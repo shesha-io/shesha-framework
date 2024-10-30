@@ -3,7 +3,7 @@ import { TemplateEvaluator } from "./client-side/utils";
 import { CodeLanguages } from "@/designer-components/codeEditor/types";
 import { IObjectMetadata } from "@/interfaces";
 import { CSSProperties } from "react";
-import { IEntityMetadata, IMetadata } from "@/interfaces/metadata";
+import { IArrayMetadata, IEntityMetadata, IMetadata } from "@/interfaces/metadata";
 
 export interface IHasCodeTemplate {
     template: TemplateEvaluator;
@@ -25,6 +25,10 @@ export type ResultType = IMetadata | IObjectMetadata;
 
 export const isObjectType = (value: ResultType): value is IObjectMetadata => {
     return value && value.dataType === "object";
+};
+
+export const isArrayType = (value: ResultType): value is IArrayMetadata => {
+    return value && value.dataType === "array";
 };
 
 export const isEntityType = (value: ResultType): value is IEntityMetadata => {

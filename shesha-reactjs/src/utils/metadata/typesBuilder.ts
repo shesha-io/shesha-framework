@@ -1,5 +1,5 @@
 import { DataTypes, FormFullName } from "@/interfaces";
-import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IArrayMetadata, IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, TypeImport, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import camelcase from "camelcase";
 import { verifiedCamelCase } from "../string";
 import { StringBuilder } from "./stringBuilder";
@@ -12,6 +12,11 @@ export interface BuildResult {
 export interface BuildContext {
     requestedFiles: string[];
 }
+
+type OnUseComplexTypeHandler = (typeImport: TypeImport) => void;
+type BuildTypeContext = {
+    onUseComplexType: OnUseComplexTypeHandler;
+};
 
 type AsyncPropertyHandler = (property: IPropertyMetadata) => Promise<void>;
 /**
@@ -157,24 +162,26 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             return {
                 name: entityType,
                 module: property.entityModule,
-                //module: property.moduleAccessor, 
-                //name: property.typeAccessor                 
             };
         } else
             return null;
     };
 
-    #getArrayType = async (_property: IPropertyMetadata): Promise<TypeAndLocation> => {
-        return { typeName: "any[]" };
-        /* TODO: add context and import required types
-        if (property.itemsType){
-            const itemType = await this.#getTypescriptType(property.itemsType);
+    buildArrayType = async (property: IArrayMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
+        return await this.#getArrayType(property, context);
+    };
 
-            return { typeName: `Array<${itemType.typeName}>` };
-        } else {
+    #getArrayType = async (property: IPropertyMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
+        const itemDataType = property.itemsType?.dataType;
+        if (!itemDataType)
             return { typeName: "any[]" };
-        } 
-        */
+
+        const itemTypeFixed = { ...property.itemsType, path: property.itemsType['name'] ?? property.itemsType.path };
+        const itemType = await this.#getTypescriptType(itemTypeFixed);
+
+        if (itemType.filePath && context?.onUseComplexType)
+            context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
+        return { typeName: `${itemType.typeName}[]` };
     };
 
     #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
@@ -221,7 +228,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return { typeName, filePath: fileName };
     };
 
-    #getTypescriptType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
+    #getTypescriptType = async (property: IPropertyMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
         if (property.typeDefinitionLoader) {
             const definition = await property.typeDefinitionLoader({ typeDefinitionBuilder: this });
 
@@ -253,7 +260,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             case DataTypes.object:
                 return await this.#getObjectType(property.path, property.properties);
             case DataTypes.array:
-                return await this.#getArrayType(property);
+                return await this.#getArrayType(property, context);
             default:
                 return undefined;
         }
