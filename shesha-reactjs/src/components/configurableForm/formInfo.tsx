@@ -25,14 +25,13 @@ export interface FormInfoProps {
   children?: React.ReactNode;
 }
 
-export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible, children }) => {
+export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
   const { id, versionNo, versionStatus, name, module } = formProps;
-  const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
+  const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [open, setOpen] = useState(false);
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
-  const [allowHidePanel, setAllowHidePanel] = useState<boolean>(false);
   const displayEditMode = formInfoBlockVisible && formProps?.id;
 
   const onModalOpen = () => setOpen(true);
@@ -43,32 +42,9 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
     setOpen(false);
   };
 
-  const toggleFormPanel = () => {
-    if (allowHidePanel === true) {
-      setPanelShowing(visible);
-    }
-  };
-
-  const toggleFormBlock = () => {
-    if (formInfoBlockVisible === true) {
-      setPanelShowing(true);
-      setAllowHidePanel(true);
-    }
-  };
-
-  useEffect(() => {
-    toggleFormBlock();
-  }, [formInfoBlockVisible]);
-
-  useEffect(() => {
-    toggleFormPanel();
-  }, [visible]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setPanelShowing(false);
-    }, 3000);
-  }, [formInfoBlockVisible]);
+  useEffect(()=>{
+    setPanelShowing(softInfoBlock);
+  },[softInfoBlock]);
 
   return (
     <div
@@ -116,6 +92,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
             )}
 
             <p
+              onClick={()=>onModalOpen()}
               title={`${getFormFullName(module, name)} v${versionNo}`}
               className={styles.shaFormInfoCardTitle}>
               {getFormFullName(module, name)} v{versionNo}

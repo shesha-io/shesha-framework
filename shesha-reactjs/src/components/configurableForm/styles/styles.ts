@@ -87,6 +87,7 @@ export const ShaFormStyles = createGlobalStyle`
             color: #fff;
             font-size: 12px;
             text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.45);
+            cursor: pointer
         }
     }
 `;
