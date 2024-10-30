@@ -7,7 +7,7 @@ import {
     IObjectMetadataBuilder as IPublicObjectMetadataBuilder,
 } from '@/publicJsApis/metadataBuilder';
 
-import { IMetadata } from '@/publicJsApis/metadata';
+import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
 import { metadataSourceCode } from '@/publicJsApis';
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
@@ -233,11 +233,12 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
 
     array = async (name: string, itemType: (builder: this) => Promise<IMetadata>, description?: string): Promise<IMetadata> => {
         const itemMetadata = await itemType(this);
-        const arrayMetadata: IMetadata = {
+        const arrayMetadata: IMetadata & IMemberType = {
             name: name,
             description: description,
             dataType: DataTypes.array,
-            itemsType: itemMetadata,
+            dataFormat: itemMetadata.dataType,
+            itemsType: itemMetadata,            
         };
         return arrayMetadata;
     };

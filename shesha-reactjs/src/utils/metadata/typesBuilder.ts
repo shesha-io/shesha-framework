@@ -172,16 +172,44 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     };
 
     #getArrayType = async (property: IPropertyMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
-        const itemDataType = property.itemsType?.dataType;
-        if (!itemDataType)
-            return { typeName: "any[]" };
+        switch (property.dataFormat) {
+            case DataTypes.entityReference: {
+                if (isIHasEntityType(property)) {
+                    const itemTypeFixed: IPropertyMetadata & IHasEntityType = {
+                        path: 'item',
+                        dataType: DataTypes.entityReference,
+                        //dataFormat: property.entityType,
+                        entityType: property.entityType,
+                    };
+                    const itemType = await this.#getTypescriptType(itemTypeFixed);
 
-        const itemTypeFixed = { ...property.itemsType, path: property.itemsType['name'] ?? property.itemsType.path };
-        const itemType = await this.#getTypescriptType(itemTypeFixed);
+                    if (itemType?.typeName){
+                        if (itemType.filePath && context?.onUseComplexType)
+                            context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
+                        return { typeName: `${itemType.typeName}[]` };
+                    } else {
+                        console.warn(`Failed to build type ${property.entityType}`, property);
+                    }
+                }
+                break;
+            }
+            case DataTypes.referenceListItem: {
+                return { typeName: `number[]` };
+            }            
+        }
+        
+        if (property.itemsType){
+            const itemTypeFixed = { ...property.itemsType, path: property.itemsType['name'] ?? property.itemsType.path };
+            const itemType = await this.#getTypescriptType(itemTypeFixed);
 
-        if (itemType.filePath && context?.onUseComplexType)
-            context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
-        return { typeName: `${itemType.typeName}[]` };
+            if (itemType){
+                if (itemType.filePath && context?.onUseComplexType)
+                    context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
+                return { typeName: `${itemType.typeName}[]` };
+            }
+        }
+
+        return { typeName: "any[]" };
     };
 
     #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
