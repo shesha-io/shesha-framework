@@ -46,6 +46,10 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
     setPanelShowing(softInfoBlock);
   },[softInfoBlock]);
 
+  if(!formProps.id){
+    return <>{children}</>
+  }
+
   return (
     <div
       onMouseEnter={(event) => {
