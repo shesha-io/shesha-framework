@@ -29,6 +29,7 @@ export interface IMetadataBuilder<TObjectBuilder extends IObjectMetadataBuilder 
   isEntityAsync(entityType: string): Promise<boolean>;
 
   object(name: string, description?: string): TObjectBuilder;
+  array(name: string, itemType: (builder: this) => Promise<IMetadata>, description?: string): Promise<IMetadata>;
   entity(entityType: string): Promise<IObjectMetadata>;
   metadata(): IObjectMetadata;
 

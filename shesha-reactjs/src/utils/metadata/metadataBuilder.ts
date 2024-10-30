@@ -231,6 +231,17 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
         return new ObjectMetadataBuilder(this, name, description);
     };
 
+    array = async (name: string, itemType: (builder: this) => Promise<IMetadata>, description?: string): Promise<IMetadata> => {
+        const itemMetadata = await itemType(this);
+        const arrayMetadata: IMetadata = {
+            name: name,
+            description: description,
+            dataType: DataTypes.array,
+            itemsType: itemMetadata,
+        };
+        return arrayMetadata;
+    };
+
     registerStandardProperty(key: string, buildAction: MetadataBuilderAction, includeByDefault = true) {
         this.standardProperties.set(key, { buildAction, includeByDefault });
     }

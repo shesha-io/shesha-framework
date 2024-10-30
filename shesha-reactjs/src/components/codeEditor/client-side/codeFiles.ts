@@ -1,6 +1,6 @@
 import { asPropertiesArray, IObjectMetadata, isPropertiesArray, isPropertiesLoader, ModelTypeIdentifier, NestedProperties, PropertiesPromise } from "@/interfaces/metadata";
 import { makeCodeTemplate, TextTemplate } from "./utils";
-import { CodeTemplateSettings, isEntityType, isObjectType, ResultType } from "../models";
+import { CodeTemplateSettings, isArrayType, isEntityType, isObjectType, ResultType } from "../models";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { trimSuffix } from "@/utils/string";
 import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
@@ -102,14 +102,30 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
             if (isEntityType(resultType)) {
                 const entityType = await tsBuilder.getEntityType({ module: resultType.entityModule, name: resultType.entityType });
                 resultTypeName = `Partial<${entityType.typeName}>`;
-                
+
                 const typesImporter = new TypesImporter();
                 typesImporter.import(entityType);
                 const importSection = typesImporter.generateImports();
 
                 localDeclarationsBlock = `${importSection}\r\n`;
             } else
-                resultTypeName = resultType.dataType;
+                if (isArrayType(resultType)) {
+                    const typesImporter = new TypesImporter();
+
+                    const resultTypeDeclaration = await tsBuilder.buildArrayType(resultType, {
+                        onUseComplexType: (typeInfo) => {
+                            typesImporter.import(typeInfo);
+                        }
+                    });
+
+                    const importSection = typesImporter.generateImports();
+                    localDeclarationsBlock = importSection
+                        ? `${importSection}\r\n`
+                        : undefined;
+
+                    resultTypeName = resultTypeDeclaration.typeName;
+                } else
+                    resultTypeName = resultType.dataType;
     }
 
     if (wrapInTemplate) {
