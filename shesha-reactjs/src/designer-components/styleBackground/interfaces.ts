@@ -17,3 +17,14 @@ export interface IBackgroundProps extends IConfigurableFormComponent {
     onChange?: (value: IBackgroundValue) => void;
     value?: IBackgroundValue;
 }
+
+export interface IRadioOption {
+    value: string | number;
+    icon?: React.ReactNode;
+    title?: string;
+}
+
+export interface IDropdownOption {
+    label: string | React.ReactNode;
+    value: string;
+}

@@ -16,25 +16,20 @@ import {
     SmallDashOutlined,
     CloseOutlined
 } from "@ant-design/icons";
+import { IDropdownOption } from "../styleBackground/interfaces";
+import { addPx } from "../button/util";
 
 export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
-    if (!input || input.hideBorder) return {};
+    if (!input) return {};
 
     const style: React.CSSProperties = {};
-
-    // Handle border radius
-    if (input.radius) {
-        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
-        style.borderRadius = `${all}px`;
-        style.borderRadius = `${topLeft || all || 6}px ${topRight || all || 6}px ${bottomRight || all || 6}px ${bottomLeft || all || 6}px`;
-    }
 
     // Handle border
     if (input.border) {
         const { all, top, right, bottom, left } = input.border;
 
         const handleBorderPart = (part, prefix: string) => {
-            if (part?.width) style[`${prefix}Width`] = `${part.width || 0}${part.unit || 'px'}`;
+            if (part?.width) style[`${prefix}Width`] = addPx(part.width);
             if (part?.style) style[`${prefix}Style`] = part.style || 'solid';
             if (part?.color) style[`${prefix}Color`] = part.color || 'black';
         };
@@ -44,6 +39,16 @@ export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
         handleBorderPart(right, 'borderRight');
         handleBorderPart(bottom, 'borderBottom');
         handleBorderPart(left, 'borderLeft');
+    }
+
+    input.hideBorder && (style.border = 'none');
+
+
+    // Handle border radius
+    if (input.radius) {
+        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
+        style.borderRadius = `${all}px`;
+        style.borderRadius = `${topLeft || all || 6}px ${topRight || all || 6}px ${bottomRight || all || 6}px ${bottomLeft || all || 6}px`;
     }
 
     return style;
@@ -63,12 +68,12 @@ export const borderOptions = [
     { value: 'top', icon: <BorderTopOutlined />, title: 'top' },
     { value: 'right', icon: <BorderRightOutlined />, title: 'right' },
     { value: 'bottom', icon: <BorderBottomOutlined />, title: 'bottom' },
-    { value: 'left', icon: <BorderLeftOutlined />, title: 'left' },
+    { value: 'left', icon: <BorderLeftOutlined />, title: 'left' }
 ];
 
-export const styleOptions = [
-    { value: 'solid', icon: <MinusOutlined />, title: 'solid' },
-    { value: 'dashed', icon: <DashOutlined />, title: 'dashed' },
-    { value: 'dotted', icon: <SmallDashOutlined />, title: 'dotted' },
-    { value: 'none', icon: <CloseOutlined />, title: 'none' },
+export const styleOptions: IDropdownOption[] = [
+    { value: 'solid', label: <MinusOutlined /> },
+    { value: 'dashed', label: <DashOutlined /> },
+    { value: 'dotted', label: <SmallDashOutlined /> },
+    { value: 'none', label: <CloseOutlined /> },
 ];

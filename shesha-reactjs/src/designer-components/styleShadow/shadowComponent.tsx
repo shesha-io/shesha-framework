@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { InputRow } from '@/designer-components/_settings/components/utils';
-import { SettingInput } from '../_settings/components/settingsInput';
+import { SettingInput } from '../_settings/components/settingsInput/settingsInput';
 
 
 export interface IShadowType {

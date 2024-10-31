@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { positionOptions, repeatOptions, sizeOptions } from './utils';
 import { InputRow } from '@/designer-components/_settings/components/utils';
-import { SettingInput } from '../_settings/components/settingsInput';
+import { SettingInput } from '../_settings/components/settingsInput/settingsInput';
 
 type SizeAndRepeatProps = {
     readOnly?: boolean;

@@ -1,9 +1,8 @@
-import { Button } from 'antd';
 import React, { FC } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
-import { SettingInput } from '../_settings/components/settingsInput';
+import { SettingInput } from '../_settings/components/settingsInput/settingsInput';
 
 
 export interface ILabelProps {
@@ -12,7 +11,7 @@ export interface ILabelProps {
     value?: boolean;
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, onChange }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly }) => {
 
     const { styles } = useStyles();
 
@@ -20,9 +19,7 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, onChange
         <>
             <div className={styles.flexWrapper} >
                 <SettingInput label='label Align' hideLabel propertyName='labelAlign' readOnly={value || readOnly} inputType='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} />
-                <SettingInput label="hide Label" hideLabel propertyName='hideLabel' readOnly={readOnly} jsSetting={false}>
-                    <Button type='primary' ghost={value ? false : true} size='small' icon={value ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange(!value)} />
-                </SettingInput>
+                <SettingInput label="hide Label" hideLabel propertyName='hideLabel' readOnly={readOnly} jsSetting={false} inputType='button' icon={value ? <EyeInvisibleOutlined /> : <EyeOutlined />} />
             </div>
             <SettingInput label="Label" propertyName='label' readOnly={value || readOnly} />
         </>

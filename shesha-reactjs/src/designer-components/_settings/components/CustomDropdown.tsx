@@ -2,6 +2,7 @@ import React, { FC, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Select, Space } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { IDropdownOption } from '@/designer-components/styleBackground/interfaces';
 
 const { Option } = Select;
 
@@ -9,12 +10,13 @@ const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 
 interface CustomDropdownProps {
     value: string;
-    options: Array<string | { label: string; value: string }>;
+    options: Array<string | IDropdownOption>;
     readOnly?: boolean;
-    label?: string;
+    label?: string | React.ReactNode;
     size?: SizeType;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
+    variant?: 'borderless' | 'outlined' | 'filled';
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
@@ -31,7 +33,6 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     const clearInputs = () => {
         setCustomOption({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
     };
-
 
     const addCustomOption = () => {
         const { width, height } = customOption;

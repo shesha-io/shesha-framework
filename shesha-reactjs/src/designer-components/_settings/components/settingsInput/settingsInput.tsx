@@ -1,37 +1,31 @@
-import { IConfigurableFormComponent } from "@/providers";
-import { IInputProps, InputComponent } from "../utils";
+import React from 'react';
+
+import { IConfigurableFormComponent } from "@/interfaces";
 import { useSearchQuery } from "../tabs/context";
+import { IInputProps, InputComponent } from "../utils";
 import FormItem from "../formItem";
-import React, { useEffect, useState } from "react";
 
 export interface ISettingsInputProps extends IInputProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
 }
 
 export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, propertyName: property, inputType: type,
-    buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden,
-    size, ...rest }) => {
+    buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
+    size, inline, ...rest }) => {
     const { searchQuery } = useSearchQuery();
-const [isHidden, setIsHidden] = useState(hidden);
 
-useEffect(()=>{
     const group = property?.split(".")[1]?.trim();
-    const stringToFind = `${group ?? ''} ${label.toLowerCase()}`?.trim();
-    setIsHidden(stringToFind.includes(searchQuery.toLowerCase()?.trim()))
-},[searchQuery])
-    
+    const stringToFind = `${group} ${label.toLowerCase()}`?.trim();
 
-        return (isHidden || hidden ? null :
-            <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
+    if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
+        return (hidden ? null :
+            <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
                 <FormItem
-                    name={`${property}`}
+                    name={property}
                     hideLabel={hideLabel}
                     label={label}
                     tooltip={tooltip}
                     jsSetting={type === 'codeEditor' ? false : jsSetting}
-                    readOnly={readOnly}
-                    layout={type === 'switch' ? 'horizontal' : 'vertical'}
-                    wrapperCol={{ span: type === 'switch' ? 18 : 24 }}
-                    labelCol={{ span: type === 'switch' ? 6 : 24 }}>
+                    readOnly={readOnly}>
                     {children || <InputComponent size='small'
                         label={label}
                         inputType={type}
@@ -45,5 +39,8 @@ useEffect(()=>{
                 </FormItem>
             </div>
         );
+    }
+
+    return null;
 
 };

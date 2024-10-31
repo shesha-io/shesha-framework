@@ -1,7 +1,6 @@
 import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 import { IconType } from '@/components';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { CSSProperties } from 'styled-components';
 
 export type TextType = 'text' | 'password';
 
@@ -20,7 +19,6 @@ export interface IInputStyles {
   backgroundColor?: string;
   hideBorder?: boolean;
   styles?: IStyleType;
-  style?: string | CSSProperties;
 }
 export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   placeholder?: string;

@@ -1,4 +1,5 @@
 import { IConfigurableFormComponent } from "@/providers";
+import { IInputUnits } from "../styleDimensions/interfaces";
 
 export interface IBorderValue {
     radius?: {
@@ -16,7 +17,7 @@ export interface IBorderValue {
             style?: string;
         };
         top?: {
-            width?: number | string;
+            width?: IInputUnits;
             unit?: string;
             color?: string;
             style?: string;

@@ -16,10 +16,7 @@ const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps> = {
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
         return model.hidden ? null : (
-            <InputRow readOnly={model.readOnly} inputs={model.inputs.map(input => {
-                const { label, propertyName, inputType, readOnly } = input;
-                return { label, propertyName, readOnly, inputType };
-            })} />
+            <InputRow readOnly={model.readOnly} {...model} />
         );
     }
 };

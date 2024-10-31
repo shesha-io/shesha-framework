@@ -6,7 +6,7 @@
       "propertyName": "settingsTabs",
       "labelAlign": "right",
       "hidden": false,
-      "jsSettings": true,
+      "jsSettting": true,
       "size": "small",
       "parentId": "root",
       "isDynamic": false,
@@ -15,7 +15,7 @@
           "key": "1",
           "id": "s4gmBg31azZC0UjZjpfTm",
           "label": "Common",
-          "jsSettings": true,
+          "jsSettting": true,
           "parentId": "W_m7doMyCpCYwAYDfRh6I",
           "components": [
             {
@@ -39,23 +39,30 @@
               "hideLabel": true
             },
             {
-              "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
-              "type": "settingsInput",
-              "propertyName": "placeholder",
+              "id": "palceholder-tooltip-s4gmBg31azZC0UjZjpfTm",
+              "type": "settingsInputRow",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Placeholder",
-              "textType": "text",
-              "size": "small",
-              "jsSettings": true
-            },
-            {
-              "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
-              "type": "settingsInput",
-              "inputType": "textArea",
-              "propertyName": "description",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Tooltip",
-              "jsSettings": true
+              "inputs": [
+                {
+                  "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+                  "type": "settingsInput",
+                  "propertyName": "placeholder",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Placeholder",
+                  "textType": "text",
+                  "size": "small",
+                  "jsSettting": true
+                },
+                {
+                  "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+                  "type": "settingsInput",
+                  "inputType": "textArea",
+                  "propertyName": "description",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Tooltip",
+                  "jsSettting": true
+                }
+              ]
             },
             {
               "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
@@ -69,7 +76,7 @@
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Readonly",
                   "size": "small",
-                  "jsSettings": true
+                  "jsSettting": true
                 },
                 {
                   "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
@@ -78,43 +85,50 @@
                   "propertyName": "hidden",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Hide",
-                  "jsSettings": true,
+                  "jsSettting": true,
                   "layout": "horizontal"
                 }
               ],
               "parentId": "s4gmBg31azZC0UjZjpfTm"
             },
             {
-              "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-              "inputType": "dropdown",
-              "type": "settingsInput",
-              "propertyName": "textType",
+              "id": "type-default-value-s4gmBg31azZC0UjZjpfTm",
+              "type": "settingsInputRow",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Type",
-              "size": "small",
-              "jsSettings": true,
-              "dropdownOptions": [
+              "inputs": [
                 {
-                  "label": "text",
-                  "value": "text",
-                  "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                  "inputType": "dropdown",
+                  "type": "settingsInput",
+                  "propertyName": "textType",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Type",
+                  "size": "small",
+                  "jsSettting": true,
+                  "dropdownOptions": [
+                    {
+                      "label": "text",
+                      "value": "text",
+                      "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                    },
+                    {
+                      "label": "password",
+                      "value": "password",
+                      "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                    }
+                  ]
                 },
                 {
-                  "label": "password",
-                  "value": "password",
-                  "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
+                  "type": "settingsInput",
+                  "propertyName": "initialValue",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Default Value",
+                  "tooltip": "Enter default value of component. (formData, formMode, globalState) are exposed",
+                  "textType": "text",
+                  "jsSettting": true
                 }
               ]
-            },
-            {
-              "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
-              "type": "settingsInput",
-              "propertyName": "initialValue",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Default Value",
-              "tooltip": "Enter default value of component. (formData, formMode, globalState) are exposed",
-              "textType": "text",
-              "jsSettings": true
             },
             {
               "id": "prefix-s4gmBg31azZC0UjZjpfTm",
@@ -127,7 +141,7 @@
                   "propertyName": "prefix",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Prefix",
-                  "jsSettings": true
+                  "jsSettting": true
                 },
                 {
                   "id": "prefix-icon-s4gmBg31azZC0UjZjpfTm",
@@ -136,7 +150,7 @@
                   "propertyName": "prefixIcon",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Prefix Icon",
-                  "jsSettings": true
+                  "jsSettting": true
                 }
               ]
             },
@@ -150,7 +164,7 @@
                   "propertyName": "Suffix",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Suffix",
-                  "jsSettings": true
+                  "jsSettting": true
                 },
                 {
                   "id": "suffix-icon-s4gmBg31azZC0UjZjpfTm",
@@ -159,7 +173,7 @@
                   "propertyName": "suffixIcon",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Suffix Icon",
-                  "jsSettings": true
+                  "jsSettting": true
                 }
               ],
               "parentId": "s4gmBg31azZC0UjZjpfTm"
@@ -172,34 +186,15 @@
           "label": "Validation",
           "components": [
             {
-              "id": "Scip2BCqWk6HniFIJTgtA",
-              "type": "settingsInputRow",
-              "inputs": [
-                {
-                  "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-                  "type": "settingsInput",
-                  "inputType": "switch",
-                  "jsSettings": true,
-                  "propertyName": "validate.required",
-                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
-                  "label": "Required",
-                  "size": "small",
-                  "layout": "horizontal"
-                },
-                {
-                  "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
-                  "type": "settingsInput",
-                  "inputType": "codeEditor",
-                  "propertyName": "validate.validator",
-                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
-                  "label": "Validator",
-                  "validate": {},
-                  "labelAlign": "right",
-                  "hidden": false,
-                  "jsSetting": false,
-                  "tooltip": "Enter custom validator logic for form.item rules. Returns a Promise"
-                }
-              ]
+              "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+              "type": "settingsInput",
+              "inputType": "switch",
+              "jsSettting": true,
+              "propertyName": "validate.required",
+              "parentId": "6eBJvoll3xtLJxdvOAlnB",
+              "label": "Required",
+              "size": "small",
+              "layout": "horizontal"
             },
             {
               "id": "qOkkwAnHvKJ0vYXeXMLsd",
@@ -226,14 +221,33 @@
               ]
             },
             {
-              "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
-              "type": "settingsInput",
-              "propertyName": "validate.message",
-              "parentId": "6eBJvoll3xtLJxdvOAlnB",
-              "label": "Message",
-              "validate": {},
-              "textType": "text",
-              "size": "small"
+              "id": "Scip2BCqWk6HniFIJTgtA",
+              "type": "settingsInputRow",
+              "inputs": [
+                {
+                  "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
+                  "type": "settingsInput",
+                  "propertyName": "validate.message",
+                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
+                  "label": "Message",
+                  "validate": {},
+                  "textType": "text",
+                  "size": "small"
+                },
+                {
+                  "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
+                  "type": "settingsInput",
+                  "inputType": "codeEditor",
+                  "propertyName": "validate.validator",
+                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
+                  "label": "Validator",
+                  "validate": {},
+                  "labelAlign": "right",
+                  "hidden": false,
+                  "jsSetting": false,
+                  "tooltip": "Enter custom validator logic for form.item rules. Returns a Promise"
+                }
+              ]
             }
           ]
         },
@@ -305,12 +319,168 @@
               },
               "content": {
                 "id": "fontStylePnl",
+                "parentId": "fontStyleCollapsiblePanel",
                 "components": [
                   {
                     "id": "try26voxhs-HxJ5k5ngYE",
-                    "type": "fontStyle",
-                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
-                    "propertyName": "inputStyles.font"
+                    "type": "settingsInputRow",
+                    "parentId": "fontStylePnl",
+                    "inline": true,
+                    "inputs": [
+                      {
+                        "id": "font-size-try26voxhs-HxJ5k5ngYE",
+                        "label": "Size",
+                        "propertyName": "inputStyles.font.size",
+                        "hideLabel": true,
+                        "jsSetting": false
+                      },
+                      {
+                        "id": "font-weight-try26voxhs-HxJ5k5ngYE",
+                        "parentId": "fontStylePnl",
+                        "label": "Weight",
+                        "propertyName": "inputStyles.font.weight",
+                        "inputType": "dropdown",
+                        "dropdownOptions": [
+                          {
+                            "value": "100",
+                            "label": "100 - thin"
+                          },
+                          {
+                            "value": "200",
+                            "label": "200 - extra-light"
+                          },
+                          {
+                            "value": "300",
+                            "label": "300 - light"
+                          },
+                          {
+                            "value": "400",
+                            "label": "400 - normal"
+                          },
+                          {
+                            "value": "500",
+                            "label": "500 - medium"
+                          },
+                          {
+                            "value": "600",
+                            "label": "600 - semi-bold"
+                          },
+                          {
+                            "value": "700",
+                            "label": "700 - bold"
+                          },
+                          {
+                            "value": "800",
+                            "label": "800 - extra-bold"
+                          },
+                          {
+                            "value": "900",
+                            "label": "900 - black"
+                          }
+                        ],
+                        "hideLabel": true,
+                        "jsSetting": false,
+                        "tooltip": "Controls text thickness (light, normal, bold, etc.)"
+                      },
+                      {
+                        "id": "font-style-try26voxhs-HxJ5k5ngYE",
+                        "parentId": "fontStylePnl",
+                        "label": "Color",
+                        "propertyName": "inputStyles.font.color",
+                        "inputType": "color",
+                        "hideLabel": true,
+                        "jsSetting": false
+                      },
+                      {
+                        "id": "font-family-try26voxhs-HxJ5k5ngYE",
+                        "label": "Family",
+                        "parentId": "fontStylePnl",
+                        "propertyName": "inputStyles.font.type",
+                        "inputType": "dropdown",
+                        "dropdownOptions": [
+                          {
+                            "value": "Arial",
+                            "label": "Arial"
+                          },
+                          {
+                            "value": "Helvetica",
+                            "label": "Helvetica"
+                          },
+                          {
+                            "value": "Times New Roman",
+                            "label": "Times New Roman"
+                          },
+                          {
+                            "value": "Courier New",
+                            "label": "Courier New"
+                          },
+                          {
+                            "value": "Verdana",
+                            "label": "Verdana"
+                          },
+                          {
+                            "value": "Georgia",
+                            "label": "Georgia"
+                          },
+                          {
+                            "value": "Palatino",
+                            "label": "Palatino"
+                          },
+                          {
+                            "value": "monospace",
+                            "label": "Monospace"
+                          },
+                          {
+                            "value": "Garamond",
+                            "label": "Garamond"
+                          },
+                          {
+                            "value": "Comic Sans MS",
+                            "label": "Comic Sans MS"
+                          },
+                          {
+                            "value": "Trebuchet MS",
+                            "label": "Trebuchet MS"
+                          },
+                          {
+                            "value": "Arial Black",
+                            "label": "Arial Black"
+                          },
+                          {
+                            "value": "impact",
+                            "label": "Impact"
+                          }
+                        ],
+                        "hideLabel": true,
+                        "jsSetting": false
+                      },
+                      {
+                        "id": "font-align-try26voxhs-HxJ5k5ngYE",
+                        "label": "Align",
+                        "parentId": "fontStylePnl",
+                        "propertyName": "inputStyles.font.align",
+                        "inputType": "radio",
+                        "buttonGroupOptions": [
+                          {
+                            "value": "left",
+                            "title": "Left",
+                            "icon": "AlignLeftOutlined"
+                          },
+                          {
+                            "value": "center",
+                            "title": "Center",
+                            "icon": "AlignCenterOutlined"
+                          },
+                          {
+                            "value": "right",
+                            "title": "Right",
+                            "icon": "AlignRightOutlined"
+                          }
+                        ],
+                        "hideLabel": true,
+                        "jsSetting": false
+                      }
+                    ]
                   }
                 ]
               }
@@ -459,7 +629,7 @@
                   "labelAlign": "right",
                   "hidden": false,
                   "isDynamic": false,
-                  "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                  "parentId": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
                   "version": 6,
                   "expandIconPosition": "start",
                   "collapsible": "header",
@@ -471,27 +641,26 @@
                     "components": []
                   },
                   "content": {
-                    "id": "stylePnl",
-                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                    "id": "stylePnl-M5-911",
+                    "parentId": "styleCollapsiblePanel",
                     "components": [
                       {
-                        "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
+                        "id": "custom-css-412c-8461-4c8d55e5c073",
                         "type": "settingsInput",
                         "inputType": "codeEditor",
                         "propertyName": "style",
-                        "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                        "parentId": "stylePnl-M5-911",
                         "label": "Custom CSS",
                         "validate": {},
                         "labelAlign": "right",
                         "hidden": false,
-                        "jsSetting": false,
                         "tooltip": "A script that returns the style of the element as an object. This should conform to CSSProperties"
                       },
                       {
                         "id": "styleBoxPnl",
                         "type": "styleBox",
                         "propertyName": "stylingBox",
-                        "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                        "parentId": "stylePnl-M5-911",
                         "validate": {},
                         "label": "Margin Padding",
                         "jsSetting": false,

@@ -28,6 +28,21 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         position: relative;
         top: 0px;
     `);
+
+
+    const inlineInputs = cx(css`
+        align-items: end !important;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0px 8px;
+    `);
+
+    const rowInputs = cx(css`
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0px 8px;
+        `);
+
     const contentCode = cx(css`
         position: relative;
         top: 0px;
@@ -67,6 +82,8 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         contentJs,
         contentCode,
         jsContent,
-        unitSelector
+        unitSelector,
+        inlineInputs,
+        rowInputs
     };
 });

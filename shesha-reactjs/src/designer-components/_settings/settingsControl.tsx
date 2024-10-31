@@ -112,7 +112,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         color='lightslategrey'
         onClick={onSwitchMode}
       />
-      <div className={styles.jsContent}>
+      <div className={styles.jsContent} style={{ marginLeft: props.readOnly ? 0 : '28px' }}>
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
       </div>

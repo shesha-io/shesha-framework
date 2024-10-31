@@ -10,7 +10,7 @@ import { IBackgroundValue } from './interfaces';
 import { useTheme } from '@/index';
 import { removeNullUndefined } from '@/providers/utils';
 import { nanoid } from '@/utils/uuid';
-import { SettingInput } from '../_settings/components/settingsInput';
+import { SettingInput } from '../_settings/components/settingsInput/settingsInput';
 interface IBackgroundProps {
     value?: IBackgroundValue;
     readOnly?: boolean;

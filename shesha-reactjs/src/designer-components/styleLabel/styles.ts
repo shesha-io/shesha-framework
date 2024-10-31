@@ -5,7 +5,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   const flexWrapper = cx("", css`
         display: flex;
-        width: 200px;
         flex-direction: row;
         gap: 8px;
         position: absolute;

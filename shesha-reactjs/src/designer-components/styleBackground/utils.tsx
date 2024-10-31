@@ -1,6 +1,6 @@
 import React from "react";
-import { AliwangwangOutlined, BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, LinkOutlined, PicCenterOutlined, TableOutlined, UploadOutlined } from "@ant-design/icons";
-import { IBackgroundValue } from "./interfaces";
+import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, LinkOutlined, PicCenterOutlined, TableOutlined, UploadOutlined } from "@ant-design/icons";
+import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -45,7 +45,7 @@ export const getBackgroundStyle = async (input?: IBackgroundValue, url?: string)
     return style;
 };
 
-export const gradientDirectionOptions = [
+export const gradientDirectionOptions: IDropdownOption[] = [
     { value: 'to right', label: 'To Right' },
     { value: 'to left', label: 'To Left' },
     { value: 'to top', label: 'To Top' },
@@ -56,23 +56,23 @@ export const gradientDirectionOptions = [
     { value: 'to bottom left', label: 'To Bottom Left' },
 ];
 
-export const backgroundTypeOptions = [
-    { value: 'color', label: 'Background color', icon: <FormatPainterOutlined /> },
-    { value: 'gradient', label: 'Gradient background', icon: <BgColorsOutlined /> },
-    { value: 'url', label: 'Image url', icon: <LinkOutlined /> },
-    { value: 'upload', label: 'Image upload', icon: <UploadOutlined /> },
-    { value: 'storedFile', label: 'Stored File', icon: <DatabaseOutlined /> },
+export const backgroundTypeOptions: IRadioOption[] = [
+    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
+    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
+    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
+    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
+    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
 ];
 
-export const repeatOptions = [
-    { value: 'no-repeat', label: 'No Repeat', icon: <PicCenterOutlined /> },
-    { value: 'repeat', label: 'Repeat', icon: <TableOutlined /> },
-    { value: 'repeat-x', label: 'Repeat X', icon: <InsertRowBelowOutlined /> },
-    { value: 'repeat-y', label: 'Repeat Y', icon: <InsertRowLeftOutlined /> },
+export const repeatOptions: IRadioOption[] = [
+    { value: 'no-repeat', title: 'No Repeat', icon: <PicCenterOutlined /> },
+    { value: 'repeat', title: 'Repeat', icon: <TableOutlined /> },
+    { value: 'repeat-x', title: 'Repeat X', icon: <InsertRowBelowOutlined /> },
+    { value: 'repeat-y', title: 'Repeat Y', icon: <InsertRowLeftOutlined /> },
 ];
 
-export const sizeOptions = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
+export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
 
-export const positionOptions = [{ value: 'center', label: 'Center' }, { value: 'top', label: 'Top' }, { value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'bottom', label: 'Bottom' },
+export const positionOptions: IDropdownOption[] = [{ value: 'center', label: 'Center' }, { value: 'top', label: 'Top' }, { value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'bottom', label: 'Bottom' },
 { value: 'top left', label: 'Top Left' }, { value: 'top right', label: 'Top Right' }, { value: 'bottom left', label: 'Bottom Left' }, { value: 'bottom right', label: 'Bottom Right' }];
 

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { InputRow, sizeOptions } from '@/designer-components/_settings/components/utils';
 import { overflowOptions } from './utils';
 import { IDimensionsType } from './interfaces';
-import { SettingInput } from '../_settings/components/settingsInput';
+import { SettingInput } from '../_settings/components/settingsInput/settingsInput';
 
 const dimensionInputs = [
     [{ label: 'Width', propertyName: 'inputStyles.dimensions.width' },
@@ -21,7 +21,7 @@ const DimensionsComponent: FC<IDimensionsType> = (props) => {
 
     return (
         <>
-            <SettingInput label="Size" propertyName='size' readOnly={readOnly} inputType='dropdown' tooltip="The size of the element" dropdownOptions={sizeOptions} />
+            <SettingInput label="Size" propertyName='size' readOnly={readOnly} inputType='radio' tooltip="The size of the element" buttonGroupOptions={sizeOptions} />
             {dimensionInputs.map((input, index) => (
                 <InputRow readOnly={readOnly} key={index} inputs={input.map(input => ({ ...input, ...commonProps }))} />
             ))}
