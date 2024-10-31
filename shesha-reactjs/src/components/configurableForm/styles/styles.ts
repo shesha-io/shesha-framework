@@ -85,7 +85,7 @@ export const ShaFormStyles = createGlobalStyle`
             text-overflow: ellipsis;
             flex-grow: 1;
             color: #fff;
-            font-size: 12px;
+            font-size: 10px;
             text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.45);
             cursor: pointer
         }

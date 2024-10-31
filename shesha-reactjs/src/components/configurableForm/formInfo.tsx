@@ -107,7 +107,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
                 value={versionStatus}
                 mappings={CONFIGURATION_ITEM_STATUS_MAPPING}
                 color={null}
-                style={{ marginRight: '5px' }}
+                style={{ display: 'flex', marginRight: '5px', fontSize: '10px', height: '15px', justifyContent: 'center', alignItems: 'center' }}
               />
               <CloseOutlined
                 onClick={() => toggleShowInfoBlock(false)}
