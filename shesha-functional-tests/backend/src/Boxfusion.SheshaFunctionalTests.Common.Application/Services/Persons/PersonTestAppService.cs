@@ -14,7 +14,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
 
     public class PersonTestDto : DynamicDto<Person, Guid>
     {
-        public virtual string FirstNameOld { get; set; }
+        public virtual string FirstName { get; set; }
 
         public virtual string LastName { get; set; }
 
@@ -43,10 +43,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
         {
             var p = new Person();
             await MapDynamicDtoToEntityAsync<PersonTestDto, Person, Guid>(input, p);
-        }
-
-        public void TestPersonDto([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] PersonTestDto input)
-        {
+            var pp = new Person();
+            var v = new List<ValidationResult>();
+            await MapJObjectToEntityAsync<Person, Guid>(input._jObject, pp, v);
         }
 
         public override async Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
