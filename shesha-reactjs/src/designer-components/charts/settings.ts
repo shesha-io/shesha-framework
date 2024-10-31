@@ -30,7 +30,8 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'dataMode',
             parentId: 'root',
-            label: 'Data Mode',
+            label: 'Data Source Type',
+            description: 'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
             dataSourceType: 'values',
             values: [
               { id: nanoid(), label: 'URL', value: 'url' },
@@ -38,6 +39,16 @@ export const settingsForm = new DesignerToolbarSettings()
             ],
             validate: { required: true },
             defaultValue: 'entityType',
+          })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'height',
+            parentId: 'root',
+            label: 'Height',
+            description: 'The height (px) of the chart. The width will be calculated automatically based on the width. Id not provided, the default height will be used.',
+            defaultValue: 0,
+            stepNumeric: 1,
+            hidden: false,
           })
           .toJson()
         ]
@@ -59,7 +70,6 @@ export const settingsForm = new DesignerToolbarSettings()
     },
     content: {
       id: nanoid(),
-      // each propery is a text field beacuse they are not dynamic
       components:
         [...new DesignerToolbarSettings()
           .addTextField({
@@ -119,8 +129,8 @@ export const settingsForm = new DesignerToolbarSettings()
           .addAutocomplete({
             id: nanoid(),
             propertyName: 'entityType',
-            label: 'Entity type',
-            description: 'The entity type you want to use for the chart',
+            label: 'Entity Type',
+            description: 'The entity type you want to use for the chart.',
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
@@ -134,12 +144,12 @@ export const settingsForm = new DesignerToolbarSettings()
           .addPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'axisProperty',
-            label: 'Axis property',
+            label: 'Axis Property',
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
             isDynamic: false,
-            description: 'The property to be used on the axis',
+            description: 'The property to be used on the x-axis.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
@@ -149,7 +159,7 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'isAxisTimeSeries',
             label: 'Is Axis Property Time Series?',
-            description: 'If the axis is a time series, check this box.',
+            description: 'If the x-axis is a time series, check this box.',
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
@@ -179,12 +189,12 @@ export const settingsForm = new DesignerToolbarSettings()
           .addPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'valueProperty',
-            label: 'Value property',
+            label: 'Value Property',
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
             isDynamic: false,
-            description: 'This is the property that will be used to calculate the data and hence show on the depenedent axis',
+            description: 'This is the property that will be used to calculate the data and hence show on the depenedent y-axis.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
@@ -202,17 +212,49 @@ export const settingsForm = new DesignerToolbarSettings()
               _value: false
             },
             isDynamic: false,
-            description: 'The properties you want to use on the Legend',
+            description: 'The properties you want to use on the Legend. This is the property that will be used to group the data for Pivot Charts.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
           })
+          .addPropertyAutocomplete({
+            id: nanoid(),
+            propertyName: 'orderBy',
+            label: 'Order By',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            isDynamic: false,
+            description: 'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
+            modelType: '{{data.entityType}}',
+            autoFillProps: false,
+            settingsValidationErrors: [],
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'orderDirection',
+            parentId: 'root',
+            label: 'Order Direction',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Ascending', value: 'asc' },
+              { id: nanoid(), label: 'Descending', value: 'desc' },
+            ],
+            validate: { required: true },
+            defaultValue: 'asc',
+            hidden: {
+              _code: "return !(getSettingValue(data?.orderBy))",
+              _mode: "code",
+              _value: true
+            },
+          })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'allowFilter',
-            label: 'Allow Filter',
+            label: 'Allow Chart Filter',
             parentId: 'root',
+            description: 'Allow users to filter the chart data directly from the chart.',
             defaultValue: true,
           })
           .addPropertyAutocomplete({
@@ -222,13 +264,13 @@ export const settingsForm = new DesignerToolbarSettings()
             labelAlign: 'right',
             mode: "multiple",
             parentId: 'root',
-            isDynamic: false,
+            isDynamic: true,
             description: 'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
             hidden: {
-              _code: "return !(getSettingValue(data?.allowFilter)",
+              _code: "return !(getSettingValue(data?.allowFilter))",
               _mode: "code",
               _value: true
             },
@@ -352,7 +394,7 @@ export const settingsForm = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showXAxisScale',
-            label: 'Show X Axis Scale',
+            label: 'Show X Axis',
             parentId: 'root',
             defaultValue: true,
           })
@@ -371,7 +413,7 @@ export const settingsForm = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showYAxisScale',
-            label: 'Show Y Axis Scale',
+            label: 'Show Y Axis',
             parentId: 'root',
             defaultValue: true,
           })
@@ -400,8 +442,8 @@ export const settingsForm = new DesignerToolbarSettings()
             dataSourceType: 'values',
             values: [
               { id: nanoid(), label: 'Top', value: 'top' },
-              { id: nanoid(), label: 'Left', value: 'left' },
               { id: nanoid(), label: 'Bottom', value: 'bottom' },
+              { id: nanoid(), label: 'Left', value: 'left' },
               { id: nanoid(), label: 'Right', value: 'right' },
             ],
             validate: { required: true },
@@ -420,11 +462,19 @@ export const settingsForm = new DesignerToolbarSettings()
               _value: true
             },
           })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'borderWidth',
+            parentId: chartSettingsId,
+            label: 'Border width',
+            defaultValue: 0.0,
+            stepNumeric: 0.1,
+          })
           .addColorPicker({
             id: nanoid(),
             propertyName: 'strokeColor',
             parentId: 'root',
-            label: 'Stroke Color',
+            label: 'Border Stroke Color',
             defaultValue: '#000000',
           })
           .toJson()

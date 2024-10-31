@@ -19,9 +19,8 @@ import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, 
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
-    axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle,
-    showYAxisScale, showYAxisTitle, simpleOrPivot, filterProperties, stacked, tension, strokeColor,
-    allowFilter, isAxisTimeSeries, timeSeriesFormat
+    axisProperty, simpleOrPivot, filterProperties, borderWidth, strokeColor,
+    allowFilter, isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -34,24 +33,19 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   useEffect(() => {
     setControlProps({
-      valueProperty, legendProperty, aggregationMethod,
-      axisProperty, showLegend, showTitle, title, legendPosition,
-      showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle,
-      simpleOrPivot, filterProperties, stacked, tension, strokeColor,
-      allowFilter, isAxisTimeSeries, timeSeriesFormat
+      ...props
     });
-  }, [valueProperty, legendProperty, aggregationMethod,
-    axisProperty, showLegend, showTitle, title, legendPosition,
-    showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle,
-    simpleOrPivot, filterProperties, stacked, tension, strokeColor,
-    allowFilter, isAxisTimeSeries, timeSeriesFormat, filters, formData]);
+  }, [props, formData]);
 
   const memoFilters = useMemo(() => filters, [filters, formData]);
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
   const evaluatedFilters = useFormEvaluatedFilter({ filter: memoFilters, metadataAccessor: propertyMetadataAccessor });
   useEffect(() => {
-    refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties))
+    if (!entityType || !valueProperty || !axisProperty) {
+      return;
+    }
+    refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties, orderBy, orderDirection))
       .then((data) => {
         if (isAxisTimeSeries) {
           data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
@@ -69,17 +63,14 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           for (const metaItem of metaData.properties as Array<IRefListPropertyMetadata>) {
             if (metaItem.dataType === 'reference-list-item') {
               let fieldName = toCamelCase(metaItem.path); // Field to transform in the data
-              const refListName = metaItem.referenceListName; // Reference list name from metadata
-              const referenceListModule = metaItem.referenceListModule; // Module from metadata
 
               // Fetch the reference list values for this field
-              getReferenceList({ refListId: { module: referenceListModule, name: refListName } }).promise.then((refListItem) => {
-                setData(data.result?.items.map(item => {
+              getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } }).promise.then((refListItem) => {
+                setData(data.result?.items?.map(item => {
                   if (item[`${fieldName}`] !== undefined) {
                     // Replace the numeric value with the corresponding reference list name
                     const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
-
-                    item[`${fieldName}`] = referenceName || item[`${fieldName}`]; // Fallback to original value if not found
+                    item[`${fieldName}`] = referenceName?.trim() || item[`${fieldName}`]; // Fallback to original value if not found
                   }
                   return item;
                 }));
@@ -90,15 +81,13 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       })
       .then(() => setIsLoaded(true))
       .catch((err: any) => console.error('getChartDataRefetchParams, err data', err));
-  }, [chartType, entityType, valueProperty, memoFilters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
-    timeSeriesFormat, aggregationMethod, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisTitle,
-    showYAxisScale, showYAxisTitle, stacked, tension, strokeColor, formData, evaluatedFilters]);
+  }, [entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, isAxisTimeSeries, timeSeriesFormat, filterProperties, orderBy, orderDirection, formData]);
 
   useEffect(() => {
     if (state.data) {
       setFilterdData(state.data);
     }
-  }, [state.data, tension]);
+  }, [state.data]);
 
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
     // Collect the missing properties in an array
@@ -115,7 +104,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       <Alert
         showIcon
         message="Chart control properties not set correctly!"
-        description={descriptionMessage} // Dynamically constructed description
+        description={descriptionMessage}
         type="warning"
       />
     );
@@ -146,7 +135,9 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   }
 
   return (
-    <div className={cx(styles.chartControlContainer)}>
+    <div className={cx(styles.chartControlContainer)} style={{
+      height: props?.height ?? 'auto'
+    }}>
       {allowFilter && (
         <>
           <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>
@@ -173,23 +164,23 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           switch (chartType) {
             case 'line':
               data = simpleOrPivot === 'simple'
-                ? prepareLineChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType);
+                ? prepareLineChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <LineChart data={data} />;
             case 'bar':
               data = simpleOrPivot === 'simple'
-                ? prepareBarChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType);
+                ? prepareBarChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <BarChart data={data} />;
             case 'pie':
               data = simpleOrPivot === 'simple'
-                ? preparePieChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType);
+                ? preparePieChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <PieChart data={data} />;
             case 'polarArea':
               data = simpleOrPivot === 'simple'
-                ? preparePolarAreaChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType);
+                ? preparePolarAreaChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <PolarAreaChart data={data} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;

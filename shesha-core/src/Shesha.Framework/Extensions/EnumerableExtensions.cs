@@ -55,5 +55,49 @@ namespace Shesha.Extensions
                 .SelectManyAwait(async x => (await selector(x)).ToAsyncEnumerable())
                 .ToListAsync(cancellationToken);
         }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and returns the minimum value 
+        /// if the sequence is not empty; otherwise returns the specified default value. 
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="source">A sequence of values to determine the minimum value of.</param>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>The minimum value in the sequence or default value if sequence is empty.</returns>
+        public static TResult MinOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
+        {
+            return source.Any()
+                ? source.Min(selector)
+                : defaultValue;
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and returns the maximum value 
+        /// if the sequence is not empty; otherwise returns the specified default value. 
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="source">A sequence of values to determine the maximum value of.</param>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>The maximum value in the sequence or default value if sequence is empty.</returns>
+        public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
+        {
+            return source.Any()
+                ? source.Max(selector)
+                : defaultValue;
+        }
+
+        /// <summary>
+        /// Returns the maximum value of the sequence or default if empty
+        /// </summary>
+        public static TSource MaxOrDefault<TSource>(this IEnumerable<TSource> source, TSource defaultValue) 
+        {
+            return source.Any()
+                ? source.Max()
+                : defaultValue;
+        }
     }
 }

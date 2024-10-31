@@ -11,6 +11,9 @@ export interface IChartData {
  * Chart props, used in the chart component and some of its children
  */
 export interface IChartsProps {
+    height?: number;
+    orderBy?: string;
+    orderDirection?: TOrderDirection;
     dataMode?: TDataMode;
     url?: string;
     chartType?: TChartType;
@@ -32,6 +35,7 @@ export interface IChartsProps {
     xProperty?: string;
     yProperty?: string;
     tension?: number;
+    borderWidth?: number;
     strokeColor?: string;
     simpleOrPivot?: 'simple' | 'pivot';
     showName?: boolean;
@@ -64,6 +68,8 @@ export type TAggregationMethod = 'count' | 'sum' | 'average' | 'min' | 'max';
 export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right';
 
 export type TTimeSeriesFormat = 'day' | 'month' | 'year' | 'day-month' | 'day-month-year' | 'month-year';
+
+export type TOrderDirection = 'asc' | 'desc';
 
 /**
  * To be used in the filter component

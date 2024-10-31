@@ -4,6 +4,7 @@ import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
 import { IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
+import { IObjectMetadataBuilder as IInternalObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 export interface IExecutableCodeEditor {
   fileName?: string;
@@ -29,13 +30,13 @@ export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type
 
 export type GetAvailableConstantsArgs = {
   data: Record<string, any>; 
-  metadataBuilder: IMetadataBuilder;
+  metadataBuilder: IMetadataBuilder<IInternalObjectMetadataBuilder>;
   form: IShaFormInstance;
 };
 export type GetAvailableConstantsFunc = (args: GetAvailableConstantsArgs) => Promise<IObjectMetadata>;
 export type GetResultTypeArgs = {
   data: Record<string, any>; 
-  metadataBuilder: IMetadataBuilder;
+  metadataBuilder: IMetadataBuilder<IInternalObjectMetadataBuilder>;
   form: IShaFormInstance;
 };
 export type GetResultTypeFunc = (args: GetResultTypeArgs) => Promise<IMetadata>;

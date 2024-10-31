@@ -70,6 +70,13 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
     }, 3000);
   }, [formInfoBlockVisible]);
 
+  
+  //Prevent rendering empty info block when there's no info to display
+
+  if(formProps?.id === undefined) {
+    return <>{children}</>;
+  }
+
   return (
     <div
       onMouseEnter={(event) => {

@@ -2,6 +2,7 @@ export interface IMetadata {
     dataType: string;
     name?: string;
     description?: string;
+    itemsType?: IPropertyMetadata;
 }
 
 export interface IMemberType {
@@ -41,7 +42,6 @@ export interface IPropertyMetadata extends IMemberMetadata {
     isNullable?: boolean;
     prefix?: string;
     isVisible?: boolean;
-    itemsType?: IPropertyMetadata;
 }
 
 export type PropertiesPromise = Promise<IPropertyMetadata[]>;
