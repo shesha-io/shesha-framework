@@ -2,7 +2,7 @@ import { asPropertiesArray, IObjectMetadata, isPropertiesArray, isPropertiesLoad
 import { makeCodeTemplate, TextTemplate } from "./utils";
 import { CodeTemplateSettings, isArrayType, isEntityType, isObjectType, ResultType } from "../models";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
-import { trimSuffix } from "@/utils/string";
+import { isEmptyString, trimSuffix } from "@/utils/string";
 import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
 
 export interface ISourceCodeFile {
@@ -46,7 +46,7 @@ import {
 } from './${variablesFileName}';
 //#endregion\r\n`;
     }
-    return undefined;
+    return "";
 };
 
 const getResultTypeName = (typeName: string, isAsync: boolean) => {
@@ -78,7 +78,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     // build exposed variables
     try {
         const constantsDeclaration = await tsBuilder.buildConstants(properties);
-        if (constantsDeclaration.content) {
+        if (constantsDeclaration.content && !isEmptyString(constantsDeclaration.content)) {
             registerFile(`/${directory}/${variablesFileName}`, constantsDeclaration.content);
             //const constantsModel = addExtraLib(monaco, constantsDeclaration.content, fileNamesState.exposedVarsPath);
             //addSubscription(constantsModel);
@@ -135,7 +135,11 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
         const finalResultTypeName = getResultTypeName(resultTypeName, useAsyncDeclaration);
         const resultTypeClause = finalResultTypeName ? `: ${finalResultTypeName}` : "";
 
-        const result = (code) => makeCodeTemplate`${variablesImportBlock}${localDeclarationsBlock}\r\nconst ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
+        let header = `${variablesImportBlock}${localDeclarationsBlock}`;
+        if (!isEmptyString(header))
+            header += "\r\n";
+
+        const result = (code) => makeCodeTemplate`${header}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
 ${(c) => c.editable(code)}
 };`;
         response.template = result;
