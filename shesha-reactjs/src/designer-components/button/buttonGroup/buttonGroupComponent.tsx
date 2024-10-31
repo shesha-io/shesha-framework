@@ -15,21 +15,15 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { useNestedPropertyMetadatAccessor } from '@/index';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
   isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
-  Factory: ({ model, form }) => {
-    const { filter, entityTypeShortAlias } = model;
-    // console.log('model', model);
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
-    const evaluatedFilters = useFormEvaluatedFilter({ filter: filter, metadataAccessor: propertyMetadataAccessor });
+  Factory: ({ model, form }) => {  
     return model.hidden ? null : (
-      <ButtonGroup {...model} filter={evaluatedFilters} disabled={model.readOnly} form={form} />
+      <ButtonGroup {...model} disabled={model.readOnly} form={form} />
     );
   },
   migrator: (m) =>

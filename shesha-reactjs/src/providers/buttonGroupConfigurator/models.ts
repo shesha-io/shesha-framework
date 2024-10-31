@@ -59,10 +59,12 @@ export interface IButtonGroupItemBase {
 export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
   entityTypeShortAlias?: string;
+  filter?: any;
 }
 
 export interface IButtonItem extends IButtonGroupItem {
   actionConfiguration?: IConfigurableActionConfiguration;
+  filter?: any;
 }
 
 export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupItem => {
@@ -92,6 +94,7 @@ export interface IDynamicItem extends IButtonGroupItem {
   tooltipProperty?: string;
   queryParams?: any;
   dataSourceType: string;
+  filter: any;
 }
 
 export const isDynamicItem = (item: IButtonGroupItemBase): item is IDynamicItem => {

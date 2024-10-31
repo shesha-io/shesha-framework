@@ -21,5 +21,4 @@ export interface IBaseButtonGroupProps {
   filter?: string;
   entityTypeShortAlias?: string;
   dataSourceType?: string;
-
 }
