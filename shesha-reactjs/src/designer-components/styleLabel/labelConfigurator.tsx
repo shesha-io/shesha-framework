@@ -19,9 +19,9 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly }) => {
         <>
             <div className={styles.flexWrapper} >
                 <SettingInput label='label Align' hideLabel propertyName='labelAlign' readOnly={value || readOnly} inputType='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} />
-                <SettingInput label="hide Label" hideLabel propertyName='hideLabel' readOnly={readOnly} jsSetting={false} inputType='button' icon={value ? <EyeInvisibleOutlined /> : <EyeOutlined />} />
+                <SettingInput label="hide Label" hideLabel propertyName='hideLabel' readOnly={readOnly} jsSetting={false} inputType='button' icon={<EyeOutlined />} iconAlt={<EyeInvisibleOutlined />} />
             </div>
-            <SettingInput label="Label" propertyName='label' readOnly={value || readOnly} />
+            <SettingInput label="Label" propertyName='label' readOnly={value || readOnly} jsSetting={true} />
         </>
     );
 };

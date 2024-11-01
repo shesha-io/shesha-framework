@@ -33,12 +33,6 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * https://stackoverflow.com/questions/43900035/ts4023-exported-variable-x-has-or-is-using-name-y-from-external-module-but
  * 
  */
-export const isHidden = (ref, value?: number) => {
-  if (ref.current) {
-    return ref?.current === null ? false : ref?.current.offsetWidth < value || ref?.current.offsetHeight < value;
-  }
-  return false;
-};
 
 const StyledCollapse: any = styled(Collapse) <
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
@@ -77,11 +71,9 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
   const { styles } = useStyles();
-  const ref = React.useRef(null);
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
   return (
-    isHidden(ref, 100) && ref.current ? null :
       <StyledCollapse
         defaultActiveKey={collapsedByDefault ? [] : ['1']}
         onChange={onChange}
@@ -93,7 +85,6 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
         hideCollapseContent={hideCollapseContent}
       >
         <Panel
-          ref={ref}
           key="1"
           collapsible={collapsible}
           showArrow={showArrow}

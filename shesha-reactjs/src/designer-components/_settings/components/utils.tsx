@@ -56,8 +56,10 @@ export interface IInputProps extends IComponentLabelProps {
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    suffixIcon?: string;
+    suffix?: string;
     size?: SizeType;
-    width?: string | number;
+    width?: number;
     hideLabel?: boolean;
     layout?: 'horizontal' | 'vertical';
     language?: CodeLanguages;
@@ -71,6 +73,7 @@ export interface IInputProps extends IComponentLabelProps {
     allowClear?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
+    iconAlt?: string | React.ReactNode;
     inline?: boolean;
 }
 
@@ -108,7 +111,9 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     const { data: formData } = useFormData();
     const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon } = props;
+        allowClear, dropdownMode, variant, icon, suffixIcon, iconAlt } = props;
+
+    const iconElement = (icon) => typeof icon === 'string' ? icons[icon] ? <ShaIcon iconName={icon as IconType} /> : icon : icon;
 
     const allData = useAvailableConstantsData();
 
@@ -135,6 +140,12 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         exposedVariables: defaultExposedVariables
     };
 
+    const editModes = [
+        { value: 'editable', icon: <EditOutlined />, title: 'Editable' },
+        { value: 'readOnly', icon: <StopOutlined />, title: 'Read only' },
+        { value: 'inherit', icon: <CopyOutlined />, title: 'Inherit' }
+    ];
+
     const editor = availableConstantsExpression?.trim()
         ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
@@ -150,16 +161,18 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 disabled={readOnly}
                 variant={variant}
                 className={className}
+                value={value}
                 onChange={
                     onChange}
-                options={typeof dropdownOptions === 'string' ? getValueFromString(dropdownOptions) : dropdownOptions}
+                options={typeof dropdownOptions === 'string' ?
+                    getValueFromString(dropdownOptions) :
+                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label) }))}
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-                    const iconElement = typeof icon === 'string' ? icons[icon] ? <ShaIcon iconName={icon as IconType} /> : icon : icon;
 
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement}</Radio.Button>;
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
@@ -175,7 +188,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 addonAfter={hasUnits ? <UnitSelector onChange={onChange} value={value} readOnly={readOnly} />
                     : null} /> :
                 <InputNumber
-                    variant={variant} readOnly={readOnly} size={size} value={value} />
+                    variant={variant} readOnly={readOnly} size={size} value={value} controls={false} />
 
         case 'customDropdown':
             return <CustomDropdown
@@ -193,25 +206,23 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button type='primary' ghost={value ? false : true} size='small' icon={icon} onClick={() => onChange(!value)} />
+            return <Button type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon) : iconElement(iconAlt)} onClick={() => onChange(!value)} />
 
         case 'editModeSelector':
-            const editModes = [
-                { value: 'editable', icon: <EditOutlined />, title: 'Editable' },
-                { value: 'readOnly', icon: <StopOutlined />, title: 'Read only' },
-                { value: 'inherit', icon: <CopyOutlined />, title: 'Inherit' }
-            ];
+
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                    <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
+
         case 'typeAutocomplete':
             return <Autocomplete.Raw
                 dataSourceType="url"
                 dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
                 readOnly={readOnly}
                 value={value}
+                size={size}
             />
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
@@ -219,6 +230,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
             return hasUnits ? <Input value={value?.value}
                 readOnly={readOnly}
                 variant={variant}
+                suffix={iconElement(suffixIcon)}
                 onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
                 size={size}
                 addonAfter={<UnitSelector onChange={onChange} value={value} readOnly={readOnly} />} /> :
@@ -228,6 +240,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                     readOnly={readOnly}
                     defaultValue={''}
                     variant={variant}
+                    suffix={iconElement(suffixIcon)}
                     value={value}
                 />;
     }
@@ -239,18 +252,18 @@ export interface IInputRowProps {
     readOnly: boolean;
     inline?: boolean;
     children?: React.ReactNode;
+    hidden?: boolean;
 }
 
-export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline }) => {
+export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
     const icons = require('@ant-design/icons');
 
-
-    return <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+    return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
-            const { inputType: type } = props;
+            const { inputType: type, suffixIcon, hasUnits } = props;
 
-            const width = type === 'button' ? 24 : type === 'dropdown' ? 100 : type === 'radio' ? props.buttonGroupOptions.length * 30 : type === 'color' ? 24 : 50;
+            const width = type === 'number' ? 100 : type === 'button' ? 24 : type === 'dropdown' ? 100 : type === 'radio' ? props.buttonGroupOptions.length * 30 : type === 'color' ? 24 : type === 'customDropdown' ? 100 : 50;
 
             return (
                 <SettingInput key={i + props.label}
@@ -267,7 +280,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
                     })}
                     readOnly={props.readOnly || readOnly}
                     inline={inline}
-                    width={inline ? props.width || width : ''} />
+                    width={inline && suffixIcon ? (props.width || width) + (hasUnits ? 10 : 0) : inline ? props.width || width : null} />
             )
         })}
         {children}
@@ -275,33 +288,45 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
 };
 
 export const filterDynamicComponents = (components, query) => {
-
     const filterResult = components.map(c => {
 
+        if (c.type === 'propertyRouter') {
+            return { ...c, components: filterDynamicComponents(c.components, query) };
+        }
+
         if (c.type === 'collapsiblePanel') {
-            return { ...c, content: { ...c.content, components: filterDynamicComponents(c.content.components, query) } };
+            const filteredComponents = filterDynamicComponents(c.content.components, query);
+            const shouldHide = filteredComponents.length === 0;
+            return {
+                ...c,
+                content: { ...c.content, components: filteredComponents },
+                hidden: shouldHide
+            };
         }
 
         if (c.type === 'settingsInputRow') {
             const shouldHide = !c.inputs.map(input => input.label).some(label => label.toLowerCase().includes(query.toLowerCase()));
-
-            return shouldHide ? { ...c, hidden: true } : c;
+            return { ...c, hidden: shouldHide };
         }
 
-        if (!c.label && !c.components && (c.type === 'settingsInput')) return c;
+        if (!c.label && !c.components && c.type === 'settingsInput') return c;
 
         let filteredComponent = { ...c };
+
+        if (c.type === 'styleBox') {
+            return 'margin padding'.includes(query.toLowerCase()) ? c : null;
+        }
 
         if (c.components) {
             filteredComponent.components = filterDynamicComponents(c.components, query);
         }
 
-        const shouldHideComponent = (c.label && !c.label.toLowerCase().includes(query.toLowerCase()) || c?.label?.props?.children[0].toLowerCase().includes(query.toLowerCase())) ||
-            (filteredComponent.components && filteredComponent.components.length === 0);
+        const shouldHideComponent = (
+            (c.label && !c.label.toLowerCase().includes(query.toLowerCase())) ||
+            (filteredComponent.components && filteredComponent.components.length === 0)
+        );
 
         filteredComponent.hidden = shouldHideComponent;
-        console.log("FILTERED COMPONENTS:::", filteredComponent);
-
         filteredComponent.className = [c.className, shouldHideComponent ? 'hidden' : ''].filter(Boolean).join(' ');
 
         return filteredComponent;

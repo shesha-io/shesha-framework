@@ -64,11 +64,11 @@ export const radiusOptions = [
 ];
 
 export const borderOptions = [
-    { value: 'all', icon: <BorderOutlined />, title: 'all' },
-    { value: 'top', icon: <BorderTopOutlined />, title: 'top' },
-    { value: 'right', icon: <BorderRightOutlined />, title: 'right' },
-    { value: 'bottom', icon: <BorderBottomOutlined />, title: 'bottom' },
-    { value: 'left', icon: <BorderLeftOutlined />, title: 'left' }
+    { value: 'all', icon: 'BorderOutlined', title: 'all' },
+    { value: 'top', icon: 'BorderTopOutlined', title: 'top' },
+    { value: 'right', icon: 'BorderRightOutlined', title: 'right' },
+    { value: 'bottom', icon: 'BorderBottomOutlined', title: 'bottom' },
+    { value: 'left', icon: 'BorderLeftOutlined', title: 'left' }
 ];
 
 export const styleOptions: IDropdownOption[] = [

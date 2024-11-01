@@ -10,8 +10,23 @@ export interface IFontType {
 
 const FontComponent: FC<IFontType> = memo((props) => {
     const { readOnly } = props;
-
-    return <InputRow inline={true} readOnly={readOnly} inputs={[]} />
+    const commonProps = { hideLabel: true, jsSetting: false, readOnly: readOnly };
+    
+    return <InputRow inline={true} readOnly={readOnly} inputs={[{
+        label: 'Size', propertyName: 'inputStyles.font.size', ...commonProps
+    },
+    {
+        label: 'Weight', propertyName: 'inputStyles.font.weight', inputType: 'dropdown', dropdownOptions: fontWeights, ...commonProps, tooltip: 'Controls text thickness (light, normal, bold, etc.)'
+    },
+    {
+        label: 'Color', propertyName: 'inputStyles.font.color', inputType: 'color', ...commonProps
+    },
+    {
+        label: 'Family', propertyName: 'inputStyles.font.type', inputType: 'dropdown', dropdownOptions: fontTypes, ...commonProps
+    },
+    {
+        label: 'Align', propertyName: 'inputStyles.font.align', inputType: 'radio', buttonGroupOptions: alignOptions, ...commonProps
+    }]} />
 });
 
 export default FontComponent;

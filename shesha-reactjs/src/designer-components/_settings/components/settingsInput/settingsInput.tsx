@@ -24,7 +24,7 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
                     hideLabel={hideLabel}
                     label={label}
                     tooltip={tooltip}
-                    jsSetting={type === 'codeEditor' ? false : jsSetting}
+                    jsSetting={type === 'codeEditor' || inline ? false : jsSetting}
                     readOnly={readOnly}>
                     {children || <InputComponent size='small'
                         label={label}

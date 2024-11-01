@@ -66,6 +66,15 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         }
     `);
 
+    const label = cx(css`
+        * {
+            font-size: 10px;
+            max-height: 20px !important;
+            color: darkslategrey;
+            font-weight: 500;
+        }
+    `);
+
     const unitSelector = cx(css`
         .ant-select-selector {
         padding: 0 !important;
@@ -84,6 +93,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         jsContent,
         unitSelector,
         inlineInputs,
-        rowInputs
+        rowInputs,
+        label
     };
 });

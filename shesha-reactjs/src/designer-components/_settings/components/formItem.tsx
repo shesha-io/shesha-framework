@@ -2,8 +2,10 @@ import React, { cloneElement, FC, ReactElement } from 'react';
 import { ConfigurableFormItem } from '@/components';
 import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
+import { useStyles } from '../styles/styles';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
+    const { styles } = useStyles();
     const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout } = props;
     const childElement = children as ReactElement;
     const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
@@ -33,7 +35,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             model={{
                 hideLabel: props.hideLabel,
                 propertyName: name,
-                label: <span style={{ fontWeight: 500, color: 'darkslategrey' }}>{label}</span>,
+                label: <span className={styles.label} style={{ fontWeight: 500, fontSize: '11px', color: 'darkslategrey', maxHeight: '28px' }}>{label}</span>,
                 type: '',
                 id: '',
                 description: tooltip,
@@ -41,7 +43,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 hidden,
                 layout,
                 size: 'small',
-                
+
             }}
 
             className='sha-js-label'
