@@ -47,7 +47,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
   },[softInfoBlock]);
 
   if(!formProps.id){
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   return (
