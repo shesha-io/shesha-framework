@@ -384,15 +384,14 @@ namespace Shesha
         /// <typeparam name="TPrimaryKey">Type of primary key</typeparam>
         /// <param name="dto">Source DTO</param>
         /// <param name="entity">Destination entity</param>
-        /// <param name="validateAndSaveEntityAction">Action to save entity before map dynamic data</param>
+        /// <param name="validateAndSaveEntityAction">Action to save entity before map dynamic data (dynamic properies)</param>
         /// <returns></returns>
         protected async Task<DynamicDtoMapingResult> MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(
             TDynamicDto dto, 
             TEntity entity, 
             Func<TEntity, List<ValidationResult>, Task> validateAndSaveEntityAction = null
         )
-            where TEntity : class, IEntity<TPrimaryKey>
-            where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+            where TEntity : class, IEntity<TPrimaryKey> where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
 
             var jObject = (dto as IHasJObjectField)._jObject;
@@ -502,7 +501,7 @@ namespace Shesha
                 ? jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>()
                 : (dto as IHasDelayedUpdateField)?._delayedUpdate;
 
-            if (delayedUpdates.Any())
+            if (delayedUpdates?.Any() ?? false)
                 await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdates, entity, result.ValidationResults);
             
             return result;
