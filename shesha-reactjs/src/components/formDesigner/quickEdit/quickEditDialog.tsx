@@ -30,16 +30,11 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
             <Modal
                 open={open}
                 onCancel={onCancel}
-                width={'95%'}
+                width={'calc(100vw)'}
                 footer={null}
                 className={styles.quickEditModal}
             >
                 <FormDesigner.NonVisual formId={latestFormId ?? formId}>
-                    <div className="ant-modal-header">
-                        <div className="ant-modal-title">
-                            <DesignerTitle />
-                        </div>
-                    </div>
                     <div className={styles.formDesigner}>
                         <QuickEditToolbar 
                             onUpdated={onUpdated}

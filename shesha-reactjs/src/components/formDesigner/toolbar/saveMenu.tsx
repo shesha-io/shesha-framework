@@ -6,7 +6,7 @@ import {
   SaveOutlined
   } from '@ant-design/icons';
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import { CONFIGURATION_ITEM_STATUS_MAPPING, ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
   App,
   Dropdown,
@@ -21,6 +21,9 @@ import { useSheshaApplication } from '@/providers';
 import {
   updateItemStatus,
 } from '@/utils/configurationFramework/actions';
+import { DesignerTitle } from '../designerTitle';
+import { getFormFullName } from '@/utils/form';
+import { StatusTag } from '@/components';
 
 
 type MenuItem = MenuProps['items'][number];
@@ -35,6 +38,9 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const toolboxComponents = useFormDesignerComponents();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { message } = App.useApp();
+
+  const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
+  const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
 
   const saveFormInternal = (): Promise<void> => {
     const payload: FormMarkupWithSettings = {
@@ -123,8 +129,35 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   ];
 
   return (
-    <Dropdown.Button icon={<DownOutlined />} menu={{ items: saveMenuItems }} onClick={onSaveClick} type="primary">
-      <SaveOutlined /> Save
+<div style={{
+    display: "flex", 
+    alignItems: "center", 
+    justifyContent: "flex-start", 
+    marginTop: "-10px"
+}}>
+    <Dropdown.Button 
+        icon={<DownOutlined />} 
+        menu={{ items: saveMenuItems }} 
+        onClick={onSaveClick} 
+        type="primary"
+    >
+        <SaveOutlined /> Save
     </Dropdown.Button>
+    <p style={{
+        width: "270px", 
+        textAlign: 'left',
+        marginLeft: "-100px",
+        textOverflow: "ellipsis", 
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        fontWeight: 500
+    }}
+    title={fullName}
+    >
+        {fullName}
+    </p>
+    <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
+</div>
+
   );
 };

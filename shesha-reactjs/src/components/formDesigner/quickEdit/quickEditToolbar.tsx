@@ -11,6 +11,7 @@ import { PublishButton } from '../toolbar/publishButton';
 import { SaveMenu } from '../toolbar/saveMenu';
 import { UndoRedoButtons } from '../toolbar/undoRedoButtons';
 import { CanvasConfig } from '../toolbar/canvasConfig';
+import { DesignerTitle } from '../designerTitle';
 
 export interface IQuickEditToolbarProps {
     onUpdated: () => void;

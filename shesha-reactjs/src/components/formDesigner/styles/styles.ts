@@ -88,8 +88,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     const quickEditModal = cx("sha-designer-modal", css`
         .${prefixCls}-modal-content {
             padding: 0;
+            margin-top: -95px;
+            overflow-y: hidden;
+            height: calc(100vh - 30px);
+            scrollbar-width: none;
             .${prefixCls}-modal-header {
-                padding: 16px 24px;
+                padding: 8px 12px;
                 margin: 0;
                 border-bottom: ${sheshaStyles.border};
             }
@@ -173,6 +177,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
             .${shaDesignerToolbarRight} {
                 float: right;
+                margin-right: 30px;
                 .${prefixCls}-btn {
                 margin-left: 2px;
                 }
