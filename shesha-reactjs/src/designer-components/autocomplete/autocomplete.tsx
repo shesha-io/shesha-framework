@@ -31,7 +31,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
 import { IInputStyles } from '../textField/interfaces';
-import { useTheme } from 'antd-style';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -49,7 +48,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
-    const theme = useTheme();
     const { queryParams, filter } = model;
     const form = useForm();
     const { data } = useFormData();
