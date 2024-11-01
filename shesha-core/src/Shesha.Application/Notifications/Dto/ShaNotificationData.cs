@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Abp.Notifications;
 using Newtonsoft.Json;
-using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 

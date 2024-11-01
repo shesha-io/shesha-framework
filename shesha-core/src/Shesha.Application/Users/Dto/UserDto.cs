@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using Shesha.Authorization.Users;
-using Shesha.AutoMapper.Dto;
-using Shesha.Services.ReferenceLists.Dto;
 
 namespace Shesha.Users.Dto
 {

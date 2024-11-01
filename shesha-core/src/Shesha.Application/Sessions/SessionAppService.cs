@@ -1,9 +1,7 @@
 ﻿using Abp.Auditing;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
-using Shesha.Authorization.Roles;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;

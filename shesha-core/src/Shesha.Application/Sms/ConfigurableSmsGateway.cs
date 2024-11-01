@@ -1,5 +1,4 @@
-﻿using Abp.Configuration;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Sms

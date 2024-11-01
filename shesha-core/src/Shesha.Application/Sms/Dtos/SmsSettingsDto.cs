@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Shesha.Sms.Dtos
+﻿namespace Shesha.Sms.Dtos
 {
     /// <summary>
     /// Represents sms settings

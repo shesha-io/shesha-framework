@@ -16,7 +16,6 @@ using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
-using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;

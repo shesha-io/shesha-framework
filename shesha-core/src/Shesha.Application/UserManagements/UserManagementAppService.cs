@@ -1,7 +1,6 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Shesha.Authorization.Users;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;

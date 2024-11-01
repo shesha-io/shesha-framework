@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using System;
 
 namespace Shesha.Users.Dto
 {
