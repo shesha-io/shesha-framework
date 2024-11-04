@@ -1,7 +1,7 @@
 import { DataTypes, FormFullName } from "@/interfaces";
 import { IArrayMetadata, IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, TypeImport, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import camelcase from "camelcase";
-import { verifiedCamelCase } from "../string";
+import { isEmptyString, verifiedCamelCase } from "../string";
 import { StringBuilder } from "./stringBuilder";
 import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
@@ -285,6 +285,8 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 return { typeName: 'Date' };
             case DataTypes.dateTime:
                 return { typeName: 'Date' };
+            case DataTypes.any:
+                return { typeName: 'any' };
             case DataTypes.entityReference:
                 return await this.#getEntityPropertyType(property);
             case DataTypes.object:
@@ -320,7 +322,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         const importSection = typesImporter.generateImports();
 
         const result: BuildResult = {
-            content: `${importSection}\n\n${exportSection}`,
+            content: importSection && !isEmptyString(importSection)
+                ? `${importSection}\n\n${exportSection}`
+                : exportSection,
         };
         return result;
     }
