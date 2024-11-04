@@ -68,7 +68,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
 
     const label = cx(css`
         * {
-            font-size: 10px;
+            font-size: 12px;
             max-height: 20px !important;
             color: darkslategrey;
             font-weight: 500;

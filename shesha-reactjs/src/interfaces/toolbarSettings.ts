@@ -38,9 +38,9 @@ import { ILabelProps } from '@/designer-components/styleLabel/labelConfigurator'
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { IDimensionsType } from '@/designer-components/styleDimensions/interfaces';
 import { IShadowType } from '@/designer-components/styleShadow/shadowComponent';
-import { ISettingsInputProps } from '@/designer-components/_settings/components/settingsInput';
 import { ISettingsInputRowProps } from '@/designer-components/_settings/components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
+import { ISettingsInputProps } from '@/designer-components/_settings/components/settingsInput/settingsInput';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
