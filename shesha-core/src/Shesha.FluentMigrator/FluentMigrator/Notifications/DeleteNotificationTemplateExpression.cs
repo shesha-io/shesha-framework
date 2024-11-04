@@ -6,7 +6,7 @@ namespace Shesha.FluentMigrator.Notifications
     /// <summary>
     /// NotificationTemplate delete expression
     /// </summary>
-    public class DeleteNotificationTemplateExpression : MigrationExpressionBase
+    public class DeleteNotificationTemplateExpression : SheshaMigrationExpressionBase
     {
         public string? Name { get; set; }
         public string? Namespace { get; set; }
@@ -19,7 +19,7 @@ namespace Shesha.FluentMigrator.Notifications
             {
                 Operation = (connection, transaction) =>
                 {
-                    var helper = new NotificationDbHelper(connection, transaction);
+                    var helper = new NotificationDbHelper(DbmsType, connection, transaction);
 
                     if (TemplateId.HasValue)
                     {
@@ -43,7 +43,7 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
-        public DeleteNotificationTemplateExpression()
+        public DeleteNotificationTemplateExpression(DbmsType dbmsType, IQuerySchema querySchema) : base(dbmsType, querySchema)
         {
             
         }

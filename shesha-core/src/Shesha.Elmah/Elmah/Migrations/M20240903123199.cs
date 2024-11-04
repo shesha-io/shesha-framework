@@ -10,7 +10,8 @@ namespace Shesha.Elmah.Migrations
         {
             Alter.Table("errors").InSchema("elmah").AddColumn("location").AsStringMax().Nullable();
 
-            Execute.Sql(@"alter view elmah.vw_referenced_errors as 
+			Execute.Sql(@"drop view elmah.vw_referenced_errors");
+            Execute.Sql(@"create view elmah.vw_referenced_errors as 
 select 
 	ref.id,
 	ref.ref_id, 
@@ -26,7 +27,7 @@ select
 	err.location
 from 
 	elmah.error_refs ref
-	inner join elmah.errors err on err.error_id = ref.error_id");
+	inner join elmah.errors err on err.error_id = ref.error_id");            
         }
     }
 }

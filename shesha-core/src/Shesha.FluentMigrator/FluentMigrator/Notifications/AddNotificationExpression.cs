@@ -12,14 +12,14 @@ namespace Shesha.FluentMigrator.Notifications
         public override void ExecuteWith(IMigrationProcessor processor)
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => {
-                var helper = new NotificationDbHelper(connection, transaction);
+                var helper = new NotificationDbHelper(DbmsType, connection, transaction);
                 var refListId = helper.InsertNotification(Namespace, Name, Description);
             }
             };
             processor.Process(exp);
         }
 
-        public AddNotificationExpression(string @namespace, string name): base(@namespace, name) 
+        public AddNotificationExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name): base(dbmsType, querySchema, @namespace, name) 
         { 
         }        
     }
