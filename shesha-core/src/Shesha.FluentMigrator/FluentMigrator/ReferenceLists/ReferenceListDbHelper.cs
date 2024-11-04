@@ -8,9 +8,9 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     internal class ReferenceListDbHelper: DbHelperBase
     {
-        private readonly IQuerySchema _querySchema;        
+        private readonly IQuerySchema _querySchema;
 
-        public ReferenceListDbHelper(IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(connection, transaction)
+        public ReferenceListDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(dbmsType, connection, transaction)
         {
             _querySchema = querySchema;
         }

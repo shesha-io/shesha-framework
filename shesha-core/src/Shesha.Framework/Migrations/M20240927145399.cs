@@ -32,7 +32,7 @@ namespace Shesha.Migrations
 
             // Shesha.Domain.ApplicationStartupAssembly
             Alter.Table("frwk_application_startup_assemblies")
-                .AddForeignKeyColumn("application_startup_id", "frwk_application_startups");
+                .AddForeignKeyColumn("application_startup_id", "frwk_application_startups", "id");
         }
     }
 }

@@ -6,11 +6,11 @@ namespace Shesha.FluentMigrator.Settings
     /// <summary>
     /// Delete setting configuration expression
     /// </summary>
-    public class DeleteSettingConfigurationExpression : MigrationExpressionBase
+    public class DeleteSettingConfigurationExpression : SheshaMigrationExpressionBase
     {
         private readonly string _migrationModule;
 
-        public DeleteSettingConfigurationExpression(string migrationModule, string name)
+        public DeleteSettingConfigurationExpression(DbmsType dbmsType, IQuerySchema querySchema, string migrationModule, string name) : base(dbmsType, querySchema)
         {
             _migrationModule = migrationModule;
             Name = name;
@@ -28,7 +28,7 @@ namespace Shesha.FluentMigrator.Settings
             var exp = new PerformDBOperationExpression()
             {
                 Operation = (connection, transaction) => {
-                    var helper = new SettingsDbHelper(connection, transaction);
+                    var helper = new SettingsDbHelper(DbmsType, connection, transaction);
 
                     var module = Module.IsSet ? Module.Value : _migrationModule;
                     var id = helper.GetSettingId(module, Name);

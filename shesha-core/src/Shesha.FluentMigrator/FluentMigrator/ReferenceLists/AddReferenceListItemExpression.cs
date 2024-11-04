@@ -1,6 +1,5 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Expressions;
-using System;
 
 namespace Shesha.FluentMigrator.ReferenceLists
 {
@@ -9,7 +8,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class AddReferenceListItemExpression : SheshaMigrationExpressionBase
     {
-        public AddReferenceListItemExpression(IQuerySchema querySchema, string @namespace, string name, ReferenceListItemDefinition item) : base(querySchema)
+        public AddReferenceListItemExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name, ReferenceListItemDefinition item) : base(dbmsType, querySchema)
         {
             Namespace = @namespace;
             Name = name;
@@ -24,7 +23,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
                 {
-                    var helper = new ReferenceListDbHelper(connection, transaction, QuerySchema);
+                    var helper = new ReferenceListDbHelper(DbmsType, connection, transaction, QuerySchema);
                     
                     var refListId = helper.GetReferenceListId(Namespace, Name);
                     if (refListId == null)
