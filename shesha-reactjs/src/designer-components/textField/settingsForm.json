@@ -346,9 +346,8 @@
                             "id": "font-size-try26voxhs-HxJ5k5ngYE",
                             "label": "Size",
                             "propertyName": "inputStyles.font.size",
-                            "hideLabel": false,
-                            "jsSetting": false,
-                            "suffixIcon": "FontSizeOutlined"
+                            "hideLabel": true,
+                            "jsSetting": false
                           },
                           {
                             "id": "font-weight-try26voxhs-HxJ5k5ngYE",
@@ -359,42 +358,42 @@
                             "dropdownOptions": [
                               {
                                 "value": "100",
-                                "label": "100 - thin"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "200",
-                                "label": "200 - extra-light"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "300",
-                                "label": "300 - light"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "400",
-                                "label": "400 - normal"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "500",
-                                "label": "500 - medium"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "600",
-                                "label": "600 - semi-bold"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "700",
-                                "label": "700 - bold"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "800",
-                                "label": "800 - extra-bold"
+                                "label": "sectionSeparator"
                               },
                               {
                                 "value": "900",
-                                "label": "900 - black"
+                                "label": "sectionSeparator"
                               }
                             ],
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "jsSetting": false,
                             "tooltip": "Controls text thickness (light, normal, bold, etc.)"
                           },
@@ -404,7 +403,7 @@
                             "label": "Color",
                             "propertyName": "inputStyles.font.color",
                             "inputType": "color",
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "jsSetting": false
                           },
                           {
@@ -467,7 +466,7 @@
                                 "label": "Impact"
                               }
                             ],
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "jsSetting": false
                           },
                           {
@@ -475,25 +474,26 @@
                             "label": "Align",
                             "parentId": "fontStylePnl",
                             "propertyName": "inputStyles.font.align",
-                            "inputType": "radio",
-                            "buttonGroupOptions": [
+                            "inputType": "dropdown",
+                            "width": 60,
+                            "dropdownOptions": [
                               {
                                 "value": "left",
                                 "title": "Left",
-                                "icon": "AlignLeftOutlined"
+                                "label": "AlignLeftOutlined"
                               },
                               {
                                 "value": "center",
                                 "title": "Center",
-                                "icon": "AlignCenterOutlined"
+                                "label": "AlignCenterOutlined"
                               },
                               {
                                 "value": "right",
                                 "title": "Right",
-                                "icon": "AlignRightOutlined"
+                                "label": "AlignRightOutlined"
                               }
                             ],
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "jsSetting": false
                           }
                         ]
@@ -532,28 +532,27 @@
                             "id": "dimensionsStyleRow-width",
                             "parentId": "dimensionsStyleRowWidth",
                             "label": "Width",
-                            "hasUnits": true,
-                            "inputType": "number",
+                            "width": 70,
                             "propertyName": "inputStyles.dimensions.width",
-                            "suffixIcon": "ColumnWidthOutlined"
+                            "icon": "width"
                           },
                           {
                             "id": "dimensionsStyleRow-minWidth",
                             "parentId": "dimensionsStyleRowWidth",
                             "label": "Min Width",
-                            "inputType": "number",
-                            "hasUnits": true,
+                            "width": 70,
+                            "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.minWidth",
-                            "suffixIcon": "FullscreenExitOutlined"
+                            "icon": "ColumnWidthOutlined"
                           },
                           {
                             "id": "dimensionsStyleRow-maxWidth",
                             "parentId": "dimensionsStyleRowWidth",
                             "label": "Max Width",
-                            "inputType": "number",
-                            "hasUnits": true,
+                            "width": 70,
+                            "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.maxWidth",
-                            "suffixIcon": "FullscreenOutlined"
+                            "icon": "maxWidth"
                           }
                         ]
                       },
@@ -567,28 +566,27 @@
                             "id": "dimensionsStyleRow-height",
                             "parentId": "dimensionsStyleRowHeight",
                             "label": "Height",
-                            "hasUnits": true,
-                            "inputType": "number",
+                            "width": 70,
                             "propertyName": "inputStyles.dimensions.height",
-                            "suffixIcon": "ColumnHeightOutlined"
+                            "icon": "height"
                           },
                           {
                             "id": "dimensionsStyleRow-minHeight",
                             "parentId": "dimensionsStyleRowHeight",
                             "label": "Min Height",
-                            "inputType": "number",
-                            "hasUnits": true,
+                            "width": 70,
+                            "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.minHeight",
-                            "suffixIcon": "FullscreenExitOutlined"
+                            "icon": "minHeight"
                           },
                           {
                             "id": "dimensionsStyleRow-maxHeight",
                             "parentId": "dimensionsStyleRowHeight",
                             "label": "Max Height",
-                            "inputType": "number",
-                            "hasUnits": true,
+                            "width": 70,
+                            "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.maxHeight",
-                            "suffixIcon": "FullscreenOutlined"
+                            "icon": "maxHeight"
                           }
                         ]
                       }
@@ -626,7 +624,7 @@
                             "id": "borderStyleRow-hideBorder",
                             "parentId": "borderStyleRow",
                             "label": "Border",
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "propertyName": "inputStyles.border.hideBorder",
                             "inputType": "button",
                             "icon": "EyeOutlined",
@@ -636,7 +634,7 @@
                             "id": "borderStyleRow-selectSide",
                             "parentId": "borderStyleRow",
                             "label": "Select Side",
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "propertyName": "inputStyles.border.selectedSide",
                             "inputType": "radio",
                             "buttonGroupOptions": [
@@ -671,9 +669,8 @@
                             "id": "borderStyleRow-borderWidth",
                             "parentId": "borderStyleRow",
                             "label": "Width",
-                            "hideLabel": false,
-                            "propertyName": "inputStyles.border.width",
-                            "suffixIcon": "MenuOutlined"
+                            "hideLabel": true,
+                            "propertyName": "inputStyles.border.width"
                           },
                           {
                             "id": "borderStyleRow-style",
@@ -681,7 +678,7 @@
                             "label": "Style",
                             "propertyName": "inputStyles.border.style",
                             "inputType": "dropdown",
-                            "hideLabel": false,
+                            "hideLabel": true,
                             "width": 60,
                             "dropdownOptions": [
                               {
@@ -708,7 +705,7 @@
                             "label": "Color",
                             "propertyName": "inputStyles.border.color",
                             "inputType": "color",
-                            "hideLabel": false
+                            "hideLabel": true
                           }
                         ]
                       },
@@ -830,7 +827,7 @@
                         "inputType": "color",
                         "hideLabel": true,
                         "jsSetting": false,
-                        "hidden": "    return data?.background?.type !== 'color' ? true : false"
+                        "hidden": "    return data?.inputStyles?.background?.type !== 'color' ? true : false"
                       },
                       {
                         "id": "backgroundStyle-gradient",
@@ -841,7 +838,7 @@
                         "inputType": "dropdown",
                         "jsSetting": false,
                         "hideLabel": true,
-                        "hidden": "    return data?.background?.type !== 'gradient' ? true : false",
+                        "hidden": false,
                         "dropdownOptions": [
                           {
                             "value": "to right",
@@ -878,6 +875,17 @@
                         ]
                       },
                       {
+                        "id": "backgroundStyle-gradientColors",
+                        "type": "settingsInput",
+                        "inputType": "multiColorPicker",
+                        "parentId": "backgroundStyleRow",
+                        "propertyName": "inputStyles.background.gradient.colors",
+                        "label": "Colors",
+                        "jsSetting": false,
+                        "hidden": false,
+                        "hideLabel": true
+                      },
+                      {
                         "id": "backgroundStyle-url",
                         "type": "settingsInput",
                         "parentId": "backgroundStyleRow",
@@ -885,7 +893,7 @@
                         "readOnly": true,
                         "jsSetting": false,
                         "label": "URL",
-                        "hidden": "    return data?.background?.type !== 'url' ? true : false"
+                        "hidden": "    return data?.inputStyles?.background?.type !== 'url' ? true : false"
                       },
                       {
                         "id": "backgroundStyle-image",
@@ -900,7 +908,7 @@
                       {
                         "id": "backgroundStyleRow-storedFile",
                         "type": "settingsInputRow",
-                        "hidden": "    return data?.background?.type !== 'storedFile' ? true : false",
+                        "hidden": "    return data?.inputStyles?.background?.type !== 'storedFile' ? true : false",
                         "parentId": "backgroundStylePnl",
                         "inputs": [
                           {
@@ -945,8 +953,8 @@
                             "parentId": "backgroundStyleRow-controls",
                             "inputType": "customDropdown",
                             "label": "Size",
+                            "hideLabel": true,
                             "propertyName": "inputStyles.background.size",
-                            "suffixIcon": "FullscreenOutlined",
                             "dropdownOptions": [
                               {
                                 "value": "cover",
@@ -966,9 +974,9 @@
                             "id": "backgroundStyleRow-controls-position",
                             "parentId": "backgroundStyleRow-controls",
                             "label": "Position",
+                            "hideLabel": true,
                             "inputType": "customDropdown",
                             "propertyName": "inputStyles.background.position",
-                            "suffixIcon": "FullscreenOutlined",
                             "dropdownOptions": [
                               {
                                 "value": "center",
@@ -1012,28 +1020,30 @@
                             "id": "backgroundStyleRow-controls-repeat",
                             "parentId": "backgroundStyleRow-controls",
                             "label": "Repeat",
+                            "hideLabel": true,
                             "propertyName": "inputStyles.background.repeat",
-                            "inputType": "radio",
-                            "buttonGroupOptions": [
+                            "inputType": "dropdown",
+                            "width": 70,
+                            "dropdownOptions": [
                               {
                                 "value": "repeat",
                                 "title": "Repeat",
-                                "icon": "TableOutlined"
+                                "label": "repeat"
                               },
                               {
                                 "value": "repeat-x",
                                 "title": "Repeat X",
-                                "icon": "InsertRowBelowOutlined"
+                                "label": "repeatX"
                               },
                               {
                                 "value": "repeat-y",
                                 "title": "Repeat Y",
-                                "icon": "InsertRowLeftOutlined"
+                                "label": "repeatY"
                               },
                               {
                                 "value": "no-repeat",
                                 "title": "No Repeat",
-                                "icon": "PicCenterOutlined"
+                                "label": "noRepeat"
                               }
                             ]
                           }
@@ -1073,28 +1083,37 @@
                             "id": "shadowStyleRow-offsetX",
                             "parentId": "shadowStyleRow",
                             "label": "Offset X",
-                            "width": 100,
+                            "hideLabel": true,
+                            "width": 60,
+                            "icon": "offsetHorizontal",
                             "propertyName": "inputStyles.shadow.offsetX"
                           },
                           {
                             "id": "shadowStyleRow-offsetY",
                             "parentId": "shadowStyleRow",
                             "label": "Offset Y",
-                            "width": 100,
+                            "hideLabel": true,
+                            "icon": "offsetVertical",
+                            "rotateIcon": true,
+                            "width": 60,
                             "propertyName": "inputStyles.shadow.offsetY"
                           },
                           {
                             "id": "shadowStyleRow-blur",
                             "parentId": "shadowStyleRow",
                             "label": "Blur",
-                            "width": 100,
+                            "icon": "blur",
+                            "hideLabel": true,
+                            "width": 60,
                             "propertyName": "inputStyles.shadow.blur"
                           },
                           {
                             "id": "shadowStyleRow-spread",
                             "parentId": "shadowStyleRow",
                             "label": "Spread",
-                            "width": 100,
+                            "hideLabel": true,
+                            "icon": "FullscreenOutlined",
+                            "width": 60,
                             "propertyName": "inputStyles.shadow.spread"
                           },
                           {
@@ -1102,6 +1121,8 @@
                             "parentId": "shadowStyleRow",
                             "label": "Color",
                             "inputType": "color",
+                            "hideLabel": true,
+                            "width": 60,
                             "propertyName": "inputStyles.shadow.color"
                           }
                         ]
@@ -1135,7 +1156,7 @@
                         "id": "custom-css-412c-8461-4c8d55e5c073",
                         "type": "settingsInput",
                         "inputType": "codeEditor",
-                        "propertyName": "style",
+                        "propertyName": "customCSS",
                         "parentId": "stylePnl-M5-911",
                         "label": "Custom CSS",
                         "validate": {},

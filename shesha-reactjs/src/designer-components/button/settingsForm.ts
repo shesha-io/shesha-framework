@@ -1,7 +1,8 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
-export const getSettings = (data: any) =>
-  new DesignerToolbarSettings(data)
+export const getSettings = (data: any) => {
+  console.log("DATA:::", data);
+  return new DesignerToolbarSettings(data)
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
       propertyName: 'pnlDisplay',
@@ -346,4 +347,5 @@ export const getSettings = (data: any) =>
         ]
       }
     })
-    .toJson();
+    .toJson()
+};

@@ -24,8 +24,9 @@ import { getBackgroundStyle } from '../styleBackground/utils';
 import settingsFormJson from './settingsForm.json';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
-import { splitValueAndUnit } from '../_settings/utils';
 import { useStyles } from './styles';
+import { migrateStyles } from '../_common-migrations/migrateStyles';
+import { getSettings } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -54,7 +55,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   Factory: ({ model }) => {
     const form = useForm();
 
-    const { data: formData } = useFormData();
+    const data = model;
+
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -95,7 +97,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     if (model?.inputStyles?.background?.type === 'storedFile' && model?.inputStyles?.background.storedFile?.id && !isValidGuid(model?.inputStyles?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    console.log("Model::", model)
+    
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
@@ -108,7 +110,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
-    const jsStyle = getStyle(model.style, formData);
+    const jsStyle = getStyle(model.style, data);
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
     const InputComponentType = renderInput(model.textType);
@@ -124,13 +126,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       disabled: model.readOnly,
       readOnly: model.readOnly,
       style: { ...finalStyle, ...jsStyle },
-      defaultValue: model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
+      defaultValue: model.initialValue && evaluateString(model.initialValue, { formData: data, formMode: form.formMode, globalState })
     };
 
     const eventProps = {
       model,
       form: getFormApi(form),
-      formData,
+      formData: data,
       globalState,
       http: axiosHttp(backendUrl),
       message,
@@ -142,7 +144,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       <ConfigurableFormItem
         model={model}
         initialValue={
-          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+          (model.initialValue ? evaluateString(model.initialValue, { formData: data, formMode: form.formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {
@@ -176,12 +178,27 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
+    ...model,
     textType: 'text',
     inputStyles: {
       background: { type: 'color' },
-      border: { selectedSide: 'all', selectedCorner: 'all' },
+      font: {
+        type: 'Arial',
+        size: 14,
+        weight: 400,
+        align: 'left',
+      },
+      dimensions: {
+        width: { value: 100, unit: '%' },
+        height: { value: 32, unit: 'px' },
+      },
+      border: {
+        hideBorder: false,
+        border: { all: { size: 1, style: 'solid', color: '#d9d9d9' } },
+        radius: { all: 8 },
+        selectedSide: 'all', selectedCorner: 'all'
+      }
     },
-    ...model,
   }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
@@ -206,36 +223,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => {
-
-      const newModel = { ...prev };
-
-      const migrateStyles = (styles: IInputStyles): IStyleType => ({
-        border: {
-          border: { all: { width: styles.borderSize } },
-          radius: { all: styles.borderRadius },
-        },
-        background: {
-          type: 'color',
-          color: styles.backgroundColor,
-        },
-        font: {
-          color: styles.fontColor,
-          size: styles.fontSize as number,
-          weight: styles.fontWeight as number,
-        },
-        dimensions: {
-          height: typeof styles.height === 'string' ? splitValueAndUnit(styles.height) : { value: styles.height, unit: 'px' },
-          width: typeof styles.width === 'string' ? splitValueAndUnit(styles.width) : { value: styles.width, unit: 'px' },
-        },
-      });
-
-      newModel.desktop = migrateStyles(prev.desktop as IInputStyles);
-      newModel.tablet = migrateStyles(prev.tablet as IInputStyles);
-      newModel.mobile = migrateStyles(prev.mobile as IInputStyles);
-
-      return newModel;
-    })
+    .add<ITextFieldComponentProps>(6, (prev) => migrateStyles(prev))
   , linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

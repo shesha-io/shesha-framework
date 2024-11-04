@@ -99,22 +99,22 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                         <InputRow readOnly={readOnly} inputs={[{
                             label: 'File Id',
                             propertyName: 'inputStyles.background.storedFile.id',
-                            readOnly: readOnly
+                            
                         }, {
                             propertyName: "inputStyles.background.storedFile.ownerId",
                             label: "Owner Id",
-                            readOnly: readOnly
+                            
                         }]} />
                         <InputRow readOnly={readOnly} inputs={[{
                             propertyName: "inputStyles.background.storedFile.ownerType",
                             label: "Owner Type",
                             inputType: "typeAutocomplete",
-                            readOnly: readOnly
+                            
                         },
                         {
                             propertyName: "inputStyles.background.storedFile.fileCatergory",
                             label: "File Catergory",
-                            readOnly: readOnly
+                            
                         }]} />
                     </>
                 );

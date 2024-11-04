@@ -280,12 +280,12 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'borderStyle');
   }
 
-  public addSizeStyle(props: DimensionStyleType | ((data: T) => DimensionStyleType)) {
+  public addDimensions(props: DimensionStyleType | ((data: T) => DimensionStyleType)) {
     return this.addProperty(props, 'dimensionsStyle');
   }
 
-  public addLabelStyle(props: LabelStyleType | ((data: T) => LabelStyleType)) {
-    return this.addProperty(props, 'labelStyle');
+  public addLabelConfigurator(props: LabelStyleType | ((data: T) => LabelStyleType)) {
+    return this.addProperty(props, 'labelConfigurator');
   }
 
   public addShadowStyle(props: ShadowStyleType | ((data: T) => ShadowStyleType)) {
@@ -304,12 +304,12 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'divider');
   }
 
-  public addSettingInput(props: SettingInputType | ((data: T) => SettingInputType)) {
-    return this.addProperty(props, 'settingInput');
+  public addSettingsInput(props: SettingInputType | ((data: T) => SettingInputType)) {
+    return this.addProperty(props, 'settingsInput');
   }
 
-  public addSettingInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
-    return this.addProperty(props, 'settingInputRow');
+  public addSettingsInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
+    return this.addProperty(props, 'settingsInputRow');
   }
 
   public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {

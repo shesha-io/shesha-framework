@@ -25,7 +25,7 @@ const BorderComponent: FC<IBorderProps> = (props) => {
     return (
         <>
             <InputRow readOnly={readOnly} inline={true} inputs={[
-                { ...commonProps, label: 'Border', propertyName: 'inputStyles.border.hideBorder', inputType: 'button', readOnly: readOnly, icon: value.hideBorder ? <EyeInvisibleOutlined /> : <EyeOutlined /> },
+                { ...commonProps, label: 'Border', propertyName: 'inputStyles.border.hideBorder', inputType: 'button', icon: value.hideBorder ? <EyeInvisibleOutlined /> : <EyeOutlined /> },
                 { ...commonProps, label: 'Select Side', jsSetting: false, propertyName: `inputStyles.border.selectedSide`, inputType: 'radio', buttonGroupOptions: borderOptions, tooltip: 'Select a border side to which the style will be applied' },
                 { ...commonProps, label: 'Width', jsSetting: false, propertyName: `inputStyles.border.border.${selectedSide}.width` },
                 { ...commonProps, label: 'Style', width: 60, jsSetting: false, propertyName: `inputStyles.border.border.${selectedSide}.style`, inputType: 'dropdown', dropdownOptions: styleOptions },
@@ -33,8 +33,8 @@ const BorderComponent: FC<IBorderProps> = (props) => {
             />
 
             <InputRow readOnly={readOnly} inline={true} inputs={[
-                { ...commonProps, readOnly: readOnly, label: 'Corner Radius', propertyName: 'inputStyles.border.selectedCorner', hideLabel: false, inputType: 'radio', buttonGroupOptions: radiusOptions, tooltip: 'Select a corner to which the raduis will be applied' },
-                { ...commonProps, readOnly: readOnly, label: 'Radius', propertyName: `inputStyles.border.radius.${selectedCorner}` }]} />
+                { ...commonProps, label: 'Corner Radius', propertyName: 'inputStyles.border.selectedCorner', hideLabel: false, inputType: 'radio', buttonGroupOptions: radiusOptions, tooltip: 'Select a corner to which the raduis will be applied' },
+                { ...commonProps, label: 'Radius', propertyName: `inputStyles.border.radius.${selectedCorner}` }]} />
         </>
     );
 };

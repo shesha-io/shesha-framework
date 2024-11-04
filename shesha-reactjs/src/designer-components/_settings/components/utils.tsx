@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
-import { Button, Input, InputNumber, Radio, Select, Switch } from "antd";
-import { CodeEditor, ColorPicker, IconType, ShaIcon } from '@/components';
+import { Button, Input, InputNumber, Radio, Row, Select, Switch, Tooltip } from "antd";
+import { CodeEditor, ColorPicker, IconType, SectionSeparator, ShaIcon } from '@/components';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -21,6 +21,8 @@ import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWr
 import { getValueFromString } from './settingsInput/utils';
 import { Autocomplete } from '@/components/autocomplete';
 import { SettingInput } from './settingsInput/settingsInput';
+import { MultiColorInput } from '@/designer-components/styleBackground/multiColorInput';
+import { customIcons } from './icons';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -45,7 +47,7 @@ export interface IInputProps extends IComponentLabelProps {
     propertyName: string;
     inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' |
-    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete';
+    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete' | 'multiColorPicker';
     variant?: 'borderless' | 'filled' | 'outlined';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
@@ -56,7 +58,6 @@ export interface IInputProps extends IComponentLabelProps {
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
-    suffixIcon?: string;
     suffix?: string;
     size?: SizeType;
     width?: number;
@@ -83,7 +84,7 @@ interface IInputComponentProps extends IInputProps {
 
 const { Option } = Select;
 
-const UnitSelector: FC<{ value: any; onChange, readOnly }> = ({ value, onChange, readOnly }) => {
+const UnitSelector: FC<{ value: any; onChange, readOnly, variant?}> = ({ value, onChange, readOnly, variant }) => {
     const { styles } = useStyles();
 
     return (
@@ -91,8 +92,10 @@ const UnitSelector: FC<{ value: any; onChange, readOnly }> = ({ value, onChange,
             value={value?.unit || 'px'}
             defaultValue={'px'}
             disabled={readOnly}
+            variant={variant}
             dropdownStyle={{ minWidth: '70px' }}
             onChange={(unit) => {
+
                 onChange({ unit, value: value?.value || '' });
             }}
             className={styles.unitSelector}
@@ -111,9 +114,19 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     const { data: formData } = useFormData();
     const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, suffixIcon, iconAlt } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt } = props;
 
-    const iconElement = (icon) => typeof icon === 'string' ? icons[icon] ? <ShaIcon iconName={icon as IconType} /> : icon : icon;
+    const iconElement = (icon, size?) => {
+        if (typeof icon === 'string') {
+            return <Tooltip title={label}> {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <>{size}</> <SectionSeparator lineThickness={Number(size[0]) / 2} lineWidth='24' lineColor='#000' fontSize={0} marginBottom={0} />
+                </div>
+                : icon}
+            </Tooltip>;
+        }
+        return icon;
+    };
 
     const allData = useAvailableConstantsData();
 
@@ -166,7 +179,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                     onChange}
                 options={typeof dropdownOptions === 'string' ?
                     getValueFromString(dropdownOptions) :
-                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label) }))}
+                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value) }))}
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
@@ -226,29 +239,34 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
             />
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
+        case 'multiColorPicker':
+            return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} />;
         default:
-            return hasUnits ? <Input value={value?.value}
+            return hasUnits ? <Input
                 readOnly={readOnly}
+                suffix={<UnitSelector variant='borderless' onChange={onChange} value={value} readOnly={readOnly} />}
+                value={hasUnits ? value?.value : value}
                 variant={variant}
-                suffix={iconElement(suffixIcon)}
-                onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
+                onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : value)}
                 size={size}
-                addonAfter={<UnitSelector onChange={onChange} value={value} readOnly={readOnly} />} /> :
+                addonAfter={iconElement(icon)}
+                style={{ textAlign: 'right' }}
+            /> :
                 <Input
                     size={size}
                     onChange={(e) => onChange(e.target.value)}
                     readOnly={readOnly}
                     defaultValue={''}
                     variant={variant}
-                    suffix={iconElement(suffixIcon)}
-                    value={value}
+                    suffix={iconElement(icon)}
+                    value={value?.value ? value.value : value}
                 />;
     }
 };
 
 
 export interface IInputRowProps {
-    inputs: Array<IInputProps>;
+    inputs: Array<Omit<IInputProps, 'readOnly'>>;
     readOnly: boolean;
     inline?: boolean;
     children?: React.ReactNode;
@@ -261,7 +279,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
 
     return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
-            const { inputType: type, suffixIcon, hasUnits } = props;
+            const { inputType: type, hasUnits } = props;
 
             const width = type === 'number' ? 100 : type === 'button' ? 24 : type === 'dropdown' ? 100 : type === 'radio' ? props.buttonGroupOptions.length * 30 : type === 'color' ? 24 : type === 'customDropdown' ? 100 : 50;
 
@@ -278,9 +296,9 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
                             return ({ value, title, icon: <IconComponent /> })
                         })
                     })}
-                    readOnly={props.readOnly || readOnly}
+                    readOnly={readOnly}
                     inline={inline}
-                    width={inline && suffixIcon ? (props.width || width) + (hasUnits ? 10 : 0) : inline ? props.width || width : null} />
+                    width={inline && props.icon ? (props.width || width) + (hasUnits ? 10 : 0) : inline ? props.width || width : null} />
             )
         })}
         {children}
@@ -288,42 +306,36 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
 };
 
 export const filterDynamicComponents = (components, query) => {
+    const lowerCaseQuery = query.toLowerCase();
+
     const filterResult = components.map(c => {
-
-        if (c.type === 'propertyRouter') {
-            return { ...c, components: filterDynamicComponents(c.components, query) };
-        }
-
-        if (c.type === 'collapsiblePanel') {
-            const filteredComponents = filterDynamicComponents(c.content.components, query);
+        if (c.type === 'propertyRouter' || c.type === 'collapsiblePanel') {
+            const filteredComponents = filterDynamicComponents(c?.content?.components || c.components, query);
             const shouldHide = filteredComponents.length === 0;
             return {
                 ...c,
-                content: { ...c.content, components: filteredComponents },
+                ...(c.content ? { content: { ...c.content, components: filteredComponents } } : { components: filteredComponents }),
                 hidden: shouldHide
             };
         }
 
         if (c.type === 'settingsInputRow') {
-            const shouldHide = !c.inputs.map(input => input.label).some(label => label.toLowerCase().includes(query.toLowerCase()));
-            return { ...c, hidden: shouldHide };
+            const filteredInputs = filterDynamicComponents(c.inputs, query);
+            const shouldHide = filteredInputs.length === 0;
+            return { ...c, inputs: filteredInputs, hidden: shouldHide };
         }
 
-        if (!c.label && !c.components && c.type === 'settingsInput') return c;
+        if (!c.label && !c.components) return c;
 
         let filteredComponent = { ...c };
-
-        if (c.type === 'styleBox') {
-            return 'margin padding'.includes(query.toLowerCase()) ? c : null;
-        }
 
         if (c.components) {
             filteredComponent.components = filterDynamicComponents(c.components, query);
         }
 
         const shouldHideComponent = (
-            (c.label && !c.label.toLowerCase().includes(query.toLowerCase())) ||
-            (filteredComponent.components && filteredComponent.components.length === 0)
+            (c.propertyName && !c.propertyName.split('.').join(' ').toLowerCase().includes(lowerCaseQuery)) &&
+            (!filteredComponent.components || filteredComponent.components.length === 0)
         );
 
         filteredComponent.hidden = shouldHideComponent;
@@ -337,4 +349,3 @@ export const filterDynamicComponents = (components, query) => {
         (!c.hidden || (c.components && c.components.length > 0))
     );
 };
-

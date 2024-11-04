@@ -39,6 +39,7 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   fontColor?: string;
   backgroundColor?: string;
   stylingBox?: string;
+  customCSS?: IConfigurableFormComponent['style'];
   desktop?: IInputStyles | IStyleType;
   mobile?: IInputStyles | IStyleType;
   tablet?: IInputStyles | IStyleType;

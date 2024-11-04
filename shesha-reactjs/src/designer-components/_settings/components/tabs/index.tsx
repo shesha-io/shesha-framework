@@ -7,6 +7,7 @@ import { nanoid } from '@/utils/uuid';
 import { TabSettingsForm } from './settings';
 import SearchableTabsComponent from './searchableTabsComponent';
 import { ConfigurableFormItem } from '@/components';
+import { useForm, useFormData } from '@/providers';
 
 
 const SearchableTabs: IToolboxComponent<ITabsComponentProps> = {
@@ -15,10 +16,11 @@ const SearchableTabs: IToolboxComponent<ITabsComponentProps> = {
   name: 'SearchableTabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
+    const { data } = useFormData();
 
     return model.hidden ? null : (
       <ConfigurableFormItem model={model} className='sha-js-label'>
-        {(value, onChange) => <SearchableTabsComponent model={model} onChange={onChange} value={value} />}
+        {(value, onChange) => <SearchableTabsComponent model={model} onChange={onChange} />}
       </ConfigurableFormItem>
     );
   },
