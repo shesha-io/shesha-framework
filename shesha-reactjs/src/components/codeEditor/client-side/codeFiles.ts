@@ -135,7 +135,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
         const finalResultTypeName = getResultTypeName(resultTypeName, useAsyncDeclaration);
         const resultTypeClause = finalResultTypeName ? `: ${finalResultTypeName}` : "";
 
-        let header = `${variablesImportBlock}${localDeclarationsBlock}`;
+        let header = [variablesImportBlock, localDeclarationsBlock].filter(b => b && !isEmptyString(b)).join("\r\n");
         if (!isEmptyString(header))
             header += "\r\n";
 
