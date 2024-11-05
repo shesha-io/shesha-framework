@@ -4,7 +4,7 @@ import {
   DownOutlined,
   ExclamationCircleOutlined,
   SaveOutlined
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
 import { CONFIGURATION_ITEM_STATUS_MAPPING, ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
@@ -12,7 +12,7 @@ import {
   Dropdown,
   MenuProps,
   Modal
-  } from 'antd';
+} from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -21,7 +21,6 @@ import { useSheshaApplication } from '@/providers';
 import {
   updateItemStatus,
 } from '@/utils/configurationFramework/actions';
-import { DesignerTitle } from '../designerTitle';
 import { getFormFullName } from '@/utils/form';
 import { StatusTag } from '@/components';
 
@@ -40,7 +39,6 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { message } = App.useApp();
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
-  const title = formProps?.label ? `${formProps.label} (${fullName})` : fullName;
 
   const saveFormInternal = (): Promise<void> => {
     const payload: FormMarkupWithSettings = {
@@ -129,35 +127,56 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   ];
 
   return (
-<div style={{
-    display: "flex", 
-    alignItems: "center", 
-    justifyContent: "flex-start", 
-    marginTop: "-10px"
-}}>
-    <Dropdown.Button 
-        icon={<DownOutlined />} 
-        menu={{ items: saveMenuItems }} 
-        onClick={onSaveClick} 
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      marginTop: "-10px"
+    }}>
+      <Dropdown.Button
+        icon={<DownOutlined />}
+        menu={{ items: saveMenuItems }}
+        onClick={onSaveClick}
         type="primary"
-    >
-        <SaveOutlined /> Save
-    </Dropdown.Button>
-    <p style={{
-        width: "270px", 
-        textAlign: 'left',
-        marginLeft: "-100px",
-        textOverflow: "ellipsis", 
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        fontWeight: 500
-    }}
-    title={fullName}
-    >
-        {fullName}
-    </p>
-    <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
-</div>
+      >
+        <SaveOutlined />
+      </Dropdown.Button>
+      <p style={{
+        marginLeft: '-90px',
+        marginTop: '13px',
+        overflow: 'visible',
+        display: 'flex',
+        flexDirection: 'row',
+        cursor: 'pointer',
+        userSelect: 'none',
+        transition: '.2s'
+      }}
+        onSelect={(e) => e.preventDefault()}
+        onDoubleClick={(event) => {
+          //@ts-ignore
+          event.target.style.backgroundColor = "#f2f2f2";
+          setTimeout(() => {
+            //@ts-ignore
+            event.target.style.backgroundColor = "#ffffff";
+          }, 400);
+          navigator.clipboard.writeText(fullName);
+        }}
+        title='Double-click to copy full form name'
+      >
+        <span style={{
+          margin: 0,
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          fontWeight: 600,
+          marginLeft: '100px',
+          maxWidth: '150px',
+        }}
+        > {fullName}
+        </span>
+        <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} />
+      </p>
+    </div>
 
   );
 };

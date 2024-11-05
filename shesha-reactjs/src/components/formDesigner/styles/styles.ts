@@ -86,11 +86,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     } = useStyles().styles;
 
     const quickEditModal = cx("sha-designer-modal", css`
+        .${prefixCls}-modal {
+            overflow-y: hidden;
+        }
         .${prefixCls}-modal-content {
             padding: 0;
-            margin-top: -95px;
+            margin-top: -84px;
             overflow-y: hidden;
-            height: calc(100vh - 30px);
+            height: calc(100vh - 40px);
             scrollbar-width: none;
             .${prefixCls}-modal-header {
                 padding: 8px 12px;
@@ -163,7 +166,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${shaDesignerToolbar} {
             background: white;
-            padding: 12px;
+            padding: 8px 12px 0px 12px;
             display: flex;
             justify-content: space-between;
         
@@ -177,7 +180,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
             .${shaDesignerToolbarRight} {
                 float: right;
-                margin-right: 30px;
                 .${prefixCls}-btn {
                 margin-left: 2px;
                 }
@@ -189,11 +191,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                    small {
-                        align-content: center;
-                        align-items: center;
-                        width: 170px;
-                    }
             }
             .${shaDesignerCanvasConfig} {
                 display: flex;

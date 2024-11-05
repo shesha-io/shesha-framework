@@ -11,14 +11,14 @@ import { PublishButton } from '../toolbar/publishButton';
 import { SaveMenu } from '../toolbar/saveMenu';
 import { UndoRedoButtons } from '../toolbar/undoRedoButtons';
 import { CanvasConfig } from '../toolbar/canvasConfig';
-import { DesignerTitle } from '../designerTitle';
 
 export interface IQuickEditToolbarProps {
     onUpdated: () => void;
     onNewVersionCreated: (newVersion: FormConfigurationDto) => void;
+    renderSource: "modal" | "designer-page";
 }
 
-export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewVersionCreated }) => {
+export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewVersionCreated, renderSource }) => {
     const { readOnly } = useFormDesignerState();
 
     // TODO: reload current dialog
@@ -52,7 +52,7 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewV
                 <PublishButton onPublished={onPublished}/>
             </div>
             <CanvasConfig/>
-            <div className="sha-designer-toolbar-right">
+            <div className="sha-designer-toolbar-right" style={{marginRight: renderSource === "modal" ? "30px" : "auto"}}>
                 <FormSettingsButton />
                 <OpenOnNewPageButton />
                 <PreviewButton />
