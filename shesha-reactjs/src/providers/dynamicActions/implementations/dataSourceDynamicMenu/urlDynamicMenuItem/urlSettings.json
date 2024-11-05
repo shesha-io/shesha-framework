@@ -2,8 +2,10 @@
     "components": [
         {
             "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
-            "type": "textField",
+            "type": "autocomplete",
             "propertyName": "dataSourceUrl",
+            "dataSourceType": "url",
+            "dataSourceUrl": "/api/services/app/Api/Endpoints",
             "parentId": "Xp6zDosEy-IrSeDfHHwh-",
             "label": "Data Source Url",
             "settingsValidationErrors": []
@@ -25,6 +27,38 @@
             "version": 3,
             "mode": "dialog"
           },
+          {
+            "id": "-jiSdvyFfoSlyO6uwihRj",
+            "type": "textField",
+            "propertyName": "urlLabelProperty",
+            "label": "Label Property",
+            "labelAlign": "right",
+            "parentId": "rqEyWa_qG99Qo53kIjCKb",
+            "hidden": {
+              "_code": "return !getSettingValue(data?.dataSourceUrl);",
+              "_mode": "code",
+              "_value": false
+            },
+            "validate": {},
+            "jsSetting": true,
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "-jiSdvyFfoalyO6uwihRj",
+            "type": "textField",
+            "propertyName": "urlTooltipProperty",
+            "label": "Tooltip Property",
+            "labelAlign": "right",
+            "parentId": "rqEyWa_qG99Qo53kIjCKb",
+            "hidden": {
+              "_code": "return !getSettingValue(data?.dataSourceUrl);",
+              "_mode": "code",
+              "_value": false
+            },
+            "validate": {},
+            "jsSetting": true,
+            "settingsValidationErrors": []
+          },
            {
             "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
             "type": "configurableActionConfigurator",
@@ -34,10 +68,12 @@
             "validate": {},
             "settingsValidationErrors": [],
             "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-            "version": 0
+            "version": 0,
+            "extendedVariables":[{ "path": "dynamicItem", "description": "This is the dynamic item" }]
           }
     ],
     "formSettings": {
+        "isSettingsForm": true,
         "layout": "horizontal",
         "colon": true,
         "labelCol": {

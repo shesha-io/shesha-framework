@@ -12,9 +12,11 @@ import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from "../mod
 const settingsMarkup = settingsJson as FormMarkup;
 
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({item, settings}) => {
+    const { actionConfiguration, urlLabelProperty, urlTooltipProperty} = settings;
     const { refetch } = useGet({ path: '', lazy: true });
     const { getTemplateState } = useTemplates(settings);
     const [data, setData] = useState(null);
+  
    useEffect(()=>{
     refetch(getTemplateState()).then((response) => {
         const result = typeof response.result === 'object' ? response.result.items : response.result
@@ -27,15 +29,17 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({item, 
 
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         if (!data) return [];
+
         console.log('data', data);
         const result = data?.map((p) => ({
             id: p.id,
             name: p.name,
-            label: p.name,
+            label: p[`${urlLabelProperty}`],
+            tooltip: p[`${urlTooltipProperty}`],
             itemType: "item",
             itemSubType: "button",
             sortOrder: 0,
-            actionConfiguration: settings.actionConfiguration,
+            actionConfiguration: actionConfiguration,
         }));
 
         return result;

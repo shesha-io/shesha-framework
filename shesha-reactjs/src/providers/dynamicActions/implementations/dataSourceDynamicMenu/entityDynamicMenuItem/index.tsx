@@ -10,10 +10,10 @@ import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from "../mod
 import { useFormEvaluatedFilter } from "@/providers/dataTable/filters/evaluateFilter";
 
 
-const settingsMarkup = settingsJson as FormMarkup;
+ const settingsMarkup = settingsJson as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({item, settings}) => {
-    const { actionConfiguration, entityLabelProperty, entityTooltipProperty} = settings;
+    const { actionConfiguration, entitTooltipProperty, entityLabelProperty} = settings;
     const { refetch } = useGet({ path: '', lazy: true });
     const { getTemplateState } = useTemplates(settings);
     const [data, setData] = useState(null);
@@ -24,7 +24,6 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ite
   });
 
    useEffect(()=>{
-    console.log('test',getTemplateState(evaluatedFilters));
     refetch(getTemplateState(evaluatedFilters)).then((response) => {
         const result = typeof response.result === 'object' ? response.result.items : response.result
         setData(result);
@@ -36,15 +35,15 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ite
 
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         if (!data) return [];
-        console.log('data', data);
         const result = data?.map((p) => ({
             id: p.id,
             name: p.name,
             label: p[`${entityLabelProperty}`],
-            tooltip: p[`${entityTooltipProperty}`],
+            tooltip: p[`${entitTooltipProperty}`],
             itemType: "item",
             itemSubType: "button",
             sortOrder: 0,
+            dynamicItem: p,
             actionConfiguration: actionConfiguration,
         }));
 

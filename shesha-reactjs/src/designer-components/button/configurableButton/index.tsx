@@ -15,12 +15,15 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
-  const { actionConfiguration } = props;
+  const { actionConfiguration, dynamicItem } = props;
   const evaluationContext = useAvailableConstantsData();
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
+
+
+  // console.log('dynamicItem', dynamicItem);
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
@@ -35,7 +38,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...actionConfiguration },
-          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext },
+          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext, dynamicItem }
         })
           .finally(() => {
             setLoading(false);
