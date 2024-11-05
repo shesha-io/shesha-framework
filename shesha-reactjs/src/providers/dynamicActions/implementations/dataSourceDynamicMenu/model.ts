@@ -8,9 +8,7 @@ export interface IDataSourceArguments {
     actionConfiguration?: IConfigurableActionConfiguration;
     filter?: string;
     entityTypeShortAlias?: string;
-    entityLabelProperty?: string;
-    entitTooltipProperty?: string;
-    urlLabelProperty?: string;
-    urlTooltipProperty?: string;
+    labelProperty?: string;
+    tooltipProperty?: string;
 
 }
