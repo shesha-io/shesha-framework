@@ -30,7 +30,8 @@ export const useTemplates = (settings: IDataSourceArguments) => {
 
   const getTemplateState = (evaluatedFilters?: any) => {
     if (dataSourceUrl !== undefined) {
-      const path = buildUrl(dataSourceUrl.id, getQueryParams());
+      const dataSourceUrlString = dataSourceUrl.id ? dataSourceUrl.id : dataSourceUrl;
+      const path = buildUrl(dataSourceUrlString, getQueryParams());
       return {
         path,
       };
