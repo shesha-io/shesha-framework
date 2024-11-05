@@ -33,7 +33,7 @@
           {
             "id": "hpm6rN_aj-L_KaG5MLIZt",
             "type": "propertyAutocomplete",
-            "propertyName": "entityLabelProperty",
+            "propertyName": "labelProperty",
             "label": "Label Property",
             "labelAlign": "right",
             "jsSetting": true,
@@ -55,7 +55,7 @@
           {
             "id": "hpm6oN_aj-L_KaG5MLIZt",
             "type": "propertyAutocomplete",
-            "propertyName": "entityTooltipProperty",
+            "propertyName": "tooltipProperty",
             "label": "Tooltip Property",
             "labelAlign": "right",
             "parentId": "uEFBpy19tApJMiBuFyj9s",

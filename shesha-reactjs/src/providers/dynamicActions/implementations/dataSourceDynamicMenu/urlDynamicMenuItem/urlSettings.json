@@ -30,7 +30,7 @@
           {
             "id": "-jiSdvyFfoSlyO6uwihRj",
             "type": "textField",
-            "propertyName": "urlLabelProperty",
+            "propertyName": "labelProperty",
             "label": "Label Property",
             "labelAlign": "right",
             "parentId": "rqEyWa_qG99Qo53kIjCKb",
@@ -46,7 +46,7 @@
           {
             "id": "-jiSdvyFfoalyO6uwihRj",
             "type": "textField",
-            "propertyName": "urlTooltipProperty",
+            "propertyName": "tooltipProperty",
             "label": "Tooltip Property",
             "labelAlign": "right",
             "parentId": "rqEyWa_qG99Qo53kIjCKb",

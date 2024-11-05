@@ -1,9 +1,4 @@
-import {
-  evaluateString,
-  useDataContextManager,
-  useFormData,
-  useGlobalState,
-} from '@/index';
+import { evaluateString, useDataContextManager, useFormData, useGlobalState } from '@/index';
 import { Key } from 'react';
 import { IDataSourceArguments } from './model';
 import { buildUrl } from '@/utils/url';
