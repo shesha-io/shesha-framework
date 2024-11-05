@@ -14,6 +14,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const listItemGhost = "sha-list-item-ghost";
     const listItemName = "sha-list-item-name";
     const helpIcon = "sha-help-icon";
+    const dragIcon = "sha-drag-icon";
     
     const list = cx("sha-list", css`
         padding-left: 4px;
@@ -84,12 +85,18 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${dragHandle} {
                     transition: opacity 0.2s;
-                    opacity: 0;
+                    opacity: 1;
                     cursor: grab;
-
                     margin-right: 8px;
                     display: flex;
                     align-items: center;
+                    width: 100%;
+                }
+
+                .${dragIcon} {
+                    transition: opacity 0.2s;
+                    opacity: 1;
+                    cursor: grab;
                 }
 
                 .${listItemContent} {
@@ -141,5 +148,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         listItemGhost,
         listItemName,
         helpIcon,
+        dragIcon,
     };
 });
