@@ -47,6 +47,17 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     }
     refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties, orderBy, orderDirection))
       .then((data) => {
+        data.result.items = data?.result?.items?.map((item: { [key: string]: any }) => {
+          for (const key in item) {
+            if (item[key] === null || item[key] === undefined) {
+              item[key] = 'undefined';
+            }
+          }
+          return item;
+        });
+        return data;
+      })
+      .then((data) => {
         if (isAxisTimeSeries) {
           data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
         } else {
@@ -70,7 +81,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
                   if (item[`${fieldName}`] !== undefined) {
                     // Replace the numeric value with the corresponding reference list name
                     const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
-                    item[`${fieldName}`] = referenceName?.trim() || item[`${fieldName}`]; // Fallback to original value if not found
+                    item[`${fieldName}`] = referenceName?.trim() || `${item[`${fieldName}`]}`; // Fallback to original value (as string) if not found
                   }
                   return item;
                 }));
