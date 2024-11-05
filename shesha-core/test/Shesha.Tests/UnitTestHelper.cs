@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using NSubstitute;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -76,6 +77,13 @@ namespace Shesha.Tests
                     .Instance(swaggerProviderMock.Object)
                     .LifestyleSingleton()
             );
+
+            var schemaGeneratorMock = new Mock<ISchemaGenerator>();
+            iocManager.IocContainer.Register(
+                Component.For<ISchemaGenerator>()
+                    .Instance(schemaGeneratorMock.Object)
+                    .LifestyleSingleton()
+            );            
         }
     }
 }
