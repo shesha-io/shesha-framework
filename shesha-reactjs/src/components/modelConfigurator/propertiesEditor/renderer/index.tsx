@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button} from 'antd';
+import { Button } from 'antd';
 import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
@@ -12,7 +12,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 }) => {
   const { items, addItem, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
-  
+
   const onAddClick = () => {
     addItem().then(_item => {
       const element = selectedItemRef?.current;
@@ -31,7 +31,6 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
     });
   };
 
-
   return (
     <div className={styles.shaToolbarConfigurator}>
       {allowAdd &&
@@ -45,8 +44,10 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
         rightSidebarProps={{
           open: true,
           title: 'Properties',
+          placeholder: 'Properties',
           content: <ToolbarItemProperties />,
         }}
+        allowFullCollapse={true}
       >
         <div>
           <ItemsContainer items={items} index={[]} />
