@@ -8,7 +8,7 @@ interface IQueryParams {
 }
 
 export const useTemplates = (settings: IDataSourceArguments) => {
-  const { dataSourceUrl, queryParams, entityTypeShortAlias } = settings;
+  const { dataSourceUrl, queryParams, entityTypeShortAlias, maxResultCount } = settings;
   const { data } = useFormData();
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManager(false)?.getPageContext();
@@ -41,7 +41,7 @@ export const useTemplates = (settings: IDataSourceArguments) => {
       path: `/api/services/app/Entities/GetAll`,
       queryParams: {
         entityType: entityTypeShortAlias,
-        maxResultCount: 100,
+        maxResultCount: maxResultCount || 100,
         filter: evaluatedFilters,
       },
     };

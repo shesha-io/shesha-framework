@@ -12,6 +12,7 @@ import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
+  dynamicItem?: any;  
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
@@ -21,9 +22,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
-
-
-  // console.log('dynamicItem', dynamicItem);
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);

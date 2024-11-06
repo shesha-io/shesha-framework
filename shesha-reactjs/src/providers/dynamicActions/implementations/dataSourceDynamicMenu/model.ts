@@ -10,5 +10,6 @@ export interface IDataSourceArguments {
     entityTypeShortAlias?: string;
     labelProperty?: string;
     tooltipProperty?: string;
+    maxResultCount?: number;
 
 }

@@ -61,7 +61,6 @@ export interface IButtonGroupItem extends IButtonGroupItemBase {
 
 export interface IButtonItem extends IButtonGroupItem {
   actionConfiguration?: IConfigurableActionConfiguration;
-  dynamicItem:any
 }
 
 export const isItem = (item: IButtonGroupItemBase): item is IButtonGroupItem => {
