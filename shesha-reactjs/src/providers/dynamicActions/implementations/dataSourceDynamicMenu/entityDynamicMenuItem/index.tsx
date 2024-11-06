@@ -7,6 +7,9 @@ import {
   DynamicActionsProvider,
   DynamicItemsEvaluationHook,
   FormMarkup,
+  useDataContextManager,
+  useFormData,
+  useGlobalState,
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import settingsJson from './entitySettings.json';
@@ -17,22 +20,26 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 const settingsMarkup = settingsJson as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty } = settings;
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter } = settings;
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const [data, setData] = useState(null);
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(settings.entityTypeShortAlias);
+  const pageContext = useDataContextManager(false)?.getPageContext();
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
   const evaluatedFilters = useFormEvaluatedFilter({
-    filter: settings.filter,
+    filter,
     metadataAccessor: propertyMetadataAccessor,
   });
 
+  const fetchTemplateData = async () => {
+    const response = await refetch(getTemplateState(evaluatedFilters ?? null));
+    const result = typeof response.result === 'object' ? response.result.items : response.result;
+    setData(result);
+  };
+
   useEffect(() => {
-    refetch(getTemplateState(evaluatedFilters)).then((response) => {
-      const result = typeof response.result === 'object' ? response.result.items : response.result;
-      setData(result);
-    });
-  }, [item, settings]);
+    fetchTemplateData();
+  }, [item, settings, evaluatedFilters, pageContext]);
 
   const { configurationItemMode } = useAppConfigurator();
 
