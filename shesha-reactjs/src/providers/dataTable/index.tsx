@@ -125,6 +125,12 @@ interface IDataTableProviderBaseProps {
    * Permanent filter exepression. Always applied irrespectively of other filters
    */
   permanentFilter?: FilterExpression;
+
+  /**
+   * Disable refresh data expression
+   * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
+   */
+  disableRefresh?: boolean;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -384,9 +390,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload) => {
-    dispatch(fetchTableDataAction(payload));
-
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
+      dispatch(fetchTableDataAction(payload));
       debouncedFetch(payload);
     }
   };
@@ -425,7 +430,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const refreshTable = () => {
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
       fetchTableData(state);
     }
   };
@@ -579,13 +584,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
       dispatch(onSortAction(sorting));
     }
   };
 
   const onGroup = (grouping: ISortingItem[]) => {
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
       dispatch(onGroupAction(grouping));
     }
   };
