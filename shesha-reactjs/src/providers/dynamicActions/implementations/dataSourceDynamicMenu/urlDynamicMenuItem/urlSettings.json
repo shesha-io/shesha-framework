@@ -1,0 +1,83 @@
+{
+  "components": [
+    {
+      "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
+      "type": "autocomplete",
+      "propertyName": "dataSourceUrl",
+      "dataSourceType": "url",
+      "dataSourceUrl": "/api/services/app/Api/Endpoints",
+      "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+      "label": "Data Source Url",
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
+      "type": "labelValueEditor",
+      "propertyName": "queryParams",
+      "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+      "label": "Query Param",
+      "labelTitle": "Param",
+      "labelName": "param",
+      "valueTitle": "Value",
+      "valueName": "value",
+      "ignorePrefixesOnNewItems": true,
+      "validate": {},
+      "description": "",
+      "settingsValidationErrors": [],
+      "version": 3,
+      "mode": "dialog"
+    },
+    {
+      "id": "-jiSdvyFfoSlyO6uwihRj",
+      "type": "textField",
+      "propertyName": "labelProperty",
+      "label": "Label Property",
+      "labelAlign": "right",
+      "parentId": "rqEyWa_qG99Qo53kIjCKb",
+      "hidden": {
+        "_code": "return !getSettingValue(data?.dataSourceUrl);",
+        "_mode": "code",
+        "_value": false
+      },
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "-jiSdvyFfoalyO6uwihRj",
+      "type": "textField",
+      "propertyName": "tooltipProperty",
+      "label": "Tooltip Property",
+      "labelAlign": "right",
+      "parentId": "rqEyWa_qG99Qo53kIjCKb",
+      "hidden": {
+        "_code": "return !getSettingValue(data?.dataSourceUrl);",
+        "_mode": "code",
+        "_value": false
+      },
+      "validate": {},
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
+      "type": "configurableActionConfigurator",
+      "propertyName": "actionConfiguration",
+      "label": "Action configuration",
+      "hidden": false,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+      "version": 0
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 6
+    },
+    "wrapperCol": {
+      "span": 18
+    },
+    "version": 1
+  }
+}
