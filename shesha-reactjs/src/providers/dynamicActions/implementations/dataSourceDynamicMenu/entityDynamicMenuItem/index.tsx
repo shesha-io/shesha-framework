@@ -8,8 +8,6 @@ import {
   DynamicItemsEvaluationHook,
   FormMarkup,
   useDataContextManager,
-  useFormData,
-  useGlobalState,
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import settingsJson from './entitySettings.json';
