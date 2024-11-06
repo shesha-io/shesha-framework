@@ -44,6 +44,7 @@ import { Result } from 'antd';
 import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 
+
 export interface IShaApplicationProviderProps {
   backendUrl: string;
   /**
