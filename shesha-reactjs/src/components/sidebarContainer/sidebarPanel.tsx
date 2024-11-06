@@ -4,33 +4,49 @@ import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 import { ISidebarProps, SidebarPanelPosition } from './models';
+import { useForm } from '@/providers';
 
 interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
     setIsOpenGlobal?: (React.Dispatch<React.SetStateAction<boolean>>) | undefined;
 }
+
+/**
+ * Used by the SidebarContainer component to render a sidebar panel, to create the Designer Main Area's sidebars.
+ */
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
     const { side, allowFullCollapse, setIsOpenGlobal } = props;
 
-    const { open, defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
+    const { defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
+    var { open } = props;
 
+    var isControllable = open !== undefined;
 
-    const isControllable = open !== undefined;
-
-    const initialState = isControllable ? open : defaultOpen;
-
+    var initialState = isControllable ? open : defaultOpen;
 
     useEffect(() => {
         if (setIsOpenGlobal) setIsOpenGlobal(initialState);
     }, []);
 
-
     const [isOpen, setIsOpen] = useState(initialState);
     const realOpen = isControllable ? open : isOpen;
     const rotation = side === 'right' ? (realOpen ? 0 : 180) : realOpen ? 180 : 0;
 
+    const { formMode } = useForm();
+
+    useEffect(() => {
+        if (formMode === 'designer') {
+            open = undefined;
+            isControllable = true;
+            setIsOpen(true);
+        } else if (formMode === 'edit') {
+            open = false;
+            isControllable = true;
+            setIsOpen(false);
+        }
+    }, [formMode]);
 
     const handleClick = () => {
         const handler = realOpen ? onClose : onOpen;
