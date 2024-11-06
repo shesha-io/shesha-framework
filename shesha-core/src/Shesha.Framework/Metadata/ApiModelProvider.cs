@@ -58,7 +58,7 @@ namespace Shesha.Metadata
                         !t.IsArray &&
                         t != typeof(string) &&
                         t != typeof(object) &&
-                        !t.Namespace.StartsWith("Abp") &&
+                        !(t.Namespace ?? string.Empty).StartsWith("Abp") &&
                         // skip entity types, they shouldn't be returned by the application service at all
                         !t.IsEntityType() && 
                         !t.IsJsonEntityType())
@@ -72,7 +72,7 @@ namespace Shesha.Metadata
                         !t.IsAbstract &&
                         t != typeof(string) &&
                         t != typeof(object) &&
-                        !t.Namespace.StartsWith("Abp"))
+                        !(t.Namespace ?? string.Empty).StartsWith("Abp"))
                     .SelectMany(t => t.GenericTypeArguments);
 
                 if (listTypes?.Count() > 0)
@@ -87,7 +87,7 @@ namespace Shesha.Metadata
                         !t.IsAbstract &&
                         t != typeof(string) &&
                         t != typeof(object) &&
-                        !t.Namespace.StartsWith("Abp"))
+                        !(t.Namespace ?? string.Empty).StartsWith("Abp"))
                     .Select(t => t.GetElementType());
 
                 if (arrayTypes?.Count() > 0)

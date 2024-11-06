@@ -34,6 +34,10 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       throw new Error('PolarAreaChart: No datasets or labels to display. Please check the data source.');
   }
 
+  data.datasets.forEach((dataset: { data: any[] }) => {
+    dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
+  });
+
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
@@ -57,7 +61,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title || `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        text: title?.trim() || `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },
     layout: {
