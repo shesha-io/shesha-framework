@@ -16,6 +16,17 @@
             "version": 5
           },
           {
+            "id": "Oc8E6PaJFth8z9iCGVsty",
+            "type": "numberField",
+            "propertyName": "maxResultCount",
+            "label": "Max Result Count",
+            "labelAlign": "right",
+            "parentId": "rqEyWa_qG99Qo53kIjCKb",
+            "hidden": false,
+            "validate": {},
+            "settingsValidationErrors": []
+          },
+          {
             "id": "n4enebtmhFgvkP5ukQK1f",
             "type": "queryBuilder",
             "propertyName": "filter",
@@ -36,7 +47,6 @@
             "propertyName": "labelProperty",
             "label": "Label Property",
             "labelAlign": "right",
-            "jsSetting": true,
             "parentId": "uEFBpy19tApJMiBuFyj9s",
             "hidden": {
               "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
@@ -59,7 +69,6 @@
             "label": "Tooltip Property",
             "labelAlign": "right",
             "parentId": "uEFBpy19tApJMiBuFyj9s",
-            "jsSetting": true,
             "hidden": {
               "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
               "_mode": "code",
@@ -83,22 +92,11 @@
             "validate": {},
             "settingsValidationErrors": [],
             "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-            "version": 0,
-            "exposedVariables": [
-            {
-              "name": "dynamicItem",
-              "description": "Form values",
-              "type": "object"
-            }
-          ],
-            "extendedVariables":[{ "path": "dynamicItem", "description": "This is the dynamic item" }],
-             "availableConstantsExpression": "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard(\"shesha:Test\").build();"
-            
-          }
+            "version": 0
+           }
     ],
     "formSettings": {
         "layout": "horizontal",
-        "isSettingsForm": true,
         "colon": true,
         "labelCol": {
             "span": 6
