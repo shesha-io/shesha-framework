@@ -15,6 +15,7 @@ export interface IObjectMetadataBuilder {
   addDate(path: string, label: string): this;
   addBoolean(path: string, label: string): this;
   addArray(path: string, label: string): this;
+  addAny(path: string, label: string): this;
   addEntityAsync(path: string, label: string, entityType: string): Promise<this>;
   addAllStandard(exclusions?: string[]): this;
   addStandard(args: StandardConstantInclusionArgs | StandardConstantInclusionArgs[]): this;
@@ -29,6 +30,7 @@ export interface IMetadataBuilder<TObjectBuilder extends IObjectMetadataBuilder 
   isEntityAsync(entityType: string): Promise<boolean>;
 
   object(name: string, description?: string): TObjectBuilder;
+  array(name: string, itemType: (builder: this) => Promise<IMetadata>, description?: string): Promise<IMetadata>;
   entity(entityType: string): Promise<IObjectMetadata>;
   metadata(): IObjectMetadata;
 

@@ -1,8 +1,8 @@
 import { asPropertiesArray, IObjectMetadata, isPropertiesArray, isPropertiesLoader, ModelTypeIdentifier, NestedProperties, PropertiesPromise } from "@/interfaces/metadata";
 import { makeCodeTemplate, TextTemplate } from "./utils";
-import { CodeTemplateSettings, isEntityType, isObjectType, ResultType } from "../models";
+import { CodeTemplateSettings, isArrayType, isEntityType, isObjectType, ResultType } from "../models";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
-import { trimSuffix } from "@/utils/string";
+import { isEmptyString, trimSuffix } from "@/utils/string";
 import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
 
 export interface ISourceCodeFile {
@@ -46,7 +46,7 @@ import {
 } from './${variablesFileName}';
 //#endregion\r\n`;
     }
-    return undefined;
+    return "";
 };
 
 const getResultTypeName = (typeName: string, isAsync: boolean) => {
@@ -78,7 +78,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     // build exposed variables
     try {
         const constantsDeclaration = await tsBuilder.buildConstants(properties);
-        if (constantsDeclaration.content) {
+        if (constantsDeclaration.content && !isEmptyString(constantsDeclaration.content)) {
             registerFile(`/${directory}/${variablesFileName}`, constantsDeclaration.content);
             //const constantsModel = addExtraLib(monaco, constantsDeclaration.content, fileNamesState.exposedVarsPath);
             //addSubscription(constantsModel);
@@ -102,14 +102,30 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
             if (isEntityType(resultType)) {
                 const entityType = await tsBuilder.getEntityType({ module: resultType.entityModule, name: resultType.entityType });
                 resultTypeName = `Partial<${entityType.typeName}>`;
-                
+
                 const typesImporter = new TypesImporter();
                 typesImporter.import(entityType);
                 const importSection = typesImporter.generateImports();
 
                 localDeclarationsBlock = `${importSection}\r\n`;
             } else
-                resultTypeName = resultType.dataType;
+                if (isArrayType(resultType)) {
+                    const typesImporter = new TypesImporter();
+
+                    const resultTypeDeclaration = await tsBuilder.buildArrayType(resultType, {
+                        onUseComplexType: (typeInfo) => {
+                            typesImporter.import(typeInfo);
+                        }
+                    });
+
+                    const importSection = typesImporter.generateImports();
+                    localDeclarationsBlock = importSection
+                        ? `${importSection}\r\n`
+                        : undefined;
+
+                    resultTypeName = resultTypeDeclaration.typeName;
+                } else
+                    resultTypeName = resultType.dataType;
     }
 
     if (wrapInTemplate) {
@@ -119,7 +135,11 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
         const finalResultTypeName = getResultTypeName(resultTypeName, useAsyncDeclaration);
         const resultTypeClause = finalResultTypeName ? `: ${finalResultTypeName}` : "";
 
-        const result = (code) => makeCodeTemplate`${variablesImportBlock}${localDeclarationsBlock}\r\nconst ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
+        let header = [variablesImportBlock, localDeclarationsBlock].filter(b => b && !isEmptyString(b)).join("\r\n");
+        if (!isEmptyString(header))
+            header += "\r\n";
+
+        const result = (code) => makeCodeTemplate`${header}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}()${resultTypeClause} => {
 ${(c) => c.editable(code)}
 };`;
         response.template = result;

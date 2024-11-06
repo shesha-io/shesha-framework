@@ -28,6 +28,9 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }, [props, formData]);
 
   useEffect(() => {
+    if (!url) {
+      return;
+    }
     refetch(getURLChartDataRefetchParams(url))
       .then((data) => {
         if (!data.result) {
@@ -49,7 +52,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       })
       .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err))
       .finally(() => setIsLoaded(true));
-  }, [props, formData]);
+  }, [url, formData]);
 
   if (!url || !chartType) {
     const missingProperties: string[] = [];
@@ -87,7 +90,9 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }
 
   return (
-    <div className={cx(styles.chartControlContainer)}>
+    <div className={cx(styles.chartControlContainer)} style={{
+      height: props?.height ?? 'auto'
+    }}>
       {
         (() => {
           switch (chartType) {

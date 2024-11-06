@@ -2,6 +2,9 @@ import { IChartsProps, IFilter, TDataMode, TTimeSeriesFormat } from "@/designer-
 import { createContext } from "react";
 
 export interface IChartDataContext {
+  height?: number;
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
   url?: string;
   dataMode?: TDataMode;
   chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
@@ -57,6 +60,7 @@ export interface IChartDataAtionsContext {
 }
 
 export const INITIAL_STATE: IChartDataContext = {
+  height: 0,
   url: '',
   dataMode: 'entityType',
   chartType: 'pivot',

@@ -177,13 +177,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  const persistedFormProps = formInfoBlockVisible
-    ? entityFormInfo.current?.formConfiguration
-    : undefined;
+  const persistedFormProps = entityFormInfo.current?.formConfiguration;
 
-  const persistedCreateFormProps = formInfoBlockVisible
-    ? createFormInfo.current?.formConfiguration
-    : undefined;
+  const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
 
   const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});

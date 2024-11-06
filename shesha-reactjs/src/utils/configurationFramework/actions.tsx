@@ -6,7 +6,7 @@ import { ConfigurationItemVersionStatus } from './models';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { FormConfigurationDto } from '@/providers/form/api';
 import { getEntityFilterByIds } from '@/utils/graphQl';
-import { getFileNameFromResponse } from '@/utils/fetchers';
+import { axiosHttp, getFileNameFromResponse } from '@/utils/fetchers';
 import { IAbpWrappedGetEntityResponse, IAbpWrappedResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -64,12 +64,12 @@ interface UpdateItemStatusArgs extends IHasHttpSettings {
   onFail?: (e: any) => void;
 }
 export const updateItemStatus = (props: UpdateItemStatusArgs) => {
-  const url = `${props.backendUrl}/api/services/app/ConfigurationItem/UpdateStatus`;
+  const url = `/api/services/app/ConfigurationItem/UpdateStatus`;
   const httpPayload = {
     filter: getEntityFilterByIds([props.id]),
     status: props.status,
   };
-  return axios
+  return axiosHttp(props.backendUrl)
     .put<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
       headers: props.httpHeaders,
     })
@@ -174,8 +174,8 @@ export interface IDeleteItemResponse {
 export const deleteItem = (payload: IDeleteItemPayload): Promise<IDeleteItemResponse> => {
   if (!payload.id) throw 'Id must not be null';
   return new Promise<IDeleteItemResponse>((resolve) => {
-    const url = `${payload.backendUrl}/api/services/app/ConfigurationItem/Delete?id=${payload.id}`;
-    return axios
+    const url = `/api/services/app/ConfigurationItem/Delete?id=${payload.id}`;
+    return axiosHttp(payload.backendUrl)
       .delete<any, AxiosResponse<IAbpWrappedResponse<string>>>(url, { headers: payload.httpHeaders })
       .then((response) => {
         resolve({ id: response.data.result });
@@ -196,11 +196,11 @@ export interface ICreateNewItemVersionResponse {
 export const createNewVersionRequest = (
   payload: ICreateNewItemVersionPayload
 ): Promise<AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>> => {
-  const url = `${payload.backendUrl}/api/services/app/ConfigurationItem/CreateNewVersion`;
+  const url = `/api/services/app/ConfigurationItem/CreateNewVersion`;
   const httpPayload = {
     id: payload.id,
   };
-  return axios.post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
+  return axiosHttp(payload.backendUrl).post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
     headers: payload.httpHeaders,
   });
 };
@@ -245,11 +245,11 @@ export interface ICancelItemVersionResponse {
 export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<ICancelItemVersionResponse> => {
   return new Promise((resolve, reject) => {
     const onOk = () => {
-      const url = `${payload.backendUrl}/api/services/app/ConfigurationItem/CancelVersion`;
+      const url = `/api/services/app/ConfigurationItem/CancelVersion`;
       const httpPayload = {
         id: payload.id,
       };
-      return axios
+      return axiosHttp(payload.backendUrl)
         .post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
           headers: payload.httpHeaders,
         })

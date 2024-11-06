@@ -9,10 +9,12 @@ namespace Shesha.FluentMigrator
     public abstract class SheshaMigrationExpressionBase: MigrationExpressionBase
     {
         protected IQuerySchema QuerySchema { get; private set; }
+        protected DbmsType DbmsType { get; private set; }
 
-        public SheshaMigrationExpressionBase(IQuerySchema querySchema)
+        public SheshaMigrationExpressionBase(DbmsType dbmsType, IQuerySchema querySchema)
         {
             QuerySchema = querySchema;
+            DbmsType = dbmsType;
         }
     }
 }

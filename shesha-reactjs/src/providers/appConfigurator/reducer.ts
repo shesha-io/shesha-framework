@@ -42,6 +42,17 @@ export default handleActions<IAppStateContext, any>(
         editModeConfirmationVisible: !payload,
       };
     },
+    [AppConfiguratorActionEnums.SoftToggleInfoBlock]: (
+      state: IAppStateContext,
+      action: ReduxActions.Action<boolean>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        softInfoBlock: payload,
+      };
+    },
   },
 
   APP_CONTEXT_INITIAL_STATE

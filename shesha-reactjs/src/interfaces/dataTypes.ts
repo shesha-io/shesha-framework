@@ -15,6 +15,7 @@ export const DataTypes = {
   specification: 'specification',
   context: 'context',
   function: 'function',
+  any: 'any',
 };
 
 export const StringFormats = {

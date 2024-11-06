@@ -7,14 +7,14 @@ import { useStyles } from './styles/styles';
 export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
-  const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
+  const { toggleShowInfoBlock, formInfoBlockVisible, softToggleInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    
+
     if (checked) {
       messageApi.destroy('editModeMessage');
       messageApi.destroy('liveModeMessage');
@@ -46,8 +46,17 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
         title={Boolean(formInfoBlockVisible) ? 'Switch to Live mode' : 'Switch to Edit mode'}
         checked={formInfoBlockVisible}
         onChange={(checked, event) => {
-toggleShowInfoBlock(checked); toggleMode(checked,event);
-}}
+          toggleShowInfoBlock(checked);
+          toggleMode(checked, event);
+          if (checked) {
+            softToggleInfoBlock(true);
+            setTimeout(() => {
+              softToggleInfoBlock(false);
+            }, 3000);
+          } else {
+            softToggleInfoBlock(false);
+          }
+        }}
       />
     </Space>
   );

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -156,8 +157,10 @@ namespace Shesha.Swagger
                     var test = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
                     return test;
                 } 
-                else
+                else if (modelType.HasInterface(typeof(IDynamicDtoProxy)))
                     return "Proxy" + GetSchemaId(modelType.BaseType);
+                else
+                    return modelType.Name;
             }
 
             if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");

@@ -47,6 +47,24 @@
       "version": 1
     },
     {
+      "id": "366f360b-a37b-4803-a2c2-8637208caa9d",
+      "type": "codeEditor",
+      "propertyName": "disableRefresh",
+      "label": "Disable refresh data",
+      "parentId": "root",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+      "version": "latest",
+      "language": "typescript",
+      "placeholder": "",
+      "wrapInTemplate": true,
+      "templateSettings": {
+        "functionName": "getDisableRefresh"
+      },
+      "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addAllStandard().build();"
+    },
+    {
       "id": "ac45ff35-a50b-42f9-9642-73d390ceddbf",
       "type": "dropdown",
       "propertyName": "sourceType",

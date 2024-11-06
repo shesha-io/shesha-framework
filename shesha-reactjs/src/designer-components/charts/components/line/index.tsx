@@ -45,6 +45,11 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
             dataset.tension = tension;
             return dataset;
         });
+    } else {
+        data?.datasets?.map((dataset: any) => {
+            dataset.tension = tension;
+            return dataset;
+        });
     }
 
     const options: any = {

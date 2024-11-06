@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { DynamicModalInstanceContext, DynamicModalRendererContext } from './contexts';
 import { useDynamicModals } from '.';
@@ -30,14 +30,14 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
   const { instances, removeModal } = useDynamicModals();
   const children = useRef([]);
 
-  const registerChildren = useCallback(() => (id: string) => {
+  const registerChildren = (id: string) => {
     if (children.current.indexOf(id) === -1) 
       children.current = [...children.current, id];
-  }, [props.id]);
-  const unregisterChildren = useCallback( () => (id: string) => {
+  };
+  const unregisterChildren = (id: string) => {
     if (children.current.indexOf(id) !== -1) 
       children.current = children.current.filter((i) => i !== id);
-  }, [props.id]);
+  };
 
   const renderInstances = () => {
     const rendered = [];
@@ -62,7 +62,7 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
     return rendered;
   };
 
-  const context = useMemo(() => ({registerChildren, unregisterChildren}), [registerChildren, unregisterChildren]);
+  const context = {registerChildren, unregisterChildren};
 
   return (
     <DynamicModalRendererContext.Provider value={context}>

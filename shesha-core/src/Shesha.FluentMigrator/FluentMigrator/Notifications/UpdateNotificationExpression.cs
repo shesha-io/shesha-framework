@@ -14,7 +14,7 @@ namespace Shesha.FluentMigrator.Notifications
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
                 {
-                    var helper = new NotificationDbHelper(connection, transaction);
+                    var helper = new NotificationDbHelper(DbmsType, connection, transaction);
                     var id = helper.GetNotificationId(Namespace, Name);
                     if (id == null)
                         return;
@@ -26,7 +26,7 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
-        public UpdateNotificationExpression(string @namespace, string name) : base(@namespace, name) 
+        public UpdateNotificationExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema, @namespace, name) 
         { 
         }
     }

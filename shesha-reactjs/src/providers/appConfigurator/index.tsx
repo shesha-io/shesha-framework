@@ -16,6 +16,7 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
+  softToggleInfoBlockAction,
   switchApplicationModeAction,
   toggleCloseEditModeConfirmationAction,
   toggleEditModeConfirmationAction,
@@ -276,6 +277,10 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     dispatch(toggleCloseEditModeConfirmationAction(visible));
   };
 
+  const softToggleInfoBlock = (softInfoBlock: boolean) => {
+    dispatch(softToggleInfoBlockAction(softInfoBlock));
+  };
+
   return (
     <AppConfiguratorStateContext.Provider value={{
       ...state,
@@ -289,6 +294,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
           toggleCloseEditModeConfirmation,
           switchConfigurationItemMode,
           toggleShowInfoBlock,
+          softToggleInfoBlock,
         }}
       >
         {children}

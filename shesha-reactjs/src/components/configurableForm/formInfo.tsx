@@ -25,14 +25,13 @@ export interface FormInfoProps {
   children?: React.ReactNode;
 }
 
-export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible, children }) => {
+export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
   const { id, versionNo, versionStatus, name, module } = formProps;
-  const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
+  const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [open, setOpen] = useState(false);
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
-  const [allowHidePanel, setAllowHidePanel] = useState<boolean>(false);
   const displayEditMode = formInfoBlockVisible && formProps?.id;
 
   const onModalOpen = () => setOpen(true);
@@ -43,32 +42,20 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
     setOpen(false);
   };
 
-  const toggleFormPanel = () => {
-    if (allowHidePanel === true) {
-      setPanelShowing(visible);
-    }
-  };
+  useEffect(()=>{
+    setPanelShowing(softInfoBlock);
+  },[softInfoBlock]);
 
-  const toggleFormBlock = () => {
-    if (formInfoBlockVisible === true) {
-      setPanelShowing(true);
-      setAllowHidePanel(true);
-    }
-  };
+  if(!formProps.id){
+    return <>{children}</>;
+  }
 
-  useEffect(() => {
-    toggleFormBlock();
-  }, [formInfoBlockVisible]);
+  
+  //Prevent rendering empty info block when there's no info to display
 
-  useEffect(() => {
-    toggleFormPanel();
-  }, [visible]);
-
-  useEffect(() => {
-    if (Boolean(displayEditMode)) setTimeout(() => {
-      setPanelShowing(false);
-    }, 3000);
-  }, [formInfoBlockVisible]);
+  if(formProps?.id === undefined) {
+    return <>{children}</>;
+  }
 
   return (
     <div
@@ -116,6 +103,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
             )}
 
             <p
+              onClick={()=>onModalOpen()}
               title={`${getFormFullName(module, name)} v${versionNo}`}
               className={styles.shaFormInfoCardTitle}>
               {getFormFullName(module, name)} v{versionNo}
@@ -126,7 +114,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
                 value={versionStatus}
                 mappings={CONFIGURATION_ITEM_STATUS_MAPPING}
                 color={null}
-                style={{ marginRight: '5px' }}
+                style={{ display: 'flex', marginRight: '5px', fontSize: '10px', height: '15px', justifyContent: 'center', alignItems: 'center' }}
               />
               <CloseOutlined
                 onClick={() => toggleShowInfoBlock(false)}

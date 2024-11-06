@@ -7,7 +7,7 @@ import {
     IObjectMetadataBuilder as IPublicObjectMetadataBuilder,
 } from '@/publicJsApis/metadataBuilder';
 
-import { IMetadata } from '@/publicJsApis/metadata';
+import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
 import { metadataSourceCode } from '@/publicJsApis';
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
@@ -88,6 +88,10 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     addArray(path: string, label: string) {
         this._createProperty(DataTypes.array, path, label);
         return this;
+    }
+
+    addAny(path: string, label: string) {
+        return this.add(DataTypes.any, path, label);
     }
 
     addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader) {
@@ -229,6 +233,18 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
 
     object = (name: string, description?: string): IObjectMetadataBuilder => {
         return new ObjectMetadataBuilder(this, name, description);
+    };
+
+    array = async (name: string, itemType: (builder: this) => Promise<IMetadata>, description?: string): Promise<IMetadata> => {
+        const itemMetadata = await itemType(this);
+        const arrayMetadata: IMetadata & IMemberType = {
+            name: name,
+            description: description,
+            dataType: DataTypes.array,
+            dataFormat: itemMetadata.dataType,
+            itemsType: itemMetadata,            
+        };
+        return arrayMetadata;
     };
 
     registerStandardProperty(key: string, buildAction: MetadataBuilderAction, includeByDefault = true) {

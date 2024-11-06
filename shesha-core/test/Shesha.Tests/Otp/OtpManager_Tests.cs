@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Shesha.Tests.Otp
 {
-    public class OtpAppService_Tests: SheshaNhTestBase
+    public class OtpManager_Tests: SheshaNhTestBase
     {
         [Fact]
         public async Task SuccessOtp_TestAsync()
@@ -70,7 +70,7 @@ namespace Shesha.Tests.Otp
                 ExpiresOn = DateTime.MaxValue
             }));
 
-            var otp = new OtpAppService(
+            var otp = new OtpManager(
                 new NullSmsGateway(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
@@ -117,7 +117,7 @@ namespace Shesha.Tests.Otp
                 ExpiresOn = DateTime.MaxValue
             }));
 
-            var otp = new OtpAppService(
+            var otp = new OtpManager(
                 new NullSmsGateway(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,

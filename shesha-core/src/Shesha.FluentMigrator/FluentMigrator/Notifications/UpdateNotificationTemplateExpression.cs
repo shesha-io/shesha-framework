@@ -6,7 +6,7 @@ namespace Shesha.FluentMigrator.Notifications
     /// <summary>
     /// NotificationTemplate update expression
     /// </summary>
-    public class UpdateNotificationTemplateExpression : MigrationExpressionBase
+    public class UpdateNotificationTemplateExpression : SheshaMigrationExpressionBase
     {
         /// <summary>
         /// Template Id
@@ -22,7 +22,7 @@ namespace Shesha.FluentMigrator.Notifications
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
                 {
-                    var helper = new NotificationDbHelper(connection, transaction);
+                    var helper = new NotificationDbHelper(DbmsType, connection, transaction);
 
                     if (Template.Name.IsSet)
                         helper.UpdateTemplateName(Id, Template.Name.Value);
@@ -39,6 +39,11 @@ namespace Shesha.FluentMigrator.Notifications
                 }
             };
             processor.Process(exp);
+        }
+
+        public UpdateNotificationTemplateExpression(DbmsType dbmsType, IQuerySchema querySchema) : base(dbmsType, querySchema)
+        {
+            
         }
     }
 }

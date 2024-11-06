@@ -6,7 +6,7 @@ namespace Shesha.FluentMigrator.Settings
     {
         public const string SettingConfigurationTypeName = "setting-configuration";
 
-        public SettingsDbHelper(IDbConnection connection, IDbTransaction transaction) : base(connection, transaction)
+        public SettingsDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction) : base(dbmsType, connection, transaction)
         {
         }
 
@@ -24,60 +24,61 @@ namespace Shesha.FluentMigrator.Settings
             if (moduleId == null)
                 throw new SheshaMigrationException($"Failed to get or create module with name `{module}`");
 
-            ExecuteNonQuery(@"INSERT INTO Frwk_ConfigurationItems
-           (Id
-           ,CreationTime
-           ,IsDeleted
-           ,Label
-           ,Name
-           ,VersionNo
-           ,VersionStatusLkp
-           ,ItemType
-           ,IsLast
-           ,OriginId
-           ,Suppress
-           ,ModuleId
+            ExecuteNonQuery($@"INSERT INTO ""Frwk_ConfigurationItems""
+           (""Id""
+           ,""CreationTime""
+           ,""IsDeleted""
+           ,""Label""
+           ,""Name""
+           ,""VersionNo""
+           ,""VersionStatusLkp""
+           ,""ItemType""
+           ,""IsLast""
+           ,""OriginId""
+           ,""Suppress""
+           ,""ModuleId""
 		   )
      VALUES
            (@id
-           ,getdate()
-           ,0
+           ,@creationTime
+           ,{BitOrBool(false)}
            ,@label
            ,@name
            ,1
            ,3 /*Live*/
            ,@itemType
-           ,1
+           ,{BitOrBool(true)}
            ,@id
-           ,0
+           ,{BitOrBool(false)}
            ,@moduleId
            )", command =>
             {
                 command.AddParameter("@id", id);
+                command.AddParameter("@creationTime", DateTime.Now);                
                 command.AddParameter("@label", displayName);
                 command.AddParameter("@name", name);
                 command.AddParameter("@itemType", SettingConfigurationTypeName);
                 command.AddParameter("@moduleId", moduleId);
             });
 
-            ExecuteNonQuery(@"INSERT INTO Frwk_SettingConfigurations
-           (Id
-           ,DataType
-           ,DataFormat
-           ,OrderIndex
-           ,IsClientSpecific
-           ,AccessModeLkp
-           ,IsUserSpecific
-           ,ClientAccessLkp
+            ExecuteNonQuery($@"INSERT INTO ""Frwk_SettingConfigurations""
+           (""Id""
+           ,""DataType""
+           ,""DataFormat""
+           ,""OrderIndex""
+           ,""IsClientSpecific""
+           ,""AccessModeLkp""
+           ,""IsUserSpecific""
+           ,""ClientAccessLkp""
             )
      VALUES
            (@id
            ,@dataType
            ,@dataFormat
            ,0
-           ,0
+           ,{BitOrBool(false)}
            ,1/*BackEndOnly*/
-           ,0
+           ,{BitOrBool(false)}
            ,3/*Full*/
            )", command =>
             {
@@ -91,16 +92,16 @@ namespace Shesha.FluentMigrator.Settings
 
         internal Guid? GetSettingId(string module, string name) 
         {
-            var sql = @"select 
-	ci.Id 
+            var sql = $@"select 
+	ci.""Id"" 
 from 
-	Frwk_SettingConfigurations sc
-	inner join Frwk_ConfigurationItems ci on ci.Id = sc.Id
-    left join Frwk_Modules m on m.Id = ci.ModuleId
+	""Frwk_SettingConfigurations"" sc
+	inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = sc.""Id""
+    left join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
 where 
-	ci.Name = @name
-    and m.Name = @moduleName
-    and ci.IsLast = 1";
+	ci.""Name"" = @name
+    and m.""Name"" = @moduleName
+    and ci.""IsLast"" = {BitOrBool(true)}";
 
             return ExecuteScalar<Guid?>(sql, command =>
             {
@@ -111,7 +112,7 @@ where
 
         internal void UpdateSettingDescription(Guid id, string description)
         {
-            ExecuteNonQuery("update Frwk_ConfigurationItems set Description = @Description where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_ConfigurationItems\" set \"Description\" = @Description where \"Id\" = @Id", command => {
                 command.AddParameter("@Description", description);
                 command.AddParameter("@Id", id);
             });
@@ -122,7 +123,7 @@ where
             if (displayName != null && displayName.Length > 300)
                 throw new ArgumentException("DisplayName must be 300 character length maximum");
 
-            ExecuteNonQuery("update Frwk_ConfigurationItems set Label = @Label where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_ConfigurationItems\" set \"Label\" = @Label where \"Id\" = @Id", command => {
                 command.AddParameter("@Label", displayName);
                 command.AddParameter("@Id", id);
             });
@@ -133,7 +134,7 @@ where
             if (category != null && category.Length > 200)
                 throw new ArgumentException("Category must be 200 character length maximum");
 
-            ExecuteNonQuery("update Frwk_SettingConfigurations set Category = @Category where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"Category\" = @Category where \"Id\" = @Id", command => {
                 command.AddParameter("@Category", category);
                 command.AddParameter("@Id", id);
             });
@@ -141,7 +142,7 @@ where
         
         internal void UpdateIsUserSpecific(Guid id, bool isUserSpecific)
         {
-            ExecuteNonQuery("update Frwk_SettingConfigurations set IsUserSpecific = @IsUserSpecific where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"IsUserSpecific\" = @IsUserSpecific where \"Id\" = @Id", command => {
                 command.AddParameter("@IsUserSpecific", isUserSpecific);
                 command.AddParameter("@Id", id);
             });
@@ -149,7 +150,7 @@ where
 
         internal void UpdateClientAccess(Guid id, UserSettingAccessMode clientAccess)
         {
-            ExecuteNonQuery("update Frwk_SettingConfigurations set ClientAccessLkp = @clientAccess where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"ClientAccessLkp\" = @clientAccess where \"Id\" = @Id", command => {
                 command.AddParameter("@clientAccess", clientAccess);
                 command.AddParameter("@Id", id);
             });
@@ -157,7 +158,7 @@ where
 
         internal void UpdateIsClientSpecific(Guid id, bool isClientSpecific)
         {
-            ExecuteNonQuery("update Frwk_SettingConfigurations set IsClientSpecific = @IsClientSpecific where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"IsClientSpecific\" = @IsClientSpecific where \"Id\" = @Id", command => {
                 command.AddParameter("@IsClientSpecific", isClientSpecific);
                 command.AddParameter("@Id", id);
             });
@@ -165,7 +166,7 @@ where
 
         internal void UpdateAccessMode(Guid id, SettingAccessMode accessMode)
         {
-            ExecuteNonQuery("update Frwk_SettingConfigurations set AccessModeLkp = @accessMode where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"AccessModeLkp\" = @accessMode where \"Id\" = @Id", command => {
                 command.AddParameter("@accessMode", accessMode);
                 command.AddParameter("@Id", id);
             });
@@ -173,7 +174,7 @@ where
 
         internal void UpdateEditForm(Guid id, ConfigurationItemIdentifier formId)
         {
-            ExecuteNonQuery("update Frwk_SettingConfigurations set EditorFormModule = @EditorFormModule, EditorFormName = @EditorFormName where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"EditorFormModule\" = @EditorFormModule, \"EditorFormName\" = @EditorFormName where \"Id\" = @Id", command => {
                 command.AddParameter("@EditorFormModule", formId?.Module);
                 command.AddParameter("@EditorFormName", formId?.Name);
                 command.AddParameter("@Id", id);
@@ -182,7 +183,7 @@ where
 
         internal void UpdateReferenceList(Guid id, ConfigurationItemIdentifier refListId)
         {
-            ExecuteNonQuery("update Frwk_SettingConfigurations set ReferenceListModule = @ReferenceListModule, ReferenceListName = @ReferenceListName where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_SettingConfigurations\" set \"ReferenceListModule\" = @ReferenceListModule, \"ReferenceListName\" = @ReferenceListName where \"Id\" = @Id", command => {
                 command.AddParameter("@ReferenceListModule", refListId?.Module);
                 command.AddParameter("@ReferenceListName", refListId?.Name);
                 command.AddParameter("@Id", id);
@@ -191,20 +192,20 @@ where
 
         internal void DeleteSettingDefinition(Guid id) 
         {
-            ExecuteNonQuery("delete from Frwk_SettingValues where SettingConfigurationId = @Id", command => {
+            ExecuteNonQuery("delete from \"Frwk_SettingValues\" where \"SettingConfigurationId\" = @Id", command => {
                 command.AddParameter("@Id", id);
             });
-            ExecuteNonQuery("delete from Frwk_SettingConfigurations where Id = @Id", command => {
+            ExecuteNonQuery("delete from \"Frwk_SettingConfigurations\" where \"Id\" = @Id", command => {
                 command.AddParameter("@Id", id);
             });
-            ExecuteNonQuery("delete from Frwk_ConfigurationItems where Id = @Id", command => {
+            ExecuteNonQuery("delete from \"Frwk_ConfigurationItems\" where \"Id\" = @Id", command => {
                 command.AddParameter("@Id", id);
             });
         }
 
         internal Guid? GetSettingValueId(Guid settingId) 
         {
-            var sql = @"select Id from Frwk_SettingValues where SettingConfigurationId = @settingId and ApplicationId is null";
+            var sql = @"select ""Id"" from ""Frwk_SettingValues"" where ""SettingConfigurationId"" = @settingId and ""ApplicationId"" is null";
             return ExecuteScalar<Guid?>(sql, command =>
             {
                 command.AddParameter("@settingId", settingId);
@@ -214,12 +215,12 @@ where
         internal Guid? GetSettingValueId(Guid settingId, Guid? appId, long? userId)
         {
             var sql = @"select 
-	                        Id 
+	                        ""Id"" 
                         from 
-	                        Frwk_SettingValues
+	                        ""Frwk_SettingValues""
                         where 
-	                        SettingConfigurationId = @settingId
-	                        and ((ApplicationId = @appId or UserId = @userId) or (ApplicationId = @appId and UserId = @userId))";
+	                        ""SettingConfigurationId"" = @settingId
+	                        and ((""ApplicationId"" = @appId or ""UserId"" = @userId) or (""ApplicationId"" = @appId and ""UserId"" = @userId))";
 
             return ExecuteScalar<Guid?>(sql, command =>
             {
@@ -244,7 +245,7 @@ where
 
         internal void UpdateSettingValueById(Guid valueId, string? value) 
         {
-            ExecuteNonQuery("update Frwk_SettingValues set Value = @value where Id = @valueId", command => {
+            ExecuteNonQuery("update \"Frwk_SettingValues\" set \"Value\" = @value where \"Id\" = @valueId", command => {
                 command.AddParameter("@valueId", valueId);
                 command.AddParameter("@value", value);
             });
@@ -255,8 +256,8 @@ where
             var id = Guid.NewGuid();
 
             var sql = @"insert into 
-	Frwk_SettingValues
-	(Id, CreationTime, Value, SettingConfigurationId, ApplicationId)
+	""Frwk_SettingValues""
+	(""Id"", ""CreationTime"", ""Value"", ""SettingConfigurationId"", ""ApplicationId"")
 values
 	(@Id, @CreationTime, @Value, @SettingConfigurationId, @ApplicationId)";
 

@@ -64,10 +64,13 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 6,
+            "version": 7,
             "useRawValues": false,
             "referenceListId": null,
-            "valueFormat": "listItem"
+            "valueFormat": "listItem",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
@@ -87,7 +90,10 @@
             "propertyName": "description",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Description",
-            "version": 3
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "ZEAbHFGIsJsmRblAqm4O8",
@@ -118,10 +124,13 @@
               }
             ],
             "settingsValidationErrors": [],
-            "version": 6,
+            "version": 7,
             "useRawValues": false,
             "referenceListId": null,
-            "valueFormat": "listItem"
+            "valueFormat": "listItem",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
@@ -129,7 +138,10 @@
             "propertyName": "hidden",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Hidden",
-            "version": 3
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
@@ -137,7 +149,10 @@
             "propertyName": "hideLabel",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Hide Label",
-            "version": 3
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -159,7 +174,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 6,
+      "version": 7,
       "dataSourceType": "values",
       "useRawValues": false,
       "referenceListId": null,
@@ -185,7 +200,10 @@
           "value": "typescript"
         }
       ],
-      "validate": {}
+      "validate": {},
+      "desktop": {},
+      "tablet": {},
+      "mobile": {}
     },
     {
       "id": "54bf6-f76d-4139-a850-c99bf06c8111",
@@ -219,10 +237,13 @@
             "propertyName": "wrapInTemplate",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
             "label": "Use function wrapper",
-            "version": 3,
+            "version": 4,
             "settingsValidationErrors": [],
             "description": "If true, a code will be wrapped in a standard function wrapper template",
-            "validate": {}
+            "validate": {},
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
@@ -238,7 +259,7 @@
               "_value": false
             },
             "isDynamic": false,
-            "version": 4,
+            "version": 6,
             "direction": "vertical",
             "justifyContent": "left",
             "flexWrap": "wrap",
@@ -249,7 +270,7 @@
                 "propertyName": "templateSettings.useAsyncDeclaration",
                 "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
                 "label": "Async declaration",
-                "version": 3,
+                "version": 4,
                 "settingsValidationErrors": [],
                 "description": "",
                 "hidden": {
@@ -257,7 +278,10 @@
                   "_code": null
                 },
                 "validate": {},
-                "context": null
+                "context": null,
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
               },
               {
                 "textType": "text",
@@ -303,7 +327,7 @@
                 "placeholder": "",
                 "description": "",
                 "templateSettings": {
-                  "functionName": "getResultType",
+                  "functionName": "getAvailableConstants",
                   "useAsyncDeclaration": true
                 },
                 "validate": {},
@@ -340,7 +364,17 @@
             ],
             "settingsValidationErrors": [],
             "gap": "",
-            "className": ""
+            "className": "",
+            "desktop": {
+              "className": ""
+            },
+            "tablet": {
+              "className": ""
+            },
+            "mobile": {
+              "className": ""
+            },
+            "shadowStyle": "none"
           }
         ]
       },
@@ -375,7 +409,10 @@
             "propertyName": "validate.required",
             "parentId": "whQTbtwSdXgO8Aeff_-9d7KozYxIAD",
             "label": "Required",
-            "version": 3
+            "version": 4,
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           }
         ]
       },
