@@ -41,6 +41,9 @@ import { MainMenuProvider } from '../mainMenu';
 import { ISheshaApplicationInstance, SheshaApplicationInstanceContext, useSheshaApplicationInstance } from './application';
 import SheshaLoader from '@/components/sheshaLoader';
 import { Result } from 'antd';
+import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
+import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
+
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -92,76 +95,80 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
               getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
             >
               <DynamicActionsDispatcherProvider>
-                <ConditionalWrap
-                  condition={!props.noAuth}
-                  wrap={(authChildren) => (
-                    <AuthProvider
-                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                      authRef={authRef}
-                      homePageUrl={homePageUrl}
+                <EntityActions>
+                  <UrlActions>
+                    <ConditionalWrap
+                      condition={!props.noAuth}
+                      wrap={(authChildren) => (
+                        <AuthProvider
+                          tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                          unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                          authRef={authRef}
+                          homePageUrl={homePageUrl}
+                        >
+                          {authChildren}
+                        </AuthProvider>
+                      )}
                     >
-                      {authChildren}
-                    </AuthProvider>
-                  )}
-                >
-                  <ConfigurationItemsLoaderProvider>
-                    <FormManager>
+                      <ConfigurationItemsLoaderProvider>
+                        <FormManager>
 
-                      <GlobalSheshaStyles />
-                      <ShaFormStyles />
-                      <GlobalPageStyles />
+                          <GlobalSheshaStyles />
+                          <ShaFormStyles />
+                          <GlobalPageStyles />
 
-                      <AppConfiguratorProvider>
-                        <ReferenceListDispatcherProvider>
-                          <EntityMetadataFetcherProvider>
-                            <MetadataDispatcherProvider>
-                              <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
-                                <ApplicationContextsProvider>
-                                  <DataContextProvider
-                                    id={SheshaCommonContexts.AppContext}
-                                    name={SheshaCommonContexts.AppContext}
-                                    description={'Application data store context'}
-                                    type={'root'}
-                                  >
-                                    <FormDataLoadersProvider>
-                                      <FormDataSubmittersProvider>
-                                        <CanvasProvider>
-                                          <DataSourcesProvider>
-                                            <DynamicModalProvider>
-                                              {(status === 'inprogress' || status === 'waiting') && <SheshaLoader message={hint || "Initializing..."} />}
-                                              {status === 'ready' &&
-                                                <DebugPanel>
-                                                  <ApplicationActionsProcessor>
-                                                    <MainMenuProvider>
-                                                      {children}
-                                                    </MainMenuProvider>
-                                                  </ApplicationActionsProcessor>
-                                                </DebugPanel>
-                                              }
-                                              {status === 'failed' &&
-                                                <Result
-                                                  status="500"
-                                                  title="500"
-                                                  subTitle={error?.message || "Sorry, something went wrong."}
-                                                //extra={<Button type="primary">Back Home</Button>}
-                                                />
-                                              }
-                                            </DynamicModalProvider>
-                                          </DataSourcesProvider>
-                                        </CanvasProvider>
-                                      </FormDataSubmittersProvider>
-                                    </FormDataLoadersProvider>
-                                  </DataContextProvider>
-                                </ApplicationContextsProvider>
-                              </DataContextManager>
-                            </MetadataDispatcherProvider>
-                          </EntityMetadataFetcherProvider>
-                        </ReferenceListDispatcherProvider>
-                      </AppConfiguratorProvider>
-                    </FormManager>
-                  </ConfigurationItemsLoaderProvider>
-                </ConditionalWrap>
+                          <AppConfiguratorProvider>
+                            <ReferenceListDispatcherProvider>
+                              <EntityMetadataFetcherProvider>
+                                <MetadataDispatcherProvider>
+                                  <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
+                                    <ApplicationContextsProvider>
+                                      <DataContextProvider
+                                        id={SheshaCommonContexts.AppContext}
+                                        name={SheshaCommonContexts.AppContext}
+                                        description={'Application data store context'}
+                                        type={'root'}
+                                      >
+                                        <FormDataLoadersProvider>
+                                          <FormDataSubmittersProvider>
+                                            <CanvasProvider>
+                                              <DataSourcesProvider>
+                                                <DynamicModalProvider>
+                                                  {(status === 'inprogress' || status === 'waiting') && <SheshaLoader message={hint || "Initializing..."} />}
+                                                  {status === 'ready' &&
+                                                    <DebugPanel>
+                                                      <ApplicationActionsProcessor>
+                                                        <MainMenuProvider>
+                                                          {children}
+                                                        </MainMenuProvider>
+                                                      </ApplicationActionsProcessor>
+                                                    </DebugPanel>
+                                                  }
+                                                  {status === 'failed' &&
+                                                    <Result
+                                                      status="500"
+                                                      title="500"
+                                                      subTitle={error?.message || "Sorry, something went wrong."}
+                                                    //extra={<Button type="primary">Back Home</Button>}
+                                                    />
+                                                  }
+                                                </DynamicModalProvider>
+                                              </DataSourcesProvider>
+                                            </CanvasProvider>
+                                          </FormDataSubmittersProvider>
+                                        </FormDataLoadersProvider>
+                                      </DataContextProvider>
+                                    </ApplicationContextsProvider>
+                                  </DataContextManager>
+                                </MetadataDispatcherProvider>
+                              </EntityMetadataFetcherProvider>
+                            </ReferenceListDispatcherProvider>
+                          </AppConfiguratorProvider>
+                        </FormManager>
+                      </ConfigurationItemsLoaderProvider>
+                    </ConditionalWrap>
+                  </UrlActions>
+                </EntityActions>
               </DynamicActionsDispatcherProvider>
             </ShaRoutingProvider>
           </ConfigurableActionDispatcherProvider>
