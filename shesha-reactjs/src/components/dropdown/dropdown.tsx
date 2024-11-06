@@ -43,9 +43,9 @@ export const Dropdown: FC<IDropdownProps> = ({
     const selectedMode = mode === 'single' ? undefined : mode;
 
     //quick fix not to default to empty string or null while working with multi-mode
-    const defaultValue = evaluateString(defaultVal, { formData, formMode, globalState }) || undefined;
+    const defaultValue = evaluateString(defaultVal, { formData, formMode, globalState }) ?? undefined;
 
-    const value = (evaluateString(val, { formData, formMode, globalState }) || undefined) as any;
+    const value = (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any;
 
     const getOptions = (): ILabelValue[] => {
         return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
