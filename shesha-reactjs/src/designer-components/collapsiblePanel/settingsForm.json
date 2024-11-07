@@ -171,6 +171,7 @@
             "defaultValue": 8,
             "version": 2,
             "textType": "number",
+            "max": 40,
             "jsSetting": false
           },
           {
