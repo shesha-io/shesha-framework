@@ -38,6 +38,9 @@ const designerClassNames = {
     sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
     sidebarHeaderTitle: "sidebar-header-title",
     siteTreeSearchValue: "site-tree-search-value",
+    formName: "form-name",
+    formTitle: "form-title",
+    formNameParent: "form-name-parent",
 };
 const useStylesResponse = {
     styles: designerClassNames,
@@ -82,6 +85,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaComponentValidationIcon,
         shaDesignerHeaderRight,
         shaForm,
+        formName,
+        formTitle,
+        formNameParent,
         //mainArea,
     } = useStyles().styles;
 
@@ -169,7 +175,34 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             padding: 8px 12px 0px 12px;
             display: flex;
             justify-content: space-between;
-        
+
+            .${formName} {
+                margin-left: -95px;
+                margin-top: 13px;
+                overflow: visible;
+                display: flex;
+                flex-direction: row;
+                cursor: pointer;
+                user-select: none;
+                transition: 0.2s;
+            }
+            .${formTitle} {
+                margin: 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                font-weight: 600;
+                margin-left: 100px;
+                max-width: 150px;
+            }
+
+            .${formNameParent} {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-top: -10px;
+            }
+
             .${shaDesignerToolbarLeft} {
                 float: left;
         

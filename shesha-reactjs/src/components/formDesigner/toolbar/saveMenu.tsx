@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import {
   CheckCircleOutlined,
+  CopyOutlined,
   DownOutlined,
   ExclamationCircleOutlined,
   SaveOutlined
@@ -23,6 +24,7 @@ import {
 } from '@/utils/configurationFramework/actions';
 import { getFormFullName } from '@/utils/form';
 import { StatusTag } from '@/components';
+import { useStyles } from '../styles/styles';
 
 
 type MenuItem = MenuProps['items'][number];
@@ -37,6 +39,8 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const toolboxComponents = useFormDesignerComponents();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { message } = App.useApp();
+
+  const { styles } = useStyles();
 
   const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
 
@@ -64,6 +68,11 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
         message.destroy();
         message.error('Failed to save form');
       });
+  };
+
+  const copyFormName = () => {
+    navigator.clipboard.writeText(fullName);
+    message.success("Form name copied");
   };
 
   const onSaveAndSetReadyClick = () => {
@@ -127,12 +136,9 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   ];
 
   return (
-    <div style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      marginTop: "-10px"
-    }}>
+    <div
+    className={styles.formNameParent}
+    >
       <Dropdown.Button
         icon={<DownOutlined />}
         menu={{ items: saveMenuItems }}
@@ -141,39 +147,14 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
       >
         <SaveOutlined />
       </Dropdown.Button>
-      <p style={{
-        marginLeft: '-90px',
-        marginTop: '13px',
-        overflow: 'visible',
-        display: 'flex',
-        flexDirection: 'row',
-        cursor: 'pointer',
-        userSelect: 'none',
-        transition: '.2s'
-      }}
-        onSelect={(e) => e.preventDefault()}
-        onDoubleClick={(event) => {
-          //@ts-ignore
-          event.target.style.backgroundColor = "#f2f2f2";
-          setTimeout(() => {
-            //@ts-ignore
-            event.target.style.backgroundColor = "#ffffff";
-          }, 400);
-          navigator.clipboard.writeText(fullName);
-        }}
-        title='Double-click to copy full form name'
+      <p
+        className={styles.formName}
+        title={fullName}
+        onClick={()=>copyFormName()}
       >
-        <span style={{
-          margin: 0,
-          textOverflow: 'ellipsis',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          fontWeight: 600,
-          marginLeft: '100px',
-          maxWidth: '150px',
-        }}
-        > {fullName}
+        <span className={styles.formTitle}> {fullName}
         </span>
+        <CopyOutlined color='#555' size={12} title={fullName}/>
         <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} />
       </p>
     </div>
