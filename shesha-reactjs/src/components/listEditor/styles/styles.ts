@@ -90,6 +90,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     margin: 8px;
                     display: flex;
                     align-items: center;
+                    align-content: center;
                     width: 100%;
                     height: 100%;
                     position: absolute;
@@ -97,14 +98,14 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${dragIcon} {
                     transition: opacity 0.2s;
-                    opacity: 0;
+                    opacity: 1;
                     cursor: grab;
-                    width: 12px;
-                    margin-top: -10px;
+                    margin-top: -23px;
                 }
 
                 .${listItemContent} {
                     flex: 1;
+                    margin-left: 20px;
 
                     .${listItemName} {
                         margin-left: 10px;
