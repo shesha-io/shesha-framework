@@ -8,14 +8,14 @@ import {
   IShowConfirmationArguments,
   showConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { IShowModalActionArguments, dialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
+import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
 import {
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   DynamicModalActionsContext,
   DynamicModalInstanceContext,
   DynamicModalStateContext,
 } from './contexts';
-import { IModalProps } from './models';
+import { IModalInstance, IModalProps } from './models';
 import DynamicModalReducer from './reducer';
 import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
@@ -120,7 +120,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           });
         });
       },
-      argumentsFormMarkup: dialogArgumentsForm,
+      argumentsFormMarkup: showDialogArgumentsForm,
       evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
@@ -141,7 +141,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   const getLatestVisibleInstance = () => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
-    let highestInstance = null;
+    let highestInstance: IModalInstance = null;
 
     for (let i = 0; i < keys.length; i++) {
       const instance = instances[keys[i]];
@@ -152,26 +152,26 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   };
 
   //#region Close the latest Dialog
-  useConfigurableAction<IShowModalActionArguments>(
+  useConfigurableAction<ICloseModalActionArguments>(
     {
       name: 'Close Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
-      hasArguments: false,
-      executer: () => {
+      hasArguments: true,
+      executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
           const latestInstance = getLatestVisibleInstance();
 
           if (latestInstance) {
             removeModal(latestInstance?.id);
-            latestInstance.onClose();
+            latestInstance.onClose(actionArgs.showDialogResult === 'true');
             resolve({});
           } else {
             reject('There is no open dialog to close');
           }
         });
       },
-      // argumentsFormMarkup: {},
+      argumentsFormMarkup: closeDialogArgumentsForm,
     },
     actionDependencies
   );

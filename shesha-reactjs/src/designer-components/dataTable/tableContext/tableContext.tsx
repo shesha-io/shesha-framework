@@ -2,7 +2,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import DataTableProvider from '@/providers/dataTable';
 import React, { FC, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components';
-import { evaluateString } from '@/providers/form/utils';
+import { evaluateString, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
 import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
@@ -16,6 +16,9 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
     const { formMode } = useForm();
     const { data } = useFormData();
+
+    const allData = useAvailableConstantsData();
+    const disableRefresh = Boolean(props.disableRefresh) ? executeScriptSync(props.disableRefresh, allData) : false;
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
@@ -51,6 +54,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             standardSorting={props.standardSorting}
             allowReordering={evaluateYesNo(allowReordering, formMode)}
             permanentFilter={permanentFilter}
+            disableRefresh={disableRefresh}
         >
             <ComponentsContainer containerId={id} />
         </DataTableProvider>

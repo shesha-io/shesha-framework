@@ -1,0 +1,56 @@
+{
+    "components": [
+      {
+          "id": "264903ff-b525-4a6e-893f-d560b219df9d",
+          "propertyName": "showDialogResult",
+          "label": "Show dialog result",
+          "allowClear": true,
+          "values": [
+              {
+                  "label": "Success",
+                  "value": "true",
+                  "id": "2f56ae38-e5f3-40ff-9830-bc048736ddb4"
+              },
+              {
+                  "label": "Fail",
+                  "value": "false",
+                  "id": "470d820b-7cd7-439c-8e95-1f5b3134f80c"
+              }
+          ],
+          "dataSourceType": "values",
+          "type": "dropdown",
+          "version": "latest",
+          "parentId": "root"
+      }
+    ],
+    "formSettings": {
+        "access": null,
+        "permissions": null,
+        "version": 2,
+        "labelCol": {
+            "span": 5
+        },
+        "wrapperCol": {
+            "span": 19
+        },
+        "layout": "horizontal",
+        "colon": true,
+        "dataLoaderType": "gql",
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            }
+        },
+        "dataSubmitterType": "gql",
+        "dataSubmittersSettings": {
+            "gql": {
+                "endpointType": "default",
+                "dynamicEndpoint": ""
+            }
+        },
+        "onAfterShow": null,
+        "onBeforeSubmit": null,
+        "onSubmitSuccess": null,
+        "onSubmitFailed": null
+    }
+}

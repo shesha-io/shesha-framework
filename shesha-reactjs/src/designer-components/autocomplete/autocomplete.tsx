@@ -61,7 +61,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
 
     const evaluatedFilters = useAsyncMemo(async () => {
-      if (!filter) return '';
+      if (model.dataSourceType !== 'entitiesList' || !filter)
+        return '';
 
       const response = await evaluateDynamicFilters(
         [{ expression: filter } as any],
@@ -76,7 +77,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           },
           {
             match: 'pageContext',
-            data: {...pageContext?.getFull()},
+            data: { ...pageContext?.getFull() },
           },
         ],
         propertyMetadataAccessor
@@ -90,16 +91,23 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const getQueryParams = (): IQueryParams => {
       const queryParamObj: IQueryParams = {};
 
-      if (queryParams?.length) {
-        queryParams?.forEach(({ param, value }) => {
-          const valueAsString = value as string;
-          if (param?.length && valueAsString.length) {
-            queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data }) : value;
-          }
-        });
+      if (model.dataSourceType === 'url') {
+        if (queryParams && typeof (queryParams) === 'object') {
+          if (Array.isArray(queryParams)) {
+            queryParams.forEach(({ param, value }) => {
+              const valueAsString = value as string;
+              if (param?.length && valueAsString.length) {
+                queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data }) : value;
+              }
+            });
+          } else
+            Object.assign(queryParamObj, queryParams);
+        }
       }
 
-      if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : evaluatedFilters;
+      if (model.dataSourceType === 'entitiesList') {
+        if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : evaluatedFilters;
+      }
 
       return queryParamObj;
     };
@@ -113,10 +121,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       useRawValues
         ? item[value]
         : {
-            id: item[value],
-            _displayName: item[displayText],
-            _className: model.entityTypeShortAlias,
-          };
+          id: item[value],
+          _displayName: item[displayText],
+          _className: model.entityTypeShortAlias,
+        };
 
     const getOptionFromFetchedItem = (item: object): ISelectOption => {
       const { dataSourceType, keyPropName, useRawValues, valuePropName } = model;
@@ -170,7 +178,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-  
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
@@ -185,8 +193,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...stylingBoxAsCSS,
     });
     const jsStyle = getStyle(model.style, data);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
-    
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
     const defaultValue = getDefaultValue();
 
     const autocompleteProps: IAutocompleteProps = {
@@ -224,20 +232,20 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
-          const customEvent =  customDropDownEventHandler(eventProps);
+          const customEvent = customDropDownEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
-         
-          
+
+
           return (
-          model.useRawValues ? (
-            <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ) : (
-            <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ));
+            model.useRawValues ? (
+              <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
+            ) : (
+              <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
+            ));
         }}
       </ConfigurableFormItem>
     );
@@ -283,7 +291,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         stylingBox: prev.stylingBox
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
