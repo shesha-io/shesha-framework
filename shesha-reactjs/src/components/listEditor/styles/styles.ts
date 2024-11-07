@@ -85,18 +85,22 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${dragHandle} {
                     transition: opacity 0.2s;
-                    opacity: 1;
+                    opacity: 0;
                     cursor: grab;
-                    margin-right: 8px;
+                    margin: 8px;
                     display: flex;
                     align-items: center;
                     width: 100%;
+                    height: 100%;
+                    position: absolute;
                 }
 
                 .${dragIcon} {
                     transition: opacity 0.2s;
-                    opacity: 1;
+                    opacity: 0;
                     cursor: grab;
+                    width: 12px;
+                    margin-top: -10px;
                 }
 
                 .${listItemContent} {
