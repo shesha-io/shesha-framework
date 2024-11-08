@@ -1,6 +1,6 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx}) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
 
     const shaSidebarEditModeContainer = cx("sha-sidebar-edit-mode-container", css`
         width: 100%;
@@ -16,7 +16,7 @@ export const useStyles = createStyles(({ css, cx}) => {
             flex-direction: row;
             justify-content: center;
             bottom: 0;
-            background-color: #10239e;
+            background-color: ${token.colorPrimary};
             padding: 13px;
             width: auto;
             cursor: pointer;
