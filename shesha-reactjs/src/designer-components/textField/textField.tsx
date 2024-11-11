@@ -1,5 +1,5 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { ConfigProvider, Input, message } from 'antd';
+import { ConfigProvider, Input, App } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
@@ -57,6 +57,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const data = model;
 
     const { globalState, setState: setGlobalState } = useGlobalState();
+    const { message } = App.useApp();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const { styles } = useStyles({ fontFamily: model?.inputStyles?.font?.type, fontWeight: model?.inputStyles?.font?.weight, textAlign: model?.inputStyles?.font?.align });

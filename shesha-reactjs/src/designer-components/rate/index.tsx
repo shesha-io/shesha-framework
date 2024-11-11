@@ -9,7 +9,7 @@ import { getStyle, validateConfigurableComponentSettings } from '@/providers/for
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
-import { message, Rate } from 'antd';
+import { App, Rate } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
@@ -50,6 +50,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+    const { message } = App.useApp();
 
     const { allowClear, icon, count, tooltips, className, style, readOnly } = model;
 

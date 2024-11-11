@@ -7,6 +7,7 @@ export interface IAppStateContext {
   mode: ApplicationMode;
   configurationItemMode: ConfigurationItemsViewMode;
   formInfoBlockVisible: boolean;
+  softInfoBlock: boolean;
 }
 
 export interface IAppActionsContext {
@@ -15,6 +16,7 @@ export interface IAppActionsContext {
   toggleEditModeConfirmation: (visible: boolean) => void;
   toggleCloseEditModeConfirmation: (visible: boolean) => void;
   toggleShowInfoBlock: (visible: boolean) => void;
+  softToggleInfoBlock: (softInfoBlock: boolean) => void;
 }
 
 export const APP_CONTEXT_INITIAL_STATE: IAppStateContext = {
@@ -23,6 +25,7 @@ export const APP_CONTEXT_INITIAL_STATE: IAppStateContext = {
   mode: 'live',
   configurationItemMode: 'live',
   formInfoBlockVisible: false,
+  softInfoBlock: true,
 };
 
 export const AppConfiguratorStateContext = createNamedContext<IAppStateContext>(APP_CONTEXT_INITIAL_STATE, "AppConfiguratorStateContext");

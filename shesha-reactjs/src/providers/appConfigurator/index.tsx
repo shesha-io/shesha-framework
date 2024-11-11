@@ -16,6 +16,7 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
+  softToggleInfoBlockAction,
   switchApplicationModeAction,
   toggleCloseEditModeConfirmationAction,
   toggleEditModeConfirmationAction,
@@ -26,6 +27,7 @@ import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
+import { App } from 'antd';
 
 export interface IAppConfiguratorProviderProps { }
 
@@ -102,6 +104,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   });
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const { message, notification, modal } = App.useApp();
 
   //#region Configuration Framework renamed to Configuration Items
 
@@ -118,7 +121,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
-          createNewVersion({ id: actionArgs.itemId, ...cfArgs })
+          createNewVersion({ id: actionArgs.itemId, ...cfArgs, message, notification, modal })
             .then(() => {
               resolve(true);
             })
@@ -140,7 +143,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
-          setItemReady({ id: actionArgs.itemId, ...cfArgs })
+          setItemReady({ id: actionArgs.itemId, ...cfArgs, message, modal })
             .then(() => {
               resolve(true);
             })
@@ -184,7 +187,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
-          publishItem({ id: actionArgs.itemId, ...cfArgs })
+          publishItem({ id: actionArgs.itemId, ...cfArgs, message, modal })
             .then(() => {
               resolve(true);
             })
@@ -206,7 +209,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       hasArguments: true,
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
-          itemCancelVersion({ id: actionArgs.itemId, ...cfArgs })
+          itemCancelVersion({ id: actionArgs.itemId, ...cfArgs, message, modal })
             .then(() => {
               resolve(true);
             })
@@ -276,6 +279,10 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     dispatch(toggleCloseEditModeConfirmationAction(visible));
   };
 
+  const softToggleInfoBlock = (softInfoBlock: boolean) => {
+    dispatch(softToggleInfoBlockAction(softInfoBlock));
+  };
+
   return (
     <AppConfiguratorStateContext.Provider value={{
       ...state,
@@ -289,6 +296,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
           toggleCloseEditModeConfirmation,
           switchConfigurationItemMode,
           toggleShowInfoBlock,
+          softToggleInfoBlock,
         }}
       >
         {children}

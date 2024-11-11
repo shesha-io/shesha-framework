@@ -78,7 +78,17 @@ namespace Shesha.FluentMigrator
         /// <param name="masterTable">Master table</param>
         /// <param name="nullable">If true the column is nullable</param>
         /// <returns></returns>
-        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, bool nullable)
+        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, bool nullable) 
+        {
+            return table.AddForeignKeyColumn(foreignColumn, masterTable, DatabaseConsts.IdColumn, nullable);            
+        }
+
+        public static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, string primaryColumn)
+        {
+            return table.AddForeignKeyColumn(foreignColumn, masterTable, primaryColumn, true);
+        }
+
+        private static IAlterTableColumnOptionOrAddColumnOrAlterColumnSyntax AddForeignKeyColumn(this IAlterTableAddColumnOrAlterColumnSyntax table, string foreignColumn, string masterTable, string primaryColumn, bool nullable)
         {
             var expression = table.AddColumn(foreignColumn).AsGuid();
             
@@ -86,7 +96,7 @@ namespace Shesha.FluentMigrator
                 ? expression.Nullable() 
                 : expression.NotNullable();
 
-            expression = expression.ForeignKey(masterTable, DatabaseConsts.IdColumn).Indexed();
+            expression = expression.ForeignKey(masterTable, primaryColumn).Indexed();
 
             return expression;
         }

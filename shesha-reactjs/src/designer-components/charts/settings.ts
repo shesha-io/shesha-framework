@@ -55,6 +55,179 @@ export const settingsForm = new DesignerToolbarSettings()
     }
   })
   .addCollapsiblePanel({
+    id: chartSettingsId,
+    propertyName: 'chartSettings',
+    parentId: 'root',
+    label: 'Chart Settings',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id: nanoid(),
+      components:
+        [...new DesignerToolbarSettings()
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'chartType',
+            parentId: 'root',
+            hidden: false,
+            label: 'Chart Type',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Pie Chart', value: 'pie' },
+              { id: nanoid(), label: 'Line Chart', value: 'line' },
+              { id: nanoid(), label: 'Bar Chart', value: 'bar' },
+              { id: nanoid(), label: 'Polar Area Chart', value: 'polarArea' },
+            ],
+            validate: { required: true },
+            defaultValue: 'line',
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'simpleOrPivot',
+            parentId: 'root',
+            hidden: false,
+            label: 'Simple / Pivot',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Simple', value: 'simple' },
+              { id: nanoid(), label: 'Pivot', value: 'pivot' }
+            ],
+            validate: { required: true },
+            defaultValue: 'simple',
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'stacked',
+            label: 'Stacked',
+            parentId: 'root',
+            hidden: {
+              _code: "return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)",
+              _mode: "code",
+              _value: true
+            },
+            defaultValue: true,
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'title',
+            parentId: 'root',
+            hidden: {
+              _code: "return getSettingValue(data?.showTitle) !== true",
+              _mode: "code",
+              _value: false
+            },
+            label: 'Title',
+            description: 'The title of the chart (if any)',
+            labelAlign: 'right',
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showTitle',
+            label: 'Show Title',
+            description: 'Show the title of the chart',
+            parentId: 'root',
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showLegend',
+            label: 'Show Legend',
+            description: 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
+            parentId: 'root',
+            defaultValue: true,
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showXAxisScale',
+            label: 'Show X Axis',
+            parentId: 'root',
+            defaultValue: true,
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showXAxisTitle',
+            label: 'Show X Axis Title',
+            parentId: 'root',
+            defaultValue: true,
+            hidden: {
+              _code: "return getSettingValue(data?.showXAxisScale) !== true",
+              _mode: "code",
+              _value: true
+            },
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showYAxisScale',
+            label: 'Show Y Axis',
+            parentId: 'root',
+            defaultValue: true,
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showYAxisTitle',
+            label: 'Show Y Axis Title',
+            parentId: 'root',
+            defaultValue: true,
+            hidden: {
+              _code: "return getSettingValue(data?.showYAxisScale) !== true",
+              _mode: "code",
+              _value: true
+            }
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'legendPosition',
+            parentId: 'root',
+            hidden: {
+              _code: "return getSettingValue(data?.showLegend) !== true && getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: false
+            },
+            label: 'Legend Position',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Top', value: 'top' },
+              { id: nanoid(), label: 'Bottom', value: 'bottom' },
+              { id: nanoid(), label: 'Left', value: 'left' },
+              { id: nanoid(), label: 'Right', value: 'right' },
+            ],
+            validate: { required: true },
+            defaultValue: 'top',
+          })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'tension',
+            parentId: chartSettingsId,
+            label: 'Tension',
+            defaultValue: 0,
+            stepNumeric: 0.1,
+            hidden: {
+              _code: "return getSettingValue(data?.chartType) !== `line`",
+              _mode: "code",
+              _value: true
+            },
+          })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'borderWidth',
+            parentId: chartSettingsId,
+            label: 'Border width',
+            defaultValue: 0.0,
+            stepNumeric: 0.1,
+          })
+          .addColorPicker({
+            id: nanoid(),
+            propertyName: 'strokeColor',
+            parentId: 'root',
+            label: 'Border Stroke Color',
+            defaultValue: '#000000',
+          })
+          .toJson()
+        ]
+    }
+  })
+  .addCollapsiblePanel({
     id: dataSettingsForUrlId,
     propertyName: 'dataSettingsForUrl',
     parentId: 'root',
@@ -303,179 +476,6 @@ export const settingsForm = new DesignerToolbarSettings()
             settingsValidationErrors: [],
             modelType: '{{data.entityType}}',
             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-          })
-          .toJson()
-        ]
-    }
-  })
-  .addCollapsiblePanel({
-    id: chartSettingsId,
-    propertyName: 'chartSettings',
-    parentId: 'root',
-    label: 'Chart Settings',
-    labelAlign: "left",
-    expandIconPosition: "start",
-    ghost: true,
-    collapsible: 'header',
-    content: {
-      id: nanoid(),
-      components:
-        [...new DesignerToolbarSettings()
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'chartType',
-            parentId: 'root',
-            hidden: false,
-            label: 'Chart Type',
-            dataSourceType: 'values',
-            values: [
-              { id: nanoid(), label: 'Pie Chart', value: 'pie' },
-              { id: nanoid(), label: 'Line Chart', value: 'line' },
-              { id: nanoid(), label: 'Bar Chart', value: 'bar' },
-              { id: nanoid(), label: 'Polar Area Chart', value: 'polarArea' },
-            ],
-            validate: { required: true },
-            defaultValue: 'line',
-          })
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'simpleOrPivot',
-            parentId: 'root',
-            hidden: false,
-            label: 'Simple / Pivot',
-            dataSourceType: 'values',
-            values: [
-              { id: nanoid(), label: 'Simple', value: 'simple' },
-              { id: nanoid(), label: 'Pivot', value: 'pivot' }
-            ],
-            validate: { required: true },
-            defaultValue: 'simple',
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'stacked',
-            label: 'Stacked',
-            parentId: 'root',
-            hidden: {
-              _code: "return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)",
-              _mode: "code",
-              _value: true
-            },
-            defaultValue: true,
-          })
-          .addTextField({
-            id: nanoid(),
-            propertyName: 'title',
-            parentId: 'root',
-            hidden: {
-              _code: "return getSettingValue(data?.showTitle) !== true",
-              _mode: "code",
-              _value: false
-            },
-            label: 'Title',
-            description: 'The title of the chart (if any)',
-            labelAlign: 'right',
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'showTitle',
-            label: 'Show Title',
-            description: 'Show the title of the chart',
-            parentId: 'root',
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'showLegend',
-            label: 'Show Legend',
-            description: 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
-            parentId: 'root',
-            defaultValue: true,
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'showXAxisScale',
-            label: 'Show X Axis',
-            parentId: 'root',
-            defaultValue: true,
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'showXAxisTitle',
-            label: 'Show X Axis Title',
-            parentId: 'root',
-            defaultValue: true,
-            hidden: {
-              _code: "return getSettingValue(data?.showXAxisScale) !== true",
-              _mode: "code",
-              _value: true
-            },
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'showYAxisScale',
-            label: 'Show Y Axis',
-            parentId: 'root',
-            defaultValue: true,
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'showYAxisTitle',
-            label: 'Show Y Axis Title',
-            parentId: 'root',
-            defaultValue: true,
-            hidden: {
-              _code: "return getSettingValue(data?.showYAxisScale) !== true",
-              _mode: "code",
-              _value: true
-            }
-          })
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'legendPosition',
-            parentId: 'root',
-            hidden: {
-              _code: "return getSettingValue(data?.showLegend) !== true && getSettingValue(data?.dataMode) === `url`",
-              _mode: "code",
-              _value: false
-            },
-            label: 'Legend Position',
-            dataSourceType: 'values',
-            values: [
-              { id: nanoid(), label: 'Top', value: 'top' },
-              { id: nanoid(), label: 'Bottom', value: 'bottom' },
-              { id: nanoid(), label: 'Left', value: 'left' },
-              { id: nanoid(), label: 'Right', value: 'right' },
-            ],
-            validate: { required: true },
-            defaultValue: 'top',
-          })
-          .addNumberField({
-            id: nanoid(),
-            propertyName: 'tension',
-            parentId: chartSettingsId,
-            label: 'Tension',
-            defaultValue: 0,
-            stepNumeric: 0.1,
-            hidden: {
-              _code: "return getSettingValue(data?.chartType) !== `line`",
-              _mode: "code",
-              _value: true
-            },
-          })
-          .addNumberField({
-            id: nanoid(),
-            propertyName: 'borderWidth',
-            parentId: chartSettingsId,
-            label: 'Border width',
-            defaultValue: 0.0,
-            stepNumeric: 0.1,
-          })
-          .addColorPicker({
-            id: nanoid(),
-            propertyName: 'strokeColor',
-            parentId: 'root',
-            label: 'Border Stroke Color',
-            defaultValue: '#000000',
           })
           .toJson()
         ]

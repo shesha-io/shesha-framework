@@ -40,7 +40,7 @@ export const removeAccessToken = (tokenName: string) => {
     getLocalStorage()?.removeItem(tokenName);
     getLocalStorage()?.clear();
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

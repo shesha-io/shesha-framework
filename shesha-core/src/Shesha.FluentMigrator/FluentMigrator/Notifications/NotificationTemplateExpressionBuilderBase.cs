@@ -1,4 +1,5 @@
-﻿using FluentMigrator.Builders;
+﻿using FluentMigrator;
+using FluentMigrator.Builders;
 using FluentMigrator.Infrastructure;
 
 namespace Shesha.FluentMigrator.Notifications
@@ -6,9 +7,13 @@ namespace Shesha.FluentMigrator.Notifications
     public class NotificationTemplateExpressionBuilderBase<TExpr, TNext>: ExpressionBuilderBase<TExpr> where TExpr: NotificationExpressionBase where TNext: class
     {
         protected readonly IMigrationContext _context;
+        protected readonly DbmsType _dbmsType;
+        protected readonly IQuerySchema _querySchema;
 
-        public NotificationTemplateExpressionBuilderBase(TExpr expression, IMigrationContext context) : base(expression)
+        public NotificationTemplateExpressionBuilderBase(DbmsType dbmsType, IQuerySchema querySchema, TExpr expression, IMigrationContext context) : base(expression)
         {
+            _dbmsType = dbmsType;
+            _querySchema = querySchema;
             _context = context;
         }
 
@@ -26,7 +31,7 @@ namespace Shesha.FluentMigrator.Notifications
             template.SendType.Set(NotificationSendType.Email);
             template.BodyFormat.Set(NotificationTemplateType.Html);
 
-            _context.Expressions.Add(new AddNotificationTemplateExpression(Expression.Namespace, Expression.Name)
+            _context.Expressions.Add(new AddNotificationTemplateExpression(_dbmsType, _querySchema, Expression.Namespace, Expression.Name)
             {
                 Template = template
             });
@@ -46,7 +51,7 @@ namespace Shesha.FluentMigrator.Notifications
             template.SendType.Set(NotificationSendType.Push);
             template.BodyFormat.Set(NotificationTemplateType.PlainText);
 
-            _context.Expressions.Add(new AddNotificationTemplateExpression(Expression.Namespace, Expression.Name)
+            _context.Expressions.Add(new AddNotificationTemplateExpression(_dbmsType, _querySchema, Expression.Namespace, Expression.Name)
             {
                 Template = template
             });
@@ -65,7 +70,7 @@ namespace Shesha.FluentMigrator.Notifications
             template.SendType.Set(NotificationSendType.SMS);
             template.BodyFormat.Set(NotificationTemplateType.PlainText);
 
-            _context.Expressions.Add(new AddNotificationTemplateExpression(Expression.Namespace, Expression.Name)
+            _context.Expressions.Add(new AddNotificationTemplateExpression(_dbmsType, _querySchema, Expression.Namespace, Expression.Name)
             {
                 Template = template
             });

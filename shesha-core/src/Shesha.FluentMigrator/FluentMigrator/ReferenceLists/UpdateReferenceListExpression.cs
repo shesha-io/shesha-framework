@@ -9,7 +9,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class UpdateReferenceListExpression : SheshaMigrationExpressionBase
     {
-        public UpdateReferenceListExpression(IQuerySchema querySchema, string @namespace, string name) : base(querySchema)
+        public UpdateReferenceListExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema)
         {
             Namespace = @namespace;
             Name = name;
@@ -24,7 +24,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
                 {
-                    var helper = new ReferenceListDbHelper(connection, transaction, QuerySchema);
+                    var helper = new ReferenceListDbHelper(DbmsType, connection, transaction, QuerySchema);
                     var id = helper.GetReferenceListId(Namespace, Name);
                     if (id == null)
                         return;

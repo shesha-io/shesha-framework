@@ -1,7 +1,12 @@
 import { FormIdentifier, FormMarkup } from '../../form/models';
 import { ButtonGroupItemProps } from '@/index';
 import { ModalFooterButtons } from '../models';
-import dialogArgumentsJson from './show-dialog-arguments.json';
+import showDialogArgumentsJson from './show-dialog-arguments.json';
+import closeDialogArgumentsJson from './close-dialog-arguments.json';
+
+export interface ICloseModalActionArguments {
+  showDialogResult?: string;
+}
 
 export interface IShowModalActionArguments {
   modalTitle: string;
@@ -20,4 +25,5 @@ export interface IShowModalActionArguments {
   submitHttpVerb?: 'POST' | 'PUT';
 }
 
-export const dialogArgumentsForm = dialogArgumentsJson as FormMarkup;
+export const showDialogArgumentsForm = showDialogArgumentsJson as FormMarkup;
+export const closeDialogArgumentsForm = closeDialogArgumentsJson as FormMarkup;

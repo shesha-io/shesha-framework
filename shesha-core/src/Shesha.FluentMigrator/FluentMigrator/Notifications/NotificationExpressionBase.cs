@@ -1,13 +1,13 @@
-﻿using FluentMigrator.Expressions;
+﻿using FluentMigrator;
 
 namespace Shesha.FluentMigrator.Notifications
 {
-    public abstract class NotificationExpressionBase: MigrationExpressionBase
+    public abstract class NotificationExpressionBase: SheshaMigrationExpressionBase
     {
-        public string Name { get; set; }
-        public string Namespace { get; set; }
+        public string Name { get; private set; }
+        public string Namespace { get; private set; }
 
-        protected NotificationExpressionBase(string @namespace, string name)
+        protected NotificationExpressionBase(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema)
         {
             Namespace = @namespace;
             Name = name;

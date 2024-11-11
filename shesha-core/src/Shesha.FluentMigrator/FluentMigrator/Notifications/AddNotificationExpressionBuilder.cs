@@ -1,6 +1,5 @@
-﻿using FluentMigrator.Builders;
+﻿using FluentMigrator;
 using FluentMigrator.Infrastructure;
-using System;
 
 namespace Shesha.FluentMigrator.Notifications
 {
@@ -9,7 +8,7 @@ namespace Shesha.FluentMigrator.Notifications
     /// </summary>
     public class AddNotificationExpressionBuilder : NotificationTemplateExpressionBuilderBase<AddNotificationExpression, IAddNotificationSyntax>, IAddNotificationSyntax
     {
-        public AddNotificationExpressionBuilder(AddNotificationExpression expression, IMigrationContext context) : base(expression, context)
+        public AddNotificationExpressionBuilder(DbmsType dbmsType, IQuerySchema querySchema, AddNotificationExpression expression, IMigrationContext context) : base(dbmsType, querySchema, expression, context)
         {
         }
 

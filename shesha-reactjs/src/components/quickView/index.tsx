@@ -8,7 +8,7 @@ import React, {
 import ValidationErrors from '@/components/validationErrors';
 import {
   Button,
-  notification,
+  App,
   Popover,
   PopoverProps,
   Spin
@@ -23,6 +23,7 @@ import { get } from '@/utils/fetchers';
 import { getQuickViewInitialValues } from './utils';
 import { useStyles } from '../entityReference/styles/styles';
 import { getStyle } from '@/providers/form/utils';
+import ParentProvider from '@/providers/parentProvider';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -86,6 +87,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { styles } = useStyles();
+  const { notification } = App.useApp();
 
   const cssStyle = getStyle(style, formData);
 
@@ -118,12 +120,14 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     return formMarkup && formData ? (
       <FormItemProvider namePrefix={undefined}>
         <MetadataProvider id="dynamic" modelType={formMarkup?.formSettings.modelType}>
-          <ConfigurableForm
-            mode="readonly"
-            {...formItemLayout}
-            markup={formMarkup}
-            initialValues={getQuickViewInitialValues(formData, dataProperties)}
-          />
+          <ParentProvider formMode='readonly' model={{editMode: 'readOnly', readOnly: true} /* force readonly to show popup dialog always read only */}> 
+            <ConfigurableForm
+              mode="readonly"
+              {...formItemLayout}
+              markup={formMarkup}
+              initialValues={getQuickViewInitialValues(formData, dataProperties)}
+            />
+          </ParentProvider>
         </MetadataProvider>
       </FormItemProvider>
     ) : (

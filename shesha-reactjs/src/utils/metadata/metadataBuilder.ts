@@ -90,6 +90,10 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
         return this;
     }
 
+    addAny(path: string, label: string) {
+        return this.add(DataTypes.any, path, label);
+    }
+
     addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader) {
         const nestedObject = this._createProperty(DataTypes.object, path, label);
         nestedObject.typeDefinitionLoader = typeDefinitionLoader;

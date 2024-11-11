@@ -7,17 +7,17 @@ namespace Shesha.FluentMigrator.Notifications
     /// <summary>
     /// NotificationTemplate create expression
     /// </summary>
-    public class AddNotificationTemplateExpression : MigrationExpressionBase
+    public class AddNotificationTemplateExpression : SheshaMigrationExpressionBase
     {
-        public string Name { get; set; }
-        public string Namespace { get; set; }
+        public string Name { get; private set; }
+        public string Namespace { get; private set; }
         public NotificationTemplateDefinition Template { get; set; } = new NotificationTemplateDefinition();
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
                 {
-                    var helper = new NotificationDbHelper(connection, transaction);
+                    var helper = new NotificationDbHelper(DbmsType, connection, transaction);
                     
                     var notificationId = helper.GetNotificationId(Namespace, Name);
                     if (notificationId == null)
@@ -46,7 +46,7 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
-        public AddNotificationTemplateExpression(string @namespace, string name)
+        public AddNotificationTemplateExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name): base(dbmsType, querySchema)
         {
             Namespace = @namespace;
             Name = name;
