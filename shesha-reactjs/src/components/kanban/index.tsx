@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Flex, Form, message, Modal } from 'antd';
+import { Flex, Form, App, Modal } from 'antd';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
@@ -17,6 +17,7 @@ import { addPx } from '../keyInformationBar/utils';
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount } = props;
 
+  const { message } = App.useApp();
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);

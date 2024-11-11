@@ -1,4 +1,4 @@
-import { InputNumber, InputNumberProps, message } from 'antd';
+import { InputNumber, InputNumberProps, App } from 'antd';
 import moment from 'moment';
 import React, { FC } from 'react';
 import { customInputNumberEventHandler } from '@/components/formDesigner/components/utils';
@@ -19,6 +19,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   const form = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
+  const { message } = App.useApp();
 
   const eventProps = {
     model,

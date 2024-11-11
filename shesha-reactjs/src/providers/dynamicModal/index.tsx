@@ -1,4 +1,4 @@
-import { Modal } from 'antd';
+import { App } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
@@ -28,6 +28,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
   const actionDependencies = [state];
+  const { modal } = App.useApp();
 
   useConfigurableAction<IShowConfirmationArguments>(
     {
@@ -37,7 +38,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       hasArguments: true,
       executer: (actionArgs, _context) => {
         return new Promise((resolve, reject) => {
-          Modal.confirm({
+          modal.confirm({
             title: actionArgs.title,
             content: actionArgs.content,
             okText: actionArgs.okText ?? 'Yes',

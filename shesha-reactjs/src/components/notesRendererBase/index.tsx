@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
 import DateDisplay from '@/components/dateDisplay';
-import { Skeleton, Card, List, Empty, Input, notification, Button, Typography } from 'antd';
+import { Skeleton, Card, List, Empty, Input, App, Button, Typography } from 'antd';
 import { Comment } from '@/components/antd';
 import { CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { INote, ICreateNotePayload } from '@/providers/notes/contexts';
@@ -47,6 +47,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   const [newComments, setNewComments] = useState('');
   const textRef = useRef(null);
   const { styles } = useStyles();
+  const { notification } = App.useApp();
 
   useEffect(() => {
     if (!isPostingNotes && newComments) {

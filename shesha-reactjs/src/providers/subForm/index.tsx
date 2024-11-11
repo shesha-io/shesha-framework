@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState
   } from 'react';
-import { ColProps, message, notification } from 'antd';
+import { App, ColProps } from 'antd';
 import {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
@@ -87,6 +87,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   } = props;
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
+  const { message, notification } = App.useApp();
 
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();

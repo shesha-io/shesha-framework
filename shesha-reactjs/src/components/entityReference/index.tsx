@@ -8,8 +8,7 @@ import React, {
 import { axiosHttp, get } from '@/utils/fetchers';
 import {
   Button,
-  message,
-  notification,
+  App,
   Spin
   } from 'antd';
 import { entitiesGet } from '@/apis/entities';
@@ -87,6 +86,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
+  const { notification, message } = App.useApp();
 
   const localForm = useForm(false);
   const formData = localForm?.formData;

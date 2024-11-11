@@ -1,6 +1,6 @@
 import ChildEntitiesTagGroupModal from './modal';
 import React, { FC, useMemo, useState } from 'react';
-import { Button, Space, message, Modal, Select, Tag } from 'antd';
+import { Button, Space, App, Modal, Select, Tag } from 'antd';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
@@ -40,6 +40,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
 
   const allData = useAvailableConstantsData();
   const parent = useParent();
+  const { message } = App.useApp();
 
   const {
     formConfiguration,
