@@ -36,7 +36,7 @@ import {
   StoredFilesStateContext,
 } from './contexts';
 import { storedFilesReducer } from './reducer';
-import { message } from 'antd';
+import { App } from 'antd';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -76,6 +76,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
   });
 
+  const { message } = App.useApp();
   const { connection } = useSignalR(false) ?? {};
   const { httpHeaders: headers, backendUrl } = useSheshaApplication();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};

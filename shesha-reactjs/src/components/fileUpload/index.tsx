@@ -1,6 +1,6 @@
 import React, { FC, useRef } from 'react';
 import { useStoredFile } from '@/providers';
-import { Upload, message, Button } from 'antd';
+import { Upload, App, Button } from 'antd';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import {
   InfoCircleOutlined,
@@ -54,6 +54,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { styles } = useStyles();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
+  const { message } = App.useApp();
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context

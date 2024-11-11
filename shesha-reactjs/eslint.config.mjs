@@ -74,21 +74,21 @@ export default [{
             property: "freeze",
             object: "Object",
         }, {
-            property: "myFavoriteWrapper",
-        }, {
-            property: "forbidExtraProps",
-            exact: true,
-        }],
+                property: "myFavoriteWrapper",
+            }, {
+                property: "forbidExtraProps",
+                exact: true,
+            }],
 
         componentWrapperFunctions: ["observer", {
             property: "styled",
         }, {
-            property: "observer",
-            object: "Mobx",
-        }, {
-            property: "observer",
-            object: "<pragma>",
-        }],
+                property: "observer",
+                object: "Mobx",
+            }, {
+                property: "observer",
+                object: "<pragma>",
+            }],
 
         formComponents: ["CustomForm", {
             name: "Form",
@@ -114,13 +114,24 @@ export default [{
     rules: {
         ...hooksPlugin.configs.recommended.rules,
         "no-restricted-imports": ["error", {
-            paths: ["@/utils/publicUtils", {
-                name: "nanoid/non-secure",
-                message: "Please import nanoid from `@/utils/uuid` instead.",
-            }, {
-                name: "nanoid",
-                message: "Please import nanoid from `@/utils/uuid` instead.",
-            }],
+            paths: ["@/utils/publicUtils",
+                {
+                    name: "nanoid/non-secure",
+                    message: "Please import nanoid from `@/utils/uuid` instead.",
+                },
+                {
+                    name: "nanoid",
+                    message: "Please import nanoid from `@/utils/uuid` instead.",
+                },
+                {
+                    name: "antd",
+                    importNames: ["message"],
+                    message: "Please get `message` via the App instead, see example: const { message } = App.useApp();",
+                }, {
+                    name: "antd",
+                    importNames: ["notification"],
+                    message: "Please get `notification` via the App instead, see example: const { notification } = App.useApp();",
+                }],
         }],
 
         "sort-imports": ["off", {

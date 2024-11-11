@@ -6,7 +6,7 @@ import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arg
 import { Key } from 'rc-tree/lib/interface';
 import { LoadingOutlined } from '@ant-design/icons';
 import {
-  message,
+  App,
   Space,
   Spin,
   Tag,
@@ -81,6 +81,7 @@ const emptyId = '_';
 const withoutModule = '[no-module]';
 
 export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, onSelectAction, ...rest }) => {
+  const { message } = App.useApp();
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissions.toolbox.objects.search', '');
 

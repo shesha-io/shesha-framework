@@ -1,6 +1,6 @@
 import React, { FC, CSSProperties, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
-import { Input, notification } from 'antd';
+import { Input, App } from 'antd';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
@@ -68,6 +68,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);
+  const { notification } = App.useApp();
 
   if (typeof window === 'undefined' || !(typeof window.google === 'object' && typeof window.google.maps === 'object'))
     return null;

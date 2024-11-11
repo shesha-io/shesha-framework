@@ -1,4 +1,4 @@
-import { Tooltip, message } from 'antd';
+import { Tooltip, App } from 'antd';
 import moment from 'moment';
 import React from 'react';
 import { IconType, ShaIcon } from '@/components';
@@ -28,6 +28,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const { globalState } = useGlobalState();
   const { executeAction, prepareArguments } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
+  const { message } = App.useApp();
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
 

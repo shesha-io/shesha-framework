@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
-import { Input, message } from 'antd';
+import { Input, App } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
@@ -50,6 +50,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+    const { message } = App.useApp();
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);

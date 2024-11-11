@@ -1,7 +1,7 @@
 import EntityConfigTree, { IEntityConfigTreeInstance } from '@/components/entityConfigTree';
 import IndexToolbar from '@/components/indexToolbar';
 import React, { useMemo, useRef, useState } from 'react';
-import { Alert, Checkbox, Col, Form, message, Modal, Row } from 'antd';
+import { Alert, Checkbox, Col, Form, App, Modal, Row } from 'antd';
 import { Autocomplete, ModelConfigurator, Page } from '@/components';
 import { DeleteOutlined, MergeCellsOutlined, SaveOutlined } from '@ant-design/icons';
 import { EntityConfigDto } from '@/apis/entityConfig';
@@ -39,6 +39,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   const [isDeleteAfterMerge, setIsDeleteAfterMerge] = useLocalStorage('shaEntityConfigPage.isDeleteAfterMerge', false);
   const [autocompleteResult, setAutocompleteResult] = useState(null);
   const [mergeError, setMergeError] = useState(null);
+  const { message } = App.useApp();
 
   const onChange = (item: EntityConfigDto) => {
     setEntityConfigId(item.id);

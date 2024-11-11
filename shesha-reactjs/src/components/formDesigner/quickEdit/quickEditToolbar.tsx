@@ -1,6 +1,6 @@
 import { FormConfigurationDto } from '@/providers/form/api';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { message } from 'antd';
+import { App } from 'antd';
 import React, { FC } from 'react';
 import { CreateNewVersionButton } from '../toolbar/createNewVersionButton';
 import { DebugButton } from '../toolbar/debugButton';
@@ -19,6 +19,7 @@ export interface IQuickEditToolbarProps {
 
 export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewVersionCreated }) => {
     const { readOnly } = useFormDesignerState();
+    const { message } = App.useApp();
 
     // TODO: reload current dialog
     const onVersionCreated = (newVersion: FormConfigurationDto) => {
