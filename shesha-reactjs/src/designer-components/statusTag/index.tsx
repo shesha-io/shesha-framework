@@ -61,7 +61,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     const getParsedMappings = () => {
       try {
         return JSON.parse(model?.mappings);
-      } catch (error) {
+      } catch {
         return null;
       }
     };

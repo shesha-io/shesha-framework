@@ -23,7 +23,7 @@ export const getQueryString = (url: string) => {
     const idx = url?.indexOf('?');
 
     return typeof idx !== 'number' || idx === -1 ? undefined : url.substring(idx);
-  } catch (_e) {
+  } catch {
     return undefined;
   }
 };

@@ -160,7 +160,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             setGlobalState
           );
         }
-      } catch (_e) {
+      } catch {
         return undefined;
       }
     };

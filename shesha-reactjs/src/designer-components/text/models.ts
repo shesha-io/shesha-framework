@@ -2,9 +2,7 @@ import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 
-declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
-
-type LevelType = typeof TITLE_ELE_LIST[number];
+type LevelType = 1 | 2 | 3 | 4 | 5;
 
 export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom';
 export type ContentDisplay = 'content' | 'name';
