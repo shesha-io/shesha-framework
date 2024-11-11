@@ -5,10 +5,9 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Button, notification } from 'antd';
+import { Button, App } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import { ICommonModalProps } from '../../dynamicModal/models';
-import { IErrorInfo } from '@/interfaces/errorInfo';
 import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
@@ -23,16 +22,9 @@ interface IConfigurationItemsExportFooterProps {
   exporterRef: MutableRefObject<IExportInterface>;
 }
 
-const displayNotificationError = (message: string, error: IErrorInfo) => {
-  notification.error({
-    message: message,
-    icon: null,
-    description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
-  });
-};
-
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
+  const { notification } = App.useApp();
   const { hideModal, exporterRef } = props;
 
   const onExport = () => {
@@ -40,8 +32,12 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
     exporterRef.current.exportExecuter().then(() => {
       hideModal();
-    }).catch((e) => {
-      displayNotificationError('Failed to export package', e);
+    }).catch((error) => {
+      notification.error({
+        message: "Failed to export package",
+        icon: null,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+      });
       setInProgress(false);
     });
   };

@@ -8,13 +8,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         ${qb_compact_styles}
 
         background-image: white !important;
-        padding: ${sheshaStyles.paddingLG}px;
     
         .query-builder-container {
             padding: unset !important;
     
             .query-builder {
-                margin: ${sheshaStyles.paddingLG}px 0 ${sheshaStyles.paddingLG}px * 2 0 !important;
+                margin: ${sheshaStyles.paddingLG}px 0px ${sheshaStyles.paddingLG}px 0px !important;
             }
     
             .ant-btn-group {

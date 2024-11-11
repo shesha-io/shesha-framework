@@ -3,7 +3,7 @@ import { IConfigurableActionConfiguration } from "@/interfaces/configurableActio
 export interface IWorkflowInstanceStartActionsProps { }
 
 export interface IDataSourceArguments {
-    dataSourceUrl?: any
+    dataSourceUrl?: any;
     queryParams?: any;
     actionConfiguration?: IConfigurableActionConfiguration;
     filter?: string;
