@@ -532,7 +532,7 @@
                             "id": "dimensionsStyleRow-width",
                             "parentId": "dimensionsStyleRowWidth",
                             "label": "Width",
-                            "width": 70,
+                            "width": 85,
                             "propertyName": "inputStyles.dimensions.width",
                             "icon": "width"
                           },
@@ -540,7 +540,7 @@
                             "id": "dimensionsStyleRow-minWidth",
                             "parentId": "dimensionsStyleRowWidth",
                             "label": "Min Width",
-                            "width": 70,
+                            "width": 85,
                             "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.minWidth",
                             "icon": "minWidth"
@@ -549,7 +549,7 @@
                             "id": "dimensionsStyleRow-maxWidth",
                             "parentId": "dimensionsStyleRowWidth",
                             "label": "Max Width",
-                            "width": 70,
+                            "width": 85,
                             "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.maxWidth",
                             "icon": "maxWidth"
@@ -566,7 +566,7 @@
                             "id": "dimensionsStyleRow-height",
                             "parentId": "dimensionsStyleRowHeight",
                             "label": "Height",
-                            "width": 70,
+                            "width": 85,
                             "propertyName": "inputStyles.dimensions.height",
                             "icon": "height"
                           },
@@ -574,7 +574,7 @@
                             "id": "dimensionsStyleRow-minHeight",
                             "parentId": "dimensionsStyleRowHeight",
                             "label": "Min Height",
-                            "width": 70,
+                            "width": 85,
                             "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.minHeight",
                             "icon": "minHeight"
@@ -583,7 +583,7 @@
                             "id": "dimensionsStyleRow-maxHeight",
                             "parentId": "dimensionsStyleRowHeight",
                             "label": "Max Height",
-                            "width": 70,
+                            "width": 85,
                             "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.maxHeight",
                             "icon": "maxHeight"
@@ -670,13 +670,13 @@
                             "parentId": "borderStyleRow",
                             "label": "Width",
                             "hideLabel": true,
-                            "propertyName": "inputStyles.border.width"
+                            "propertyName": "inputStyles.border.border.all.width"
                           },
                           {
                             "id": "borderStyleRow-style",
                             "parentId": "borderStyleRow",
                             "label": "Style",
-                            "propertyName": "inputStyles.border.style",
+                            "propertyName": "inputStyles.border.border.all.style",
                             "inputType": "dropdown",
                             "hideLabel": true,
                             "width": 60,
@@ -703,7 +703,7 @@
                             "id": "borderStyleRow-color",
                             "parentId": "borderStyleRow",
                             "label": "Color",
-                            "propertyName": "inputStyles.border.color",
+                            "propertyName": "inputStyles.border.border.all.color",
                             "inputType": "color",
                             "hideLabel": true
                           }
@@ -752,9 +752,10 @@
                           {
                             "id": "borderRadiusStyleRow-radiusValue",
                             "parentId": "borderRadiusStyleRow",
+                            "inputType": "number",
                             "label": "Radius",
                             "hideLabel": true,
-                            "propertyName": "inputStyles.border.radius"
+                            "propertyName": "inputStyles.border.radius.all"
                           }
                         ]
                       }
@@ -827,7 +828,7 @@
                         "inputType": "color",
                         "hideLabel": true,
                         "jsSetting": false,
-                        "hidden": "    return data?.inputStyles?.background?.type === 'color'"
+                        "hidden": "    return data?.inputStyles?.background?.type !== 'color'"
                       },
                       {
                         "id": "backgroundStyle-gradient",

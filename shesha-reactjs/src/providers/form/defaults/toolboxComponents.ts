@@ -46,8 +46,6 @@ import Space from '@/designer-components/space';
 import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
-import BorderConfigurator from '@/designer-components/styleBorder';
-import DimensionsStyle from '@/designer-components/styleDimensions';
 import SubForm from '@/designer-components/subForm';
 import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
@@ -103,15 +101,12 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
-import FontConfigurator from '@/designer-components/styleFont';
-import BackgroundConfigurator from '@/designer-components/styleBackground';
-import ShadowConfigurator from '@/designer-components/styleShadow';
 import LabelConfigurator from '@/designer-components/styleLabel';
-import SearchableTabs from '@/designer-components/_settings/components/tabs';
+import SearchableTabs from '@/designer-components/propertiesTabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
-import SettingsInput from '@/designer-components/_settings/components/settingsInput';
-import SettingsInputRow from '@/designer-components/_settings/components/settingsInputRow';
+import SettingsInput from '@/designer-components/settingsInput';
+import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
 
@@ -251,11 +246,6 @@ export const getToolboxComponents = (
         Buttons,
         Section,
         StyleBox,
-        FontConfigurator,
-        BorderConfigurator,
-        BackgroundConfigurator,
-        DimensionsStyle,
-        ShadowConfigurator,
         LabelConfigurator,
         SearchableTabs,
         SettingsInput,

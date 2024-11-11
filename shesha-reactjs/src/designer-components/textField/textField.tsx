@@ -7,7 +7,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { FormMarkup, IStyleType, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { FormMarkup, useForm, useGlobalState, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
@@ -18,15 +18,14 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
-import { getSizeStyle } from '../styleDimensions/utils';
-import { getBorderStyle } from '../styleBorder/utils';
-import { getBackgroundStyle } from '../styleBackground/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import settingsFormJson from './settingsForm.json';
-import { getShadowStyle } from '../styleShadow/utils';
-import { getFontStyle } from '../styleFont/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
 import { migrateStyles } from '../_common-migrations/migrateStyles';
-import { getSettings } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -97,7 +96,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     if (model?.inputStyles?.background?.type === 'storedFile' && model?.inputStyles?.background.storedFile?.id && !isValidGuid(model?.inputStyles?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-    
+
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
@@ -189,12 +188,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         align: 'left',
       },
       dimensions: {
-        width: { value: 100, unit: '%' },
-        height: { value: 32, unit: 'px' },
+        width: '100%',
+        height: '32px',
       },
       border: {
         hideBorder: false,
-        border: { all: { size: 1, style: 'solid', color: '#d9d9d9' } },
+        border: { all: { size: '1', style: 'solid', color: '#d9d9d9' } },
         radius: { all: 8 },
         selectedSide: 'all', selectedCorner: 'all'
       }

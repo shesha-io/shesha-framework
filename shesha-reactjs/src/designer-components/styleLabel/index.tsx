@@ -3,9 +3,9 @@ import { IToolboxComponent } from '@/interfaces';
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { getSettings } from './settings';
 import LabelConfiguratorComponent from './labelConfigurator';
 import { ILabelComponentProps } from './interfaces';
+import { getSettings } from './settings';
 
 const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
     type: 'labelConfigurator',

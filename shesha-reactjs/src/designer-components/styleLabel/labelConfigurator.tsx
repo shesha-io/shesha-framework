@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
-import { SettingInput } from '../_settings/components/settingsInput/settingsInput';
+import { SettingInput } from '../settingsInput/settingsInput';
 
 
 export interface ILabelProps {

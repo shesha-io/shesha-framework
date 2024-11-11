@@ -29,20 +29,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         top: 0px;
     `);
 
-
-    const inlineInputs = cx(css`
-        align-items: end !important;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0px 8px;
-    `);
-
-    const rowInputs = cx(css`
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0px 8px;
-        `);
-
     const contentCode = cx(css`
         position: relative;
         top: 0px;
@@ -75,25 +61,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         }
     `);
 
-    const unitSelector = cx(css`
-        .ant-select-selector {
-        padding: 0 !important;
-        padding-inline-end: 5px !important;
-        align-self: auto !important;
-        line-height: auto !important;
-        align-self: top !important;
-        padding-left: 0 !important;
-    }
-    `);
 
     return {
         jsSwitch,
         contentJs,
         contentCode,
         jsContent,
-        unitSelector,
-        inlineInputs,
-        rowInputs,
         label
     };
 });

@@ -1,4 +1,4 @@
-import { splitValueAndUnit } from "../_settings/utils";
+import { addPx } from "../_settings/utils";
 import { IInputStyles, ITextFieldComponentProps } from "../textField/interfaces";
 import { IStyleType } from "@/interfaces";
 
@@ -20,7 +20,7 @@ export const migrateStyles = (prev: ITextFieldComponentProps) => {
     const migrateStyles = (styles: IInputStyles): IStyleType => ({
         border: {
             hideBorder: styles.hideBorder,
-            border: { all: { width: styles.borderSize } },
+            border: { all: { width: styles.borderSize + "" } },
             radius: { all: styles.borderRadius },
         },
         background: {
@@ -33,8 +33,8 @@ export const migrateStyles = (prev: ITextFieldComponentProps) => {
             weight: styles.fontWeight as number || 400,
         },
         dimensions: {
-            height: typeof styles.height === 'string' ? splitValueAndUnit(styles.height) : { value: styles.height, unit: 'px' },
-            width: typeof styles.width === 'string' ? splitValueAndUnit(styles.width) : { value: styles.width, unit: 'px' },
+            height: addPx(styles.height),
+            width: addPx(styles.width),
         },
     });
 
