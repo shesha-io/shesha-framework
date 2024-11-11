@@ -59,5 +59,5 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly }) => {
             </FormItem>
         </>
     );
-}
+};
 
