@@ -36,7 +36,7 @@ export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
         handleBorderPart(left, 'borderLeft');
     }
 
-    input.hideBorder && (style.border = 'none');
+    if (input.hideBorder) style.border = 'none';
 
 
     // Handle border radius

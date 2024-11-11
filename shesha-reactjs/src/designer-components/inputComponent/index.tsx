@@ -83,7 +83,7 @@ interface IInputComponentProps extends IInputProps {
 
 const { Option } = Select;
 
-const UnitSelector: FC<{ value: any; onChange, readOnly, variant?}> = ({ value, onChange, readOnly, variant }) => {
+const UnitSelector: FC<{ value: any; onChange; readOnly; variant?}> = ({ value, onChange, readOnly, variant }) => {
     const { styles } = useStyles();
 
     return (
@@ -201,7 +201,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 addonAfter={hasUnits ? <UnitSelector onChange={onChange} value={value} readOnly={readOnly} />
                     : null} /> :
                 <InputNumber
-                    variant={variant} readOnly={readOnly} size={size} value={value} controls={false} />
+                    variant={variant} readOnly={readOnly} size={size} value={value} controls={false} />;
 
         case 'customDropdown':
             return <CustomDropdown
@@ -219,7 +219,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon) : iconElement(iconAlt)} onClick={() => onChange(!value)} />
+            return <Button type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon) : iconElement(iconAlt)} onClick={() => onChange(!value)} />;
 
         case 'editModeSelector':
 
@@ -236,7 +236,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 readOnly={readOnly}
                 value={value}
                 size={size}
-            />
+            />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
@@ -289,17 +289,16 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
                     {...(type === 'radio' && {
                         buttonGroupOptions: props.buttonGroupOptions.map(({ value, title, icon }) => {
                             if (!icons[`${icon}`]) {
-                                return ({ value, title, icon: null })
+                                return ({ value, title, icon: null });
                             }
-
                             const IconComponent = icons[`${icon}`];
-                            return ({ value, title, icon: <IconComponent /> })
+                            return ({ value, title, icon: <IconComponent /> });
                         })
                     })}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) + (hasUnits ? 10 : 0) : inline ? props.width || width : null} />
-            )
+            );
         })}
         {children}
     </div>;
