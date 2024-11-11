@@ -20,7 +20,7 @@ const SearchableTabs: IToolboxComponent<ITabsComponentProps> = {
 
     return model.hidden ? null : (
       <ConfigurableFormItem model={model} className='sha-js-label'>
-        {(value, onChange) => <SearchableTabsComponent model={model} onChange={onChange} />}
+        {( onChange) => <SearchableTabsComponent model={model} onChange={onChange} data={data} />}
       </ConfigurableFormItem>
     );
   },

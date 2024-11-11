@@ -20,7 +20,7 @@ export interface ISectionSeparatorProps {
   lineWidth?: string;
   lineHeight?: string;
   titleMargin?: number;
-  marginBottom?: number;
+  marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
   fontWeight?: string;

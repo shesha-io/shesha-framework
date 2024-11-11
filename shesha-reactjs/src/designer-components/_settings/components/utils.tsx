@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { Button, Input, InputNumber, Radio, Row, Select, Switch, Tooltip } from "antd";
+import { Button, Input, InputNumber, Radio, Select, Switch, Tooltip } from "antd";
 import { CodeEditor, ColorPicker, IconType, SectionSeparator, ShaIcon } from '@/components';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
@@ -16,7 +16,6 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { defaultExposedVariables } from '../settingsControl';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
-import { CopyOutlined, EditOutlined, StopOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
 import { getValueFromString } from './settingsInput/utils';
 import { Autocomplete } from '@/components/autocomplete';
@@ -119,8 +118,8 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     const iconElement = (icon, size?) => {
         if (typeof icon === 'string') {
             return <Tooltip title={label}> {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <>{size}</> <SectionSeparator lineThickness={Number(size[0]) / 2} lineWidth='24' lineColor='#000' fontSize={0} marginBottom={0} />
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle' }}>
+                    {size}<SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='24' lineColor='#000' fontSize={14} marginBottom={'0px'} />
                 </div>
                 : icon}
             </Tooltip>;
@@ -154,9 +153,9 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     };
 
     const editModes = [
-        { value: 'editable', icon: <EditOutlined />, title: 'Editable' },
-        { value: 'readOnly', icon: <StopOutlined />, title: 'Read only' },
-        { value: 'inherit', icon: <CopyOutlined />, title: 'Inherit' }
+        { value: 'editable', icon: 'EditOutlined', title: 'Editable' },
+        { value: 'readOnly', icon: 'EyeVisibleOutlined', title: 'Read only' },
+        { value: 'inherit', icon: 'ApartmentOutlined', title: 'Inherit' }
     ];
 
     const editor = availableConstantsExpression?.trim()
@@ -305,47 +304,142 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
     </div>;
 };
 
-export const filterDynamicComponents = (components, query) => {
+/**
+ * Evaluates a string expression in the context of the provided data object.
+ * @param expression The string expression to evaluate.
+ * @param data The data object to use as context for the evaluation.
+ * @returns The result of the evaluated expression.
+ */
+const evaluateString = (expression: string, data: any): any => {
+    try {
+        // Create a new function with 'data' as a parameter and the expression as the function body
+        const func = new Function('data', expression);
+        // Execute the function with the provided data
+        return func(data);
+    } catch (error) {
+        console.error('Error evaluating expression:', expression, error);
+        return null;
+    }
+};
+
+export const filterDynamicComponents = (components, query, data) => {
+    if (!components || !Array.isArray(components)) return [];
+
     const lowerCaseQuery = query.toLowerCase();
 
-    const filterResult = components.map(c => {
-        if (c.type === 'propertyRouter' || c.type === 'collapsiblePanel') {
-            const filteredComponents = filterDynamicComponents(c?.content?.components || c.components, query);
-            const shouldHide = filteredComponents.length === 0;
+    // Helper function to evaluate hidden property
+    const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
+        if (typeof hidden === 'string') {
+            console.log("evaluate hidden property Hidden::  ", hidden, " :: ", evaluateString(hidden, data));
+            return evaluateString(hidden, data);
+        }
+        return hidden || (!directMatch && !hasVisibleChildren);
+    };
+
+    // Helper function to check if text matches query
+    const matchesQuery = (text) => text?.toLowerCase().includes(lowerCaseQuery);
+
+    const filterResult = components.map(component => {
+        // Deep clone the component to avoid mutations
+        const c = { ...component };
+
+        // Check if component matches query directly
+        const directMatch = (
+            matchesQuery(c.label) ||
+            matchesQuery(c.propertyName) ||
+            (c.propertyName && matchesQuery(c.propertyName.split('.').join(' ')))
+        );
+
+        // Handle propertyRouter
+        if (c.type === 'propertyRouter') {
+            const filteredComponents = filterDynamicComponents(c.components, query, data);
+            const hasVisibleChildren = filteredComponents.length > 0;
             return {
                 ...c,
-                ...(c.content ? { content: { ...c.content, components: filteredComponents } } : { components: filteredComponents }),
-                hidden: shouldHide
+                components: filteredComponents,
+                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }
 
+        // Handle collapsiblePanel
+        if (c.type === 'collapsiblePanel') {
+            const contentComponents = filterDynamicComponents(c.content?.components || [], query, data);
+            const hasVisibleChildren = contentComponents.length > 0;
+
+            return {
+                ...c,
+                content: {
+                    ...c.content,
+                    components: contentComponents
+                },
+                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
+            };
+        }
+
+        // Handle settingsInputRow
         if (c.type === 'settingsInputRow') {
-            const filteredInputs = filterDynamicComponents(c.inputs, query);
-            const shouldHide = filteredInputs.length === 0;
-            return { ...c, inputs: filteredInputs, hidden: shouldHide };
+            const filteredInputs = c.inputs?.filter(input =>
+                matchesQuery(input.label) ||
+                matchesQuery(input.propertyName) ||
+                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
+            ) || [];
+
+            return {
+                ...c,
+                inputs: filteredInputs,
+                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
+            };
         }
 
-        if (!c.label && !c.components) return c;
-
-        let filteredComponent = { ...c };
-
+        // Handle components with nested components
         if (c.components) {
-            filteredComponent.components = filterDynamicComponents(c.components, query);
+            const filteredComponents = filterDynamicComponents(c.components, query, data);
+            const hasVisibleChildren = filteredComponents.length > 0;
+
+            return {
+                ...c,
+                components: filteredComponents,
+                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
+            };
         }
 
-        const shouldHideComponent = (
-            (c.propertyName && !c.propertyName.split('.').join(' ').toLowerCase().includes(lowerCaseQuery)) &&
-            (!filteredComponent.components || filteredComponent.components.length === 0)
-        );
+        // Handle inputs array if present
+        if (c.inputs) {
+            const filteredInputs = c.inputs?.filter(input =>
+                matchesQuery(input.label) ||
+                matchesQuery(input.propertyName) ||
+                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
+            ) || [];
 
-        filteredComponent.hidden = shouldHideComponent;
-        filteredComponent.className = [c.className, shouldHideComponent ? 'hidden' : ''].filter(Boolean).join(' ');
+            return {
+                ...c,
+                inputs: filteredInputs,
+                hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
+            };
+        }
 
-        return filteredComponent;
+        // Handle basic component
+        return {
+            ...c,
+            hidden: evaluateHidden(c.hidden, directMatch, false)
+        };
     });
 
-    return filterResult.filter(c =>
-        c !== null &&
-        (!c.hidden || (c.components && c.components.length > 0))
-    );
+    // Filter out null components and handle visibility
+    return filterResult.filter(c => {
+        if (!c) return false;
+
+        // Evaluate final hidden state
+        const hasVisibleChildren = (
+            (c.components && c.components.length > 0) ||
+            (c.content?.components && c.content.components.length > 0) ||
+            (c.inputs && c.inputs.length > 0)
+        );
+
+        const isHidden = typeof c.hidden === 'string'
+            ? evaluateString(c.hidden, data)
+            : c.hidden;
+
+        return !isHidden || hasVisibleChildren;
+    });
 };

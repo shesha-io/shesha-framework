@@ -9,22 +9,23 @@ import { SearchOutlined } from '@ant-design/icons';
 
 interface SearchableTabsProps {
     model: any;
-    value?: any;
+    data?: any;
     onChange?: (value: any) => void;
 }
 
-const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
+const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }) => {
 
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredTabs, setFilteredTabs] = useState(tabs);
     const { styles } = useStyles();
 
+    console.log('tabs value', data);
     useEffect(() => {
         const newFilteredTabs = tabs
             .map((tab: any) => {
-                const filteredComponents = filterDynamicComponents(tab.components, searchQuery);
-
+                const filteredComponents = filterDynamicComponents(tab.components, searchQuery, data);
+                if (tab.label === 'Appearance') console.log('filteredComponents', filteredComponents);
                 const hasVisibleComponents = Array.isArray(filteredComponents)
                     ? filteredComponents.some(comp => !comp.hidden)
                     : !!filteredComponents;

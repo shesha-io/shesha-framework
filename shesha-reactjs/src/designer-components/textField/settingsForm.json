@@ -543,7 +543,7 @@
                             "width": 70,
                             "hideLabel": true,
                             "propertyName": "inputStyles.dimensions.minWidth",
-                            "icon": "ColumnWidthOutlined"
+                            "icon": "minWidth"
                           },
                           {
                             "id": "dimensionsStyleRow-maxWidth",
@@ -827,7 +827,7 @@
                         "inputType": "color",
                         "hideLabel": true,
                         "jsSetting": false,
-                        "hidden": "    return data?.inputStyles?.background?.type !== 'color' ? true : false"
+                        "hidden": "    return data?.inputStyles?.background?.type === 'color'"
                       },
                       {
                         "id": "backgroundStyle-gradient",
@@ -882,7 +882,7 @@
                         "propertyName": "inputStyles.background.gradient.colors",
                         "label": "Colors",
                         "jsSetting": false,
-                        "hidden": false,
+                        "hidden": "    return data?.inputStyles?.background?.type !== 'gradient' ? true : false",
                         "hideLabel": true
                       },
                       {
@@ -1028,7 +1028,7 @@
                               {
                                 "value": "repeat",
                                 "title": "Repeat",
-                                "label": "repeat"
+                                "label": "RetweetOutlined"
                               },
                               {
                                 "value": "repeat-x",
@@ -1112,7 +1112,7 @@
                             "parentId": "shadowStyleRow",
                             "label": "Spread",
                             "hideLabel": true,
-                            "icon": "FullscreenOutlined",
+                            "icon": "RadarChartOutlined",
                             "width": 60,
                             "propertyName": "inputStyles.shadow.spread"
                           },
