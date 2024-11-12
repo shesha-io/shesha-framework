@@ -1,14 +1,25 @@
 {
   "components": [
     {
-      "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
-      "type": "autocomplete",
+      "id": "3B19B03F-8568-4125-9CB0-CDEA52BE207D",
+      "type": "endpointsAutocomplete",
       "propertyName": "dataSourceUrl",
-      "dataSourceType": "url",
-      "dataSourceUrl": "/api/services/app/Api/Endpoints",
-      "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-      "label": "Data Source Url",
-      "settingsValidationErrors": []
+      "parentId": "root",
+      "label": "Custom Endpoint",
+      "hidden": false,  
+      "validate": {
+        "minLength": "",
+        "maxLength": "",
+        "message": ""
+      },
+      "placeholder": "",
+      "description": "",
+      "prefix": "",
+      "suffix": "",
+      "initialValue": "",
+      "quickviewWidth": "",
+      "settingsValidationErrors": [],
+      "version": 1
     },
     {
       "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
