@@ -20,7 +20,24 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { designerWidth, zoom } = useCanvas();
     const { styles } = useStyles();
 
-    return (
+    if (formMode !== 'designer') {
+        return (
+            <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
+                <ConditionalWrap
+                    condition={Boolean(formSettings?.modelType)}
+                    wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
+                >
+                    <ParentProvider model={{}} formMode='designer'>
+                        <ConfigurableFormRenderer form={form} className={undefined}  >
+                            {isDebug && (
+                                <DebugPanel formData={form.getFieldValue([])} />
+                            )}
+                        </ConfigurableFormRenderer>
+                    </ParentProvider>
+                </ConditionalWrap>
+            </div>
+        );
+    } else return (
         <div className={styles.mainArea}>
             <SidebarContainer
                 leftSidebarProps={
