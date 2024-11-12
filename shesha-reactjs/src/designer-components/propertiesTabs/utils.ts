@@ -5,7 +5,6 @@ export const filterDynamicComponents = (components, query, data) => {
 
     const lowerCaseQuery = query.toLowerCase();
 
-    // Helper function to evaluate hidden property
     const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
         if (typeof hidden === 'string') {
             return evaluateString(hidden, data);
@@ -13,14 +12,11 @@ export const filterDynamicComponents = (components, query, data) => {
         return hidden || (!directMatch && !hasVisibleChildren);
     };
 
-    // Helper function to check if text matches query
     const matchesQuery = (text) => text?.toLowerCase().includes(lowerCaseQuery);
 
     const filterResult = components.map(component => {
-        // Deep clone the component to avoid mutations
         const c = { ...component };
 
-        // Check if component matches query directly
         const directMatch = (
             matchesQuery(c.label) ||
             matchesQuery(c.propertyName) ||
@@ -95,18 +91,15 @@ export const filterDynamicComponents = (components, query, data) => {
             };
         }
 
-        // Handle basic component
         return {
             ...c,
             hidden: evaluateHidden(c.hidden, directMatch, false)
         };
     });
 
-    // Filter out null components and handle visibility
     return filterResult.filter(c => {
         if (!c) return false;
 
-        // Evaluate final hidden state
         const hasVisibleChildren = (
             (c.components && c.components.length > 0) ||
             (c.content?.components && c.content.components.length > 0) ||

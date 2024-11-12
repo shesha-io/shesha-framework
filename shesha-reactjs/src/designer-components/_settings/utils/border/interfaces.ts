@@ -11,7 +11,6 @@ export interface IBorderValue {
     border?: {
         all?: {
             width?: string;
-            unit?: string;
             color?: string;
             style?: string;
         };
@@ -22,19 +21,19 @@ export interface IBorderValue {
             style?: string;
         };
         right?: {
-            width?: number | string;
+            width?: string;
             unit?: string;
             color?: string;
             style?: string;
         };
         bottom?: {
-            width?: number | string;
+            width?: string;
             unit?: string;
             color?: string;
             style?: string;
         };
         left?: {
-            width?: number | string;
+            width?: string;
             unit?: string;
             color?: string;
             style?: string;

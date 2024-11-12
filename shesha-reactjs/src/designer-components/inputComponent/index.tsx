@@ -50,7 +50,7 @@ export interface IInputProps extends IComponentLabelProps {
     variant?: 'borderless' | 'filled' | 'outlined';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
-    readOnly: boolean;
+    readOnly?: boolean;
     onChange?: (value: any) => void;
     hasUnits?: boolean;
     hidden?: boolean;
@@ -115,6 +115,8 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt } = props;
+
+    console.log("VALUe:: ", value);
 
     const iconElement = (icon, size?, tooltip?) => {
         if (typeof icon === 'string') {
@@ -266,7 +268,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
 
 
 export interface IInputRowProps {
-    inputs: Array<Omit<IInputProps, 'readOnly'>>;
+    inputs: Array<IInputProps>;
     readOnly: boolean;
     inline?: boolean;
     children?: React.ReactNode;

@@ -11,8 +11,8 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
     name: 'SettingsInput',
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
-        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly } = model;
-        return model.hidden ? null : (
+        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly, hidden } = model;
+        return hidden ? null : (
             <SettingInput size='small'
                 label={label}
                 inputType={inputType}

@@ -20,7 +20,8 @@ export interface IInputStyles {
   hideBorder?: boolean;
   styles?: IStyleType;
   style?: string;
-}
+};
+
 export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
   prefix?: string;
@@ -40,7 +41,6 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   fontColor?: string;
   backgroundColor?: string;
   stylingBox?: string;
-  customCSS?: IConfigurableFormComponent['style'];
   desktop?: IInputStyles | IStyleType;
   mobile?: IInputStyles | IStyleType;
   tablet?: IInputStyles | IStyleType;

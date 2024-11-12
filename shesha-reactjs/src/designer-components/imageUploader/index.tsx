@@ -16,7 +16,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>(value ? [{ ...value }] : []);
 
-    const uploadBtnRef = useRef(null);
+    const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
     useEffect(() => {
         if (value?.uid) {
@@ -38,7 +38,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
 
         if (file?.originFileObj) {
             const base64Image = await toBase64(file.originFileObj as File);
-            onChange({ ...file, url: base64Image });
+            onChange({ ...file, url: base64Image, fileName: "" });
         }
     };
 
@@ -48,37 +48,39 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     };
 
     const handleReplace = (file: UploadFile) => {
-        setFileList([file]);
-        onChange(file);
+        setFileList([]);
+        if (uploadBtnRef.current) {
+            uploadBtnRef.current.click();
+        }
+        setFileList([file])
     };
 
     const fileControls = (file: UploadFile) => {
-        return (
-            <a onClick={() => handleReplace(file)} style={{ position: 'relative', top: 52 }}>
+        return file ? (
+            <a onClick={() => handleReplace(file)} style={{ position: 'relative', top: -44, left: 100 }}>
                 <SyncOutlined title="Replace" />
             </a>
-        );
+        ) : null;
     };
 
     const uploadButton = (
-        <button ref={uploadBtnRef} style={{ border: 0, background: 'none' }} type="button">
+        <button ref={uploadBtnRef} style={{ display: fileList.length === 0 ? 'block' : 'none' }} type="button">
             <UploadOutlined title='upload' />
         </button>
     );
 
     return (
-        <div>
+        <div style={{ maxWidth: 150 }}>
             <Upload
                 listType="picture"
-                fileList={fileList}
+                fileList={fileList.map(file => ({ ...file, name: '' }))}
                 onPreview={handlePreview}
                 onRemove={handleRemove}
                 onChange={handleChange}
                 beforeUpload={() => false}
                 disabled={readOnly}
             >
-                {!fileList[0]?.uid && uploadButton}
-
+                {uploadButton}
             </Upload>
             <Image
                 style={{ display: 'none' }}

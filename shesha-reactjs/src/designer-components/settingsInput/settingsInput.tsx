@@ -11,7 +11,8 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
     buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
     size, inline, ...rest }) => {
 
-    return (hidden ? null :
+    console.log("Setting:::", label, hidden)
+    return hidden ? null :
         <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
             <FormItem
                 name={property}
@@ -33,6 +34,6 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
                 }
             </FormItem>
         </div>
-    );
+        ;
 
 };

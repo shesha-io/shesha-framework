@@ -113,7 +113,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
-  settingsFormMarkup?: FormMarkup;
+  settingsFormMarkup?: (model: TModel) => FormMarkup | FormMarkup;
   /**
    * Settings validator
    */

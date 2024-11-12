@@ -23,7 +23,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
     useEffect(() => {
         const newFilteredTabs = tabs
             .map((tab: any) => {
-                const filteredComponents = filterDynamicComponents(tab.components, searchQuery, data);
+                const filteredComponents = tab.children ? tab.children : filterDynamicComponents(tab.components, searchQuery, data);
                 const hasVisibleComponents = Array.isArray(filteredComponents)
                     ? filteredComponents.some(comp => !comp.hidden)
                     : !!filteredComponents;

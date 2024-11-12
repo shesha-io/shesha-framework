@@ -26,6 +26,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
 import { migrateStyles } from '../_common-migrations/migrateStyles';
+import { getSettings } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -55,6 +56,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const form = useForm();
 
     const data = model;
+
+    console.log("TextField:: ", model);
 
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
@@ -110,7 +113,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
-    const jsStyle = getStyle(model.style, data);
+    const jsStyle = getStyle(model.inputStyles?.style, data);
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
     const InputComponentType = renderInput(model.textType);
@@ -175,28 +178,48 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
+  settingsFormMarkup: (model) => getSettings(model),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     ...model,
     textType: 'text',
     inputStyles: {
-      background: { type: 'color' },
+      background: { type: 'color', color: '#ffffff' },
       font: {
         type: 'Arial',
         size: 14,
         weight: 400,
         align: 'left',
+        color: '#0000000'
       },
       dimensions: {
         width: '100%',
         height: '32px',
+        minHeight: '0px',
+        minWidth: '0px',
+        maxWidth: '100%',
+        maxHeight: '100%',
       },
       border: {
         hideBorder: false,
-        border: { all: { size: '1', style: 'solid', color: '#d9d9d9' } },
+        border: {
+          all:
+          {
+            width: '1px',
+            style: 'solid',
+            color: '#d9d9d9'
+          }
+        },
         radius: { all: 8 },
-        selectedSide: 'all', selectedCorner: 'all'
+        selectedSide: 'all',
+        selectedCorner: 'all'
+      },
+      shadow: {
+        offsetX: 0,
+        offsetY: 0,
+        color: '#000',
+        blurRadius: 0,
+        spreadRadius: 0
       }
     },
   }),
