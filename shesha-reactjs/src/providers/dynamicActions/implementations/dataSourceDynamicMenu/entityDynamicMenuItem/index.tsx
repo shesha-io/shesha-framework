@@ -8,6 +8,8 @@ import {
   DynamicItemsEvaluationHook,
   FormMarkup,
   useDataContextManager,
+  useFormData,
+  useGlobalState,
   useNestedPropertyMetadatAccessor,
 } from '@/providers';
 import settingsJson from './entitySettings.json';
@@ -18,9 +20,11 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 const settingsMarkup = settingsJson as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter } = settings;
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType } = settings;
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
+  const { data: FormData } = useFormData();
+  const { globalState } = useGlobalState();
   const [data, setData] = useState(null);
   const pageContext = useDataContextManager(false)?.getPageContext();
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityTypeShortAlias);
@@ -35,9 +39,15 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
     setData(result);
   };
 
-  useEffect(() => {
+useEffect(() => {
+  const shouldFetch = 
+    filter === undefined || // No filter case
+    (filter !== undefined && evaluatedFilters !== undefined); // Has filter and filters are evaluated
+
+  if (shouldFetch) {
     fetchTemplateData();
-  }, [item, settings, evaluatedFilters, pageContext]);
+  }
+}, [item, settings, evaluatedFilters, pageContext, FormData, globalState]);
 
   const { configurationItemMode } = useAppConfigurator();
 
@@ -52,6 +62,7 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
       itemSubType: 'button',
       sortOrder: 0,
       dynamicItem: p,
+      buttonType: buttonType,
       actionConfiguration: actionConfiguration,
     }));
 
