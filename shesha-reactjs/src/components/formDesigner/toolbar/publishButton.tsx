@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, message, Modal } from 'antd';
+import { Button, App } from 'antd';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import { DeploymentUnitOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useFormPersister } from '@/providers/formPersisterProvider';
@@ -15,6 +15,7 @@ export interface IPublishButtonProps {
 export const PublishButton: FC<IPublishButtonProps> = ({ onPublished }) => {
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const { loadForm, formProps } = useFormPersister();
+    const { message, modal } = App.useApp();
 
     const onPublishClick = () => {
         const onOk = () => {
@@ -32,9 +33,10 @@ export const PublishButton: FC<IPublishButtonProps> = ({ onPublished }) => {
                         loadForm({ skipCache: true });
                     }
                 },
+                message,
             });
         };
-        Modal.confirm({
+        modal.confirm({
             title: 'Publish Item',
             icon: <ExclamationCircleOutlined />,
             content: 'Are you sure you want to publish this form?',

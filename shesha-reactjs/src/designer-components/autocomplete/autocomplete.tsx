@@ -1,5 +1,5 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { App } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, Key } from 'react';
 import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
@@ -54,6 +54,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const pageContext = useDataContextManager(false)?.getPageContext();
     const { backendUrl } = useSheshaApplication();
+    const { message } = App.useApp();
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
       model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
     );
@@ -160,7 +161,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             setGlobalState
           );
         }
-      } catch (_e) {
+      } catch {
         return undefined;
       }
     };

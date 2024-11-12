@@ -8,7 +8,7 @@ import React, {
 import ValidationErrors from '@/components/validationErrors';
 import {
   Button,
-  notification,
+  App,
   Popover,
   PopoverProps,
   Spin
@@ -87,6 +87,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { styles } = useStyles();
+  const { notification } = App.useApp();
 
   const cssStyle = getStyle(style, formData);
 

@@ -11,9 +11,7 @@ import { Typography } from 'antd';
 
 const { Paragraph, Text, Title } = Typography;
 
-declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
-
-type LevelType = (typeof TITLE_ELE_LIST)[number];
+type LevelType = 1 | 2 | 3 | 4 | 5;
 
 interface IGenericTextProps
   extends Omit<ITextTypographyProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {

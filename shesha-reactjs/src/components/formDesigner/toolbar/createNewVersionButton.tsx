@@ -1,7 +1,7 @@
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import { BranchesOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, message, Modal } from 'antd';
+import { Button, App } from 'antd';
 import React, { FC } from 'react';
 import {
     createNewVersionRequest,
@@ -17,6 +17,7 @@ export interface ICreateNewVersionButtonProps {
 export const CreateNewVersionButton: FC<ICreateNewVersionButtonProps> = ({ onSuccess }) => {
     const { formProps } = useFormPersister();
     const { backendUrl, httpHeaders } = useSheshaApplication();
+    const { message, notification, modal } = App.useApp();
 
     const onCreateNewVersionClick = () => {
         const onOk = () => {
@@ -25,6 +26,9 @@ export const CreateNewVersionButton: FC<ICreateNewVersionButtonProps> = ({ onSuc
                 backendUrl: backendUrl,
                 httpHeaders: httpHeaders,
                 id: formProps.id,
+                message,
+                notification,
+                modal,
             })
                 .then((response) => {
                     message.destroy();
@@ -34,10 +38,10 @@ export const CreateNewVersionButton: FC<ICreateNewVersionButtonProps> = ({ onSuc
                 })
                 .catch((e) => {
                     message.destroy();
-                    showErrorDetails(e);
+                    showErrorDetails(message, notification, e);
                 });
         };
-        Modal.confirm({
+        modal.confirm({
             title: 'Create New Version',
             icon: <ExclamationCircleOutlined />,
             content: 'Are you sure you want to create new version of the form?',

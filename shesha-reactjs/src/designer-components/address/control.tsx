@@ -5,7 +5,7 @@ import ValidationErrors from '@/components/validationErrors';
 import { axiosHttp } from '@/utils/fetchers';
 import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentProps } from './models';
-import { message } from 'antd';
+import { App } from 'antd';
 import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
@@ -30,6 +30,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
   const [googlePlaceReady, setGooglePlaceReady] = useState(false);
+  const { message } = App.useApp();
 
   useEffect(() => {
     if (googleMapsApiKey && !window.google) {

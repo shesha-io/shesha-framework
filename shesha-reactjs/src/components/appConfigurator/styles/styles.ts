@@ -1,34 +1,26 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, token }) => {
-    const shaConfigurableComponent = "sha-configurable-component";
-    const shaConfigurableComponentSelected = "sha-configurable-component-selected";    
-    const shaConfigurableComponentOverlay = "sha-configurable-component-overlay";
-    const shaForm = "sha-form";
-    const shaEditViewMsg = "sha-edit-view-msg";
+  const shaConfigurableComponent = "sha-configurable-component";
+  const shaConfigurableComponentSelected = "sha-configurable-component-selected";
+  const shaConfigurableComponentOverlay = "sha-configurable-component-overlay";
+  const shaForm = "sha-form";
+  const shaEditViewMsg = "sha-edit-view-msg";
 
-    const shaConfigurableModeSwitcherMessageEdit = "sha-configurable-modeswitcher-message-edit";
-    //const shaConfigurableModeSwitcherMessageLive = "sha-configurable-modeswitcher-message-live";
+  const shaConfigurableModeSwitcherMessageEdit = "sha-configurable-modeswitcher-message-edit";
 
-    const shaConfigurableModeSwitcherMessageLive = cx("sha-configurable-modeswitcher-message-live", css`
-      .ant-message-notice-content {
-        background-color: blue !important;
-        color: white;
-      }
-    `);
+  const shaConfigurableModeSwitcherMessageLive = cx("sha-configurable-modeswitcher-message-live");
 
-    const shaConfigurableViewButtonWrapper = cx("sha-configurable-view-button-wrapper", css`
+  const shaConfigurableViewButtonWrapper = cx("sha-configurable-view-button-wrapper", css`
       left: 100px;
       top: 100px;
     `);
 
-    const shaConfigurableModeSwitcherLabel = cx("sha-configurable-modeswitcher-label", css`
-      color: blue;
-    `);
-    const shaConfigurableModeSwitcherSwitcher = cx("sha-configurable-modeswitcher-switcher", css`
+  const shaConfigurableModeSwitcherLabel = cx("sha-configurable-modeswitcher-label");
+  const shaConfigurableModeSwitcherSwitcher = cx("sha-configurable-modeswitcher-switcher", css`
     `);
 
-    const shaAppEditMode = cx("sha-app-editmode", css`
+  const shaAppEditMode = cx("sha-app-editmode", css`
         .${shaConfigurableModeSwitcherMessageEdit} {
           .ant-message-notice-content {
             background-color: #14A38B;
@@ -46,12 +38,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
 
         .${shaConfigurableComponent} {
           position: relative;
-          //border: 2px dashed #ddd;
           min-height: 30px;
-      
-          &:hover {
-            //border: 2px dashed ${token.colorPrimary};
-          }
       
           &.${shaConfigurableComponentSelected} {
             border: 2px dashed ${token.colorPrimary};
@@ -77,10 +64,6 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
               position: fixed;
               left: 14px;
               bottom: 14px;
-              //position: absolute;
-              //bottom: -32px;
-              //width: 100%;
-              //text-align: center;
             }
 
             .sha-configurable-view-button-wrapper {
@@ -164,7 +147,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
         }
     `);
 
-    const shaConfigItemModeToggler = cx("sha-config-item-mode-toggler", css`
+  const shaConfigItemModeToggler = cx("sha-config-item-mode-toggler", css`
         display: flex;
         flex-direction: row;
         position: relative;
@@ -175,9 +158,9 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
         }
     `);
 
-    const appModesDropdown = cx("app-modes-dropdown", css`
+  const appModesDropdown = cx("app-modes-dropdown", css`
         .ant-dropdown & {
-            background-color: #fff; //@dropdown-menu-bg;
+            background-color: #fff;
       
             .ant-dropdown-menu {
                 box-shadow: none;
@@ -185,22 +168,22 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
       
             box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
             0 6px 16px 0 rgba(0, 0, 0, 0.08),
-            0 9px 28px 8px rgba(0, 0, 0, 0.05); //@box-shadow-base
+            0 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
     `);
 
-    return {
-        shaAppEditMode,
-        shaConfigurableComponent,
-        shaConfigurableComponentSelected,
-        shaConfigurableComponentOverlay,
-        shaConfigItemModeToggler,
-        shaConfigurableViewButtonWrapper,
-        shaConfigurableModeSwitcherSwitcher,
-        shaConfigurableModeSwitcherLabel,
-        shaConfigurableModeSwitcherMessageLive,
-        shaConfigurableModeSwitcherMessageEdit,
-        appModesDropdown,
-        shaEditViewMsg,
-    };
+  return {
+    shaAppEditMode,
+    shaConfigurableComponent,
+    shaConfigurableComponentSelected,
+    shaConfigurableComponentOverlay,
+    shaConfigItemModeToggler,
+    shaConfigurableViewButtonWrapper,
+    shaConfigurableModeSwitcherSwitcher,
+    shaConfigurableModeSwitcherLabel,
+    shaConfigurableModeSwitcherMessageLive,
+    shaConfigurableModeSwitcherMessageEdit,
+    appModesDropdown,
+    shaEditViewMsg,
+  };
 });

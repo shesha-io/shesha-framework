@@ -8,6 +8,7 @@ import StatusTag from '@/components/statusTag';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 export interface FormInfoProps {
   /**
@@ -42,18 +43,11 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
     setOpen(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setPanelShowing(softInfoBlock);
-  },[softInfoBlock]);
+  }, [softInfoBlock]);
 
-  if(!formProps.id){
-    return <>{children}</>;
-  }
-
-  
-  //Prevent rendering empty info block when there's no info to display
-
-  if(formProps?.id === undefined) {
+  if (!formProps?.id) {
     return <>{children}</>;
   }
 
@@ -67,17 +61,12 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
         event.stopPropagation();
         if (Boolean(displayEditMode)) setPanelShowing(false);
       }}
-      style={{
-        border: Boolean(displayEditMode) ? '1px #10239e solid' : 'none',
-        position: 'relative',
-        transition: '.1s',
-        padding: '3px',
-      }}
+      className={classNames(styles.shaFormContainer, { [styles.shaEditMode]: displayEditMode })}
     >
 
       <div className={`${styles.shaFormInfoCardParent}`} style={{
         height: Boolean(displayEditMode) ? '40px' : '0px',
-        }}>
+      }}>
         <div
           className={`${styles.shaFormInfoCard}`}
           style={{
@@ -103,7 +92,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
             )}
 
             <p
-              onClick={()=>onModalOpen()}
+              onClick={() => onModalOpen()}
               title={`${getFormFullName(module, name)} v${versionNo}`}
               className={styles.shaFormInfoCardTitle}>
               {getFormFullName(module, name)} v{versionNo}

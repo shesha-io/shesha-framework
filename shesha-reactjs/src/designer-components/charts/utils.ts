@@ -240,7 +240,7 @@ export function filterData(preFilteredData: object[], property: string, operator
       try {
         value = parseInt(value as string, 10);
       } catch (e) {
-        console.error('filterData, Invalid value: Value must be a number');
+        console.error('filterData, Invalid value: Value must be a number', e);
         return false;
       }
     }

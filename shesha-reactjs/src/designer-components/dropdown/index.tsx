@@ -11,7 +11,7 @@ import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDropdownComponentProps } from './model';
 import { IToolboxComponent } from '@/interfaces';
-import { message } from 'antd';
+import { App } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
@@ -40,6 +40,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { data: formData } = useFormData();
+    const { message } = App.useApp();
     const eventProps = {
       model,
       form: getFormApi(form),
