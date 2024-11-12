@@ -27,28 +27,10 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
         }
     }, [formMode]);
 
-    if (formMode !== 'designer') {
-        return (
-            <div className={`${styles.mainArea} ${styles.previewBorderTop10}`}>
-                <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
-                    <ConditionalWrap
-                        condition={Boolean(formSettings?.modelType)}
-                        wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
-                    >
-                        <ParentProvider model={{}} formMode={formMode}>
-                            <ConfigurableFormRenderer form={form} className={undefined}  >
-                                {isDebug && (
-                                    <DebugPanel formData={form.getFieldValue([])} />
-                                )}
-                            </ConfigurableFormRenderer>
-                        </ParentProvider>
-                    </ConditionalWrap>
-                </div>
-            </div>
-        );
-    } else {
-        return (
-            <div className={styles.mainArea}>
+    return (
+        <ConditionalWrap
+            condition={formMode === 'designer'}
+            wrap={(children) => (
                 <SidebarContainer
                     leftSidebarProps={
                         readOnly
@@ -65,23 +47,26 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                         placeholder: 'Properties',
                     }}
                 >
-                    <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
-                        <ConditionalWrap
-                            condition={Boolean(formSettings?.modelType)}
-                            wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
-                        >
-                            <ParentProvider model={{}} formMode='designer'>
-                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
-                                    {isDebug && (
-                                        <DebugPanel formData={form.getFieldValue([])} />
-                                    )}
-                                </ConfigurableFormRenderer>
-                            </ParentProvider>
-                        </ConditionalWrap>
-
-                    </div>
+                    {children}
                 </SidebarContainer>
+            )}
+        >
+            <div className={`${styles.mainArea} ${formMode === 'designer' ? '' : styles.previewBorderTop10}`}>
+                <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
+                    <ConditionalWrap
+                        condition={Boolean(formSettings?.modelType)}
+                        wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
+                    >
+                        <ParentProvider model={{}} formMode={formMode}>
+                            <ConfigurableFormRenderer form={form} className={undefined}  >
+                                {isDebug && (
+                                    <DebugPanel formData={form.getFieldValue([])} />
+                                )}
+                            </ConfigurableFormRenderer>
+                        </ParentProvider>
+                    </ConditionalWrap>
+                </div>
             </div>
-        );
-    }
+        </ConditionalWrap>
+    );
 };
