@@ -30,11 +30,12 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
     const result = data?.map((p) => ({
       id: p.id,
       name: p.name,
-      label: p[`${labelProperty}`],
+      label: p[`${labelProperty}`] || 'Not Configured Properly',
       tooltip: p[`${tooltipProperty}`],
       itemType: 'item',
       itemSubType: 'button',
       sortOrder: 0,
+      dynamicItem: p,
       actionConfiguration: actionConfiguration,
     }));
 

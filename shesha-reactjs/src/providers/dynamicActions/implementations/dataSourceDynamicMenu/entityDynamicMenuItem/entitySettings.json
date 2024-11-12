@@ -56,7 +56,9 @@
             "isDynamic": false,
             "placeholder": "",
             "description": "Name of the property that should be used for the label of the button.",
-            "validate": {},
+            "validate": {
+              "required": true
+            },
             "modelType": "{{data.entityTypeShortAlias}}",
             "autoFillProps": false,
             "settingsValidationErrors": [],

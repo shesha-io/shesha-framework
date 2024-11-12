@@ -39,7 +39,9 @@
         "_mode": "code",
         "_value": false
       },
-      "validate": {},
+      "validate": {
+            "required": true
+          },
       "settingsValidationErrors": []
     },
     {
