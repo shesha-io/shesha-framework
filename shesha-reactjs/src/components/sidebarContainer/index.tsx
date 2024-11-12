@@ -7,7 +7,6 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { useForm } from '@/providers';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   leftSidebarProps?: ISidebarProps;
@@ -28,7 +27,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
-  const { formMode } = useForm();
+
 
   const [currentSizes, setCurrentSizes] = useState([]);
 
@@ -36,16 +35,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
     setCurrentSizes(newSizes.sizes);
   }, [isOpenRight, isOpenLeft]);
-
-  useEffect(() => {
-    if (formMode === 'designer') {
-      setIsOpenLeft(true);
-      setIsOpenRight(true);
-    } else if (formMode === 'edit') {
-      setIsOpenLeft(false);
-      setIsOpenRight(false);
-    }
-  }, [formMode]);
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
