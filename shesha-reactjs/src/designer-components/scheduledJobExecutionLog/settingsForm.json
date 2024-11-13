@@ -15,7 +15,8 @@
       "label": "Component name",
       "validate": {
         "required": true
-      }
+      },
+      "jsSetting": false
     },
     {
       "id": "b85ad1b3-0e5b-46a2-8a87-7fad5d62a22e",

@@ -52,7 +52,7 @@ export class GqlLoader implements IFormDataLoader {
                 return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });                
             }
             case 'static': {
-                return staticEndpoint;
+                return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
             }
             case 'dynamic': {
                 const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });
@@ -114,6 +114,8 @@ export class GqlLoader implements IFormDataLoader {
         const { formFlatStructure, formSettings } = payload;
         if (!formFlatStructure) return null;
 
+        const gqlSettings = this.#getGqlSettings(formSettings);
+
         const toolboxComponents = this.#toolboxComponents;
 
         const { allComponents: components } = formFlatStructure;
@@ -139,7 +141,7 @@ export class GqlLoader implements IFormDataLoader {
             }
         }
 
-        fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
+        fieldNames = fieldNames.concat(gqlSettings?.fieldsToFetch ?? []);
 
         for (const id in components) {
             if (components.hasOwnProperty(id)) {

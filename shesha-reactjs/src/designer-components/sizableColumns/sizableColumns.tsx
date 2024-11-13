@@ -52,14 +52,15 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
         { id: nanoid(), size: 50, components: [] },
         { id: nanoid(), size: 50, components: [] },
       ],
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;
   },
   settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
-  migrator: (m) =>m
+  migrator: (m) => m
     .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
-    .add<ISizableColumnComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ISizableColumnComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ISizableColumnComponentProps>(2, (prev) => removeComponents(prev))
   ,
   customContainerNames: ['columns'],

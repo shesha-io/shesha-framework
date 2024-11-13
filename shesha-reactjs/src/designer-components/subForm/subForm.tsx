@@ -3,7 +3,6 @@ import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
 import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useForm, useSheshaApplication } from '@/providers';
-import Show from '@/components/show';
 import FormInfo from '@/components/configurableForm/formInfo';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { IPersistedFormProps } from '@/providers/form/models';
@@ -53,9 +52,9 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
               if (component.propertyName && !component.context)
                 properties.push([...propertyName.split("."), ...component.propertyName.split(".")]);
             }
-        
+
           if (properties.length > 0)
-            return form.form.validateFields(properties, {recursive: false})
+            return form.form.validateFields(properties, { recursive: false })
               .catch(e => {
                 if (e.errorFields?.length > 0)
                   throw e;
@@ -76,7 +75,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
 
-  if (formSettings?.access === 4 &&  !anyOfPermissionsGranted(formSettings?.permissions || [])) {
+  if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {
     return (
       <Result
         status="403"
@@ -95,26 +94,25 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   }
 
   return (
-    <ShaSpin spinning={isLoading}>
-      <Show when={showFormInfo}>
-        <FormInfo formProps={persistedFormProps} />
-      </Show>
-      <div style={{ flex: 1 }} data-name={propertyName}>
-        {Object.keys(errors).map((error, index) => (
-          <ValidationErrors key={index} error={errors[error]} />
-        ))}
 
-        <div>
-          <ComponentsContainerProvider
-            ContainerComponent={ComponentsContainerSubForm}
-          >
-            <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly}/>
-            </FormItemProvider>
-          </ComponentsContainerProvider>
+    <ShaSpin spinning={isLoading}>
+      <FormInfo visible={showFormInfo} formProps={persistedFormProps}>
+        <div style={{ flex: 1 }} data-name={propertyName}>
+          {Object.keys(errors).map((error, index) => (
+            <ValidationErrors key={index} error={errors[error]} />
+          ))}
+          <div>
+            <ComponentsContainerProvider
+              ContainerComponent={ComponentsContainerSubForm}>
+              <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
+              </FormItemProvider>
+            </ComponentsContainerProvider>
+          </div>
         </div>
-      </div>
+      </FormInfo>
     </ShaSpin>
+
   );
 };
 

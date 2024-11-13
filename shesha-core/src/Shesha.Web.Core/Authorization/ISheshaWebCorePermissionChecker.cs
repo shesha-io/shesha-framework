@@ -13,6 +13,6 @@ namespace Boxfusion.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        Task<bool> IsDataAdministrator(Person person);
+        Task<bool> IsDataAdministratorAsync(Person person);
     }
 }

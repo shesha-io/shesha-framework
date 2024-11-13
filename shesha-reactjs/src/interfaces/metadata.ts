@@ -57,8 +57,6 @@ export interface IHasChildPropertiesMetadata {
 export interface ModelTypeIdentifier {
   name: string;
   module: string;
-  // accessor: string;
-  // moduleAccessor: string;
 }
 
 export interface IHasEntityType {

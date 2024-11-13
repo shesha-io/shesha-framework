@@ -1,10 +1,10 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
 import { setThemeAction } from './actions';
 import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
 import { defaultRequiredMark } from './shaRequiredMark';
-import { useSettingValue } from '..';
+import { useSettings, useSheshaApplication } from '..';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -23,12 +23,13 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     iconPrefixCls: iconPrefixCls,
   });
 
-  const { loadingState, value } = useSettingValue({module: 'Shesha', name: 'Shesha.ThemeSettings'});
-
-  useEffect(() => {
-    if (loadingState === 'ready')
-      dispatch(setThemeAction(value as IConfigurableTheme));
-  }, [loadingState]);
+  const settings = useSettings();
+  const application = useSheshaApplication();
+  application.registerInitialization('theme', async () => {
+    // load theme settings
+    const theme = await settings.getSetting({ module: 'Shesha', name: 'Shesha.ThemeSettings' }) as IConfigurableTheme;
+    dispatch(setThemeAction(theme));
+  });
 
   const changeTheme = (theme: IConfigurableTheme) => {
     // save theme to the state

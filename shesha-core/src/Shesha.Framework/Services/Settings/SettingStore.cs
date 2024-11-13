@@ -84,10 +84,12 @@ namespace Shesha.Services.Settings
             definition.Category = input.Category;
             definition.IsUserSpecific = input.IsUserSpecific;
             definition.ClientAccess = input.ClientAccess;
-
+            
             definition.Normalize();
 
             await Repository.InsertAsync(definition);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             return definition;
         }
@@ -140,7 +142,7 @@ namespace Shesha.Services.Settings
         public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return await WithUnitOfWorkAsync(async () => {
-                var settingConfiguration = await GetSettingConfiguration(setting);
+                var settingConfiguration = await GetSettingConfigurationAsync(setting);
                 var query = _settingValueRepository.GetAll()
                     .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
 
@@ -159,7 +161,7 @@ namespace Shesha.Services.Settings
             });
         }
 
-        private async Task<SettingConfiguration> GetSettingConfiguration(SettingDefinition setting) 
+        private async Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
         {
             return await GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }

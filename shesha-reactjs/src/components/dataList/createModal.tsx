@@ -1,7 +1,7 @@
 import FormInfo from '../configurableForm/formInfo';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { FC } from 'react';
-import { ComponentsContainer, Show, ValidationErrors } from '@/components';
+import React, { FC, useState } from 'react';
+import { ComponentsContainer, ValidationErrors } from '@/components';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
@@ -29,13 +29,22 @@ const CreateModal: FC<ICreateModalProps> = ({
 }) => {
 
   const { performCreate, switchMode, saveError } = useDataListCrud();
+  const [isloading, setLoading] = useState(loading);
+
+  const { buttonLoading, buttonDisabled } = {
+    buttonLoading: isloading,
+    buttonDisabled: readOnly || isloading
+  };
+
 
   const onOk = async () => {
     try {
+      setLoading(true);
       await performCreate();
       switchMode('read');
       onToggle(false);
     } catch (error) {
+      setLoading(false);
       console.error('Update failed: ', error);
     }
 
@@ -52,21 +61,17 @@ const CreateModal: FC<ICreateModalProps> = ({
       onCancel={onCancel}
       title='Add new item'
       width={width}
-      okButtonProps={{ disabled: readOnly }}
-    >
-      <Skeleton loading={loading}>
-        <Show when={!!formInfo}>
-          <FormInfo formProps={formInfo} />
-        </Show>
-
-        <ValidationErrors error={saveError} />
-
-        <ParentProvider model={{}} formMode='edit'>
-          <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-            <ComponentsContainer containerId={'root'} />
-          </ComponentsContainerProvider>
-        </ParentProvider>
-      </Skeleton>
+      okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}>
+      <FormInfo formProps={formInfo} visible={!!formInfo}>
+        <Skeleton loading={loading}>
+          <ValidationErrors error={saveError} />
+          <ParentProvider model={{}} formMode='edit'>
+            <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+              <ComponentsContainer containerId={'root'} />
+            </ComponentsContainerProvider>
+          </ParentProvider>
+        </Skeleton>
+      </FormInfo>
     </Modal>
   );
 };

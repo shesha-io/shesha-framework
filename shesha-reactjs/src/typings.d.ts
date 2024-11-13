@@ -26,3 +26,9 @@ declare module '*.svg' {
   export default svgUrl;
   export { svgComponent as ReactComponent };
 }
+
+
+declare module '*.ts?raw' {
+  const fileText: string;
+  export default fileText;
+}

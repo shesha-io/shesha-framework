@@ -30,6 +30,8 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
+import { IInputStyles } from '../textField/interfaces';
+import { useTheme } from 'antd-style';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -47,6 +49,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
+    const theme = useTheme();
     const { queryParams, filter } = model;
     const form = useForm();
     const { data } = useFormData();
@@ -75,7 +78,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           },
           {
             match: 'pageContext',
-            data: {...pageContext?.getFull()} ?? {},
+            data: {...pageContext?.getFull()},
           },
         ],
         propertyMetadataAccessor
@@ -174,10 +177,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       fontWeight: model.fontWeight,
-      borderWidth: model.hideBorder ? '0px' : model.borderSize, //this is handled in the entityAutcomplete.tsx
+      borderWidth: model?.borderSize || '0px', //this is handled in the entityAutcomplete.tsx
       borderRadius: model.borderRadius,
-      borderStyle: model.hideBorder ? 'none' : model.borderType,
-      borderColor: model.borderColor,
+      borderStyle: model.hideBorder ? 'none' : (model.borderType || 'solid'),
+      borderColor: model.borderColor || theme.colorBorder,
       backgroundColor: model.backgroundColor,
       fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
@@ -268,6 +271,22 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
+    .add<IAutocompleteComponentProps>(6, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {

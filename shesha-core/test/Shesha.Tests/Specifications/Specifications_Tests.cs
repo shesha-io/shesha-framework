@@ -1,7 +1,9 @@
-﻿using Abp.TestBase;
+﻿using Abp.Domain.Repositories;
+using Abp.TestBase;
 using Moq;
 using NHibernate;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.NHibernate.Repositories;
 using Shesha.Specifications;
@@ -68,7 +70,7 @@ namespace Shesha.Tests.Specifications
             var sessionProviderMoq = new Mock<ISessionProvider>();
             sessionProviderMoq.Setup(s => s.Session).Returns(() => sessionMoq.Object);
 
-            var repository = Resolve<NhRepositoryBase<Person, Guid>>(new { sessionProvider = sessionProviderMoq.Object });
+            var repository = Resolve<NhRepositoryBase<Person, Guid>>(new { sessionProvider = sessionProviderMoq.Object }) as IRepository<Person, Guid>;
 
             // prepare expected values
             var expectedAllPersonsCount = testPersons.Count();
@@ -83,7 +85,7 @@ namespace Shesha.Tests.Specifications
 
             await Task.Delay(1);
 
-            var allPersonsCount = repository.GetAll().Count();
+            var allPersonsCount = await repository.CountAsync();
             allPersonsCount.ShouldBe(expectedAllPersonsCount);
 
             using (specAccessor.Use<Age18PlusSpecification, Person>())
@@ -92,7 +94,7 @@ namespace Shesha.Tests.Specifications
 
                 specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification) }, ignoreOrder: true);
 
-                var persons18Plus = repository.GetAll().ToList();
+                var persons18Plus = await repository.GetAll().ToListAsync();
                 persons18Plus.ShouldBe(expectedPersons18Plus, ignoreOrder: true);
 
                 using (specAccessor.Use<HasNoAccountSpecification, Person>())

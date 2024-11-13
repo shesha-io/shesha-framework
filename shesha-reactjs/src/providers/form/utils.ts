@@ -135,6 +135,7 @@ export type AvailableConstantsContext = {
   backendUrl: string;
   message: MessageInstance;
 };
+
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { backendUrl } = useSheshaApplication();
@@ -203,10 +204,6 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     message: () => message,
     data: () => {
       const data = {...shaFormInstance?.formData};
-      const delayedUpdate = shaForm?.getDelayedUpdates();
-      // handle delayed updates
-      if (delayedUpdate?.length > 0)
-        data._delayedUpdate = delayedUpdate;
       return removeGhostKeys(data);
     },
     form: () => {
@@ -1617,6 +1614,9 @@ export interface EvaluationContext {
   evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
 };
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+  if (!data)
+    return data;
+  
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;

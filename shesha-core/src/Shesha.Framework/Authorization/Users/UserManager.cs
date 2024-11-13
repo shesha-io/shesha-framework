@@ -206,7 +206,7 @@ namespace Shesha.Authorization.Users
         /// <param name="supportedPasswordResetMethods"></param>
         /// <returns>Returns the User object representing the newly created User Account. If parameters were incorrect will through 
         /// a AbpValidationException exception that can be allowed through to the calling web app.</returns>
-        public async Task<User> CreateUser(string username, bool createLocalPassword, string password, string passwordConfirmation, string firstname, string lastname, string mobileNumber, string emailAddress, long? supportedPasswordResetMethods = null)
+        public async Task<User> CreateUserAsync(string username, bool createLocalPassword, string password, string passwordConfirmation, string firstname, string lastname, string mobileNumber, string emailAddress, long? supportedPasswordResetMethods = null)
         {
             var validationResults = new List<ValidationResult>();
 
@@ -214,7 +214,7 @@ namespace Shesha.Authorization.Users
                 validationResults.Add(new ValidationResult("Username is mandatory"));
             else
             // check duplicate usernames
-            if (await UserNameAlreadyInUse(username))
+            if (await UserNameAlreadyInUseAsync(username))
                 validationResults.Add(new ValidationResult("User with the same username already exists"));
 
             if (createLocalPassword)
@@ -269,7 +269,7 @@ namespace Shesha.Authorization.Users
         /// Checks is specified username already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> UserNameAlreadyInUse(string username)
+        private async Task<bool> UserNameAlreadyInUseAsync(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
                 return false;

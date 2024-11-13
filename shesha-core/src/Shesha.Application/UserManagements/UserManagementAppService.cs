@@ -105,7 +105,7 @@ namespace Shesha.UserManagements
             var defaultMethods = supportedPasswordResetMethods.Count > 0 ? supportedPasswordResetMethods.Sum() : 0;
 
             // Creating User Account to enable login into the application
-            User user = await _userManager.CreateUser(
+            User user = await _userManager.CreateUserAsync(
                 registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName,
                 input.TypeOfAccount?.ItemValue == (long)RefListTypeOfAccount.Internal,
                 input.Password,

@@ -20,12 +20,12 @@ export interface ICustomEventHandler {
   message: MessageInstance;
   moment: object;
   setGlobalState: (payload: ISetStatePayload) => void;
-}
+};
 
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onChange: Function;
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;
-}
+};
 
 export const onCustomEventsHandler = <FormCustomEvent = any>(
   event: FormCustomEvent,
@@ -36,6 +36,7 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
   http: AxiosInstance,
   message: MessageInstance,
   moment: object,
+  value: any,
   setGlobalState: SetGlobalStateFunc
 ) => {
   /* tslint:disable:function-constructor */
@@ -47,11 +48,11 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
     'http',
     'message',
     'moment',
+    'value',
     'setGlobalState',
     customEventAction
   );
-
-  return eventFunc(formData, event, form, globalState, http, message, moment, setGlobalState);
+  return eventFunc(formData, event, form, globalState, http, message, moment, value, setGlobalState);
 };
 
 type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
@@ -66,8 +67,8 @@ export const customEventHandler = <T = any>({
   moment,
   setGlobalState,
 }: ICustomEventHandler): EventHandlerAttributes<T> => {
-  const onCustomEvent = (event: any, key: string) =>
-    onCustomEventsHandler(
+  const onCustomEvent = (event: any, key: string) => {
+    return onCustomEventsHandler(
       event,
       model?.[key],
       form,
@@ -76,8 +77,11 @@ export const customEventHandler = <T = any>({
       http,
       message,
       moment,
+      event?.currentTarget.value,
       setGlobalState
     );
+
+  };
 
   return {
     onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
@@ -177,6 +181,28 @@ export const customDropDownEventHandler = <T = any>({
   },
 });
 
+export const customOnChangeValueEventHandler = (
+  {
+    model,
+    form,
+    formData,
+    globalState,
+    http,
+    message,
+    moment,
+    setGlobalState,
+  }: ICustomEventHandler
+) => ({
+  onChange: (value: any) => {
+    const eventFunc = new Function(
+      'data, form, globalState, http, message, moment, value, setGlobalState',
+      model?.onChangeCustom
+    );
+
+    return eventFunc(formData, form, globalState, http, message, moment, value, setGlobalState);
+  },
+});
+
 export const customInputNumberEventHandler = (
   {
     model,
@@ -244,6 +270,7 @@ export const customAddressEventHandler = ({
       http,
       message,
       moment,
+      event?.currentTarget?.value,
       setGlobalState
     );
 
@@ -261,7 +288,7 @@ export const customAddressEventHandler = ({
   };
 };
 export const isValidGuid = (input: string): boolean => {
-  if(!input) return false;
+  if (!input) return false;
   const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return guidRegex.test(input);
 };

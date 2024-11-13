@@ -35,10 +35,10 @@ namespace Shesha.Tests.Users
         }
 
         [Fact]
-        public async Task ResetPasswordUsingOtp_Test()
+        public async Task ResetPasswordUsingOtp_TestAsync()
         {
             var oldPassword = "123qwe";
-            var mobileNo = await GetUniqueMobileNo(); // todo: mock user store to prevent duplicated mobile numbers and remove this code
+            var mobileNo = await GetUniqueMobileNoAsync(); // todo: mock user store to prevent duplicated mobile numbers and remove this code
             var newPassword = "!!!Pass1234";
             var userName = Guid.NewGuid().ToString("N");
 
@@ -87,7 +87,7 @@ namespace Shesha.Tests.Users
                 });
 
             // try to login using current password
-            var firstLoginAttempt = await ValidateCredentials(userName, oldPassword);
+            var firstLoginAttempt = await ValidateCredentialsAsync(userName, oldPassword);
             firstLoginAttempt.ShouldBeTrue("Failed to login as a new user");
 
             using (var uow = _unitOfWorkManager.Begin())
@@ -120,10 +120,10 @@ namespace Shesha.Tests.Users
                 });
 
             // try to login using old password
-            var failedAttempt = await ValidateCredentials(userName, oldPassword);
+            var failedAttempt = await ValidateCredentialsAsync(userName, oldPassword);
             
             // try to login using new password
-            var successAttempt = await ValidateCredentials(userName, newPassword);
+            var successAttempt = await ValidateCredentialsAsync(userName, newPassword);
             
             // remove the user
             await _userRepository.DeleteAsync(userDto.Id);
@@ -135,7 +135,7 @@ namespace Shesha.Tests.Users
         }
 
         [Fact]
-        public async Task ResetPasswordUsingEmail_Test()
+        public async Task ResetPasswordUsingEmail_TestAsync()
         {
             var oldPassword = "123qwe@T";
             var newPassword = "!!!Pass1234";
@@ -188,7 +188,7 @@ namespace Shesha.Tests.Users
                 });
 
             // try to login using current password
-            var firstLoginAttempt = await ValidateCredentials(userName, oldPassword);
+            var firstLoginAttempt = await ValidateCredentialsAsync(userName, oldPassword);
             firstLoginAttempt.ShouldBeTrue("Failed to login as a new user");
 
             // send OTP for password reset
@@ -226,10 +226,10 @@ namespace Shesha.Tests.Users
                 });
 
             // try to login using old password
-            var failedAttempt = await ValidateCredentials(userName, oldPassword);
+            var failedAttempt = await ValidateCredentialsAsync(userName, oldPassword);
 
             // try to login using new password
-            var successAttempt = await ValidateCredentials(userName, newPassword);
+            var successAttempt = await ValidateCredentialsAsync(userName, newPassword);
 
             // remove the user
             await _userRepository.DeleteAsync(userDto.Id);
@@ -241,7 +241,7 @@ namespace Shesha.Tests.Users
 
         }
 
-        private async Task<string> GetUniqueMobileNo()
+        private async Task<string> GetUniqueMobileNoAsync()
         {
             var rnd = new Random();
             using (var uow = _unitOfWorkManager.Begin())
@@ -256,7 +256,7 @@ namespace Shesha.Tests.Users
             }
         }
 
-        private async Task<bool> ValidateCredentials(string username, string password)
+        private async Task<bool> ValidateCredentialsAsync(string username, string password)
         {
             try
             {
@@ -315,7 +315,7 @@ namespace Shesha.Tests.Users
         }
 
         [Fact]
-        public async Task CreateUser_Test()
+        public async Task CreateUser_TestAsync()
         {
             LoginAsHostAdmin();
 

@@ -262,7 +262,7 @@ namespace Shesha.Authorization
 
         private async Task<ExternalAuthUserInfo> GetExternalUserInfo(ExternalAuthenticateModel model)
         {
-            var userInfo = await _externalAuthManager.GetUserInfo(model.AuthProvider, model.ProviderAccessCode);
+            var userInfo = await _externalAuthManager.GetUserInfoAsync(model.AuthProvider, model.ProviderAccessCode);
             if (userInfo.ProviderKey != model.ProviderKey)
             {
                 throw new UserFriendlyException(L("CouldNotValidateExternalUser"));

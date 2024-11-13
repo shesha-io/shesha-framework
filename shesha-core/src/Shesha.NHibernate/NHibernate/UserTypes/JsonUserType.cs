@@ -36,7 +36,7 @@ namespace Shesha.NHibernate.UserTypes
                 return null;
 
             if (value is IJsonEntityProxy proxy)
-                return JsonConvert.DeserializeObject<T>(JsonEntityProxy.GetJson(proxy).ToJsonString());
+                return JsonEntityProxy.GetJson(proxy).ToObject<T>();
 
             var serialized = JsonConvert.SerializeObject(value, new JsonSerializerSettings
             {
@@ -88,9 +88,7 @@ namespace Shesha.NHibernate.UserTypes
             var val = rs[names[0]] as string;
 
             if (val != null && !string.IsNullOrWhiteSpace(val))
-            {
                 return JsonConvert.DeserializeObject<T>(val);
-            }
 
             return null;
         }
@@ -106,7 +104,7 @@ namespace Shesha.NHibernate.UserTypes
             else
             {
                 if (value is IJsonEntityProxy proxy)
-                    parameter.Value = JsonEntityProxy.GetJson(proxy).ToJsonString();
+                    parameter.Value = JsonEntityProxy.GetJson(proxy).ToString();
                 else
                     parameter.Value = JsonConvert.SerializeObject(value, new JsonSerializerSettings
                     {

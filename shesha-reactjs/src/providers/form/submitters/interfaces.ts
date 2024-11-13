@@ -11,6 +11,10 @@ export type ExpressionCaller<TArguments = any, TResult = any> = (args: TArgument
 export type ExpressionFactory<TArguments = any, TResult = any> = (expression: string) => ExpressionCaller<TArguments, TResult>;
 export type AsyncExpressionFactory<TArguments = any, TResult = any> = ExpressionFactory<TArguments, Promise<TResult>>;
 
+export interface IDataArguments<Values> {
+    data: Values;
+}
+
 export interface FormDataSubmitPayload extends Required<SubmitRelatedEvents> {
     data: any;
     formSettings: IFormSettings;

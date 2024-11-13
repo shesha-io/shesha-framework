@@ -1,4 +1,4 @@
-import { createGlobalStyle, css } from "antd-style";
+import { createGlobalStyle, css } from "@/styles";
 import { sheshaStyles } from '@/styles';
 
 const flexCenterAlignedSpaceBetween = css`
