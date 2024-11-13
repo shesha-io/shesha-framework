@@ -19,7 +19,7 @@ import { nanoid } from '@/utils/uuid';
 import { useDeepCompareMemo } from '@/hooks';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 
 const { Option } = Select;
