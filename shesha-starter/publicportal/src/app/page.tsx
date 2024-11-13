@@ -1,12 +1,14 @@
 "use client";
 
-import Banner from 'src/components/Banner';
-import Card from 'src/components/NavCard';
-import React from 'react';
-import { PageWithLayout } from '@shesha-io/reactjs';
+import Banner from "src/components/Banner";
+import Card from "src/components/NavCard";
+import React from "react";
+import { PageWithLayout } from "@shesha-io/reactjs";
+import { PortalLayout } from "@shesha-io/pd-publicportal";
 
 const Home: PageWithLayout<{}> = () => {
   return (
+    <PortalLayout>
       <div
         style={{
           padding: "15px",
@@ -47,6 +49,7 @@ const Home: PageWithLayout<{}> = () => {
           />
         </div>
       </div>
+    </PortalLayout>
   );
 };
 

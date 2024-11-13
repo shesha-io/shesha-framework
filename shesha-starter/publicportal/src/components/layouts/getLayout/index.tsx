@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
-import MainLayout from "../mainLayout";
-import { LOGO } from "@/app-constants";
+import { MainLayout } from "@shesha-io/reactjs";
 
 /**
  * Returns the component wrapped up in a layout
@@ -8,7 +7,7 @@ import { LOGO } from "@/app-constants";
  * @returns the component wrapped up in a layout
  */
 export const getLayout = (page: ReactElement): JSX.Element => {
-  return <MainLayout imageProps={LOGO}>{page}</MainLayout>;
+  return <MainLayout noPadding>{page}</MainLayout>;
 };
 
 export default getLayout;

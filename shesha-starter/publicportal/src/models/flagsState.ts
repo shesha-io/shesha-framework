@@ -1,4 +1,4 @@
-import { IErrorInfo } from './errorInfo';
+import { IErrorInfo } from "@shesha-io/reactjs";
 
 export interface IFlagsState<
   ProgressFlags extends string,
