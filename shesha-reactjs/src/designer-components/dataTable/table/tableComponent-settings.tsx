@@ -16,7 +16,7 @@ import { ShaIconTypes } from '@/components/iconPicker';
 import { ColumnsConfig } from './columnsEditor/columnsConfig';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;

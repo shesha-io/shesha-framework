@@ -12,7 +12,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 

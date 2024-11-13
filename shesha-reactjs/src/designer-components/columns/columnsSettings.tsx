@@ -10,7 +10,7 @@ import { EXPOSED_VARIABLES } from './exposedVariables';
 import { IColumnsComponentProps } from './interfaces';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) => {
   const { readOnly } = props;

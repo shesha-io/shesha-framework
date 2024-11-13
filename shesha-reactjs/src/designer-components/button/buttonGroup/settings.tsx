@@ -7,7 +7,7 @@ import { ButtonGroupConfigurator } from '../../../components/buttonGroupConfigur
 import { Checkbox, Input, Select } from 'antd';
 import { IButtonGroupComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 
