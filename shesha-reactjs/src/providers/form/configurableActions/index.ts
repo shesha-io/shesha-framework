@@ -10,7 +10,7 @@ export type UseShaFormActionsArgs = {
     name: string;
     isActionsOwner: boolean;
     shaForm: IShaFormInstance;
-    formData: any
+    formData: any;
 };
 export const useShaFormActions = ({ name, isActionsOwner, shaForm, formData }: UseShaFormActionsArgs) => {
     const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
