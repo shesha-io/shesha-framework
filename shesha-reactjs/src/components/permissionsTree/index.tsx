@@ -104,8 +104,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const shaForm = useShaFormInstance();
-  const { setFormMode } = shaForm;
+  const shaForm = useShaFormInstance(false);
+  const { setFormMode } = shaForm ?? {};
 
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useRef<any>({});
@@ -229,7 +229,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     const item = findItem(allItems, ids[0]);
     if (rest.mode === 'Edit') {
       if (!item.isDbPermission) {
-        setFormMode('readonly');
+        setFormMode?.('readonly');
       }
     }
     onChangeAction(item);
@@ -529,7 +529,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         }
         setDoSelect(emptyId);
         setSearchText('');
-        setFormMode('edit');
+        setFormMode?.('edit');
 
         return Promise.resolve();
       },
@@ -559,7 +559,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         expandParent(newItems, s);
         setDoSelect(emptyId);
         setSearchText('');
-        setFormMode('edit');
+        setFormMode?.('edit');
 
         return Promise.resolve();
       },
