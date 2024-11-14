@@ -10,6 +10,7 @@ import { filterDynamicComponents } from './utils';
 interface SearchableTabsProps {
     model: any;
     data?: any;
+    value: any;
     onChange?: (value: any) => void;
 }
 

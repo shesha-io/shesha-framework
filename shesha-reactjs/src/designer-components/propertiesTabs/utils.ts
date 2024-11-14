@@ -16,11 +16,10 @@ export const filterDynamicComponents = (components, query, data) => {
 
     const filterResult = components.map(component => {
         const c = { ...component };
-
+        const propertyName = evaluateString(c.propertyName, data);
         const directMatch = (
             matchesQuery(c.label) ||
-            matchesQuery(c.propertyName) ||
-            (c.propertyName && matchesQuery(c.propertyName.split('.').join(' ')))
+            (propertyName && matchesQuery(propertyName.split('.').slice(1).join(' ')))
         );
 
         // Handle propertyRouter
@@ -51,15 +50,15 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle settingsInputRow
         if (c.type === 'settingsInputRow') {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
+            const filteredInputs = c.inputs?.filter(input => {
+                const propertyName = evaluateString(input.propertyName, data);
+                return matchesQuery(input.label) ||
+                    (propertyName && matchesQuery(propertyName.split('.').slice(1).join(' ')))
+            }) || [];
 
             return {
                 ...c,
-                inputs: filteredInputs,
+                inputs: filteredInputs.map(input => ({ ...input, propertyName: evaluateString(input.propertyName, data) })),
                 hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
             };
         }
@@ -78,21 +77,22 @@ export const filterDynamicComponents = (components, query, data) => {
 
         // Handle inputs array if present
         if (c.inputs) {
-            const filteredInputs = c.inputs?.filter(input =>
-                matchesQuery(input.label) ||
-                matchesQuery(input.propertyName) ||
-                (input.propertyName && matchesQuery(input.propertyName.split('.').join(' ')))
-            ) || [];
+            const filteredInputs = c.inputs?.filter(input => {
+                const propertyName = evaluateString(input.propertyName, data);
+                return matchesQuery(input.label) ||
+                    (propertyName && matchesQuery(propertyName.split('.').join(' ')))
+            }) || [];
 
             return {
                 ...c,
-                inputs: filteredInputs,
+                inputs: filteredInputs.map(input => ({ ...input, propertyName: evaluateString(input.propertyName, data) })),
                 hidden: evaluateHidden(c.hidden, directMatch, filteredInputs.length > 0)
             };
         }
 
         return {
             ...c,
+            propertyName: evaluateString(c.propertyName, data),
             hidden: evaluateHidden(c.hidden, directMatch, false)
         };
     });
@@ -106,9 +106,7 @@ export const filterDynamicComponents = (components, query, data) => {
             (c.inputs && c.inputs.length > 0)
         );
 
-        const isHidden = typeof c.hidden === 'string'
-            ? evaluateString(c.hidden, data)
-            : c.hidden;
+        const isHidden = c.hidden;
 
         return !isHidden || hasVisibleChildren;
     });

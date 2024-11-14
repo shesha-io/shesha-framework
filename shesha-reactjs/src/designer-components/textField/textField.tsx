@@ -76,6 +76,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
+    console.log(`inputStyles.border.border.${border?.selectedCorner}.width`);
+
     useEffect(() => {
 
       const fetchStyles = async () => {
@@ -113,9 +115,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
-    const jsStyle = getStyle(model.inputStyles?.style, data);
+    const jsStyle = getStyle(model.style, data);
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
-
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
@@ -142,6 +143,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       moment,
       setGlobalState,
     };
+
+    console.log("LOG:::Model", model);
 
     return (
       <ConfigurableFormItem
@@ -184,7 +187,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     ...model,
     textType: 'text',
     inputStyles: {
-      background: { type: 'color', color: '#ffffff' },
+      background: { type: 'color', color: '#ffffff', repeat: 'no-repeat', size: 'cover', position: 'center' },
       font: {
         type: 'Arial',
         size: 14,

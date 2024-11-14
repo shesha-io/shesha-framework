@@ -21,13 +21,13 @@ export interface IContextPropertyAutocompleteComponentProps extends IConfigurabl
   mode?: 'single' | 'multiple';
   modelType?: string;
   autoFillProps?: boolean;
+  styledLabel?: boolean;
 }
 
 
 export interface IContextPropertyAutocompleteProps extends Omit<IContextPropertyAutocompleteComponentProps, 'type' | 'propertyName'> {
   defaultModelType: string;
   formData: any;
-  styledLabel?: boolean;
   onValuesChange?: (changedValues: any) => void;
 }
 
@@ -69,7 +69,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const context = !!state?.context && mode === 'context' ? state?.context : undefined;
 
-  const styledLabel = (label: string) => <span style={{ fontWeight: 500, color: 'darkslategrey' }}>{label}</span>;
+  const styledLabel = (label: string) => <span style={{ fontWeight: 500, fontSize: 12, color: 'darkslategrey' }}>{label}</span>;
   ;
   const contextlabel = model.styledLabel ? styledLabel("Context") : <label>Context</label>;
   const componentlabel = model.styledLabel ? styledLabel("Component Name") : <label>Component name</label>;
@@ -162,6 +162,7 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
     return (
       <ContextPropertyAutocomplete {...model}
         readOnly={model.readOnly}
+        styledLabel={model.styledLabel}
         defaultModelType={designerModelType ?? formSettings.modelType}
         formData={formData}
         onValuesChange={(values) => {

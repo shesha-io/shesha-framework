@@ -1,42 +1,59 @@
 import React, { FC } from 'react';
-import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITextFieldComponentProps } from './interfaces';
-import ReadOnlyModeSelector from '@/components/editModeSelector/index';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
-import LabelConfiguratorComponent from '../styleLabel/labelConfigurator';
-import FormItem from '../_settings/components/formItem';
-import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
-import { useFormDesignerState } from '@/providers/formDesigner';
-import { useForm } from '@/providers';
 import { SettingInput } from '../settingsInput/settingsInput';
 import SearchableTabsComponent from '../propertiesTabs/searchableTabsComponent';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {
     const readOnly = props.readOnly || false;
-    const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
-    const { formSettings } = useForm();
-
-    const { model, onValuesChange } = useSettingsForm<ITextFieldComponentProps>();
 
     const tabs = [
         {
-            key: "display",
-            label: "Display",
+            key: '1',
+            label: 'Common',
             children: (
                 <>
-                    <ContextPropertyAutocomplete
-                        id="5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4"
-                        readOnly={readOnly}
-                        defaultModelType={designerModelType ?? formSettings.modelType}
-                        formData={model}
-                        onValuesChange={onValuesChange}
-                    />
-                    <FormItem name='hideLabel' label='' jsSetting={false}>
-                        <LabelConfiguratorComponent readOnly={readOnly} />
-                    </FormItem>
                     <SettingInput
-                        label="Text Type"
+                        label="Property Name"
+                        propertyName='propertyName'
+                        inputType='contextPropertyAutocomplete'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Label"
+                        propertyName='hideLabel'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Placeholder"
+                        propertyName='placeholder'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Tooltip"
+                        propertyName='description'
+                        readOnly={readOnly}
+                        inputType='textArea'
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Readonly"
+                        propertyName='editMode'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Hide"
+                        propertyName='hidden'
+                        readOnly={readOnly}
+                        inputType='switch'
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Type"
                         propertyName='textType'
                         readOnly={readOnly}
                         inputType='dropdown'
@@ -46,66 +63,180 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                             { label: 'password', value: 'password' }
                         ]}
                     />
-                    <SettingInput label="Placeholder" propertyName='placeholder' readOnly={readOnly} jsSetting={true} />
-                    <SettingInput label="Description" propertyName='description' readOnly={readOnly} inputType='textArea' jsSetting={true} />
-                    <SettingInput label="Initial Value" propertyName='initialValue' readOnly={readOnly} jsSetting={true} />
-                    <SettingInput label="Hidden" propertyName='hidden' readOnly={readOnly} inputType='switch' jsSetting={true} layout='horizontal' />
-                    <SettingInput label="Edit Mode" propertyName='editMode' readOnly={readOnly} jsSetting={true}>
-                        <ReadOnlyModeSelector readOnly={readOnly} value={model.editMode} />
-                    </SettingInput>
+                    <SettingInput
+                        label="Default Value"
+                        propertyName='initialValue'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Prefix"
+                        propertyName='prefix'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Prefix Icon"
+                        propertyName='prefixIcon'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Suffix"
+                        propertyName='suffix'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Suffix Icon"
+                        propertyName='suffixIcon'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
                 </>
             )
         },
         {
-            key: "events",
-            label: "Events",
+            key: '2',
+            label: 'Validation',
             children: (
                 <>
-                    <SettingInput label="On Change" propertyName='onChangeCustom' readOnly={readOnly} inputType='codeEditor' tooltip="Enter custom eventhandler on changing of event. (form, event) are exposed"
-                        jsSetting={true} />
-                    <SettingInput label="On Blur" propertyName='onBlurCustom' readOnly={readOnly} inputType='codeEditor' tooltip="Enter custom eventhandler on blur of event. (form, event) are exposed"
-                        jsSetting={true} />
-                    <SettingInput label="On Focus" propertyName='onFocusCustom' readOnly={readOnly} inputType='codeEditor' tooltip="Enter custom eventhandler on focus of event. (form, event) are exposed"
-                        jsSetting={true} />
+                    <SettingInput
+                        label="Required"
+                        propertyName='validate.required'
+                        readOnly={readOnly}
+                        inputType='switch'
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Min Length"
+                        propertyName='validate.minLength'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Max Length"
+                        propertyName='validate.maxLength'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Message"
+                        propertyName='validate.message'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Validator"
+                        propertyName='validate.validator'
+                        readOnly={readOnly}
+                        inputType='codeEditor'
+                        jsSetting={true}
+                    />
                 </>
             )
         },
         {
-            key: "validation",
-            label: "Validation",
-            children:
-                <>
-                    <SettingInput label="Required" propertyName='validate.required' readOnly={readOnly} inputType='switch' layout='horizontal'
-                        jsSetting={true} />
-                    <SettingInput label="Min Length" propertyName='validate.minLength' readOnly={readOnly} inputType='number'
-                        jsSetting={true} />
-                    <SettingInput label="Max Length" propertyName='validate.maxLength' readOnly={readOnly} inputType='number'
-                        jsSetting={true} />
-                    <SettingInput label="Validator" propertyName='validate.validator' readOnly={readOnly} inputType='codeEditor' tooltip="Enter custom validator logic for form.item rules. Returns a Promise"
-                        jsSetting={true} />
-                    <SettingInput label="Validation Message" propertyName='validate.message' readOnly={readOnly}
-                        jsSetting={true} />
-                </>
-        },
-        {
-            key: "style",
-            label: "Style",
-            children: <FormItem name='styles' label='' jsSetting={false}>
-            </FormItem>
-        },
-        {
-            key: "security",
-            label: "Security",
+            key: '3',
+            label: 'Events',
             children: (
-                <SettingInput label='Permissions' propertyName='permissions' readOnly={readOnly}>
-                    <PermissionAutocomplete readOnly={readOnly} />
-                </SettingInput>
+                <>
+                    <SettingInput
+                        label="On Change"
+                        propertyName='onChangeCustom'
+                        readOnly={readOnly}
+                        inputType='codeEditor'
+                    />
+                    <SettingInput
+                        label="On Focus"
+                        propertyName='onFocusCustom'
+                        readOnly={readOnly}
+                        inputType='codeEditor'
+                    />
+                    <SettingInput
+                        label="On Blur"
+                        propertyName='onBlurCustom'
+                        readOnly={readOnly}
+                        inputType='codeEditor'
+                    />
+                </>
+            )
+        },
+        {
+            key: '4',
+            label: 'Appearance',
+            children: (
+                <>
+                    <SettingInput
+                        label="Font Size"
+                        propertyName='inputStyles.font.size'
+                        readOnly={readOnly}
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Font Weight"
+                        propertyName='inputStyles.font.weight'
+                        readOnly={readOnly}
+                        inputType='dropdown'
+                        jsSetting={true}
+                        dropdownOptions={[
+                            { value: '100', label: 'Light' },
+                            { value: '400', label: 'Normal' },
+                            { value: '700', label: 'Bold' }
+                        ]}
+                    />
+                    <SettingInput
+                        label="Font Color"
+                        propertyName='inputStyles.font.color'
+                        readOnly={readOnly}
+                        inputType='color'
+                        jsSetting={true}
+                    />
+                    <SettingInput
+                        label="Font Family"
+                        propertyName='inputStyles.font.type'
+                        readOnly={readOnly}
+                        inputType='dropdown'
+                        jsSetting={true}
+                        dropdownOptions={[
+                            { value: 'Arial', label: 'Arial' },
+                            { value: 'Helvetica', label: 'Helvetica' },
+                            { value: 'Times New Roman', label: 'Times New Roman' }
+                        ]}
+                    />
+                    <SettingInput
+                        label="Text Align"
+                        propertyName='inputStyles.font.align'
+                        readOnly={readOnly}
+                        inputType='dropdown'
+                        jsSetting={true}
+                        dropdownOptions={[
+                            { value: 'left', label: 'Left' },
+                            { value: 'center', label: 'Center' },
+                            { value: 'right', label: 'Right' }
+                        ]}
+                    />
+                </>
+            )
+        },
+        {
+            key: '5',
+            label: 'Security',
+            children: (
+                <SettingInput
+                    label="Permissions"
+                    propertyName='permissions'
+                    readOnly={readOnly}
+                    inputType='permissions'
+                    jsSetting={true}
+                />
             )
         }
     ];
 
     return (
         <SearchableTabsComponent
+            value={props}
             model={{
                 tabs: tabs,
                 tabType: "card",
@@ -117,4 +248,4 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
 };
 
 export const TextFieldSettingsForm: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) =>
-    SettingsForm<any>({ ...props, children: <TextFieldSettings {...props} /> });
+    <TextFieldSettings {...props} />;

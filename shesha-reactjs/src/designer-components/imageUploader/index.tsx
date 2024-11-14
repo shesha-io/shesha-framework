@@ -3,6 +3,7 @@ import { SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { toBase64 } from '../_settings/utils/background/utils';
+import { useStyles } from './style';
 
 
 interface IImageUploaderProps {
@@ -15,6 +16,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>(value ? [{ ...value }] : []);
+    const { styles } = useStyles();
 
     const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -57,7 +59,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
 
     const fileControls = (file: UploadFile) => {
         return file ? (
-            <a onClick={() => handleReplace(file)} style={{ position: 'relative', top: -44, left: 100 }}>
+            <a onClick={() => handleReplace(file)} className={styles.replaceBtn}>
                 <SyncOutlined title="Replace" />
             </a>
         ) : null;
@@ -70,7 +72,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     );
 
     return (
-        <div style={{ maxWidth: 150 }}>
+        <div className={styles.image}>
             <Upload
                 listType="picture"
                 fileList={fileList.map(file => ({ ...file, name: '' }))}

@@ -309,7 +309,8 @@ export interface FormMarkupWithSettings {
 export type FormRawMarkup = IConfigurableFormComponent[];
 export type FormMarkup =
   | FormRawMarkup
-  | FormMarkupWithSettings
+  | FormMarkupWithSettings | ((data: any) => FormRawMarkup
+    | FormMarkupWithSettings);
 
 export interface FormFullName {
   readonly name: string;

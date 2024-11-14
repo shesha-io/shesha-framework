@@ -22,6 +22,7 @@ import { getValueFromString } from '../settingsInput/utils';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
 import { SettingInput } from '../settingsInput/settingsInput';
+import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -46,7 +47,7 @@ export interface IInputProps extends IComponentLabelProps {
     propertyName: string;
     inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' |
-    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete' | 'multiColorPicker';
+    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete' | 'multiColorPicker' | 'contextPropertyAutocomplete';
     variant?: 'borderless' | 'filled' | 'outlined';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
@@ -151,6 +152,8 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         fileName: propertyName,
         label: label ?? propertyName,
         wrapInTemplate: true,
+        value: value,
+        onChange: onChange,
         templateSettings: { functionName: functionName },
         exposedVariables: defaultExposedVariables
     };
@@ -239,6 +242,9 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 value={value}
                 size={size}
             />;
+
+        case 'contextPropertyAutocomplete':
+            return <ContextPropertyAutocomplete {...props} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
@@ -283,7 +289,12 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
         {inputs.map((props, i) => {
             const { inputType: type, hasUnits } = props;
 
-            const width = type === 'number' ? 100 : type === 'button' ? 24 : type === 'dropdown' ? 100 : type === 'radio' ? props.buttonGroupOptions.length * 30 : type === 'color' ? 24 : type === 'customDropdown' ? 100 : 50;
+            const width = type === 'number' ? 100 :
+                type === 'button' ? 24 :
+                    type === 'dropdown' ? 100 :
+                        type === 'radio' ? props.buttonGroupOptions.length * 30 :
+                            type === 'color' ? 24 :
+                                type === 'customDropdown' ? 100 : 50;
 
             return (
                 <SettingInput key={i + props.label}

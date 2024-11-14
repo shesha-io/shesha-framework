@@ -420,7 +420,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     hideLabel: true,
                                                     propertyName: "inputStyles.border.selectedSide",
                                                     inputType: "radio",
-                                                    readOnly: { _code: 'return  getSettingValue(data?.inputStyles.border.hideBorder);', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     buttonGroupOptions: [
                                                         {
                                                             value: "all",
@@ -452,16 +452,16 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 {
                                                     label: "Width",
                                                     hideLabel: true,
-                                                    propertyName: 'inputStyles.border.border.all.width',
-                                                    readOnly: { _code: '{return  getSettingValue(data?.inputStyles?.border?.hideBorder);}', _mode: 'code', _value: false } as any,
+                                                    propertyName: "inputStyles.border.border.{{data.inputStyles.border.selectedSide}}.width",
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any
                                                 },
                                                 {
                                                     label: "Style",
-                                                    propertyName: 'inputStyles.border.border.all.style',
+                                                    propertyName: "inputStyles.border.border.{{data.inputStyles.border.selectedSide}}.style",
                                                     inputType: "dropdown",
                                                     hideLabel: true,
                                                     width: 60,
-                                                    readOnly: { _code: 'return  getSettingValue(data?.inputStyles.border.hideBorder);', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     dropdownOptions: [
                                                         {
                                                             value: "solid",
@@ -483,9 +483,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 },
                                                 {
                                                     label: "Color",
-                                                    propertyName: "inputStyles.border.border.all.color",
+                                                    propertyName: `inputStyles.border.border.{{data.inputStyles.border.selectedSide}}.color`,
                                                     inputType: "color",
-                                                    readOnly: { _code: 'return  getSettingValue(data?.inputStyles.border.hideBorder);', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     hideLabel: true,
                                                 }
                                             ],
@@ -532,7 +532,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     inputType: "number",
                                                     label: "Radius",
                                                     hideLabel: true,
-                                                    propertyName: "inputStyles.border.radius.all",
+                                                    propertyName: "inputStyles.border.radius.{{data.inputStyles.border.selectedCorner}}",
                                                 }
                                             ]
                                         })
@@ -888,9 +888,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         .addSettingsInput({
                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             id: 'custom-css-412c-8461-4c8d55e5c073',
-                                            propertyName: 'inputStyles.style',
+                                            propertyName: 'style',
                                             inputType: 'codeEditor',
-                                            label: 'Custom CSS',
+                                            label: 'Style',
                                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                         })
                                         .toJson()
