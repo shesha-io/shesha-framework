@@ -581,7 +581,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     },
                                                     {
                                                         value: "storedFile",
-                                                        icon: "FileImageOutlined",
+                                                        icon: "DatabaseOutlined",
                                                         title: "Stored File"
                                                     }
                                                 ],
