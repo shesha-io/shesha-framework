@@ -4,6 +4,7 @@ import { Image, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { toBase64 } from '../_settings/utils/background/utils';
 import { useStyles } from './style';
+import { SettingInput } from '../settingsInput/settingsInput';
 
 
 interface IImageUploaderProps {
@@ -66,9 +67,9 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     };
 
     const uploadButton = (
-        <button ref={uploadBtnRef} style={{ display: fileList.length === 0 ? 'block' : 'none' }} type="button">
+        <SettingInput propertyName='file' label='Upload' readOnly={readOnly} hidden={fileList.length === 0} >
             <UploadOutlined title='upload' />
-        </button>
+        </SettingInput>
     );
 
     return (

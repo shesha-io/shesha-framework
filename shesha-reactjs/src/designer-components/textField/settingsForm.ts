@@ -64,7 +64,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                     {
                                         inputType: 'editModeSelector',
                                         propertyName: 'editMode',
-                                        label: 'Readonly',
+                                        label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
                                     },
@@ -691,23 +691,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     {
                                                         jsSetting: false,
                                                         propertyName: "inputStyles.background.storedFile.id",
-                                                        label: "File ID",
-                                                    },
-                                                    {
-                                                        jsSetting: false,
-                                                        propertyName: "inputStyles.background.storedFile.ownerId",
-                                                        label: "Owner ID",
-                                                    },
-                                                    {
-                                                        inputType: "typeAutocomplete",
-                                                        jsSetting: false,
-                                                        propertyName: "inputStyles.background.storedFile.ownerType",
-                                                        label: "Owner Type",
-                                                    },
-                                                    {
-                                                        jsSetting: false,
-                                                        propertyName: "inputStyles.background.storedFile.catergory",
-                                                        label: "File Category",
+                                                        label: "File ID"
                                                     }
                                                 ]
                                             })
@@ -716,7 +700,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 parentId: "backgroundStyleRow",
                                                 inline: true,
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                hidden: { _code: 'return  getSettingValue(data?.inputStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
                                                         inputType: "customDropdown",

@@ -159,9 +159,9 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     };
 
     const editModes = [
-        { value: 'editable', icon: 'EditOutlined', title: 'Editable' },
-        { value: 'readOnly', icon: 'EyeOutlined', title: 'Read only' },
-        { value: 'inherit', icon: 'ApartmentOutlined', title: 'Inherit' }
+        { value: 'editable', icon: 'edit', title: 'Editable' },
+        { value: 'readOnly', icon: 'readonly', title: 'Read only' },
+        { value: 'inherit', icon: 'inherit', title: 'Inherit' }
     ];
 
     const editor = availableConstantsExpression?.trim()
