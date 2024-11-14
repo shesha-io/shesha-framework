@@ -21,10 +21,11 @@ const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item,
 
   useEffect(() => {
     refetch(getTemplateState()).then((response) => {
-      const result = typeof response.result === 'object' ? response.result.items : response.result;
-      setData(result);
+        const result = Array.isArray(response.result) ? response.result : response.result.items;
+        setData(result);
     });
-  }, [item, settings, pageContext, FormData, globalState]);
+}, [item, settings, pageContext, FormData, globalState]);
+
 
   const { configurationItemMode } = useAppConfigurator();
 
