@@ -13,6 +13,7 @@ import { PropertyAutocomplete } from '@/components/propertyAutocomplete/property
 import { useFormDesignerState } from '@/providers/formDesigner';
 import SettingsControl from '../_settings/settingsControl';
 import { getValueFromPropertySettings } from '../_settings/utils';
+import { useStyles } from '../_settings/styles/styles';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -42,6 +43,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   const { defaultModelType, readOnly, formData, onValuesChange } = model;
 
   const [state, setState] = useState<IContextPropertyAutocompleteState>();
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (!state && formData?.propertyName)
@@ -69,7 +71,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const context = !!state?.context && mode === 'context' ? state?.context : undefined;
 
-  const styledLabel = (label: string) => <span style={{ fontWeight: 500, fontSize: 12, color: 'darkslategrey' }}>{label}</span>;
+  const styledLabel = (label: string) => <span className={styles.label}>{label}</span>;
   ;
   const contextlabel = model.styledLabel ? styledLabel("Context") : <label>Context</label>;
   const componentlabel = model.styledLabel ? styledLabel("Component Name") : <label>Component name</label>;

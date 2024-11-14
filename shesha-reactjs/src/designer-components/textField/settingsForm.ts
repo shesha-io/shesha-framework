@@ -4,6 +4,146 @@ import { FormLayout } from 'antd/lib/form/Form';
 
 export const getSettings = (data: ITextFieldComponentProps) => {
 
+    const sideOptions = ['all', 'top', 'right', 'bottom', 'left'];
+    const cornerOptions = ['all', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
+
+    const getBorderInputs = () => sideOptions.map(side => ({
+        id: 'borderStyleRow',
+        parentId: 'borderStylePnl',
+        inline: true,
+        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+        hidden: { _code: `return  getSettingValue(data?.inputStyles?.border?.selectedSide) !== '${side}';`, _mode: 'code', _value: false } as any,
+        inputs: [
+            {
+                label: "Border",
+                hideLabel: true,
+                inputType: "button",
+                propertyName: "inputStyles.border.hideBorder",
+                icon: "EyeOutlined",
+                iconAlt: "EyeInvisibleOutlined"
+            },
+            {
+                label: "Select Side",
+                hideLabel: true,
+                propertyName: "inputStyles.border.selectedSide",
+                inputType: "radio",
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                buttonGroupOptions: [
+                    {
+                        value: "all",
+                        icon: "BorderOutlined",
+                        title: "All"
+                    },
+                    {
+                        value: "top",
+                        icon: "BorderTopOutlined",
+                        title: "Top"
+                    },
+                    {
+                        value: "right",
+                        icon: "BorderRightOutlined",
+                        title: "Right"
+                    },
+                    {
+                        value: "bottom",
+                        icon: "BorderBottomOutlined",
+                        title: "Bottom"
+                    },
+                    {
+                        value: "left",
+                        icon: "BorderLeftOutlined",
+                        title: "Left"
+                    }
+                ]
+            },
+            {
+                label: "Width",
+                hideLabel: true,
+                propertyName: `inputStyles.border.border.${side}.width`, //TODO: Change to selectedSide to be dynamic
+            },
+            {
+                label: "Style",
+                propertyName: `inputStyles.border.border.${side}.style`, //TODO: Change to selectedSide to be dynamic
+                inputType: "dropdown",
+                hideLabel: true,
+                width: 60,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                dropdownOptions: [
+                    {
+                        value: "solid",
+                        label: "MinusOutlined"
+                    },
+                    {
+                        value: "dashed",
+                        label: "DashOutlined"
+                    },
+                    {
+                        value: "dotted",
+                        label: "SmallDashOutlined"
+                    },
+                    {
+                        value: "none",
+                        label: "CloseOutlined"
+                    }
+                ],
+            },
+            {
+                label: `Color ${side}`,
+                propertyName: `inputStyles.border.border.${side}.color`, //TODO: Change to selectedSide to be dynamic
+                inputType: "color",
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hideLabel: true,
+            }
+        ]
+    }));
+
+    const getCornerInputs = () => cornerOptions.map(corner => ({
+        id: "borderRadiusStyleRow",
+        parentId: "borderStylePnl",
+        inline: true,
+        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+        hidden: { _code: `return  getSettingValue(data?.inputStyles?.border?.selectedCorner) !== '${corner}';`, _mode: 'code', _value: false } as any,
+        inputs: [
+            {
+                label: "Corner Radius",
+                propertyName: "inputStyles.border.selectedCorner",
+                inputType: "radio",
+                buttonGroupOptions: [
+                    {
+                        value: "all",
+                        icon: "ExpandOutlined",
+                        title: "All"
+                    },
+                    {
+                        value: "topLeft",
+                        icon: "RadiusUpleftOutlined",
+                        title: "Top Left"
+                    },
+                    {
+                        value: "topRight",
+                        icon: "RadiusUprightOutlined",
+                        title: "Top Right"
+                    },
+                    {
+                        value: "bottomLeft",
+                        icon: "RadiusBottomleftOutlined",
+                        title: "Bottom Left"
+                    },
+                    {
+                        value: "bottomRight",
+                        icon: "RadiusBottomrightOutlined",
+                        title: "Bottom Right"
+                    }
+                ],
+            },
+            {
+                label: "Radius",
+                hideLabel: true,
+                propertyName: `inputStyles.border.radius.${corner}`,
+            }
+        ]
+    }));
+
     return {
 
         components: new DesignerToolbarSettings(data)
@@ -25,6 +165,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 propertyName: 'propertyName',
                                 label: 'Property Name',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                                styledLabel: true,
+                                size: 'small',
                                 validate: {
                                     required: true,
                                 },
@@ -257,6 +399,27 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             inputs: [
                                                 {
+                                                    label: 'Family',
+                                                    propertyName: 'inputStyles.font.type',
+                                                    inputType: 'dropdown',
+                                                    hideLabel: true,
+                                                    dropdownOptions: [
+                                                        { value: 'Arial', label: 'Arial' },
+                                                        { value: 'Helvetica', label: 'Helvetica' },
+                                                        { value: 'Times New Roman', label: 'Times New Roman' },
+                                                        { value: 'Courier New', label: 'Courier New' },
+                                                        { value: 'Verdana', label: 'Verdana' },
+                                                        { value: 'Georgia', label: 'Georgia' },
+                                                        { value: 'Palatino', label: 'Palatino' },
+                                                        { value: 'monospace', label: 'Monospace' },
+                                                        { value: 'Garamond', label: 'Garamond' },
+                                                        { value: 'Comic Sans MS', label: 'Comic Sans MS' },
+                                                        { value: 'Trebuchet MS', label: 'Trebuchet MS' },
+                                                        { value: 'Arial Black', label: 'Arial Black' },
+                                                        { value: 'impact', label: 'Impact' }
+                                                    ],
+                                                },
+                                                {
                                                     label: 'Size',
                                                     propertyName: 'inputStyles.font.size',
                                                     hideLabel: true,
@@ -280,27 +443,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     inputType: 'color',
                                                     hideLabel: true,
                                                     propertyName: 'inputStyles.font.color',
-                                                },
-                                                {
-                                                    label: 'Family',
-                                                    propertyName: 'inputStyles.font.type',
-                                                    inputType: 'dropdown',
-                                                    hideLabel: true,
-                                                    dropdownOptions: [
-                                                        { value: 'Arial', label: 'Arial' },
-                                                        { value: 'Helvetica', label: 'Helvetica' },
-                                                        { value: 'Times New Roman', label: 'Times New Roman' },
-                                                        { value: 'Courier New', label: 'Courier New' },
-                                                        { value: 'Verdana', label: 'Verdana' },
-                                                        { value: 'Georgia', label: 'Georgia' },
-                                                        { value: 'Palatino', label: 'Palatino' },
-                                                        { value: 'monospace', label: 'Monospace' },
-                                                        { value: 'Garamond', label: 'Garamond' },
-                                                        { value: 'Comic Sans MS', label: 'Comic Sans MS' },
-                                                        { value: 'Trebuchet MS', label: 'Trebuchet MS' },
-                                                        { value: 'Arial Black', label: 'Arial Black' },
-                                                        { value: 'impact', label: 'Impact' }
-                                                    ],
                                                 },
                                                 {
                                                     label: 'Align',
@@ -401,141 +543,36 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 content: {
                                     id: 'borderStylePnl',
                                     components: [...new DesignerToolbarSettings()
-                                        .addSettingsInputRow({
-                                            id: 'borderStyleRow',
-                                            parentId: 'borderStylePnl',
-                                            inline: true,
-                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            inputs: [
-                                                {
-                                                    label: "Border",
-                                                    hideLabel: true,
-                                                    inputType: "button",
-                                                    propertyName: "inputStyles.border.hideBorder",
-                                                    icon: "EyeOutlined",
-                                                    iconAlt: "EyeInvisibleOutlined"
-                                                },
-                                                {
-                                                    label: "Select Side",
-                                                    hideLabel: true,
-                                                    propertyName: "inputStyles.border.selectedSide",
-                                                    inputType: "radio",
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    buttonGroupOptions: [
-                                                        {
-                                                            value: "all",
-                                                            icon: "BorderOutlined",
-                                                            title: "All"
-                                                        },
-                                                        {
-                                                            value: "top",
-                                                            icon: "BorderTopOutlined",
-                                                            title: "Top"
-                                                        },
-                                                        {
-                                                            value: "right",
-                                                            icon: "BorderRightOutlined",
-                                                            title: "Right"
-                                                        },
-                                                        {
-                                                            value: "bottom",
-                                                            icon: "BorderBottomOutlined",
-                                                            title: "Bottom"
-                                                        },
-                                                        {
-                                                            value: "left",
-                                                            icon: "BorderLeftOutlined",
-                                                            title: "Left"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    label: "Width",
-                                                    hideLabel: true,
-                                                    propertyName: "inputStyles.border.border.all.width", //TODO: Change to selectedSide to be dynamic
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any
-                                                },
-                                                {
-                                                    label: "Style",
-                                                    propertyName: "inputStyles.border.border.all.style", //TODO: Change to selectedSide to be dynamic
-                                                    inputType: "dropdown",
-                                                    hideLabel: true,
-                                                    width: 60,
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    dropdownOptions: [
-                                                        {
-                                                            value: "solid",
-                                                            label: "MinusOutlined"
-                                                        },
-                                                        {
-                                                            value: "dashed",
-                                                            label: "DashOutlined"
-                                                        },
-                                                        {
-                                                            value: "dotted",
-                                                            label: "SmallDashOutlined"
-                                                        },
-                                                        {
-                                                            value: "none",
-                                                            label: "CloseOutlined"
-                                                        }
-                                                    ],
-                                                },
-                                                {
-                                                    label: "Color",
-                                                    propertyName: `inputStyles.border.border.all.color`, //TODO: Change to selectedSide to be dynamic
-                                                    inputType: "color",
-                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    hideLabel: true,
-                                                }
-                                            ],
-                                        })
-                                        .addSettingsInputRow({
-                                            id: "borderRadiusStyleRow",
-                                            parentId: "borderStylePnl",
-                                            inline: true,
-                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            inputs: [
-                                                {
-                                                    label: "Corner Radius",
-                                                    propertyName: "inputStyles.border.selectedCorner",
-                                                    inputType: "radio",
-                                                    buttonGroupOptions: [
-                                                        {
-                                                            value: "all",
-                                                            icon: "ExpandOutlined",
-                                                            title: "All"
-                                                        },
-                                                        {
-                                                            value: "topLeft",
-                                                            icon: "RadiusUpleftOutlined",
-                                                            title: "Top Left"
-                                                        },
-                                                        {
-                                                            value: "topRight",
-                                                            icon: "RadiusUprightOutlined",
-                                                            title: "Top Right"
-                                                        },
-                                                        {
-                                                            value: "bottomLeft",
-                                                            icon: "RadiusBottomleftOutlined",
-                                                            title: "Bottom Left"
-                                                        },
-                                                        {
-                                                            value: "bottomRight",
-                                                            icon: "RadiusBottomrightOutlined",
-                                                            title: "Bottom Right"
-                                                        }
-                                                    ],
-                                                },
-                                                {
-                                                    inputType: "number",
-                                                    label: "Radius",
-                                                    hideLabel: true,
-                                                    propertyName: "inputStyles.border.radius.all",  //TODO: Change to selectedCorner to be dynamic
-                                                }
-                                            ]
-                                        })
+                                        .addSettingsInputRow(
+                                            getBorderInputs()[0] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getBorderInputs()[1] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getBorderInputs()[2] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getBorderInputs()[3] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getBorderInputs()[4] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getCornerInputs()[0] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getCornerInputs()[1] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getCornerInputs()[2] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getCornerInputs()[3] as any
+                                        )
+                                        .addSettingsInputRow(
+                                            getCornerInputs()[4] as any
+                                        )
                                         .toJson()
                                     ]
                                 }
@@ -601,53 +638,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             })
                                             .addSettingsInputRow({
-                                                id: "backgroundStyle-gradient",
-                                                parentId: "backgroundStylePnl",
-                                                inputs: [{
-                                                    label: "Direction",
-                                                    propertyName: "inputStyles.background.gradient.direction",
-                                                    inputType: "dropdown",
-                                                    jsSetting: false,
-                                                    hideLabel: true,
-                                                    dropdownOptions: [
-                                                        {
-                                                            value: "to right",
-                                                            label: "To Right"
-                                                        },
-                                                        {
-                                                            value: "to left",
-                                                            label: "To Left"
-                                                        },
-                                                        {
-                                                            value: "to top",
-                                                            label: "To Top"
-                                                        },
-                                                        {
-                                                            value: "to bottom",
-                                                            label: "To Bottom"
-                                                        },
-                                                        {
-                                                            value: "to top right",
-                                                            label: "To Top Right"
-                                                        },
-                                                        {
-                                                            value: "to top left",
-                                                            label: "To Top Left"
-                                                        },
-                                                        {
-                                                            value: "to bottom right",
-                                                            label: "To Bottom Right"
-                                                        },
-                                                        {
-                                                            value: "to bottom left",
-                                                            label: "To Bottom Left"
-                                                        }
-                                                    ]
-                                                }],
-                                                hidden: { _code: 'return  getSettingValue(data?.inputStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                            })
-                                            .addSettingsInputRow({
                                                 id: "backgroundStyle-gradientColors",
                                                 parentId: "backgroundStylePnl",
                                                 inputs: [{
@@ -655,7 +645,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     propertyName: "inputStyles.background.gradient.colors",
                                                     label: "Colors",
                                                     jsSetting: false,
-                                                }],
+                                                }
+                                                ],
                                                 hidden: { _code: 'return  getSettingValue(data?.inputStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                 hideLabel: true,
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -774,7 +765,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         dropdownOptions: [
                                                             {
                                                                 value: "repeat",
-                                                                label: "RetweetOutlined"
+                                                                label: "repeat"
                                                             },
                                                             {
                                                                 value: "repeat-x",
@@ -789,6 +780,56 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: "noRepeat"
                                                             }
                                                         ],
+                                                    }
+                                                ]
+                                            })
+                                            .addSettingsInputRow({
+                                                id: "background-gradient-direcion-StyleRow-controls",
+                                                parentId: "backgroundStyleRow",
+                                                inline: true,
+                                                hidden: { _code: 'return  getSettingValue(data?.inputStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                inputs: [
+                                                    {
+                                                        label: "Direction",
+                                                        propertyName: "inputStyles.background.gradient.direction",
+                                                        inputType: "dropdown",
+                                                        jsSetting: false,
+                                                        hideLabel: true,
+                                                        dropdownOptions: [
+                                                            {
+                                                                value: "to right",
+                                                                label: "To Right"
+                                                            },
+                                                            {
+                                                                value: "to left",
+                                                                label: "To Left"
+                                                            },
+                                                            {
+                                                                value: "to top",
+                                                                label: "To Top"
+                                                            },
+                                                            {
+                                                                value: "to bottom",
+                                                                label: "To Bottom"
+                                                            },
+                                                            {
+                                                                value: "to top right",
+                                                                label: "To Top Right"
+                                                            },
+                                                            {
+                                                                value: "to top left",
+                                                                label: "To Top Left"
+                                                            },
+                                                            {
+                                                                value: "to bottom right",
+                                                                label: "To Bottom Right"
+                                                            },
+                                                            {
+                                                                value: "to bottom left",
+                                                                label: "To Bottom Left"
+                                                            }
+                                                        ]
                                                     }
                                                 ]
                                             })
@@ -855,7 +896,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                             .addCollapsiblePanel({
                                 id: 'styleCollapsiblePanel',
                                 propertyName: 'stylingBox',
-                                label: 'Styles',
+                                label: 'Margin & Padding',
                                 labelAlign: 'right',
                                 ghost: true,
                                 collapsible: 'header',
@@ -868,10 +909,25 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                             hideLabel: true,
                                             propertyName: 'stylingBox',
                                         })
+                                        .toJson()
+                                    ]
+                                }
+                            })
+                            .addCollapsiblePanel({
+                                id: 'customStyleCollapsiblePanel',
+                                propertyName: 'customStyle',
+                                label: 'Custom Style',
+                                labelAlign: 'right',
+                                ghost: true,
+                                collapsible: 'header',
+                                content: {
+                                    id: 'stylePnl-M500-911MFR',
+                                    components: [...new DesignerToolbarSettings()
                                         .addSettingsInput({
                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                             id: 'custom-css-412c-8461-4c8d55e5c073',
                                             propertyName: 'style',
+                                            hideLabel: true,
                                             inputType: 'codeEditor',
                                             label: 'Style',
                                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',

@@ -58,7 +58,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             color: darkslategrey;
             font-weight: 500;
             position: relative;
-            top: 8px;  
+            top: 6px;
     `);
 
 

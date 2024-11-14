@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Switch, Tooltip } from "antd";
-import { CodeEditor, ColorPicker, IconType, SectionSeparator, ShaIcon } from '@/components';
+import { CodeEditor, ColorPicker, IconType, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ResultType } from '@/components/codeEditor/models';
@@ -46,8 +46,8 @@ export interface IInputProps extends IComponentLabelProps {
     label: string;
     propertyName: string;
     inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' |
-    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete' | 'multiColorPicker' | 'contextPropertyAutocomplete';
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' |
+    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete' | 'multiColorPicker' | 'propertyAutocomplete';
     variant?: 'borderless' | 'filled' | 'outlined';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
@@ -117,8 +117,6 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt } = props;
 
-    console.log("VALUe:: ", value);
-
     const iconElement = (icon, size?, tooltip?) => {
         if (typeof icon === 'string') {
             return <Tooltip title={tooltip}> {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
@@ -128,6 +126,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 : icon}
             </Tooltip>;
         }
+        
         return icon;
     };
 
@@ -184,7 +183,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                     onChange}
                 options={typeof dropdownOptions === 'string' ?
                     getValueFromString(dropdownOptions) :
-                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value) }))}
+                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, option.label) }))}
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
@@ -243,6 +242,8 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 size={size}
             />;
 
+        case 'propertyAutocomplete':
+            return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':
             return <ContextPropertyAutocomplete {...props} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'permissions':

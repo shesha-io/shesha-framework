@@ -144,7 +144,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
-    console.log("LOG:::Model", model);
 
     return (
       <ConfigurableFormItem
@@ -188,32 +187,18 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     textType: 'text',
     inputStyles: {
       background: { type: 'color', color: '#ffffff', repeat: 'no-repeat', size: 'cover', position: 'center' },
-      font: {
-        type: 'Arial',
-        size: 14,
-        weight: 400,
-        align: 'left',
-        color: '#0000000'
-      },
-      dimensions: {
-        width: '100%',
-        height: '32px',
-        minHeight: '0px',
-        minWidth: '0px',
-        maxWidth: '100%',
-        maxHeight: '100%',
-      },
+      font: { type: 'Arial', size: 14, weight: 400, align: 'left', color: '#0000000' },
+      dimensions: { width: '100%', height: '32px', minHeight: '0px', minWidth: '0px', maxWidth: '100%', maxHeight: '100%', },
       border: {
         hideBorder: false,
         border: {
-          all:
-          {
-            width: '1px',
-            style: 'solid',
-            color: '#d9d9d9'
-          }
+          all: { width: '1px', style: 'solid', color: '#d9d9d9' },
+          top: { width: '1px', style: 'solid', color: '#d9d9d9' },
+          right: { width: '1px', style: 'solid', color: '#d9d9d9' },
+          bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
+          left: { width: '1px', style: 'solid', color: '#d9d9d9' }
         },
-        radius: { all: 8 },
+        radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
         selectedSide: 'all',
         selectedCorner: 'all'
       },
