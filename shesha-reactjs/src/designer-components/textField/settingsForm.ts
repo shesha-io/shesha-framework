@@ -452,12 +452,12 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 {
                                                     label: "Width",
                                                     hideLabel: true,
-                                                    propertyName: "inputStyles.border.border.{{data.inputStyles.border.selectedSide}}.width",
+                                                    propertyName: "inputStyles.border.border.all.width", //TODO: Change to selectedSide to be dynamic
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any
                                                 },
                                                 {
                                                     label: "Style",
-                                                    propertyName: "inputStyles.border.border.{{data.inputStyles.border.selectedSide}}.style",
+                                                    propertyName: "inputStyles.border.border.all.style", //TODO: Change to selectedSide to be dynamic
                                                     inputType: "dropdown",
                                                     hideLabel: true,
                                                     width: 60,
@@ -483,7 +483,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 },
                                                 {
                                                     label: "Color",
-                                                    propertyName: `inputStyles.border.border.{{data.inputStyles.border.selectedSide}}.color`,
+                                                    propertyName: `inputStyles.border.border.all.color`, //TODO: Change to selectedSide to be dynamic
                                                     inputType: "color",
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     hideLabel: true,
@@ -532,7 +532,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     inputType: "number",
                                                     label: "Radius",
                                                     hideLabel: true,
-                                                    propertyName: "inputStyles.border.radius.{{data.inputStyles.border.selectedCorner}}",
+                                                    propertyName: "inputStyles.border.radius.all",  //TODO: Change to selectedCorner to be dynamic
                                                 }
                                             ]
                                         })
@@ -848,14 +848,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     hideLabel: true,
                                                     width: 60,
                                                     icon: 'blur',
-                                                    propertyName: 'inputStyles.shadow.blur',
+                                                    propertyName: 'inputStyles.shadow.blurRadius',
                                                 },
                                                 {
                                                     label: 'Spread',
                                                     hideLabel: true,
                                                     width: 60,
                                                     icon: 'spread',
-                                                    propertyName: 'inputStyles.shadow.spread',
+                                                    propertyName: 'inputStyles.shadow.spreadRadius',
                                                 },
                                                 {
                                                     label: 'Color',

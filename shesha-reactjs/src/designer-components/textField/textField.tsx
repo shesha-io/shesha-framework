@@ -181,7 +181,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (model) => getSettings(model),
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     ...model,
