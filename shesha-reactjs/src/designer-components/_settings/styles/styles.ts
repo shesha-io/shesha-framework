@@ -59,6 +59,10 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             font-weight: 500;
             position: relative;
             top: 6px;
+
+            +.ant-form-item-tooltip {
+            align-self: end !important;
+            }
     `);
 
 

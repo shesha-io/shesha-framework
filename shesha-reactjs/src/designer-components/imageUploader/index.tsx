@@ -17,18 +17,14 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     const [fileList, setFileList] = useState<UploadFile[]>(value ? [{ ...value }] : []);
     const { styles } = useStyles();
 
-    const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
-    useEffect(() => {
-        if (value?.uid) {
-            setFileList([value]);
-        }
-    }, [value]);
+    const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await toBase64(file.originFileObj as File);
         }
+
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
@@ -40,6 +36,8 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
         if (file?.originFileObj) {
             const base64Image = await toBase64(file.originFileObj as File);
             onChange({ ...file, url: base64Image, fileName: "" });
+        } else {
+            onChange({});
         }
     };
 

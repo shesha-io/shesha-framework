@@ -139,15 +139,15 @@ export const customIcons = {
             <rect width="20" height="20" fill="#D9D9D9"></rect>
         </mask>
         <g mask="url(#mask0_9_15)">
-            <rect x="4.17" y="3.33" width="11.67" height="0.83" fill="#1C1B1F"></rect>
-            <rect x="4.17" y="4.17" width="0.83" height="5" fill="#1C1B1F"></rect>
-            <rect x="15" y="4.17" width="0.83" height="5" fill="#1C1B1F"></rect>
-            <rect x="5" y="8.33" width="10" height="0.83" fill="#1C1B1F"></rect>
-            <rect x="5.83" y="16.44" width="8.33" height="0.83" fill="#1C1B1F"></rect>
-            <rect x="5.83" y="13.94" width="8.33" height="0.83" fill="#1C1B1F"></rect>
-            <rect x="5.83" y="14.55" width="0.83" height="2.5" fill="#1C1B1F"></rect>
-            <rect x="13.33" y="14.55" width="0.83" height="2.5" fill="#1C1B1F"></rect>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.666 9.167V12.426L8.271 11.031 7.791 11.5 10 13.708 12.208 11.5 11.729 11.031 10.334 12.426V9.167H9.666Z" fill="#1C1B1F"></path>
+            <rect x="4.17" y="3.33" width="11.67" height="0.83" fill="#000000"></rect>
+            <rect x="4.17" y="4.17" width="0.83" height="5" fill="#000000"></rect>
+            <rect x="15" y="4.17" width="0.83" height="5" fill="#000000"></rect>
+            <rect x="5" y="8.33" width="10" height="0.83" fill="#000000"></rect>
+            <rect x="5.83" y="16.44" width="8.33" height="0.83" fill="#000000"></rect>
+            <rect x="5.83" y="13.94" width="8.33" height="0.83" fill="#000000"></rect>
+            <rect x="5.83" y="14.55" width="0.83" height="2.5" fill="#000000"></rect>
+            <rect x="13.33" y="14.55" width="0.83" height="2.5" fill="#000000"></rect>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.666 9.167V12.426L8.271 11.031 7.791 11.5 10 13.708 12.208 11.5 11.729 11.031 10.334 12.426V9.167H9.666Z" fill="#000000"></path>
         </g>
     </svg>,
     readonly: <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

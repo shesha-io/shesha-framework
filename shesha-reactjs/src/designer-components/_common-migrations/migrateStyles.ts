@@ -2,49 +2,45 @@ import { addPx } from "../_settings/utils";
 import { IInputStyles, ITextFieldComponentProps } from "../textField/interfaces";
 import { IStyleType } from "@/interfaces";
 
-export const migrateStyles = (prev: ITextFieldComponentProps) => {
-    const styles: IInputStyles = {
-        size: prev.size,
-        width: prev.width,
-        height: prev.height,
-        hideBorder: prev.hideBorder,
-        borderSize: prev.borderSize,
-        borderRadius: prev.borderRadius,
-        borderColor: prev.borderColor,
-        fontSize: prev.fontSize,
-        fontColor: prev.fontColor,
-        backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox
+export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
+
+    const migrateStyles = (screen: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
+        const prevStyles = prev[screen] as IInputStyles;
+
+        return {
+            border: {
+                hideBorder: prevStyles?.hideBorder,
+                border: { all: { width: prevStyles?.borderSize + "" } },
+                radius: { all: prevStyles?.borderRadius },
+            },
+            background: {
+                type: 'color',
+                color: prevStyles.backgroundColor || '#fff',
+            },
+            font: {
+                color: prevStyles.fontColor || '#000',
+                size: prevStyles.fontSize as number || 14,
+                weight: prevStyles.fontWeight as number || 400,
+            },
+            dimensions: {
+                height: addPx(prevStyles.height),
+                width: addPx(prevStyles.width),
+            },
+        }
     };
 
-    const migrateStyles = (styles: IInputStyles): IStyleType => ({
-        border: {
-            hideBorder: styles.hideBorder,
-            border: { all: { width: styles.borderSize + "" } },
-            radius: { all: styles.borderRadius },
-        },
-        background: {
-            type: 'color',
-            color: styles.backgroundColor || '#fff',
-        },
-        font: {
-            color: styles.fontColor || '#000',
-            size: styles.fontSize as number || 14,
-            weight: styles.fontWeight as number || 400,
-        },
-        dimensions: {
-            height: addPx(styles.height),
-            width: addPx(styles.width),
-        },
-    });
+    console.log("desktop:", migrateStyles('desktop'),
+        "tablet:", migrateStyles('tablet'),
+        "mobile:", migrateStyles('mobile'))
 
     const result: ITextFieldComponentProps = {
         ...prev,
-        desktop: migrateStyles(styles),
-        tablet: migrateStyles(styles),
-        mobile: migrateStyles(styles)
+        desktop: migrateStyles('desktop'),
+        tablet: migrateStyles('tablet'),
+        mobile: migrateStyles('mobile')
     };
 
+    console.log("result:", result)
 
     return result;
 }; 

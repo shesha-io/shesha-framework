@@ -16,19 +16,7 @@ export const fontTypes = [
     { value: 'Trebuchet MS', label: 'Trebuchet MS' },
     { value: 'Arial Black', label: 'Arial Black' },
     { value: 'impact', label: 'Impact' },
-];
-
-export const fontWeights = [
-    { value: '100', label: '100 - thin' },
-    { value: '200', label: '200 - extra-light' },
-    { value: '300', label: '300 - light' },
-    { value: '400', label: '400 - normal' },
-    { value: '500', label: '500 - medium' },
-    { value: '600', label: '600 - semi-bold' },
-    { value: '700', label: '700 - bold' },
-    { value: '800', label: '800 - extra-bold' },
-    { value: '900', label: '900 - black' },
-];
+]
 
 
 export const alignOptions = [

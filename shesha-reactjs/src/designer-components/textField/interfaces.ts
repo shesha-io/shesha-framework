@@ -18,8 +18,6 @@ export interface IInputStyles {
   width?: string | number;
   backgroundColor?: string;
   hideBorder?: boolean;
-  styles?: IStyleType;
-  style?: string;
 };
 
 export interface ITextFieldComponentProps extends IConfigurableFormComponent {

@@ -25,7 +25,7 @@ import settingsFormJson from './settingsForm.json';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
-import { migrateStyles } from '../_common-migrations/migrateStyles';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -57,8 +57,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const data = model;
 
-    console.log("TextField:: ", model);
-
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
     const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -76,8 +74,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-    console.log(`inputStyles.border.border.${border?.selectedCorner}.width`);
-
+    console.log("MODEL:::", model)
     useEffect(() => {
 
       const fetchStyles = async () => {
@@ -184,7 +181,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     ...model,
-    textType: 'text',
+    textType: 'password',
     inputStyles: {
       background: { type: 'color', color: '#ffffff', repeat: 'no-repeat', size: 'cover', position: 'center' },
       font: { type: 'Arial', size: 14, weight: 400, align: 'left', color: '#0000000' },
@@ -229,13 +226,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         fontSize: prev.fontSize,
         fontColor: prev.fontColor,
         backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox
+        stylingBox: prev.stylingBox,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => migrateStyles(prev))
-  , linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
+    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),
+  linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,
       textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text',

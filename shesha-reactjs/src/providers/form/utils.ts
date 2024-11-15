@@ -203,7 +203,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => axiosHttp(backendUrl),
     message: () => message,
     data: () => {
-      const data = {...shaFormInstance?.formData};
+      const data = { ...shaFormInstance?.formData };
       return removeGhostKeys(data);
     },
     form: () => {
@@ -246,6 +246,11 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
   if (!value) return value;
 
   if (typeof value === 'object') {
+    if (value._mode === 'code') {
+      return calcFunction(value, allData);
+    } else if (value._mode === 'value') {
+      return value._value;
+    }
     // If array - update all items
     if (Array.isArray(value)) {
       return value;
@@ -259,8 +264,10 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
       */
     }
 
+
     // update setting value to actual
     if (isPropertySettings(value)) {
+
       switch (value._mode) {
         case 'code': {
           return Boolean(value._code) ? calcFunction(value, allData) : undefined;
@@ -1616,7 +1623,7 @@ export interface EvaluationContext {
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
   if (!data)
     return data;
-  
+
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;
