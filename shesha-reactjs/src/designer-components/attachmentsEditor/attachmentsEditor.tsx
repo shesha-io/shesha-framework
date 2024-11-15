@@ -1,5 +1,5 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { App } from 'antd';
 import moment from 'moment';
 import React from 'react';
 import { CustomFile } from '@/components';
@@ -48,6 +48,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const form = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
+    const { message } = App.useApp();
 
     const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
 

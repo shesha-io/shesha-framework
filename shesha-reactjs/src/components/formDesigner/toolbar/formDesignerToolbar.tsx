@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import { message } from 'antd';
+import { App } from 'antd';
 import { CreateNewVersionButton } from './createNewVersionButton';
 import { FormConfigurationDto } from '@/providers/form/api';
 import { SaveMenu } from './saveMenu';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useShaRouting, useSheshaApplication } from '@/providers';
+import { useCanvas, useShaRouting, useSheshaApplication } from '@/providers';
 import { PublishButton } from './publishButton';
 import { DebugButton } from './debugButton';
 import { UndoRedoButtons } from './undoRedoButtons';
@@ -21,9 +21,11 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { router } = useShaRouting(false) ?? {};
   const { readOnly } = useFormDesignerState();
   const { styles } = useStyles();
+  const { message } = App.useApp();
 
   const { formSettings } = useFormDesignerState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { activeDevice } = useCanvas();
 
   const isGranted = formSettings?.access !== 4 || anyOfPermissionsGranted(formSettings?.permissions || []);
 
@@ -48,7 +50,10 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             <CreateNewVersionButton onSuccess={onVersionCreated} />
             <PublishButton />
           </div>
-          <CanvasConfig/>
+          <div className={styles.shaDesignerToolbarCenter}>
+            <CanvasConfig/>
+            <small>Styling applicable for <b>{activeDevice}</b></small>
+          </div>
           <div className={styles.shaDesignerToolbarRight}>
             <FormSettingsButton />
             <PreviewButton />

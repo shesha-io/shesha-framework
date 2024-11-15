@@ -35,6 +35,11 @@ export const getSettings = () =>
             label: 'Edit mode',
             jsSetting: true,
           })
+          .addCheckbox({
+            id: 'wBQB4hK-jX',
+            propertyName: 'useAsyncEvaluation',
+            label: 'Async evaluation',
+          })
           .addCodeEditor({
             id: '9bwTOXitpfb7rb0DhhQIecgxfkvAZh',
             propertyName: 'availableConstantsExpression',
@@ -62,6 +67,34 @@ export const getSettings = () =>
               };
               result.addMetadataBuilder();
               return result.build();
+            },
+            resultTypeExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder.metadata();
+            },
+            validate: {},
+            wrapInTemplate: true
+          })
+          .addCodeEditor({
+            id: '0vdsTdr-zK',
+            propertyName: 'resultTypeExpression',
+            componentName: 'resultTypeExpression',
+            label: 'Result type',
+            labelAlign: 'right',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            mode: 'dialog',
+            version: 3,
+            settingsValidationErrors: [],
+            templateSettings: {
+              functionName: 'getResultType',
+              useAsyncDeclaration: true
+            },
+            availableConstantsExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder.object("constants")
+                .addStandard(["shesha:metadataBuilder", "shesha:form", "shesha:formData"])
+                .build();
+            },
+            resultTypeExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder.metadata();
             },
             validate: {},
             wrapInTemplate: true

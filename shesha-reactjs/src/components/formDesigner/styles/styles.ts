@@ -7,6 +7,7 @@ const designerClassNames = {
     designerWorkArea: "sha-designer-work-area",
     hasConfigErrors: "has-config-errors",
     mainArea: "sha-designer-main-area",
+    previewBorderTop10: "preview-form-border-top-10",
     shaComponent: "sha-component",
     shaComponentControls: "sha-component-controls",
     shaComponentGhost: "sha-component-ghost",
@@ -24,6 +25,7 @@ const designerClassNames = {
     shaToolboxComponents: "sha-toolbox-components",
     shaDesignerToolbarLeft: "sha-designer-toolbar-left",
     shaDesignerToolbarRight: "sha-designer-toolbar-right",
+    shaDesignerToolbarCenter: "sha-designer-toolbar-center",
     shaDesignerToolbox: "sha-designer-toolbox",
     shaDesignerWarning: "sha-designer-warning",
     shaDragging: "sha-dragging",
@@ -50,11 +52,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaHelpIcon,
         shaDragging,
         componentDragHandle,
+        previewBorderTop10,
         sidebarContainerMainAreaBody,
         shaDesignerToolbar,
         shaToolboxComponents,
         shaDesignerToolbarLeft,
         shaDesignerToolbarRight,
+        shaDesignerToolbarCenter,
         shaDesignerCanvasConfig,
         shaDesignerToolbox,
         sidebarHeaderTitle,
@@ -123,6 +127,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
    `);
     */
     const formDesigner = cx(formDesignerClassName, css`
+        .${previewBorderTop10} {
+            border-top: 1px solid #d3d3d3;
+        }
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -174,6 +181,19 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .${prefixCls}-btn {
                 margin-left: 2px;
                 }
+            }
+
+
+            .${shaDesignerToolbarCenter} {
+                width: 180px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                    small {
+                        align-content: center;
+                        align-items: center;
+                        width: 170px;
+                    }
             }
             .${shaDesignerCanvasConfig} {
                 display: flex;
@@ -246,7 +266,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
         
                 &.active {
-                    background-color: #ebf3fb;
+                    background-color: ${token.colorPrimaryBg}80;
                 }
                 .${shaToolboxPanelItems} {
                     margin:-1rem -0.8rem;
@@ -328,7 +348,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
 
         .${shaComponentGhost} {
-            border: 1px dashed #4099ff;
+            border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
             opacity: 0.7;
 
@@ -348,9 +368,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         
             &.selected {
-              border: #61affe 1px solid;
+              border: ${token.colorPrimary} 1px solid;
               border-radius: 4px;
-              background-color: #ebf3fb;
+              background-color: ${token.colorPrimaryBg}80;
             }
         
             &.${hasConfigErrors} {
@@ -380,7 +400,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: 100%;
               position: relative;
               cursor: grab;
-              border: 1px dashed #61affe;
+              border: 1px dashed ${token.colorPrimary};
               box-sizing: border-box;
             }
             &:not(:hover) {

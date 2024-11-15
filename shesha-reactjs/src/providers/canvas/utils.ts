@@ -1,7 +1,7 @@
 import { IDeviceTypes } from "./contexts";
 
 export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
-  return width > 924
+  return width > 724
     ? 'desktop'
     : width > 599
       ? 'tablet'
@@ -12,7 +12,7 @@ export const getWidthByDeviceType = (deviceType: IDeviceTypes): string => {
   return deviceType === 'desktop'
     ? '100%'
     : deviceType === 'tablet'
-      ? '924px'
+      ? '724px'
       : '599px';
 };
 

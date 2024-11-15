@@ -25,22 +25,36 @@ namespace Shesha.FluentMigrator
             _migration = migration;
         }
 
+        private DbmsType DbmsType
+        {
+            get {
+                var dbType = _context.QuerySchema is IMigrationProcessor mp
+                    ? mp.DatabaseType
+                    : null;
+                return dbType switch {
+                    "PostgreSQL" or "Postgres" => DbmsType.PostgreSQL,                     
+                    "SQLServer" => DbmsType.SQLServer,
+                    _ => DbmsType.SQLServer,
+                };
+            }
+        }
+
         #region Reference Lists
 
-        [Obsolete]
+    [Obsolete]
         public IAddReferenceListSyntax ReferenceListCreate(string @namespace, string name) 
         {
-            var expression = new AddReferenceListExpression(_context.QuerySchema, @namespace, name);
+            var expression = new AddReferenceListExpression(DbmsType, _context.QuerySchema, @namespace, name);
             
             _context.Expressions.Add(expression);
 
-            return new AddReferenceListExpressionBuilder(expression, _context);
+            return new AddReferenceListExpressionBuilder(DbmsType, expression, _context);
         }
 
         [Obsolete]
         public IDeleteReferenceListSyntax ReferenceListDelete(string @namespace, string name)
         {
-            var expression = new DeleteReferenceListExpression(_context.QuerySchema, @namespace, name);
+            var expression = new DeleteReferenceListExpression(DbmsType, _context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -50,11 +64,11 @@ namespace Shesha.FluentMigrator
         [Obsolete]
         public IUpdateReferenceListSyntax ReferenceListUpdate(string @namespace, string name)
         {
-            var expression = new UpdateReferenceListExpression(_context.QuerySchema, @namespace, name);
+            var expression = new UpdateReferenceListExpression(DbmsType, _context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
-            return new UpdateReferenceListExpressionBuilder(expression, _context);
+            return new UpdateReferenceListExpressionBuilder(DbmsType, expression, _context);
         }
 
         #endregion
@@ -64,16 +78,16 @@ namespace Shesha.FluentMigrator
 
         public IAddNotificationSyntax NotificationCreate(string @namespace, string name)
         {
-            var expression = new AddNotificationExpression(@namespace, name);
+            var expression = new AddNotificationExpression(DbmsType, _context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
-            return new AddNotificationExpressionBuilder(expression, _context);
+            return new AddNotificationExpressionBuilder(DbmsType, _context.QuerySchema, expression, _context);
         }
 
         public IDeleteNotificationSyntax NotificationDelete(string @namespace, string name)
         {
-            var expression = new DeleteNotificationExpression(@namespace, name);
+            var expression = new DeleteNotificationExpression(DbmsType, _context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -82,17 +96,17 @@ namespace Shesha.FluentMigrator
 
         public IUpdateNotificationSyntax NotificationUpdate(string @namespace, string name)
         {
-            var expression = new UpdateNotificationExpression (@namespace, name);
+            var expression = new UpdateNotificationExpression(DbmsType, _context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
-            return new UpdateNotificationExpressionBuilder(expression, _context);
+            return new UpdateNotificationExpressionBuilder(DbmsType, _context.QuerySchema, expression, _context);
         }
 
         
         public IAddNotificationTemplateSyntax NotificationTemplateCreate(string @namespace, string name)
         {
-            var expression = new AddNotificationTemplateExpression(@namespace, name);
+            var expression = new AddNotificationTemplateExpression(DbmsType, _context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -101,7 +115,7 @@ namespace Shesha.FluentMigrator
 
         public IDeleteNotificationTemplateSyntax NotificationTemplateDelete(Guid id)
         {
-            var expression = new DeleteNotificationTemplateExpression { TemplateId = id };
+            var expression = new DeleteNotificationTemplateExpression(DbmsType, _context.QuerySchema) { TemplateId = id };
 
             _context.Expressions.Add(expression);
 
@@ -110,7 +124,7 @@ namespace Shesha.FluentMigrator
 
         public IUpdateNotificationTemplateSyntax NotificationTemplateUpdate(Guid id)
         {
-            var expression = new UpdateNotificationTemplateExpression { Id = id };
+            var expression = new UpdateNotificationTemplateExpression(DbmsType, _context.QuerySchema) { Id = id };
 
             _context.Expressions.Add(expression);
 
@@ -126,10 +140,10 @@ namespace Shesha.FluentMigrator
             var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
 
-            var expression = new AddSettingConfigurationExpression(moduleName, name, displayName);
+            var expression = new AddSettingConfigurationExpression(DbmsType, _context.QuerySchema, moduleName, name, displayName);
 
             _context.Expressions.Add(expression);
-
+            
             return new AddSettingConfigurationExpressionBuilder(expression, _context);
         }
 
@@ -138,7 +152,7 @@ namespace Shesha.FluentMigrator
             var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
 
-            var expression = new UpdateSettingConfigurationExpression(moduleName, name);
+            var expression = new UpdateSettingConfigurationExpression(DbmsType, _context.QuerySchema, moduleName, name);
 
             _context.Expressions.Add(expression);
 
@@ -150,7 +164,7 @@ namespace Shesha.FluentMigrator
             var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
 
-            var expression = new DeleteSettingConfigurationExpression(moduleName, name);
+            var expression = new DeleteSettingConfigurationExpression(DbmsType, _context.QuerySchema, moduleName, name);
 
             _context.Expressions.Add(expression);
 

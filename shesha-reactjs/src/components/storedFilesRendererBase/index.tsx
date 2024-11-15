@@ -4,8 +4,7 @@ import {
   Alert,
   Button,
   ButtonProps,
-  message,
-  notification,
+  App,
   Upload
   } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
@@ -73,6 +72,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
+  const { message, notification } = App.useApp();
 
   const openFilesZipNotification = () =>
     notification.success({

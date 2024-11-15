@@ -30,6 +30,7 @@ import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfac
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
+import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -97,6 +98,8 @@ type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, '
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
+
+type PropertyRouterType = ToolbarSettingsProp & Omit<IPropertyRouterProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -237,6 +240,10 @@ export class DesignerToolbarSettings<T> {
 
   public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
     return this.addProperty(props, 'divider');
+  }
+
+  public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {
+    return this.addProperty(props, 'propertyRouter');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

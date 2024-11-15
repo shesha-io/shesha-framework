@@ -163,6 +163,18 @@
             "version": 1
           },
           {
+            "id": "6bac1a1f-67a2-48b5-a11e-b474e30d282e",
+            "type": "numberField",
+            "propertyName": "borderRadius",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "label": "Border Radius",
+            "defaultValue": 8,
+            "version": 2,
+            "textType": "number",
+            "max": 40,
+            "jsSetting": false
+          },
+          {
             "id": "d95693e6-f8dc-4f77-9ec4-68a14612cf34",
             "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
             "type": "colorPicker",

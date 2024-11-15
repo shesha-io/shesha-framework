@@ -1,35 +1,74 @@
+import {
+  ArcElement, CategoryScale,
+  Chart as ChartJS,
+  ChartOptions,
+  Decimation,
+  DoughnutController,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController, LineElement,
+  PieController,
+  PointElement,
+  RadialLinearScale,
+  Title, Tooltip,
+} from 'chart.js';
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-  ChartOptions,
-} from 'chart.js';
-import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+import { IChartData, IChartDataProps } from '../../model';
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
 }
 
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  DoughnutController,
+  PieController,
+  RadialLinearScale,
+  Decimation,
+  Filler,
+  ArcElement,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Legend,
+);
+
 const PieChart = ({ data }: IPieChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
+
+
+  if (!data || !data.datasets || !data.labels) {
+    if (!data)
+      throw new Error('PieChart: No data to display. Please check the data source');
+
+    if (!data.datasets || !data.labels)
+      throw new Error('PieChart: No datasets or labels to display. Please check the data source');
+  }
+
+  data.datasets.forEach((dataset: { data: any[] }) => {
+    dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
+  });
 
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
       legend: {
-        display: showLegend,
+        display: showXAxisScale ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle,
-        text: title || `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        display: showTitle ? true : false,
+        text: title?.trim() || `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },
     layout: {

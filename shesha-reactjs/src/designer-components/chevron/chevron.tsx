@@ -3,10 +3,10 @@ import { FolderOpenOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
-import { RefListItemGroupConfiguratorProvider } from '@/components/chevron/provider';
+import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
 import { ChevronSettingsForm } from './settings';
 import { ConfigurableFormItem } from '@/components';
-import { IChevronProps } from '@/components/chevron/provider/models';
+import { IChevronProps } from '@/components/chevron/models';
 
 const ChevronComponent: IToolboxComponent<IChevronProps> = {
   type: 'chevron',

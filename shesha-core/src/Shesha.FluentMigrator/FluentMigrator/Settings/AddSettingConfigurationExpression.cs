@@ -6,11 +6,11 @@ namespace Shesha.FluentMigrator.Settings
     /// <summary>
     /// Add setting configuration expression
     /// </summary>
-    public class AddSettingConfigurationExpression : MigrationExpressionBase
+    public class AddSettingConfigurationExpression : SheshaMigrationExpressionBase
     {
         private readonly string _migrationModule;
 
-        public AddSettingConfigurationExpression(string migrationModule, string name, string displayName)
+        public AddSettingConfigurationExpression(DbmsType dbmsType, IQuerySchema querySchema, string migrationModule, string name, string displayName) : base(dbmsType, querySchema)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException($"`{nameof(name)}` is mandatory", nameof(name));
@@ -52,7 +52,7 @@ namespace Shesha.FluentMigrator.Settings
             var exp = new PerformDBOperationExpression()
             {
                 Operation = (connection, transaction) => {
-                    var helper = new SettingsDbHelper(connection, transaction);
+                    var helper = new SettingsDbHelper(DbmsType, connection, transaction);
 
                     var dataType = DataType.IsSet
                         ? DataType.Value

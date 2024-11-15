@@ -23,7 +23,7 @@ export const getQueryString = (url: string) => {
     const idx = url?.indexOf('?');
 
     return typeof idx !== 'number' || idx === -1 ? undefined : url.substring(idx);
-  } catch (_e) {
+  } catch {
     return undefined;
   }
 };
@@ -37,8 +37,8 @@ export const getQueryParams = (url?: string): QueryStringParams => {
   return qs.parse(queryString, { ignoreQueryPrefix: true });
 };
 
-export const getQueryParam = (name: string) => {
-  const result = getQueryParams()[name];
+export const getQueryParam = (name: string, url?: string) => {
+  const result = getQueryParams(url)[name];
 
   return result;
 };

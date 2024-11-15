@@ -676,6 +676,24 @@
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
     },
+
+    
+    {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
     {
       "id": "7UJDsvMw_E9kg5mvIL6XT",
       "type": "collapsiblePanel",
@@ -778,7 +796,7 @@
             "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
             "type": "checkbox",
             "propertyName": "hideBorder",
-            "label": "Hide border",
+            "label": "Hide Border",
             "parentId": "G670M5i5T85_M0HrSligg",
             "hidden": false,
             "validate": {},
@@ -895,7 +913,9 @@
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
-    },
+    }
+  ]
+  },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIp",
       "type": "collapsiblePanel",

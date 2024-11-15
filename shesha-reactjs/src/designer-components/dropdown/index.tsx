@@ -11,7 +11,7 @@ import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDropdownComponentProps } from './model';
 import { IToolboxComponent } from '@/interfaces';
-import { message } from 'antd';
+import { App } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
@@ -23,6 +23,7 @@ import {
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -39,6 +40,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { data: formData } = useFormData();
+    const { message } = App.useApp();
     const eventProps = {
       model,
       form: getFormApi(form),
@@ -96,6 +98,15 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
             : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IDropdownComponentProps>(7, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

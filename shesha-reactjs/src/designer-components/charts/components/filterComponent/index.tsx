@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Select, Input, Space, Row, Col, Flex } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { IFilter } from '../../model';
+import useStyles from '../../styles';
 
 const { Option } = Select;
 
@@ -22,6 +23,7 @@ const FilterComponent = ({
   onFilter: () => void;
   resetFilter: () => void;
 }) => {
+  const { styles, cx } = useStyles();
   // Add new filter condition
   const addCondition = () => {
     // Update filters state with new filter condition
@@ -49,7 +51,7 @@ const FilterComponent = ({
       }}
     >
       {filters?.map((filter, index) => (
-        <Space key={index} direction="vertical" style={{ width: '100%' }}>
+        <Space key={index} direction="vertical" className={index > 0 ? cx(styles.fullWidth, styles['margin-top-5']) : cx(styles.fullWidth)}>
           <Row align="middle">
             <Col flex="auto">
               <Row gutter={8}>
@@ -59,7 +61,7 @@ const FilterComponent = ({
                     placeholder="Select property"
                     value={filter.property}
                     onChange={(value) => handleInputChange(index, 'property', value)}
-                    style={{ width: '100%' }}
+                    className={cx(styles.fullWidth)}
                   >
                     {properties.map((property: any) => (
                       <Option key={property} value={property}>
@@ -74,7 +76,7 @@ const FilterComponent = ({
                     placeholder="Select operator"
                     value={filter.operator}
                     onChange={(value) => handleInputChange(index, 'operator', value)}
-                    style={{ width: '100%' }}
+                    className={cx(styles.fullWidth)}
                   >
                     <Option value="equals">Equals</Option>
                     <Option value="not_equals">Not Equals</Option>
@@ -89,19 +91,17 @@ const FilterComponent = ({
                   </Select>
                 </Col>
                 {/* Input value */}
-                <Col span={6}>
-                  <Input
-                    placeholder="Enter a value"
-                    value={filter.value}
-                    onChange={(e) => handleInputChange(index, 'value', e.target.value)}
-                  />
-                </Col>
+                {filter.operator === 'is_empty' || filter.operator === 'is_not_empty' ? null : (
+                  <Col span={6}>
+                    <Input
+                      placeholder="Enter a value"
+                      value={filter.value}
+                      onChange={(e) => handleInputChange(index, 'value', e.target.value)}
+                    />
+                  </Col>
+                )}
                 {/* Delete Button */}
-                <Col span={2} style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}>
+                <Col span={2} className={cx(styles.flexCenterCenter)}>
                   <Flex justify='center' align='center'>
                     <Button
                       icon={<DeleteOutlined />}
@@ -129,12 +129,12 @@ const FilterComponent = ({
         type="dashed"
         block
         icon={<PlusOutlined />}
-        style={{ marginTop: 10 }}
+        className={cx(styles['margin-top-10'])}
       >
         Add condition
       </Button>
       <Flex justify='end' align='center'
-        style={{ marginTop: 10, gap: 10 }}
+        className={cx(styles['margin-top-10'], styles['gap-10'])}
       >
         <Button key="cancel" size='small' onClick={onClose}>
           Hide

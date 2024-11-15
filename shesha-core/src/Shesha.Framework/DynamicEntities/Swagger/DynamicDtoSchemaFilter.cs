@@ -1,4 +1,9 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Abp.Domain.Entities.Auditing;
+using Microsoft.OpenApi.Models;
+using Nito.AsyncEx.Synchronous;
+using Shesha.Configuration.Runtime;
+using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -7,28 +12,48 @@ using Shesha.Services;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Shesha.DynamicEntities.Swagger
 {
     public class DynamicDtoSchemaFilter : ISchemaFilter
     {
+
+        private readonly IEntityConfigCache _entityConfigCache;
+            
+        public DynamicDtoSchemaFilter(
+            IEntityConfigCache entityConfigCache
+        ) 
+        {
+            _entityConfigCache = entityConfigCache;
+        }
+
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
             var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
+            var isGeneric = context.Type.IsGenericType;
 
             if (!context.Type.IsDynamicDto() || isProxy)
                 return;
 
-            var srcProperties = context.Type.IsGenericType
-                ? context.Type.GetGenericArguments()[0]?.GetProperties().Where(x => x.PropertyType.IsEntityType()).Select(x => x.Name).ToList()
+            var modelType = isGeneric ? context.Type : context.Type.FindBaseGenericType(typeof(DynamicDto<,>));
+
+            var isCreateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(CreateDynamicDto<,>));
+            var isUpdateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(UpdateDynamicDto<,>));
+
+            var srcType = modelType.GetGenericArguments()[0];
+            var srcProperties = srcType?.GetProperties().ToList();
+            var entityReferenceProperties = srcProperties?.Where(x => x.PropertyType.IsEntityType()).Select(x => x.Name).ToList();
+
+            var propertiesConfigs = srcType != null 
+                ? _entityConfigCache.GetEntityPropertiesAsync(srcType).WaitAndUnwrapException() 
                 : null;
 
             var dtoBuilder = StaticContext.IocManager.Resolve<IDynamicDtoTypeBuilder>();
-
             var builderContext = new DynamicDtoTypeBuildingContext
             {
-                ModelType = context.Type
+                ModelType = modelType
             };
             var dtoType = AsyncHelper.RunSync(async () => await dtoBuilder.BuildDtoFullProxyTypeAsync(builderContext.ModelType, builderContext));
 
@@ -40,12 +65,31 @@ namespace Shesha.DynamicEntities.Swagger
             var allProperties = dtoType.GetProperties();
             foreach (var property in allProperties)
             {
-                if (propNames.Contains(property.Name.ToLower()))
+                var propertyName = property.Name;
+                var srcProperty = srcProperties?.FirstOrDefault(x => x.Name == propertyName);
+                
+                if (
+                    // skip already added
+                    propNames.Contains(propertyName.ToLower())
+                    || (isCreateDto || isUpdateDto)
+                        && // skip special properties
+                        (propertyName != nameof(FullAuditedEntity.Id) && propertyName.IsSpecialProperty()
+                        || // skip system Readonly attributes
+                        srcProperty?.GetAttribute<ReadOnlyAttribute>(true) != null
+                        || // skip EntityConfig Reaadonly
+                        (propertiesConfigs?.FirstOrDefault(x => x.Name == propertyName)?.ReadOnly ?? false)
+                        || !(srcProperty?.CanWrite ?? true)
+                    )
+                    || // skip Shesha Readonly attributes
+                    isCreateDto && !(srcProperty?.GetAttribute<ReadonlyPropertyAttribute>(true)?.Insert ?? true)
+                    || // skip Shesha Readonly attributes
+                    isUpdateDto && !(srcProperty?.GetAttribute<ReadonlyPropertyAttribute>(true)?.Update ?? true)
+                )
                     continue;
 
                 var propertySchema = context.SchemaGenerator.GenerateSchema(property.PropertyType, context.SchemaRepository, memberInfo: property);
 
-                if (srcProperties?.Contains(property.Name) ?? false)
+                if (entityReferenceProperties?.Contains(property.Name) ?? false)
                 {
                     var anyOf = new List<OpenApiSchema>()
                     {

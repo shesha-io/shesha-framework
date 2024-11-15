@@ -49,7 +49,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const styling = JSON.parse(model.stylingBox || '{}');
 
     const getPanelStyle = {
-      backgroundColor: headerColor,
       ...pickStyleFromModel(styling),
       ...(executeFunction(model?.style, { data, globalState }) || {}),
     };
@@ -74,9 +73,11 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
           ghost={ghost}
-          style={getPanelStyle}
+          dynamicBorderRadius={model?.borderRadius}
+          style={{...getPanelStyle}}
           className={model.className}
           bodyColor={bodyColor}
+          headerColor={headerColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
           hideWhenEmpty={hideWhenEmpty}
