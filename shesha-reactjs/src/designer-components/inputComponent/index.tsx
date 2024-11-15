@@ -126,7 +126,6 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 : icon}
             </Tooltip>;
         }
-        
         return icon;
     };
 
@@ -211,7 +210,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
             return <CustomDropdown
                 variant={variant} value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textArea':
-            return <TextArea readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+            return <TextArea readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ top: '4px' }} />;
         case 'codeEditor':
             return editor;
         case 'iconPicker':
@@ -223,7 +222,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon) : iconElement(iconAlt)} onClick={() => onChange(!value)} />;
+            return <Button disabled={readOnly} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon) : iconElement(iconAlt)} onClick={() => onChange(!value)} />;
 
         case 'editModeSelector':
 

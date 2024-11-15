@@ -4,14 +4,14 @@ import { IStyleType } from "@/interfaces";
 
 export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
 
-    const migrateStyles = (screen: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
-        const prevStyles = prev[screen] as IInputStyles;
+    const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
+        const prevStyles = screen ? prev[screen] as IInputStyles : prev as IInputStyles;
 
         return {
             border: {
                 hideBorder: prevStyles?.hideBorder,
-                border: { all: { width: prevStyles?.borderSize + "" } },
-                radius: { all: prevStyles?.borderRadius },
+                border: { all: { width: prevStyles?.borderSize + "" || '1px', style: prevStyles.borderType || 'solid' } },
+                radius: { all: prevStyles?.borderRadius || 8 },
             },
             background: {
                 type: 'color',
@@ -23,8 +23,8 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 weight: prevStyles.fontWeight as number || 400,
             },
             dimensions: {
-                height: addPx(prevStyles.height),
-                width: addPx(prevStyles.width),
+                height: addPx(prevStyles.height) || '32px',
+                width: addPx(prevStyles.width) || '100%',
             },
         }
     };
@@ -37,10 +37,9 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
         ...prev,
         desktop: migrateStyles('desktop'),
         tablet: migrateStyles('tablet'),
-        mobile: migrateStyles('mobile')
+        mobile: migrateStyles('mobile'),
+        inputStyles: migrateStyles()
     };
-
-    console.log("result:", result)
 
     return result;
 }; 

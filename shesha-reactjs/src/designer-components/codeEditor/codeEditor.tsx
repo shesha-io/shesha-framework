@@ -125,14 +125,9 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   return (
     <>
-      <Space>
-        <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {readOnly ? 'View Code' : hasValue ? 'Edit Code' : 'Create Code'}
-        </Button>
-        <Show when={hasValue && !readOnly}>
-          <Button type="primary" size="small" danger onClick={onClear} icon={<CloseOutlined />} />
-        </Show>
-      </Space>
+      <Button type={hasValue ? 'primary' : 'default'} icon={<CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {readOnly ? 'View Code' : '...'}
+      </Button>
       {showDialog && (
         <Modal
           open={showDialog}

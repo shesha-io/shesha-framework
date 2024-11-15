@@ -190,10 +190,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         hideBorder: false,
         border: {
           all: { width: '1px', style: 'solid', color: '#d9d9d9' },
-          top: { width: '1px', style: 'solid', color: '#d9d9d9' },
-          right: { width: '1px', style: 'solid', color: '#d9d9d9' },
-          bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
-          left: { width: '1px', style: 'solid', color: '#d9d9d9' }
         },
         radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
         selectedSide: 'all',
