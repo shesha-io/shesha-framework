@@ -135,7 +135,10 @@ export class Authenticator implements IAuthenticator {
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
         if (isSameUrls(currentPath, this.#unauthorizedRedirectUrl)) {
-            const returnUrl = this.#router.query[RETURN_URL_KEY]?.toString();
+            const returnUrlParam = this.#router.query[RETURN_URL_KEY];
+            const returnUrl = returnUrlParam
+                ? decodeURIComponent(returnUrlParam.toString())
+                : undefined;
 
             const redirects: string[] = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
             const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
@@ -166,7 +169,7 @@ export class Authenticator implements IAuthenticator {
             const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
             return {
                 userProfile: userProfile,
-                url: redirectUrl ?? this.#router.path
+                url: redirectUrl ?? this.#router.fullPath
             };
         } catch (error) {
             this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
