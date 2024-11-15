@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SyncOutlined, UploadOutlined } from '@ant-design/icons';
-import { Image, Upload } from 'antd';
+import { Button, Image, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { toBase64 } from '../_settings/utils/background/utils';
 import { useStyles } from './style';
-import { SettingInput } from '../settingsInput/settingsInput';
-
 
 interface IImageUploaderProps {
     onChange: (value: any) => void;
@@ -67,9 +65,9 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     };
 
     const uploadButton = (
-        <SettingInput propertyName='file' label='Upload' readOnly={readOnly} hidden={fileList.length === 0} >
+        <Button ref={uploadBtnRef} style={{ display: fileList.length > 0 ? 'none' : 'block' }}>
             <UploadOutlined title='upload' />
-        </SettingInput>
+        </Button>
     );
 
     return (

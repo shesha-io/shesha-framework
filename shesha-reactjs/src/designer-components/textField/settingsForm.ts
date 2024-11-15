@@ -669,6 +669,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     inputType: "imageUploader",
                                                     propertyName: "inputStyles.background.uploadFile",
                                                     label: "Image",
+                                                    jsSetting: false,
                                                 }],
                                                 hidden: { _code: 'return  getSettingValue(data?.inputStyles?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
