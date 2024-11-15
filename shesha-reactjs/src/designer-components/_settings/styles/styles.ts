@@ -75,11 +75,16 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             }
     `);
 
+    const bindingOptionsBtn = cx(css`
+        top: -8px;
+        `);
+
     return {
         jsSwitch,
         contentJs,
         contentCode,
         jsContent,
-        label
+        label,
+        bindingOptionsBtn
     };
 });

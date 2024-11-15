@@ -7,11 +7,10 @@ import {
   App,
   Button,
   Modal,
-  Space,
   Tabs
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
-import { CloseOutlined, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
@@ -48,10 +47,10 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       }
     }
   };
-  const onClear = () => {
-    setInternalValue(null);
-    if (props.onChange) props.onChange(null);
-  };
+  // const onClear = () => {
+  //   setInternalValue(null);
+  //   if (props.onChange) props.onChange(null);
+  // };
 
   const openEditorDialog = () => setShowDialog(true);
 

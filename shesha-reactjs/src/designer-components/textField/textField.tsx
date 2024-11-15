@@ -74,7 +74,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-    console.log("MODEL:::", model)
     useEffect(() => {
 
       const fetchStyles = async () => {

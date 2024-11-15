@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, Image, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
@@ -51,7 +51,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
         if (uploadBtnRef.current) {
             uploadBtnRef.current.click();
         }
-        setFileList([file])
+        setFileList([file]);
     };
 
     const fileControls = (file: UploadFile) => {

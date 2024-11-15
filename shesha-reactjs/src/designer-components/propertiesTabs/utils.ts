@@ -53,7 +53,7 @@ export const filterDynamicComponents = (components, query, data) => {
             const filteredInputs = c.inputs?.filter(input => {
                 const propertyName = evaluateString(input.propertyName, data);
                 return matchesQuery(input.label) ||
-                    (propertyName && matchesQuery(propertyName.split('.').slice(1).join(' ')))
+                    (propertyName && matchesQuery(propertyName.split('.').slice(1).join(' ')));
             }) || [];
 
             return {
@@ -80,7 +80,7 @@ export const filterDynamicComponents = (components, query, data) => {
             const filteredInputs = c.inputs?.filter(input => {
                 const propertyName = evaluateString(input.propertyName, data);
                 return matchesQuery(input.label) ||
-                    (propertyName && matchesQuery(propertyName.split('.').join(' ')))
+                    (propertyName && matchesQuery(propertyName.split('.').join(' ')));
             }) || [];
 
             return {

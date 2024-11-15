@@ -968,5 +968,5 @@ export const getSettings = (data: ITextFieldComponentProps) => {
             labelCol: { span: 24 },
             wrapperCol: { span: 24 }
         }
-    }
+    };
 };

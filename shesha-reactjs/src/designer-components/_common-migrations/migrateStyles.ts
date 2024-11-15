@@ -26,12 +26,8 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 height: addPx(prevStyles.height) || '32px',
                 width: addPx(prevStyles.width) || '100%',
             },
-        }
+        };
     };
-
-    console.log("desktop:", migrateStyles('desktop'),
-        "tablet:", migrateStyles('tablet'),
-        "mobile:", migrateStyles('mobile'))
 
     const result: ITextFieldComponentProps = {
         ...prev,
