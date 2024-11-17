@@ -6,7 +6,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         max-width: 150px;
         
         .ant-upload-list-item-container {
-         top: -30px !important;
+        //  top: -30px !important;
          position: relative;
         }
     `);

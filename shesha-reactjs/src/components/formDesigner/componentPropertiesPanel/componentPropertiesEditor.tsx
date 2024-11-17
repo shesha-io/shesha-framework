@@ -18,9 +18,9 @@ export interface IComponentPropertiesEditorProps {
 }
 
 const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
-  // const evaluatedMarkup = typeof markup === 'function'
-  //   ? markup({})
-  //   : markup;
+  const evaluatedMarkup = typeof markup === 'function'
+    ? markup({})
+    : markup;
   return ({ readOnly, model, onSave, onCancel, onValuesChange, toolboxComponent, formRef, propertyFilter, layoutSettings }) => {
     return (
       <GenericSettingsForm
@@ -28,9 +28,7 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
         model={model}
         onSave={onSave}
         onCancel={onCancel}
-        markup={typeof markup === 'function'
-          ? markup(model)
-          : markup}
+        markup={evaluatedMarkup}
         onValuesChange={onValuesChange}
         toolboxComponent={toolboxComponent}
         formRef={formRef}
@@ -45,7 +43,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { componentModel, readOnly, toolboxComponent } = props;
 
   const { getCachedComponentEditor } = useFormDesignerActions();
-  
+
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
     return toolboxComponent?.settingsFormFactory
       ? toolboxComponent.settingsFormFactory

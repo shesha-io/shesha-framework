@@ -110,6 +110,7 @@ const UnitSelector: FC<{ value: any; onChange; readOnly; variant?}> = ({ value, 
 
 export const InputComponent: FC<IInputComponentProps> = (props) => {
     const icons = require('@ant-design/icons');
+    const {styles} = useStyles();
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
@@ -119,7 +120,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
 
     const iconElement = (icon, size?, tooltip?) => {
         if (typeof icon === 'string') {
-            return <Tooltip title={tooltip}> {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
+            return <Tooltip className={styles.icon} title={tooltip}> {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle' }}>
                     {size}<SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='24' lineColor='#000' fontSize={14} marginBottom={'0px'} />
                 </div>

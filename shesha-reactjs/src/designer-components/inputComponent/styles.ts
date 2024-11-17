@@ -27,9 +27,13 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
     `);
 
+    const icon = cx(css`
+        --icon-fill-color: #1C1B1F;
+    `);
     return {
         unitSelector,
         inlineInputs,
-        rowInputs
+        rowInputs,
+        icon
     };
 });

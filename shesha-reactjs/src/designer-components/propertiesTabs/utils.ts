@@ -23,7 +23,7 @@ export const filterDynamicComponents = (components, query, data) => {
         );
 
         // Handle propertyRouter
-        if (c.type === 'propertyRouter') {
+        if (c.componentName === 'propertyRouter') {
             const filteredComponents = filterDynamicComponents(c.components, query, data);
             const hasVisibleChildren = filteredComponents.length > 0;
             return {

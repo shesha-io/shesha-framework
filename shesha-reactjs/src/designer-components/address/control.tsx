@@ -13,7 +13,6 @@ import { customAddressEventHandler } from '@/components/formDesigner/components/
 import { getFormApi } from '@/providers/form/formApi';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
-  cssStyles?: React.CSSProperties;
   value?: any;
   onChange?: (...args) => void;
 }
@@ -36,8 +35,8 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   useEffect(() => {
     if (googleMapsApiKey && !window.google) {
       loadGooglePlaces(googleMapsApiKey, setGooglePlaceReady);
-
     }
+      
   }, [googleMapsApiKey, googlePlaceReady]);
 
   const onSelect = (selected: IAddressAndCoords): Promise<IOpenCageResponse | IAddressAndCoords> =>
@@ -76,7 +75,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
       <ValidationErrors error={error} />
 
       <GooglePlacesAutocomplete
-        style={model.cssStyles}
         value={getAddressValue(value)}
         debounce={debounce}
         externalLoader={loading}

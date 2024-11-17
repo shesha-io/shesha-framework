@@ -72,7 +72,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
         <div className={styles.image}>
             <Upload
                 listType="picture"
-                fileList={fileList.map(file => ({ ...file, name: '' }))}
+                fileList={fileList}
                 onPreview={handlePreview}
                 onRemove={handleRemove}
                 onChange={handleChange}
@@ -82,7 +82,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
                 {uploadButton}
             </Upload>
             <Image
-                style={{ display: 'none' }}
+                // style={{ display: 'none' }}
                 preview={{
                     visible: previewOpen,
                     onVisibleChange: (visible) => setPreviewOpen(visible),

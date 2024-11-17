@@ -246,11 +246,6 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
   if (!value) return value;
 
   if (typeof value === 'object') {
-    if (value._mode === 'code') {
-      return calcFunction(value, allData);
-    } else if (value._mode === 'value') {
-      return value._value;
-    }
     // If array - update all items
     if (Array.isArray(value)) {
       return value;

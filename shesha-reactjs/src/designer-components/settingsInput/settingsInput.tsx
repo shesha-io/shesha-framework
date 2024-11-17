@@ -18,6 +18,7 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
                 hideLabel={hideLabel}
                 label={label}
                 tooltip={tooltip}
+                hidden={hidden}
                 layout='vertical'
                 jsSetting={type === 'codeEditor' || inline ? false : jsSetting ? jsSetting : false}
                 readOnly={readOnly}>
