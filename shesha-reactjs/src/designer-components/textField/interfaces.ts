@@ -4,12 +4,12 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export type TextType = 'text' | 'password';
 
-export interface IInputStyles {
+export interface IInputStyles extends IStyleType {
   size?: SizeType;
   borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;
-  borderColor?: string;
+  borderColor?: string
   fontColor?: string;
   fontWeight?: string | number;
   fontSize?: string | number;
@@ -34,13 +34,14 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   height?: string;
   hideBorder?: boolean;
   borderSize?: number;
+  borderType?: string;
   borderRadius?: number;
   borderColor?: string;
   fontSize?: string;
   fontColor?: string;
   backgroundColor?: string;
   stylingBox?: string;
-  desktop?: IInputStyles | IStyleType;
-  mobile?: IInputStyles | IStyleType;
-  tablet?: IInputStyles | IStyleType;
+  desktop?: IInputStyles;
+  mobile?: IInputStyles;
+  tablet?: IInputStyles;
 }

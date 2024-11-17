@@ -5,7 +5,7 @@ import { IStyleType } from "@/interfaces";
 export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
-        const prevStyles = screen ? prev[screen] as IInputStyles : prev as IInputStyles;
+        const prevStyles = screen ? prev[screen] : prev;
 
         return {
             border: {
@@ -14,13 +14,13 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 radius: { all: prevStyles?.borderRadius || 8 },
             },
             background: {
+                ...prevStyles,
                 type: 'color',
                 color: prevStyles.backgroundColor || '#fff',
             },
             font: {
                 color: prevStyles.fontColor || '#000',
-                size: prevStyles.fontSize as number || 14,
-                weight: prevStyles.fontWeight as number || 400,
+                size: prevStyles.fontSize as number || 14
             },
             dimensions: {
                 height: addPx(prevStyles.height) || '32px',
