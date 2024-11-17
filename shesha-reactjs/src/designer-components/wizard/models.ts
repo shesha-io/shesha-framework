@@ -50,6 +50,8 @@ export interface IWizardStepProps {
 
   beforeDoneActionConfiguration?: IConfigurableActionConfiguration;
   afterDoneActionConfiguration?: IConfigurableActionConfiguration;
+  hideDefaultButtons?: boolean;
+  allowCustomFooter?: boolean;
 }
 
 export interface IWizardSequence {
@@ -60,6 +62,8 @@ export interface IWizardSequence {
 
 export interface IStepProps extends StepProps {
   content?: JSX.Element;
+  hideDefaultButtons?: boolean;
+  allowCustomFooter?: boolean;
 }
 
 export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
@@ -76,4 +80,8 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   buttonsLayout?: 'left' | 'right' | 'spaceBetween';
   showStepStatus?: boolean;
   sequence?: IWizardSequence;
+  footers?: {
+    id: string;
+    components: IConfigurableFormComponent[];
+  }[];
 }

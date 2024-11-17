@@ -80,6 +80,26 @@ export const getSettings = (_data?: IWizardStepProps) =>
       settingsValidationErrors: [],
     })
     .addCheckbox({
+      id: 'ba280e2b-a604-4e3e-acab-cfde391d00e0',
+      propertyName: 'hideDefaultButtons',
+      label: 'Hide Default Buttons',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      defaultValue: false,
+      validate: {},
+    })
+    .addCheckbox({
+      id: 'ba280e2b-a604-4e3e-acab-cfde392f99e0',
+      propertyName: 'allowCustomFooter',
+      label: 'Allow Custom Footer',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      defaultValue: false,
+      validate: {},
+    })
+    .addCheckbox({
       id: 'ba280e2b-a604-4e3e-acab-cfde391d99e0',
       propertyName: 'allowCancel',
       label: 'Allow Cancel',
@@ -372,7 +392,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       hidden: false,
       description:
-        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'Enter custom visibility code.  You must return true to show the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
@@ -405,7 +425,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customEnabled: null,
       description:
-        'Enter custom enabled code.  You must return true to enable the component. ' + 
+        'Enter custom enabled code.  You must return true to enable the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],

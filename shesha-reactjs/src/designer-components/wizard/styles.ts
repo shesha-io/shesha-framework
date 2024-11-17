@@ -5,7 +5,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const shaStepsContent = "sha-steps-content";
   const shaStepsButtonsContainer = "sha-steps-buttons-container";
   const shaStepsButtons = "sha-steps-buttons";
+  const customFooter = "custom-footer";
   const shaWizard = cx("sha-wizard", css`
+        .${customFooter} {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          
+        }
         .${shaWizardContainer} {
           margin: unset;
       
@@ -51,5 +60,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     shaStepsContent,
     shaStepsButtonsContainer,
     shaStepsButtons,
+    customFooter
   };
 });

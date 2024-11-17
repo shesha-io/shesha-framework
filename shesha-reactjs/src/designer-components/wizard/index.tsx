@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import WizardSettingsForm from './settings';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
@@ -23,6 +23,20 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model, form }) => {
+
+
+    model['footers'] = useMemo(() => {
+      return model?.steps?.map(({ }, index) => {
+
+        if (model?.footers[index]?.id) return model?.footers[index];
+
+        return {
+          id: nanoid(),
+          components: []
+        };
+      });
+    }, [model?.steps]);
+
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
@@ -94,10 +108,22 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
+      .add<IWizardComponentProps>(7, (prev) => {
+        return {
+          ...prev,
+          footers: prev?.steps?.map(({ }, index) => {
+            if (prev?.footers?.length) return prev?.footers[index];
+            return {
+              id: nanoid(),
+              components: []
+            };
+          }),
+        };
+      })
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
-  customContainerNames: ['steps'],
+  customContainerNames: ['steps', 'footers'],
   getContainers: (model) => {
     return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
   },
