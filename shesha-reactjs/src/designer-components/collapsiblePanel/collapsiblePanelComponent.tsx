@@ -54,19 +54,28 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     };
 
     const headerComponents = model?.header?.components ?? [];
+
+    const hasCustomHeader = model?.hasCustomHeader;
+
     const extra =
-      headerComponents?.length > 0 || formMode === 'designer' ? (
+      ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
         <ComponentsContainer
           containerId={model.header?.id}
           direction="horizontal"
-          dynamicComponents={model?.isDynamic ? headerComponents : []}
+          dynamicComponents={model?.isDynamic ? model.header?.components : []}
         />
       ) : null;
 
     return (
       <ParentProvider model={model}>
         <CollapsiblePanel
-          header={evaluatedLabel}
+          header={hasCustomHeader ?
+            <ComponentsContainer
+              containerId={model.customHeader.id}
+              dynamicComponents={(model?.isDynamic) ? model?.customHeader?.components : []}
+            /> :
+            evaluatedLabel
+          }
           expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
           collapsedByDefault={collapsedByDefault}
           extra={extra}
@@ -74,9 +83,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
           ghost={ghost}
           dynamicBorderRadius={model?.borderRadius}
-          style={{...getPanelStyle}}
+          style={{ ...getPanelStyle }}
           className={model.className}
           bodyColor={bodyColor}
+          readonly={formMode !== 'designer'}
           headerColor={headerColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
@@ -138,8 +148,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
       .add<ICollapsiblePanelComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
+      .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
+        ...prev,
+        customHeader: { id: nanoid(), components: [] }
+      }))
   ,
-  customContainerNames: ['header', 'content'],
+  customContainerNames: ['header', 'content', 'customHeader'],
 };
 
 export default CollapsiblePanelComponent;
