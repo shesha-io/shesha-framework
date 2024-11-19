@@ -19,6 +19,21 @@ namespace Shesha.Migrations
                 .WithColumn("UserId").AsInt64().Nullable()
                 .WithColumn("IsComplete").AsBoolean().WithDefaultValue(false).Nullable()
                 .WithColumn("UserNameOrEmailAddress").AsString(255).Nullable();
+
+            // Insert UserRegistration for existing Persons
+            Execute.Sql(@"
+                INSERT INTO Frwk_UserRegistration (Id, UserId, UserNameOrEmailAddress, CreationTime, IsComplete)
+                SELECT 
+                    NEWID() AS Id, 
+                    UserId, 
+                    EmailAddress1 AS UserNameOrEmailAddress, 
+                    CreationTime, 
+                    1 AS IsComplete
+                FROM 
+                    Core_Persons
+                WHERE 
+                    UserId IS NOT NULL;
+            ");
         }
     }
 }
