@@ -1,5 +1,5 @@
 import { IApiEndpoint, StandardEntityActions } from "@/interfaces/metadata";
-import { HttpClientApi } from "../http/api";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { EntityConfigurationDto, IEntity, IEntityTypeIndentifier } from "./models";
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
@@ -8,7 +8,7 @@ import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/
 import { IEntityEndpoints } from "./entityTypeAccessor";
 
 export const ENTITIES_URLS = {
-    GET_CONFIGURATIONS: '/api/services/app/EntityConfig/GetClientApiConfigurations',    
+    GET_CONFIGURATIONS: '/api/services/app/EntityConfig/GetClientApiConfigurations',
 };
 
 export class EntitiesManager {
@@ -31,9 +31,9 @@ export class EntitiesManager {
         const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.create);
 
         const response = await this._httpClient.post<IAjaxResponse<TEntity>>(endpoint.url, value);
-        if (response.status !== 200 || !response.data.success) 
+        if (response.status !== 200 || !response.data.success)
             throw new Error(`Failed to create entity '${typeAccessor.module}.${typeAccessor.name}'`);
-        
+
         return response.data.result;
     };
 
@@ -44,9 +44,9 @@ export class EntitiesManager {
         const requestParams = { id: id };
         const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
         const response = await this._httpClient.get<IAjaxResponse<TEntity>>(url);
-        if (response.status !== 200 || !response.data.success) 
+        if (response.status !== 200 || !response.data.success)
             throw new Error(`Failed to get entity '${typeAccessor.module}.${typeAccessor.name}' by id ${id}`);
-        
+
         return response.data.result;
     };
 
@@ -57,7 +57,7 @@ export class EntitiesManager {
         const requestParams = { id: value.id };
         const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
         const response = await this._httpClient.put<IAjaxResponse<TEntity>>(url, value);
-        if (response.status !== 200 || !response.data.success) 
+        if (response.status !== 200 || !response.data.success)
             throw new Error(`Failed to update entity '${typeAccessor.module}.${typeAccessor.name}' by id ${value.id}`);
 
         return response.data.result;
@@ -70,9 +70,9 @@ export class EntitiesManager {
         const requestParams = { id: id };
         const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
         const response = await this._httpClient.delete<IAjaxResponse<void>>(url);
-        if (response.status !== 200 || !response.data.success) 
+        if (response.status !== 200 || !response.data.success)
             throw new Error(`Failed to delete entity '${typeAccessor.module}.${typeAccessor.name}' by id ${id}`);
-    };    
+    };
 
     #getApiEndpoint = (meta: IEntityMetadata, action: StandardEntityActions): IApiEndpoint => {
         return meta.apiEndpoints[action];

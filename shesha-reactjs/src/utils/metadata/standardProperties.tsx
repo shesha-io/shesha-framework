@@ -1,11 +1,10 @@
 import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
-import { httpApiDefinition } from "@/providers/sourceFileManager/api-utils/http";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
 import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
-import { metadataSourceCode, metadataBuilderSourceCode } from '@/publicJsApis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -28,7 +27,7 @@ export const registerHttpAction: MetadataBuilderAction = (builder, name = "http"
   builder.addCustom(name, "axios instance used to make http requests", () => {
     const definition: TypeDefinition = {
       typeName: 'HttpClientApi',
-      files: [{ content: httpApiDefinition, fileName: 'apis/http.ts' }],
+      files: [{ content: httpClientSourceCode, fileName: 'apis/http.ts' }],
     };
     return Promise.resolve(definition);
   });

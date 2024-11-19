@@ -160,6 +160,5 @@ export const unwrapAbpResponse = <TResponse extends any, TData extends any>(resp
 export const axiosHttp = (baseURL: string, tokenName?: string) =>
   axios.create({
     baseURL,
-    timeout: 10000,
     headers: requestHeaders(tokenName || DEFAULT_ACCESS_TOKEN_NAME, { addCustomHeaders: true }),
   });

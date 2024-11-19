@@ -1,6 +1,6 @@
 import { CurrentUserApi, IInternalCurrentUserApi } from './currentUser/api';
 import { ISettingsApi, SettingsApi } from './settings/api';
-import { HttpClientApi } from './http/api';
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { EntitiesApi, IEntitiesApi } from './entities/api';
 import { UtilsApi, IUtilsApi } from './utils/api';
 import { FormsApi, IFormsApi } from './forms/api';
