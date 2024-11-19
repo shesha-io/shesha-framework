@@ -8,9 +8,9 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     internal class ReferenceListDbHelper: DbHelperBase
     {
-        private readonly IQuerySchema _querySchema;        
+        private readonly IQuerySchema _querySchema;
 
-        public ReferenceListDbHelper(IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(connection, transaction)
+        public ReferenceListDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(dbmsType, connection, transaction)
         {
             _querySchema = querySchema;
         }
@@ -200,7 +200,7 @@ set
 where 
 	""ReferenceListId"" in (
 		select 
-			rl.Id 
+			rl.""Id""
 		from 
 			""Frwk_ReferenceLists"" rl
 			inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id"" and ci.""Name"" = @FullName
@@ -300,7 +300,7 @@ where
             if (id == null)
                 return;
 
-            ExecuteNonQuery(@"delete from Frwk_ReferenceListItems where ReferenceListId = @ReferenceListId",
+            ExecuteNonQuery(@"delete from ""Frwk_ReferenceListItems"" where ""ReferenceListId"" = @ReferenceListId",
                 command => {
                     command.AddParameter("@ReferenceListId", id);
                 }
@@ -313,7 +313,7 @@ where
             if (id == null)
                 return;
 
-            ExecuteNonQuery(@"delete from Frwk_ReferenceListItems where ReferenceListId = @ReferenceListId and ItemValue = @ItemValue",
+            ExecuteNonQuery(@"delete from ""Frwk_ReferenceListItems"" where ""ReferenceListId"" = @ReferenceListId and ""ItemValue"" = @ItemValue",
                 command => {
                     command.AddParameter("@ReferenceListId", id);
                     command.AddParameter("@ItemValue", itemValue);
@@ -323,7 +323,7 @@ where
 
         internal Guid? GetReferenceListItemId(Guid listId, Int64 itemValue)
         {
-            return ExecuteScalar<Guid?>(@"select Id from Frwk_ReferenceListItems where ReferenceListId = @Id and ItemValue = @ItemValue", command => {
+            return ExecuteScalar<Guid?>(@"select ""Id"" from ""Frwk_ReferenceListItems"" where ""ReferenceListId"" = @Id and ""ItemValue"" = @ItemValue", command => {
                 command.AddParameter("@Id", listId);
                 command.AddParameter("@ItemValue", itemValue);
             });
@@ -331,7 +331,7 @@ where
 
         internal void UpdateReferenceListItemText(Guid? id, string itemText)
         {
-            ExecuteNonQuery("update Frwk_ReferenceListItems set Item = @Item where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_ReferenceListItems\" set \"Item\" = @Item where \"Id\" = @Id", command => {
                 command.AddParameter("@Item", itemText);
                 command.AddParameter("@Id", id);
             });
@@ -339,7 +339,7 @@ where
 
         internal void UpdateReferenceListItemDescription(Guid? id, string description)
         {
-            ExecuteNonQuery("update Frwk_ReferenceListItems set Description = @Description where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_ReferenceListItems\" set \"Description\" = @Description where \"Id\" = @Id", command => {
                 command.AddParameter("@Description", description);
                 command.AddParameter("@Id", id);
             });
@@ -347,7 +347,7 @@ where
 
         internal void UpdateReferenceListItemOrderIndex(Guid? id, long orderIndex)
         {
-            ExecuteNonQuery("update Frwk_ReferenceListItems set OrderIndex = @OrderIndex where Id = @Id", command => {
+            ExecuteNonQuery("update \"Frwk_ReferenceListItems\" set \"OrderIndex\" = @OrderIndex where \"Id\" = @Id", command => {
                 command.AddParameter("@OrderIndex", orderIndex);
                 command.AddParameter("@Id", id);
             });

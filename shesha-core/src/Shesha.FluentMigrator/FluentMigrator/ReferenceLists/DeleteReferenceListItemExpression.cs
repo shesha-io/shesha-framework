@@ -8,7 +8,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class DeleteReferenceListItemExpression : SheshaMigrationExpressionBase
     {
-        public DeleteReferenceListItemExpression(IQuerySchema querySchema, string @namespace, string name) : base(querySchema)
+        public DeleteReferenceListItemExpression(DbmsType dbmsType, IQuerySchema querySchema, string @namespace, string name) : base(dbmsType, querySchema)
         {
             Namespace = @namespace;
             Name = name;
@@ -25,7 +25,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
             {
                 Operation = (connection, transaction) =>
                 {
-                    var helper = new ReferenceListDbHelper(connection, transaction, QuerySchema);
+                    var helper = new ReferenceListDbHelper(DbmsType, connection, transaction, QuerySchema);
 
                     var refListId = helper.GetReferenceListId(Namespace, Name);
                     if (refListId == null)

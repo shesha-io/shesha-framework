@@ -33,7 +33,7 @@
             "parentId": "root",
             "hidden": false,
             "isDynamic": false,
-            "version": 5,
+            "version": 6,
             "dataSourceType": "values",
             "direction": "horizontal",
             "referenceListId": null,
@@ -47,7 +47,10 @@
                     "value": "readonly"
                 }
             ],
-            "validate": {}
+            "validate": {},
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
         },
         {
             "id": "264903ff-b525-4a6e-893f-d560b219df9d",
@@ -141,7 +144,8 @@
             "templateSettings": {
                 "useAsyncDeclaration": true,
                 "functionName": "getArguments"
-            }
+            },
+            "resultTypeExpression": "    return metadataBuilder.anyObject();"
         },
         {
             "id": "O3Y7Zddxtoq79a541od-znjM81ZMIw",
@@ -153,61 +157,8 @@
             "parentId": "root",
             "hidden": false,
             "isDynamic": false,
-            "version": 5,
+            "version": 6,
             "expandIconPosition": "end",
-            "components": [
-                {
-                    "id": "vCbxNvaSm1xPuF9wQQ6x9khi-1WS6r",
-                    "components": [],
-                    "parentId": "O3Y7Zddxtoq79a541od-znjM81ZMIw"
-                },
-                {
-                    "id": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7",
-                    "components": [
-                        {
-                            "id": "eX3ZelYUEIbGAcxXAsqW0ZI3u6t9Iy",
-                            "propertyName": "footerButtons",
-                            "label": "Buttons type",
-                            "dataSourceType": "values",
-                            "values": [
-                                {
-                                    "id": "7YrHI15F80sjgTDtLx5XLRg3kwGsMP",
-                                    "label": "Default",
-                                    "value": "default"
-                                },
-                                {
-                                    "id": "3dKvewJIJffZ5H5MM2YRooBLdiG6nV",
-                                    "label": "Custom",
-                                    "value": "custom"
-                                },
-                                {
-                                    "id": "H7t0zUbQmLRTNddNXq30iVxOf_nOSE",
-                                    "label": "None",
-                                    "value": "none"
-                                }
-                            ],
-                            "defaultValue": "default",
-                            "type": "dropdown",
-                            "version": "latest",
-                            "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
-                        },
-                        {
-                            "id": "qRRoct09timdmYy9ne60KFk3_99CiZ",
-                            "propertyName": "buttons",
-                            "hidden": {
-                                "_code": "return !(getSettingValue(data?.footerButtons) === \"custom\");",
-                                "_mode": "code",
-                                "_value": false
-                            },
-                            "label": "Configure Modal Buttons",
-                            "type": "buttons",
-                            "version": "latest",
-                            "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
-                        }
-                    ],
-                    "parentId": "O3Y7Zddxtoq79a541od-znjM81ZMIw"
-                }
-            ],
             "header": {
                 "id": "vCbxNvaSm1xPuF9wQQ6x9khi-1WS6r",
                 "components": []
@@ -258,13 +209,14 @@
                 ]
             },
             "collapsible": "icon",
-            "ghost": true
+            "ghost": true,
+            "components": []
         }
     ],
     "formSettings": {
         "access": null,
         "permissions": null,
-        "version": 2,
+        "version": 6,
         "labelCol": {
             "span": 5
         },
@@ -274,11 +226,6 @@
         "layout": "horizontal",
         "colon": true,
         "dataLoaderType": "gql",
-        "dataLoadersSettings": {
-            "gql": {
-                "endpointType": "default"
-            }
-        },
         "dataSubmitterType": "gql",
         "dataSubmittersSettings": {
             "gql": {
@@ -289,6 +236,12 @@
         "onAfterShow": null,
         "onBeforeSubmit": null,
         "onSubmitSuccess": null,
-        "onSubmitFailed": null
+        "onSubmitFailed": null,
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            },
+            "custom": {}
+        }
     }
 }

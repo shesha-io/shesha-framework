@@ -39,7 +39,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
     try {
       if (Boolean(children)) return children;
       return 'N/A';
-    } catch (error) {
+    } catch {
       return 'Invalid';
     }
   };

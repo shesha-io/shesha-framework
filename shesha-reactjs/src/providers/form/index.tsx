@@ -84,7 +84,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     props.shaForm.setFormMode(formMode);
   }, [props.shaForm]);
 
-  useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm });
+  useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm, formData: props.shaForm.formData });
 
   const setFormData = useCallback((payload: ISetFormDataPayload) => {
     props.shaForm.setFormData(payload);
@@ -112,7 +112,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     // TODO: AS - review and remove
     initialValues: undefined
   };
-  
+
   return (
     <FormStateContext.Provider value={realState}>
       <FormActionsContext.Provider value={configurableFormActions}>

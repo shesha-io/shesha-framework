@@ -26,7 +26,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^8.0.0",
     "@next/bundle-analyzer": "^14.1.0",
-    "@shesha-io/reactjs": "0.39.1",
+    "@shesha-io/reactjs": "0.40.0",
     "@types/react-dom": "^18.2.4",
     "antd": "5.17.4",
     "antd-style": "3.6.2",

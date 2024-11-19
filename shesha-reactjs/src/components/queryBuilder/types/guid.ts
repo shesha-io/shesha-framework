@@ -8,7 +8,7 @@ export type CustomType = Type & {
 
 export const GuidType: CustomType = {
   ...standardTypes.text,
-  valueSources: ['value'],
+  valueSources: ['value', 'field', 'func'],
   defaultOperator: 'equal',
   operators: [
     'equal',

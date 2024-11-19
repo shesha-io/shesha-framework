@@ -6,7 +6,7 @@ import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arg
 import { Key } from 'rc-tree/lib/interface';
 import { LoadingOutlined } from '@ant-design/icons';
 import {
-  message,
+  App,
   Space,
   Spin,
   Tag,
@@ -81,6 +81,7 @@ const emptyId = '_';
 const withoutModule = '[no-module]';
 
 export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, onSelectAction, ...rest }) => {
+  const { message } = App.useApp();
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissions.toolbox.objects.search', '');
 
@@ -103,8 +104,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const shaForm = useShaFormInstance();
-  const { setFormMode } = shaForm;
+  const shaForm = useShaFormInstance(false);
+  const { setFormMode } = shaForm ?? {};
 
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useRef<any>({});
@@ -228,7 +229,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     const item = findItem(allItems, ids[0]);
     if (rest.mode === 'Edit') {
       if (!item.isDbPermission) {
-        setFormMode('readonly');
+        setFormMode?.('readonly');
       }
     }
     onChangeAction(item);
@@ -528,7 +529,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         }
         setDoSelect(emptyId);
         setSearchText('');
-        setFormMode('edit');
+        setFormMode?.('edit');
 
         return Promise.resolve();
       },
@@ -558,7 +559,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         expandParent(newItems, s);
         setDoSelect(emptyId);
         setSearchText('');
-        setFormMode('edit');
+        setFormMode?.('edit');
 
         return Promise.resolve();
       },

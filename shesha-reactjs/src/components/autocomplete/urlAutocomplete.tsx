@@ -17,6 +17,7 @@ import {
   IUrlAutocompleteProps,
   IUrlFetcherQueryParams,
 } from './models';
+import { isEqual } from 'lodash';
 
 export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) => {
   const {
@@ -48,6 +49,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
   );
 
   const selectRef = useRef(null);
+  const previousQueryParams = useRef(null);
 
   const [autocompleteText, setAutocompleteText] = useState(null);
 
@@ -69,6 +71,10 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
         ...additionalQueryParams,
       };
 
+      if (isEqual(queryParams, previousQueryParams.current))
+        return;
+
+      previousQueryParams.current = queryParams;
       urlFetcher.refetch({
         queryParams,
       });

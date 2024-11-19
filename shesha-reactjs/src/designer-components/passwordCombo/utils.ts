@@ -81,7 +81,7 @@ export const incrementLastChar = (value: string): string => {
     }
 
     return value;
-  } catch (_e) {
+  } catch {
     return null;
   }
 };
@@ -95,7 +95,7 @@ export const getDefaultModel = (m: IPasswordComponentProps) => {
     }
 
     return model;
-  } catch (_e) {
+  } catch {
     return m;
   }
 };

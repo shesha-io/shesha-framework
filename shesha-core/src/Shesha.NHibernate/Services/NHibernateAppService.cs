@@ -79,7 +79,7 @@ namespace Shesha.Services
                     TryFetch(type, e => errors.Add(type, e));                    
                 }
 
-                var typesToMap = errors.Select(e => e.Key).Where(t => !t.Namespace.StartsWith("Abp") && !t.HasAttribute<ImMutableAttribute>()).ToList();
+                var typesToMap = errors.Select(e => e.Key).Where(t => !(t.Namespace ?? "").StartsWith("Abp") && !t.HasAttribute<ImMutableAttribute>()).ToList();
 
                 var migration = migrationGenerator.GenerateMigrations(typesToMap);
 

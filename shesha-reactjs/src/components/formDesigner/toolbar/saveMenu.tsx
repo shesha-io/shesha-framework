@@ -12,8 +12,7 @@ import {
   App,
   Dropdown,
   MenuProps,
-  Modal
-} from 'antd';
+  } from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -38,7 +37,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { formFlatMarkup, formSettings } = useFormDesignerState();
   const toolboxComponents = useFormDesignerComponents();
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
 
   const { styles } = useStyles();
 
@@ -94,6 +93,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
                 loadForm({ skipCache: true });
               }
             },
+            message,
           }).catch(() => {
             message.destroy();
             message.error('Failed to set form ready');
@@ -104,7 +104,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
           message.error('Failed to save form');
         });
     };
-    Modal.confirm({
+    modal.confirm({
       title: 'Save and Set Ready',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to set this form ready?',

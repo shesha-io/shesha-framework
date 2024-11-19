@@ -5,12 +5,15 @@ using Abp.Domain.Repositories;
 using Abp.IdentityFramework;
 using Abp.Linq;
 using Abp.Runtime.Session;
+using Abp.Runtime.Validation;
 using Abp.UI;
 using FluentValidation;
+using GraphQL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Newtonsoft.Json.Linq;
 using Shesha.Authorization.Users;
 using Shesha.DelayedUpdate;
@@ -316,6 +319,8 @@ namespace Shesha
 
         /// <summary>
         /// Map static properties (defined in the entity class) of dynamic DTO to a specified entity
+        /// The Dto object must be inherited from DynamicDto(CreateDynamicDto, UpdateDynamicDto) 
+        /// or proxied by the DynamicBinder parameter attribute
         /// </summary>
         /// <typeparam name="TDynamicDto">Type of Dynamic DTO</typeparam>
         /// <typeparam name="TEntity">Type of entity</typeparam>
@@ -334,6 +339,8 @@ namespace Shesha
 
         /// <summary>
         /// Map dynamic properties (defined using entity configurator) of dynamic DTO to a specified entity
+        /// The Dto object must be inherited from DynamicDto(CreateDynamicDto, UpdateDynamicDto) 
+        /// or proxied by the DynamicBinder parameter attribute
         /// </summary>
         /// <typeparam name="TDynamicDto">Type of Dynamic DTO</typeparam>
         /// <typeparam name="TEntity">Type of entity</typeparam>
@@ -348,8 +355,10 @@ namespace Shesha
             await DynamicPropertyManager.MapDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Map all properties (dynamic and static) of dynamic DTO to a specified entity
+        /// The Dto object must be inherited from DynamicDto(CreateDynamicDto, UpdateDynamicDto) 
+        /// or proxied by the DynamicBinder parameter attribute
         /// </summary>
         /// <typeparam name="TDynamicDto">Type of Dynamic DTO</typeparam>
         /// <typeparam name="TEntity">Type of entity</typeparam>
@@ -363,10 +372,62 @@ namespace Shesha
         {
             await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
             await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
+        }*/
+
+        /// <summary>
+        /// Map all properties (dynamic and static) of dynamic DTO to a specified entity
+        /// The Dto object must be inherited from DynamicDto(CreateDynamicDto, UpdateDynamicDto) 
+        /// or proxied by the DynamicBinder parameter attribute
+        /// </summary>
+        /// <typeparam name="TDynamicDto">Type of Dynamic DTO</typeparam>
+        /// <typeparam name="TEntity">Type of entity</typeparam>
+        /// <typeparam name="TPrimaryKey">Type of primary key</typeparam>
+        /// <param name="dto">Source DTO</param>
+        /// <param name="entity">Destination entity</param>
+        /// <param name="validateAndSaveEntityAction">Action to save entity before map dynamic data (dynamic properies)</param>
+        /// <returns></returns>
+        protected async Task<DynamicDtoMapingResult> MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(
+            TDynamicDto dto, 
+            TEntity entity, 
+            Func<TEntity, List<ValidationResult>, Task> validateAndSaveEntityAction = null
+        )
+            where TEntity : class, IEntity<TPrimaryKey> where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+        {
+
+            var jObject = (dto as IHasJObjectField)._jObject;
+
+            var result = new DynamicDtoMapingResult();
+            bool mapResult = true;
+            if (jObject != null)
+            {
+                // Update the Jobject from the input because it might have changed
+                ObjectToJsonExtension.ObjectToJObject(dto, jObject);
+                mapResult = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
+            }
+            else
+            {
+                await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
+            }
+
+            mapResult = mapResult && await ValidateEntityAsync<TEntity>(entity, result.ValidationResults);
+
+            if (result.HasValidationError)
+                return result;
+
+            if (validateAndSaveEntityAction != null)
+                await validateAndSaveEntityAction.Invoke(entity, result.ValidationResults);
+
+            if (result.HasValidationError)
+                return result;
+
+            await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
+            await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
+            
+            return result;
         }
 
         /// <summary>
-        /// Map properties of JObject to a specified entity
+        /// Map all properties (dynamic and static) of JObject to a specified entity
         /// </summary>
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <typeparam name="TPrimaryKey">Type of primary key</typeparam>
@@ -425,6 +486,25 @@ namespace Shesha
 
             // ToDo: Add validations
             return true;
+        }
+
+        protected async Task<DynamicDtoMapingResult> DelayedUpdateAsync<TDynamicDto, TEntity, TPrimaryKey>(
+            TDynamicDto dto,
+            TEntity entity
+        )
+            where TEntity : class, IEntity<TPrimaryKey>
+            where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+        {
+            var result = new DynamicDtoMapingResult();
+            var jObject = (dto as IHasJObjectField)._jObject;
+            var delayedUpdates = jObject != null
+                ? jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>()
+                : (dto as IHasDelayedUpdateField)?._delayedUpdate;
+
+            if (delayedUpdates?.Any() ?? false)
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdates, entity, result.ValidationResults);
+            
+            return result;
         }
 
         protected async Task DelayedUpdateAsync<TEntity, TPrimaryKey>(

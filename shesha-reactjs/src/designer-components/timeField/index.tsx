@@ -1,6 +1,6 @@
 import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { App } from 'antd';
 import moment from 'moment';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
@@ -36,6 +36,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+    const { message } = App.useApp();
     
     const eventProps = {
       model,

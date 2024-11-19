@@ -2,13 +2,13 @@ import React, { FC, useState } from 'react';
 import { Select } from 'antd';
 import { PermissionsTree } from '@/components/permissionsTree';
 
-export interface IPropertyAutocompleteProps {
+export interface IPermissionAutocompleteProps {
   onChange?: (value: string[]) => void;
   value?: string[];
   readOnly?: boolean;
 }
 
-const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
+export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) => {
 
   const { onChange, value, readOnly } = props;
 
@@ -50,5 +50,3 @@ const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
     />
   );
 };
-
-export default PermissionAutocomplete;

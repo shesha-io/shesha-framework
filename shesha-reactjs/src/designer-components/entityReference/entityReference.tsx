@@ -30,7 +30,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-          return <EntityReference {...model} disabled={readOnly} value={value} style={style}/>;
+          return <EntityReference {...model} value={value} style={style}/>;
         }}
       </ConfigurableFormItem>
     );

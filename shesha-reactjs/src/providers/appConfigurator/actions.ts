@@ -5,6 +5,7 @@ export enum AppConfiguratorActionEnums {
   SwitchMode = 'SWITCH_MODE',
   ToggleEditModeConfirmation = 'TOGGLE_EDIT_MODE_CONFIRMATION',
   ToggleCloseEditModeConfirmation = 'TOGGLE_CLOSE_EDIT_MODE_CONFIRMATION',
+  SoftToggleInfoBlock = 'SOFT_TOGGLE_INFO_BLOCK'
 }
 
 export const switchApplicationModeAction = createAction<ApplicationMode, ApplicationMode>(
@@ -22,4 +23,8 @@ export const toggleCloseEditModeConfirmationAction = createAction<boolean, boole
   (p) => p
 );
 
+export const softToggleInfoBlockAction = createAction<boolean, boolean>(
+  AppConfiguratorActionEnums.SoftToggleInfoBlock,
+  (p) => p
+);
 /* NEW_ACTION_GOES_HERE */

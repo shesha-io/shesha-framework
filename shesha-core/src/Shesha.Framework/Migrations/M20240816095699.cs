@@ -98,7 +98,7 @@ where
 		from 
 			""Frwk_FormConfigurations"" fc
 		where
-			fc.""Id"" = ""Frwk_ConfigurationItems"".Id
+			fc.""Id"" = ""Frwk_ConfigurationItems"".""Id""
 	)");
         }
     }

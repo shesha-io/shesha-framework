@@ -1,18 +1,17 @@
-﻿using FluentMigrator.Builders;
+﻿using FluentMigrator;
 using FluentMigrator.Infrastructure;
-using System;
 
 namespace Shesha.FluentMigrator.Notifications
 {
     public class UpdateNotificationExpressionBuilder : NotificationTemplateExpressionBuilderBase<UpdateNotificationExpression, IUpdateNotificationSyntax>, IUpdateNotificationSyntax
     {
-        public UpdateNotificationExpressionBuilder(UpdateNotificationExpression expression, IMigrationContext context) : base(expression, context)
+        public UpdateNotificationExpressionBuilder(DbmsType dbmsType, IQuerySchema querySchema, UpdateNotificationExpression expression, IMigrationContext context) : base(dbmsType, querySchema, expression, context)
         {
         }
 
         public IUpdateNotificationSyntax DeleteTemplates()
         {
-            _context.Expressions.Add(new DeleteNotificationTemplateExpression
+            _context.Expressions.Add(new DeleteNotificationTemplateExpression(_dbmsType, _querySchema)
             {
                 Namespace = Expression.Namespace,
                 Name = Expression.Name,

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Button, Input, message } from 'antd';
+import { Button, Input, App } from 'antd';
 import { useGlobalState } from '@/providers';
 
 export interface ICurrencyConverterProps {
@@ -35,6 +35,7 @@ const CurrencyConverter: FC<ICurrencyConverterProps> = ({
         getStateByKey: getGlobalStateByKey,
         clearState: clearGlobalState
     } = useGlobalState();
+    const { message } = App.useApp();
 
     const onConvert = () => {
         setExchange(uAmount * rate);

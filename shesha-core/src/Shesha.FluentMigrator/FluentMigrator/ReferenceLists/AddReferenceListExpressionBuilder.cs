@@ -1,4 +1,5 @@
-﻿using FluentMigrator.Builders;
+﻿using FluentMigrator;
+using FluentMigrator.Builders;
 using FluentMigrator.Infrastructure;
 
 namespace Shesha.FluentMigrator.ReferenceLists
@@ -6,10 +7,12 @@ namespace Shesha.FluentMigrator.ReferenceLists
     public class AddReferenceListExpressionBuilder : ExpressionBuilderBase<AddReferenceListExpression>, IAddReferenceListSyntax
     {
         private readonly IMigrationContext _context;
+        private readonly DbmsType _dbmsType;
 
-        public AddReferenceListExpressionBuilder(AddReferenceListExpression expression, IMigrationContext context) : base(expression)
+        public AddReferenceListExpressionBuilder(DbmsType dbmsType, AddReferenceListExpression expression, IMigrationContext context) : base(expression)
         {
             _context = context;
+            _dbmsType = dbmsType;
         }
 
         public IAddReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string? description = null)
@@ -18,7 +21,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
                 OrderIndex = orderIndex,
                 Description = description
             };
-            var addRefListItem = new AddReferenceListItemExpression(_context.QuerySchema, Expression.Namespace, Expression.Name, listItem);
+            var addRefListItem = new AddReferenceListItemExpression(_dbmsType, _context.QuerySchema, Expression.Namespace, Expression.Name, listItem);
 
             _context.Expressions.Add(addRefListItem);
             

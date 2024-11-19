@@ -1,6 +1,7 @@
 import { createGlobalStyle } from 'antd-style';
 
 const formClassNames = {
+    shaFormContainer: 'sha-form-container',
     shaForm: 'sha-form',
     shaComponentsContainer: 'sha-components-container',
     shaComponentsContainerInner: 'sha-components-container-inner',
@@ -8,6 +9,7 @@ const formClassNames = {
     shaFormInfoCardTitle: 'sha-form-info-card-title',
     shaError: 'sha-error',
     shaFormInfoCardParent: 'sha-form-info-card-parent',
+    shaEditMode: 'sha-edit-mode',
 };
 
 const hookResponse = {
@@ -19,6 +21,15 @@ export const useStyles = () => {
 };
 
 export const ShaFormStyles = createGlobalStyle`
+    .${formClassNames.shaFormContainer} {
+        position: relative;
+        transition: .1s;
+        padding: 3px;
+        border: none;
+        &.${formClassNames.shaEditMode} {
+            border: 1px ${(p) => p.theme.colorPrimary} solid;
+        }
+    }
     .${formClassNames.shaForm} {
         .${formClassNames.shaComponentsContainer} {
             min-height: 32px;
@@ -67,7 +78,7 @@ export const ShaFormStyles = createGlobalStyle`
         position: absolute;
         transition: 0.3s;
         height: 27px;
-        background: rgba(0, 0, 255, 0.75);
+        background: ${(p) => p.theme.colorPrimary};
         max-width: 100%;
         width: auto;
         padding: 0 10px 0 20px;
@@ -85,8 +96,9 @@ export const ShaFormStyles = createGlobalStyle`
             text-overflow: ellipsis;
             flex-grow: 1;
             color: #fff;
-            font-size: 12px;
+            font-size: 10px;
             text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.45);
+            cursor: pointer
         }
     }
 `;
