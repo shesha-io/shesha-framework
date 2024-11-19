@@ -9,6 +9,15 @@ export interface HttpResponse<T = any> {
     request?: any;
 }
 
+export type ResponseType =
+    | 'arraybuffer'
+    | 'blob'
+    | 'document'
+    | 'json'
+    | 'text'
+    | 'stream'
+    | 'formdata';
+
 /**
  * Http request configuration
  */
@@ -17,6 +26,7 @@ export interface HttpRequestConfig {
     headers?: Record<string, string>;
     /* Timeout in milliseconds */
     timeout?: number;
+    responseType?: ResponseType;
 }
 
 /**

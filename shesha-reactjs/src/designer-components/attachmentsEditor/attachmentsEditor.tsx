@@ -5,7 +5,7 @@ import React from 'react';
 import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValue,
@@ -14,7 +14,6 @@ import {
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
 import { IStoredFile } from '@/providers/storedFiles/contexts';
-import { axiosHttp } from '@/utils/fetchers';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -45,6 +44,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const form = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
@@ -64,7 +64,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         data,
         form: getFormApi(form),
         globalState,
-        http: axiosHttp(backendUrl),
+        http: httpClient,
         message,
         moment,
         setGlobalState

@@ -16,7 +16,7 @@ import { FormMarkupWithSettings } from '@/providers/form/models';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient } from '@/providers';
 import {
   updateItemStatus,
 } from '@/utils/configurationFramework/actions';
@@ -32,7 +32,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { loadForm, saveForm, formProps } = useFormPersister();
   const { formFlatMarkup, formSettings } = useFormDesignerState();
   const toolboxComponents = useFormDesignerComponents();
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const { message, modal } = App.useApp();
 
   const saveFormInternal = (): Promise<void> => {
@@ -67,8 +67,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
       saveFormInternal()
         .then(() => {
           updateItemStatus({
-            backendUrl: backendUrl,
-            httpHeaders: httpHeaders,
+            httpClient,
             id: formProps.id,
             status: ConfigurationItemVersionStatus.Ready,
             onSuccess: () => {

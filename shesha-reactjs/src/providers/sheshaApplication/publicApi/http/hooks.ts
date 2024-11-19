@@ -18,9 +18,10 @@ export class AxiosHttpClient implements HttpClientApi {
             : config.timeout;
 
         return { 
-            ...this.#axiosConfig?.headers, 
+            ...this.#axiosConfig, 
             headers,
             timeout,
+            responseType: config.responseType
         };
     };
 
