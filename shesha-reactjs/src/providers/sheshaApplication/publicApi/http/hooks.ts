@@ -1,31 +1,50 @@
 import { useAxiosRequestConfig } from "@/hooks/useAxiosRequestConfig";
-import { HttpClientApi, HttpResponse } from "./api";
+import { HttpClientApi, HttpRequestConfig, HttpResponse } from "@/publicJsApis/httpClient";
 import { useEffect, useState } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 
 export class AxiosHttpClient implements HttpClientApi {
     #axiosConfig: AxiosRequestConfig;
-    get<T = any, R = HttpResponse<T>>(url: string, headers?: Record<string, string>): Promise<R> {
-        const httpHeaders = { ...this.#axiosConfig?.headers, ...headers };
-        return axios.get(url, { ...this.#axiosConfig, headers: httpHeaders });
+
+    #getRequestConfig = (config?: HttpRequestConfig): AxiosRequestConfig => {
+        if (!config)
+            return this.#axiosConfig;
+
+        const headers = config.headers === undefined
+            ? this.#axiosConfig.headers
+            : config.headers;
+        const timeout = config.timeout === undefined
+            ? this.#axiosConfig.timeout
+            : config.timeout;
+
+        return { 
+            ...this.#axiosConfig, 
+            headers,
+            timeout,
+            responseType: config.responseType
+        };
+    };
+
+    get<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+        return axios.get(url, this.#getRequestConfig(config));
     }
-    delete<T = any, R = HttpResponse<T>>(url: string): Promise<R> {
-        return axios.delete(url, this.#axiosConfig);
+    delete<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+        return axios.delete(url, this.#getRequestConfig(config));
     }
-    head<T = any, R = HttpResponse<T>>(url: string): Promise<R> {
-        return axios.head(url, this.#axiosConfig);
+    head<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+        return axios.head(url, this.#getRequestConfig(config));
     }
-    options<T = any, R = HttpResponse<T>>(url: string): Promise<R> {
-        return axios.options(url, this.#axiosConfig);
+    options<T = any, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R> {
+        return axios.options(url, this.#getRequestConfig(config));
     }
-    post<T = any, R = HttpResponse<T>>(url: string, data?: any): Promise<R> {
-        return axios.post(url, data, this.#axiosConfig);
+    post<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R> {
+        return axios.post(url, data, this.#getRequestConfig(config));
     }
-    put<T = any, R = HttpResponse<T>>(url: string, data?: any): Promise<R> {
-        return axios.put(url, data, this.#axiosConfig);
+    put<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R> {
+        return axios.put(url, data, this.#getRequestConfig(config));
     }
-    patch<T = any, R = HttpResponse<T>>(url: string, data?: any): Promise<R> {
-        return axios.patch(url, data, this.#axiosConfig);
+    patch<T = any, R = HttpResponse<T>>(url: string, data?: any, config?: HttpRequestConfig): Promise<R> {
+        return axios.patch(url, data, this.#getRequestConfig(config));
     }
 
     setConfig(axiosConfig: AxiosRequestConfig) {

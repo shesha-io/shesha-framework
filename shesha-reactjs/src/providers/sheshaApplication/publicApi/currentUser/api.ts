@@ -1,5 +1,5 @@
 import qs from "qs";
-import { HttpClientApi } from "../http/api";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { IAjaxResponse, IEntityReferenceDto } from "@/interfaces";
 
 const URLS = {
@@ -37,19 +37,19 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     #profileInfo: IUserProfileInfo;
 
     //#region profile data
-    get isLoggedIn(){
+    get isLoggedIn() {
         return Boolean(this.#profileInfo);
     }
-    get id(){
+    get id() {
         return this.#profileInfo?.id;
     }
-    get userName(){
+    get userName() {
         return this.#profileInfo?.userName;
     }
-    get firstName(){
+    get firstName() {
         return this.#profileInfo?.firstName;
     }
-    get lastName(){
+    get lastName() {
         return this.#profileInfo?.lastName;
     }
     //#endregion
@@ -65,7 +65,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     async hasPermissionAsync(permissionName: string, permissionedEntity?: IEntityReferenceDto): Promise<boolean> {
         if (!this.isLoggedIn)
             return Promise.resolve(false);
-        
+
         const requestParams = {
             permissionName,
             permissionedEntityId: permissionedEntity ? permissionedEntity?.id : undefined,
@@ -77,7 +77,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     async hasRoleAsync(roleName: string): Promise<boolean> {
         if (!this.isLoggedIn)
             return Promise.resolve(false);
-        
+
         const requestParams = {
             roleName: roleName
         };
@@ -85,14 +85,14 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     }
 
     async getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
-        return this.#httpClient.post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, {name,module,defaultValue, dataType})
-        .then(res => {
+        return this.#httpClient.post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, { name, module, defaultValue, dataType })
+            .then(res => {
                 return res.data.success ? res.data.result : undefined;
-        });
+            });
     };
 
     async updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
-        return this.#httpClient.post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, {name,module,value, dataType})
+        return this.#httpClient.post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, { name, module, value, dataType })
             .then(res => {
                 if (!res.data.success)
                     throw new Error("Failed to update setting value: " + res.data.error.message);

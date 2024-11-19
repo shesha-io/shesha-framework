@@ -59,13 +59,12 @@ import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
+  HttpClientApi,
   IApplicationApi,
   useDataTableState,
   useGlobalState,
-  useSheshaApplication,
+  useHttpClient,
 } from '@/providers';
-import { axiosHttp } from '@/utils/fetchers';
-import { AxiosInstance } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { IParentProviderProps } from '../parentProvider/index';
@@ -95,8 +94,8 @@ export interface IApplicationContext<Value = any> {
   selectedRow: ISelectionProps;
   /** Moment function */
   moment: Function;
-  /** Axios Http */
-  http: AxiosInstance;
+  /** Http Client */
+  http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
 
@@ -132,13 +131,12 @@ export type AvailableConstantsContext = {
   closestContextId: string;
   globalState: IAnyObject;
   setGlobalState: (payload: ISetStatePayload) => void;
-  backendUrl: string;
   message: MessageInstance;
+  httpClient: HttpClientApi;
 };
 
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
-  const { backendUrl } = useSheshaApplication();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContext(false)?.id;
@@ -148,6 +146,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const selectedRow = useDataTableState(false)?.selectedRow;
 
   const closestShaForm = useShaFormInstance(false);
+  const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
     closestShaForm,
@@ -156,7 +155,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
     closestContextId,
     globalState,
     setGlobalState,
-    backendUrl,
+    httpClient,
     message,
   };
   return result;
@@ -173,7 +172,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     closestContextId,
     globalState,
     setGlobalState,
-    backendUrl,
+    httpClient,
     message
   } = fullContext;
   const shaFormInstance = shaForm ?? closestShaForm;
@@ -200,7 +199,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     globalState: () => globalState,
     setGlobalState: () => setGlobalState,
     moment: () => moment,
-    http: () => axiosHttp(backendUrl),
+    http: () => httpClient,
     message: () => message,
     data: () => {
       const data = {...shaFormInstance?.formData};

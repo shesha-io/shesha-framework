@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { HttpResponse } from "./api";
+import { HttpResponse } from "@/publicJsApis/httpClient";
 
 export const unwrapAxiosError = (error: any) => {
     const axiosError = axios.isAxiosError(error) ? error as AxiosError: undefined;

@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState
   } from 'react';
-import { axiosHttp, get } from '@/utils/fetchers';
+import { get } from '@/utils/fetchers';
 import {
   Button,
   App,
@@ -25,6 +25,7 @@ import {
   useConfigurableActionDispatcher,
   useForm,
   useGlobalState,
+  useHttpClient,
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
@@ -94,6 +95,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const { getMetadata } = useMetadataDispatcher();
   const executionContext = useAvailableConstantsData();
 
@@ -198,7 +200,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       moment: moment,
       form: getFormApi(localForm),
       formMode: formMode,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message: message,
       globalState: globalState,
     };

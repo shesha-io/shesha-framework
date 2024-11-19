@@ -1,8 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
 import { buildUrl } from './url';
+import { HttpResponse } from '@/publicJsApis/httpClient';
 
 export function constructUrl<TQueryParams>(base: string, path: string, queryParams?: TQueryParams) {
   let normalizedBase = Boolean(base) ? base : '';
@@ -144,7 +145,7 @@ export const getFileNameFromContentDisposition = (disposition: string): string =
   return fileName;
 };
 
-export const getFileNameFromResponse = (fileResponse: AxiosResponse<any>): string => {
+export const getFileNameFromResponse = (fileResponse: HttpResponse<any>): string => {
   return getFileNameFromContentDisposition(fileResponse.headers['content-disposition']);
 };
 
@@ -160,6 +161,5 @@ export const unwrapAbpResponse = <TResponse extends any, TData extends any>(resp
 export const axiosHttp = (baseURL: string, tokenName?: string) =>
   axios.create({
     baseURL,
-    timeout: 10000,
     headers: requestHeaders(tokenName || DEFAULT_ACCESS_TOKEN_NAME, { addCustomHeaders: true }),
   });
