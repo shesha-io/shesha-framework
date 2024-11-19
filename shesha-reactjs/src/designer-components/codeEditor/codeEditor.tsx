@@ -10,7 +10,7 @@ import {
   Tabs
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
-import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { CodeFilled, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
@@ -47,10 +47,11 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       }
     }
   };
-  // const onClear = () => {
-  //   setInternalValue(null);
-  //   if (props.onChange) props.onChange(null);
-  // };
+
+  const onClear = () => {
+    setInternalValue(null);
+    if (props.onChange) props.onChange(null);
+  };
 
   const openEditorDialog = () => setShowDialog(true);
 
@@ -66,7 +67,22 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         onOk() {
           setInternalValue(value);
           setShowDialog(false);
-        }
+        },
+        footer: <>
+          <Show when={hasValue && !readOnly}>
+            <Button type="primary" size="small" danger onClick={onClear}>
+              Clear
+            </Button>
+          </Show>,
+          <Button key="cancel" onClick={onDialogCancel}>
+            {readOnly ? 'Close' : 'Cancel'}
+          </Button>,
+          !readOnly && (
+          <Button key="ok" type="primary" onClick={onDialogSave}>
+            OK
+          </Button>
+          )
+        </>
       });
     } else {
       setInternalValue(value);
@@ -124,14 +140,15 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   return (
     <>
-      <Button type={hasValue ? 'primary' : 'default'} icon={<CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {readOnly ? 'View Code' : '...'}
+      <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} ghost={props.ghost} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {props.label !== " " && (readOnly ? 'View Code' : props.label ? props.label : '...')}
       </Button>
       {showDialog && (
         <Modal
           open={showDialog}
           onCancel={onDialogCancel}
           onOk={onDialogSave}
+          closable={true}
           title={props.label}
           okButtonProps={{ hidden: readOnly }}
           cancelText={readOnly ? 'Close' : undefined}
@@ -139,6 +156,19 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           classNames={{ body: styles.codeEditorModalBody }}
           className={styles.codeEditorModal}
           width={null}
+          footer={[
+            <Button key="clear" onClick={onClear} disabled={readOnly}>
+              Clear
+            </Button>,
+            <Button key="cancel" onClick={onDialogCancel}>
+              {readOnly ? 'Close' : 'Cancel'}
+            </Button>,
+            !readOnly && (
+              <Button key="ok" type="primary" onClick={onDialogSave}>
+                OK
+              </Button>
+            ),
+          ]}
         >
           <Show when={Boolean(props?.description)}>
             <Alert message={props?.description} />

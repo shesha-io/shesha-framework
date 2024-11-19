@@ -61,12 +61,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { message } = App.useApp();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { styles } = useStyles({ fontFamily: model?.inputStyles?.font?.type, fontWeight: model?.inputStyles?.font?.weight, textAlign: model?.inputStyles?.font?.align });
-    const dimensions = model?.inputStyles?.dimensions;
-    const border = model?.inputStyles?.border;
-    const font = model?.inputStyles?.font;
-    const shadow = model?.inputStyles?.shadow;
-    const background = model?.inputStyles?.background;
+    const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
+    const dimensions = model?.dimensions;
+    const border = model?.border;
+    const font = model?.font;
+    const shadow = model?.shadow;
+    const background = model?.background;
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -95,7 +95,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       fetchStyles();
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-    if (model?.inputStyles?.background?.type === 'storedFile' && model?.inputStyles?.background.storedFile?.id && !isValidGuid(model?.inputStyles?.background.storedFile.id)) {
+    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -115,12 +115,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
     const InputComponentType = renderInput(model.textType);
 
+    console.log('model', model);
     const inputProps: InputProps = {
       className: `sha-input ${styles.textField}`,
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model?.inputStyles?.border?.hideBorder ? 'borderless' : undefined,
+      variant: model?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
@@ -160,9 +161,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
             theme={{
               components: {
                 Input: {
-                  fontFamily: model?.inputStyles?.font?.type,
-                  fontSize: model?.inputStyles?.font?.size || 14,
-                  fontWeightStrong: model?.inputStyles?.font?.weight || 500,
+                  fontFamily: model?.font?.type,
+                  fontSize: model?.font?.size || 14,
+                  fontWeightStrong: model?.font?.weight || 500,
                 },
               },
             }}
@@ -181,7 +182,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   initModel: (model) => ({
     ...model,
     textType: 'password',
-    inputStyles: {
+    desktop: {
+      ...model.desktop,
       background: { type: 'color', color: '#ffffff', repeat: 'no-repeat', size: 'cover', position: 'center' },
       font: { type: 'Arial', size: 14, weight: 400, align: 'left', color: '#0000000' },
       dimensions: { width: '100%', height: '32px', minHeight: '0px', minWidth: '0px', maxWidth: '100%', maxHeight: '100%', },

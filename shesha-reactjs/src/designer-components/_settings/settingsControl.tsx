@@ -1,14 +1,12 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
-import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
-import { CodeFilled, CodeOutlined, FormOutlined } from '@ant-design/icons';
 import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 
@@ -18,6 +16,7 @@ export interface ISettingsControlProps<Value = any> {
   propertyName: string;
   readOnly?: boolean;
   value?: IPropertySetting<Value>;
+  setHasCode?: (hasCode: boolean) => void;
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting<Value>) => void;
   readonly children?: SettingsControlChildrenType;
@@ -58,6 +57,12 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       props.onChange(newValue);
   };
 
+  useEffect(() => {
+    const newMode = !!code ? 'code' : 'value' as IPropertySetting<Value>['_mode'];
+    props.setHasCode?.(newMode === 'code');
+    onInternalChange({ ...setting, _mode: newMode }, newMode);
+  }, [code])
+
   const codeOnChange = (val: any) => {
     const newValue = { ...setting, _code: val };
     onInternalChange(newValue);
@@ -70,10 +75,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     }
   };
 
-  const onSwitchMode = () => {
-    const newMode = mode === 'code' ? 'value' : 'code';
-    onInternalChange(setting, newMode);
-  };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
@@ -91,7 +92,11 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       functionName: functionName,
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
-    exposedVariables: defaultExposedVariables
+    type: 'text',
+    label: ' ',
+    className: `${styles.jsSwitch}`,
+    ghost: true,
+    exposedVariables: defaultExposedVariables,
   };
 
   const editor = constantsEvaluator
@@ -101,20 +106,9 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
-      <Button
-        hidden={props.readOnly}
-        className={`${styles.jsSwitch}`}
-        type='text'
-        danger={mode === 'value' && !!code}
-        ghost
-        size='small'
-        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
-        color='lightslategrey'
-        onClick={onSwitchMode}
-      />
+      {editor}
       <div className={styles.jsContent} style={{ marginLeft: 0 }}>
-        {mode === 'code' && editor}
-        {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
+        {props.children(setting?._value, valueOnChange, propertyName)}
       </div>
     </div>
   );

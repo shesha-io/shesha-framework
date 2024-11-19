@@ -1,4 +1,4 @@
-import React, { cloneElement, FC, ReactElement } from 'react';
+import React, { cloneElement, FC, ReactElement, useState } from 'react';
 import { ConfigurableFormItem } from '@/components';
 import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
@@ -9,6 +9,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
     const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout } = props;
     const childElement = children as ReactElement;
     const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
+    const [hasCode, setHasCode] = useState(false);
 
     const handleChange = (onChange) => (...args: any[]) => {
         const event = args[0];
@@ -22,9 +23,9 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         childElement,
         {
             ...childElement?.props,
-            readOnly,
+            readOnly: readOnly || hasCode,
             size: 'small',
-            disabled: readOnly,
+            disabled: readOnly || hasCode,
             onChange: handleChange(onChange),
             [valuePropName]: value
         }
@@ -57,9 +58,10 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                         mode={'value'}
                         onChange={onChange}
                         value={value}
+                        setHasCode={setHasCode}
                         readOnly={readOnly}
                     >
-                        {(value, onChange) => createClonedElement(value, onChange)}
+                        {(value, onChange) => createClonedElement(value, onChange,)}
                     </SettingsControl>
                 )
             }

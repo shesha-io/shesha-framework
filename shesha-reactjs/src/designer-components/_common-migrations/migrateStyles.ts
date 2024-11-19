@@ -1,5 +1,5 @@
 import { addPx } from "../_settings/utils";
-import { IInputStyles, ITextFieldComponentProps } from "../textField/interfaces";
+import { ITextFieldComponentProps } from "../textField/interfaces";
 import { IStyleType } from "@/interfaces";
 
 export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
@@ -10,16 +10,23 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
         return {
             border: {
                 hideBorder: prevStyles?.hideBorder,
-                border: { all: { width: prevStyles?.borderSize + "" || '1px', style: prevStyles.borderType || 'solid' } },
+                border: {
+                    all: {
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles.borderType || 'solid',
+                        color: prevStyles.borderColor || '#d9d9d9'
+                    }
+                },
                 radius: { all: prevStyles?.borderRadius || 8 },
             },
             background: {
-                ...prevStyles,
                 type: 'color',
                 color: prevStyles.backgroundColor || '#fff',
             },
             font: {
                 color: prevStyles.fontColor || '#000',
+                type: 'Arial',
+                align: 'left',
                 size: prevStyles.fontSize as number || 14
             },
             dimensions: {

@@ -21,7 +21,7 @@ export interface IInputStyles extends IStyleType {
   style?: string;
 };
 
-export interface ITextFieldComponentProps extends IConfigurableFormComponent {
+export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
   placeholder?: string;
   prefix?: string;
   suffix?: string;
@@ -29,18 +29,6 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   prefixIcon?: IconType;
   initialValue?: string;
   textType?: TextType;
-  inputStyles?: IStyleType;
-  width?: string;
-  height?: string;
-  hideBorder?: boolean;
-  borderSize?: number;
-  borderType?: string;
-  borderRadius?: number;
-  borderColor?: string;
-  fontSize?: string;
-  fontColor?: string;
-  backgroundColor?: string;
-  stylingBox?: string;
   desktop?: IInputStyles;
   mobile?: IInputStyles;
   tablet?: IInputStyles;

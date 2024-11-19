@@ -6,19 +6,13 @@ export const useStyles = createStyles(({ css, cx }) => {
         max-width: 150px;
         
         .ant-upload-list-item-container {
-        //  top: -30px !important;
+         top: 25px !important;
          position: relative;
         }
     `);
 
-    const replaceBtn = cx(css`
-        position: relative;
-        top: -75px;
-        left: 100px;
-        `);
 
     return {
-        image,
-        replaceBtn
+        image
     };
 });
