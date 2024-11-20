@@ -4,7 +4,7 @@ import { CreateNewVersionButton } from './createNewVersionButton';
 import { FormConfigurationDto } from '@/providers/form/api';
 import { SaveMenu } from './saveMenu';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useCanvas, useShaRouting, useSheshaApplication } from '@/providers';
+import { useShaRouting, useSheshaApplication } from '@/providers';
 import { PublishButton } from './publishButton';
 import { DebugButton } from './debugButton';
 import { UndoRedoButtons } from './undoRedoButtons';
@@ -25,7 +25,6 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   const { formSettings } = useFormDesignerState();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { activeDevice } = useCanvas();
 
   const isGranted = formSettings?.access !== 4 || anyOfPermissionsGranted(formSettings?.permissions || []);
 
@@ -52,7 +51,6 @@ export const FormDesignerToolbar: FC<IProps> = () => {
           </div>
           <div className={styles.shaDesignerToolbarCenter}>
             <CanvasConfig/>
-            <small>Styling applicable for <b>{activeDevice}</b></small>
           </div>
           <div className={styles.shaDesignerToolbarRight}>
             <FormSettingsButton />
