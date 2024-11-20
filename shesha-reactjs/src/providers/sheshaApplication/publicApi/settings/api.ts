@@ -1,4 +1,4 @@
-import { HttpClientApi } from "../http/api";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { SettingsManager } from "./manager";
 import { ISettingsModuleAccessor, SettingsModuleAccessor } from "./moduleAccessor";
 

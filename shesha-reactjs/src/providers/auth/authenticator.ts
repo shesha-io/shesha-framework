@@ -2,7 +2,7 @@ import { getAccessToken, removeAccessToken, saveUserToken } from "@/utils/auth";
 import { DEFAULT_ACCESS_TOKEN_NAME } from "../sheshaApplication/contexts";
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from "@/shesha-constants";
 import { IEntityReferenceDto, IErrorInfo, ILoginForm } from "@/interfaces";
-import { HttpClientApi } from "../sheshaApplication/publicApi";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from "@/apis/tokenAuth";
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from "@/apis/session";
 import { getQueryParam, isSameUrls } from "@/utils/url";
@@ -11,7 +11,7 @@ import React from "react";
 import { IAccessToken, IHttpHeaders } from "@/interfaces/accessToken";
 import { getLocalizationOrDefault } from "@/utils/localization";
 import { getTenantId } from "@/utils/multitenancy";
-import { HttpResponse } from "../sheshaApplication/publicApi/http/api";
+import { HttpResponse } from "@/publicJsApis/httpClient";
 import { ASPNET_CORE_CULTURE, AuthenticationState, AuthenticationStatus, DEFAULT_HOME_PAGE, ERROR_MESSAGES, IAuthenticator, LoginUserResponse, URLS } from "./models";
 import { ISettingsActionsContext } from "../settings/contexts";
 
@@ -118,7 +118,7 @@ export class Authenticator implements IAuthenticator {
 
     #fetchUserInfoHttp = async (): Promise<GetCurrentLoginInfoOutput> => {
         const headers = this.#getHttpHeaders();
-        const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(URLS.GET_CURRENT_LOGIN_INFO, headers);
+        const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
         const { data: response } = httpResponse;
         if (!response.success || !response.result)
             throw new Error("Failed to get user profile", { cause: response.error });
@@ -135,7 +135,10 @@ export class Authenticator implements IAuthenticator {
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
         if (isSameUrls(currentPath, this.#unauthorizedRedirectUrl)) {
-            const returnUrl = this.#router.query[RETURN_URL_KEY]?.toString();
+            const returnUrlParam = this.#router.query[RETURN_URL_KEY];
+            const returnUrl = returnUrlParam
+                ? decodeURIComponent(returnUrlParam.toString())
+                : undefined;
 
             const redirects: string[] = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
             const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
@@ -166,7 +169,7 @@ export class Authenticator implements IAuthenticator {
             const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
             return {
                 userProfile: userProfile,
-                url: redirectUrl ?? this.#router.path
+                url: redirectUrl ?? this.#router.fullPath
             };
         } catch (error) {
             this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
@@ -191,22 +194,22 @@ export class Authenticator implements IAuthenticator {
         if (this.loginInfo)
             return;
 
-        const getRedirectUrlAsync = async(): Promise<string> => {
+        const getRedirectUrlAsync = async (): Promise<string> => {
             const currentPath = this.#router.path;
-            const fullPath = this.#router.fullPath;            
-            if (currentPath === '/' || currentPath === ''){
+            const fullPath = this.#router.fullPath;
+            if (currentPath === '/' || currentPath === '') {
                 const defaultUrl = await this.#settings.getSetting({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
-                if (typeof(defaultUrl) === 'string' && Boolean(defaultUrl.trim()))
+                if (typeof (defaultUrl) === 'string' && Boolean(defaultUrl.trim()))
                     return defaultUrl;
-            }       
-    
+            }
+
             const existingReturnUrl = notAuthorizedRedirectUrl ? getQueryParam(RETURN_URL_KEY, notAuthorizedRedirectUrl) : undefined;
             const redirectUrl = existingReturnUrl || isSameUrls(currentPath, this.#homePageUrl) || isSameUrls(currentPath, notAuthorizedRedirectUrl)
                 ? ''
                 : `/?${RETURN_URL_KEY}=${encodeURIComponent(fullPath)}`;
-    
+
             return `${notAuthorizedRedirectUrl}${redirectUrl}`;
-        }; 
+        };
 
         const token = this.#getToken();
         if (token) {
@@ -214,7 +217,7 @@ export class Authenticator implements IAuthenticator {
             try {
                 // fetch user profile
                 const userProfile = await this.#fetchUserInfoHttp();
-                if (userProfile.user){
+                if (userProfile.user) {
                     this.#loginInfo = userProfile;
                     this.#updateState('ready', null, null);
                 } else {

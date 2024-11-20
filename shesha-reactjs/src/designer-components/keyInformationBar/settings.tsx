@@ -11,7 +11,7 @@ import { IKeyInformationBarProps } from './interfaces';
 import { ColorPicker, Show } from '@/components';
 import { strings } from '@/components/keyInformationBar/utils';
 import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;

@@ -2,11 +2,10 @@ import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/google
 import moment from 'moment';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import ValidationErrors from '@/components/validationErrors';
-import { axiosHttp } from '@/utils/fetchers';
 import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentProps } from './models';
 import { App } from 'antd';
-import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useGlobalState, useHttpClient } from '@/providers';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
@@ -28,7 +27,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
 
   const form = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
-  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const [googlePlaceReady, setGooglePlaceReady] = useState(false);
   const { message } = App.useApp();
 
@@ -62,7 +61,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     form: getFormApi(form),
     formData: form.formData,
     globalState,
-    http: axiosHttp(backendUrl),
+    http: httpClient,
     message,
     moment,
     setGlobalState,

@@ -2,7 +2,7 @@ import React from 'react';
 import { Checkbox, Form } from 'antd';
 import { ITableViewSelectorComponentProps } from './models';
 import { SectionSeparator } from '@/components';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FiltersList } from './filters/filtersList';
 
 export interface ITableViewSelectorSettingsProps {

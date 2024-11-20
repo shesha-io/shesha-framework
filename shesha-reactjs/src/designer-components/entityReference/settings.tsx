@@ -18,7 +18,7 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { ButtonGroupConfigurator } from '@/components';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 

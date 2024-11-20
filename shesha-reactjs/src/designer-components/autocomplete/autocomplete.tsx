@@ -9,7 +9,7 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useDataContextManager, useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
+import { useDataContextManager, useFormData, useGlobalState, useHttpClient, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
 import {
@@ -20,7 +20,6 @@ import {
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { evaluateDynamicFilters } from '@/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { IAutocompleteComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -53,7 +52,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const pageContext = useDataContextManager(false)?.getPageContext();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { message } = App.useApp();
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
       model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
@@ -155,7 +154,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             data,
             getFormApi(form),
             globalState,
-            axiosHttp(backendUrl),
+            httpClient,
             message,
             moment,
             setGlobalState
@@ -171,7 +170,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       form: getFormApi(form),
       formData: data,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

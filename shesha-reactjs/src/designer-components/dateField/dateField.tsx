@@ -6,10 +6,9 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { IDateFieldProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
@@ -36,7 +35,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { message } = App.useApp();
 
     const eventProps = {
@@ -44,7 +43,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

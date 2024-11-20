@@ -5,7 +5,7 @@ import { EntityPicker } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { ButtonGroupItemProps, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -19,7 +19,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -58,7 +57,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
    Factory: ({ model }) => {
     const form = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { data: formData } = useFormData();
     const { message } = App.useApp();
     const eventProps = {
@@ -66,7 +65,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

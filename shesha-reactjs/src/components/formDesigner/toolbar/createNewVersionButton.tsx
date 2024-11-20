@@ -7,7 +7,7 @@ import {
     createNewVersionRequest,
     showErrorDetails,
 } from '@/utils/configurationFramework/actions';
-import { useSheshaApplication } from '@/providers/index';
+import { useHttpClient } from '@/providers/index';
 import { FormConfigurationDto } from '@/providers/form/api';
 
 export interface ICreateNewVersionButtonProps {
@@ -16,15 +16,14 @@ export interface ICreateNewVersionButtonProps {
 
 export const CreateNewVersionButton: FC<ICreateNewVersionButtonProps> = ({ onSuccess }) => {
     const { formProps } = useFormPersister();
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { message, notification, modal } = App.useApp();
 
     const onCreateNewVersionClick = () => {
         const onOk = () => {
             message.loading('Creating new version..', 0);
             return createNewVersionRequest({
-                backendUrl: backendUrl,
-                httpHeaders: httpHeaders,
+                httpClient,
                 id: formProps.id,
                 message,
                 notification,

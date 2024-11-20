@@ -6,9 +6,8 @@ import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
@@ -49,7 +48,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { message } = App.useApp();
 
     const styling = JSON.parse(model.stylingBox || '{}');
@@ -88,7 +87,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

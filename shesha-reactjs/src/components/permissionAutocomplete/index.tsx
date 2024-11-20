@@ -3,14 +3,14 @@ import { Select } from 'antd';
 import { PermissionsTree } from '@/components/permissionsTree';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
-export interface IPropertyAutocompleteProps {
+export interface IPermissionAutocompleteProps {
   onChange?: (value: string[]) => void;
   value?: string[];
   readOnly?: boolean;
   size?: SizeType;
 }
 
-const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
+export const PermissionAutocomplete: FC<IPermissionAutocompleteProps> = (props) => {
 
   const { onChange, value, readOnly, size } = props;
 
@@ -52,5 +52,3 @@ const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
     />
   );
 };
-
-export default PermissionAutocomplete;

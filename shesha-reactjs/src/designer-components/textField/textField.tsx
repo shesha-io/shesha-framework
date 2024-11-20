@@ -7,9 +7,8 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { FormMarkup, useForm, useGlobalState, useSheshaApplication } from '@/providers';
+import { FormMarkup, useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -58,6 +57,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const data = model;
 
     const { globalState, setState: setGlobalState } = useGlobalState();
+    const httpClient = useHttpClient();
     const { message } = App.useApp();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -135,7 +135,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       form: getFormApi(form),
       formData: data,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

@@ -1,4 +1,4 @@
-import { HttpClientApi } from "@/providers/sheshaApplication/publicApi";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { IEntityTypesMap, IEntityMetadataFetcher, ISyncEntitiesContext, ICacheProvider } from "./models";
 import { DataTypes, IPropertyMetadata } from "@/interfaces";
 import { IEntityMetadata, NestedProperties, isIHasEntityType, isPropertiesArray } from "@/interfaces/metadata";
@@ -56,7 +56,7 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
             typesMap: this.#typesMap,
         };
     };
-    
+
     #syncEntities = (): Promise<void> => {
         return syncEntities(this.#syncContext);
     };

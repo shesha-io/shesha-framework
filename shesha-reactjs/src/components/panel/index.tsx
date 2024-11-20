@@ -19,6 +19,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   noContentPadding?: boolean;
   loading?: boolean;
   collapsedByDefault?: boolean;
+  headerColor?: string;
   bodyColor?: string;
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
@@ -40,6 +41,7 @@ const StyledCollapse: any = styled(Collapse)<
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
+    background-color: ${({ headerColor }) => headerColor} !important;;
   }
 
   .ant-collapse-content {
@@ -65,6 +67,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   collapsible,
   ghost,
   bodyColor = 'unset',
+  headerColor = 'unset',
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
@@ -85,6 +88,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       style={{ ...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius }}
       ghost={ghost}
       bodyColor={bodyColor}
+      headerColor={headerColor}
       hideCollapseContent={hideCollapseContent}
     >
       <Panel

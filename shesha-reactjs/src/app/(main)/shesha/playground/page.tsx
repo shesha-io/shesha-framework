@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { IAjaxResponse, PageWithLayout } from '@/interfaces';
 import useSWR from 'swr';
 import { ComponentSettingsFile } from './api/filesList/route';
@@ -12,6 +12,7 @@ import qs from 'qs';
 import { IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 import axios from 'axios';
 import { FileContentResponse } from './api/fileContent/route';
+import { PermissionAutocomplete } from '@/components';
 
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
 const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
@@ -113,8 +114,11 @@ const Page: PageWithLayout<{}> = () => {
         console.log("LOG: process forms - success");
     };
 
+    const [permission, setPermission] = useState<string[]>();
+
     return (
         <div>
+            <PermissionAutocomplete value={permission} onChange={setPermission} readOnly={false}/>
             <h2>Components with JSON settings: </h2>
             {!data && "Loading..."}
 
