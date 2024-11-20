@@ -9,6 +9,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IPropertyRouterComponent extends IConfigurableFormComponent {
   propertyRouteName?: string;
+  components?: IConfigurableFormComponent[];
 }
 
 const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
@@ -21,7 +22,7 @@ const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
       ? null
       : <ParentProvider model={model}>
         <FormItemProvider namePrefix={model.propertyRouteName}>
-          <ComponentsContainer containerId={model.id} />
+          <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model?.components : []}/>
         </FormItemProvider>
       </ParentProvider>;
   },
