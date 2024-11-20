@@ -122,6 +122,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
+      max: model.validate?.maxLength,
+      min: model.validate?.minLength,
       minLength: model.validate?.minLength,
       size: model.size,
       disabled: model.readOnly,
@@ -180,7 +182,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     ...model,
-    textType: 'password'
+    textType: 'password',
+    
   }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))

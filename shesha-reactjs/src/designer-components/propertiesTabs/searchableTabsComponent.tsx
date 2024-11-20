@@ -5,9 +5,10 @@ import { ComponentsContainer } from '@/components';
 import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
+import { ITabsComponentProps } from './models';
 
 interface SearchableTabsProps {
-    model: any;
+    model: ITabsComponentProps;
     data?: any;
     value: any;
     onChange?: (value: any) => void;

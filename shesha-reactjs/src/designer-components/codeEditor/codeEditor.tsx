@@ -77,7 +77,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         },
         footer: <>
           <Show when={hasValue && !readOnly}>
-            <Button ghost size="small" danger onClick={onClear}>
+            <Button size="small" danger={true} onClick={onClear}>
               Clear
             </Button>
           </Show>,
@@ -142,7 +142,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   return (
     <>
       <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} ghost={props.ghost} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {props.label !== " " && (readOnly ? 'View Code' : props.label ? props.label : '...')}
+        {props.label !== " " && (readOnly ? 'View Code' : '...')}
       </Button>
       {showDialog && (
         <Modal

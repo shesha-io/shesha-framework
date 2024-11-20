@@ -10,7 +10,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
     const [hasCode, setHasCode] = useState(false);
 
     const childElement = children as ReactElement;
-    const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled || hasCode;
+    const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
 
 
     const handleChange = (onChange) => (...args: any[]) => {

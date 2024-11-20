@@ -197,18 +197,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return hasUnits ? <InputNumber
-                controls={false}
-                value={hasUnits ? value?.value : value}
-                readOnly={readOnly}
-                variant={variant}
-                onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
-                size={size}
-                addonAfter={hasUnits ? <UnitSelector onChange={onChange} value={value} readOnly={readOnly} />
-                    : null} /> :
-                <InputNumber
-                    variant={variant} readOnly={readOnly} size={size} value={value} controls={false} />;
-
+            return <InputNumber variant={variant} readOnly={readOnly} size={size} value={value} controls={false} />;
         case 'customDropdown':
             return <CustomDropdown
                 variant={variant} value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
