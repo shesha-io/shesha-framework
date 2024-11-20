@@ -143,7 +143,6 @@ export const customIcons = {
             <rect x="5" y="5" width="1" height="6" fill="currentColor"></rect>
             <rect x="18" y="5" width="1" height="6" fill="currentColor"></rect>
             <rect x="6" y="10" width="12" height="1" fill="currentColor"></rect>
-            <rect x="7" y="19.7276" width="10" height="1" fill="currentColor"></rect>
             <rect x="7" y="16.7276" width="10" height="1" fill="currentColor"></rect>
             <rect x="7" y="17.4552" width="1" height="3" fill="currentColor"></rect>
             <rect x="16" y="17.4552" width="1" height="3" fill="currentColor"></rect>

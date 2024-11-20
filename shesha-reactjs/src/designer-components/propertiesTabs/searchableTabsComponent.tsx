@@ -40,8 +40,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
         })
         .filter(tab => !tab.hidden);
 
-    console.log("newFilteredTabs", newFilteredTabs);
-
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         if (onChange) {

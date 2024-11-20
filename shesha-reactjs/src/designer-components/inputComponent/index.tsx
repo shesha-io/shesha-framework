@@ -1,13 +1,12 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Switch, Tooltip } from "antd";
-import { CodeEditor, ColorPicker, IconType, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { CodeEditor, ColorPicker, IconType, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { ResultType } from '@/components/codeEditor/models';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, IComponentLabelProps, useAvailableConstantsData, useFormData } from '@/index';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';

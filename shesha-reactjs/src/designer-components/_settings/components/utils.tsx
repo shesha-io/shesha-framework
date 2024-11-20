@@ -1,5 +1,4 @@
-import { IContainerComponentProps } from "@/designer-components/container/interfaces";
-import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
+import { IPropertySetting } from "@/interfaces";
 
 /**
  * Checks if the provided data is an instance of IPropertySetting.

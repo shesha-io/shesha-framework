@@ -44,8 +44,6 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
         </Button>
     );
 
-    console.log("FileList", fileList, "Value", value);
-
     return (
         <div className={styles.image}>
             <Upload

@@ -141,8 +141,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
-    console.log("TextFieldComponent -> eventProps", model);
-
     return (
       <ConfigurableFormItem
         model={model}

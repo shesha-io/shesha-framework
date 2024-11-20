@@ -58,10 +58,10 @@ export const fontWeights = [
     { value: '500', label: 'sectionSeparator' },
     { value: '700', label: 'sectionSeparator' },
     { value: '900', label: 'sectionSeparator' },
-]
+];
 
 export const textAlign = [
     { value: 'left', label: 'AlignLeftOutlined' },
     { value: 'center', label: 'AlignCenterOutlined' },
     { value: 'right', label: 'AlignRightOutlined' },
-]
+];

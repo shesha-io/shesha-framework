@@ -90,4 +90,4 @@ export const borderSides = [
         icon: "BorderLeftOutlined",
         title: "Left"
     }
-]
+];

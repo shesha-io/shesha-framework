@@ -8,7 +8,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
 
     const getBorderInputs = () => borderSides.map(value => {
         const side = value.value;
-        const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.border?.selectedSide)' + `!== "${side}";`;
+        const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);';
 
         return {
             id: `borderStyleRow-${side}`,
@@ -17,6 +17,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
             readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
             hidden: { _code: code, _mode: 'code', _value: false } as any,
             inputs: [
+                {
+                    label: "Select Side",
+                    hideLabel: true,
+                    propertyName: "border.selectedSide",
+                    inputType: "radio",
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    buttonGroupOptions: borderSides
+                },
                 {
                     label: "Width",
                     hideLabel: true,
@@ -486,18 +494,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 icon: "EyeOutlined",
                                                                 iconAlt: "EyeInvisibleOutlined"
                                                             },
-                                                            {
-                                                                label: "Select Side",
-                                                                hideLabel: true,
-                                                                propertyName: "border.selectedSide",
-                                                                inputType: "radio",
-                                                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                buttonGroupOptions: borderSides
-                                                            },
                                                         ]
-                                                    }
-                                                    )
+                                                    })
                                                     .addSettingsInputRow(
                                                         getBorderInputs()[0] as any
                                                     )
