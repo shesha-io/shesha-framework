@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef } from 'react';
 import { Collapse, Skeleton, theme } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
+
 
 const { Panel } = Collapse;
 const { useToken } = theme;
@@ -46,8 +47,8 @@ const StyledCollapse: any = styled(Collapse) <
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    border-top: ${({ parentPanel, primaryColor }) => (parentPanel ? 'none' : `3px solid  ${primaryColor}`)};
-    border-left: ${({ parentPanel, primaryColor }) => (!parentPanel ? 'none' : `3px solid  ${primaryColor}`)};
+    border-top: ${({ parentPanel, primaryColor }) => (parentPanel ? `3px solid  ${primaryColor}` : 'none')};
+    border-left: ${({ parentPanel, primaryColor }) => (!parentPanel ? `3px solid  ${primaryColor}` : 'none')};
     font-size: ${({ parentPanel }) => (parentPanel ? '13px' : '16px')};
     font-weight: 'bold';
     
@@ -82,35 +83,16 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
-  readonly,
+  parentPanel,
   dynamicBorderRadius
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
   const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
-  const [parentPanel, setParentPanel] = useState(false);
   const panelRef = useRef(null);
   const { token } = useToken();
 
-
-  useEffect(() => {
-    let currentElement = panelRef.current;
-
-    const currentElementParent = !readonly ?
-      currentElement.parentElement.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement
-      : currentElement.parentElement.parentElement?.parentElement.parentElement;
-
-    if (currentElementParent.className.includes('ant-collapse')) {
-      setParentPanel(true);
-    } else {
-      setParentPanel(false);
-    };
-
-  }, []);
-
-
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
-
 
   return (
     <StyledCollapse
