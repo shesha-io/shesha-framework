@@ -15,9 +15,10 @@ import { CanvasConfig } from '../toolbar/canvasConfig';
 export interface IQuickEditToolbarProps {
     onUpdated: () => void;
     onNewVersionCreated: (newVersion: FormConfigurationDto) => void;
+    renderSource: "modal" | "designer-page";
 }
 
-export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewVersionCreated }) => {
+export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewVersionCreated, renderSource }) => {
     const { readOnly } = useFormDesignerState();
     const { message } = App.useApp();
 
@@ -52,7 +53,7 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewV
                 <PublishButton onPublished={onPublished}/>
             </div>
             <CanvasConfig/>
-            <div className="sha-designer-toolbar-right">
+            <div className="sha-designer-toolbar-right" style={{marginRight: renderSource === "modal" ? "30px" : "auto"}}>
                 <FormSettingsButton />
                 <OpenOnNewPageButton />
                 <PreviewButton />

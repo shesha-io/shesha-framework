@@ -3,7 +3,6 @@ import { FormIdentifier } from '@/interfaces';
 import { Modal } from 'antd';
 import { FormDesigner } from '../index';
 import { DesignerMainArea } from '../designerMainArea/index';
-import { DesignerTitle } from '../designerTitle/index';
 import { QuickEditToolbar } from './quickEditToolbar';
 import { FormConfigurationDto } from '@/providers/form/api';
 import { useMainStyles } from '../styles/styles';
@@ -30,18 +29,14 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
             <Modal
                 open={open}
                 onCancel={onCancel}
-                width={'95%'}
+                width={'calc(100vw)'}
                 footer={null}
                 className={styles.quickEditModal}
             >
                 <FormDesigner.NonVisual formId={latestFormId ?? formId}>
-                    <div className="ant-modal-header">
-                        <div className="ant-modal-title">
-                            <DesignerTitle />
-                        </div>
-                    </div>
                     <div className={styles.formDesigner}>
                         <QuickEditToolbar 
+                            renderSource='modal'
                             onUpdated={onUpdated}
                             onNewVersionCreated={onNewVersionCreated}
                         />

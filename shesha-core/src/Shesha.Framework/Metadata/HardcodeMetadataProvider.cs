@@ -2,38 +2,24 @@
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Abp.ObjectMapping;
-using Abp.Runtime.Validation;
 using JetBrains.Annotations;
-using JsonLogic.Net;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using NetTopologySuite.Geometries;
-using PluralizationService.Providers;
-using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
-using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
-using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Specifications;
 using Shesha.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
@@ -58,7 +44,7 @@ namespace Shesha.Metadata
 
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
-            var allProps = containerType.GetProperties(flags).OrderBy(p => p.Name).ToList();
+            var allProps = containerType.GetPropertiesWithoutHidden(flags).OrderBy(p => p.Name).ToList();
             if (containerType.IsEntityType())
                 allProps = allProps.Where(p => MappingHelper.IsPersistentProperty(p) || p.CanRead && p.HasAttribute<NotMappedAttribute>()).ToList();
 
