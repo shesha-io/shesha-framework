@@ -95,12 +95,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             style={{ ...getPanelStyle }}
             className={model.className}
             bodyColor={bodyColor}
-            readonly={formMode !== 'designer'}
             headerColor={headerColor}
             isSimpleDesign={isSimpleDesign}
             parentPanel={panelPosition === 'parent'}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
+            isSettingPanel={!model?.componentName}
           >
             <ComponentsContainer
               containerId={model.content.id}
