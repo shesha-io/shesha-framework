@@ -46,6 +46,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       hideWhenEmpty,
     } = model;
 
+    const panelContextState = useContext(PanelContext);
+
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
     if (model.hidden) return null;
@@ -69,8 +71,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           dynamicComponents={model?.isDynamic ? model.header?.components : []}
         />
       ) : null;
-
-    const panelContextState = useContext(PanelContext);
 
     const panelPosition = !!panelContextState ? 'child' : 'parent';
 
