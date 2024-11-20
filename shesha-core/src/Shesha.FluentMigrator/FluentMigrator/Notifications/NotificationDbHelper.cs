@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using FluentMigrator;
+using System.Data;
 
 namespace Shesha.FluentMigrator.Notifications
 {
@@ -7,7 +8,7 @@ namespace Shesha.FluentMigrator.Notifications
     /// </summary>
     internal class NotificationDbHelper: DbHelperBase
     {
-        public NotificationDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction): base (dbmsType, connection, transaction)
+        public NotificationDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base (dbmsType, connection, transaction, querySchema)
         {
         }
 
