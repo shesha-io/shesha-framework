@@ -3,7 +3,7 @@ import { Button, App } from 'antd';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import { DeploymentUnitOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useFormPersister } from '@/providers/formPersisterProvider';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient } from '@/providers';
 import {
     updateItemStatus,
 } from '@/utils/configurationFramework/actions';
@@ -13,7 +13,7 @@ export interface IPublishButtonProps {
 }
 
 export const PublishButton: FC<IPublishButtonProps> = ({ onPublished }) => {
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { loadForm, formProps } = useFormPersister();
     const { message, modal } = App.useApp();
 
@@ -21,8 +21,7 @@ export const PublishButton: FC<IPublishButtonProps> = ({ onPublished }) => {
         const onOk = () => {
             message.loading('Publishing in progress..', 0);
             updateItemStatus({
-                backendUrl: backendUrl,
-                httpHeaders: httpHeaders,
+                httpClient,
                 id: formProps.id,
                 status: ConfigurationItemVersionStatus.Live,
                 onSuccess: () => {

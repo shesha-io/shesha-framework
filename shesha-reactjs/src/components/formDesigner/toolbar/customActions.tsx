@@ -1,4 +1,4 @@
-import { useDynamicModals, useSheshaApplication } from "@/providers";
+import { useDynamicModals, useHttpClient } from "@/providers";
 import { useFormDesignerState } from "@/providers/formDesigner";
 import { useFormPersister } from "@/providers/formPersisterProvider";
 import { downloadAsJson } from "@/utils/configurationFramework/actions";
@@ -14,7 +14,7 @@ export interface ICustomActionsProps {
 }
 
 export const CustomActions: FC<ICustomActionsProps> = () => {
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { formProps, loadForm } = useFormPersister();
     const { open: openModal } = useDynamicModals();
     const { message } = App.useApp();
@@ -25,7 +25,7 @@ export const CustomActions: FC<ICustomActionsProps> = () => {
             key: 'exportJson',
             label: 'Get JSON',
             onClick: () => { 
-                downloadAsJson({ backendUrl, httpHeaders, id: formProps.id });
+                downloadAsJson({ httpClient, id: formProps.id });
             },
         },
         {
