@@ -5,10 +5,10 @@ import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
 
-
 const { Panel } = Collapse;
 const { useToken } = theme;
 
+export type defaultHeaderType = 'settings' | 'default';
 
 export interface ICollapsiblePanelProps extends CollapseProps {
   isActive?: boolean;
@@ -31,6 +31,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   primaryColor?: string;
   isSettingPanel?: boolean;
   dynamicBorderRadius?: number;
+  defaultHeaderBorder?: defaultHeaderType;
 }
 
 /**
@@ -47,18 +48,16 @@ const StyledCollapse: any = styled(Collapse) <
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    border-top: ${({ parentPanel, primaryColor,isSettingPanel }) => (parentPanel && !isSettingPanel ? `3px solid  ${primaryColor}` : 'none')};
-    border-left: ${({ parentPanel, primaryColor,isSettingPanel }) => (!parentPanel && !isSettingPanel ? `3px solid  ${primaryColor}` : 'none')};
+    border-top: ${({ parentPanel, primaryColor, isSettingPanel }) => (parentPanel && !isSettingPanel ? `3px solid  ${primaryColor}` : 'none')};
+    border-left: ${({ parentPanel, primaryColor, isSettingPanel }) => (!parentPanel && !isSettingPanel ? `3px solid  ${primaryColor}` : 'none')};
     font-size: ${({ parentPanel }) => (parentPanel ? '13px' : '16px')};
     font-weight: 'bold';
+    background-color: ${({ headerColor }) => headerColor} !important;
     
   }
-  >.ant-collapse-item >.ant-collapse-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 55px;
-    background-color: ${({ bodyColor }) => bodyColor};
+  .ant-collapse-content {
+    .ant-collapse-content-box > .sha-components-container {
+      background-color: ${({ bodyColor }) => bodyColor};
     }
   }
 `;
@@ -83,9 +82,10 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
-  parentPanel,
-  isSettingPanel,
-  dynamicBorderRadius
+  parentPanel = false,
+  defaultHeaderBorder = 'default',
+  dynamicBorderRadius,
+
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
@@ -108,8 +108,8 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       hideCollapseContent={hideCollapseContent}
       parentPanel={parentPanel}
       primaryColor={token.colorPrimary}
-      isSettingPanel={isSettingPanel}
-      
+      isSettingPanel={defaultHeaderBorder === 'settings'}
+
     >
       <Panel
         key="1"

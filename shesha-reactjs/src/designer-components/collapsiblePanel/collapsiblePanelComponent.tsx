@@ -30,7 +30,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
+    const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const {
@@ -100,7 +100,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             parentPanel={panelPosition === 'parent'}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
-            isSettingPanel={!model?.componentName}
+            defaultHeaderBorder={formSettings.isSettingsForm ? 'settings' : 'default'}
           >
             <ComponentsContainer
               containerId={model.content.id}
