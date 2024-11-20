@@ -7,7 +7,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { FormMarkup, useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -20,14 +20,11 @@ import { removeUndefinedProps } from '@/utils/object';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import settingsFormJson from './settingsForm.json';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -179,11 +176,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => ({
     ...model,
     textType: 'password',
-    
+
   }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
