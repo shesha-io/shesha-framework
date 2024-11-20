@@ -7,9 +7,11 @@ import { useStyles } from '../styles/styles';
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
     const { styles } = useStyles();
     const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout } = props;
-    const childElement = children as ReactElement;
-    const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
     const [hasCode, setHasCode] = useState(false);
+
+    const childElement = children as ReactElement;
+    const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled || hasCode;
+
 
     const handleChange = (onChange) => (...args: any[]) => {
         const event = args[0];

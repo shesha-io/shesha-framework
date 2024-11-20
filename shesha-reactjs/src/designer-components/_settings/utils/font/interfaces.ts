@@ -8,7 +8,7 @@ export interface IFontComponentProps extends IConfigurableFormComponent {
 export interface IFontValue {
     size?: number;
     type?: string;
-    weight?: number;
+    weight?: string;
     color?: string;
     align?: AlignSetting;
     transform?: string;

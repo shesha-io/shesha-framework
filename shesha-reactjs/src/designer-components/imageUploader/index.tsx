@@ -39,7 +39,7 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
 
 
     const uploadButton = (
-        <Button ref={uploadBtnRef} style={{ top: '5px' }}>
+        <Button size="small" ref={uploadBtnRef} style={{ top: '5px' }}>
             {fileList.length === 0 ? <UploadOutlined title='upload' /> : <SyncOutlined title='Replace' />}
         </Button>
     );

@@ -1,3 +1,75 @@
+import { IContainerComponentProps } from "@/designer-components/container/interfaces";
+import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
+
+/**
+ * Checks if the provided data is an instance of IPropertySetting.
+ *
+ * @param {any} data - The data to be checked
+ * @return {boolean} Indicates whether the data is an instance of IPropertySetting
+ */
+export const isPropertySettings = <Value = any>(data: any): data is IPropertySetting<Value> => {
+    if (!data || typeof data !== 'object')
+        return false;
+
+    const typed = data as IPropertySetting;
+    return typed._mode === 'code' || typed._mode === 'value';
+};
+
+export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
+    if (!propName || !data)
+        return { _mode: 'value', _code: undefined, _value: undefined };
+
+    const propNames = propName.split('.');
+    let val = data;
+    propNames.forEach(p => {
+        val = val?.[p];
+    });
+
+    if (isPropertySettings(val))
+        return val;
+    else
+        return { _mode: 'value', _code: undefined, _value: val };
+};
+
+export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
+    const copy = { ...model };
+    Object.keys(values).forEach(k => {
+        if (isPropertySettings(copy[k]) && !isPropertySettings(values[k]))
+            copy[k]._value = values[k];
+        else
+            copy[k] = values[k];
+    });
+    return copy;
+};
+
+export const getValueFromPropertySettings = (value: any): any => {
+    if (isPropertySettings(value))
+        return value._value;
+    else
+        return value;
+};
+
+export const getValuesFromSettings = <T,>(model: T): T => {
+    const copy = { ...model };
+    Object.keys(copy).forEach(k => {
+        copy[k] = getValueFromPropertySettings(copy[k]);
+    });
+    return copy;
+};
+
+export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
+    if (!isPropertySettings(value) || !value)
+        return { _mode: 'value', _code: undefined, _value: value };
+    else
+        return value;
+};
+
+/**
+ * Evaluates a string expression in the context of the provided data object.
+ * @param expression The string expression to evaluate.
+ * @param data The data object to use as context for the evaluation.
+ * @returns The result of the evaluated expression.
+ */
 const evaluateString = (expression: string, data: any): any => {
     try {
         // Create a new function with 'data' as a parameter and the expression as the function body
@@ -17,6 +89,10 @@ export const filterDynamicComponents = (components, query, data) => {
 
     // Helper function to evaluate hidden property
     const evaluateHidden = (hidden, directMatch, hasVisibleChildren) => {
+        if (typeof hidden === 'string') {
+            console.log("evaluate hidden property Hidden::  ", hidden, " :: ", evaluateString(hidden, data));
+            return evaluateString(hidden, data);
+        }
         return hidden || (!directMatch && !hasVisibleChildren);
     };
 
@@ -35,13 +111,13 @@ export const filterDynamicComponents = (components, query, data) => {
         );
 
         // Handle propertyRouter
-        if (c.componentName === 'propertyRouter') {
+        if (c.type === 'propertyRouter') {
             const filteredComponents = filterDynamicComponents(c.components, query, data);
-
+            const hasVisibleChildren = filteredComponents.length > 0;
             return {
                 ...c,
-                hidden: filteredComponents.length < 1,
-                components: filteredComponents
+                components: filteredComponents,
+                hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }
 

@@ -7,7 +7,7 @@ import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
 
-export const MultiColorInput = ({ value = {}, onChange, readOnly }) => {
+export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }) => {
     const { theme } = useTheme();
     const [colors, setColors] = useState(value);
 
@@ -36,7 +36,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly }) => {
                                 setColors(newColors);
                             }}
                         >
-                            <SettingInput propertyName={`inputStyles.background.gradient.colors.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
+                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
                         </Tag>
                     );
                 })}

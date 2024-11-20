@@ -61,7 +61,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     const newMode = !!code ? 'code' : 'value' as IPropertySetting<Value>['_mode'];
     props.setHasCode?.(newMode === 'code');
     onInternalChange({ ...setting, _mode: newMode }, newMode);
-  }, [code])
+  }, [code]);
 
   const codeOnChange = (val: any) => {
     const newValue = { ...setting, _code: val };

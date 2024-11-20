@@ -1,67 +1,50 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { borderSides, borderStyles, radiusCorners } from '../_settings/utils/border/utils';
 
 export const getSettings = (data: ITextFieldComponentProps) => {
 
-    const sideOptions = ['all', 'top', 'right', 'bottom', 'left'];
-    const cornerOptions = ['all', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
-
-    const getBorderInputs = () => sideOptions.map(side => {
-        // const device = '`${contexts.canvasContext?.designerDevice || "desktop"}`';
+    const getBorderInputs = () => borderSides.map(value => {
+        const side = value.value;
         const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.border?.selectedSide)' + `!== "${side}";`;
-        console.log("CODE::", code);
+
         return {
             id: `borderStyleRow-${side}`,
             parentId: 'borderStylePnl',
             inline: true,
-            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+            readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
             hidden: { _code: code, _mode: 'code', _value: false } as any,
             inputs: [
                 {
                     label: "Width",
                     hideLabel: true,
-                    propertyName: `inputStyles.border.border.${side}.width`, //TODO: Change to selectedSide to be dynamic
+                    propertyName: `border.border.${side}.width`,
                 },
                 {
                     label: "Style",
-                    propertyName: `inputStyles.border.border.${side}.style`, //TODO: Change to selectedSide to be dynamic
+                    propertyName: `border.border.${side}.style`,
                     inputType: "dropdown",
                     hideLabel: true,
                     width: 60,
                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    dropdownOptions: [
-                        {
-                            value: "solid",
-                            label: "MinusOutlined"
-                        },
-                        {
-                            value: "dashed",
-                            label: "DashOutlined"
-                        },
-                        {
-                            value: "dotted",
-                            label: "SmallDashOutlined"
-                        },
-                        {
-                            value: "none",
-                            label: "CloseOutlined"
-                        }
-                    ],
+                    dropdownOptions: borderStyles,
                 },
                 {
                     label: `Color ${side}`,
-                    propertyName: `inputStyles.border.border.${side}.color`, //TODO: Change to selectedSide to be dynamic
+                    propertyName: `border.border.${side}.color`,
                     inputType: "color",
                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hideLabel: true,
                 }
             ]
-        }
+        };
     });
 
-    const getCornerInputs = () => cornerOptions.map(corner => {
-        const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.border?.selectedCorner)' + `!== "${corner}";`;
+    const getCornerInputs = () => radiusCorners.map(value => {
+        const corner = value.value;
+        const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";`;
 
         return {
             id: `borderRadiusStyleRow-${corner}`,
@@ -71,8 +54,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
             width: 65,
             hidden: { _code: code, _mode: 'code', _value: false } as any,
             defaultValue: 0,
-            propertyName: `inputStyles.border.radius.${corner}`
-        }
+            propertyName: `border.radius.${corner}`
+        };
     });
 
     return {
@@ -204,7 +187,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        propertyName: 'Suffix',
+                                        propertyName: 'suffix',
                                         label: 'Suffix',
                                         jsSetting: true,
                                     },
@@ -244,11 +227,13 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         propertyName: 'validate.minLength',
                                         label: 'Min Length',
                                         size: 'small',
+                                        jsSetting: true,
                                     },
                                     {
                                         propertyName: 'validate.maxLength',
                                         label: 'Max Length',
                                         size: 'small',
+                                        jsSetting: true,
                                     },
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -261,6 +246,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         propertyName: 'validate.message',
                                         label: 'Message',
                                         size: 'small',
+                                        jsSetting: true,
                                     },
                                     {
                                         inputType: 'codeEditor',
@@ -321,7 +307,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                             .addPropertyRouter({
                                 id: 'styleRouter',
                                 propertyName: 'propertyRouter1',
-                                componentName: 'propertyRouter1',
+                                componentName: 'propertyRouter',
                                 label: 'Property router1',
                                 labelAlign: 'right',
                                 parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
@@ -348,65 +334,42 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         id: 'try26voxhs-HxJ5k5ngYE',
                                                         parentId: 'fontStylePnl',
                                                         inline: true,
+                                                        propertyName: 'font',
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 label: 'Family',
-                                                                propertyName: 'inputStyles.font.type',
+                                                                propertyName: 'font.type',
                                                                 inputType: 'dropdown',
                                                                 hideLabel: true,
-                                                                dropdownOptions: [
-                                                                    { value: 'Arial', label: 'Arial' },
-                                                                    { value: 'Helvetica', label: 'Helvetica' },
-                                                                    { value: 'Times New Roman', label: 'Times New Roman' },
-                                                                    { value: 'Courier New', label: 'Courier New' },
-                                                                    { value: 'Verdana', label: 'Verdana' },
-                                                                    { value: 'Georgia', label: 'Georgia' },
-                                                                    { value: 'Palatino', label: 'Palatino' },
-                                                                    { value: 'monospace', label: 'Monospace' },
-                                                                    { value: 'Garamond', label: 'Garamond' },
-                                                                    { value: 'Comic Sans MS', label: 'Comic Sans MS' },
-                                                                    { value: 'Trebuchet MS', label: 'Trebuchet MS' },
-                                                                    { value: 'Arial Black', label: 'Arial Black' },
-                                                                    { value: 'impact', label: 'Impact' }
-                                                                ],
+                                                                dropdownOptions: fontTypes,
                                                             },
                                                             {
                                                                 label: 'Size',
-                                                                propertyName: 'inputStyles.font.size',
+                                                                propertyName: 'font.size',
                                                                 hideLabel: true,
                                                             },
                                                             {
                                                                 label: 'Weight',
-                                                                propertyName: 'inputStyles.font.weight',
+                                                                propertyName: 'font.weight',
                                                                 hideLabel: true,
                                                                 inputType: 'dropdown',
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: [
-                                                                    { value: '100', label: 'sectionSeparator' },
-                                                                    { value: '400', label: 'sectionSeparator' },
-                                                                    { value: '500', label: 'sectionSeparator' },
-                                                                    { value: '700', label: 'sectionSeparator' },
-                                                                    { value: '900', label: 'sectionSeparator' },
-                                                                ],
+                                                                dropdownOptions: fontWeights,
                                                             },
                                                             {
                                                                 label: 'Color',
                                                                 inputType: 'color',
                                                                 hideLabel: true,
-                                                                propertyName: 'inputStyles.font.color',
+                                                                propertyName: 'font.color',
                                                             },
                                                             {
                                                                 label: 'Align',
-                                                                propertyName: 'inputStyles.font.align',
+                                                                propertyName: 'font.align',
                                                                 inputType: 'dropdown',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                dropdownOptions: [
-                                                                    { value: 'left', label: 'AlignLeftOutlined' },
-                                                                    { value: 'center', label: 'AlignCenterOutlined' },
-                                                                    { value: 'right', label: 'AlignRightOutlined' },
-                                                                ],
+                                                                dropdownOptions: textAlign,
                                                             },
                                                         ],
                                                     })
@@ -434,7 +397,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             {
                                                                 label: "Width",
                                                                 width: 85,
-                                                                propertyName: "inputStyles.dimensions.width",
+                                                                propertyName: "dimensions.width",
                                                                 icon: "width",
 
                                                             },
@@ -442,14 +405,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: "Min Width",
                                                                 width: 85,
                                                                 hideLabel: true,
-                                                                propertyName: "inputStyles.dimensions.minWidth",
+                                                                propertyName: "dimensions.minWidth",
                                                                 icon: "minWidth",
                                                             },
                                                             {
                                                                 label: "Max Width",
                                                                 width: 85,
                                                                 hideLabel: true,
-                                                                propertyName: "inputStyles.dimensions.maxWidth",
+                                                                propertyName: "dimensions.maxWidth",
                                                                 icon: "maxWidth",
                                                             }
                                                         ]
@@ -463,23 +426,35 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             {
                                                                 label: "Height",
                                                                 width: 85,
-                                                                propertyName: "inputStyles.dimensions.height",
+                                                                propertyName: "dimensions.height",
                                                                 icon: "height",
                                                             },
                                                             {
                                                                 label: "Min Height",
                                                                 width: 85,
                                                                 hideLabel: true,
-                                                                propertyName: "inputStyles.dimensions.minHeight",
+                                                                propertyName: "dimensions.minHeight",
                                                                 icon: "minHeight",
                                                             },
                                                             {
                                                                 label: "Max Height",
                                                                 width: 85,
                                                                 hideLabel: true,
-                                                                propertyName: "inputStyles.dimensions.maxHeight",
+                                                                propertyName: "dimensions.maxHeight",
                                                                 icon: "maxHeight",
                                                             }
+                                                        ]
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: 'predefinedSizes',
+                                                        propertyName: 'size',
+                                                        label: 'Size',
+                                                        inputType: 'dropdown',
+                                                        width: '150px',
+                                                        dropdownOptions: [
+                                                            { value: 'small', label: 'Small' },
+                                                            { value: 'medium', label: 'Medium' },
+                                                            { value: 'large', label: 'Large' },
                                                         ]
                                                     })
                                                     .toJson()
@@ -507,43 +482,18 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: "Border",
                                                                 hideLabel: true,
                                                                 inputType: "button",
-                                                                propertyName: "inputStyles.border.hideBorder",
+                                                                propertyName: "border.hideBorder",
                                                                 icon: "EyeOutlined",
                                                                 iconAlt: "EyeInvisibleOutlined"
                                                             },
                                                             {
                                                                 label: "Select Side",
                                                                 hideLabel: true,
-                                                                propertyName: "inputStyles.border.selectedSide",
+                                                                propertyName: "border.selectedSide",
                                                                 inputType: "radio",
+                                                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                buttonGroupOptions: [
-                                                                    {
-                                                                        value: "all",
-                                                                        icon: "BorderOutlined",
-                                                                        title: "All"
-                                                                    },
-                                                                    {
-                                                                        value: "top",
-                                                                        icon: "BorderTopOutlined",
-                                                                        title: "Top"
-                                                                    },
-                                                                    {
-                                                                        value: "right",
-                                                                        icon: "BorderRightOutlined",
-                                                                        title: "Right"
-                                                                    },
-                                                                    {
-                                                                        value: "bottom",
-                                                                        icon: "BorderBottomOutlined",
-                                                                        title: "Bottom"
-                                                                    },
-                                                                    {
-                                                                        value: "left",
-                                                                        icon: "BorderLeftOutlined",
-                                                                        title: "Left"
-                                                                    }
-                                                                ]
+                                                                buttonGroupOptions: borderSides
                                                             },
                                                         ]
                                                     }
@@ -567,7 +517,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         {
                                                             id: "corner-selector",
                                                             label: "Corner Radius",
-                                                            propertyName: "inputStyles.border.selectedCorner",
+                                                            propertyName: "border.selectedCorner",
                                                             inputType: "radio",
                                                             defaultValue: "all",
                                                             buttonGroupOptions: [
@@ -635,7 +585,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             parentId: "backgroundStylePnl",
                                                             label: "Type",
                                                             jsSetting: false,
-                                                            propertyName: "inputStyles.background.type",
+                                                            propertyName: "background.type",
                                                             inputType: "radio",
                                                             buttonGroupOptions: [
                                                                 {
@@ -671,12 +621,12 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
                                                                 label: "Color",
-                                                                propertyName: "inputStyles.background.color",
+                                                                propertyName: "background.color",
                                                                 inputType: "color",
                                                                 hideLabel: true,
                                                                 jsSetting: false,
                                                             }],
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -684,12 +634,12 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
                                                                 inputType: "multiColorPicker",
-                                                                propertyName: "inputStyles.background.gradient.colors",
+                                                                propertyName: "background.gradient.colors",
                                                                 label: "Colors",
                                                                 jsSetting: false,
                                                             }
                                                             ],
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                             hideLabel: true,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
@@ -697,11 +647,11 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                propertyName: "inputStyles.background.url",
+                                                                propertyName: "background.url",
                                                                 jsSetting: false,
                                                                 label: "URL",
                                                             }],
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -709,22 +659,22 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             parentId: 'backgroundStylePnl',
                                                             inputs: [{
                                                                 inputType: "imageUploader",
-                                                                propertyName: 'inputStyles.background.uploadFile',
+                                                                propertyName: 'background.uploadFile',
                                                                 label: "Image",
                                                                 jsSetting: false,
                                                             }],
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-storedFile",
                                                             parentId: 'backgroundStylePnl',
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     jsSetting: false,
-                                                                    propertyName: "inputStyles.background.storedFile.id",
+                                                                    propertyName: "background.storedFile.id",
                                                                     label: "File ID"
                                                                 }
                                                             ]
@@ -739,7 +689,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     inputType: "customDropdown",
                                                                     label: "Size",
                                                                     hideLabel: true,
-                                                                    propertyName: "inputStyles.background.size",
+                                                                    propertyName: "background.size",
                                                                     dropdownOptions: [
                                                                         {
                                                                             value: "cover",
@@ -802,7 +752,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 {
                                                                     label: "Repeat",
                                                                     hideLabel: true,
-                                                                    propertyName: "inputStyles.background.repeat",
+                                                                    propertyName: "background.repeat",
                                                                     inputType: "dropdown",
                                                                     width: 70,
                                                                     dropdownOptions: [
@@ -830,12 +780,12 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "background-gradient-direcion-StyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.inputStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
                                                                     label: "Direction",
-                                                                    propertyName: "inputStyles.background.gradient.direction",
+                                                                    propertyName: "background.gradient.direction",
                                                                     inputType: "dropdown",
                                                                     jsSetting: false,
                                                                     hideLabel: true,
@@ -902,34 +852,34 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 hideLabel: true,
                                                                 width: 60,
                                                                 icon: "offsetHorizontal",
-                                                                propertyName: 'inputStyles.shadow.offsetX',
+                                                                propertyName: 'shadow.offsetX',
                                                             },
                                                             {
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 width: 60,
                                                                 icon: 'offsetVertical',
-                                                                propertyName: 'inputStyles.shadow.offsetY',
+                                                                propertyName: 'shadow.offsetY',
                                                             },
                                                             {
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 width: 60,
                                                                 icon: 'blur',
-                                                                propertyName: 'inputStyles.shadow.blurRadius',
+                                                                propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 width: 60,
                                                                 icon: 'spread',
-                                                                propertyName: 'inputStyles.shadow.spreadRadius',
+                                                                propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
                                                                 label: 'Color',
                                                                 inputType: 'color',
                                                                 hideLabel: true,
-                                                                propertyName: 'inputStyles.shadow.color',
+                                                                propertyName: 'shadow.color',
                                                             },
                                                         ],
                                                     })

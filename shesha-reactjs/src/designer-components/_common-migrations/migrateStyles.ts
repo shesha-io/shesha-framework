@@ -10,6 +10,8 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
         return {
             border: {
                 hideBorder: prevStyles?.hideBorder,
+                selectedCorner: 'all',
+                selectedSide: 'all',
                 border: {
                     all: {
                         width: prevStyles?.borderSize as string || '1px',
@@ -17,30 +19,45 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                         color: prevStyles.borderColor || '#d9d9d9'
                     }
                 },
-                radius: { all: prevStyles?.borderRadius || 8 },
+                radius: { all: prevStyles?.borderRadius || 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
             },
             background: {
                 type: 'color',
                 color: prevStyles.backgroundColor || '#fff',
+                repeat: 'no-repeat',
+                size: 'cover',
+                position: 'center'
             },
             font: {
                 color: prevStyles.fontColor || '#000',
                 type: 'Arial',
                 align: 'left',
-                size: prevStyles.fontSize as number || 14
+                size: prevStyles.fontSize as number || 14,
+                weight: prevStyles.fontWeight as string || '400',
             },
             dimensions: {
                 height: addPx(prevStyles.height) || '32px',
                 width: addPx(prevStyles.width) || '100%',
+                minHeight: '0px',
+                minWidth: '0px',
+                maxWidth: '100%',
+                maxHeight: '100%'
             },
+            shadow: {
+                offsetX: 0,
+                offsetY: 0,
+                color: '#000',
+                blurRadius: 0,
+                spreadRadius: 0
+            }
         };
     };
 
     const result: ITextFieldComponentProps = {
         ...prev,
-        desktop: migrateStyles('desktop'),
-        tablet: migrateStyles('tablet'),
-        mobile: migrateStyles('mobile'),
+        desktop: { ...prev.desktop, ...migrateStyles('desktop') },
+        tablet: { ...prev.tablet, ...migrateStyles('tablet') },
+        mobile: { ...prev.mobile, ...migrateStyles('mobile') },
         inputStyles: migrateStyles()
     };
 

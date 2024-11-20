@@ -53,7 +53,14 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     if (props.onChange) props.onChange(null);
   };
 
+  const onDialogSave = () => {
+    if (props.onChange) props.onChange(internalValue);
+    setShowDialog(false);
+  };
+
   const openEditorDialog = () => setShowDialog(true);
+  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
+
 
   const onDialogCancel = () => {
     if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
@@ -70,7 +77,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         },
         footer: <>
           <Show when={hasValue && !readOnly}>
-            <Button type="primary" size="small" danger onClick={onClear}>
+            <Button ghost size="small" danger onClick={onClear}>
               Clear
             </Button>
           </Show>,
@@ -88,10 +95,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       setInternalValue(value);
       setShowDialog(false);
     }
-  };
-  const onDialogSave = () => {
-    if (props.onChange) props.onChange(internalValue);
-    setShowDialog(false);
   };
 
   const effectiveValue = mode === 'inline' ? value : internalValue;
@@ -113,8 +116,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       style={mode === 'dialog' ? { height: "100%" } : undefined}
     />
   );
-
-  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
   if (mode === 'inline')
     return renderCodeEditor();

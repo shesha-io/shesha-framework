@@ -49,26 +49,45 @@ export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
     return style;
 };
 
-
-export const radiusOptions = [
-    { value: 'all', icon: <ExpandOutlined />, title: 'all' },
-    { value: 'topLeft', icon: <RadiusUpleftOutlined />, title: 'top left' },
-    { value: 'topRight', icon: <RadiusUprightOutlined />, title: 'top right' },
-    { value: 'bottomLeft', icon: <RadiusBottomleftOutlined />, title: 'bottom left' },
-    { value: 'bottomRight', icon: <RadiusBottomrightOutlined />, title: 'bottom right' },
-];
-
-export const borderOptions = [
-    { value: 'all', icon: 'BorderOutlined', title: 'all' },
-    { value: 'top', icon: 'BorderTopOutlined', title: 'top' },
-    { value: 'right', icon: 'BorderRightOutlined', title: 'right' },
-    { value: 'bottom', icon: 'BorderBottomOutlined', title: 'bottom' },
-    { value: 'left', icon: 'BorderLeftOutlined', title: 'left' }
-];
-
-export const styleOptions: IDropdownOption[] = [
+export const borderStyles: IDropdownOption[] = [
     { value: 'solid', label: <MinusOutlined /> },
     { value: 'dashed', label: <DashOutlined /> },
     { value: 'dotted', label: <SmallDashOutlined /> },
     { value: 'none', label: <CloseOutlined /> },
 ];
+
+export const radiusCorners: IDropdownOption[] = [
+    { value: 'all', label: <ExpandOutlined /> },
+    { value: 'topLeft', label: <RadiusUpleftOutlined /> },
+    { value: 'topRight', label: <RadiusUprightOutlined /> },
+    { value: 'bottomLeft', label: <RadiusBottomleftOutlined /> },
+    { value: 'bottomRight', label: <RadiusBottomrightOutlined /> }
+];
+
+export const borderSides = [
+    {
+        value: "all",
+        icon: "BorderOutlined",
+        title: "All"
+    },
+    {
+        value: "top",
+        icon: "BorderTopOutlined",
+        title: "Top"
+    },
+    {
+        value: "right",
+        icon: "BorderRightOutlined",
+        title: "Right"
+    },
+    {
+        value: "bottom",
+        icon: "BorderBottomOutlined",
+        title: "Bottom"
+    },
+    {
+        value: "left",
+        icon: "BorderLeftOutlined",
+        title: "Left"
+    }
+]

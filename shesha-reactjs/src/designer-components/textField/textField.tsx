@@ -112,10 +112,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     });
 
     const jsStyle = getStyle(model.style, data);
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
     const InputComponentType = renderInput(model.textType);
 
-    console.log('model', model);
     const inputProps: InputProps = {
       className: `sha-input ${styles.textField}`,
       placeholder: model.placeholder,
@@ -123,6 +122,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
+      minLength: model.validate?.minLength,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
@@ -141,6 +141,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
+    console.log("TextFieldComponent -> eventProps", model);
 
     return (
       <ConfigurableFormItem
@@ -163,7 +164,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
                 Input: {
                   fontFamily: model?.font?.type,
                   fontSize: model?.font?.size || 14,
-                  fontWeightStrong: model?.font?.weight || 500,
+                  fontWeightStrong: Number(model?.font?.weight.split(' - ')[0]) || 400,
                 },
               },
             }}
@@ -181,29 +182,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     ...model,
-    textType: 'password',
-    desktop: {
-      ...model.desktop,
-      background: { type: 'color', color: '#ffffff', repeat: 'no-repeat', size: 'cover', position: 'center' },
-      font: { type: 'Arial', size: 14, weight: 400, align: 'left', color: '#0000000' },
-      dimensions: { width: '100%', height: '32px', minHeight: '0px', minWidth: '0px', maxWidth: '100%', maxHeight: '100%', },
-      border: {
-        hideBorder: false,
-        border: {
-          all: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        },
-        radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
-        selectedSide: 'all',
-        selectedCorner: 'all'
-      },
-      shadow: {
-        offsetX: 0,
-        offsetY: 0,
-        color: '#000',
-        blurRadius: 0,
-        spreadRadius: 0
-      }
-    },
+    textType: 'password'
   }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
@@ -225,7 +204,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox,
       };
-
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),

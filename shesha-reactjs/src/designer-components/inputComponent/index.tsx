@@ -23,6 +23,7 @@ import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
+import { startCase } from 'lodash';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -60,7 +61,7 @@ export interface IInputProps extends IComponentLabelProps {
     tooltip?: string;
     suffix?: string;
     size?: SizeType;
-    width?: number;
+    width?: string | number;
     hideLabel?: boolean;
     layout?: 'horizontal' | 'vertical';
     language?: CodeLanguages;
@@ -110,7 +111,7 @@ const UnitSelector: FC<{ value: any; onChange; readOnly; variant?}> = ({ value, 
 
 export const InputComponent: FC<IInputComponentProps> = (props) => {
     const icons = require('@ant-design/icons');
-    const {styles} = useStyles();
+    const { styles } = useStyles();
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
@@ -120,11 +121,12 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
 
     const iconElement = (icon, size?, tooltip?) => {
         if (typeof icon === 'string') {
-            return <Tooltip className={styles.icon} title={tooltip}> {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle' }}>
-                    {size}<SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='24' lineColor='#000' fontSize={14} marginBottom={'0px'} />
-                </div>
-                : icon}
+            return <Tooltip className={styles.icon} title={tooltip}>
+                {icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? customIcons[icon] : icon === 'sectionSeparator' ?
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
+                        {size}<SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='24' lineColor='#000' fontSize={14} marginBottom={'0px'} />
+                    </div>
+                    : icon}
             </Tooltip>;
         }
         return icon;
@@ -142,6 +144,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
     }, [availableConstantsExpression, metadataBuilderFactory, formData]);
 
     const functionName = `get${camelcase(propertyName, { pascalCase: true })}`;
+    const tooltip = startCase(propertyName.split('.')[1]);
 
     const codeEditorProps: ICodeEditorProps = {
         readOnly: readOnly,
@@ -183,13 +186,13 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                     onChange}
                 options={typeof dropdownOptions === 'string' ?
                     getValueFromString(dropdownOptions) :
-                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, option.label) }))}
+                    dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))}
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
 
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null, tooltip)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
@@ -215,7 +218,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         case 'codeEditor':
             return editor;
         case 'iconPicker':
-            return <IconPickerWrapper iconSize={30} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPickerWrapper iconSize={20} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImageUploader
                 value={value}
@@ -223,7 +226,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button disabled={readOnly} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon) : iconElement(iconAlt)} onClick={() => onChange(!value)} />;
+            return <Button disabled={readOnly} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
 
         case 'editModeSelector':
 
@@ -249,7 +252,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
-            return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} />;
+            return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
         default:
             return hasUnits ? <Input
                 readOnly={readOnly}
@@ -288,7 +291,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
 
     return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
-            const { inputType: type, hasUnits } = props;
+            const { inputType: type } = props;
 
             const width = type === 'number' ? 100 :
                 type === 'button' ? 24 :
@@ -311,7 +314,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
                     })}
                     readOnly={readOnly}
                     inline={inline}
-                    width={inline && props.icon ? (props.width || width) + (hasUnits ? 10 : 0) : inline ? props.width || width : null} />
+                    width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />
             );
         })}
         {children}
