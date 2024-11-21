@@ -55,7 +55,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Items'>
-        <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to come reselect the reference list if any changes are applied to any of the reference list items'>
+        <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
             typeShortAlias="Shesha.Framework.ReferenceList"

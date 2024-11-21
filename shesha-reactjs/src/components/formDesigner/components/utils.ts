@@ -1,5 +1,4 @@
 import { MessageInstance } from 'antd/es/message/interface';
-import { AxiosInstance } from 'axios';
 import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
@@ -8,6 +7,7 @@ import { CustomLabeledValue } from '@/components/autocomplete';
 import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 import { FormApi } from '@/providers/form/formApi';
+import { HttpClientApi } from '@/publicJsApis/httpClient';
 
 type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
@@ -16,7 +16,7 @@ export interface ICustomEventHandler {
   form: FormApi;
   formData: any;
   globalState: IAnyObject;
-  http: AxiosInstance;
+  http: HttpClientApi;
   message: MessageInstance;
   moment: object;
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -33,7 +33,7 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
   form: FormApi,
   formData: any,
   globalState: IAnyObject,
-  http: AxiosInstance,
+  http: HttpClientApi,
   message: MessageInstance,
   moment: object,
   value: any,

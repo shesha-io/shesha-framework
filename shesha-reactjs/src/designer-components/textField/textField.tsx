@@ -7,10 +7,9 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { ITextFieldComponentProps, IInputStyles, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -50,7 +49,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { message } = App.useApp();
 
     const styling = JSON.parse(model.stylingBox || '{}');
@@ -92,7 +91,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

@@ -10,7 +10,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITabPaneProps, ITabsComponentProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 

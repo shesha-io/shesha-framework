@@ -2,7 +2,6 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import moment from 'moment';
 import React from 'react';
 import settingsFormJson from './settingsForm.json';
-import { axiosHttp } from '@/utils/fetchers';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
@@ -18,7 +17,7 @@ import {
   useForm,
   useFormData,
   useGlobalState,
-  useSheshaApplication
+  useHttpClient,
 } from '@/providers';
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { getFormApi } from '@/providers/form/formApi';
@@ -38,7 +37,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   Factory: ({ model }) => {
     const form = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { data: formData } = useFormData();
     const { message } = App.useApp();
     const eventProps = {
@@ -46,7 +45,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

@@ -12,6 +12,7 @@ import {
   useDataTableStore,
   useForm,
   useGlobalState,
+  useHttpClient,
   useMetadata,
   useSheshaApplication,
 } from '@/providers';
@@ -43,7 +44,6 @@ import {
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
 import moment from 'moment';
-import { axiosHttp } from '@/utils/fetchers';
 import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
@@ -211,6 +211,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const metadata = useMetadata(false)?.metadata;
 
   const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
 
   const toolboxComponents = useFormDesignerComponents();
 
@@ -225,7 +226,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ? () => {
         // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
         //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
+        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
         return Promise.resolve(result);
       }
       : () => {
@@ -389,10 +390,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
     return (data, formApi, globalState) => {
-      const preparedData = executer(data, formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
+      const preparedData = executer(data, formApi, globalState, httpClient, moment, appContextData);
       return Promise.resolve(preparedData);
     };
-  }, [onRowSave, backendUrl]);
+  }, [onRowSave, httpClient]);
 
   const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
@@ -407,7 +408,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         formApi,
         globalState,
         setGlobalState,
-        http: axiosHttp(backendUrl),
+        http: httpClient,
         moment,
       };
       // execute the action

@@ -1,18 +1,18 @@
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import FileSaver from 'file-saver';
-import IRequestHeaders from '@/interfaces/requestHeaders';
 import React, { FC } from 'react';
 import { ConfigurationItemVersionStatus } from './models';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { FormConfigurationDto } from '@/providers/form/api';
 import { getEntityFilterByIds } from '@/utils/graphQl';
-import { axiosHttp, getFileNameFromResponse } from '@/utils/fetchers';
+import { getFileNameFromResponse } from '@/utils/fetchers';
 import { IAbpWrappedGetEntityResponse, IAbpWrappedResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { MessageInstance } from 'antd/lib/message/interface';
 import { NotificationInstance } from 'antd/lib/notification/interface';
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
+import { HttpClientApi } from '@/providers';
 
 //#region validation
 
@@ -45,21 +45,15 @@ export interface ItemWithIdPayload {
   id: string;
 }
 
-export interface IConfigurationFrameworkHookArguments {
-  backendUrl: string;
-  httpHeaders: IRequestHeaders;
-}
-
-interface IHasHttpSettings {
-  backendUrl: string;
-  httpHeaders: IRequestHeaders;
+interface IHasHttpClient {
+  httpClient: HttpClientApi;
 }
 
 export interface IHasConfigurableItemId {
   itemId: string;
 }
 
-interface UpdateItemStatusArgs extends IHasHttpSettings {
+interface UpdateItemStatusArgs extends IHasHttpClient {
   id: string;
   status: ConfigurationItemVersionStatus;
   onSuccess?: () => void;
@@ -67,16 +61,14 @@ interface UpdateItemStatusArgs extends IHasHttpSettings {
   message: MessageInstance;
 }
 export const updateItemStatus = (props: UpdateItemStatusArgs) => {
-  const { message } = props;
+  const { message, httpClient } = props;
   const url = `/api/services/app/ConfigurationItem/UpdateStatus`;
   const httpPayload = {
     filter: getEntityFilterByIds([props.id]),
     status: props.status,
   };
-  return axiosHttp(props.backendUrl)
-    .put<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
-      headers: props.httpHeaders,
-    })
+  return httpClient
+    .put<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload)
     .then((_response) => {
       message.destroy();
       if (props.onSuccess) props.onSuccess();
@@ -89,7 +81,7 @@ export const updateItemStatus = (props: UpdateItemStatusArgs) => {
 };
 
 //#region Publish
-export interface IPublishItemPayload extends IHasHttpSettings {
+export interface IPublishItemPayload extends IHasHttpClient {
   id: string;
   message: MessageInstance;
   modal: ModalHookAPI;
@@ -99,14 +91,13 @@ export interface IPublishItemResponse {
 }
 export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemResponse> => {
   if (!payload.id) throw 'Id must not be null';
-  const { message, modal } = payload;
+  const { message, modal, httpClient } = payload;
 
   return new Promise<IPublishItemResponse>((resolve, reject) => {
     const onOk = () => {
       message.loading('Publishing in progress..', 0);
       updateItemStatus({
-        backendUrl: payload.backendUrl,
-        httpHeaders: payload.httpHeaders,
+        httpClient,
         id: payload.id,
         status: ConfigurationItemVersionStatus.Live,
         onSuccess: () => {
@@ -135,7 +126,7 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
 //#endregion
 
 //#region Set item ready
-export interface ISetItemReadyPayload extends IHasHttpSettings {
+export interface ISetItemReadyPayload extends IHasHttpClient {
   id: string;
   message: MessageInstance;
   modal: ModalHookAPI;
@@ -145,12 +136,11 @@ export interface ISetItemReadyResponse {
 }
 export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemReadyResponse> => {
   if (!payload.id) throw 'Id must not be null';
-  const { message, modal } = payload;
+  const { message, modal, httpClient } = payload;
   return new Promise<ISetItemReadyResponse>((resolve, reject) => {
     const onOk = () => {
       updateItemStatus({
-        backendUrl: payload.backendUrl,
-        httpHeaders: payload.httpHeaders,
+        httpClient,
         id: payload.id,
         status: ConfigurationItemVersionStatus.Ready,
         onSuccess: () => {
@@ -176,18 +166,18 @@ export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemRea
 //#endregion
 
 //#region Set item ready
-export interface IDeleteItemPayload extends IHasHttpSettings {
+export interface IDeleteItemPayload extends IHasHttpClient {
   id: string;
 }
 export interface IDeleteItemResponse {
   id: string;
 }
-export const deleteItem = (payload: IDeleteItemPayload): Promise<IDeleteItemResponse> => {
-  if (!payload.id) throw 'Id must not be null';
+export const deleteItem = ({ id, httpClient }: IDeleteItemPayload): Promise<IDeleteItemResponse> => {
+  if (!id) throw 'Id must not be null';
   return new Promise<IDeleteItemResponse>((resolve) => {
-    const url = `/api/services/app/ConfigurationItem/Delete?id=${payload.id}`;
-    return axiosHttp(payload.backendUrl)
-      .delete<any, AxiosResponse<IAbpWrappedResponse<string>>>(url, { headers: payload.httpHeaders })
+    const url = `/api/services/app/ConfigurationItem/Delete?id=${id}`;
+    return httpClient
+      .delete<any, AxiosResponse<IAbpWrappedResponse<string>>>(url)
       .then((response) => {
         resolve({ id: response.data.result });
       });
@@ -197,7 +187,7 @@ export const deleteItem = (payload: IDeleteItemPayload): Promise<IDeleteItemResp
 //#endregion
 
 //#region Create new version
-export interface ICreateNewItemVersionPayload extends IHasHttpSettings {
+export interface ICreateNewItemVersionPayload extends IHasHttpClient {
   id: string;
   message: MessageInstance;
   notification: NotificationInstance;
@@ -207,16 +197,9 @@ export interface ICreateNewItemVersionResponse {
   id: string;
 }
 
-export const createNewVersionRequest = (
-  payload: ICreateNewItemVersionPayload
-): Promise<AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>> => {
+export const createNewVersionRequest = ({ id, httpClient }: ICreateNewItemVersionPayload): Promise<AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>> => {
   const url = `/api/services/app/ConfigurationItem/CreateNewVersion`;
-  const httpPayload = {
-    id: payload.id,
-  };
-  return axiosHttp(payload.backendUrl).post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
-    headers: payload.httpHeaders,
-  });
+  return httpClient.post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, { id });
 };
 
 export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise<ICreateNewItemVersionResponse> => {
@@ -251,7 +234,7 @@ export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise
 //#endregion
 
 //#region Cancel version
-export interface ICancelItemVersionPayload extends IHasHttpSettings {
+export interface ICancelItemVersionPayload extends IHasHttpClient {
   id: string;
   message: MessageInstance;
   modal: ModalHookAPI;
@@ -260,20 +243,17 @@ export interface ICancelItemVersionResponse {
   id: string;
 }
 export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<ICancelItemVersionResponse> => {
-  const { message, modal } = payload;
+  const { message, modal, httpClient } = payload;
   return new Promise((resolve, reject) => {
     const onOk = () => {
       const url = `/api/services/app/ConfigurationItem/CancelVersion`;
       const httpPayload = {
         id: payload.id,
       };
-      return axiosHttp(payload.backendUrl)
-        .post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload, {
-          headers: payload.httpHeaders,
-        })
+      return httpClient
+        .post<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, httpPayload)
         .then((response) => {
           message.destroy();
-          //message.info('Version cancelled successfully', 3);
           resolve({ id: response?.data?.result?.id });
         })
         .catch((e) => {
@@ -299,24 +279,21 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
 //#endregion
 
 //#region Download as JSON
-export interface IDownloadItemAsJsonPayload extends IHasHttpSettings {
+export interface IDownloadItemAsJsonPayload extends IHasHttpClient {
   id: string;
 }
 export interface IDownloadItemAsJsonResponse {
   id: string;
 }
-export const downloadAsJson = (payload: IDownloadItemAsJsonPayload): Promise<IDownloadItemAsJsonResponse> => {
-  const url = `${payload.backendUrl}/api/services/Shesha/FormConfiguration/GetJson?id=${payload.id}`;
-  return axios({
-    url: url,
-    method: 'GET',
-    responseType: 'blob', // important
-    headers: payload.httpHeaders,
-  }).then((response) => {
-    const fileName = getFileNameFromResponse(response) ?? 'form.json';
-    FileSaver.saveAs(new Blob([response.data]), fileName);
-    return { id: payload.id };
-  });
+export const downloadAsJson = ({ httpClient, id }: IDownloadItemAsJsonPayload): Promise<IDownloadItemAsJsonResponse> => {
+  const url = `/api/services/Shesha/FormConfiguration/GetJson?id=${id}`;
+  return httpClient
+    .get(url, { responseType: 'blob' })
+    .then((response) => {
+      const fileName = getFileNameFromResponse(response) ?? 'form.json';
+      FileSaver.saveAs(new Blob([response.data]), fileName);
+      return { id: id };
+    });
 };
 
 //#endregion
