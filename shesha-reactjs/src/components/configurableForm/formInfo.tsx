@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useAppConfigurator } from '@/providers';
+import { useAppConfigurator, useAuth } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { Button } from 'antd';
 import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
@@ -27,9 +27,12 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
+  
   const { id, versionNo, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
+
+  const auth = useAuth(false);
 
   const [open, setOpen] = useState(false);
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
@@ -48,6 +51,10 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
   }, [softInfoBlock]);
 
   if (!formProps?.id) {
+    return <>{children}</>;
+  }
+
+  if (auth.state.status !== 'ready'){
     return <>{children}</>;
   }
 
