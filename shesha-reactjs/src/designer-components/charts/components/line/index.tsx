@@ -61,7 +61,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
             },
             title: {
                 display: showTitle ? true : false,
-                text: title?.trim() || `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
+                text: title?.trim().length > 0 ? title : `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
             }
         },
         scales: {

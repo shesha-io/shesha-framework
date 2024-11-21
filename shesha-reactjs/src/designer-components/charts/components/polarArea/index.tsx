@@ -61,7 +61,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim() || `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        text: title?.trim().length > 0 ? title : `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },
     layout: {

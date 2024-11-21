@@ -46,7 +46,6 @@ ChartJS.register(
 const PieChart = ({ data }: IPieChartProps) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
 
-
   if (!data || !data.datasets || !data.labels) {
     if (!data)
       throw new Error('PieChart: No data to display. Please check the data source');
@@ -68,7 +67,7 @@ const PieChart = ({ data }: IPieChartProps) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim() || `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        text: title?.trim().length > 0 ? title :  `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },
     layout: {

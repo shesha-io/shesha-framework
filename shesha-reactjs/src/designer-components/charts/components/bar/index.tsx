@@ -26,7 +26,6 @@ ChartJS.register(
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked, legendProperty } = useChartDataStateContext();
 
-
   if (!data || !data.datasets || !data.labels) {
     if (!data)
       throw new Error('BarChart: No data to display. Please check the data source');
@@ -44,7 +43,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim() || `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
+        text: title?.trim().length > 0 ? title : `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
       },
     },
     scales: {
