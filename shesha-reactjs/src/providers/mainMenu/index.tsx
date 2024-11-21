@@ -74,7 +74,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
         && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
       ) {
-        itemsToCheck.push(item);
+        itemsToCheck.concat([item]);
       } 
     });
 
