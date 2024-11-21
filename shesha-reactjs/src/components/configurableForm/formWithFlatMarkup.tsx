@@ -7,7 +7,7 @@ import { ConfigurableFormRenderer } from './configurableFormRenderer';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
-import { ConditionalMetadataProvider, useAuth } from '@/providers';
+import { ConditionalMetadataProvider } from '@/providers';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import ParentProvider from '@/providers/parentProvider';
 
@@ -36,7 +36,6 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   const [shaForm] = useShaForm({ form: props.shaForm });
   const { formInfoBlockVisible } = useAppConfigurator();
-  const auth = useAuth(false);
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
   if (!formFlatMarkup) return null;
 
@@ -44,7 +43,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
     : null;
 
-  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
+  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
 
   return (
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>
