@@ -70,7 +70,7 @@ const PieChart = ({ data }: IPieChartProps) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim().length > 0 ? title :  `${entityClassName}: ${yProperty} by ${xProperty} (${aggregationMethod})`,
+        text: title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} by ${yProperty} (${aggregationMethod})`,
       },
     },
     layout: {
