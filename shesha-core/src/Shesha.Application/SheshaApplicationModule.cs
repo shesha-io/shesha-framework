@@ -11,6 +11,7 @@ using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
@@ -23,6 +24,8 @@ using Shesha.Settings.Ioc;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
+using Shesha.UserManagements.Configurations;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -118,7 +121,18 @@ namespace Shesha
                     DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
                     DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
                     DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate
+                });
+            });
 
+            IocManager.RegisterSettingAccessor<IUserManagementSettings>(s => {
+                s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
+                {
+                   SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
+                   GoToUrlAfterRegistration = "/",
+                   UserEmailAsUsername = false,
+                   AdditionalRegistrationInfo = false,
+                   AdditionalRegistrationInfoFormModule = null,
+                   AdditionalRegistrationInfoFormName = null
                 });
             });
 
