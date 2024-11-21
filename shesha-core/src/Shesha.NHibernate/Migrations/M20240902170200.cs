@@ -25,14 +25,16 @@ namespace Shesha.Migrations
                 INSERT INTO Frwk_UserRegistration (Id, UserId, UserNameOrEmailAddress, CreationTime, IsComplete)
                 SELECT 
                     NEWID() AS Id, 
-                    UserId, 
-                    EmailAddress1 AS UserNameOrEmailAddress, 
-                    CreationTime, 
+                    p.UserId, 
+                    u.UserName AS UserNameOrEmailAddress, 
+                    p.CreationTime, 
                     1 AS IsComplete
                 FROM 
-                    Core_Persons
+                    Core_Persons p
+                INNER JOIN 
+                    AbpUsers u ON p.UserId = u.Id
                 WHERE 
-                    UserId IS NOT NULL;
+                    p.UserId IS NOT NULL;
             ");
         }
     }
