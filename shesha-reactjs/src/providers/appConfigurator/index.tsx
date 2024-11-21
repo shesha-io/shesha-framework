@@ -120,8 +120,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
           createNewVersion({ id: actionArgs.itemId, httpClient, message, notification, modal })
-            .then(() => {
-              resolve(true);
+            .then((res) => {
+              resolve(res);
             })
             .catch((error) => {
               reject(error);
