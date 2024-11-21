@@ -62,7 +62,7 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties,
+      properties: removePropertyDuplicates((removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       maxResultCount: -1

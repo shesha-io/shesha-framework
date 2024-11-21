@@ -65,7 +65,7 @@ export const INITIAL_STATE: IChartDataContext = {
   dataMode: 'entityType',
   chartType: 'pivot',
   showTitle: true,
-  title: 'Chart Title',
+  title: '',
   showLegend: true,
   legendPosition: 'top',
   entityType: 'entity',

@@ -27,7 +27,10 @@ ChartJS.register(
 );
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
-    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, legendProperty, strokeColor, dataMode, borderWidth } = useChartDataStateContext();
+    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, legendProperty, strokeColor, dataMode, borderWidth, entityType } = useChartDataStateContext();
+
+    const entityTypeArray = entityType.split('.');
+    const entityClassName = entityTypeArray[entityTypeArray.length - 1];
 
     if (!data || !data.datasets || !data.labels) {
         if (!data)
@@ -61,7 +64,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
             },
             title: {
                 display: showTitle ? true : false,
-                text: title?.trim() || `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
+                text: title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
             }
         },
         scales: {
