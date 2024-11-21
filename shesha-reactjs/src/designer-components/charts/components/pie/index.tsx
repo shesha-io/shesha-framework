@@ -44,7 +44,10 @@ ChartJS.register(
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition, entityType } = useChartDataStateContext();
+
+  const entityTypeArray = entityType.split('.');
+  const entityClassName = entityTypeArray[entityTypeArray.length - 1];
 
   if (!data || !data.datasets || !data.labels) {
     if (!data)
@@ -67,7 +70,7 @@ const PieChart = ({ data }: IPieChartProps) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim().length > 0 ? title :  `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        text: title?.trim().length > 0 ? title :  `${entityClassName}: ${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },
     layout: {

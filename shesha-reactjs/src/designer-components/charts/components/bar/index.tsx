@@ -24,7 +24,10 @@ ChartJS.register(
 );
 
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked, legendProperty } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked, legendProperty, entityType } = useChartDataStateContext();
+
+  const entityTypeArray = entityType.split('.');
+  const entityClassName = entityTypeArray[entityTypeArray.length - 1];
 
   if (!data || !data.datasets || !data.labels) {
     if (!data)
@@ -43,7 +46,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim().length > 0 ? title : `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
+        text: title?.trim().length > 0 ? title : `${entityClassName}: ${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
       },
     },
     scales: {
