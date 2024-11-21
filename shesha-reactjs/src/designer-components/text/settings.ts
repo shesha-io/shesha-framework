@@ -78,11 +78,34 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
         })
         .addDropdown({
           id: nanoid(),
+          propertyName: 'textDisplay',
+          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: 'Display',
+          allowClear: false,
+          defaultValue: 'grid',
+          description: 'Using display type of Grid allows use to utilize its CSS properties to align the Text component',
+          values: [
+            {
+              label: 'Auto',
+              value: 'auto',
+              id: nanoid(),
+            },
+            {
+              label: 'Grid',
+              value: 'grid',
+              id: nanoid(),
+            },
+          ],
+          dataSourceType: 'values',
+        })
+        .addDropdown({
+          id: nanoid(),
           propertyName: 'textAlign',
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Text Align',
           allowClear: false,
           defaultValue: 'start',
+          hidden: {_code: 'return getSettingValue(data?.textDisplay) === "auto";', _mode: 'code', _value: false} as any,
           values: [
             {
               label: 'Left',
@@ -392,6 +415,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'ellipsis',
           parentId: '4pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Ellipsis?',
+          hidden: {_code: 'return getSettingValue(data?.textDisplay) === "grid";', _mode: 'code', _value: false} as any,
         })
         .addCheckbox({
           id: '23f1f1d7-7eb8-440b-8620-bb059b6938e4',
