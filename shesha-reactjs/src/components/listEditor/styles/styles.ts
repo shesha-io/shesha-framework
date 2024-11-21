@@ -105,7 +105,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${listItemContent} {
                     flex: 1;
-                    margin-left: 20px;
+                    margin-left: 30px;
 
                     .${listItemName} {
                         margin-left: 10px;
