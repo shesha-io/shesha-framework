@@ -120,7 +120,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
-      min: model.validate?.minLength,
       minLength: model.validate?.minLength,
       size: model.size,
       disabled: model.readOnly,

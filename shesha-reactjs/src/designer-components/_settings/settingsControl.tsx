@@ -17,6 +17,7 @@ export interface ISettingsControlProps<Value = any> {
   readOnly?: boolean;
   value?: IPropertySetting<Value>;
   setHasCode?: (hasCode: boolean) => void;
+  hasCode?: boolean;
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting<Value>) => void;
   readonly children?: SettingsControlChildrenType;
@@ -41,14 +42,13 @@ export const defaultExposedVariables: ICodeExposedVariable[] = [
 
 export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
 
-  const { styles } = useStyles();
-
-
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
+
+  const { styles } = useStyles(setting._code);
 
   const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
     const newSetting = { ...value, _mode: (m ?? mode) };
@@ -107,9 +107,9 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       {editor}
-      <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+      {!code && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
-      </div>
+      </div>}
     </div>
   );
 };

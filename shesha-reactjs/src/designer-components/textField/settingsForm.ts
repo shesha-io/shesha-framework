@@ -18,6 +18,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
             hidden: { _code: code, _mode: 'code', _value: false } as any,
             inputs: [
                 {
+                    label: "Border",
+                    hideLabel: true,
+                    inputType: "button",
+                    propertyName: "border.hideBorder",
+                    icon: "EyeOutlined",
+                    iconAlt: "EyeInvisibleOutlined"
+                },
+                {
                     label: "Select Side",
                     hideLabel: true,
                     propertyName: "border.selectedSide",
@@ -55,14 +63,20 @@ export const getSettings = (data: ITextFieldComponentProps) => {
         const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";`;
 
         return {
-            id: `borderRadiusStyleRow-${corner}`,
-            parentId: "borderStylePnl",
-            label: "Corner Radius",
-            hideLabel: true,
-            width: 65,
+            id: `borderStyleRow-${corner}`,
+            parentId: 'borderStylePnl',
+            inline: true,
+            readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
             hidden: { _code: code, _mode: 'code', _value: false } as any,
-            defaultValue: 0,
-            propertyName: `border.radius.${corner}`
+            inputs: [{
+                id: `borderRadiusStyleRow-${corner}`,
+                parentId: "borderStylePnl",
+                label: "Corner Radius",
+                hideLabel: true,
+                width: 65,
+                defaultValue: 0,
+                propertyName: `border.radius.${corner}`
+            }]
         };
     });
 
@@ -459,6 +473,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         label: 'Size',
                                                         inputType: 'dropdown',
                                                         width: '150px',
+                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
                                                         dropdownOptions: [
                                                             { value: 'small', label: 'Small' },
                                                             { value: 'medium', label: 'Medium' },
@@ -483,8 +498,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     .addSettingsInputRow({
                                                         id: `borderStyleRow`,
                                                         parentId: 'borderStylePnl',
-                                                        inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
                                                                 label: "Border",
@@ -547,19 +562,19 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             ],
                                                         }
                                                     )
-                                                    .addSettingsInput(
+                                                    .addSettingsInputRow(
                                                         getCornerInputs()[0] as any
                                                     )
-                                                    .addSettingsInput(
+                                                    .addSettingsInputRow(
                                                         getCornerInputs()[1] as any
                                                     )
-                                                    .addSettingsInput(
+                                                    .addSettingsInputRow(
                                                         getCornerInputs()[2] as any
                                                     )
-                                                    .addSettingsInput(
+                                                    .addSettingsInputRow(
                                                         getCornerInputs()[3] as any
                                                     )
-                                                    .addSettingsInput(
+                                                    .addSettingsInputRow(
                                                         getCornerInputs()[4] as any
                                                     )
                                                     .toJson()

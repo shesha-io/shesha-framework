@@ -61,6 +61,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                         onChange={onChange}
                         value={value}
                         setHasCode={setHasCode}
+                        hasCode={hasCode}
                         readOnly={readOnly}
                     >
                         {(value, onChange) => createClonedElement(value, onChange,)}

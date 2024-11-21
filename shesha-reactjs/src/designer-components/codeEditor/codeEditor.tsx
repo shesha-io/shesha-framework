@@ -78,7 +78,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         footer: <>
           <Show when={hasValue && !readOnly}>
             <Button size="small" danger={true} onClick={onClear}>
-              Clear
+              Clear Code
             </Button>
           </Show>,
           <Button key="cancel" onClick={onDialogCancel}>
