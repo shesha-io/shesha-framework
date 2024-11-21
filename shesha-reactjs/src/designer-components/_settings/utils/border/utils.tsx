@@ -91,3 +91,31 @@ export const borderSides = [
         title: "Left"
     }
 ];
+
+export const borderCorners = [
+    {
+        value: "all",
+        icon: "ExpandOutlined",
+        title: "All"
+    },
+    {
+        value: "topLeft",
+        icon: "RadiusUpleftOutlined",
+        title: "Top Left"
+    },
+    {
+        value: "topRight",
+        icon: "RadiusUprightOutlined",
+        title: "Top Right"
+    },
+    {
+        value: "bottomLeft",
+        icon: "RadiusBottomleftOutlined",
+        title: "Bottom Left"
+    },
+    {
+        value: "bottomRight",
+        icon: "RadiusBottomrightOutlined",
+        title: "Bottom Right"
+    }
+];

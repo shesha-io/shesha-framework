@@ -43,6 +43,7 @@ export const fontTypes = [
     { value: 'Courier New', label: 'Courier New' },
     { value: 'Verdana', label: 'Verdana' },
     { value: 'Georgia', label: 'Georgia' },
+    { value: 'Segoe UI', label: 'Segoe UI' },
     { value: 'Palatino', label: 'Palatino' },
     { value: 'monospace', label: 'Monospace' },
     { value: 'Garamond', label: 'Garamond' },

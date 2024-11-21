@@ -23,16 +23,16 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     onChange,
     size
 }) => {
-    const [customOption, setCustomOption] = useState({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
+    const [customOption, setCustomOption] = useState({ x: '', y: '' });
     const [customOptions, setCustomOptions] = useState(options);
 
     const clearInputs = () => {
-        setCustomOption({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
+        setCustomOption({ x: '', y: '' });
     };
 
     const addCustomOption = () => {
-        const { width, height } = customOption;
-        const newValue = `${width.value}${width.unit} ${height.value}${height.unit}`;
+        const { x, y } = customOption;
+        const newValue = `${x} ${y}`;
         setCustomOptions(prev => [...prev, newValue]);
         clearInputs();
     };
@@ -43,16 +43,20 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             <Space style={{ padding: '0 8px 4px' }} onClick={(e) => e.stopPropagation()}>
                 <Space.Compact size="large">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 8px', width: '100%' }}>
-                        {['width', 'height'].map((dim) => (
-                            <div key={dim} style={{ maxWidth: '60px' }}>
-                                <Input
-                                    type='number'
-                                    readOnly={readOnly}
-                                    value={customOption[dim].value}
-                                    onChange={(e) => setCustomOption(prev => ({ ...prev, [dim]: { ...prev[dim], value: e.target.value } }))}
-                                    size='small'
-                                    onClick={(e) => e.stopPropagation()}
-                                />
+                        {['x', 'y'].map((dim) => (
+                            <div key={dim} >
+                                <Space style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Input
+                                        type='number'
+                                        readOnly={readOnly}
+                                        value={customOption[dim].value}
+                                        onChange={(e) => setCustomOption(prev => ({ ...prev, [dim]: e.target.value }))}
+                                        size='small'
+                                        prefix={dim}
+                                        onClick={(e) => e.stopPropagation()}
+                                    />
+                                </Space>
+
                             </div>
                         ))}
                     </div>

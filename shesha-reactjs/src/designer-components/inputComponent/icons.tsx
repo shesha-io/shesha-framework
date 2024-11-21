@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const customIcons = {
-    blur: <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M120-380q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Zm0-160q-8 0-14-6t-6-14q0-8 6-14t14-6q8
+    blur: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M120-380q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Zm0-160q-8 0-14-6t-6-14q0-8 6-14t14-6q8
      0 14 6t6 14q0 8-6 14t-14 6Zm120 340q-17 0-28.5-11.5T200-200q0-17 11.5-28.5T200-280q17 0 28.5 11.5T280-200q0 17-11.5 28.5T200-200Zm0-160q-17
       0-28.5-11.5T200-400q0-17 11.5-28.5T200-440q17 0 28.5 11.5T280-400q0 17-11.5 28.5T200-360Zm0-160q-17 0-28.5-11.5T200-560q0-17 11.5-28.5T200-600q17
        0 28.5 11.5T280-560q0 17-11.5 28.5T200-520Zm0-160q-17 0-28.5-11.5T200-720q0-17 11.5-28.5T200-760q17 0 28.5 11.5T280-720q0 17-11.5 28.5T200-680Zm160
@@ -14,9 +14,9 @@ export const customIcons = {
               6Zm0-720q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Zm160 620q-17 0-28.5-11.5T680-200q0-17 11.5-28.5T720-280q17 0 28.5 11.5T760-200q0 17-11.5 28.5T720-200Zm0-160q-17 0-28.5-11.5T680-400q0-17 11.5-28.5T720-440q17
                0 28.5 11.5T760-400q0 17-11.5 28.5T720-360Zm0-160q-17 0-28.5-11.5T680-560q0-17 11.5-28.5T720-600q17 0 28.5 11.5T760-560q0 17-11.5 28.5T720-520Zm0-160q-17 0-28.5-11.5T680-720q0-17 11.5-28.5T720-760q17 0 28.5 11.5T760-720q0 17-11.5 28.5T720-680Zm120
                 300q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Zm0-160q-8 0-14-6t-6-14q0-8 6-14t14-6q8 0 14 6t6 14q0 8-6 14t-14 6Z" /></svg>,
-    edit: <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+    edit: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor">
         <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" /></svg>,
-    height: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    height: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_5_99" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -24,7 +24,7 @@ export const customIcons = {
             <path d="M11.9808 20L8.69226 16.7115L9.38076 16.023L11.4808 18.0788V5.902L9.40001 7.977L8.71151 7.2885L12 4L15.2885 7.2885L14.5808 8.002L12.4808 5.92125V18.0788L14.5808 16.023L15.2693 16.7115L11.9808 20Z" fill="currentColor" />
         </g>
     </svg>,
-    maxHeight: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    maxHeight: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_103" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -34,7 +34,7 @@ export const customIcons = {
                 fill="currentColor" />
         </g>
     </svg>,
-    maxWidth: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    maxWidth: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_110" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -43,7 +43,7 @@ export const customIcons = {
              14.3737L16.1226 15L19 12.0088ZM19 12.0088V8H20V16H19V12.0088Z" fill="currentColor" />
         </g>
     </svg>,
-    minHeight: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    minHeight: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_116" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -52,7 +52,7 @@ export const customIcons = {
              10.3189V5H16V4H8V5Z" fill="currentColor" />
         </g>
     </svg>,
-    minWidth: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    minWidth: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_138" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -61,7 +61,7 @@ export const customIcons = {
              12.4636H19V16H20V8H19Z" fill="currentColor" />
         </g>
     </svg>,
-    width: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    width: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_100" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect y="20" width="20" height="20" transform="rotate(-90 0 20)" fill="currentColor" />
         </mask>
@@ -70,7 +70,7 @@ export const customIcons = {
              12.0192Z" fill="currentColor" />
         </g>
     </svg>,
-    noRepeat: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    noRepeat: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_161" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -81,7 +81,7 @@ export const customIcons = {
               4.17387L4.1739 4.88098L19.1814 19.8885L19.8886 19.1814L4.88101 4.17387Z" fill="currentColor" />
         </g>
     </svg>,
-    offsetHorizontal: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    offsetHorizontal: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_193" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -91,7 +91,7 @@ export const customIcons = {
              15.1038L5.927 17.1923H13V18.1923ZM13 11H11V13H13V11Z" fill="currentColor" />
         </g>
     </svg>,
-    offsetVertical: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    offsetVertical: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_164" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -101,7 +101,7 @@ export const customIcons = {
              8.0155L6.80775 5.927V13H5.80775ZM13 11H11V13H13V11Z" fill="currentColor" />
         </g>
     </svg>,
-    repeatX: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    repeatX: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_155" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -112,7 +112,7 @@ export const customIcons = {
               15H14.4439L12.62 12.0909L14.4325 9.18182H13.4155L12.0234 11.4574H11.978Z" fill="currentColor" />
         </g>
     </svg>,
-    repeatY: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    repeatY: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_158" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -122,7 +122,7 @@ export const customIcons = {
              4L3 7.30775L3.71925 8.0155L5.80775 5.927V18.3077ZM10.4492 9.18182H9.45206L11.5629 12.7159V15H12.4379V12.7159L14.5487 9.18182H13.5515L12.0316 11.8267H11.9691L10.4492 9.18182Z" fill="currentColor" />
         </g>
     </svg>,
-    repeat: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    repeat: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_6_154" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>
@@ -134,7 +134,7 @@ export const customIcons = {
     spread: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M444-792v-120h72v120h-72Zm0 744v-120h72v120h-72Zm348-396v-72h120v72H792Zm-744
      0v-72h120v72H48Zm678-231-51-51 84-87 54 54-87 84ZM202-148l-54-54 86-83 51 51-83 86Zm557 0-84-86 51-51 87 83-54 54ZM234-675l-86-84 54-54 83 87-51 51Zm246 435q-100 0-170-70t-70-170q0-100 70-170t170-70q100
       0 170 70t70 170q0 100-70 170t-170 70Zm-.25-71Q550-311 599-360.5t49-119.75q0-70.24-48.75-119-48.76-48.75-119-48.75Q410-648 361-599.25q-49 48.76-49 119 0 70.25 48.75 119.75 48.76 49.5 119 49.5ZM481-481Z" /></svg>,
-    inherit: <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+    inherit: <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_9_15" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="#D9D9D9"></rect>
         </mask>
@@ -149,7 +149,7 @@ export const customIcons = {
             <path fillRule="evenodd" clipRule="evenodd" d="M11.5993 11V14.9111L9.92577 13.2375L9.34942 13.8047L12 16.4553L14.6506 13.8047L14.0742 13.2375L12.4007 14.9111V11H11.5993Z" fill="currentColor"></path>
         </g>
     </svg>,
-    readonly: <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    readonly: <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <mask id="mask0_10_13" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
             <rect width="20" height="20" fill="currentColor" />
         </mask>

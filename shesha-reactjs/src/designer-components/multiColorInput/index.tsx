@@ -6,6 +6,8 @@ import { useTheme } from '@/providers';
 import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
+import { InputRow } from '../inputComponent';
+import { gradientDirectionOptions } from '../_settings/utils/background/utils';
 
 export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }) => {
     const { theme } = useTheme();
@@ -41,22 +43,25 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                     );
                 })}
             </Row>
-            <FormItem>
-                <Button
-                    type='primary'
-                    ghost
-                    size='small'
-                    onClick={() => {
-                        const id = nanoid();
-                        onChange({ ...value, [id]: '#000000' });
-                        setColors({ ...colors, [id]: '#000000' });
-                    }}
-                    disabled={readOnly}
-                    icon={<PlusOutlined />}
-                >
-                    Add Color
-                </Button>
-            </FormItem>
+
+            <InputRow inline={true} readOnly={readOnly} inputs={[{ propertyName: 'background.gradient.direction', label: 'Direction', hideLabel: true, width: '120px', inputType: 'dropdown', dropdownOptions: gradientDirectionOptions }]} >
+                <FormItem>
+                    <Button
+                        type='primary'
+                        ghost
+                        size='small'
+                        onClick={() => {
+                            const id = nanoid();
+                            onChange({ ...value, [id]: '#000000' });
+                            setColors({ ...colors, [id]: '#000000' });
+                        }}
+                        disabled={readOnly}
+                        icon={<PlusOutlined />}
+                    >
+                        Add Color
+                    </Button>
+                </FormItem>
+            </InputRow>
         </>
     );
 };

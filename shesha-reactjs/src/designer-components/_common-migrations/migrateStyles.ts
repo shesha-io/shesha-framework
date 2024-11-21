@@ -26,7 +26,8 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 color: prevStyles.backgroundColor || '#fff',
                 repeat: 'no-repeat',
                 size: 'cover',
-                position: 'center'
+                position: 'center',
+                gradient: { direction: 'to right', colors: {} }
             },
             font: {
                 color: prevStyles.fontColor || '#000',

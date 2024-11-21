@@ -2,7 +2,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { borderSides, borderStyles, radiusCorners } from '../_settings/utils/border/utils';
+import { borderCorners, borderSides, borderStyles, radiusCorners } from '../_settings/utils/border/utils';
 
 export const getSettings = (data: ITextFieldComponentProps) => {
 
@@ -68,15 +68,27 @@ export const getSettings = (data: ITextFieldComponentProps) => {
             inline: true,
             readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
             hidden: { _code: code, _mode: 'code', _value: false } as any,
-            inputs: [{
-                id: `borderRadiusStyleRow-${corner}`,
-                parentId: "borderStylePnl",
-                label: "Corner Radius",
-                hideLabel: true,
-                width: 65,
-                defaultValue: 0,
-                propertyName: `border.radius.${corner}`
-            }]
+            inputs: [
+                {
+                    id: "corner-selector",
+                    label: "Corner Radius",
+                    propertyName: "border.selectedCorner",
+                    inputType: "radio",
+                    defaultValue: "all",
+                    tooltip: "Select a corner to which the radius will be applied",
+                    buttonGroupOptions: borderCorners,
+                },
+                {
+                    id: `borderRadiusStyleRow-${corner}`,
+                    parentId: "borderStylePnl",
+                    label: "Corner Radius",
+                    hideLabel: true,
+                    width: 65,
+                    defaultValue: 0,
+                    inputType: 'number',
+                    tooltip: "Select a corner to which the radius will be applied",
+                    propertyName: `border.radius.${corner}`
+                }]
         };
     });
 
@@ -250,12 +262,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         label: 'Min Length',
                                         size: 'small',
                                         jsSetting: true,
+                                        inputType: "number",
                                     },
                                     {
                                         propertyName: 'validate.maxLength',
                                         label: 'Max Length',
                                         size: 'small',
                                         jsSetting: true,
+                                        inputType: "number",
                                     },
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -370,6 +384,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
                                                                 hideLabel: true,
+                                                                inputType: 'number',
+                                                                width: 50,
                                                             },
                                                             {
                                                                 label: 'Weight',
@@ -378,6 +394,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 inputType: 'dropdown',
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
                                                                 dropdownOptions: fontWeights,
+                                                                width: 100,
                                                             },
                                                             {
                                                                 label: 'Color',
@@ -421,6 +438,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
                                                                 icon: "width",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                             },
                                                             {
@@ -450,6 +468,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
                                                                 icon: "height",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
                                                                 label: "Min Height",
@@ -526,42 +545,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     .addSettingsInputRow(
                                                         getBorderInputs()[4] as any
                                                     )
-                                                    .addSettingsInput(
-                                                        {
-                                                            id: "corner-selector",
-                                                            label: "Corner Radius",
-                                                            propertyName: "border.selectedCorner",
-                                                            inputType: "radio",
-                                                            defaultValue: "all",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "all",
-                                                                    icon: "ExpandOutlined",
-                                                                    title: "All"
-                                                                },
-                                                                {
-                                                                    value: "topLeft",
-                                                                    icon: "RadiusUpleftOutlined",
-                                                                    title: "Top Left"
-                                                                },
-                                                                {
-                                                                    value: "topRight",
-                                                                    icon: "RadiusUprightOutlined",
-                                                                    title: "Top Right"
-                                                                },
-                                                                {
-                                                                    value: "bottomLeft",
-                                                                    icon: "RadiusBottomleftOutlined",
-                                                                    title: "Bottom Left"
-                                                                },
-                                                                {
-                                                                    value: "bottomRight",
-                                                                    icon: "RadiusBottomrightOutlined",
-                                                                    title: "Bottom Right"
-                                                                }
-                                                            ],
-                                                        }
-                                                    )
                                                     .addSettingsInputRow(
                                                         getCornerInputs()[0] as any
                                                     )
@@ -600,6 +583,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             jsSetting: false,
                                                             propertyName: "background.type",
                                                             inputType: "radio",
+                                                            tooltip: "Select a type of background",
                                                             buttonGroupOptions: [
                                                                 {
                                                                     value: "color",
@@ -786,56 +770,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                             label: "noRepeat"
                                                                         }
                                                                     ],
-                                                                }
-                                                            ]
-                                                        })
-                                                        .addSettingsInputRow({
-                                                            id: "background-gradient-direcion-StyleRow-controls",
-                                                            parentId: 'backgroundStyleRow',
-                                                            inline: true,
-                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                            inputs: [
-                                                                {
-                                                                    label: "Direction",
-                                                                    propertyName: "background.gradient.direction",
-                                                                    inputType: "dropdown",
-                                                                    jsSetting: false,
-                                                                    hideLabel: true,
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "to right",
-                                                                            label: "To Right"
-                                                                        },
-                                                                        {
-                                                                            value: "to left",
-                                                                            label: "To Left"
-                                                                        },
-                                                                        {
-                                                                            value: "to top",
-                                                                            label: "To Top"
-                                                                        },
-                                                                        {
-                                                                            value: "to bottom",
-                                                                            label: "To Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "to top right",
-                                                                            label: "To Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "to top left",
-                                                                            label: "To Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "to bottom right",
-                                                                            label: "To Bottom Right"
-                                                                        },
-                                                                        {
-                                                                            value: "to bottom left",
-                                                                            label: "To Bottom Left"
-                                                                        }
-                                                                    ]
                                                                 }
                                                             ]
                                                         })
