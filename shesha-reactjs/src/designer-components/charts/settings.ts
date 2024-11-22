@@ -203,7 +203,7 @@ export const settingsForm = new DesignerToolbarSettings()
             defaultValue: 0,
             stepNumeric: 0.1,
             hidden: {
-              _code: "return getSettingValue(data?.chartType) !== `line`",
+              _code: "return getSettingValue(data?.chartType) !== `line` || getSettingValue(data?.dataMode) === `url`",
               _mode: "code",
               _value: true
             },
@@ -215,6 +215,11 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Border width',
             defaultValue: 0.0,
             stepNumeric: 0.1,
+            hidden: {
+              _code: "return getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: true
+            },
           })
           .addColorPicker({
             id: nanoid(),
@@ -222,6 +227,11 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             label: 'Border Stroke Color',
             defaultValue: '#000000',
+            hidden: {
+              _code: "return getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: true
+            },
           })
           .toJson()
         ]
@@ -320,13 +330,17 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Axis Property',
             labelAlign: 'right',
             parentId: 'root',
-            hidden: false,
             isDynamic: false,
             description: 'The property to be used on the x-axis.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+            hidden: {
+              _code: "return getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: true
+            },
           })
           .addCheckbox({
             id: nanoid(),
@@ -336,6 +350,7 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
+            
           })
           .addDropdown({
             id: nanoid(),
@@ -365,13 +380,18 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Value Property',
             labelAlign: 'right',
             parentId: 'root',
-            hidden: false,
             isDynamic: false,
             description: 'This is the property that will be used to calculate the data and hence show on the depenedent y-axis.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+            // do not show this field if the dataMode is URL
+            hidden: {
+              _code: "return getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: true
+            },
           })
           .addPropertyAutocomplete({
             id: nanoid(),
