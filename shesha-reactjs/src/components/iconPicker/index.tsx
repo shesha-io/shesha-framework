@@ -151,7 +151,7 @@ const IconPicker: FC<IIconPickerProps> = ({
               className={styles.shaIconPicker}
               iconName={localSelectedIcon}
               {...props}
-              style={{ marginLeft: -8, fontSize: iconSize || 24 }}
+              style={{ marginLeft: -8, fontSize: iconSize || 14 }}
               name={localSelectedIcon}
               title={localSelectedIcon}
             />

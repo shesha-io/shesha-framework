@@ -156,7 +156,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber variant={variant} readOnly={readOnly} size={size} value={value} style={{ width: "100%" }} />;
+            return <InputNumber variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} />;
         case 'customDropdown':
             return <CustomDropdown
                 variant={variant} value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;

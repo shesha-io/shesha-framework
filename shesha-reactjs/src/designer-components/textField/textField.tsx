@@ -115,17 +115,17 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const inputProps: InputProps = {
       className: `sha-input ${styles.textField}`,
       placeholder: model.placeholder,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
-      maxLength: model.validate?.maxLength,
-      max: model.validate?.maxLength,
-      minLength: model.validate?.minLength,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
       style: { ...finalStyle, ...jsStyle },
-      defaultValue: model.initialValue && evaluateString(model.initialValue, { formData: data, formMode: form.formMode, globalState })
+      defaultValue: model.initialValue && evaluateString(model.initialValue, { formData: data, formMode: form.formMode, globalState }),
+      maxLength: model.validate?.maxLength,
+      max: model.validate?.maxLength,
+      minLength: model.validate?.minLength,
     };
 
     const eventProps = {
@@ -160,7 +160,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
                 Input: {
                   fontFamily: model?.font?.type,
                   fontSize: model?.font?.size || 14,
-                  fontWeightStrong: Number(model?.font?.weight.split(' - ')[0]) || 400,
+                  fontWeightStrong: Number(fontStyles.fontWeight) || 400,
                 },
               },
             }}

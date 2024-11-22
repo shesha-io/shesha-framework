@@ -17,7 +17,28 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                         width: prevStyles?.borderSize as string || '1px',
                         style: prevStyles.borderType || 'solid',
                         color: prevStyles.borderColor || '#d9d9d9'
+                    },
+                    top: {
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles.borderType || 'solid',
+                        color: prevStyles.borderColor || '#d9d9d9'
+                    },
+                    bottom: {
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles.borderType || 'solid',
+                        color: prevStyles.borderColor || '#d9d9d9'
+                    },
+                    left: {
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles.borderType || 'solid',
+                        color: prevStyles.borderColor || '#d9d9d9'
+                    },
+                    right: {
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles.borderType || 'solid',
+                        color: prevStyles.borderColor || '#d9d9d9'
                     }
+
                 },
                 radius: { all: prevStyles?.borderRadius || 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
             },
