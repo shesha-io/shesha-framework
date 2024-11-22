@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using FluentMigrator;
+using System.Data;
 
 namespace Shesha.FluentMigrator.Settings
 {
@@ -6,7 +7,7 @@ namespace Shesha.FluentMigrator.Settings
     {
         public const string SettingConfigurationTypeName = "setting-configuration";
 
-        public SettingsDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction) : base(dbmsType, connection, transaction)
+        public SettingsDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(dbmsType, connection, transaction, querySchema)
         {
         }
 
@@ -61,6 +62,9 @@ namespace Shesha.FluentMigrator.Settings
                 command.AddParameter("@moduleId", moduleId);
             });
 
+            var isUserSpecificExists = QuerySchema.ColumnExists(null, "Frwk_SettingConfigurations", "IsUserSpecific");
+            var clientAccessLkpExists = QuerySchema.ColumnExists(null, "Frwk_SettingConfigurations", "ClientAccessLkp");
+
             ExecuteNonQuery($@"INSERT INTO ""Frwk_SettingConfigurations""
            (""Id""
            ,""DataType""
@@ -68,8 +72,8 @@ namespace Shesha.FluentMigrator.Settings
            ,""OrderIndex""
            ,""IsClientSpecific""
            ,""AccessModeLkp""
-           ,""IsUserSpecific""
-           ,""ClientAccessLkp""
+           {(isUserSpecificExists ? ",\"IsUserSpecific\"" : "")}
+           {(clientAccessLkpExists ? ",\"ClientAccessLkp\"" : "")}
             )
      VALUES
            (@id
@@ -78,8 +82,8 @@ namespace Shesha.FluentMigrator.Settings
            ,0
            ,{BitOrBool(false)}
            ,1/*BackEndOnly*/
-           ,{BitOrBool(false)}
-           ,3/*Full*/
+           {(isUserSpecificExists ? $",{BitOrBool(false)}" : "")}
+           {(clientAccessLkpExists ? ",3/*Full*/" : "")}
            )", command =>
             {
                 command.AddParameter("@id", id);
@@ -214,19 +218,23 @@ where
 
         internal Guid? GetSettingValueId(Guid settingId, Guid? appId, long? userId)
         {
-            var sql = @"select 
+            var userIdExists = QuerySchema.ColumnExists(null, "Frwk_SettingValues", "UserId");
+            var sql = $@"select 
 	                        ""Id"" 
                         from 
 	                        ""Frwk_SettingValues""
                         where 
 	                        ""SettingConfigurationId"" = @settingId
-	                        and ((""ApplicationId"" = @appId or ""UserId"" = @userId) or (""ApplicationId"" = @appId and ""UserId"" = @userId))";
+                            and ((@appId is null and ""ApplicationId"" is null or (""ApplicationId"" = @appId)))
+                            {(userIdExists ? "and ((@userId is null and \"UserId\" is null or (\"ApplicationId\" = @userId)))" : "")}
+            ";
 
             return ExecuteScalar<Guid?>(sql, command =>
             {
                 command.AddParameter("@settingId", settingId);
                 command.AddParameter("@appId", appId);
-                command.AddParameter("@userId", userId);
+                if (userIdExists)
+                    command.AddParameter("@userId", userId);
             });
         }
 

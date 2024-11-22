@@ -428,7 +428,7 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Allow Chart Filter',
             parentId: 'root',
             description: 'Allow users to filter the chart data directly from the chart.',
-            defaultValue: true,
+            defaultValue: false,
           })
           .addPropertyAutocomplete({
             id: nanoid(),

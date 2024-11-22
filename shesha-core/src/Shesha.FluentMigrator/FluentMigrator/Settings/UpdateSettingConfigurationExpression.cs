@@ -43,7 +43,7 @@ namespace Shesha.FluentMigrator.Settings
             var exp = new PerformDBOperationExpression()
             {
                 Operation = (connection, transaction) => {
-                    var helper = new SettingsDbHelper(DbmsType, connection, transaction);
+                    var helper = new SettingsDbHelper(DbmsType, connection, transaction, QuerySchema);
 
                     var module = Module.IsSet ? Module.Value : _migrationModule;
                     var id = helper.GetSettingId(module, Name);

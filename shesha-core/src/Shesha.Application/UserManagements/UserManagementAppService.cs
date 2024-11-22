@@ -1,12 +1,19 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Auditing;
+using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Runtime.Validation;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Configuration;
 using Shesha.Configuration.Security;
+using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.Models.TokenAuth;
 using Shesha.Persons;
+using Shesha.UserManagements.Configurations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,18 +30,24 @@ namespace Shesha.UserManagements
         private readonly UserManager _userManager;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
         private readonly IRepository<Person, Guid> _repository;
+        private readonly IRepository<ShaUserRegistration, Guid> _userRegistration;
         private readonly ISecuritySettings _securitySettings;
+        private readonly IUserManagementSettings _userManagementSettings;
 
         public UserManagementAppService(
             IRepository<Person, Guid> repository, 
             UserManager userManager, 
             IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository,
-            ISecuritySettings securitySettings)
+            ISecuritySettings securitySettings,
+            IUserManagementSettings userManagementSettings,
+            IRepository<ShaUserRegistration, Guid> userRegistration)
         {
             _userManager = userManager;
             _rolePersonRepository = rolePersonRepository;
             _repository = repository;
             _securitySettings = securitySettings;
+            _userManagementSettings = userManagementSettings;
+            _userRegistration = userRegistration;
         }
 
         /// <summary>
@@ -49,6 +62,7 @@ namespace Shesha.UserManagements
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
             //CheckCreatePermission();
+            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
 
             // Performing additional validations
             var validationResults = new List<ValidationResult>();
@@ -92,7 +106,7 @@ namespace Shesha.UserManagements
 
             // Creating User Account to enable login into the application
             User user = await _userManager.CreateUserAsync(
-                input.UserName,
+                registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName,
                 input.TypeOfAccount?.ItemValue == (long)RefListTypeOfAccount.Internal,
                 input.Password,
                 input.PasswordConfirmation,
@@ -104,6 +118,7 @@ namespace Shesha.UserManagements
 
             // Creating Person entity
             var person = ObjectMapper.Map<Person>(input);
+           
             // manual map for now
             person.EmailAddress1 = input.EmailAddress;
             person.MobileNumber1 = input.MobileNumber;
@@ -111,11 +126,46 @@ namespace Shesha.UserManagements
 
             await _repository.InsertAsync(person);
 
+            var personAccount = ObjectMapper.Map<PersonAccountDto>(person);
+            personAccount.GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration;
+
+            var userRegistration = new ShaUserRegistration
+            {
+                UserId = user.Id,
+                UserNameOrEmailAddress = user.UserName,
+                GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration,
+                AdditionalRegistrationInfoForm = !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormModule) && !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormName)
+                ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) : null,
+                IsComplete = registrationSettings.AdditionalRegistrationInfo ? false : true
+            };
+          
+            await _userRegistration.InsertAsync(userRegistration);
+
             CurrentUnitOfWork.SaveChanges();
 
-            return ObjectMapper.Map<PersonAccountDto>(person);
+            return personAccount;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> CompleteRegistration (long userId)
+        {
+            var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
+            if (userRegistration == null)
+                throw new Exception("User registration not found");
+
+            if (userRegistration.IsComplete)
+                throw new Exception("User registration already completed");
+
+            userRegistration.IsComplete = true;
+            await _userRegistration.UpdateAsync(userRegistration);
+
+            return userRegistration.GoToUrlAfterRegistration;
+        }
 
 
         /// <summary>

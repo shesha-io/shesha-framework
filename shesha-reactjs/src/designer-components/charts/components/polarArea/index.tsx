@@ -24,7 +24,10 @@ ChartJS.register(
 );
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition, entityType } = useChartDataStateContext();
+
+  const entityTypeArray = entityType.split('.');
+  const entityClassName = entityTypeArray[entityTypeArray.length - 1];
 
   if (!data || !data.datasets || !data.labels) {
     if (!data)
@@ -61,7 +64,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
       },
       title: {
         display: showTitle ? true : false,
-        text: title?.trim() || `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        text: title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} by ${yProperty} (${aggregationMethod})`,
       },
     },
     layout: {

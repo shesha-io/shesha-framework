@@ -8,18 +8,15 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     internal class ReferenceListDbHelper: DbHelperBase
     {
-        private readonly IQuerySchema _querySchema;
-
-        public ReferenceListDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(dbmsType, connection, transaction)
+        public ReferenceListDbHelper(DbmsType dbmsType, IDbConnection connection, IDbTransaction transaction, IQuerySchema querySchema) : base(dbmsType, connection, transaction, querySchema)
         {
-            _querySchema = querySchema;
         }
 
         #region list
 
         internal bool IsLegacyRefListStructure()
         {
-            return _querySchema.ColumnExists(null, "Frwk_ReferenceLists", "Name") && _querySchema.ColumnExists(null, "Frwk_ReferenceLists", "Namespace");
+            return QuerySchema.ColumnExists(null, "Frwk_ReferenceLists", "Name") && QuerySchema.ColumnExists(null, "Frwk_ReferenceLists", "Namespace");
         }
 
         internal Guid InsertReferenceList(string @namespace, string name, string? description)

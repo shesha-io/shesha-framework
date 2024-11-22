@@ -8,6 +8,8 @@ export interface AuthenticateResultModel {
   userId?: number;
   personId?: string | null;
   deviceName?: string | null;
+  redirect?: Boolean;
+  url?: string;
 }
 
 export interface AuthenticateResultModelAjaxResponse extends IAjaxResponse<AuthenticateResultModel> {}
