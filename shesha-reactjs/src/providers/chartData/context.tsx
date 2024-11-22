@@ -3,6 +3,7 @@ import { createContext } from "react";
 
 export interface IChartDataContext {
   height?: number;
+  width?: number;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
   url?: string;

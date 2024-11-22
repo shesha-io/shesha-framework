@@ -90,8 +90,10 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }
 
   return (
-    <div className={cx(styles.chartControlContainer)} style={{
-      height: props?.height ?? 'auto'
+    <Flex align='center' justify='center' className={cx(styles.chartControlContainer)} style={{
+      height: props?.height > 200 ? props.height : 'auto',
+      width: props?.width > 300 ? props.width : 'auto',
+      border: props?.showBorder ? '1px solid #ddd' : 'none'
     }}>
       {
         (() => {
@@ -109,7 +111,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
           }
         })()
       }
-    </div>
+    </Flex>
   );
 };
 

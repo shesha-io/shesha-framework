@@ -7,27 +7,25 @@ import ChartDataProvider from '../../providers/chartData';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import ChartControlURL from './chartControlURL';
+import { ConfigurableFormItem } from '@/components';
 
 const ChartComponent: IToolboxComponent<IChartProps> = {
   type: 'chart',
   name: 'Chart',
   isInput: false,
+  isOutput: true,
   icon: <BarChartOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
-
-    if (model.dataMode === 'url') {
-      return (
-        <ChartDataProvider>
-          <ChartControlURL {...model} />
-        </ChartDataProvider>
-      );
-    }
-
     return (
-      <ChartDataProvider>
-        <ChartControl {...model} />
-      </ChartDataProvider>
+      <ConfigurableFormItem model={model}>
+        {() => {
+          return (
+            <ChartDataProvider>
+              {model.dataMode === 'url' ? <ChartControlURL {...model} /> : <ChartControl {...model} />}
+            </ChartDataProvider>
+          );
+        }}
+      </ConfigurableFormItem>
     );
   },
   initModel: (model) => ({
@@ -35,6 +33,11 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
   }),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IChartProps>(0, prev => {
+      prev.hideLabel = true;
+      return prev;
+    })
 };
 
 export default ChartComponent;
