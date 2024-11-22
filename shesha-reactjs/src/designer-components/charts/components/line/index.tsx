@@ -28,7 +28,7 @@ ChartJS.register(
 );
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
-    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, strokeColor, dataMode, borderWidth } = useChartDataStateContext();
+    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, strokeColor, dataMode, strokeWidth } = useChartDataStateContext();
 
     const chartTitle: string = useGeneratedTitle();
 
@@ -44,7 +44,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         data?.datasets?.map((dataset: any) => {
             dataset.borderColor = strokeColor || 'black';
             dataset.pointRadius = 5;
-            dataset.borderWidth = typeof (borderWidth) === 'number' || borderWidth < 1 ? borderWidth : 1;
+            dataset.strokeWidth = typeof (strokeWidth) === 'number' || strokeWidth < 1 ? strokeWidth : 1;
             dataset.tension = tension;
             return dataset;
         });

@@ -388,7 +388,7 @@ function getPredictableColor(input: string | number): string {
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared line chart data
  */
-export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum', borderWidth?: number): IChartData => {
+export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum', strokeWidth?: number): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -401,7 +401,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
         pointRadius: 5,
-        borderWidth: typeof (borderWidth) === 'number' ? borderWidth : 0,
+        strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
       }
     ]
   };
@@ -415,7 +415,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared bar chart data
  */
-export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum', borderWidth?: number): IChartData => {
+export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum', strokeWidth?: number): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -426,7 +426,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
         data: aggregatedData?.map(item => item.y),
         backgroundColor: aggregatedData?.map(item => getPredictableColor(item.x.toString())),
         borderColor: strokeColor || 'fff',
-        borderWidth: typeof (borderWidth) === 'number' ? borderWidth : 0
+        strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0
       }
     ]
   };
@@ -441,7 +441,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared polar area chart data
  */
-export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod, borderWidth?: number): IChartData => {
+export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod, strokeWidth?: number): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
@@ -460,7 +460,7 @@ export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: s
     }),
     backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
     borderColor: strokeColor || 'fff',
-    borderWidth: typeof (borderWidth) === 'number' ? borderWidth : 0,
+    strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
   }];
 
   return {
@@ -513,7 +513,7 @@ export const preparePivotChartData = (
   strokeColor: string,
   aggregationMethod: TAggregationMethod,
   chartType: TChartType,
-  borderWidth?: number,
+  strokeWidth?: number,
 ): IChartData => {
   var labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
   const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
@@ -545,7 +545,7 @@ export const preparePivotChartData = (
       borderColor: strokeColor || 'fff',
       backgroundColor: colors,
       pointRadius: 5,
-      borderWidth: typeof (borderWidth) === 'number' ? borderWidth : 0,
+      strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
     };
   });
 

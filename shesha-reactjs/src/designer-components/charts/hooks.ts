@@ -16,7 +16,7 @@ export const useGeneratedTitle = (): string => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, title, legendProperty, dataMode, entityType, chartType } = useChartDataStateContext();
   
   const entityTypeArray = dataMode === 'entityType' ? entityType?.split('.') : undefined;
-  const entityClassName = dataMode === 'entityType' ? entityTypeArray[entityTypeArray.length - 1] : '';
+  const entityClassName = dataMode === 'entityType' ? entityTypeArray[entityTypeArray?.length - 1] : '';
   switch (chartType) {
     case 'bar':
     case 'line':

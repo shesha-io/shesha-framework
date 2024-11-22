@@ -34,7 +34,7 @@ export interface IChartDataContext {
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
   tension?: number;
-  borderWidth?: number;
+  strokeWidth?: number;
   strokeColor?: string;
 
   data?: object[];
@@ -86,7 +86,7 @@ export const INITIAL_STATE: IChartDataContext = {
   showYAxisTitle: true,
   aggregationMethod: 'count',
   tension: 0,
-  borderWidth: 0,
+  strokeWidth: 0,
 
   data: [],
   items: [],

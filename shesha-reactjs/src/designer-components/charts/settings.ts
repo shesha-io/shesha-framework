@@ -273,10 +273,11 @@ export const settingsForm = new DesignerToolbarSettings()
           })
           .addNumberField({
             id: nanoid(),
-            propertyName: 'borderWidth',
+            propertyName: 'strokeWidth',
             parentId: chartSettingsId,
             label: 'Stroke width',
             defaultValue: 0.0,
+            description: 'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
             min: 0.0,
             stepNumeric: 0.1,
             hidden: {
@@ -289,7 +290,7 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'strokeColor',
             parentId: 'root',
-            label: 'Border Stroke Color',
+            label: 'Stroke Color',
             hidden: {
               _code: "return getSettingValue(data?.dataMode) === `url`",
               _mode: "code",

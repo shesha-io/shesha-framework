@@ -20,7 +20,7 @@ import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, 
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
-    axisProperty, simpleOrPivot, filterProperties, borderWidth, strokeColor,
+    axisProperty, simpleOrPivot, filterProperties, strokeWidth: strokeWidth, strokeColor,
     allowFilter, isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
@@ -190,23 +190,23 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           switch (chartType) {
             case 'line':
               data = simpleOrPivot === 'simple'
-                ? prepareLineChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? prepareLineChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, strokeWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth);
               return <LineChart data={data} />;
             case 'bar':
               data = simpleOrPivot === 'simple'
-                ? prepareBarChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? prepareBarChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, strokeWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth);
               return <BarChart data={data} />;
             case 'pie':
               data = simpleOrPivot === 'simple'
-                ? preparePieOrPolarAreaChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? preparePieOrPolarAreaChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, strokeWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth);
               return <PieChart data={data} />;
             case 'polarArea':
               data = simpleOrPivot === 'simple'
-                ? preparePieOrPolarAreaChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? preparePieOrPolarAreaChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, strokeWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, strokeWidth);
               return <PolarAreaChart data={data} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
