@@ -14,29 +14,31 @@ namespace Shesha.Persons
     {
         [Required]
         [MinLength(5)]
-        public virtual string UserName { get; set; }
+        public string UserName { get; set; }
         
         [Required]
         [MinLength(1)]
-        public virtual string FirstName { get; set; }
+        public string FirstName { get; set; }
 
         [Required]
         [MinLength(1)]
-        public virtual string LastName { get; set; }
+        public string LastName { get; set; }
 
         [ReadOnly(true)]
-        public virtual string FullName { get; set; }
+        public string FullName { get; set; }
 
-        public virtual string MobileNumber { get; set; }
+        public string MobileNumber { get; set; }
 
         [EmailAddress]
         [Required]
-        public virtual string EmailAddress { get; set; }
+        public string EmailAddress { get; set; }
 
-        public virtual bool isContractor { get; set; }
+        public bool isContractor { get; set; }
 
-        public virtual EntityReferenceDto<Guid?> PrimaryOrganisation { get; set; }
+        public EntityReferenceDto<Guid?> PrimaryOrganisation { get; set; }
 
-        public virtual ReferenceListItemValueDto TypeOfAccount { get; set; }
+        public ReferenceListItemValueDto TypeOfAccount { get; set; }
+
+        public string GoToUrlAfterRegistration { get; set; }
     }
 }
