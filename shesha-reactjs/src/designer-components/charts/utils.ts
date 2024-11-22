@@ -407,7 +407,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
         pointRadius: 5,
-        strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
+        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
       }
     ]
   };
@@ -432,7 +432,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
         data: aggregatedData?.map(item => item.y),
         backgroundColor: aggregatedData?.map(item => getPredictableColor(item.x.toString())),
         borderColor: strokeColor || 'fff',
-        strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0
+        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0
       }
     ]
   };
@@ -466,7 +466,7 @@ export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: s
     }),
     backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
     borderColor: strokeColor || 'fff',
-    strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
+    borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
   }];
 
   return {
@@ -551,7 +551,7 @@ export const preparePivotChartData = (
       borderColor: strokeColor || 'fff',
       backgroundColor: colors,
       pointRadius: 5,
-      strokeWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
+      borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
     };
   });
 

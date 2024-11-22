@@ -265,8 +265,10 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Tension',
             defaultValue: 0,
             stepNumeric: 0.1,
+            min: 0,
+            max: 5,
             hidden: {
-              _code: "return getSettingValue(data?.chartType) !== `line` || getSettingValue(data?.dataMode) === `url`",
+              _code: "return getSettingValue(data?.chartType) !== `line`",
               _mode: "code",
               _value: true
             },
@@ -278,24 +280,16 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Stroke width',
             defaultValue: 0.0,
             description: 'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
-            min: 0.0,
             stepNumeric: 0.1,
-            hidden: {
-              _code: "return getSettingValue(data?.dataMode) === `url`",
-              _mode: "code",
-              _value: true
-            },
+            min: 0,
+            max: 10,
           })
           .addColorPicker({
             id: nanoid(),
             propertyName: 'strokeColor',
             parentId: 'root',
             label: 'Stroke Color',
-            hidden: {
-              _code: "return getSettingValue(data?.dataMode) === `url`",
-              _mode: "code",
-              _value: true
-            },
+            allowClear: true,
           })
           .toJson()
         ]

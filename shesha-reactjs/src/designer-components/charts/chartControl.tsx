@@ -20,7 +20,7 @@ import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, 
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
-    axisProperty, simpleOrPivot, filterProperties, strokeWidth: strokeWidth, strokeColor,
+    axisProperty, simpleOrPivot, filterProperties, strokeWidth, strokeColor,
     allowFilter, isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
@@ -31,6 +31,12 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { data: formData } = useFormData();
 
   const { styles, cx } = useStyles();
+
+  useEffect(() => {
+    console.log('strokeWidth', strokeWidth);
+
+    console.log('strokeColor', strokeColor);
+  }, [strokeColor, strokeWidth]);
 
   useEffect(() => {
     setControlProps({

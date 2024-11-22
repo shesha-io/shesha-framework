@@ -38,6 +38,7 @@ export interface IChartsProps {
     xProperty?: string;
     yProperty?: string;
     tension?: number;
+    borderWidth?: number; // for migration
     strokeWidth?: number;
     strokeColor?: string;
     simpleOrPivot?: 'simple' | 'pivot';

@@ -44,12 +44,17 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         data?.datasets?.map((dataset: any) => {
             dataset.borderColor = strokeColor || 'black';
             dataset.pointRadius = 5;
-            dataset.strokeWidth = typeof (strokeWidth) === 'number' || strokeWidth < 1 ? strokeWidth : 1;
+            dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+            dataset.strokeColor = strokeColor || 'black';
             dataset.tension = tension;
             return dataset;
         });
     } else {
         data?.datasets?.map((dataset: any) => {
+            dataset.borderColor = strokeColor || 'black';
+            dataset.pointRadius = 5;
+            dataset.borderWidth = strokeWidth > 1 ? strokeWidth : 1;
+            dataset.strokeColor = strokeColor || 'black';
             dataset.tension = tension;
             return dataset;
         });
