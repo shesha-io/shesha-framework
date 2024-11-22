@@ -54,7 +54,7 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (p
         <StyleBox />
       </SettingsFormItem>
 
-      <SettingsCollapsiblePanel header="Security">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

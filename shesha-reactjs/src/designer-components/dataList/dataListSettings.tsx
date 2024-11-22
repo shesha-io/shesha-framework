@@ -207,7 +207,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
     ],
     onBuild: (builder) => {
       builder.addObject("item", "List item", undefined);
-      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);      
+      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);
     }
   });
 
@@ -234,7 +234,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Select>
       </SettingsFormItem>
 
-      <SettingsCollapsiblePanel header="Render">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Render">
         <SettingsFormItem name="formSelectionMode" label="Form selection mode">
           <Select disabled={readOnly} defaultValue={'none'}>
             <Select.Option key='name' value='name'>Named form</Select.Option>
@@ -327,35 +327,35 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
 
         <Show when={model?.orientation === 'wrap'}>
-            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-         
-            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-          
-            <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
-      
-            <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
-              <Input readOnly={readOnly}/>
-            </SettingsFormItem>
+          <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-            <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
-              <Checkbox disabled={readOnly} />
-            </SettingsFormItem>
-          </Show>
+          <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
 
-          
+          <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
+
+          <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
+        </Show>
+
+
 
         <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="CRUD">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="CRUD">
         <SettingsFormItem name="canEditInline" label="Can edit inline" jsSetting>
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
@@ -486,36 +486,36 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <Show when={model.orientation === "vertical" || model.orientation === "horizontal" }>
-        <SettingsCollapsiblePanel header="Grouping">
-        <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+      <Show when={model.orientation === "vertical" || model.orientation === "horizontal"}>
+        <SettingsCollapsiblePanel hasHeaderBorder={false} header="Grouping">
+          <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
-          <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
+            <Checkbox disabled={readOnly} />
+          </SettingsFormItem>
 
-        <SettingsFormItem name="groupStyle" label="Style of group headers">
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="groupStyle"
-            label="Style of group headers"
-            exposedVariables={[
-              { name: "data", description: "Selected form values", type: "object" },
-            ]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getGroupHeadersStyle',
-            }}
-            availableConstants={getGroupStyleConstants}
-          />
-        </SettingsFormItem>
+          <SettingsFormItem name="groupStyle" label="Style of group headers">
+            <CodeEditor
+              readOnly={readOnly}
+              mode="dialog"
+              propertyName="groupStyle"
+              label="Style of group headers"
+              exposedVariables={[
+                { name: "data", description: "Selected form values", type: "object" },
+              ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getGroupHeadersStyle',
+              }}
+              availableConstants={getGroupStyleConstants}
+            />
+          </SettingsFormItem>
         </SettingsCollapsiblePanel>
       </Show>
 
-      <SettingsCollapsiblePanel header='Empty List'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Empty List'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
           <Input defaultValue={"No Data"} readOnly={readOnly} />
         </SettingsFormItem>
@@ -531,7 +531,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Security">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

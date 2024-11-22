@@ -11,9 +11,10 @@ export const getSettings = (data: any) =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
+      hasHeaderBorder: false,
       content: {
-        id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()    
+        id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+        components: [...new DesignerToolbarSettings()
           .addContextPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'propertyName',
@@ -94,9 +95,10 @@ export const getSettings = (data: any) =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
+      hasHeaderBorder: false,
       content: {
-        id:'2pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()    
+        id: '2pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+        components: [...new DesignerToolbarSettings()
           .addCodeEditor({
             id: 'b9269416-3b78-42c4-934e-3e0dac8c7f01',
             propertyName: 'onChangeCustom',
@@ -172,7 +174,7 @@ export const getSettings = (data: any) =>
             ],
             wrapInTemplate: true,
             templateSettings: {
-              functionName: 'onChange'              
+              functionName: 'onChange'
             },
             availableConstantsExpression: async ({ metadataBuilder }) => {
               return metadataBuilder
@@ -194,9 +196,10 @@ export const getSettings = (data: any) =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
+      hasHeaderBorder: false,
       content: {
-        id:'3pnl4bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()    
+        id: '3pnl4bf6-f76d-4139-a850-c99bf06c8b69',
+        components: [...new DesignerToolbarSettings()
           .addCodeEditor({
             id: '987c3de1-b959-4670-96f6-9b1747189a6e',
             propertyName: 'style',
@@ -226,9 +229,10 @@ export const getSettings = (data: any) =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
+      hasHeaderBorder: false,
       content: {
-        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings() 
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -239,6 +243,6 @@ export const getSettings = (data: any) =>
             validate: {},
           }).toJson()
         ]
-  }
-  })
+      }
+    })
     .toJson();

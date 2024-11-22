@@ -4,6 +4,7 @@ import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
+import { useParent } from '@/providers/parentProvider';
 
 const { Panel } = Collapse;
 const { useToken } = theme;
@@ -29,9 +30,9 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   hideWhenEmpty?: boolean;
   parentPanel?: boolean;
   primaryColor?: string;
-  isSettingPanel?: boolean;
+  hasBorder?: boolean;
+  hasHeaderBorder?: boolean;
   dynamicBorderRadius?: number;
-  defaultHeaderBorder?: defaultHeaderType;
 }
 
 /**
@@ -48,8 +49,8 @@ const StyledCollapse: any = styled(Collapse) <
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    border-top: ${({ parentPanel, primaryColor, isSettingPanel }) => (parentPanel && !isSettingPanel ? `3px solid  ${primaryColor}` : 'none')};
-    border-left: ${({ parentPanel, primaryColor, isSettingPanel }) => (!parentPanel && !isSettingPanel ? `3px solid  ${primaryColor}` : 'none')};
+    border-top: ${({ parentPanel, primaryColor, hasHeaderBorder }) => (parentPanel && hasHeaderBorder ? `3px solid  ${primaryColor}` : 'none')};
+    border-left: ${({ parentPanel, primaryColor, hasHeaderBorder }) => (!parentPanel && hasHeaderBorder ? `3px solid  ${primaryColor}` : 'none')};
     font-size: ${({ parentPanel }) => (parentPanel ? '13px' : '16px')};
     font-weight: 'bold';
     background-color: ${({ headerColor }) => headerColor} !important;
@@ -83,7 +84,6 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   hideCollapseContent,
   hideWhenEmpty = false,
   parentPanel = false,
-  defaultHeaderBorder = 'default',
   dynamicBorderRadius,
 
 }) => {
@@ -92,6 +92,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
   const panelRef = useRef(null);
   const { token } = useToken();
+  const { model: { hasHeaderBorder = true } } = useParent();
 
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
@@ -108,8 +109,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       hideCollapseContent={hideCollapseContent}
       parentPanel={parentPanel}
       primaryColor={token.colorPrimary}
-      isSettingPanel={defaultHeaderBorder === 'settings'}
-
+      hasHeaderBorder={hasHeaderBorder}
     >
       <Panel
         key="1"

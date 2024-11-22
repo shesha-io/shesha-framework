@@ -30,7 +30,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode, formSettings } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const {
@@ -73,7 +73,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ) : null;
 
     const panelPosition = !!panelContextState ? 'child' : 'parent';
-
     return (
       <ParentProvider model={model}>
         <PanelContext.Provider value={panelPosition}>
@@ -100,7 +99,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             parentPanel={panelPosition === 'parent'}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
-            defaultHeaderBorder={formSettings.isSettingsForm ? 'settings' : 'default'}
           >
             <ComponentsContainer
               containerId={model.content.id}
@@ -163,6 +161,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         ...prev,
         customHeader: { id: nanoid(), components: [] }
       }))
+
   ,
   customContainerNames: ['header', 'content', 'customHeader'],
 };

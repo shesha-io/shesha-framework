@@ -38,7 +38,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'>
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
@@ -62,7 +62,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Entity reference configuration'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Entity reference configuration'>
         <SettingsFormItem name="placeholder" label="Placeholder" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -128,7 +128,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </SettingsCollapsiblePanel>
 
       <Show when={values?.entityReferenceType === 'Quickview'}>
-        <SettingsCollapsiblePanel header='Quickview settings'>
+        <SettingsCollapsiblePanel hasHeaderBorder={false} header='Quickview settings'>
           <SettingsFormItem name="quickviewWidth" label="Quickview width" jsSetting>
             <InputNumber min={0} defaultValue={600} step={1} readOnly={readOnly} />
           </SettingsFormItem>
@@ -136,7 +136,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </Show>
 
       <Show when={values?.entityReferenceType === 'Dialog'}>
-        <SettingsCollapsiblePanel header='Dialog settings'>
+        <SettingsCollapsiblePanel hasHeaderBorder={false} header='Dialog settings'>
           <SettingsFormItem name="modalTitle" label="Title" jsSetting>
             <Input readOnly={readOnly} />
           </SettingsFormItem>
@@ -232,7 +232,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsCollapsiblePanel>
       </Show>
 
-      <SettingsCollapsiblePanel header='Layout'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Layout'>
         <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
           <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
         </SettingsFormItem>
@@ -260,7 +260,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Visibility'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Visibility'>
         <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
@@ -270,7 +270,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Security">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

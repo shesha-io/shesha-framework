@@ -81,7 +81,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
   return (
     <>
-      <SettingsCollapsiblePanel header="Display">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Display">
         <SettingsFormItem name="componentName" label="Component name" required={true}>
           <Input disabled={readOnly} />
         </SettingsFormItem>
@@ -157,7 +157,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Configure Wizard Steps">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Configure Wizard Steps">
         <SettingsFormItem name="steps" initialValue={steps}>
           <ItemListConfiguratorModal<IWizardStepProps>
             readOnly={readOnly}
@@ -169,8 +169,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
                   layout: "horizontal",
                   isSettingsForm: true,
                   colon: true,
-                  labelCol: {span: 5},
-                  wrapperCol: {span: 13}
+                  labelCol: { span: 5 },
+                  wrapperCol: { span: 13 }
                 }
               };
             }}
@@ -184,13 +184,13 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
               title: readOnly ? "View Wizard Steps" : "Configure Wizard Steps",
               header: <Alert message={readOnly ? 'Here you can view wizard steps configuration.' : 'Here you can configure the wizard steps by adjusting their settings and ordering.'} />,
             }}
-            actualModelContext={allData} 
+            actualModelContext={allData}
           >
           </ItemListConfiguratorModal>
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Style">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Style">
         <SettingsFormItem
           label="Style"
           name="style"
@@ -229,7 +229,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Security">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

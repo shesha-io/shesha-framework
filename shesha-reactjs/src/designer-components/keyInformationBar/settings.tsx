@@ -101,7 +101,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <StyleBox />
             </SettingsFormItem>
 
-            <SettingsCollapsiblePanel header="Security">
+            <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
                 <SettingsFormItem
                     jsSetting
                     label="Permissions"

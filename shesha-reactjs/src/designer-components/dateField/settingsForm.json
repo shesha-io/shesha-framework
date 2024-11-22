@@ -3,6 +3,7 @@
     {
       "id": "YdG427sm65_Ww47MFVdxA",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -176,6 +177,7 @@
     {
       "id": "oP0uMf56z-zs32j-jCAhx",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlFormats",
       "label": "Formats",
       "labelAlign": "right",
@@ -274,103 +276,107 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "gCBUNeJjyMzcs1G2RRAK8",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "d8nBKM4Ft50LTL1Supx8N",
-        "components": []
-      },
-      "content": {
-        "id": "Fd2QdtLi2FOTaZJZvFz3Q",
-        "components": [
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
-            "hidden": false,
-            "validate": {},
-            "version": 2
+        {
+          "id": "gCBUNeJjyMzcs1G2RRAK8",
+          "type": "collapsiblePanel",
+          "hasHeaderBorder": false,
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "header": {
+            "id": "d8nBKM4Ft50LTL1Supx8N",
+            "components": []
           },
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
+          "content": {
+            "id": "Fd2QdtLi2FOTaZJZvFz3Q",
+            "components": [
               {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
+                "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+                "type": "checkbox",
+                "propertyName": "hideBorder",
+                "label": "Hide border",
+                "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+                "hidden": false,
+                "validate": {},
+                "version": 2
               },
               {
-                "name": "globalState",
-                "description": "The global state",
-                "type": "object"
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  },
+                  {
+                    "name": "globalState",
+                    "description": "The global state",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              },
+              {
+                "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                "type": "dropdown",
+                "propertyName": "size",
+                "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+                "label": "Size",
+                "allowClear": true,
+                "values": [
+                  {
+                    "label": "Small",
+                    "value": "small",
+                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  },
+                  {
+                    "label": "Middle",
+                    "value": "middle",
+                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  },
+                  {
+                    "label": "Large",
+                    "value": "large",
+                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 5,
+                "referenceListId": null,
+                "valueFormat": "listItem"
               }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            ]
           },
-          {
-            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "dropdown",
-            "propertyName": "size",
-            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
-            "label": "Size",
-            "allowClear": true,
-            "values": [
-              {
-                "label": "Small",
-                "value": "small",
-                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-              },
-              {
-                "label": "Middle",
-                "value": "middle",
-                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-              },
-              {
-                "label": "Large",
-                "value": "large",
-                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-              }
-            ],
-            "dataSourceType": "values",
-            "version": 5,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
-    }]},
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": []
+        }
+      ]
+    },
     {
       "id": "kE28pclZaV8tpOab8iJyl",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlControlVisibility",
       "label": "Control Visibility",
       "labelAlign": "right",
@@ -529,6 +535,7 @@
     {
       "id": "WJlrXoQpXXzHVvk-VGn-z",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -631,6 +638,7 @@
     {
       "id": "UgwgMBSPX2eKVlZKWGtcc",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -680,6 +688,7 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

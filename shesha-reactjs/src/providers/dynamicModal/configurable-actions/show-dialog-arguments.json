@@ -150,6 +150,7 @@
         {
             "id": "O3Y7Zddxtoq79a541od-znjM81ZMIw",
             "type": "collapsiblePanel",
+            "hasHeaderBorder": false,
             "propertyName": "panel2",
             "componentName": "panel2",
             "label": "Footer",

@@ -3,6 +3,7 @@
     {
       "id": "54bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -208,6 +209,7 @@
     {
       "id": "54bf6-f76d-4139-a850-c99bf06c8111",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "JavaScript/TypeScript",
       "labelAlign": "right",
@@ -384,6 +386,7 @@
     {
       "id": "EdDq7GYOJy2O2TIOads9rczqkjh6t6",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -421,6 +424,7 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

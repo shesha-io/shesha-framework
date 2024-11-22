@@ -3,12 +3,12 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -110,16 +110,15 @@
         ]
       }
     },
-
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",

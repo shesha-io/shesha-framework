@@ -165,23 +165,23 @@ export interface IProps {
 
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
   const { readOnly } = props;
-  
+
   const { model } = useSettingsForm<ITableComponentProps>();
 
-  const crudConstants = useAvailableConstantsMetadata({ 
+  const crudConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData, SheshaConstants.moment
     ]
   });
 
-  const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
+  const onNewRowInitializeConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+  const onRowSaveConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
@@ -191,7 +191,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
     }
   });
 
-  const styleConstants = useAvailableConstantsMetadata({ 
+  const styleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData
@@ -216,7 +216,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       </SettingsFormItem>
 
 
-      <SettingsCollapsiblePanel header='CRUD'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='CRUD'>
         <SettingsFormItem
           name="canEditInline"
           label="Can edit inline"
@@ -349,7 +349,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
 
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel header="Layout">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Layout">
         <SettingsFormItem jsSetting
           name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
           <InputNumber />
@@ -393,7 +393,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Empty Table'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Empty Table'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
           <Input defaultValue={"No Data"} readOnly={readOnly} />
         </SettingsFormItem>
@@ -409,7 +409,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Security">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

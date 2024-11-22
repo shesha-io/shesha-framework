@@ -3,6 +3,7 @@
     {
       "id": "xjb9Aq4cAijce1v8OhZ0a",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -132,6 +133,7 @@
     {
       "id": "vo4MNuVku-MPmfaD-6JZN",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlData",
       "label": "Data",
       "labelAlign": "right",
@@ -400,7 +402,7 @@
                 }
               },
               {
-                 "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
+                "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
                 "type": "textArea",
                 "propertyName": "ignoredValues",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
@@ -457,6 +459,7 @@
     {
       "id": "75yJPi5tyshcrOt3me9mS",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -559,6 +562,7 @@
     {
       "id": "AASvPn3ioEAnbsJqvV5_c",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -605,90 +609,92 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "Mozdwwy7lEfcuptdyLjTw",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "SQLqOqH5GQNgDUE72HGw5",
-        "components": []
-      },
-      "content": {
-        "id": "eAyxVPfzY3iiPI_FDfs83",
-        "components": [
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "eAyxVPfzY3iiPI_FDfs83",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
-              {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
-              }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+        {
+          "id": "Mozdwwy7lEfcuptdyLjTw",
+          "type": "collapsiblePanel",
+          "hasHeaderBorder": false,
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "header": {
+            "id": "SQLqOqH5GQNgDUE72HGw5",
+            "components": []
           },
-          {
-            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "dropdown",
-            "propertyName": "size",
-            "parentId": "eAyxVPfzY3iiPI_FDfs83",
-            "label": "Size",
-            "allowClear": true,
-            "values": [
+          "content": {
+            "id": "eAyxVPfzY3iiPI_FDfs83",
+            "components": [
               {
-                "label": "Small",
-                "value": "small",
-                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "eAyxVPfzY3iiPI_FDfs83",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
               },
               {
-                "label": "Middle",
-                "value": "middle",
-                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-              },
-              {
-                "label": "Large",
-                "value": "large",
-                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                "type": "dropdown",
+                "propertyName": "size",
+                "parentId": "eAyxVPfzY3iiPI_FDfs83",
+                "label": "Size",
+                "allowClear": true,
+                "values": [
+                  {
+                    "label": "Small",
+                    "value": "small",
+                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  },
+                  {
+                    "label": "Middle",
+                    "value": "middle",
+                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  },
+                  {
+                    "label": "Large",
+                    "value": "large",
+                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 5,
+                "referenceListId": null,
+                "valueFormat": "listItem"
               }
-            ],
-            "dataSourceType": "values",
-            "version": 5,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
-    }
-    ]
-  },
+            ]
+          },
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": []
+        }
+      ]
+    },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

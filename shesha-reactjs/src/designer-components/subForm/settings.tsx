@@ -44,7 +44,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
     })
   );
 
-  
+
   const getStyleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
@@ -78,7 +78,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'>
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
@@ -142,7 +142,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel header='Data source'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Data source'>
         <SettingsFormItem
           name="dataSource"
           initialValue={'form'}
@@ -383,7 +383,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
           </SettingsFormItem>
         </Show>
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel header="Actions">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Actions">
         <SettingsFormItem
           label="On Created"
           name="onCreated"
@@ -486,7 +486,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel header="Layout">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Layout">
 
         <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
           <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
@@ -512,15 +512,15 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
               },
             ]}
             wrapInTemplate={true}
-              templateSettings={{
-                functionName: 'getStyle'
-              }}
-              availableConstants={getStyleConstants}
+            templateSettings={{
+              functionName: 'getStyle'
+            }}
+            availableConstants={getStyleConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Security">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

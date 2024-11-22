@@ -194,6 +194,7 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

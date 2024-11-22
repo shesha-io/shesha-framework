@@ -126,7 +126,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 0,
       "description": "Enable this setting to hide a group automatically when it has no any visible items",
@@ -136,6 +135,7 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

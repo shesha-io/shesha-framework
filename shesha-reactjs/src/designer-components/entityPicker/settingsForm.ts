@@ -12,6 +12,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
@@ -233,6 +234,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
@@ -400,6 +402,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: 'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
@@ -421,6 +424,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: 'pnl44bf6-f76d-4139-a850-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
@@ -479,6 +483,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     ghost: true,
     version: 4,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: '44bf6-f76d-4139-a853-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()
@@ -522,6 +527,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
       components: [...new DesignerToolbarSettings()

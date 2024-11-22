@@ -21,13 +21,13 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'>
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={values.readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={model}
           onValuesChange={onValuesChange}
-          
+
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>
@@ -54,7 +54,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Items'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Items'>
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
@@ -68,7 +68,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Styles'>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Styles'>
         <SettingsFormItem name="colorSource" label="Color Source" jsSetting tooltip='Hex and RGB colors are supported'>
           <Select disabled={values.readOnly}>
             <Option value="primary">Primary Color</Option>
@@ -84,23 +84,23 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
         </Show>
 
         <SettingsFormItem name="fontColor" label="Font Color" jsSetting >
-            <ColorPicker readOnly={values.readOnly} allowClear />
-          </SettingsFormItem>
+          <ColorPicker readOnly={values.readOnly} allowClear />
+        </SettingsFormItem>
 
         <SettingsFormItem name="showIcons" label="Show Icons?" valuePropName="checked" jsSetting>
           <Checkbox disabled={values.readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="width" label="Width" jsSetting>
-          <Input type='number' disabled={values.readOnly}  />
+          <Input type='number' disabled={values.readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="height" label="Height" jsSetting>
-          <Input type='number' disabled={values.readOnly}  />
+          <Input type='number' disabled={values.readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="fontSize" label="Font Size" jsSetting>
-          <Input type='number' disabled={values.readOnly}  />
+          <Input type='number' disabled={values.readOnly} />
         </SettingsFormItem>
 
       </SettingsCollapsiblePanel>

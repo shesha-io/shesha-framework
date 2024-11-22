@@ -3,6 +3,7 @@
     {
       "id": "C_3Dxl1_DNn4hsKlN_gxA",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -181,6 +182,7 @@
     {
       "id": "WJlrXoQpXXzHVvk-VGn-z",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "name": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -282,6 +284,7 @@
     {
       "id": "xo2WA7pfU4naLdeDng0oJ",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -316,6 +319,7 @@
     {
       "id": "rgk2wtrB_1338wuSOE0R4",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSteps",
       "label": "Steps",
       "labelAlign": "right",
@@ -382,107 +386,109 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "Vsrf7S8ssmciZPHKmADHm",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "ZeuTecxmmp8iiYfppgaEy",
-        "components": []
-      },
-      "content": {
-        "id": "zCxTl6HxDRQTogJ9lFn8T",
-        "components": [
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "zCxTl6HxDRQTogJ9lFn8T",
-            "hidden": false,
-            "validate": {},
-            "description": "",
-            "version": 2
+        {
+          "id": "Vsrf7S8ssmciZPHKmADHm",
+          "type": "collapsiblePanel",
+          "hasHeaderBorder": false,
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "header": {
+            "id": "ZeuTecxmmp8iiYfppgaEy",
+            "components": []
           },
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "zCxTl6HxDRQTogJ9lFn8T",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
+          "content": {
+            "id": "zCxTl6HxDRQTogJ9lFn8T",
+            "components": [
               {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
+                "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+                "type": "checkbox",
+                "propertyName": "hideBorder",
+                "label": "Hide border",
+                "parentId": "zCxTl6HxDRQTogJ9lFn8T",
+                "hidden": false,
+                "validate": {},
+                "description": "",
+                "version": 2
               },
               {
-                "name": "globalState",
-                "description": "The global state",
-                "type": "object"
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "zCxTl6HxDRQTogJ9lFn8T",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  },
+                  {
+                    "name": "globalState",
+                    "description": "The global state",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              },
+              {
+                "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                "type": "dropdown",
+                "propertyName": "size",
+                "parentId": "zCxTl6HxDRQTogJ9lFn8T",
+                "label": "Size",
+                "allowClear": true,
+                "values": [
+                  {
+                    "label": "Small",
+                    "value": "small",
+                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  },
+                  {
+                    "label": "Middle",
+                    "value": "middle",
+                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  },
+                  {
+                    "label": "Large",
+                    "value": "large",
+                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 5,
+                "referenceListId": null,
+                "valueFormat": "listItem"
               }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            ]
           },
-          {
-            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "dropdown",
-            "propertyName": "size",
-            "parentId": "zCxTl6HxDRQTogJ9lFn8T",
-            "label": "Size",
-            "allowClear": true,
-            "values": [
-              {
-                "label": "Small",
-                "value": "small",
-                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-              },
-              {
-                "label": "Middle",
-                "value": "middle",
-                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-              },
-              {
-                "label": "Large",
-                "value": "large",
-                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-              }
-            ],
-            "dataSourceType": "values",
-            "version": 5,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          }
-        ]
-      },
-      "collapsible": "header",
-      "collapsedByDefault": false,
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
-    }
-  ]
-  },
+          "collapsible": "header",
+          "collapsedByDefault": false,
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": []
+        }
+      ]
+    },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

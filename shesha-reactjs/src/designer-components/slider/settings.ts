@@ -11,6 +11,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: 'start',
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: nanoid(),
       components: [
@@ -54,6 +55,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: 'start',
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: nanoid(),
       components: [
@@ -86,6 +88,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: 'start',
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
       id: nanoid(),
       components: [

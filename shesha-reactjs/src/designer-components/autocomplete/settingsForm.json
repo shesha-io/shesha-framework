@@ -3,6 +3,7 @@
     {
       "id": "aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -152,6 +153,7 @@
     {
       "id": "a7qbgROr9WUeMWUO-CQ56",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlData",
       "label": "Data",
       "labelAlign": "right",
@@ -446,6 +448,7 @@
     {
       "id": "PDYQYqtRUJBl-9TpyJeCm",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -548,6 +551,7 @@
     {
       "id": "cTmW5Fmz3yVQap6tItHIl",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -581,6 +585,7 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlQuickview",
       "label": "Quickview",
       "labelAlign": "right",
@@ -676,8 +681,6 @@
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
     },
-
-    
     {
       "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
       "type": "propertyRouter",
@@ -694,231 +697,233 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "7UJDsvMw_E9kg5mvIL6XT",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 6,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "_FeSUC4a-2dcJrU2A7fc9",
-        "components": []
-      },
-      "content": {
-        "id": "G670M5i5T85_M0HrSligg",
-        "components": [
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
+        {
+          "id": "7UJDsvMw_E9kg5mvIL6XT",
+          "type": "collapsiblePanel",
+          "hasHeaderBorder": false,
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 6,
+          "expandIconPosition": "start",
+          "header": {
+            "id": "_FeSUC4a-2dcJrU2A7fc9",
+            "components": []
+          },
+          "content": {
+            "id": "G670M5i5T85_M0HrSligg",
+            "components": [
               {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder\n        .object(\"constants\")\n        .addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              },
+              {
+                "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                "type": "dropdown",
+                "propertyName": "size",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "label": "Size",
+                "allowClear": true,
+                "values": [
+                  {
+                    "label": "Small",
+                    "value": "small",
+                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  },
+                  {
+                    "label": "Middle",
+                    "value": "middle",
+                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  },
+                  {
+                    "label": "Large",
+                    "value": "large",
+                    "id": "F4A7F447-68D6-457F-94D4-C1220C6EA630"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 6,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
+                "type": "textField",
+                "propertyName": "height",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "label": "Height",
+                "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+                "version": 5,
+                "textType": "text",
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
+              },
+              {
+                "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+                "type": "textField",
+                "propertyName": "width",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "label": "Width",
+                "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+                "version": 5,
+                "textType": "text",
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
+              },
+              {
+                "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
+                "type": "checkbox",
+                "propertyName": "hideBorder",
+                "label": "Hide Border",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "hidden": false,
+                "validate": {},
+                "version": 3
+              },
+              {
+                "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
+                "type": "numberField",
+                "propertyName": "borderSize",
+                "label": "Border Width",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "description": "To see your changes, check 'Hide Border'.",
+                "version": 3,
+                "hidden": {
+                  "_code": "return getSettingValue(data?.hideBorder) == true;",
+                  "_mode": "code",
+                  "_value": false
+                }
+              },
+              {
+                "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
+                "type": "numberField",
+                "propertyName": "borderRadius",
+                "label": "Border Radius",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "defaultValue": "8",
+                "version": 3
+              },
+              {
+                "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
+                "type": "dropdown",
+                "propertyName": "borderType",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "label": "Border Type",
+                "dataSourceType": "values",
+                "hidden": {
+                  "_code": "return getSettingValue(data?.hideBorder) == true;",
+                  "_mode": "code",
+                  "_value": false
+                },
+                "values": [
+                  {
+                    "label": "Solid",
+                    "value": "solid",
+                    "id": "1"
+                  },
+                  {
+                    "label": "Dashed",
+                    "value": "dashed",
+                    "id": "2"
+                  },
+                  {
+                    "label": "Dotted",
+                    "value": "dotted",
+                    "id": "3"
+                  }
+                ],
+                "version": 6,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "type": "colorPicker",
+                "propertyName": "borderColor",
+                "componentName": "borderColor",
+                "label": "Border Color",
+                "labelAlign": "right",
+                "isDynamic": false,
+                "version": 3,
+                "settingsValidationErrors": [],
+                "title": "",
+                "fontSize": "",
+                "allowClear": true,
+                "showText": true,
+                "hidden": {
+                  "_code": "return getSettingValue(data?.hideBorder) == true;",
+                  "_mode": "code",
+                  "_value": false
+                }
+              },
+              {
+                "id": "edb5da32-d1c5-4167-bb05-37c89475601a",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "type": "colorPicker",
+                "propertyName": "backgroundColor",
+                "componentName": "borderColor",
+                "label": "Background Color",
+                "labelAlign": "right",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 3,
+                "settingsValidationErrors": [],
+                "title": "",
+                "fontSize": "",
+                "allowClear": true,
+                "showText": true
+              },
+              {
+                "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+                "type": "styleBox",
+                "propertyName": "stylingBox",
+                "parentId": "G670M5i5T85_M0HrSligg",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "jsSetting": false,
+                "version": 2
               }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder\n        .object(\"constants\")\n        .addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            ]
           },
-          {
-            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "dropdown",
-            "propertyName": "size",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "label": "Size",
-            "allowClear": true,
-            "values": [
-              {
-                "label": "Small",
-                "value": "small",
-                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-              },
-              {
-                "label": "Middle",
-                "value": "middle",
-                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-              },
-              {
-                "label": "Large",
-                "value": "large",
-                "id": "F4A7F447-68D6-457F-94D4-C1220C6EA630"
-              }
-            ],
-            "dataSourceType": "values",
-            "version": 6,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
-            "type": "textField",
-            "propertyName": "height",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "label": "Height",
-            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
-            "version": 5,
-            "textType": "text",
-            "desktop": {},
-            "tablet": {},
-            "mobile": {}
-          },
-          {
-            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
-            "type": "textField",
-            "propertyName": "width",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "label": "Width",
-            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
-            "version": 5,
-            "textType": "text",
-            "desktop": {},
-            "tablet": {},
-            "mobile": {}
-          },
-          {
-            "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide Border",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "hidden": false,
-            "validate": {},
-            "version": 3
-          },
-          {
-            "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
-            "type": "numberField",
-            "propertyName": "borderSize",
-            "label": "Border Width",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "description": "To see your changes, check 'Hide Border'.",
-            "version": 3,
-            "hidden": {
-              "_code": "return getSettingValue(data?.hideBorder) == true;",
-              "_mode": "code",
-              "_value": false
-            }
-          },
-          {
-            "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
-            "type": "numberField",
-            "propertyName": "borderRadius",
-            "label": "Border Radius",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "defaultValue": "8",
-            "version": 3
-          },
-          {
-            "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
-            "type": "dropdown",
-            "propertyName": "borderType",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "label": "Border Type",
-            "dataSourceType": "values",
-            "hidden": {
-              "_code": "return getSettingValue(data?.hideBorder) == true;",
-              "_mode": "code",
-              "_value": false
-            },
-            "values": [
-              {
-                "label": "Solid",
-                "value": "solid",
-                "id": "1"
-              },
-              {
-                "label": "Dashed",
-                "value": "dashed",
-                "id": "2"
-              },
-              {
-                "label": "Dotted",
-                "value": "dotted",
-                "id": "3"
-              }
-            ],
-            "version": 6,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "type": "colorPicker",
-            "propertyName": "borderColor",
-            "componentName": "borderColor",
-            "label": "Border Color",
-            "labelAlign": "right",
-            "isDynamic": false,
-            "version": 3,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true,
-            "hidden": {
-              "_code": "return getSettingValue(data?.hideBorder) == true;",
-              "_mode": "code",
-              "_value": false
-            }
-          },
-          {
-            "id": "edb5da32-d1c5-4167-bb05-37c89475601a",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "type": "colorPicker",
-            "propertyName": "backgroundColor",
-            "componentName": "borderColor",
-            "label": "Background Color",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 3,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true
-          },
-          {
-            "id": "d9adcd79-771f-4585-a09d-9b769f594490",
-            "type": "styleBox",
-            "propertyName": "stylingBox",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "jsSetting": false,
-            "version": 2
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
-    }
-  ]
-  },
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": []
+        }
+      ]
+    },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIp",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

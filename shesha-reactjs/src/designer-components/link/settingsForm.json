@@ -3,12 +3,12 @@
     {
       "id": "aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -112,12 +112,16 @@
     {
       "id": "1IMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlContent",
       "label": "Content",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return  !getSettingValue(data?.hasChildren);", "_mode": "code", "_value": false},
-
+      "hidden": {
+        "_code": "return  !getSettingValue(data?.hasChildren);",
+        "_mode": "code",
+        "_value": false
+      },
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -164,7 +168,11 @@
             "label": "Justify Content",
             "labelAlign": "right",
             "parentId": "19SNudmMM0Wd1Sc_YI1ng",
-            "hidden": {"_code": "return  getSettingValue(data?.direction) !== 'horizontal';", "_mode": "code", "_value": false},
+            "hidden": {
+              "_code": "return  getSettingValue(data?.direction) !== 'horizontal';",
+              "_mode": "code",
+              "_value": false
+            },
             "dataSourceType": "values",
             "values": [
               {
@@ -222,7 +230,11 @@
             "label": "Align Items",
             "labelAlign": "right",
             "parentId": "19SNudmMM0Wd1Sc_YI1ng",
-            "hidden": {"_code": "return  getSettingValue(data?.direction) !== 'horizontal';", "_mode": "code", "_value": false},
+            "hidden": {
+              "_code": "return  getSettingValue(data?.direction) !== 'horizontal';",
+              "_mode": "code",
+              "_value": false
+            },
             "dataSourceType": "values",
             "values": [
               {
@@ -305,7 +317,11 @@
             "label": "Justify Items",
             "labelAlign": "right",
             "parentId": "19SNudmMM0Wd1Sc_YI1ng",
-            "hidden": {"_code": "return  getSettingValue(data?.direction) !== 'horizontal';", "_mode": "code", "_value": false},
+            "hidden": {
+              "_code": "return  getSettingValue(data?.direction) !== 'horizontal';",
+              "_mode": "code",
+              "_value": false
+            },
             "dataSourceType": "values",
             "values": [
               {
@@ -428,50 +444,55 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "aIMnm2re1exN1M7pEEur9",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlData",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-
-      "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "header": {
-        "id": "FizvkIoyeq1cZMqAgbDLL",
-        "components": [
-
-        ]
-      },
-      "content": {
-        "id": "y9SNusmMM0Wd1Sc_YI1ng",
-        "components": [
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "root",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+        {
+          "id": "aIMnm2re1exN1M7pEEur9",
+          "type": "collapsiblePanel",
+          "hasHeaderBorder": false,
+          "propertyName": "pnlData",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 2,
+          "expandIconPosition": "left",
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": [],
+          "header": {
+            "id": "FizvkIoyeq1cZMqAgbDLL",
+            "components": []
+          },
+          "content": {
+            "id": "y9SNusmMM0Wd1Sc_YI1ng",
+            "components": [
+              {
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "root",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ]
+              }
+            ]
           }
-        ]
-      }
-    }
-  ]
-  },
+        }
+      ]
+    },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

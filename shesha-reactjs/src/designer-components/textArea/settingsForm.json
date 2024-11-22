@@ -3,6 +3,7 @@
     {
       "id": "11114bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "left",
@@ -162,6 +163,7 @@
     {
       "id": "990990f54ee-b754-479d-8e45-559efbd70c10",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -406,6 +408,7 @@
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -520,231 +523,233 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "ghost": true,
-      "header": {
-        "id": "EBA8a8KryY",
-        "components": []
-      },
-      "content": {
-        "id": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-        "components": [
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
+        {
+          "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
+          "type": "collapsiblePanel",
+          "hasHeaderBorder": false,
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "collapsible": "header",
+          "ghost": true,
+          "header": {
+            "id": "EBA8a8KryY",
+            "components": []
+          },
+          "content": {
+            "id": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "components": [
               {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              },
+              {
+                "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                "type": "dropdown",
+                "propertyName": "size",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "label": "Size",
+                "allowClear": true,
+                "values": [
+                  {
+                    "label": "Small",
+                    "value": "small",
+                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  },
+                  {
+                    "label": "Middle",
+                    "value": "middle",
+                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  },
+                  {
+                    "label": "Large",
+                    "value": "large",
+                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
+                "type": "textField",
+                "propertyName": "height",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "label": "Height",
+                "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+                "version": 3,
+                "textType": "text"
+              },
+              {
+                "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+                "type": "textField",
+                "propertyName": "width",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "label": "Width",
+                "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+                "version": 3,
+                "textType": "text"
+              },
+              {
+                "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
+                "type": "numberField",
+                "propertyName": "borderSize",
+                "label": "Border Width",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "version": 3
+              },
+              {
+                "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
+                "type": "numberField",
+                "propertyName": "borderRadius",
+                "label": "Border Radius",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "version": 3
+              },
+              {
+                "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
+                "type": "dropdown",
+                "propertyName": "borderType",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "label": "Border Type",
+                "dataSourceType": "values",
+                "values": [
+                  {
+                    "label": "Solid",
+                    "value": "solid",
+                    "id": "1"
+                  },
+                  {
+                    "label": "Dashed",
+                    "value": "dashed",
+                    "id": "2"
+                  },
+                  {
+                    "label": "Dotted",
+                    "value": "dotted",
+                    "id": "3"
+                  }
+                ],
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "type": "colorPicker",
+                "propertyName": "borderColor",
+                "componentName": "borderColor",
+                "label": "Border Color",
+                "labelAlign": "right",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 2,
+                "settingsValidationErrors": [],
+                "title": "",
+                "fontSize": "",
+                "allowClear": true,
+                "showText": true
+              },
+              {
+                "id": "7faa1735-9480-4ee1-ad23-7e64e470d99a",
+                "type": "numberField",
+                "propertyName": "fontSize",
+                "label": "Font Size",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "version": 3
+              },
+              {
+                "id": "fa37ddbb-27a7-4ab8-b12e-9967764072f2",
+                "type": "numberField",
+                "propertyName": "fontWeight",
+                "label": "Font Weight",
+                "description": "Updates the thickness or 'weight' of each character. 0 to 900",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "version": 3
+              },
+              {
+                "id": "2729e575-16a7-45ff-9a60-97273484fe47",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "type": "colorPicker",
+                "propertyName": "fontColor",
+                "componentName": "fontColor",
+                "label": "Font Color",
+                "labelAlign": "right",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 2,
+                "settingsValidationErrors": [],
+                "title": "",
+                "fontSize": "",
+                "allowClear": true,
+                "showText": true
+              },
+              {
+                "id": "edb5da32-d1c5-4167-bb05-37c89475601a",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "type": "colorPicker",
+                "propertyName": "backgroundColor",
+                "componentName": "borderColor",
+                "label": "Background Color",
+                "labelAlign": "right",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 2,
+                "settingsValidationErrors": [],
+                "title": "",
+                "fontSize": "",
+                "allowClear": true,
+                "showText": true
+              },
+              {
+                "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+                "type": "styleBox",
+                "propertyName": "stylingBox",
+                "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "jsSetting": false
               }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-          },
-          {
-            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "dropdown",
-            "propertyName": "size",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "label": "Size",
-            "allowClear": true,
-            "values": [
-              {
-                "label": "Small",
-                "value": "small",
-                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-              },
-              {
-                "label": "Middle",
-                "value": "middle",
-                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-              },
-              {
-                "label": "Large",
-                "value": "large",
-                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-              }
-            ],
-            "dataSourceType": "values",
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
-            "type": "textField",
-            "propertyName": "height",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "label": "Height",
-            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
-            "version": 3,
-            "textType": "text"
-          },
-          {
-            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
-            "type": "textField",
-            "propertyName": "width",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "label": "Width",
-            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
-            "version": 3,
-            "textType": "text"
-          },
-          {
-            "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
-            "type": "numberField",
-            "propertyName": "borderSize",
-            "label": "Border Width",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "version": 3
-          },
-          {
-            "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
-            "type": "numberField",
-            "propertyName": "borderRadius",
-            "label": "Border Radius",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "version": 3
-          },
-          {
-            "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
-            "type": "dropdown",
-            "propertyName": "borderType",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "label": "Border Type",
-            "dataSourceType": "values",
-            "values": [
-              {
-                "label": "Solid",
-                "value": "solid",
-                "id": "1"
-              },
-              {
-                "label": "Dashed",
-                "value": "dashed",
-                "id": "2"
-              },
-              {
-                "label": "Dotted",
-                "value": "dotted",
-                "id": "3"
-              }
-            ],
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "type": "colorPicker",
-            "propertyName": "borderColor",
-            "componentName": "borderColor",
-            "label": "Border Color",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true
-          },
-          {
-            "id": "7faa1735-9480-4ee1-ad23-7e64e470d99a",
-            "type": "numberField",
-            "propertyName": "fontSize",
-            "label": "Font Size",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "version": 3
-          },
-          {
-            "id": "fa37ddbb-27a7-4ab8-b12e-9967764072f2",
-            "type": "numberField",
-            "propertyName": "fontWeight",
-            "label": "Font Weight",
-            "description": "Updates the thickness or 'weight' of each character. 0 to 900",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "version": 3
-          },
-          {
-            "id": "2729e575-16a7-45ff-9a60-97273484fe47",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "type": "colorPicker",
-            "propertyName": "fontColor",
-            "componentName": "fontColor",
-            "label": "Font Color",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true
-          },
-          {
-            "id": "edb5da32-d1c5-4167-bb05-37c89475601a",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "type": "colorPicker",
-            "propertyName": "backgroundColor",
-            "componentName": "borderColor",
-            "label": "Background Color",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true
-          },
-          {
-            "id": "d9adcd79-771f-4585-a09d-9b769f594490",
-            "type": "styleBox",
-            "propertyName": "stylingBox",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "jsSetting": false
-            }
-        ]
-      }
-    }]
+            ]
+          }
+        }
+      ]
     },
-
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

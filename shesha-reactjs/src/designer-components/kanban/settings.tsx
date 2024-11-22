@@ -12,7 +12,7 @@ import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { nanoid } from '@/utils/uuid';
 
-interface IKanbanSettingsState extends IKanbanProps {}
+interface IKanbanSettingsState extends IKanbanProps { }
 
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
   const { values } = useSettingsForm<IKanbanProps>();
@@ -25,7 +25,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
 
   return (
     <>
-      <SettingsCollapsiblePanel header="Display">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Display">
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
           <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
         </SettingsFormItem>
@@ -42,9 +42,9 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         </SettingsFormItem>
       </MetadataProvider>
       <SettingsFormItem name="maxResultCount" label="Max Result Count" jsSetting>
-          <Input type="number" disabled={readOnly} />
-        </SettingsFormItem>
-      <SettingsCollapsiblePanel header="Columns">
+        <Input type="number" disabled={readOnly} />
+      </SettingsFormItem>
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Columns">
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
@@ -96,7 +96,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <Checkbox disabled={values.readOnly} />
       </SettingsFormItem>
       {/* Column Styles */}
-      <SettingsCollapsiblePanel header="Column Styles">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Column Styles">
         <SettingsFormItem name="columnStyle" label="Style">
           <CodeEditor
             readOnly={readOnly}
@@ -143,7 +143,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
       </SettingsCollapsiblePanel>
 
       {/* Header Styles */}
-      <SettingsCollapsiblePanel header="Header Styles">
+      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Header Styles">
         <SettingsFormItem name="headerStyles" label="Style">
           <CodeEditor
             readOnly={readOnly}

@@ -3,12 +3,12 @@
     {
       "id": "W_m7doMyCpCYwAYDfRh6I",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -93,7 +93,6 @@
             "labelAlign": "right",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "hidden": false,
-
             "isDynamic": false,
             "version": 0,
             "validate": {},
@@ -109,12 +108,12 @@
     {
       "id": "6eBJvoll3xtLJxdvOAlnB",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Data",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -135,7 +134,6 @@
             "labelAlign": "right",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
             "hidden": false,
-
             "isDynamic": false,
             "version": 1,
             "validate": {
@@ -154,12 +152,12 @@
     {
       "id": "Mpe4Sli-5JNDMZYHqeVnY",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",

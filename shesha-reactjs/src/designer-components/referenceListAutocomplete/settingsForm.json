@@ -3,12 +3,12 @@
     {
       "id": "aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -105,12 +105,12 @@
     {
       "id": "2aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -182,12 +182,12 @@
     {
       "id": "3aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",

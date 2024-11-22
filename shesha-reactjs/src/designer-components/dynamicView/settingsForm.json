@@ -3,12 +3,12 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06d8b69",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "start",
@@ -22,34 +22,35 @@
       "content": {
         "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
         "components": [
-     {
-      "textType": "text",
-      "id": "8UYTrC2TxF7XMv2TeM0wO",
-      "type": "textField",
-      "propertyName": "componentName",
-      "label": "Component name",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "jsSetting": false,
-      "validate": {
-        "required": true
-      },
-      "settingsValidationErrors": []
-    },
-    {
-      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    }
-  ]
+          {
+            "textType": "text",
+            "id": "8UYTrC2TxF7XMv2TeM0wO",
+            "type": "textField",
+            "propertyName": "componentName",
+            "label": "Component name",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "jsSetting": false,
+            "validate": {
+              "required": true
+            },
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "root",
+            "label": "Hidden"
+          }
+        ]
       }
     },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
+      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

@@ -25,6 +25,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   borderRadius?: number;
   hasCustomHeader?: boolean;
   customHeader?: ICollapsiblePanelContent;
+  hasHeaderBorder?: boolean;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {

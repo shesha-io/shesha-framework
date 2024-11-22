@@ -10,10 +10,11 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()  
-          .addContextPropertyAutocomplete({
+      id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
+        .addContextPropertyAutocomplete({
           id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
           propertyName: 'propertyName',
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -102,9 +103,10 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-      components: [...new DesignerToolbarSettings() 
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+      components: [...new DesignerToolbarSettings()
         .addPermissionAutocomplete({
           id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
           propertyName: 'permissions',
@@ -115,6 +117,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           validate: {},
         }).toJson()
       ]
-}
-})
+    }
+  })
   .toJson();

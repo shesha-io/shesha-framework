@@ -2,7 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces';
 import {
   FONT_SIZES,
-  PADDING_SIZES, 
+  PADDING_SIZES,
 } from './models';
 import {
   DEFAULT_CONTENT_DISPLAY,
@@ -20,9 +20,10 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
+      id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
         .addContextPropertyAutocomplete({
           id: '936859e7-0342-4a7d-a8f1-c2ae444defee',
           propertyName: 'propertyName',
@@ -110,7 +111,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           validate: {
             required: true,
           },
-          hidden: {_code: 'return getSettingValue(data?.contentDisplay) === "name";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return getSettingValue(data?.contentDisplay) === "name";', _mode: 'code', _value: false } as any,
         })
         .addCheckbox({
           id: '123498f1-1e05-479d-b119-d038cb7d398d',
@@ -131,10 +132,11 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'2pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
-      .addDropdown({
+      id: '2pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
+        .addDropdown({
           id: '747589ce-a289-44b9-b713-01d072ac9d01',
           parentId: '2pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           propertyName: 'dataType',
@@ -171,7 +173,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'dateFormat',
           label: 'Format',
           placeholder: 'Date Format',
-          hidden: {_code: 'return  getSettingValue(data?.dataType) !== "date-time";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return  getSettingValue(data?.dataType) !== "date-time";', _mode: 'code', _value: false } as any,
         })
         .addDropdown({
           id: 'd5bb0113-144e-4fb3-8246-e9a7f12462b9',
@@ -202,7 +204,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
             },
           ],
           dataSourceType: 'values',
-          hidden: {_code: 'return  getSettingValue(data?.dataType) !== "number";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return  getSettingValue(data?.dataType) !== "number";', _mode: 'code', _value: false } as any,
         }).toJson()
       ]
     }
@@ -216,10 +218,11 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
-      .addDropdown({
+      id: '3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
+        .addDropdown({
           id: '6d29cf2c-96fe-40ce-be97-32e9f5d0fe40',
           propertyName: 'contentType',
           parentId: '3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -275,7 +278,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           parentId: '3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Custom Color',
           title: 'Pick Content Color',
-          hidden: {_code: 'return  getSettingValue(data?.contentType) !== "custom";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return  getSettingValue(data?.contentType) !== "custom";', _mode: 'code', _value: false } as any,
           allowClear: true,
           showText: true,
         })
@@ -300,10 +303,11 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'4pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
-      .addDropdown({
+      id: '4pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
+        .addDropdown({
           id: 'ccea671b-9144-4266-9cd7-64495cbc6910',
           propertyName: 'level',
           parentId: '4pnl54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -337,7 +341,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
             ...Object.keys(FONT_SIZES).map(key => ({ id: nanoid(), value: key, label: key })),
           ],
           dataSourceType: 'values',
-          hidden: {_code: 'return  getSettingValue(data?.textType) !== "title";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return  getSettingValue(data?.textType) !== "title";', _mode: 'code', _value: false } as any,
         })
         .addDropdown({
           id: nanoid(),
@@ -346,7 +350,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           label: 'Font Size',
           values: Object.keys(FONT_SIZES).map(key => ({ id: nanoid(), value: key, label: key })),
           dataSourceType: 'values',
-          hidden: {_code: 'return  getSettingValue(data?.textType) === "title";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return  getSettingValue(data?.textType) === "title";', _mode: 'code', _value: false } as any,
         })
         .addDropdown({
           id: '6edef969-8e4b-4495-92fa-12cd3430fa8e',
@@ -404,7 +408,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'strong',
           parentId: '4pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Strong?',
-          hidden: {_code: 'return  getSettingValue(data?.textType) === "title";', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return  getSettingValue(data?.textType) === "title";', _mode: 'code', _value: false } as any,
         })
         .addCheckbox({
           id: '12b8a36a-3aec-414c-942f-a57e37f00901',
@@ -424,10 +428,11 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'5pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
-      .addCodeEditor({
+      id: '5pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
+        .addCodeEditor({
           id: '06ab0599-914d-4d2d-875c-765a495472f8',
           propertyName: 'style',
           label: 'Style',
@@ -453,9 +458,10 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hasHeaderBorder: false,
     content: {
-      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-      components: [...new DesignerToolbarSettings() 
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+      components: [...new DesignerToolbarSettings()
         .addPermissionAutocomplete({
           id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
           propertyName: 'permissions',
@@ -466,6 +472,6 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           validate: {},
         }).toJson()
       ]
-}
-})
+    }
+  })
   .toJson();
