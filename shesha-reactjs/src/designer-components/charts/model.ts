@@ -13,11 +13,13 @@ export interface IChartData {
 export interface IChartsProps {
     width?: number;
     height?: number;
+    showBorder?: boolean;
     orderBy?: string;
     orderDirection?: TOrderDirection;
     dataMode?: TDataMode;
     url?: string;
     chartType?: TChartType;
+    isDoughnut?: boolean;
     showTitle?: boolean;
     title?: string;
     name?: string;

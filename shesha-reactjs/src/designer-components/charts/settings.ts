@@ -94,7 +94,6 @@ export const settingsForm = new DesignerToolbarSettings()
               _value: true
             },
           })
-          // checkbox for border or not
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showBorder',
@@ -458,7 +457,6 @@ export const settingsForm = new DesignerToolbarSettings()
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
-            // do not show this field if the dataMode is URL
             hidden: {
               _code: "return getSettingValue(data?.dataMode) === `url`",
               _mode: "code",

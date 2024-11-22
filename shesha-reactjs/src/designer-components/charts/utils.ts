@@ -433,42 +433,6 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
 };
 
 /**
- * Prepare pie chart data
- * @param data raw data
- * @param legendProperty legend property
- * @param valueProperty value property
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared pie chart data
- */
-export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod, borderWidth?: number): IChartData => {
-  const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
-
-  const datasets = [{
-    label: `${valueProperty} (${aggregationMethod})`,
-    data: labels?.map((label: string) => {
-      const filteredData = data?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
-      const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
-
-      // Aggregation logic
-      if (aggregationMethod === 'sum') return values.reduce((acc, val) => acc + (val || 0), 0);
-      if (aggregationMethod === 'count') return values.length;
-      if (aggregationMethod === 'average') return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
-      if (aggregationMethod === 'min') return Math.min(...values);
-      if (aggregationMethod === 'max') return Math.max(...values);
-      return 0;
-    }),
-    backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'fff',
-    borderWidth: typeof (borderWidth) === 'number' ? borderWidth : 0,
-  }];
-
-  return {
-    labels,
-    datasets
-  };
-};
-
-/**
  * prepare polar area chart data
  * @param data raw data
  * @param legendProperty legend property 
@@ -477,7 +441,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared polar area chart data
  */
-export const preparePolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod, borderWidth?: number): IChartData => {
+export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod, borderWidth?: number): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
@@ -598,3 +562,20 @@ export const preparePivotChartData = (
     datasets,
   };
 };
+
+/**
+ * Function to stringify values in an array of objects
+ * @param data array of objects to stringify values
+ * @returns array of objects with stringified values
+ */
+export const stringifyValues = (data: object[]) => {
+  return data.map(item => {
+    for (const key in item) {
+      if (typeof item[key] !== 'string') {
+        item[key] = `${item[key]}`;
+      }
+    }
+    return item;
+  });
+};
+

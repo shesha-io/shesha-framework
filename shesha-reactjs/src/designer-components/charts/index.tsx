@@ -34,10 +34,8 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
-    .add<IChartProps>(0, prev => {
-      prev.hideLabel = true;
-      return prev;
-    })
+    .add<IChartProps>(0, prev => ({ ...prev, hideLabel: true }))
+    .add<IChartProps>(1, prev => ({...prev, showBorder: true}))
 };
 
 export default ChartComponent;

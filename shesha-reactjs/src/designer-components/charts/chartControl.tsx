@@ -16,7 +16,7 @@ import PieChart from './components/pie';
 import PolarAreaChart from './components/polarArea';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieOrPolarAreaChartData, preparePivotChartData } from './utils';
+import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieOrPolarAreaChartData, preparePivotChartData, stringifyValues } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
@@ -52,8 +52,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           for (const key in item) {
             if (item[key] === null || item[key] === undefined) {
               item[key] = 'undefined';
-            } else if (typeof item[key] !== 'string') {
-              item[key] = item[key].toString();
             }
           }
           return item;
@@ -79,15 +77,19 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
               let fieldName = toCamelCase(metaItem.path); // Field to transform in the data
 
               // Fetch the reference list values for this field
-              getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } }).promise.then((refListItem) => {
-                setData(data.result?.items?.map(item => {
-                  if (item[`${fieldName}`] !== undefined) {
-                    // Replace the numeric value with the corresponding reference list name
-                    const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
-                    item[`${fieldName}`] = referenceName?.trim() || `${item[`${fieldName}`]}`; // Fallback to original value (as string) if not found
-                  }
-                  return item;
-                }));
+              getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } })
+                .promise.then((refListItem) => {
+                  setData(data.result?.items?.map(item => {
+                    if (item[`${fieldName}`] !== undefined) {
+                      // Replace the numeric value with the corresponding reference list name
+                      const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
+                      item[`${fieldName}`] = referenceName?.trim() || `${item[`${fieldName}`]}`; // Fallback to original value (as string) if not found
+                    }
+                    // stringify all the values of the object if they are not string already
+                    // console.log('item', item);
+                    
+                    return item;
+                  })); 
               }).catch((err: any) => console.error('getReferenceList, err metadata', err));
             }
           }
@@ -188,23 +190,23 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           switch (chartType) {
             case 'line':
               data = simpleOrPivot === 'simple'
-                ? prepareLineChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? prepareLineChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <LineChart data={data} />;
             case 'bar':
               data = simpleOrPivot === 'simple'
-                ? prepareBarChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? prepareBarChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <BarChart data={data} />;
             case 'pie':
               data = simpleOrPivot === 'simple'
-                ? preparePieOrPolarAreaChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? preparePieOrPolarAreaChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <PieChart data={data} />;
             case 'polarArea':
               data = simpleOrPivot === 'simple'
-                ? preparePieOrPolarAreaChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? preparePieOrPolarAreaChartData(stringifyValues(state.filteredData), axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
+                : preparePivotChartData(stringifyValues(state.filteredData), axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
               return <PolarAreaChart data={data} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
