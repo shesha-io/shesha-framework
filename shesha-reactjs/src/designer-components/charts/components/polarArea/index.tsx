@@ -10,6 +10,7 @@ import React from 'react';
 import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
+import { useGeneratedTitle } from "../../hooks";
 
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
@@ -24,10 +25,9 @@ ChartJS.register(
 );
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition, entityType } = useChartDataStateContext();
+  const { showTitle, legendPosition, showXAxisScale } = useChartDataStateContext();
 
-  const entityTypeArray = entityType.split('.');
-  const entityClassName = entityTypeArray[entityTypeArray.length - 1];
+  const chartTitle: string = useGeneratedTitle();
 
   if (!data || !data.datasets || !data.labels) {
     if (!data)
@@ -63,8 +63,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle ? true : false,
-        text: title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} by ${yProperty} (${aggregationMethod})`,
+        display: showTitle && chartTitle.length > 0,
+        text: chartTitle,
       },
     },
     layout: {

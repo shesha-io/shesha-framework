@@ -1,4 +1,4 @@
-import { IChartsProps, IFilter, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -7,7 +7,7 @@ export interface IChartDataContext {
   orderDirection?: 'asc' | 'desc';
   url?: string;
   dataMode?: TDataMode;
-  chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
+  chartType?: TChartType;
   showTitle?: boolean;
   title?: string;
   showLegend?: boolean;
