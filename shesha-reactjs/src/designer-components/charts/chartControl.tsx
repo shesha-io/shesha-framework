@@ -33,12 +33,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { styles, cx } = useStyles();
 
   useEffect(() => {
-    console.log('strokeWidth', strokeWidth);
-
-    console.log('strokeColor', strokeColor);
-  }, [strokeColor, strokeWidth]);
-
-  useEffect(() => {
     setControlProps({
       ...props
     });
