@@ -40,7 +40,7 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                     }
 
                 },
-                radius: { all: prevStyles?.borderRadius || 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
+                radius: { all: prevStyles?.borderRadius || 8 },
             },
             background: {
                 type: 'color',
@@ -58,7 +58,7 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 weight: prevStyles.fontWeight as string || '400',
             },
             dimensions: {
-                height: addPx(prevStyles.height) || '32px',
+                height: addPx(prevStyles.height) || null,
                 width: addPx(prevStyles.width) || '100%',
                 minHeight: '0px',
                 minWidth: '0px',

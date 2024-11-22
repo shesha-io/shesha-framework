@@ -178,7 +178,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => ({
     ...model,
-    textType: 'password',
+    textType: 'text',
 
   }),
   migrator: (m) => m
