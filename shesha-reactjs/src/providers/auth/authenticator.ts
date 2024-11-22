@@ -101,9 +101,23 @@ export class Authenticator implements IAuthenticator {
         removeAccessToken(this.#tokenName);
     };
 
+    #checkRegistrationCompletion = (response: AuthenticateResultModelAjaxResponse): Promise<AuthenticateResultModelAjaxResponse> => {
+        return new Promise((resolve, reject) => {
+            if (response?.result?.redirect) {
+                this.#redirect(`/no-auth/${response.result.url}`);
+                reject(new Error('Redirecting to another page.'));
+            } else {
+                resolve(response);
+            }
+        });
+    };
+
     #loginUserHttp = async (loginFormData: ILoginForm): Promise<void> => {
         const httpResponse = await this.#httpClient.post<AuthenticateModel, HttpResponse<AuthenticateResultModelAjaxResponse>>(URLS.LOGIN, loginFormData);
         const { data: response } = httpResponse;
+
+        await this.#checkRegistrationCompletion(response); // Check if registration completion redirect is needed
+
         const token = response.success && response.result
             ? (response.result as IAccessToken)
             : null;

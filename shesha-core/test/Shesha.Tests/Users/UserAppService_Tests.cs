@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Castle.MicroKernel.Registration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NHibernate.Linq;
@@ -262,14 +263,35 @@ namespace Shesha.Tests.Users
                 using (var uow = _unitOfWorkManager.Begin())
                 {
                     var controller = Resolve<TokenAuthController>();
+
+                    // Call the Authenticate method
                     var response = await controller.Authenticate(new AuthenticateModel()
                     {
                         UserNameOrEmailAddress = username,
                         Password = password
                     });
+
                     await uow.CompleteAsync();
 
-                    return !string.IsNullOrWhiteSpace(response.AccessToken);
+                    // Check if response is an OkObjectResult
+                    if (response is OkObjectResult okResult)
+                    {
+                        // Cast the result to dynamic
+                        dynamic result = okResult.Value;
+
+                        // Check for the redirect case
+                        if (result.Redirect == true)
+                        {
+                            // Handle the redirect case in your test (e.g., simulate navigation or log it)
+                            Console.WriteLine($"Redirect to: {result.Url}");
+                            return false; // Return false to indicate that redirection occurred and login was not completed
+                        }
+
+                        // Handle successful login by checking for an access token
+                        return !string.IsNullOrWhiteSpace(result.AccessToken);
+                    }
+
+                    return false; // Return false if the response is not as expected
                 }
             }
             catch
@@ -277,6 +299,8 @@ namespace Shesha.Tests.Users
                 return false;
             }
         }
+
+
 
         private void ConfigureTokenAuth()
         {
