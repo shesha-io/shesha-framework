@@ -25,7 +25,7 @@ ChartJS.register(
 );
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { showTitle, legendPosition, showXAxisScale } = useChartDataStateContext();
+  const { showTitle, legendPosition, showLegend } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
@@ -59,7 +59,7 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         }
       },
       legend: {
-        display: showXAxisScale ? true : false,
+        display: showLegend ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {

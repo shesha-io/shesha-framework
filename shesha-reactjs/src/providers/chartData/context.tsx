@@ -9,6 +9,7 @@ export interface IChartDataContext {
   url?: string;
   dataMode?: TDataMode;
   chartType?: TChartType;
+  isDoughnut?: boolean;
   showTitle?: boolean;
   title?: string;
   showLegend?: boolean;
@@ -64,7 +65,7 @@ export const INITIAL_STATE: IChartDataContext = {
   height: 0,
   url: '',
   dataMode: 'entityType',
-  chartType: 'pivot',
+  chartType: 'line',
   showTitle: true,
   title: '',
   showLegend: true,

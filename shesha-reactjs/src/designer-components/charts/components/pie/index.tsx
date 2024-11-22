@@ -14,7 +14,7 @@ import {
   Title, Tooltip,
 } from 'chart.js';
 import React from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Doughnut } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from "../../hooks";
@@ -45,7 +45,7 @@ ChartJS.register(
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { showXAxisScale, showTitle, legendPosition } = useChartDataStateContext(); 
+  const { showLegend, showTitle, legendPosition, isDoughnut } = useChartDataStateContext(); 
 
   const chartTitle: string = useGeneratedTitle();
 
@@ -65,7 +65,7 @@ const PieChart = ({ data }: IPieChartProps) => {
     responsive: true,
     plugins: {
       legend: {
-        display: showXAxisScale ? true : false,
+        display: showLegend ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {
@@ -83,7 +83,7 @@ const PieChart = ({ data }: IPieChartProps) => {
     },
   };
 
-  return <Pie data={data as any} options={options} />;
+  return isDoughnut ? <Doughnut data={data as any} options={options} /> : <Pie data={data as any} options={options} />;
 };
 
 export default PieChart;
