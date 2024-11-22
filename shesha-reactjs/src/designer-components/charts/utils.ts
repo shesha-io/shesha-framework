@@ -350,6 +350,12 @@ function getPredictableColorHSL(value: string): string {
     hash += (value.charCodeAt(i) * (i + 1)) ** 3.5;  // Raising to 3.5 to exaggerate differences
   }
 
+  if (value === 'true') {
+    hash += 124356;  // Arbitrary number to differentiate 'true'
+  } else if (value === 'false') {
+    hash += 653421;  // Arbitrary number to differentiate 'false'
+  }
+
   // Use the hash to calculate the hue (0 - 360 degrees on the color wheel)
   const hue = Math.abs(hash % 360);
 
