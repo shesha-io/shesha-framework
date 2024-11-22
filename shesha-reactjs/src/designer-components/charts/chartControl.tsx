@@ -147,7 +147,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   return (
     <div className={cx(styles.chartControlContainer)} style={{
-      height: props?.height ?? 'auto'
+      height: props?.height > 200 ? props.height : 'auto',
     }}>
       {allowFilter && (
         <>
