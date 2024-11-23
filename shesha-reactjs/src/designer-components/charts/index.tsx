@@ -36,6 +36,7 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ ...prev, hideLabel: true }))
     .add<IChartProps>(1, prev => ({...prev, showBorder: true}))
+    .add<IChartProps>(2, prev => ({...prev, isDoughnut: false}))
 };
 
 export default ChartComponent;
