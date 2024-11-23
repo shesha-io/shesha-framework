@@ -1,4 +1,4 @@
-import { IChartsProps, IFilter, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -32,14 +32,17 @@ export interface IChartDataContext {
   showYAxisScale?: boolean;
   showYAxisTitle?: boolean;
   stacked?: boolean;
-  aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+  aggregationMethod?: TAggregationMethod;
   tension?: number;
   strokeWidth?: number;
   strokeColor?: string;
 
   data?: object[];
   items?: object[];
-  urlTypeData?: object;
+  urlTypeData?: {
+    labels?: string[];
+    datasets?: object[];
+  };
 
   isLoaded?: boolean;
 

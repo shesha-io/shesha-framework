@@ -7,8 +7,8 @@ import {
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-import { IChartData, IChartDataProps } from '../../model';
 import { useGeneratedTitle } from '../../hooks';
+import { IChartData, IChartDataProps } from '../../model';
 
 interface BarChartProps extends IChartDataProps {
   data: IChartData;
@@ -25,8 +25,9 @@ ChartJS.register(
 );
 
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked } = useChartDataStateContext();
-
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked,
+   } = useChartDataStateContext();
+   
   const chartTitle: string = useGeneratedTitle();
 
   if (!data || !data.datasets || !data.labels) {

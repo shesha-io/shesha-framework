@@ -25,7 +25,7 @@ ChartJS.register(
 );
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { showTitle, legendPosition, showLegend } = useChartDataStateContext();
+  const { showTitle, legendPosition, showLegend, strokeColor, dataMode, strokeWidth } = useChartDataStateContext();
 
   const chartTitle: string = useGeneratedTitle();
 
@@ -40,6 +40,15 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
   data.datasets.forEach((dataset: { data: any[] }) => {
     dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
   });
+
+  if (dataMode === 'url') {
+    data?.datasets?.map((dataset: any) => {
+      dataset.borderColor = strokeColor || 'black';
+      dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.strokeColor = strokeColor || 'black';
+      return dataset;
+    });
+  }
 
   const options: ChartOptions<any> = {
     responsive: true,

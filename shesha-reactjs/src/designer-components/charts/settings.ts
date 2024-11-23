@@ -266,7 +266,6 @@ export const settingsForm = new DesignerToolbarSettings()
             defaultValue: 0,
             stepNumeric: 0.1,
             min: 0,
-            max: 5,
             hidden: {
               _code: "return getSettingValue(data?.chartType) !== `line`",
               _mode: "code",

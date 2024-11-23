@@ -1,4 +1,20 @@
-import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+import { IFilter, TAggregationMethod, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
+
+/**
+ * Function to stringify values in an array of objects
+ * @param data array of objects to stringify values
+ * @returns array of objects with stringified values
+ */
+export const stringifyValues = (data: object[]) => {
+  return data.map(item => {
+    for (const key in item) {
+      if (typeof item[key] !== 'string') {
+        item[key] = `${item[key]}`;
+      }
+    }
+    return item;
+  });
+};
 
 /**
  * @param str the enjoined properties string to remove duplicates from
@@ -176,7 +192,7 @@ export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string
  * @param aggregationMethod - The aggregation method to use (sum, average, count, min, max)
  * @returns Aggregated data
  * */
-const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string) => {
+export const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string) => {
   const groupedData = data.reduce((acc: object, item: { [key: string]: string | number | object }) => {
     const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
     const yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
@@ -375,7 +391,7 @@ function getPredictableColorHSL(value: string): string {
  * @param input the input to get the color for
  * @returns a predictable color in HSL format
  */
-function getPredictableColor(input: string | number): string {
+export function getPredictableColor(input: string | number): string {
   if (typeof input === 'string') {
     return getPredictableColorHSL(input.toString());
   }
@@ -384,97 +400,6 @@ function getPredictableColor(input: string | number): string {
   return getPredictableColorHSL(input + '');
 }
 
-// Update the relevant functions to use getPredictableColor
-
-/**
- * Prepare line chart data
- * @param data raw data
- * @param xProperty x-axis property
- * @param yProperty y-axis property
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared line chart data
- */
-export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum', strokeWidth?: number): IChartData => {
-  const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
-
-  return {
-    labels: aggregatedData?.map(item => item.x),
-    datasets: [
-      {
-        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-        data: aggregatedData?.map(item => item.y),
-        borderColor: strokeColor || 'fff',
-        backgroundColor: getPredictableColor(yProperty),
-        fill: false,
-        pointRadius: 5,
-        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
-      }
-    ]
-  };
-};
-
-/**
- * Prepare bar chart data
- * @param data raw data
- * @param xProperty x-axis property
- * @param yProperty y-axis property
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared bar chart data
- */
-export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum', strokeWidth?: number): IChartData => {
-  const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
-
-  return {
-    labels: aggregatedData?.map(item => item.x),
-    datasets: [
-      {
-        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-        data: aggregatedData?.map(item => item.y),
-        backgroundColor: aggregatedData?.map(item => getPredictableColor(item.x.toString())),
-        borderColor: strokeColor || 'fff',
-        borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0
-      }
-    ]
-  };
-};
-
-/**
- * prepare polar area chart data
- * @param data raw data
- * @param legendProperty legend property 
- * @param valueProperty value property
- * @param strokeColor stroke color
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @returns prepared polar area chart data
- */
-export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod, strokeWidth?: number): IChartData => {
-  const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
-
-  const datasets = [{
-    label: `${valueProperty} (${aggregationMethod})`,
-    data: labels?.map((label: string) => {
-      const filteredData = data?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
-      const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
-
-      // Aggregation logic
-      if (aggregationMethod === 'sum') return values.reduce((acc, val) => acc + (val || 0), 0);
-      if (aggregationMethod === 'count') return values.length;
-      if (aggregationMethod === 'average') return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
-      if (aggregationMethod === 'min') return Math.min(...values);
-      if (aggregationMethod === 'max') return Math.max(...values);
-      return 0;
-    }),
-    backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'fff',
-    borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
-  }];
-
-  return {
-    labels,
-    datasets
-  };
-};
-
 /**
  * Function to aggregate values based on the aggregation method
  * @param items the items to aggregate
@@ -482,7 +407,7 @@ export const preparePieOrPolarAreaChartData = (data: object[], legendProperty: s
  * @param valueProperty the property to aggregate
  * @returns the aggregated value
  */
-function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
+export function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
   const values: number[] = items?.map((item: { [key: string]: any }) => item[valueProperty]);
   switch (aggregationMethod) {
     case 'sum':
@@ -499,89 +424,3 @@ function aggregateValues(items: object[], aggregationMethod: TAggregationMethod,
       return 0;
   }
 }
-
-/**
- * Prepare pivot chart data
- * @param data raw data
- * @param axisProperty axis property
- * @param legendProperty legend property
- * @param valueProperty value property
- * @param aggregationMethod aggregation method (sum, average, count, min, max)
- * @param chartType chart type (bar, line, pie)
- * @param refLists reference lists for the legend property
- * @returns prepared pivot chart data
- */
-export const preparePivotChartData = (
-  data: object[],
-  axisProperty: string,
-  legendProperty: string,
-  valueProperty: string,
-  strokeColor: string,
-  aggregationMethod: TAggregationMethod,
-  chartType: TChartType,
-  strokeWidth?: number,
-): IChartData => {
-  var labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
-  const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
-
-  var datasets = legendItems?.map(legend => {
-    const strLegend = typeof legend === 'string' ? legend : legend + '';
-    const barBackgroundColor = getPredictableColor(strLegend);
-    let colors: string[] = [];
-    const legendDisplayValue = legend;
-    return {
-      label: legendDisplayValue,
-      data: labels?.map(label => {
-        const matchingItems = data.filter((item: { [key: string]: any }) => {
-          return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, legendProperty) === legend;
-        });
-        switch (chartType) {
-          case 'bar':
-          case 'line':
-            colors.push(barBackgroundColor);
-            break;
-          default:
-            const strLabel = typeof label === 'string' ? label : legend + '';
-            colors.push(getPredictableColor(strLabel));
-            break;
-        }
-        return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
-      }),
-      fill: false,
-      borderColor: strokeColor || 'fff',
-      backgroundColor: colors,
-      pointRadius: 5,
-      borderWidth: typeof (strokeWidth) === 'number' ? strokeWidth : 0,
-    };
-  });
-
-  // Ensure dataset labels and data labels are not null or undefined
-  datasets = datasets?.map((dataset) => ({
-    ...dataset,
-    label: dataset.label ?? 'null',
-  }));
-
-  labels = labels?.map((label) => label ?? 'null');
-
-  return {
-    labels,
-    datasets,
-  };
-};
-
-/**
- * Function to stringify values in an array of objects
- * @param data array of objects to stringify values
- * @returns array of objects with stringified values
- */
-export const stringifyValues = (data: object[]) => {
-  return data.map(item => {
-    for (const key in item) {
-      if (typeof item[key] !== 'string') {
-        item[key] = `${item[key]}`;
-      }
-    }
-    return item;
-  });
-};
-

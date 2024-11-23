@@ -1,13 +1,13 @@
+import { ConfigurableFormItem } from '@/components';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
 import React from 'react';
-import { settingsForm } from './settings';
-import { IChartProps } from './model';
-import ChartControl from './chartControl';
 import ChartDataProvider from '../../providers/chartData';
-import { IToolboxComponent } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
-import { ConfigurableFormItem } from '@/components';
+import { IChartProps } from './model';
+import { settingsForm } from './settings';
 
 const ChartComponent: IToolboxComponent<IChartProps> = {
   type: 'chart',
@@ -36,7 +36,6 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ ...prev, hideLabel: true }))
     .add<IChartProps>(1, prev => ({...prev, showBorder: true}))
-    .add<IChartProps>(2, prev => ({...prev, strokeWidth: prev?.borderWidth}))
 };
 
 export default ChartComponent;

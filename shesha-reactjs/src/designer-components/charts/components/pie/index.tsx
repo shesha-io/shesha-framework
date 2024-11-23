@@ -45,7 +45,7 @@ ChartJS.register(
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { showLegend, showTitle, legendPosition, isDoughnut } = useChartDataStateContext(); 
+  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, dataMode, strokeWidth } = useChartDataStateContext(); 
 
   const chartTitle: string = useGeneratedTitle();
 
@@ -60,6 +60,15 @@ const PieChart = ({ data }: IPieChartProps) => {
   data.datasets.forEach((dataset: { data: any[] }) => {
     dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
   });
+
+  if (dataMode === 'url') {
+    data?.datasets?.map((dataset: any) => {
+      dataset.borderColor = strokeColor || 'black';
+      dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.strokeColor = strokeColor || 'black';
+      return dataset;
+    });
+  } 
 
   const options: ChartOptions<any> = {
     responsive: true,

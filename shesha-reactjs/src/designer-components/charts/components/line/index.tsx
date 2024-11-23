@@ -6,7 +6,7 @@ import {
     LineController, LineElement, PointElement,
     Title, Tooltip
 } from 'chart.js';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
@@ -40,25 +40,22 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
             throw new Error('LineChart: No datasets or labels to display. Please check the data source');
     }
 
-    if (dataMode === 'url') {
-        data?.datasets?.map((dataset: any) => {
-            dataset.borderColor = strokeColor || 'black';
-            dataset.pointRadius = 5;
-            dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
-            dataset.strokeColor = strokeColor || 'black';
-            dataset.tension = tension;
-            return dataset;
-        });
-    } else {
-        data?.datasets?.map((dataset: any) => {
-            dataset.borderColor = strokeColor || 'black';
-            dataset.pointRadius = 5;
-            dataset.borderWidth = strokeWidth > 1 ? strokeWidth : 1;
-            dataset.strokeColor = strokeColor || 'black';
-            dataset.tension = tension;
-            return dataset;
-        });
-    }
+    useEffect(() => {
+        if (dataMode === 'url') {
+            data?.datasets?.map((dataset: any) => {
+                dataset.borderColor = strokeColor || 'black';
+                dataset.pointRadius = 5;
+                dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+                dataset.tension = tension;
+                return dataset;
+            });
+        } else {
+            data?.datasets?.map((dataset: any) => {
+                dataset.tension = tension;
+                return dataset;
+            });
+        }
+    }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension]);
 
     const options: any = {
         responsive: true,
