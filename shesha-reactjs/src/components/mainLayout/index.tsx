@@ -168,7 +168,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           <LayoutHeader collapsed={collapsed} headerFormId={headerFormId} />
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
-          <>
+          <NodeOrFuncRenderer>
             {breadcrumb}
             <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
@@ -182,7 +182,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
             >
               {children}
             </div>
-          </>
+          </NodeOrFuncRenderer>
         </Content>
 
         {footer && (
