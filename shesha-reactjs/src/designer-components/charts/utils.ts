@@ -32,13 +32,15 @@ function removePropertyDuplicates(str) {
 }
 
 /**
+ * Function to convert an array of nested properties to object format
+ * @example convertNestedPropertiesToObjectFormat(['a.b.c', 'a.b.d', 'a.e']) => 'a { b { c }, a { b { d }, a { e }'
  * @param array array of nested properties
  * @returns the array in object format
  */
-function convertNestedPropertiesToObjectFormat(array) {
+function convertNestedPropertiesToObjectFormat(array?: string[]) {
   if (!array) return '';
 
-  return array?.map(path => {
+  return array?.filter(path => path && path?.trim() !== '').map(path => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;
@@ -73,12 +75,11 @@ function convertNestedPropertiesToObjectFormat(array) {
  * @returns getChartData mutate path and queryParams
  */
 export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection) => {
-  filterProperties = convertNestedPropertiesToObjectFormat(filterProperties);
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties).replace(/\s/g, '')),
+      properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       maxResultCount: -1
