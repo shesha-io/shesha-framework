@@ -2,7 +2,8 @@ import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { getDataProperty } from '@/utils/metadata';
 import { getMoment } from '@/utils/date';
-import { IDateFieldProps } from './interfaces';
+import { DisabledDateTemplate, IDateFieldProps } from './interfaces';
+import { range } from 'lodash';
 
 export const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',
@@ -50,6 +51,50 @@ export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) =>
   return null;
 };
 
+export const timeObject = () => {
+  const now = new Date();
+  return {
+    hours: now.getHours(),
+    minutes: now.getMinutes(),
+    seconds: now.getSeconds(),
+  };
+};
+
+const disabledTimeTemplateFunc = (disabledTimeTemplate: DisabledDateTemplate) => {
+  if (disabledTimeTemplate === 'disabledPastTime') {
+    return () => ({
+      disabledHours: () => range(0, timeObject().hours),
+      disabledMinutes: () => range(0, timeObject().minutes),
+      disabledSeconds: () => range(0, timeObject().seconds),
+    });
+  }
+
+  return () => ({
+    disabledHours: () => range(timeObject().hours + 1, 24),
+    disabledMinutes: () => range(timeObject().minutes + 1, 60),
+    disabledSeconds: () => range(timeObject().seconds + 1, 60),
+  });
+};
+
+export const disabledTime = (props: IDateFieldProps, data: object, globalState: object) => {
+  const { disabledTimeMode, disabledTimeTemplate, disabledTimeFunc } = props;
+  console.log('props :>> ', props);
+
+  if (disabledTimeMode === 'none') return undefined;
+
+  const disabledTimeExpressionFunc =
+    disabledTimeMode === 'timeFunctionTemplate' ? disabledTimeTemplateFunc(disabledTimeTemplate) : disabledTimeFunc;
+
+  if (typeof disabledTimeExpressionFunc === 'string') {
+    // tslint:disable-next-line:function-constructor
+    const disabledFunc = new Function('moment', 'data', 'globalState', 'range', disabledTimeExpressionFunc);
+
+    return disabledFunc(moment, data, globalState, range);
+  }
+
+  return disabledTimeExpressionFunc;
+};
+
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]) => {
   const { propertyName, picker, showTime } = props || {};
 
@@ -77,4 +122,3 @@ export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[
       return dateFormat;
   }
 };
-

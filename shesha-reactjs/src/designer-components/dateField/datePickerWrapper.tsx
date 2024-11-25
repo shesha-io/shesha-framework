@@ -7,11 +7,7 @@ import { getStyle } from '@/providers/form/utils';
 import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
-import {
-    DATE_TIME_FORMATS,
-    disabledDate,
-    getFormat,
-} from './utils';
+import { DATE_TIME_FORMATS, disabledDate, disabledTime, getFormat } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
@@ -37,6 +33,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         disabledDateMode,
         disabledDateTemplate,
         disabledDateFunc,
+    disabledTimeMode,
+    disabledTimeTemplate,
+    disabledTimeFunc,
         readOnly,
         style,
         defaultToMidnight,
@@ -53,7 +52,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     const convertValue = (localValue: any) => {
       const newValue = isMoment(localValue) ? localValue : getMoment(localValue, pickerFormat);
-      const val = picker === 'week'
+    const val =
+      picker === 'week'
         ? newValue.startOf('week')
         : picker === 'month'
           ? newValue.startOf('month')
@@ -100,6 +100,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             <RangePicker
                 className="sha-range-picker"
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
+        disabledTime={disabledTime(props, formData, globalState)}
                 onChange={handleRangePicker}
                 format={pickerFormat}
                 value={rangeMomentValue}
@@ -117,20 +118,14 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     if (readOnly) {
       const format = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-      return (
-        <ReadOnlyDisplayFormItem
-          value={momentValue}
-          type="datetime"
-          dateFormat={format}
-          timeFormat={timeFormat}
-        />
-      );
+    return <ReadOnlyDisplayFormItem value={momentValue} type="datetime" dateFormat={format} timeFormat={timeFormat} />;
     }
 
     return (
         <DatePicker
             className="sha-date-picker"
             disabledDate={(e) => disabledDate(props, e, formData, globalState)}
+      disabledTime={disabledTime(props, formData, globalState)}
             onChange={handleDatePickerChange}
       onOk={handleOnOk}
             variant={hideBorder ? 'borderless' : undefined}
