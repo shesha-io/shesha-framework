@@ -118,15 +118,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          createNewVersion({ id: actionArgs.itemId, httpClient, message, notification, modal })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return createNewVersion({ id: actionArgs.itemId, httpClient, message, notification, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -140,15 +132,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          setItemReady({ id: actionArgs.itemId, httpClient, message, modal })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return setItemReady({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -162,15 +146,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          deleteItem({ id: actionArgs.itemId, httpClient })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return deleteItem({ id: actionArgs.itemId, httpClient });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -184,15 +160,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          publishItem({ id: actionArgs.itemId, httpClient, message, modal })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return publishItem({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -206,15 +174,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          itemCancelVersion({ id: actionArgs.itemId, httpClient, message, modal })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return itemCancelVersion({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -228,15 +188,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          downloadAsJson({ id: actionArgs.itemId, httpClient })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return downloadAsJson({ id: actionArgs.itemId, httpClient });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },

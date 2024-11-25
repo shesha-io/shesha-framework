@@ -5,13 +5,17 @@ import { useGet } from '@/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_FORMS_MODULE_NAME } from '@/shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
-import { FormFullName, FormIdentifier } from '@/providers/form/models';
-import { isFormFullName, isFormRawId } from '@/providers/form/utils';
 import HelpTextPopover from '@/components/helpTextPopover';
 
-export interface IFormAutocompleteRuntimeProps {
-    value?: FormIdentifier;
-    onChange?: (value?: FormIdentifier) => void;
+export interface NotificationIdentifier {
+    readonly name: string;
+    readonly module?: string | null;
+    readonly version?: number;
+  }
+
+export interface INotificationAutocompleteRuntimeProps {
+    value?: NotificationIdentifier;
+    onChange?: (value?: NotificationIdentifier) => void;
     readOnly?: boolean;
     maxResultCount?: number;
     convertToFullId?: boolean;
@@ -20,7 +24,7 @@ export interface IFormAutocompleteRuntimeProps {
 interface IOption {
     label: string | ReactNode;
     value: string;
-    data: FormFullName;
+    data: NotificationIdentifier;
     options?: IOption[];
 }
 
@@ -28,9 +32,6 @@ const baseItemFilter = [
     {
         "==": [{ "var": "isLast" }, true]
     },
-    {
-        "==": [{ "var": "isTemplate" }, false]
-    }
 ];
 const getFilter = (term: string) => {
     const termFilter = term
@@ -48,42 +49,38 @@ const getFilter = (term: string) => {
     };
     return JSON.stringify(filter);
 };
-const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
-const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
+const NOTIFICATION_CONFIG_ENTITY_TYPE = 'Shesha.Domain.Notification';
+const NOTIFICATION_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
 
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
         maxResultCount: maxResultCount ?? 10,
-        entityType: FORM_CONFIG_ENTITY_TYPE,
-        properties: FORM_CONFIG_PROPERTIES,
+        entityType: NOTIFICATION_CONFIG_ENTITY_TYPE,
+        properties: NOTIFICATION_CONFIG_PROPERTIES,
         quickSearch: null,
         filter: getFilter(term),
         sorting: 'module.name, name',
     };
 };
-const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayload => {
+const getSelectedValueQueryParams = (value?: NotificationIdentifier): IGenericGetAllPayload => {
     if (!value)
         return null;
 
-    const expression = isFormRawId(value)
-        ? { '==': [{ var: 'id' }, value] }
-        : isFormFullName(value)
-            ? {
-                and: [
-                    ...baseItemFilter,
-                    { '==': [{ 'var': 'name' }, value.name] },
-                    { '==': [{ 'var': 'module.name' }, value.module] },
-                ]
-            }
-            : null;
+    const expression = {
+        and: [
+            ...baseItemFilter,
+            { '==': [{ 'var': 'name' }, value.name] },
+            { '==': [{ 'var': 'module.name' }, value.module] },
+        ]
+    };
 
     return expression
         ? {
             skipCount: 0,
             maxResultCount: 1000,
-            entityType: FORM_CONFIG_ENTITY_TYPE,
-            properties: FORM_CONFIG_PROPERTIES,
+            entityType: NOTIFICATION_CONFIG_ENTITY_TYPE,
+            properties: NOTIFICATION_CONFIG_PROPERTIES,
             filter: JSON.stringify(expression),
         }
         : null;
@@ -108,7 +105,7 @@ interface IConfigurationItemProps {
     versionNo?: number;
 }
 
-const FormLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, label }) => {
+const NotificationLabel: FC<IConfigurationItemProps> = ({ name, description, versionNo, label }) => {
     const displayLabel = label && label !== name
         ? label
         : null;
@@ -138,7 +135,7 @@ const getDisplayText = (item: IResponseItem) => {
         : null;
 };
 
-export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
+export const NotificationAutocomplete: FC<INotificationAutocompleteRuntimeProps> = (props) => {
     const selectedValue = useRef(null);
     const [autocompleteText, setAutocompleteText] = useState<string>(null);
     const {
@@ -166,7 +163,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
                 const displayText = getDisplayText(items[0]);
                 setAutocompleteText(displayText);
             } else
-                console.error(items.length > 1 ? "Found more than one form with specified name" : "Form not found");
+                console.error(items.length > 1 ? "Found more than one notification with specified name" : "Notification not found");
         }
     }, [valueFetcher.data?.result]);
 
@@ -203,7 +200,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
 
                 const opt: IOption = {
                     label: (
-                        <FormLabel
+                        <NotificationLabel
                             name={item.name}
                             label={item.label}
                             description={item.description}
@@ -248,10 +245,10 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
     };
 
     const onSelect = (_value, option) => {
-        const formId = (option as IOption)?.data;
-        selectedValue.current = formId;
+        const notificationId = (option as IOption)?.data;
+        selectedValue.current = notificationId;
         if (props.onChange) {
-            props.onChange(formId);
+            props.onChange(notificationId);
         }
     };
 

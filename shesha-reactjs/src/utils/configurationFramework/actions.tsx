@@ -152,7 +152,7 @@ export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemRea
     modal.confirm({
       title: 'Set Ready',
       icon: <ExclamationCircleOutlined />,
-      content: 'Are you sure you want to set this form ready?',
+      content: 'Are you sure you want to set this item ready?',
       okText: 'Yes',
       onCancel: () => {
         reject();
@@ -215,6 +215,7 @@ export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise
         .catch((e) => {
           message.destroy();
           showErrorDetails(message, notification, e);
+          reject(e);
         });
     };
     modal.confirm({
@@ -263,7 +264,7 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
         });
     };
     modal.confirm({
-      title: 'Cancel form version',
+      title: 'Cancel item version',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to cancel current version?',
       okText: 'Yes',
