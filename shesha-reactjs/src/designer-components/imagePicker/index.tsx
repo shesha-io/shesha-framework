@@ -3,10 +3,9 @@ import { DeleteOutlined, FileAddOutlined, SyncOutlined, UploadOutlined } from '@
 import { Button, Space, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { useStyles } from './style';
-import { toBase64 } from './utils';
 import { IToolboxComponent } from '@/interfaces';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { toBase64, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IFileUploadProps } from '../fileUpload';
 import { getSettings } from './settings';
 
@@ -43,14 +42,14 @@ const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
 
 
     const uploadButton = (
-        <Button size="small" ref={uploadBtnRef} style={{ top: '5px' }}>
+        <Button size="small" ref={uploadBtnRef}>
             {fileList.length === 0 ? <UploadOutlined title='upload' /> : <SyncOutlined title='Replace' />}
         </Button>
     );
 
     const deleteButton = (
         <Button size="small" style={{ top: '5px' }} danger onClick={(e) => {
-            handleRemove()
+            handleRemove();
             e.stopPropagation();
         }}>
             <DeleteOutlined title='delete' />
