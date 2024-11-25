@@ -4,7 +4,6 @@ import { createStyles } from 'antd-style';
 export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   // variables
   const layoutTriggerHeight = sheshaStyles.layoutHeaderHeight; // @layout-trigger-height
-  const layoutHeaderBackground = '#fff'; // @layout-header-background
   const shaPageHeadingHeight = '45px'; // @sha-page-heading-height
   const shaPageToolbarHeight = '33px'; // @sha-page-toolbar-height
   const backgroundColor = '#f0f2f5'; // @background-color
@@ -52,31 +51,18 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     z-index: 3;
     width: 100%;
     padding: unset;
-    height: ${sheshaStyles.layoutHeaderHeight};
-    line-height: ${sheshaStyles.layoutHeaderHeight};
-    background: ${layoutHeaderBackground};
     overflow: hidden;
   `);
 
   const layoutHeader = cx(css`
-    height: 55px;
+    height: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 ${sheshaStyles.paddingLG}px;
     ${marginLeftTransition}
   `);
 
   const layoutHeaderLeft = css`
-        ${headerPart}
-        height: 100%;
-        .logo {
-          height: 100%;
-          img {
-            height: calc(${sheshaStyles.layoutHeaderHeight} - 8px);
-          }
-        }
-
         .search {
           display: flex;
           align-items: center;
@@ -225,12 +211,10 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const shaSiteLayoutBackgroundNoPadding = cx(css``);
 
   const headerWrapper = cx(css`
-    background: ${layoutHeaderBackground};
     width: 100%;
   `);
 
   const shaSiteLayoutBackground = css`
-    min-height: calc(100vh - 55px);
     background: ${backgroundColor};
 
     .sha-site-layout-toolbar {

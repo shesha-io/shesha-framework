@@ -1,11 +1,13 @@
-import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
-import { useForm, useSheshaApplication } from '@/providers';
-import { CustomErrorBoundary } from '..';
+import { useCanvas, useForm, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { useDeepCompareMemo } from '@/hooks';
+import { IModelValidation } from '@/utils/errors';
+import { CustomErrorBoundary } from '..';
+import ComponentError from '../componentErrors';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -18,10 +20,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { form, isComponentFiltered } = formInstance;
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { activeDevice } = useCanvas();
 
   const parent = useParent(false);
 
-  const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
+  let actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     const result = getActualModelWithParent(
       { ...componentModel, editMode: typeof componentModel.editMode === 'undefined' ? undefined : componentModel.editMode }, // add editMode property if not exists
       allData, parent
@@ -31,25 +34,49 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   }, [componentModel, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
-  if (!toolboxComponent) return <div>Component not found</div>;
+  if (!toolboxComponent) 
+    return <ComponentError errors={{
+        hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type
+      }} message={`Component '${componentModel.type}' not found`} type='error'
+    />;
 
   actualModel.hidden = allData.form?.formMode !== 'designer' 
     && (
       actualModel.hidden
         || !anyOfPermissionsGranted(actualModel?.permissions || [])
-        || !isComponentFiltered(componentModel)); // check `model` without modification
-  actualModel.readOnly = actualModel.readOnly;
+        || !isComponentFiltered(componentModel));
 
-  // binding only input and output components
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
 
+  actualModel = Boolean(activeDevice) && typeof activeDevice === 'string'
+      ? { ...actualModel, ...actualModel?.[activeDevice] }
+      : actualModel;
+
+  if (formInstance.formMode === 'designer') {
+    const validationResult: IModelValidation = {hasErrors: false, errors: []};
+    toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
+      validationResult.hasErrors = true;
+      validationResult.errors.push({ propertyName, error });
+    });
+    if (validationResult.hasErrors) {
+      validationResult.componentId = componentModel.id;
+      validationResult.componentName = componentModel.componentName;
+      validationResult.componentType = componentModel.type;
+      return <ComponentError errors={validationResult} message='' type='warning'/>;
+    }
+  }
+
+  return <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />;
+};
+
+const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   return (
-    <CustomErrorBoundary>
-      <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
+    <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} componentId={componentModel.id}>
+      <FormComponent componentModel={componentModel} componentRef={componentRef} />
     </CustomErrorBoundary>
   );
 };
 
-const FormComponentMemo = React.memo(FormComponent);
+const FormComponentMemo = React.memo(FormCompomnentErrorWrapper);
 export default FormComponentMemo;

@@ -60,6 +60,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     showModalFooter,
     formArguments,
     initialValues,
+    parentFormValues,
     width,
     onFailed,
     mode = 'edit',
@@ -119,6 +120,9 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     onFinishFailed: onFailed,
     onSubmittedFailed: () => setIsSubmitted(false),
     initialValues: initialValues,
+    parentFormValues: parentFormValues,
+    isActionsOwner: true,
+    formName: id,
     //logEnabled: true,
   };
 
@@ -134,18 +138,18 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       content={
-        <ConditionalWrap
-          condition={Boolean(wrapper)}
-          wrap={(content) => (wrapper({ children: content }))}
-        >
         <ConfigurableForm {...formProps}>
-          <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
-            </div>
-          </Show>
+          <ConditionalWrap
+            condition={Boolean(wrapper)}
+            wrap={(content) => (wrapper({ children: content }))}
+          >
+            <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+              </div>
+            </Show>
+          </ConditionalWrap>
         </ConfigurableForm>
-        </ConditionalWrap>
       }
     />
   );

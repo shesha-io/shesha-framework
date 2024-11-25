@@ -27,6 +27,7 @@ export const getSettings = (data: any) =>
             validate: {
               required: true,
             },
+            jsSetting: false
           })
           .addCheckbox({
             id: '12345e70-99a0-4825-ae6c-8b933004e119',
@@ -205,7 +206,12 @@ export const getSettings = (data: any) =>
             templateSettings: {
               functionName: 'getContainerStyle',
             },
-            availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();'
+            availableConstantsExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder
+                .object("constants")
+                .addStandard(["shesha:formData", "shesha:globalState"])
+                .build();
+            },
           })
           .addStyleBox({
             id: 'a0e21b98-0cb9-45ef-8b79-c78c884534f4',
@@ -230,7 +236,12 @@ export const getSettings = (data: any) =>
             templateSettings: {
               functionName: 'getTitleStyle',
             },
-            availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();'
+            availableConstantsExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder
+                .object("constants")
+                .addStandard(["shesha:formData", "shesha:globalState"])
+                .build();
+            },
           })
           .toJson(),
       },

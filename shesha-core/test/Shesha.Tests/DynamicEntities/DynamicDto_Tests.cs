@@ -1,14 +1,12 @@
 ﻿using Abp.Runtime.Caching;
 using Abp.TestBase;
 using Moq;
-using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
-using Shesha.Reflection;
 using Shesha.Tests.DynamicEntities.Dtos;
 using Shouldly;
 using System;
@@ -22,7 +20,7 @@ namespace Shesha.Tests.DynamicEntities
     public class DynamicDto_Tests : AbpIntegratedTestBase<SheshaTestModule>//SheshaNhTestBase
     {
         [Fact]
-        public async Task BuildFullDynamicDto_Test()
+        public async Task BuildFullDynamicDto_TestAsync()
         {
             var entityConfigCacheMock = new Mock<IEntityConfigCache>();
             
@@ -59,7 +57,7 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task BuildFullDynamicDto_HasNoSideEffect_Test() 
+        public async Task BuildFullDynamicDto_HasNoSideEffect_TestAsync() 
         {
             var entityConfigCacheMock = new Mock<IEntityConfigCache>();
 
@@ -93,7 +91,7 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task BuildDynamicDto_Test()
+        public async Task BuildDynamicDto_TestAsync()
         {
             var entityConfigCacheMock = new Mock<IEntityConfigCache>();
 
@@ -154,56 +152,5 @@ namespace Shesha.Tests.DynamicEntities
             nestedProperties.ShouldContain(p => p.Name == supervisorFirstNamePropName);
             nestedProperties.ShouldContain(p => p.Name == supervisorLastNamePropName);
         }
-
-        /*
-        [Fact]
-        public async Task BuildDynamicDto_WidthDtoReferences_Test()
-        {
-            var entityConfigCacheMock = new Mock<IEntityConfigCache>();
-
-            const string area1PropName = nameof(Person.AreaLevel1);
-
-            entityConfigCacheMock.Setup(x => x.GetEntityPropertiesAsync(It.IsAny<Type>()))
-                .Returns(() => {
-                    var result = new EntityPropertyDtoList();
-                    result.Add(new EntityPropertyDto
-                    {
-                        Name = area1PropName,
-                        DataType = DataTypes.EntityReference,
-                        EntityType = "Shesha.Core.Area",
-                    });
-
-                    var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
-                });
-
-            var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
-
-            var baseDtoType = typeof(DynamicDto<Person, Guid>);
-
-            var context = new DynamicDtoTypeBuildingContext()
-            {
-                ModelType = baseDtoType,
-                UseDtoForEntityReferences = true,
-                // AddFormFieldsProperty = false // note: false is a default value for AddFormFieldsProperty. Leave it blank to test default value 
-            };
-            var proxyType = await builder.BuildDtoFullProxyTypeAsync(baseDtoType, context);
-
-            proxyType.Assembly.IsDynamic.ShouldBeTrue();
-
-            var properties = proxyType.GetProperties();
-
-            properties.ShouldContain(p => p.Name == area1PropName);
-            proxyType.ShouldNotBeAssignableTo(typeof(IHasFormFieldsList));
-
-            var area1Prop = properties.FirstOrDefault(p => p.Name == area1PropName);
-            area1Prop.ShouldNotBeNull($"{area1PropName} property is missing in the created DTO");
-
-            var area1IsDto = area1Prop.PropertyType == typeof(EntityWithDisplayNameDto<Guid>);
-            area1IsDto.ShouldBeTrue($"{area1PropName} is not mapped as '{nameof(EntityWithDisplayNameDto<Guid>)}'");
-        }
-        */
     }
 }

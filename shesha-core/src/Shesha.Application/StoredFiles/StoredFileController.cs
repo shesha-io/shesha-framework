@@ -487,7 +487,7 @@ namespace Shesha.StoredFiles
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
-                var compressedStream = await CompressionService.CompressFiles(list);
+                var compressedStream = await CompressionService.CompressFilesAsync(list);
 
                 // note: compressedStream will be disposed automatically in the FileStreamResult
                 return File(compressedStream, "multipart/x-zip", "files.zip");

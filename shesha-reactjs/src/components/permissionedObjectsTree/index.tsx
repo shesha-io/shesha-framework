@@ -1,15 +1,15 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { ApiOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Spin } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '@/apis/permissionedObject';
-import { useConfigurableAction } from '@/providers';
+import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { ISetGroupingArguments, setGroupingArgumentsForm } from './set-grouping-arguments';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
-import { useConfigurableFormActions } from '@/providers/form/actions';
+import { useAvailableConstantsData } from '@/index';
 
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
@@ -23,6 +23,8 @@ export interface IPermissionedObjectsTreeProps {
   formComponentName?: string;
 
   formComponentId?: string;
+
+  onSelectAction?: IConfigurableActionConfiguration;
 }
 
 export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
@@ -35,16 +37,14 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
 
+  const { executeAction } = useConfigurableActionDispatcher();
+  const allData = useRef<any>({});
+  allData.current = useAvailableConstantsData();
+
   const fetcher = usePermissionedObjectGetAllTree({ queryParams: { type: objectsType ?? props.objectsType }, lazy: true });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
 
   const [objectId, setObjectId] = useState("");
-
-  const { onChangeId } = useConfigurableFormActions(false) ?? {};
-
-  useEffect(() => {
-    onChangeId?.(objectId);
-  }, [objectId]);
 
   useEffect(() => {
     fetcher.refetch();
@@ -128,8 +128,18 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
     }
   );
 
+  const onChangeAction = (selectedRow: PermissionedObjectDto) => {
+    if (props.onSelectAction?.actionName) {
+      executeAction({
+        actionConfiguration: props.onSelectAction,
+        argumentsEvaluationContext: {...allData.current, selectedRow},
+      });
+    }
+  };
+
   const onChangeHandler = (item: PermissionedObjectDto) => {
     setObjectId(item.id);
+    onChangeAction(item);
     if (Boolean(props.onChange))
       props.onChange(item.id);
   };
@@ -153,7 +163,8 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
           className='sha-component-title' 
           style={access === 1 ? { textDecoration: 'line-through', color: 'gray', paddingLeft: '10px'} : {paddingLeft: '10px'}}
         >
-          {item.name}
+          {item.description && <Tooltip title={item.description}>{item.name}</Tooltip>}
+          {!item.description && item.name}
           </span>
           {access === 4 && <span style={{color: 'green'}}> (permissioned)</span>}
           {access === 5 && <span style={{color: 'red'}}> (unsecured)</span>}

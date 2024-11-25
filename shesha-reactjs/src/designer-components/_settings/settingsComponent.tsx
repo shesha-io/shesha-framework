@@ -12,6 +12,8 @@ import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
   availableConstantsExpression?: string;
+  resultTypeExpression?: string;
+  useAsyncEvaluation?: boolean;
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
@@ -43,7 +45,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     if (model.hidden) return null;
     
     return (
-        <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+        <ConfigurableFormItem model={model} className='sha-js-label' >
             {(value, onChange) => (
                 <SettingsControl
                     readOnly={model.readOnly}
@@ -52,6 +54,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     onChange={onChange}
                     value={value}
                     availableConstantsExpression={model.availableConstantsExpression}
+                    resultTypeExpression={model.resultTypeExpression}
+                    useAsyncEvaluation={model.useAsyncEvaluation}
                 >
                     {(_valueValue, _onChangeValue, propertyName) => {
                       return (

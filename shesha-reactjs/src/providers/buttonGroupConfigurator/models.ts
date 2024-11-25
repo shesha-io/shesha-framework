@@ -33,7 +33,7 @@ export interface IButtonGroupItemBase {
   hidden?: boolean;
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
-  icon?: string;
+  icon?: string | React.ReactNode;
   iconPosition?: 'start' | 'end';
   downIcon?: string;
   buttonType?: ButtonType;

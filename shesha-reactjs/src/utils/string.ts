@@ -84,7 +84,7 @@ export function getLastSection(separator: string, value: string) {
 export const getNumericValue = (localValue: any) => {
   try {
     return Number(localValue);
-  } catch (error) {
+  } catch {
     return 0;
   }
 };
@@ -176,4 +176,8 @@ export const trimPrefix = (s: string, w: string) => {
   return s && s.startsWith(w)
     ? s.slice(w.length)
     : s;
+};
+
+export const isEmptyString = (value: any): boolean => {
+  return typeof(value) === 'string' && value.trim() === '';
 };

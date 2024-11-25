@@ -39,7 +39,7 @@ namespace Shesha.Api
 
             var permissioned = new List<ActionDescriptor>();
             foreach (var actionDescriptor in actionDescriptors)
-                if (await _permissionedObjectManager.IsActionDescriptorEnabled(actionDescriptor))
+                if (await _permissionedObjectManager.IsActionDescriptorEnabledAsync(actionDescriptor))
                     permissioned.Add(actionDescriptor);
 
             var allEndpoints = permissioned.SelectMany(desc => {

@@ -34,11 +34,21 @@ namespace Shesha.Elmah
             var state = CurrentState;
 
             var watchDog = new ExceptionWatchDog((exception) => {
-                state.AllExceptions.Add(new ExceptionDetails
+
+                // note 1: this handled fires for any exception rethrow
+                // note 2: handle AggregateException to cover AsyncHelper logic
+                var alreadyLogged = state.AllExceptions.Where(e => (e.Exception == exception || exception is AggregateException aggException && aggException.InnerException == e.Exception) && e.ErrorReference == errorRef)
+                    .Any();
+
+                if (!alreadyLogged)
                 {
-                    Exception = exception,
-                    ErrorReference = errorRef,
-                });
+                    state.AllExceptions.Add(new ExceptionDetails
+                    {
+                        Exception = exception,
+                        ErrorReference = errorRef,
+                        Location = state.CurrentLocation,
+                    });
+                }
             });
 
             state.ActiveWatchDogs.Add(watchDog);
@@ -72,6 +82,22 @@ namespace Shesha.Elmah
 
                 if (hasUncompleted)
                     throw new WatchDogCleanupException();
+            });
+        }
+
+        public IDisposable SetLocationScope(string location)
+        {
+            var state = CurrentState;
+
+            var prevLocation = state.CurrentLocation;
+            
+            var watchDog = state.TopWatchDog;
+            if (watchDog != null)
+                watchDog.Location = location;
+
+            return new DisposeAction(() => {
+                if (watchDog != null)
+                    watchDog.Location = prevLocation;
             });
         }
     }

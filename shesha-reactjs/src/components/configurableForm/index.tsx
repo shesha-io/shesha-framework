@@ -30,6 +30,7 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     isSettingsForm = false,
     onFinish,
     initialValues,
+    parentFormValues,
     onSubmitted,
     onValuesChange,
     onMarkupLoaded,
@@ -52,6 +53,7 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     antdForm: form,
     init: (instance) => {
       instance.setFormMode(props.mode);
+      instance.setParentFormValues(parentFormValues);
     }
   });
   shaForm.setOnMarkupLoaded(onMarkupLoaded);

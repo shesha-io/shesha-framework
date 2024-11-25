@@ -18,8 +18,9 @@ namespace Shesha.ConfigurationItems
             _scopeProvider = scopeProvider;
         }
 
-        private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState { 
-            ViewMode = ConfigurationItemViewMode.Live
+        private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState {
+            ViewMode = ConfigurationItemViewMode.Live,
+            FrontEndApplication = FrontEndAppKeyConsts.SheshaSwaggerFrontend,
         };
 
         private ConfigurationFrameworkRuntimeState State 

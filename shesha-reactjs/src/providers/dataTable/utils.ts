@@ -172,7 +172,7 @@ export const getIncomingSelectedStoredFilterIds = (filters: IStoredFilter[], id:
     }
 
     return fallback;
-  } catch (_e) {
+  } catch {
     return fallback;
   }
 };

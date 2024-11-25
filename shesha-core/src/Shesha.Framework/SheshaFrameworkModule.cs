@@ -143,6 +143,10 @@ namespace Shesha
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
             });
+            IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
+                s.Theme.WithDefaultValue(ThemeSettings.Default);
+                s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
+            });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
                 s.SmtpSettings.WithDefaultValue(new SmtpSettings
@@ -163,6 +167,9 @@ namespace Shesha
 
             // register Shesha exception to error converter
             IocManager.Resolve<ErrorInfoBuilder>().AddExceptionConverter(IocManager.Resolve<ShaExceptionToErrorInfoConverter>());
+
+            // Enabled by default for Background Jobs
+            Configuration.EntityHistory.IsEnabledForAnonymousUsers = true;
         }
     }
 }

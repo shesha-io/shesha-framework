@@ -24,15 +24,18 @@ namespace Shesha.JsonEntities.Converters
                 ? jObj.GetValue(nameof(IJsonEntity._className).ToCamelCase()).ToString()
                 : null;
             
-            objectType = _className != null 
+            var classNameObjectType = _className != null 
                 ? StaticContext.IocManager.Resolve<TypeFinder>().Find(t => t.FullName == _className).FirstOrDefault()
                 : objectType;
 
-            if (objectType == typeof(JsonEntity) && _className == null)
+            if (classNameObjectType == typeof(JsonEntity) && _className == null)
                 throw new JsonSerializationException("JsonEntity must contain \"_className\" field");
 
+            if (classNameObjectType == null)
+                throw new JsonSerializationException($"Type for \"_className\": \"{_className}\" not found. Type of field: \"{objectType?.FullName ?? "undefined"}\"");
+
             var proxyFactory = StaticContext.IocManager.Resolve<IJsonEntityProxyFactory>();
-            return proxyFactory.GetNewProxiedJsonEntity(objectType, jObj);
+            return proxyFactory.GetNewProxiedJsonEntity(classNameObjectType, jObj);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

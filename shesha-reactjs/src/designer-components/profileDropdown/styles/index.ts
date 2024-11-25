@@ -1,18 +1,32 @@
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ css, cx }) => {
-  const shaProfileDropdown = cx(
-    'sha-profile-dropdown',
+interface IStyle {
+  subText?: string;
+}
+
+export const useStyles = createStyles(({ css, cx }, props: IStyle) => {
+  const shaProfileDropdownWrapper = cx(
+    'sha-profile-dropdown-wrapper',
     css`
-      width: 200px;
       display: flex;
-      flex-direction: row;
       justify-content: space-between;
+      width: ${props.subText ? '400px' : '200px'};
       align-items: center;
       padding: 0px 5px 0px 5px;
     `
   );
+
+  const shaProfileDropdown = cx(
+    'sha-profile-dropdown',
+    css`
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+    `
+  );
+
   return {
+    shaProfileDropdownWrapper,
     shaProfileDropdown,
   };
 });

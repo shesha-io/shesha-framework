@@ -19,7 +19,7 @@ import { nanoid } from '@/utils/uuid';
 import { useDeepCompareMemo } from '@/hooks';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 
 const { Option } = Select;
@@ -162,7 +162,18 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
           <ItemListConfiguratorModal<IWizardStepProps>
             readOnly={readOnly}
             initNewItem={onAddNewItem}
-            settingsMarkupFactory={() => wizardStepSettingsMarkup}
+            settingsMarkupFactory={() => {
+              return {
+                components: wizardStepSettingsMarkup,
+                formSettings: {
+                  layout: "horizontal",
+                  isSettingsForm: true,
+                  colon: true,
+                  labelCol: {span: 5},
+                  wrapperCol: {span: 13}
+                }
+              };
+            }}
             itemRenderer={({ item }) => ({
               label: item.title || item.label || item.name,
               description: item.tooltip,

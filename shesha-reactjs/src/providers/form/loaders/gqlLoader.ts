@@ -32,6 +32,9 @@ export class GqlLoader implements IFormDataLoader {
         this.#toolboxComponents = args.toolboxComponents;
         this.#endpointsEvaluator = args.endpointsEvaluator;
     }
+    canLoadData = (formArguments: any): boolean => {
+        return Boolean(formArguments?.id);
+    };
 
     #getGqlSettings = (formSettings: IFormSettings): GqlLoaderSettings => {
         const { dataLoadersSettings = {} } = formSettings;
@@ -49,7 +52,7 @@ export class GqlLoader implements IFormDataLoader {
                 return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });                
             }
             case 'static': {
-                return staticEndpoint;
+                return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
             }
             case 'dynamic': {
                 const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });
@@ -61,7 +64,10 @@ export class GqlLoader implements IFormDataLoader {
     };
 
     loadAsync = async (payload: FormDataLoadingPayload): Promise<any> => {
-        const { dataId, loadingCallback, formSettings, formFlatStructure } = payload;
+        const { loadingCallback, formSettings, formArguments, formFlatStructure } = payload;
+        const dataId = formArguments?.id;
+        if (!dataId)
+            throw new Error('Data id is missing');
 
         const endpoint = await this.getEndpointAsync(payload);
 
@@ -108,6 +114,8 @@ export class GqlLoader implements IFormDataLoader {
         const { formFlatStructure, formSettings } = payload;
         if (!formFlatStructure) return null;
 
+        const gqlSettings = this.#getGqlSettings(formSettings);
+
         const toolboxComponents = this.#toolboxComponents;
 
         const { allComponents: components } = formFlatStructure;
@@ -119,7 +127,7 @@ export class GqlLoader implements IFormDataLoader {
 
                 // get data only for isInput components
                 // and for context = null or empty string (form context)
-                if (component?.isInput && !model.context) {
+                if (component && (component.isInput || component.isOutput) && !model.context) {
                     const propName = model.propertyName;
 
                     // TODO: AS - calc actual propName from JS setting
@@ -133,7 +141,7 @@ export class GqlLoader implements IFormDataLoader {
             }
         }
 
-        fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
+        fieldNames = fieldNames.concat(gqlSettings?.fieldsToFetch ?? []);
 
         for (const id in components) {
             if (components.hasOwnProperty(id)) {

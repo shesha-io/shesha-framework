@@ -26,6 +26,6 @@ namespace Shesha.Metadata
         /// Clear models cache
         /// </summary>
         /// <returns></returns>
-        Task ClearCache();
+        Task ClearCacheAsync();
     }
 }

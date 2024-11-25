@@ -5,9 +5,8 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Button, message, notification } from 'antd';
+import { Button, App } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
-import { IErrorInfo } from '@/interfaces/errorInfo';
 import { ImportOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
@@ -22,17 +21,10 @@ interface IConfigurationItemsExportFooterProps {
   importerRef: MutableRefObject<IImportInterface>;
 }
 
-const displayNotificationError = (message: string, error: IErrorInfo) => {
-  notification.error({
-    message: message,
-    icon: null,
-    description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
-  });
-};
-
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
   const { hideModal, importerRef: exporterRef } = props;
+  const { message, notification } = App.useApp();
 
   const onImport = () => {
     setInProgress(true);
@@ -40,8 +32,12 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
     exporterRef.current.importExecuter().then(() => {
       message.info('Items imported successfully');
       hideModal();
-    }).catch((e) => {
-      displayNotificationError('Failed to import package', e);
+    }).catch((error) => {
+      notification.error({
+        message: "Failed to import package",
+        icon: null,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+      });
       setInProgress(false);
     });
   };

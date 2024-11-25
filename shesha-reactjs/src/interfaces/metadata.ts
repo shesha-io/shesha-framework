@@ -18,6 +18,11 @@ export interface TypeDefinition {
   files: SourceFile[];
 }
 
+export interface TypeImport {
+  typeName: string;
+  filePath: string;
+};
+
 export interface TypeAndLocation {
   typeName: string;
   filePath?: string;
@@ -57,8 +62,6 @@ export interface IHasChildPropertiesMetadata {
 export interface ModelTypeIdentifier {
   name: string;
   module: string;
-  // accessor: string;
-  // moduleAccessor: string;
 }
 
 export interface IHasEntityType {
@@ -137,6 +140,10 @@ export interface IPropertyMetadata extends IMemberMetadata {
   itemsType?: IPropertyMetadata;
 }
 
+export interface IArrayMetadata extends IMetadata {
+  itemsType?: IPropertyMetadata;
+}
+
 export const isPropertiesArray = (value: NestedProperties): value is IPropertyMetadata[] => {
   return value && Array.isArray(value);
 };
@@ -203,6 +210,7 @@ export interface IEntityMetadata extends IMetadata, IContainerWithNestedProperti
 export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperties {
   
 }
+
 export interface IContextMetadata extends IMetadata, IContainerWithNestedProperties {
 
 }

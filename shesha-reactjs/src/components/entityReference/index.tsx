@@ -5,11 +5,10 @@ import React, {
   useMemo,
   useState
   } from 'react';
-import { axiosHttp, get } from '@/utils/fetchers';
+import { get } from '@/utils/fetchers';
 import {
   Button,
-  message,
-  notification,
+  App,
   Spin
   } from 'antd';
 import { entitiesGet } from '@/apis/entities';
@@ -26,6 +25,7 @@ import {
   useConfigurableActionDispatcher,
   useForm,
   useGlobalState,
+  useHttpClient,
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
@@ -87,6 +87,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
+  const { notification, message } = App.useApp();
 
   const localForm = useForm(false);
   const formData = localForm?.formData;
@@ -94,6 +95,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const { getMetadata } = useMetadataDispatcher();
   const executionContext = useAvailableConstantsData();
 
@@ -198,7 +200,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       moment: moment,
       form: getFormApi(localForm),
       formMode: formMode,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message: message,
       globalState: globalState,
     };

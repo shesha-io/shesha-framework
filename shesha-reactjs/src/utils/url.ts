@@ -23,7 +23,7 @@ export const getQueryString = (url: string) => {
     const idx = url?.indexOf('?');
 
     return typeof idx !== 'number' || idx === -1 ? undefined : url.substring(idx);
-  } catch (_e) {
+  } catch {
     return undefined;
   }
 };
@@ -37,8 +37,8 @@ export const getQueryParams = (url?: string): QueryStringParams => {
   return qs.parse(queryString, { ignoreQueryPrefix: true });
 };
 
-export const getQueryParam = (name: string) => {
-  const result = getQueryParams()[name];
+export const getQueryParam = (name: string, url?: string) => {
+  const result = getQueryParams(url)[name];
 
   return result;
 };
@@ -84,3 +84,17 @@ export function removeURLParameter(url: string, parameter: string) {
   }
   return url;
 }
+
+
+export const buildUrl = (url: string, queryParams?: Record<string, any>) => {
+  const urlWithoutQuery = getUrlWithoutQueryParams(url);
+  const urlQueryPatams = getQueryParams(url);
+
+  const queryStringData = { ...urlQueryPatams, ...queryParams };
+
+  const queryString = qs.stringify(queryStringData);
+  const preparedUrl = queryString
+    ? `${urlWithoutQuery}?${queryString}`
+    : urlWithoutQuery;
+  return preparedUrl;
+};

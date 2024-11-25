@@ -3,15 +3,20 @@ import { IShaFormInstance } from "../store/interfaces";
 import { SheshaActionOwners } from "@/providers/configurableActionsDispatcher/models";
 import { hasPreviousActionError } from "@/interfaces/configurableAction";
 import { ISubmitActionArguments } from "../models";
+import { useRef } from "react";
+
 
 export type UseShaFormActionsArgs = {
     name: string;
     isActionsOwner: boolean;
     shaForm: IShaFormInstance;
+    formData: any;
 };
-export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs) => {
+export const useShaFormActions = ({ name, isActionsOwner, shaForm, formData }: UseShaFormActionsArgs) => {
     const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
     const actionDependencies = [actionsOwnerUid];
+    const prevFormData = useRef(null);
+
 
     useConfigurableAction(
         {
@@ -20,6 +25,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             ownerUid: actionsOwnerUid,
             hasArguments: false,
             executer: () => {
+                prevFormData.current = formData;
                 shaForm.setFormMode('edit');
                 return Promise.resolve();
             },
@@ -34,6 +40,8 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             ownerUid: actionsOwnerUid,
             hasArguments: false,
             executer: () => {
+                shaForm.resetFields();
+                shaForm.setFormData({ values: prevFormData?.current, mergeValues: true });
                 shaForm.setFormMode('readonly');
                 return Promise.resolve();
             },
@@ -66,9 +74,8 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             owner: name,
             ownerUid: actionsOwnerUid,
             hasArguments: false,
-            executer: (_, actionContext) => {
-                var formInstance = actionContext?.form?.formInstance ?? shaForm.antdForm;
-                formInstance.resetFields();
+            executer: () => {
+                shaForm.resetFields();
                 return Promise.resolve();
             },
         },

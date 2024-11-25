@@ -1,7 +1,7 @@
 import { DataTypes, FormFullName } from "@/interfaces";
-import { IHasEntityType, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IArrayMetadata, IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, TypeImport, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import camelcase from "camelcase";
-import { verifiedCamelCase } from "../string";
+import { isEmptyString, verifiedCamelCase } from "../string";
 import { StringBuilder } from "./stringBuilder";
 import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
@@ -12,6 +12,11 @@ export interface BuildResult {
 export interface BuildContext {
     requestedFiles: string[];
 }
+
+type OnUseComplexTypeHandler = (typeImport: TypeImport) => void;
+type BuildTypeContext = {
+    onUseComplexType: OnUseComplexTypeHandler;
+};
 
 type AsyncPropertyHandler = (property: IPropertyMetadata) => Promise<void>;
 /**
@@ -102,7 +107,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         const { typeAccessor, moduleAccessor } = entityMetadata;
         if (!moduleAccessor)
             return null;
-        
+
         const fileName = this.#getEntityFileName(typeAccessor, moduleAccessor);
         const typeName = typeAccessor;
         const fullName = `${moduleAccessor}/${typeAccessor}`;
@@ -121,7 +126,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         sb.incIndent();
         await this.#iterateProperties(entityMetadata.properties, async (prop) => {
             const propertyName = verifiedCamelCase(prop.path);
-            const dataType = await this.#getTypescriptType(prop);
+            const dataType = await this.#getTypescriptType(prop, { onUseComplexType: (typeInfo) => {
+                typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
+            } });
 
             if (dataType) {
                 if (dataType.filePath !== fileName)
@@ -153,28 +160,58 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         if (!entityType)
             return null;
 
-        if (isIHasEntityType(property) && entityType){
-            return { 
+        if (isIHasEntityType(property) && entityType) {
+            return {
                 name: entityType,
                 module: property.entityModule,
-                //module: property.moduleAccessor, 
-                //name: property.typeAccessor                 
             };
         } else
             return null;
     };
 
-    #getArrayType = async (_property: IPropertyMetadata): Promise<TypeAndLocation> => {
-        return { typeName: "any[]" };
-        /* TODO: add context and import required types
-        if (property.itemsType){
-            const itemType = await this.#getTypescriptType(property.itemsType);
+    buildArrayType = async (property: IArrayMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
+        return await this.#getArrayType(property, context);
+    };
 
-            return { typeName: `Array<${itemType.typeName}>` };
-        } else {
-            return { typeName: "any[]" };
-        } 
-        */       
+    #getArrayType = async (property: IPropertyMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
+        switch (property.dataFormat) {
+            case DataTypes.entityReference: {
+                if (isIHasEntityType(property)) {
+                    const itemTypeFixed: IPropertyMetadata & IHasEntityType = {
+                        path: 'item',
+                        dataType: DataTypes.entityReference,
+                        //dataFormat: property.entityType,
+                        entityType: property.entityType,
+                    };
+                    const itemType = await this.#getTypescriptType(itemTypeFixed);
+
+                    if (itemType?.typeName){
+                        if (itemType.filePath && context?.onUseComplexType)
+                            context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
+                        return { typeName: `${itemType.typeName}[]` };
+                    } else {
+                        console.warn(`Failed to build type ${property.entityType}`, property);
+                    }
+                }
+                break;
+            }
+            case DataTypes.referenceListItem: {
+                return { typeName: `number[]` };
+            }            
+        }
+        
+        if (property.itemsType){
+            const itemTypeFixed = { ...property.itemsType, path: property.itemsType['name'] ?? property.itemsType.path };
+            const itemType = await this.#getTypescriptType(itemTypeFixed);
+
+            if (itemType){
+                if (itemType.filePath && context?.onUseComplexType)
+                    context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
+                return { typeName: `${itemType.typeName}[]` };
+            }
+        }
+
+        return { typeName: "any[]" };
     };
 
     #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
@@ -192,7 +229,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         }
         const typeName = camelcase(propertyName, { pascalCase: true });
         const fileName = this.#generateFileName(typeName);
-        
+
         const typesImporter = new TypesImporter();
 
         if (!this.isFileExists(fileName)) {
@@ -201,7 +238,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             sb.incIndent();
             await this.#iterateProperties(properties, async (prop) => {
                 const dataType = await this.#getTypescriptType(prop);
-                if (dataType){
+                if (dataType) {
                     typesImporter.import(dataType);
                     sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
                 }
@@ -209,7 +246,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             sb.decIndent();
             sb.append("}");
             const exportSection = sb.build();
-            
+
             const importSection = typesImporter.generateImports();
             const content = importSection
                 ? `${importSection}\n\n${exportSection}`
@@ -221,7 +258,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return { typeName, filePath: fileName };
     };
 
-    #getTypescriptType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
+    #getTypescriptType = async (property: IPropertyMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
         if (property.typeDefinitionLoader) {
             const definition = await property.typeDefinitionLoader({ typeDefinitionBuilder: this });
 
@@ -248,12 +285,14 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 return { typeName: 'Date' };
             case DataTypes.dateTime:
                 return { typeName: 'Date' };
+            case DataTypes.any:
+                return { typeName: 'any' };
             case DataTypes.entityReference:
                 return await this.#getEntityPropertyType(property);
             case DataTypes.object:
                 return await this.#getObjectType(property.path, property.properties);
             case DataTypes.array:
-                return await this.#getArrayType(property);
+                return await this.#getArrayType(property, context);
             default:
                 return undefined;
         }
@@ -262,7 +301,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     /**
      * Build type definition for specified list of properties
      */
-    async build(properties: NestedProperties): Promise<BuildResult> {
+    async buildConstants(properties: NestedProperties): Promise<BuildResult> {
         const typesImporter = new TypesImporter();
         const sb = new StringBuilder();
 
@@ -283,7 +322,65 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         const importSection = typesImporter.generateImports();
 
         const result: BuildResult = {
-            content: `${importSection}\n\n${exportSection}`,
+            content: importSection && !isEmptyString(importSection)
+                ? `${importSection}\n\n${exportSection}`
+                : exportSection,
+        };
+        return result;
+    }
+
+    getBaseType = async (metadata: IObjectMetadata): Promise<TypeAndLocation> => {
+        const { typeDefinitionLoader } = metadata;
+        if (!typeDefinitionLoader)
+            return undefined;
+
+        const definition = await typeDefinitionLoader({ typeDefinitionBuilder: this });
+
+        definition.files.forEach(file => {
+            this.#internalRegisterFile(file.fileName, file.content);
+        });
+
+        const fileName = definition.files.length > 0
+            ? definition.files[0].fileName
+            : undefined;
+
+        return { typeName: definition.typeName, filePath: fileName };
+    };
+
+    async buildType(metadata: IObjectMetadata): Promise<BuildResult> {
+        const { name: typeName, properties } = metadata;
+
+        const typesImporter = new TypesImporter();
+
+        const baseTypeDef = await this.getBaseType(metadata);
+        const extendsClause = baseTypeDef?.typeName
+            ? `extends ${baseTypeDef.typeName} `
+            : "";
+        if (baseTypeDef)
+            typesImporter.import(baseTypeDef);
+
+        const sb = new StringBuilder();
+        sb.append(`export interface ${typeName} ${extendsClause}{`);
+        sb.incIndent();
+        await this.#iterateProperties(properties, async (prop) => {
+            const dataType = await this.#getTypescriptType(prop);
+            if (dataType) {
+                typesImporter.import(dataType);
+                this.#appendCommentBlock(sb, [prop.label, prop.description]);
+                sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
+            }
+        });
+        sb.decIndent();
+        sb.append("}");
+        const exportSection = sb.build();
+
+        const importSection = typesImporter.generateImports();
+        const content = importSection
+            ? `${importSection}\n\n${exportSection}`
+            : exportSection;
+
+        const result: BuildResult = {
+            content,
         };
         return result;
     }

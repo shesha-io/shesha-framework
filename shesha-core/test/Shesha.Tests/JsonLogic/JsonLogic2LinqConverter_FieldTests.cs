@@ -71,11 +71,11 @@ namespace Shesha.Tests.JsonLogic
         [InlineData("Equal", StringExpressions.Equal)]
         [InlineData("Equal Nested", StringExpressions.Equal_Nested)]
         [InlineData("NotEqual", StringExpressions.NotEqual)]
-        public async Task StringField_Fetch(string name, string jsonLogicExpression)
+        public async Task StringField_FetchAsync(string name, string jsonLogicExpression)
         {
             Console.WriteLine($"Test: '{name}'");
 
-            var data = await TryFetchData<Person, Guid>(jsonLogicExpression);
+            var data = await TryFetchDataAsync<Person, Guid>(jsonLogicExpression);
             Assert.NotNull(data);
         }
 
@@ -232,11 +232,11 @@ namespace Shesha.Tests.JsonLogic
         [InlineData("LessOrEqual", NumberExpressions.LessOrEqual)]
         [InlineData("Between", NumberExpressions.Between)]
         [InlineData("NotBetween", NumberExpressions.NotBetween)]
-        public async Task NumberField_Fetch(string name, string jsonLogicExpression)
+        public async Task NumberField_FetchAsync(string name, string jsonLogicExpression)
         {
             Console.WriteLine($"Test: '{name}'");
 
-            var data = await TryFetchData<Person, Guid>(jsonLogicExpression);
+            var data = await TryFetchDataAsync<Person, Guid>(jsonLogicExpression);
             Assert.NotNull(data);
         }
 
@@ -399,11 +399,11 @@ namespace Shesha.Tests.JsonLogic
         [InlineData("LessOrEqual", DateTimeExpressions.LessOrEqual)]
         [InlineData("Between", DateTimeExpressions.Between)]
         [InlineData("NotBetween", DateTimeExpressions.NotBetween)]
-        public async Task DateField_Fetch(string name, string jsonLogicExpression)
+        public async Task DateField_FetchAsync(string name, string jsonLogicExpression)
         {
             Console.WriteLine($"Test: '{name}'");
 
-            var data = await TryFetchData<Person, Guid>(jsonLogicExpression);
+            var data = await TryFetchDataAsync<Person, Guid>(jsonLogicExpression);
             Assert.NotNull(data);
         }
 
@@ -458,11 +458,11 @@ namespace Shesha.Tests.JsonLogic
         [Theory]
         [InlineData("Equal", BoolExpressions.Equal)]
         [InlineData("NotEqual", BoolExpressions.NotEqual)]
-        public async Task BoolField_Fetch(string name, string jsonLogicExpression)
+        public async Task BoolField_FetchAsync(string name, string jsonLogicExpression)
         {
             Console.WriteLine($"Test: '{name}'");
 
-            var data = await TryFetchData<Person, Guid>(jsonLogicExpression);
+            var data = await TryFetchDataAsync<Person, Guid>(jsonLogicExpression);
             Assert.NotNull(data);
         }
 
@@ -516,11 +516,11 @@ namespace Shesha.Tests.JsonLogic
         [Theory]
         [InlineData("Equal", EntityExpressions.Equal)]
         [InlineData("NotEqual", EntityExpressions.NotEqual)]
-        public async Task EntityField_Fetch(string name, string jsonLogicExpression)
+        public async Task EntityField_FetchAsync(string name, string jsonLogicExpression)
         {
             Console.WriteLine($"Test: '{name}'");
 
-            var data = await TryFetchData<Person, Guid>(jsonLogicExpression);
+            var data = await TryFetchDataAsync<Person, Guid>(jsonLogicExpression);
             Assert.NotNull(data);
         }
 
@@ -575,11 +575,11 @@ namespace Shesha.Tests.JsonLogic
         [Theory]
         [InlineData("Equal", RefListExpressions.Equal)]
         [InlineData("NotEqual", RefListExpressions.NotEqual)]
-        public async Task RefListField_Fetch(string name, string jsonLogicExpression)
+        public async Task RefListField_FetchAsync(string name, string jsonLogicExpression)
         {
             Console.WriteLine($"Test: '{name}'");
 
-            var data = await TryFetchData<Person, Guid>(jsonLogicExpression);
+            var data = await TryFetchDataAsync<Person, Guid>(jsonLogicExpression);
             Assert.NotNull(data);
         }
 

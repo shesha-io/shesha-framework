@@ -5,6 +5,7 @@ import { FormInstance } from "antd";
 import { isEntityMetadata } from "@/interfaces";
 import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { IShaFormInstance } from "./store/interfaces";
+import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 
 export interface IFormSettings {
   modelType?: string;
@@ -27,6 +28,12 @@ type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
  */
 export interface FormApi<Values = any> {
   /**
+   * Add deferred update data to `data` object 
+   * @param data model data object for updating
+   * @returns The deferred update data
+   */
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
+  /**
    * Set field value
    * @param name field name
    * @param value field value
@@ -37,6 +44,10 @@ export interface FormApi<Values = any> {
    * @param values 
    */
   setFieldsValue: (values: Values) => void;
+  /**
+   * Clear fields value
+   */
+  clearFieldsValue: () => void;
   /**
    * Submit form
    */
@@ -74,11 +85,21 @@ class PublicFormApiWrapper implements FormApi {
     this.#form = form;
   }
 
+  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[]  => {
+    const delayedUpdateData = this.#form?.shaForm?.getDelayedUpdates();
+    if (delayedUpdateData?.length > 0)
+      data['_delayedUpdate'] = delayedUpdateData;
+    return delayedUpdateData;
+  };
+
   setFieldValue = (name: string, value: any) => {
     this.#form?.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
   };
   setFieldsValue = (values: any) => {
     this.#form?.setFormData({ values, mergeValues: true });
+  };
+  clearFieldsValue = () => {
+    this.#form?.setFormData({ values: {}, mergeValues: false });
   };
   submit = () => {
     this.#form?.form?.submit();

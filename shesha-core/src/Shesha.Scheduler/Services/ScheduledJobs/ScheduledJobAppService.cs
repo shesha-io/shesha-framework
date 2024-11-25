@@ -62,7 +62,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task EnqueueAll()
+        public async Task EnqueueAllAsync()
         {
             await _jobManager.EnqueueAllAsync();
         }
@@ -120,7 +120,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<string> BootstrapScheduledJobs()
+        public async Task<string> BootstrapScheduledJobsAsync()
         {
             var bootstrapper = IocManager.Resolve<ScheduledJobBootstrapper>();
             await bootstrapper.ProcessAsync();

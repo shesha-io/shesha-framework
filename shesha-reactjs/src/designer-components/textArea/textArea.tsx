@@ -1,14 +1,13 @@
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
-import { Input, message } from 'antd';
+import { Input, App } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
@@ -20,6 +19,7 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -48,7 +48,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
+    const { message } = App.useApp();
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
@@ -86,7 +87,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,
@@ -144,6 +145,23 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
       .add<ITextAreaComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+      .add<ITextAreaComponentProps>(4, (prev) => {
+        const styles: IInputStyles = {
+          size: prev.size,
+          width: prev.width,
+          height: prev.height,
+          hideBorder: prev.hideBorder,
+          borderSize: prev.borderSize,
+          borderRadius: prev.borderRadius,
+          borderColor: prev.borderColor,
+          fontSize: prev.fontSize,
+          fontColor: prev.fontColor,
+          backgroundColor: prev.backgroundColor,
+          stylingBox: prev.stylingBox,
+          style: prev.style,
+        };
+        return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      })
     ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

@@ -78,12 +78,12 @@ namespace Shesha.Web.FormsDesigner.Services
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
-        public async Task<List<PermissionedObjectDto>> GetAnonymousForms()
+        public async Task<List<PermissionedObjectDto>> GetAnonymousFormsAsync()
         {
-            return await _permissionedObjectManager.GetObjectsByAccess(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
+            return await _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
         }
 
-        private async Task<bool> CheckFormPermissions(string module, string name)
+        private async Task<bool> CheckFormPermissionsAsync(string module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name),
@@ -131,7 +131,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <returns></returns>
         /// <exception cref="FormNotFoundException"></exception>
         [HttpPost]
-        public async Task<List<FormByFullNamePermissionsDto>> CheckPermissions(GetFormByFullNameInput[] input)
+        public async Task<List<FormByFullNamePermissionsDto>> CheckPermissionsAsync(GetFormByFullNameInput[] input)
         {
             var result = new List<FormByFullNamePermissionsDto>();
 
@@ -216,7 +216,7 @@ namespace Shesha.Web.FormsDesigner.Services
             dto.CacheMd5 = GetMd5(dto);
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
 
-            if (!await CheckFormPermissions(form.Module?.Name, form.Name))
+            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
                 dto.CacheMd5 = "";
@@ -243,7 +243,7 @@ namespace Shesha.Web.FormsDesigner.Services
             // add MD5 to request
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
 
-            if (!await CheckFormPermissions(form.Module?.Name, form.Name))
+            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
                 dto.CacheMd5 = "";
@@ -294,10 +294,10 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task UpdateStatus(UpdateConfigurationStatusInput input)
+        public async Task UpdateStatusAsync(UpdateConfigurationStatusInput input)
         {
             // todo: check rights
-            
+
             var validationResults = new List<ValidationResult>();
             if (string.IsNullOrWhiteSpace(input.Filter))
                 validationResults.Add(new ValidationResult("Filter is mandatory", new string[] { nameof(input.Filter) }));
@@ -309,6 +309,28 @@ namespace Shesha.Web.FormsDesigner.Services
             foreach (var form in forms)
             {
                 await _formManager.UpdateStatusAsync(form, input.Status);
+            }
+        }
+
+        /// <summary>
+        /// Publish All forms
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task PublishAllAsync()
+        {
+            CheckCreatePermission();
+
+            var forms = await _formManager.GetAllAsync();
+
+            var draftOrReadyForms = forms
+                .Where(x => x.VersionStatus == ConfigurationItemVersionStatus.Draft || x.VersionStatus == ConfigurationItemVersionStatus.Ready)
+                .ToList();
+
+            // Update the status of each form to Live
+            foreach (var form in draftOrReadyForms)
+            {
+                await _formManager.UpdateStatusAsync(form, ConfigurationItemVersionStatus.Live);
             }
         }
 
@@ -331,7 +353,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPost]
-        public async Task<FormConfigurationDto> CreateNewVersion(CreateNewVersionInput input) 
+        public async Task<FormConfigurationDto> CreateNewVersionAsync(CreateNewVersionInput input) 
         {
             CheckCreatePermission();
 
@@ -360,7 +382,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPost]
-        public async Task<FormConfigurationDto> CancelVersion(CancelVersionInput input)
+        public async Task<FormConfigurationDto> CancelVersionAsync(CancelVersionInput input)
         {
             CheckCreatePermission();
 
@@ -389,7 +411,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<FileContentResult> GetJson(Guid id)
+        public async Task<FileContentResult> GetJsonAsync(Guid id)
         {
             var item = await Repository.GetAsync(id);
             var bytes = Encoding.UTF8.GetBytes(item.Markup ?? "");
@@ -402,7 +424,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<FormConfigurationDto> ImportJson([FromForm] ImportFormJsonInput input)
+        public async Task<FormConfigurationDto> ImportJsonAsync([FromForm] ImportFormJsonInput input)
         {
             var item = await Repository.GetAsync(input.ItemId);
             
@@ -538,7 +560,7 @@ namespace Shesha.Web.FormsDesigner.Services
             return result;
         }
 
-        public async Task<List<object>> GetFormsWithNotImplemented()
+        public async Task<List<object>> GetFormsWithNotImplementedAsync()
         {
             var configs = (await _entityConfigManager.GetMainDataListAsync()).Where(x => x.NotImplemented).ToList();
             var list = new List<object>();
@@ -587,7 +609,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         #endregion
 
-        public async Task ExportAll(ExportAllInput input) 
+        public async Task ExportAllAsync(ExportAllInput input) 
         {
             if (!Directory.Exists(input.Path))
                 Directory.CreateDirectory(input.Path);

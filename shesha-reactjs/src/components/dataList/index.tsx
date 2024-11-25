@@ -177,13 +177,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  const persistedFormProps = formInfoBlockVisible
-    ? entityFormInfo.current?.formConfiguration
-    : undefined;
+  const persistedFormProps = entityFormInfo.current?.formConfiguration;
 
-  const persistedCreateFormProps = formInfoBlockVisible
-    ? createFormInfo.current?.formConfiguration
-    : undefined;
+  const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
 
   const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});
@@ -525,9 +521,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           width={props.modalWidth}
         />
       }
-      <Show when={!!persistedFormProps}>
-        <FormInfo formProps={{...(persistedFormProps as IPersistedFormProps)}} />
-      </Show>
       <div>
         <Show when={selectionMode === 'multiple'} >
           <Checkbox
@@ -555,6 +548,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Button>
         </Show>*/}
       </div>
+      <FormInfo visible={formInfoBlockVisible} formProps={{...(persistedFormProps as IPersistedFormProps)}}>
       <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
         <div
           key="spin_key"
@@ -596,6 +590,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Show>
         </div>
       </ShaSpin>
+      </FormInfo>
     </>
   );
 };

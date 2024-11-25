@@ -9,7 +9,6 @@ using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using NetTopologySuite.Index.HPRtree;
 using Shesha.Application.Services;
 using Shesha.Authorization;
 using Shesha.Cache;
@@ -51,6 +50,7 @@ namespace Shesha.Permissions
         private readonly IObjectMapper _objectMapper;
         private readonly IRepository<Module, Guid> _moduleReporsitory;
         private readonly ICacheManager _cacheManager;
+        private readonly IIocResolver _iocResolver;
 
         private readonly ITypedCache<string, PermissionedObjectRelations> RelationsCache;
         private readonly ITypedCache<string, CacheItemWrapper<PermissionedObjectDto>> PermissionedObjectsCache;
@@ -60,7 +60,8 @@ namespace Shesha.Permissions
             IUnitOfWorkManager unitOfWorkManager,
             IObjectMapper objectMapper,
             ICacheManager cacheManager,
-            IRepository<Module, Guid> moduleReporsitory
+            IRepository<Module, Guid> moduleReporsitory,
+            IIocResolver iocResolver
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
@@ -68,6 +69,7 @@ namespace Shesha.Permissions
             _objectMapper = objectMapper;
             _cacheManager = cacheManager;
             _moduleReporsitory = moduleReporsitory;
+            _iocResolver = iocResolver;
 
             var cache = _cacheManager.GetPermissionedObjectCache();
             cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
@@ -85,7 +87,7 @@ namespace Shesha.Permissions
 
         public virtual string GetObjectType(Type type)
         {
-            var providers = IocManager.Instance.ResolveAll<IPermissionedObjectProvider>();
+            var providers = _iocResolver.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
             {
                 var objType = permissionedObjectProvider.GetObjectType(type);
@@ -110,31 +112,22 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<List<PermissionedObjectDto>> GetAllFlatAsync(string type = null, bool withNested = true, bool withHidden = false)
         {
-            var root = (await _permissionedObjectRepository.GetAll()
+            var rootItems = await _permissionedObjectRepository.GetAll()
                 .WhereIf(!string.IsNullOrEmpty(type?.Trim()), x => x.Type == type)
                 .WhereIf(!withHidden, x => !x.Hidden)
-                .ToListAsync())
-                .Select(async x => {
-                    var dto = await GetDtoAsync(x);
-                    await SetCacheAsync(dto);
-                    return dto;
-                })
-                .Select(x => x.Result)
+                .ToListAsync();
+            
+            var root = (await rootItems.SelectAsync(async x => await GetCacheOrDtoAsync(x)))
                 .OrderBy(x => x.Name)
                 .ToList();
 
             if (withNested && !string.IsNullOrEmpty(type?.Trim()))
             {
-                var nested = (await _permissionedObjectRepository.GetAll()
+                var nestedItems = await _permissionedObjectRepository.GetAll()
                     .Where(x => x.Type.StartsWith($"{type}."))
                     .WhereIf(!withHidden, x => !x.Hidden)
-                    .ToListAsync())
-                    .Select(async x => {
-                        var dto = await GetDtoAsync(x);
-                        await SetCacheAsync(dto);
-                        return dto;
-                    })
-                    .Select(x => x.Result)
+                    .ToListAsync();
+                var nested = (await nestedItems.SelectAsync(async x => await GetCacheOrDtoAsync(x)))
                     .OrderBy(x => x.Name)
                     .ToList();
                 root.AddRange(nested);
@@ -180,7 +173,11 @@ namespace Shesha.Permissions
                 .ToList();
             foreach (var permissionedObject in child)
             {
-                dto.Children.Add(GetObjectWithChild(permissionedObject, list, withHidden));
+                var ch = dto.Children.FirstOrDefault(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type);
+                if (ch != null)
+                    GetObjectWithChild(ch, list, withHidden);
+                else
+                    dto.Children.Add(GetObjectWithChild(permissionedObject, list, withHidden));
             }
             return dto;
         }
@@ -309,6 +306,19 @@ namespace Shesha.Permissions
             return null;
         }
 
+        private async Task<PermissionedObjectDto> GetCacheOrDtoAsync(PermissionedObject dbObj)
+        {
+            var key = GetCacheKey(dbObj.Object, dbObj.Type);
+            var cacheObj = await PermissionedObjectsCache.TryGetValueAsync(key);
+            if (cacheObj.HasValue)
+                return cacheObj.Value.DbValue ?? cacheObj.Value.DefaultValue;
+
+            var dto = await GetDtoAsync(dbObj);
+
+            await SetCacheAsync(dto);
+            return dto;
+        }
+
         [UnitOfWork]
         public virtual async Task<PermissionedObjectDto> CreateAsync(string objectName, string objectType, string inheritedFromName = null)
         {
@@ -338,11 +348,8 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
         {
-            var dbObj = _permissionedObjectRepository.GetAll().FirstOrDefault(x => x.Id == id);
-            var dto = await GetDtoAsync(dbObj);
-            await SetCacheAsync(dto);
-
-            return dto;
+            var dbObj = await _permissionedObjectRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+            return await GetCacheOrDtoAsync(dbObj);
         }
 
         public virtual async Task<CacheItemWrapper<PermissionedObjectDto>> GetInternalAsync(string objectName, string objectType)
@@ -398,9 +405,9 @@ namespace Shesha.Permissions
                     Object = permissionedObject.Object,
                     Type = permissionedObject.Type,
                     Module = permissionedObject.Module != null
-                    ? _moduleReporsitory.FirstOrDefault(x => x.Id == permissionedObject.ModuleId)
+                    ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
                     : !permissionedObject.Module.IsNullOrEmpty()
-                        ? _moduleReporsitory.FirstOrDefault(x => x.Name == permissionedObject.Module)
+                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
                         : null,
                     Parent = permissionedObject.Parent,
                     Name = permissionedObject.Name ?? permissionedObject.Object,
@@ -447,13 +454,14 @@ namespace Shesha.Permissions
             return null;
         }
 
-        public async Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor)
+        public async Task<bool> IsActionDescriptorEnabledAsync(ActionDescriptor actionDescriptor)
         {
             if (actionDescriptor is ControllerActionDescriptor descriptor)
             {
+                var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
                 // remove disabled endpoints
-                var method = PermissionedObjectManager.CrudMethods.ContainsKey(descriptor.MethodInfo.Name.RemovePostfix("Async"))
-                    ? PermissionedObjectManager.CrudMethods[descriptor.MethodInfo.Name.RemovePostfix("Async")]
+                var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
+                    ? PermissionedObjectManager.CrudMethods[methodName]
                     : null;
 
                 var obj = "";
@@ -466,7 +474,7 @@ namespace Shesha.Permissions
                 }
                 else
                     // api service
-                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{descriptor.MethodInfo.Name}";
+                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{methodName}";
 
                 var permission = await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.WebApiAction);
                 return permission == null || permission.ActualAccess != RefListPermissionedAccess.Disable;
@@ -487,25 +495,49 @@ namespace Shesha.Permissions
             };
         }
 
+        private void RemoveCache(string objectName, string objectType, string parentName)
+        {
+            var key = "";
+            var pkey = GetCacheKey(objectName, objectType);
+            var parent = PermissionedObjectsCache.GetOrDefault(pkey);
+            while (parent != null)
+            {
+                key = pkey;
+                if (parent != null)
+                {
+                    pkey = GetCacheKey(parent.DefaultValue.Parent, objectType);
+                    parent = PermissionedObjectsCache.GetOrDefault(pkey);
+                }
+            }
+
+            PermissionedObjectsCache.Remove(key);
+            PermissionedObjectRelations relation;
+            if (RelationsCache.TryGetValue(key, out relation))
+            {
+                foreach (var childKey in relation.Children)
+                {
+                    RemoveCache(childKey);
+                }
+            };
+        }
+
         public void HandleEvent(EntityChangedEventData<PermissionedObject> eventData)
         {
-            RemoveCache(GetCacheKey(eventData.Entity.Object, eventData.Entity.Type));
+            RemoveCache(eventData.Entity.Object, eventData.Entity.Type, eventData.Entity.Parent);
         }
 
         /// <summary>
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
-        public async Task<List<PermissionedObjectDto>> GetObjectsByAccess(string type, RefListPermissionedAccess access)
+        public async Task<List<PermissionedObjectDto>> GetObjectsByAccessAsync(string type, RefListPermissionedAccess access)
         {
-            var forms = (await _permissionedObjectRepository.GetAll()
-                .ToListAsync())
-                .Select(async x => {
-                    var dto = await GetDtoAsync(x);
-                    await SetCacheAsync(dto);
-                    return dto;
-                }).Where(x => x.Result.Type == type && x.Result.ActualAccess == access)
-                .Select(x => x.Result)
+            var permissionedObjects = await _permissionedObjectRepository.GetAll().Where(o => o.Type == type).ToListAsync();
+
+            var dtos = await permissionedObjects.SelectAsync(async x => await GetCacheOrDtoAsync(x));
+
+            var forms = dtos
+                .Where(x => x.ActualAccess == access)
                 .ToList();
             return forms;
         }
