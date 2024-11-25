@@ -34,6 +34,7 @@ namespace Shesha.Authorization
         private readonly ITenantCache _tenantCache;
         private readonly ShaLoginResultTypeHelper _shaLoginResultTypeHelper;
         private readonly TokenAuthConfiguration _configuration;
+        private readonly IRepository<ShaUserRegistration, Guid> _userRegistration;
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
@@ -49,6 +50,7 @@ namespace Shesha.Authorization
             IExternalAuthManager externalAuthManager,
             UserRegistrationManager userRegistrationManager,
             IRepository<Person, Guid> personRepository,
+            IRepository<ShaUserRegistration, Guid> userRegistration,
             IRepository<MobileDevice, Guid> mobileDeviceRepository)
         {
             _logInManager = logInManager;
@@ -60,11 +62,23 @@ namespace Shesha.Authorization
             _userRegistrationManager = userRegistrationManager;
             _personRepository = personRepository;
             _mobileDeviceRepository = mobileDeviceRepository;
+            _userRegistration = userRegistration;
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticateModel model)
         {
+            // Check for user registration status
+            var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
+
+            if (registration != null && !registration.IsComplete)
+            {
+                // Return a custom result indicating a client-side redirect
+                var redirectUrl = $"{registration.AdditionalRegistrationInfoForm.Module}/{registration.AdditionalRegistrationInfoForm.Name}";
+                return Ok(new { Redirect = true, Url = redirectUrl });
+            }
+
+            // Attempt login authentication
             var loginResult = await GetLoginResultAsync(
                 model.UserNameOrEmailAddress,
                 model.Password,
@@ -72,7 +86,9 @@ namespace Shesha.Authorization
                 GetTenancyNameOrNull()
             );
 
-            return await GetAuthenticateResultAsync(loginResult, model.IMEI);
+            // Return the authenticate result
+            var authenticateResult = await GetAuthenticateResultAsync(loginResult, model.IMEI);
+            return Ok(authenticateResult);
         }
 
         private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 

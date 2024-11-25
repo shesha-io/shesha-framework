@@ -11,6 +11,8 @@ export type RangeValue = [moment.Moment, moment.Moment];
 export type TimePickerChangeEvent = (value: any | null, dateString: string) => void;
 export type RangePickerChangeEvent = (values: any, formatString: [string, string]) => void;
 
+export type DisabledDateTemplate = 'disabledPastTime' | 'disableFutureTime';
+
 export interface IDateFieldProps extends IConfigurableFormComponent {
   dateFormat?: string;
   value?: any;
@@ -32,4 +34,7 @@ export interface IDateFieldProps extends IConfigurableFormComponent {
   disabledDateMode?: 'none' | 'functionTemplate' | 'customFunction';
   disabledDateTemplate?: string;
   disabledDateFunc?: string;
+  disabledTimeMode?: 'none' | 'timeFunctionTemplate' | 'customTimeFunction';
+  disabledTimeTemplate?: DisabledDateTemplate;
+  disabledTimeFunc?: string;
 }

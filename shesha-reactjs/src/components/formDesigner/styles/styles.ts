@@ -55,7 +55,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaHelpIcon,
         shaDragging,
         componentDragHandle,
-        previewBorderTop10,
         sidebarContainerMainAreaBody,
         shaDesignerToolbar,
         shaToolboxComponents,
@@ -140,9 +139,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
    `);
     */
     const formDesigner = cx(formDesignerClassName, css`
-        .${previewBorderTop10} {
-            border-top: 1px solid #d3d3d3;
-        }
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -222,7 +218,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 margin-left: 2px;
                 }
             }
-
 
             .${shaDesignerToolbarCenter} {
                 width: 180px;
@@ -305,7 +300,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
                 .${shaToolboxPanelItems} {
                     margin:-1rem -0.8rem;
-            }
+                }
             }
         
             .${shaToolboxComponent} {
@@ -385,10 +380,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${shaComponentGhost} {
             border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
-            opacity: 0.7;
-
-          
-
+            opacity: 0.7;        
         }
         .${shaToolboxPanelComponents}{
             margin: -1rem -0.8rem;
