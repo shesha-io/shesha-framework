@@ -87,12 +87,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     transition: opacity 0.2s;
                     opacity: 0;
                     cursor: grab;
-                    margin: 8px;
                     display: flex;
                     align-items: center;
                     align-content: center;
-                    width: 100%;
-                    height: 100%;
+                    width: 95%;
+                    height: 90%;
                     position: absolute;
                 }
 
@@ -100,7 +99,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     transition: opacity 0.2s;
                     opacity: 1;
                     cursor: grab;
-                    margin-top: -23px;
+                    margin-top: -10px;
                 }
 
                 .${listItemContent} {
