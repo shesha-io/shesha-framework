@@ -73,25 +73,24 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       })
       .then((data) => {
         getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
-          for (const metaItem of metaData.properties as Array<IRefListPropertyMetadata>) {
-            if (metaItem.dataType === 'reference-list-item') {
-              const fieldName = toCamelCase(metaItem.path); // Field to transform in the data
+          const refListPromises = (metaData.properties as Array<IRefListPropertyMetadata>)
+            .filter((metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item')
+            .map((metaItem: IRefListPropertyMetadata) => {
+              const fieldName = toCamelCase(metaItem.path);
+              return getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } })
+              .promise
+              .then((refListItem) => {
+                data.result?.items?.forEach((item: any) => {
+                  if (item[fieldName] !== undefined) {
+                    const referenceName = refListItem.items.find((x) => x.itemValue === item[fieldName])?.item;
+                    item[fieldName] = referenceName?.trim() || `${item[fieldName]}`;
+                  }
+                });
+              })
+              .catch((err: any) => console.error('getReferenceList, err metadata', err));
+            });
 
-              // Fetch the reference list values for this field
-              getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } })
-                .promise.then((refListItem) => {
-                  setData(data.result?.items?.map(item => {
-                    if (item[`${fieldName}`] !== undefined) {
-                      // Replace the numeric value with the corresponding reference list name
-                      const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
-                      item[`${fieldName}`] = referenceName?.trim() || `${item[`${fieldName}`]}`; // Fallback to original value (as string) if not found
-                    }
-                    
-                    return item;
-                  })); 
-              }).catch((err: any) => console.error('getReferenceList, err metadata', err));
-            }
-          }
+            Promise.all(refListPromises).then(() => setData(data.result.items));
         });
       })
       .then(() => setIsLoaded(true))
