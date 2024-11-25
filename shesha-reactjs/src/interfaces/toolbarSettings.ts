@@ -31,6 +31,7 @@ import { IPermissionAutocompleteComponentProps } from '@/designer-components/per
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
+import { IFileUploadProps } from '@/designer-components/fileUpload';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -47,6 +48,8 @@ type ContextPropertyAutocompleteType = ToolbarSettingsProp &
   Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
+
+type ImagePickerType = ToolbarSettingsProp & Omit<IFileUploadProps, 'hidden' | 'type'>;
 
 type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden' | 'type'>;
 
@@ -154,6 +157,10 @@ export class DesignerToolbarSettings<T> {
 
   public addColorPicker(props: ColorPickerType | ((data: T) => PropertyAutocompleteType)) {
     return this.addProperty(props, 'colorPicker');
+  }
+
+  public addImagePicker(props: ImagePickerType | ((data: T) => ImagePickerType)) {
+    return this.addProperty(props, 'imagePicker');
   }
 
   public addTextArea(props: TextAreaType | ((data: T) => TextAreaType)) {

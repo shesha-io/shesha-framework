@@ -202,7 +202,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => httpClient,
     message: () => message,
     data: () => {
-      const data = {...shaFormInstance?.formData};
+      const data = { ...shaFormInstance?.formData };
       return removeGhostKeys(data);
     },
     form: () => {
@@ -308,6 +308,13 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
       parentReadOnly)
   );
 };
+
+export const toBase64 = file => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result as string);
+  reader.onerror = reject;
+});
 
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
@@ -1615,7 +1622,7 @@ export interface EvaluationContext {
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
   if (!data)
     return data;
-  
+
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;
