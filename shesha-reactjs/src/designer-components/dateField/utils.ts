@@ -78,7 +78,6 @@ const disabledTimeTemplateFunc = (disabledTimeTemplate: DisabledDateTemplate) =>
 
 export const disabledTime = (props: IDateFieldProps, data: object, globalState: object) => {
   const { disabledTimeMode, disabledTimeTemplate, disabledTimeFunc } = props;
-  console.log('props :>> ', props);
 
   if (disabledTimeMode === 'none') return undefined;
 
