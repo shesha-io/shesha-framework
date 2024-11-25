@@ -11,8 +11,6 @@ import GenericArgumentsEditor from './genericArgumentsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 
-const { Panel } = Collapse;
-
 export interface IActionArgumentsEditorProps {
   action: IConfigurableActionDescriptor;
   value?: any;
@@ -88,11 +86,11 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   if (!argumentsEditor) return null;
 
   return (
-    <Collapse defaultActiveKey={['1']} key={action.name}>
-      <Panel header="Arguments" key="1">
-        {argumentsEditor}
-      </Panel>
-    </Collapse>
+    <Collapse
+      defaultActiveKey={['1']}
+      key={action.name}
+      items={[{ key: "1", label: "Arguments", children: argumentsEditor }]}
+    />
   );
 };
 
