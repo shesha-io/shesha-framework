@@ -11,11 +11,17 @@ using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
+using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
+using Shesha.OmoNotifications;
+using Shesha.OmoNotifications.Configuration;
+using Shesha.OmoNotifications.Configuration.Email;
+using Shesha.OmoNotifications.Configuration.Email.Gateways;
+using Shesha.OmoNotifications.Configuration.Sms;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
@@ -23,6 +29,7 @@ using Shesha.Settings.Ioc;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -36,6 +43,8 @@ namespace Shesha
         typeof(AbpAutoMapperModule))]
     public class SheshaApplicationModule : SheshaSubModule<SheshaFrameworkModule>
     {
+        public const int DefaultSingleMessageMaxLength = 160;
+        public const int DefaultMessagePartLength = 153;
         public override async Task<bool> InitializeConfigurationAsync()
         {
             return await ImportConfigurationAsync();
@@ -47,6 +56,7 @@ namespace Shesha
             Configuration.Auditing.IsEnabled = false;
 
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
+            IocManager.Register<INotificationSender, NotificationSender>();
 
             Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
             Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
@@ -69,14 +79,57 @@ namespace Shesha
                 Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
             );
 
+            #region Notification Settings
+
+            IocManager.RegisterSettingAccessor<INotificationSettings>(s => {
+                s.NotificationSettings.WithDefaultValue(new NotificationSettings
+                {
+                    Low = new List<NotificationChannelConfig> { },
+                    Medium = new List<NotificationChannelConfig> { },
+                    High = new List<NotificationChannelConfig> { },
+                });
+                s.SmsSettings.WithDefaultValue(new Shesha.OmoNotifications.Configuration.Sms.SmsSettings
+                {
+                    SmsEnabled = true,
+                    PreferredGateway = null
+                });
+                s.EmailSettings.WithDefaultValue(new Shesha.OmoNotifications.Configuration.Email.EmailSettings
+                {
+                    EmailsEnabled = true,
+                    PreferredGateway = null
+                });
+            });
+
+            IocManager.RegisterSettingAccessor<IEmailGatewaySettings>(s => {
+                s.SmtpSettings.WithDefaultValue(new SmtpSettings
+                {
+                    Port = 25,
+                    UseSmtpRelay = false,
+                    EnableSsl = false,
+                });
+            });
+
+            IocManager.RegisterSettingAccessor<ISmsGatewaySettings>(s => {
+                s.ClickatellSettings.WithDefaultValue(new OmoNotifications.Configuration.Sms.Gateways.ClickatellSettings
+                {
+                    Host = "api.clickatell.com",
+                    SingleMessageMaxLength = DefaultSingleMessageMaxLength,
+                    MessagePartLength = DefaultMessagePartLength
+                });
+            });
+
+            #endregion
+
             #region SMS Gateways
 
             IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
-                s.SmsSettings.WithDefaultValue(new SmsSettings
+                s.SmsSettings.WithDefaultValue(new Shesha.Sms.Configuration.SmsSettings
                 {
                     SmsGateway = NullSmsGateway.Uid
                 });
             });
+
+
 
             IocManager.Register<NullSmsGateway, NullSmsGateway>(DependencyLifeStyle.Transient);
 

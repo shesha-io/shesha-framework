@@ -1,0 +1,52 @@
+﻿using Abp.Domain.Entities.Auditing;
+using Shesha.Domain.Attributes;
+using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shesha.Domain
+{
+    [Entity(TypeShortAlias = "Shesha.Core.OmoNotification")]
+    public class OmoNotification: FullAuditedEntity<Guid>
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual string Name { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual NotificationTypeConfig NotificationType { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual Person ToPerson { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual Person FromPerson { get; set; }
+        /// <summary>
+        /// Serialized Json of the notification data
+        /// </summary>
+        [StringLength(int.MaxValue)]
+        public virtual string NotificationData { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ReferenceList("Shesha.Core", "NotificationPriority")]
+        public virtual RefListNotificationPriority Priority { get; set; }
+        /// <summary>
+        /// The entity that the notification pertains to
+        /// </summary>
+        public virtual GenericEntityReference TriggeringEntity { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual NotificationTopic NotificationTopic { get; set; }
+    }
+}

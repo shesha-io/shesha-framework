@@ -31,6 +31,13 @@ using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
+using Shesha.OmoNotifications;
+using Shesha.OmoNotifications.Configuration.Sms.Gateways;
+using Shesha.OmoNotifications.Emails;
+using Shesha.OmoNotifications.Emails.Gateways;
+using Shesha.OmoNotifications.Sms.Gateways;
+using Shesha.OmoNotifications.SMS;
+using Shesha.OmoNotifications.Teams;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -95,6 +102,14 @@ namespace Shesha.Web.Host.Startup
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
+
+            services.AddScoped<INotificationChannelSender, TeamsChannelSender>();
+            services.AddScoped<INotificationChannelSender, EmailChannelSender>();
+            services.AddScoped<INotificationChannelSender, SmsChannelSender>();
+            services.AddTransient<ClickatellGateway>();
+            services.AddTransient<SmtpGateway>();
+            services.AddSingleton<SmsGatewayFactory>();
+            services.AddSingleton<EmailGatewayFactory>();
 
             services.AddSignalR();
 

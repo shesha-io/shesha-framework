@@ -12,10 +12,14 @@
 
         public const string SmsSettings = "Shesha.SmsSettings";
 
+        public const string OmoSmsSettings = "Shesha.OmoSmsSettings";
+
         public const string ThemeSettings = "Shesha.ThemeSettings";
 
         public const string MainMenuSettings = "Shesha.MainMenuSettings";
 
         public const string DefaultUrl = "Shesha.DefaultUrl";
+
+        public const string NotificationSettings = "Shesha.NotificationSettings";
     }
 }
