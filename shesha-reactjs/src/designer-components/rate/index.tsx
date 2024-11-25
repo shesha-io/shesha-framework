@@ -2,14 +2,13 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import moment from 'moment';
 import React from 'react';
-import { axiosHttp } from '@/utils/fetchers';
 import { customRateEventHandler } from '@/components/formDesigner/components/utils';
 import { getSettings } from './settings';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
-import { message, Rate } from 'antd';
+import { App, Rate } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
@@ -18,7 +17,7 @@ import {
   useForm,
   useFormData,
   useGlobalState,
-  useSheshaApplication,
+  useHttpClient,
 } from '@/providers';
 import {
   ConfigurableFormItem,
@@ -49,7 +48,8 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
+    const { message } = App.useApp();
 
     const { allowClear, icon, count, tooltips, className, style, readOnly } = model;
 
@@ -58,7 +58,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,

@@ -1,5 +1,5 @@
 import { CloseOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, App } from 'antd';
 import React, { ReactNode } from 'react';
 import { FC } from 'react';
 import { useSettingsEditor } from './provider';
@@ -16,6 +16,7 @@ interface MenuItem {
 export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
 
     const { settingSelection: selectedSetting, editorMode, saveSetting, cancelEditSetting, startEditSetting } = useSettingsEditor();
+    const { message } = App.useApp();
 
     const onEditClick = () => {
         startEditSetting();
@@ -59,7 +60,7 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
             isVisible: canCancelEdit,
             content: () => (
                 <Button onClick={onCancelEditClick} type="link">
-                    <CloseOutlined /> Cancel Edit
+                    <CloseOutlined /> Cancel changes
                 </Button>
             )
         },

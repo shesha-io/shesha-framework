@@ -3,7 +3,7 @@ import { IErrorInfo } from "@/interfaces/errorInfo";
 import { ExpressionExecuter } from "../submitters/interfaces";
 
 export interface FormDataLoadingPayload {
-    dataId?: string;
+    formArguments?: any;
     formSettings: IFormSettings;
     formFlatStructure: IFlatComponentsStructure;
     loadingCallback?: LoadingCallback;
@@ -12,6 +12,7 @@ export interface FormDataLoadingPayload {
 
 export interface IFormDataLoader {
     loadAsync: (payload: FormDataLoadingPayload) => Promise<any>;
+    canLoadData: (formArguments: any) => boolean;
 }
 
 export interface IFieldData {
@@ -45,6 +46,14 @@ export interface GqlLoaderSettings {
     dynamicEndpoint?: string;
 }
 
+export interface CustomLoaderSettings {
+    onDataLoad: string;
+}
+
 export const isGqlLoaderSettings = (s: any): s is GqlLoaderSettings => {
-    return s && typeof s === 'object';
+    return s && typeof s === 'object' && s.endpointType;
+};
+
+export const isCustomLoaderSettings = (s: any): s is CustomLoaderSettings => {
+    return s && typeof s === 'object' && s.onDataLoad;
 };

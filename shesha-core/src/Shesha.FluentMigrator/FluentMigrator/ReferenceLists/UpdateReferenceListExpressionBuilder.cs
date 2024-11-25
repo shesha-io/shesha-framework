@@ -6,9 +6,11 @@ namespace Shesha.FluentMigrator.ReferenceLists
     public class UpdateReferenceListExpressionBuilder : ExpressionBuilderBase<UpdateReferenceListExpression>, IUpdateReferenceListSyntax
     {
         private readonly IMigrationContext _context;
+        private readonly DbmsType _dbmsType;
 
-        public UpdateReferenceListExpressionBuilder(UpdateReferenceListExpression expression, IMigrationContext context) : base(expression)
+        public UpdateReferenceListExpressionBuilder(DbmsType dbmsType, UpdateReferenceListExpression expression, IMigrationContext context) : base(expression)
         {
+            _dbmsType = dbmsType;
             _context = context;
         }
 
@@ -19,7 +21,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
                 OrderIndex = orderIndex,
                 Description = description
             };
-            var addRefListItem = new AddReferenceListItemExpression(_context.QuerySchema, Expression.Namespace, Expression.Name, listItem);
+            var addRefListItem = new AddReferenceListItemExpression(_dbmsType, _context.QuerySchema, Expression.Namespace, Expression.Name, listItem);
 
             _context.Expressions.Add(addRefListItem);
 
@@ -28,7 +30,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         public IUpdateReferenceListSyntax DeleteItem(Int64 itemValue) 
         {
-            _context.Expressions.Add(new DeleteReferenceListItemExpression(_context.QuerySchema, Expression.Namespace, Expression.Name)
+            _context.Expressions.Add(new DeleteReferenceListItemExpression(_dbmsType, _context.QuerySchema, Expression.Namespace, Expression.Name)
             {
                 ItemValue = itemValue
             });
@@ -38,7 +40,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         public IUpdateReferenceListSyntax DeleteAllItems()
         {
-            _context.Expressions.Add(new DeleteReferenceListItemExpression(_context.QuerySchema, Expression.Namespace, Expression.Name)
+            _context.Expressions.Add(new DeleteReferenceListItemExpression(_dbmsType, _context.QuerySchema, Expression.Namespace, Expression.Name)
             {
                 DeleteAll = true
             });
@@ -62,7 +64,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
 
         public IUpdateReferenceListSyntax UpdateItem(long itemValue, Action<IUpdateReferenceListItemSyntax> updateAction)
         {
-            var updateRefListItem = new UpdateReferenceListItemExpression(_context.QuerySchema, Expression.Namespace, Expression.Name, itemValue);
+            var updateRefListItem = new UpdateReferenceListItemExpression(_dbmsType, _context.QuerySchema, Expression.Namespace, Expression.Name, itemValue);
 
             var builder = new UpdateReferenceListItemExpressionBuilder(updateRefListItem, _context);
             updateAction.Invoke(builder);

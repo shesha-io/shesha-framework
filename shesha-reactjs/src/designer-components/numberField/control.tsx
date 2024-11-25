@@ -1,10 +1,9 @@
-import { InputNumber, InputNumberProps, message } from 'antd';
+import { InputNumber, InputNumberProps, App } from 'antd';
 import moment from 'moment';
 import React, { FC } from 'react';
 import { customInputNumberEventHandler } from '@/components/formDesigner/components/utils';
-import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useGlobalState, useHttpClient } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { INumberFieldComponentProps } from './interfaces';
 import { getFormApi } from '@/providers/form/formApi';
 
@@ -18,14 +17,15 @@ interface IProps {
 const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) => {
   const form = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
-  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
+  const { message } = App.useApp();
 
   const eventProps = {
     model,
     form: getFormApi(form),
     formData: form.formData,
     globalState,
-    http: axiosHttp(backendUrl),
+    http: httpClient,
     message,
     moment,
     setGlobalState,

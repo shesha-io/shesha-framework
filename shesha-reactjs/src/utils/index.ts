@@ -4,6 +4,7 @@ import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
 import { IPersistedFormProps } from '@/providers';
+import { CSSProperties } from 'react';
 
 export type NumberOrString = number | string;
 /**
@@ -117,7 +118,7 @@ export const getValidDefaultBool = (value: any, defalutValue: boolean = true) =>
 export const getPlainValue = <T = object | any[]>(value: T): T => {
   try {
     return JSON.parse(JSON.stringify(value, getCircularReplacer()));
-  } catch (_e) {
+  } catch {
     return value;
   }
 };
@@ -162,7 +163,7 @@ export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: 
 };
 
 export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: string]: any }, ...args: any[]) => {
-  const argList = [...args] || [];
+  const argList = [...args];
   Object.values(dynamicParam || {}).map((key) => argList.push(key));
 
   return fn.apply(null, argList);
@@ -247,13 +248,22 @@ export const executeFunction = (expression: string, args: { [key: string]: any }
     return expression
       ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
       : null;
-  } catch (_e) {
+  } catch {
     return null;
   }
 };
 
 export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]) =>
   configs.some(({ name: n, module: m }) => props?.module === m && props?.name === n);
+
+export const convertJsonToCss = (style: CSSProperties) => {
+  const css = Object.entries(style || {})
+    .map(([k, v]) => [k.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`), v])
+    .map(([k, v]) => `${k}:${v}`)
+    .join(';');
+
+  return !!css ? `${css};` : null;
+};
 
 export { unwrapAbpResponse } from './fetchers';
 export * from './metadata/index';

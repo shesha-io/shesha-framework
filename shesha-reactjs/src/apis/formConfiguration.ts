@@ -1,7 +1,7 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 import { FormIdFullNameDto } from './entityConfig';
-import { HttpClientApi } from '@/providers/sheshaApplication/publicApi';
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
 import qs from 'qs';
 
@@ -162,7 +162,7 @@ export interface FormUpdateMarkupInput {
   markup?: string | null;
   /** Form asscess mode */
   access?: number;
-  /** Form permissions for Required premission mode */  
+  /** Form permissions for Required premission mode */
   permissions?: string[];
 }
 
@@ -195,7 +195,7 @@ export interface FormPermissionsDto {
   permissions?: string[] | null;
 }
 
-export type FormPermissionsDtoAjaxResponse = IAjaxResponse<FormPermissionsDto[]>;  
+export type FormPermissionsDtoAjaxResponse = IAjaxResponse<FormPermissionsDto[]>;
 
 export interface FormConfigurationCheckPermissionsQueryParams {
   /**

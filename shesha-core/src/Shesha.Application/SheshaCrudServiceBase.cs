@@ -360,7 +360,8 @@ namespace Shesha
                 
                 case DataTypes.Array:
                     if (property.DataFormat == ArrayFormats.ReferenceListItem
-                        || property.DataFormat == ArrayFormats.ObjectReference)
+                        || property.DataFormat == ArrayFormats.ObjectReference
+                        || property.DataFormat == ArrayFormats.Object)
                     {
                         sb.AppendLine(propertyName);
                         break;

@@ -1,6 +1,7 @@
 export interface IAccessToken {
-  accessToken: string;
-  expiresIn: string;
+  accessToken?: string | null;
+  expireInSeconds?: number;
+  expireOn?: string;
 }
 
 export interface IHttpHeaders {

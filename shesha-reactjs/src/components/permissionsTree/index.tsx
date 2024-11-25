@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { DataNode, EventDataNode } from 'antd/lib/tree';
 import { FC } from 'react';
@@ -6,14 +6,14 @@ import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arg
 import { Key } from 'rc-tree/lib/interface';
 import { LoadingOutlined } from '@ant-design/icons';
 import {
-  message,
+  App,
   Space,
   Spin,
   Tag,
   Tooltip,
   Tree
 } from 'antd';
-import { useConfigurableAction } from '@/providers';
+import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { useLocalStorage } from 'react-use';
 import {
   PermissionDto,
@@ -23,7 +23,7 @@ import {
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
-import { useConfigurableFormActions } from '@/providers/form/actions';
+import { useAvailableConstantsData } from '@/index';
 
 interface IDataNode {
   title: JSX.Element;
@@ -73,12 +73,15 @@ export interface IPermissionsTreeProps {
 
   hideSearch?: boolean;
   searchText?: string;
+
+  onSelectAction?: IConfigurableActionConfiguration;
 }
 
 const emptyId = '_';
 const withoutModule = '[no-module]';
 
-export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ...rest }) => {
+export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, onSelectAction, ...rest }) => {
+  const { message } = App.useApp();
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissions.toolbox.objects.search', '');
 
@@ -101,11 +104,12 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const shaForm = useShaFormInstance();
-  const { setFormMode } = shaForm;
+  const shaForm = useShaFormInstance(false);
+  const { setFormMode } = shaForm ?? {};
 
-  const formActions = useConfigurableFormActions(false);
-  const { onChangeFormData, onChangeId } = formActions ?? {};  
+  const { executeAction } = useConfigurableActionDispatcher();
+  const allData = useRef<any>({});
+  allData.current = useAvailableConstantsData();
 
   useEffect(() => {
     if (rest.mode === 'Select' && allItems) return; // skip refetch for selectmode if fetched
@@ -202,28 +206,33 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     return res;
   };
 
+  const onChangeAction = (selectedRow: PermissionDto) => {
+    if (onSelectAction?.actionName) {
+      executeAction({
+        actionConfiguration: onSelectAction,
+        argumentsEvaluationContext: {...allData.current, selectedRow},
+      });
+    }
+  };
+
   const onSelect = (keys: Key[]) => {
     if (!keys || keys.length === 0) {
       setSelected(null);
 
-      onChangeFormData?.({ values: { id: null }, mergeValues: false });
+      onChangeAction(null);
       return;
     }
 
     const ids = keys.map(item => {
       return item.toString();
     });
-    if (rest.mode === 'Edit' && Boolean(formActions)) {
-      const item = findItem(allItems, ids[0]);
+    const item = findItem(allItems, ids[0]);
+    if (rest.mode === 'Edit') {
       if (!item.isDbPermission) {
-        setFormMode('readonly');
-      }
-      if (item.id === emptyId) {
-        onChangeFormData?.({ values: item, mergeValues: false });
-      } else {
-          onChangeId?.(ids[0]);
+        setFormMode?.('readonly');
       }
     }
+    onChangeAction(item);
     setSelected(ids);
   };
 
@@ -520,7 +529,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         }
         setDoSelect(emptyId);
         setSearchText('');
-        setFormMode('edit');
+        setFormMode?.('edit');
 
         return Promise.resolve();
       },
@@ -550,7 +559,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         expandParent(newItems, s);
         setDoSelect(emptyId);
         setSearchText('');
-        setFormMode('edit');
+        setFormMode?.('edit');
 
         return Promise.resolve();
       },

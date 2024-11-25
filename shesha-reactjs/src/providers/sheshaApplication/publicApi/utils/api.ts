@@ -1,5 +1,5 @@
 import { evaluateString } from "@/providers/form/utils";
-import { HttpClientApi } from "../http/api";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 
 export interface IUtilsApi {
     evaluateString: (template: string, data: any) => string;

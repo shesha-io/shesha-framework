@@ -45,7 +45,7 @@ import {
   StoredFileActionsContext,
   StoredFileStateContext,
 } from './contexts';
-import { message } from 'antd';
+import { App } from 'antd';
 
 export interface IStoredFileProviderPropsBase {
   baseUrl?: string;
@@ -83,7 +83,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     propertyName,
     fileId,
     children,
-    baseUrl = 'http://sheshabackend.boxfusion.co.za',
+    baseUrl,
     uploadMode = 'async',
     onChange,
     value,
@@ -94,6 +94,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   const [state, dispatch] = useReducer(storedFileReducer, {
     ...STORED_FILE_CONTEXT_INITIAL_STATE,
   });
+  const { message } = App.useApp();
 
   const { httpHeaders: headers } = useSheshaApplication();
 

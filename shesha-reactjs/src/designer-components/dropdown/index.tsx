@@ -2,7 +2,6 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import moment from 'moment';
 import React from 'react';
 import settingsFormJson from './settingsForm.json';
-import { axiosHttp } from '@/utils/fetchers';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
@@ -11,18 +10,19 @@ import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDropdownComponentProps } from './model';
 import { IToolboxComponent } from '@/interfaces';
-import { message } from 'antd';
+import { App } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
   useForm,
   useFormData,
   useGlobalState,
-  useSheshaApplication
+  useHttpClient,
 } from '@/providers';
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -37,14 +37,15 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   Factory: ({ model }) => {
     const form = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
     const { data: formData } = useFormData();
+    const { message } = App.useApp();
     const eventProps = {
       model,
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,
@@ -96,6 +97,15 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
             : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IDropdownComponentProps>(7, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

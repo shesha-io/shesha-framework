@@ -1,20 +1,8 @@
-﻿using Abp.Configuration;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json.Linq;
-using Shesha.Attributes;
-using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
-using Shesha.Extensions;
-using Shesha.Modules;
-using Shesha.Reflection;
-using Shesha.Settings.Ioc;
-using Shesha.Utilities;
 using System;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Shesha.Settings
 {
@@ -37,7 +25,7 @@ namespace Shesha.Settings
         public void Define(ISettingDefinitionContext context)
         {
             var settings = context.GetAll();
-            var dbSettings = _settingConfigurationRepository.GetAll().ToList();
+            var dbSettings = _settingConfigurationRepository.GetAll().Where(sc => sc.Module != null).ToList();
 
             var dynamicallyCreatedSettings = dbSettings
                 .Where(c => !settings.Any(d => d.Value.Name == c.Name && d.Value.ModuleName == c.Module.Name))

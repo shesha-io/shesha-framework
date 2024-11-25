@@ -22,6 +22,8 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
     const store = useDataTableStore(false);
     if (model.hidden) return null;
     
+    return <TablePager {...model} />;
+
     return store 
       ? <TablePager {...model} />
       : <Alert

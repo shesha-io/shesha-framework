@@ -137,6 +137,7 @@ export const makeCodeTemplate = (strings: TemplateStringsArray, ...expr: (string
         content: content,
         editableRanges: ranges,
     };
+
     return response;
 };
 

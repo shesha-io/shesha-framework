@@ -8,7 +8,7 @@ import { getQueryParams, getUrlWithoutQueryParams } from "@/utils/url";
 import qs from "qs";
 import { unwrapAxiosCall } from "@/providers/sheshaApplication/publicApi/http/httpUtils";
 import { unwrapAbpResponse } from "@/utils/fetchers";
-import { HttpResponse } from "@/providers/sheshaApplication/publicApi/http/api";
+import { HttpResponse } from "@/publicJsApis/httpClient";
 import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from "@/utils/form";
 import { useFormDesignerComponents } from "../hooks";
 
@@ -43,7 +43,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
         const { formSettings, data, antdForm, getDelayedUpdates } = payload;
         const settings = this.#getGqlSettings(formSettings);
 
-        const postData = { ...data };
+        const postData = removeGhostKeys({ ...data });
 
         const postDataAfterPreparation = payload.onPrepareSubmitData
             ? await payload.onPrepareSubmitData({ data: postData })
@@ -58,11 +58,9 @@ export class GqlSubmitter implements IFormDataSubmitter {
         if (Boolean(getDelayedUpdates))
             postDataWithServiceFields._delayedUpdate = getDelayedUpdates();
 
-        const postDataWithoutGhosts = removeGhostKeys(postDataWithServiceFields);
-
-        const postDataFinal = data && hasFiles(postDataWithoutGhosts)
-            ? jsonToFormData(postDataWithoutGhosts)
-            : postDataWithoutGhosts;
+        const postDataFinal = data && hasFiles(postDataWithServiceFields)
+            ? jsonToFormData(postDataWithServiceFields)
+            : postDataWithServiceFields;
 
         return postDataFinal;
     };
@@ -124,7 +122,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
         const { onBeforeSubmit, onSubmitSuccess, onSubmitFailed, customSubmitCaller } = payload;
 
         if (onBeforeSubmit)
-            await onBeforeSubmit(data);
+            await onBeforeSubmit({data: removeGhostKeys({...data})});
 
         const getDefaultSubmitCaller = async (): Promise<SubmitCaller> => {
             const entityAction = data?.id

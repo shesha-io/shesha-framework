@@ -85,7 +85,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
 
 export const ViewsEditorComponent: FC<IViewsEditorProps> = (props) => {
     return (
-        <Form.Item name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+        <Form.Item className='shaViewsEditorForm' name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
             <ViewsEditor {...props} />
         </Form.Item>
     );

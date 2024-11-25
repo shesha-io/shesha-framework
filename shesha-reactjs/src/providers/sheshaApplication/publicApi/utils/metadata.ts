@@ -1,5 +1,5 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 
 const getUtilsApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
     var userSource = [
@@ -23,6 +23,6 @@ const getUtilsApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefiniti
     });
 };
 
-export const getUtilsApiProperties = (builder: MetadataBuilder): MetadataBuilder =>
+export const getUtilsApiProperties = (builder: IObjectMetadataBuilder): IObjectMetadataBuilder =>
     builder
         .setTypeDefinition(getUtilsApiTypeDefinition);

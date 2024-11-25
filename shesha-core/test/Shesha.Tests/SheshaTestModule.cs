@@ -12,8 +12,11 @@ using Abp.TestBase;
 using Abp.Zero.Configuration;
 using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
@@ -35,10 +38,9 @@ namespace Shesha.Tests
         typeof(AbpAspNetCoreModule),
 
         typeof(SheshaFormsDesignerModule),
-
         typeof(SheshaApplicationModule),
-        typeof(SheshaNHibernateModule),
-        typeof(SheshaFrameworkModule)        
+        typeof(SheshaFrameworkModule),
+        typeof(SheshaNHibernateModule)        
         )]
     public class SheshaTestModule : AbpModule
     {
@@ -84,6 +86,8 @@ namespace Shesha.Tests
                     .Instance(configuration)
                     .LifestyleSingleton()
             );
+
+            IocManager.MockApiExplorer();
 
             // Use database for language management
             Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();

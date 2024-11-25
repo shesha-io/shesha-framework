@@ -1,15 +1,14 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { App } from 'antd';
 import moment from 'moment';
 import React, { Fragment } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { IDateFieldProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
@@ -20,6 +19,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { DatePickerWrapper } from './datePickerWrapper';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -35,14 +35,15 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const httpClient = useHttpClient();
+    const { message } = App.useApp();
 
     const eventProps = {
       model,
       form: getFormApi(form),
       formData,
       globalState,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message,
       moment,
       setGlobalState,
@@ -87,6 +88,15 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       ...prev,
       showNow: Boolean(prev.showNow || prev['showToday'])
     }))
+    .add<IDateFieldProps>(5, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        hideBorder: prev.hideBorder,
+        style: prev.style
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
 

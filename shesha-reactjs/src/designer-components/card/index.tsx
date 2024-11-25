@@ -13,6 +13,7 @@ import { getSettings } from './settingsForm';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import classNames from 'classnames';
 import { useStyles } from './styles';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
@@ -60,12 +61,14 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     ...model,
     header: { id: nanoid(), components: [] },
     content: { id: nanoid(), components: [] },
+    stylingBox: "{\"marginBottom\":\"5\"}"
   }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   customContainerNames: ['header', 'content'],
   migrator: (m) => m
-    .add<ICardComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
+    .add<ICardComponentProps>(2, (prev) => removeComponents(prev))
 };
 
 export default CardComponent;

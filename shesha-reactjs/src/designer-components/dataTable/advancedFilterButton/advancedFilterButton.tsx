@@ -41,7 +41,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
 
   const customIcon = () => {
     if (props.icon) {
-      const splitIconName = splitByCapitalLetters(props.icon);
+      const splitIconName = splitByCapitalLetters(props.icon as string);
       splitIconName.pop();
       splitIconName.push(hasFilters ? 'Filled' : 'Outlined');
       const iconName = splitIconName.join('');

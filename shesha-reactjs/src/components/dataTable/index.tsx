@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo, useState } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
@@ -12,6 +12,7 @@ import {
   useDataTableStore,
   useForm,
   useGlobalState,
+  useHttpClient,
   useMetadata,
   useSheshaApplication,
 } from '@/providers';
@@ -43,7 +44,6 @@ import {
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
 import moment from 'moment';
-import { axiosHttp } from '@/utils/fetchers';
 import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
@@ -109,6 +109,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
   const { formMode, data: formData } = formApi;
   const { globalState, setState: setGlobalState } = useGlobalState();
+  const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
 
   if (tableRef) tableRef.current = store;
@@ -210,6 +211,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const metadata = useMetadata(false)?.metadata;
 
   const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
 
   const toolboxComponents = useFormDesignerComponents();
 
@@ -222,11 +224,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
-          // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-          //return onNewRowInitializeExecuter(formData, globalState);
-          const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
-          return Promise.resolve(result);
-        }
+        // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+        //return onNewRowInitializeExecuter(formData, globalState);
+        const result = onNewRowInitializeExecuter(formApi, globalState, httpClient, moment, appContextData);
+        return Promise.resolve(result);
+      }
       : () => {
         return Promise.resolve({});
       };
@@ -302,7 +304,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       inlineEditMode,
       formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-      onNewRowInitialize,
+      onNewRowInitialize
     };
     return {
       ...result,
@@ -315,6 +317,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [crudOptions, prevCrudOptions]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
+    setVisibleColumns(columns?.filter((c) => c.show).length);
     const localPreparedColumns = columns
       .map((column) => {
         if (column.columnType === 'crud-operations') {
@@ -328,6 +331,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               canDoubleWidth: widthOptions.canDoubleWidth,
               canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
               canTripleWidth: widthOptions.canTripleWidth,
+              columnsChanged: visibleColumns !== columns?.filter((c) => c.show).length && !!visibleColumns
             }
           );
           column.minWidth = minWidth;
@@ -364,8 +368,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
-
     return localPreparedColumns;
+
   }, [
     columns,
     crudOptions.enabled,
@@ -386,10 +390,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
     return (data, formApi, globalState) => {
-      const preparedData = executer(data, formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
+      const preparedData = executer(data, formApi, globalState, httpClient, moment, appContextData);
       return Promise.resolve(preparedData);
     };
-  }, [onRowSave, backendUrl]);
+  }, [onRowSave, httpClient]);
 
   const { executeAction } = useConfigurableActionDispatcher();
   const performOnRowSaveSuccess = useMemo<OnSaveSuccessHandler>(() => {
@@ -404,7 +408,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         formApi,
         globalState,
         setGlobalState,
-        http: axiosHttp(backendUrl),
+        http: httpClient,
         moment,
       };
       // execute the action

@@ -13,7 +13,7 @@ import { IDataSourceComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { MetadataProvider } from '@/providers/metadata';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 
 const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
