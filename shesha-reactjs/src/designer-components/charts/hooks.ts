@@ -16,24 +16,13 @@ import { aggregateData, aggregateValues, getPredictableColor, getPropertyValue, 
  * @returns title for the chart
  */
 export const useGeneratedTitle = (): string => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, title, legendProperty, dataMode, entityType, chartType } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, title, legendProperty, dataMode, entityType, simpleOrPivot } = useChartDataStateContext();
   
   const entityTypeArray = dataMode === 'entityType' ? entityType?.split('.') : undefined;
   const entityClassName = dataMode === 'entityType' ? entityTypeArray[entityTypeArray?.length - 1] : '';
-  switch (chartType) {
-    case 'bar':
-    case 'line':
-      return dataMode === 'entityType' ?
-        (title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`) :
-        (title?.trim().length > 0 ? title : ``);
-    case 'polarArea':
-    case 'pie':
-      return dataMode === 'entityType' ?
-        (title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} by ${yProperty} (${aggregationMethod})`) :
-        (title?.trim().length > 0 ? title : ``);
-    default:
-      return '';
-  }
+  return dataMode === 'entityType' ?
+    (title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty && simpleOrPivot === 'pivot' ? `, grouped by ${legendProperty}` : ''}`) :
+    (title?.trim().length > 0 ? title : ``);
 };
 
 /**
