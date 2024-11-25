@@ -4,7 +4,7 @@ import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder
 import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
 import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
-import { useAuthState, useShaRouting } from '@/providers';
+import { useAuth, useShaRouting } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
@@ -39,7 +39,7 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
   // inject fields from plugins
   const [contextData] = useState<IApplicationApi>(() => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter));
 
-  const { loginInfo } = useAuthState(false) ?? {};
+  const { loginInfo } = useAuth(false) ?? {};
   useEffect(() => {
     const profile: IUserProfileInfo = loginInfo
       ? {
