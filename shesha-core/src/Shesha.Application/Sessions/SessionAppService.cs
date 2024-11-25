@@ -46,6 +46,7 @@ namespace Shesha.Sessions
             if (AbpSession.UserId.HasValue)
             {
                 var user = await GetCurrentUserAsync();
+                var person = await GetCurrentPersonAsync();
 
                 string homeUrl = await HomePageRouter.GetHomePageUrlAsync(user);
 
@@ -60,6 +61,7 @@ namespace Shesha.Sessions
                     Email = user.EmailAddress,
                     MobileNumber = user.PhoneNumber,
                     GrantedPermissions = await GetGrantedPermissions(),
+                    PersonId = person.Id,
                     HomeUrl = homeUrl
                 };
             }

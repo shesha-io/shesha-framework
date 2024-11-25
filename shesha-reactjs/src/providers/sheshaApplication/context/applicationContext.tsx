@@ -46,7 +46,8 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
         id: loginInfo.id?.toString(),
         userName: loginInfo.userName,
         firstName: loginInfo.firstName,
-        lastName: loginInfo.lastName
+        lastName: loginInfo.lastName,
+        personId: loginInfo.personId
       }
       : undefined;
 

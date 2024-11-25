@@ -19,4 +19,5 @@ export const getUserApiProperties = (builder: IObjectMetadataBuilder): IObjectMe
         .addString("userName", "User Name")
         .addString("firstName", "First Name")
         .addString("lastName", "Last Name")
+        .addString("personId", "Person Id")
         .setTypeDefinition(getUserApiTypeDefinition);
