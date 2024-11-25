@@ -8,6 +8,7 @@ import BarChart from './components/bar';
 import LineChart from './components/line';
 import PieChart from './components/pie';
 import PolarAreaChart from './components/polarArea';
+import { useChartURLData } from './hooks';
 import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getURLChartDataRefetchParams } from './utils';
@@ -54,6 +55,8 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       .finally(() => setIsLoaded(true));
   }, [url, formData]);
 
+  const memoUrlTypeData = useChartURLData();
+
   if (!url || !chartType) {
     const missingProperties: string[] = [];
     if (!url) missingProperties.push("'url'");
@@ -90,26 +93,28 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }
 
   return (
-    <div className={cx(styles.chartControlContainer)} style={{
-      height: props?.height ?? 'auto'
+    <Flex align='center' justify='center' className={cx(styles.chartControlContainer)} style={{
+      height: props?.height > 200 ? props.height : 'auto',
+      width: props?.width > 300 ? props.width : 'auto',
+      border: props?.showBorder ? '1px solid #ddd' : 'none'
     }}>
       {
         (() => {
           switch (chartType) {
             case 'line':
-              return <LineChart data={state.urlTypeData as any} />;
+              return <LineChart data={memoUrlTypeData as any} />;
             case 'bar':
-              return <BarChart data={state.urlTypeData as any} />;
+              return <BarChart data={memoUrlTypeData as any} />;
             case 'pie':
-              return <PieChart data={state.urlTypeData as any} />;
+              return <PieChart data={memoUrlTypeData as any} />;
             case 'polarArea':
-              return <PolarAreaChart data={state.urlTypeData as any} />;
+              return <PolarAreaChart data={memoUrlTypeData as any} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a valid chart type." />;
           }
         })()
       }
-    </div>
+    </Flex>
   );
 };
 
