@@ -52,17 +52,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
       return { ...state, selectedRow };
     },
 
-    [DataTableActionEnums.SetHoverRow]: (
-      state: IDataTableStateContext,
-      action: ReduxActions.Action<string>
-    ) => {
-      const { payload } = action;
-      return {
-        ...state,
-        hoverRowId: payload,
-      };
-    },
-
     [DataTableActionEnums.SetDraggingState]: (
       state: IDataTableStateContext,
       action: ReduxActions.Action<DragState>

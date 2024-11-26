@@ -77,6 +77,7 @@ import { IShaFormInstance } from './store/interfaces';
 import { useShaFormInstance } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
 import { removeGhostKeys } from '@/utils/form';
+import { isEmpty } from 'lodash';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -164,6 +165,9 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
 export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
   fullContext: AvailableConstantsContext;
 };
+
+const EMPTY_DATA = {};
+
 export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaForm,
@@ -202,7 +206,10 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => httpClient,
     message: () => message,
     data: () => {
-      const data = {...shaFormInstance?.formData};
+      if (!shaFormInstance?.formData || isEmpty(shaFormInstance.formData))
+        return EMPTY_DATA; 
+
+      const data = shaFormInstance?.formData;
       return removeGhostKeys(data);
     },
     form: () => {

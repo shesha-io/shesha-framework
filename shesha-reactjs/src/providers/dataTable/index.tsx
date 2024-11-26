@@ -53,7 +53,6 @@ import {
   setMultiSelectedRowAction,
   fetchGroupingColumnsSuccessAction,
   setSortingSettingsAction,
-  setHoverRowAction,
   setDraggingRowAction,
   setStandardSortingAction,
   onGroupAction,
@@ -717,11 +716,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch(setSelectedRowAction(state.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
   };
 
-  const setHoverRowId = (id: string) => {
-    if (state.hoverRowId !== id)
-      dispatch(setHoverRowAction(id));
-  };
-
   const setDraggingState = (dragState: DragState) => {
     if (state.dragState !== dragState)
       dispatch(setDraggingRowAction(dragState));
@@ -760,7 +754,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     getRepository,
     setRowData,
     setSelectedRow,
-    setHoverRowId,
     setDragState: setDraggingState,
     setMultiSelectedRow,
     requireColumns,
