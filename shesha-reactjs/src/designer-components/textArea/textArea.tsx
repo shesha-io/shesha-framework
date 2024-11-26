@@ -5,7 +5,12 @@ import { Input, App } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import {
+  evaluateString,
+  getStyle,
+  pickStyleFromModel,
+  validateConfigurableComponentSettings,
+} from '@/providers/form/utils';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { axiosHttp } from '@/utils/fetchers';
@@ -14,7 +19,11 @@ import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migratePropertyName,
+  migrateCustomFunctions,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -81,6 +90,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
       style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
+      spellCheck: model.enForceSpellCheck,
     };
 
     const eventProps = {
@@ -99,7 +109,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         model={model}
         initialValue={
           (model?.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model?.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+          (model.initialValue
+            ? evaluateString(model?.initialValue, { formData, formMode: form.formMode, globalState })
+            : undefined)
         }
       >
         {(value, onChange) => {
@@ -162,8 +174,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           style: prev.style,
         };
         return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
-      })
-    ,
+      }),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
