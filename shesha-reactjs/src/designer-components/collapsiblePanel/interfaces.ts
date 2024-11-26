@@ -1,3 +1,4 @@
+import { headerType } from './../../components/panel/index';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
@@ -23,6 +24,9 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   borderRadius?: number;
+  hasCustomHeader?: boolean;
+  customHeader?: ICollapsiblePanelContent;
+  panelHeadType?: headerType;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
