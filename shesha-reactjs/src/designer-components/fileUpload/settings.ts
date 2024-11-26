@@ -12,7 +12,6 @@ export const getSettings = () =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...new DesignerToolbarSettings()
@@ -118,7 +117,6 @@ export const getSettings = () =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
         components: [...new DesignerToolbarSettings()
@@ -141,7 +139,6 @@ export const getSettings = () =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
         components: [...new DesignerToolbarSettings()
@@ -186,7 +183,6 @@ export const getSettings = () =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
         components: [...new DesignerToolbarSettings()

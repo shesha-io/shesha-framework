@@ -12,7 +12,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
         components: [
@@ -95,7 +94,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: "start",
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
         components: [...new DesignerToolbarSettings()

@@ -12,7 +12,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
         components: [
@@ -99,7 +98,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: 'fccb6b17-656d-43c0-8144-0b91c454da1d',
         components: [

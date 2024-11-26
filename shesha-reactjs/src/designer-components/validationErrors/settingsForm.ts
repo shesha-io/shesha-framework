@@ -12,7 +12,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: '85323edf-da64-44ee-bb3f-f69f59abde03',
         components: [
@@ -40,7 +39,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: '3aba1229-e330-4b91-8576-4b5e6ab77305',
         components: [
@@ -97,7 +95,6 @@ export const getSettings = (data: any) =>
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hasHeaderBorder: false,
       content: {
         id: '27eaaa7e-10c0-4233-befe-d7734b97e252',
         components: [

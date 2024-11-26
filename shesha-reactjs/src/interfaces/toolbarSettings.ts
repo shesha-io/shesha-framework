@@ -127,7 +127,7 @@ export class DesignerToolbarSettings<T> {
     const collapsibleProps: typeof props = {
       ...props,
       id: nanoid(),
-      hasHeaderBorder: false,
+
     };
     return this.addProperty(collapsibleProps, 'collapsiblePanel');
   }
