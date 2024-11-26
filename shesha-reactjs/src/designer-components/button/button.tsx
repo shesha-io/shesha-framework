@@ -1,9 +1,9 @@
 import ConfigurableButton from './configurableButton';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
@@ -14,8 +14,13 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useForm, useFormData, useSheshaApplication } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { addPx } from './util';
 import { removeNullUndefined } from '@/providers/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getBackgroundStyle } from '../_settings/utils/background/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -28,7 +33,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const { style, ...restProps } = model;
     const { formMode } = useForm();
     const { data } = useFormData();
-
+    const { backendUrl, httpHeaders } = useSheshaApplication();
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
     const fieldModel = {
@@ -39,21 +44,54 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
 
     const grantedPermission = anyOfPermissionsGranted(restProps?.permissions || []);
 
+    const dimensions = model?.dimensions;
+    const border = model?.border;
+    const font = model?.font;
+    const shadow = model?.shadow;
+    const background = model?.background;
+
+    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(border), [border]);
+    const fontStyles = useMemo(() => getFontStyle(font), [font]);
+    const [backgroundStyles, setBackgroundStyles] = useState({});
+    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const jsStyle = getStyle(model.style, data);
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+
+        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+            .then((response) => {
+              return response.blob();
+            })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            }) : '';
+
+        const style = await getBackgroundStyle(background, storedImageUrl);
+        setBackgroundStyles(style);
+      };
+
+      fetchStyles();
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+
+
     if (!grantedPermission && formMode !== 'designer') {
       return null;
     }
 
     const newStyles = {
-      width: addPx(model.width),
-      height: addPx(model.height),
-      backgroundColor: model.backgroundColor,
-      fontSize: addPx(model.fontSize),
-      color: model.color,
-      fontWeight: model.fontWeight,
-      borderWidth: addPx(model.borderWidth),
-      borderColor: model.borderColor,
-      borderStyle: model.borderStyle,
-      borderRadius: addPx(model.borderRadius)
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...fontStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...stylingBoxAsCSS,
+      ...jsStyle
     };
 
     return (
@@ -84,7 +122,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonGroupItemBaseV0>(0, prev => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
-          hidden: prev.hidden as boolean,
+          hidden: prev.hidden,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
@@ -99,8 +137,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-
-  ,
+  .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev) })),
 };
 
 export default ButtonComponent;
