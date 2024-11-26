@@ -204,7 +204,7 @@ stages:
         versionSpec: 23.x
       retryCountOnTaskFailure: 5
     - task: Npm@1
-      displayName: 'Npm Update Version'
+      displayName: 'Npm Update Version for shesha-reactjs'
       inputs:
         command: custom
         workingDir: shesha-reactjs
@@ -212,7 +212,7 @@ stages:
         customCommand: 'version $(versionNo) --allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: Npm@1
-      displayName: 'Npm Install'
+      displayName: 'Npm Install for shesha-reactjs'
       inputs:
         command: custom
         workingDir: shesha-reactjs
@@ -226,7 +226,7 @@ stages:
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
-      displayName: Npm Build
+      displayName: 'Npm Build for shesha-reactjs'
       inputs:
         command: custom
         workingDir: shesha-reactjs
@@ -235,7 +235,7 @@ stages:
       env:
         NODE_OPTIONS: "--max-old-space-size=8192" # Increase memory limit for the build process
     - task: Npm@1
-      displayName: 'Npm Update Version'
+      displayName: 'Npm Update Version for shesha-starter/frontend'
       inputs:
         command: custom
         workingDir: shesha-starter/frontend
@@ -243,7 +243,7 @@ stages:
         customCommand: 'version $(versionNo) --allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')        
     - task: Npm@1
-      displayName: 'Npm Install'
+      displayName: 'Npm Install for shesha-starter/frontend'
       inputs:
         command: custom
         workingDir: shesha-starter/frontend
@@ -257,7 +257,7 @@ stages:
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
-      displayName: Npm Build
+      displayName: 'Npm Build shesha-starter/frontend'
       inputs:
         command: custom
         workingDir: 'shesha-starter/frontend'
