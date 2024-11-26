@@ -76,8 +76,8 @@ export const Dropdown: FC<IDropdownProps> = ({
     }, [valueFormat, outcomeCustomJs]);
 
     const getLabeledValue = useCallback((value: any, options: ISelectOption<any>[]) => {
-        if (value === undefined) 
-            return undefined;
+        if (typeof value === 'undefined' || value === null)
+            return value;
         const itemValue = incomeValueFunc(value, {});
         const item = options?.find(i => i.value === itemValue);
         return {
