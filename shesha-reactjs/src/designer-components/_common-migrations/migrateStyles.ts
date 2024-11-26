@@ -19,22 +19,22 @@ export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T)
                     },
                     top: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderStyle || 'solid',
+                        style: prevStyles?.borderType || 'solid',
                         color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     bottom: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderStyle || 'solid',
+                        style: prevStyles?.borderType || 'solid',
                         color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     left: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderStyle || 'solid',
+                        style: prevStyles?.borderType || 'solid',
                         color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     right: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderStyle || 'solid',
+                        style: prevStyles?.borderType || 'solid',
                         color: prevStyles?.borderColor || '#d9d9d9'
                     }
 
