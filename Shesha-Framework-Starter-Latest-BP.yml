@@ -257,7 +257,7 @@ stages:
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
-      displayName: 'Npm Build shesha-starter/frontend'
+      displayName: 'Npm Build for shesha-starter/frontend'
       inputs:
         command: custom
         workingDir: 'shesha-starter/frontend'
