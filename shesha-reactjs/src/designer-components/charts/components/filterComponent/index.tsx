@@ -24,11 +24,12 @@ const FilterComponent = ({
   resetFilter: () => void;
 }) => {
   const { styles, cx } = useStyles();
-  // Add new filter condition
-  const addCondition = () => {
-    // Update filters state with new filter condition
+
+  const addNewCondition = () => {
+    if (filters.length > 0 && !filters[filters.length - 1]?.property || filters[filters.length - 1]?.property.length === 0) {
+      return;
+    }
     setFilters([...filters, { property: '', operator: 'contains', value: '' }]);
-    // Trigger filter function with new filters
     onFilter();
   };
 
@@ -125,7 +126,7 @@ const FilterComponent = ({
       ))}
 
       <Button
-        onClick={addCondition}
+        onClick={addNewCondition}
         type="dashed"
         block
         icon={<PlusOutlined />}

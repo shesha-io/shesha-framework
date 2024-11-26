@@ -8,7 +8,8 @@ import {
   Button,
   Modal,
   Space,
-  Tabs
+  Tabs,
+  Typography
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
@@ -82,22 +83,22 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
   const renderCodeEditor = () => (
-      <BaseCodeEditor
-        value={effectiveValue}
-        onChange={onChange}
-        readOnly={readOnly}
-        placeholder={props.placeholder}
-        language={language}
-  
-        path={src?.path}
-        wrapInTemplate={props.wrapInTemplate}
-        templateSettings={props.templateSettings}
-        fileName={props.fileName ?? props.propertyName}
-        availableConstants={props.availableConstants}
-        resultType={props.resultType}
-        style={mode === 'dialog' ? { height: "100%" } : undefined}
-      />
-    );
+    <BaseCodeEditor
+      value={effectiveValue}
+      onChange={onChange}
+      readOnly={readOnly}
+      placeholder={props.placeholder}
+      language={language}
+
+      path={src?.path}
+      wrapInTemplate={props.wrapInTemplate}
+      templateSettings={props.templateSettings}
+      fileName={props.fileName ?? props.propertyName}
+      availableConstants={props.availableConstants}
+      resultType={props.resultType}
+      style={mode === 'dialog' ? { height: "100%" } : undefined}
+    />
+  );
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
@@ -123,43 +124,46 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ]
     : undefined;
 
-  return (
-    <>
-      <Space>
-        <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small">
-          {readOnly ? 'View Code' : hasValue ? 'Edit in Code Editor' : 'Create in Code Editor'}
-        </Button>
-        <Show when={hasValue && !readOnly}>
-          <Button type="primary" size="small" danger onClick={onClear}>
-            Clear
-          </Button>
-        </Show>
-      </Space>
-      {showDialog && (
-        <Modal
-          open={showDialog}
-          onCancel={onDialogCancel}
-          onOk={onDialogSave}
-          title={props.label}
-          okButtonProps={{ hidden: readOnly }}
-          cancelText={readOnly ? 'Close' : undefined}
-          destroyOnClose={true}
-          classNames={{ body: styles.codeEditorModalBody }}
-          className={styles.codeEditorModal}
-          width={null}
-        >
-          <Show when={Boolean(props?.description)}>
-            <Alert message={props?.description} />
-            <br />
+  return readOnly && !hasValue
+    ? (<Typography.Text disabled>No Code</Typography.Text>)
+    : (
+      <>
+        <Space>
+          <Button icon={<CodeOutlined />
+          } onClick={openEditorDialog} size="small" >
+            {readOnly ? 'View Code' : hasValue ? 'Edit in Code Editor' : 'Create in Code Editor'}
+          </Button >
+          <Show when={hasValue && !readOnly}>
+            <Button type="primary" size="small" danger onClick={onClear}>
+              Clear
+            </Button>
           </Show>
+        </Space >
+        {showDialog && (
+          <Modal
+            open={showDialog}
+            onCancel={onDialogCancel}
+            onOk={onDialogSave}
+            title={props.label}
+            okButtonProps={{ hidden: readOnly }}
+            cancelText={readOnly ? 'Close' : undefined}
+            destroyOnClose={true}
+            classNames={{ body: styles.codeEditorModalBody }}
+            className={styles.codeEditorModal}
+            width={null}
+          >
+            <Show when={Boolean(props?.description)}>
+              <Alert message={props?.description} />
+              <br />
+            </Show>
 
-          {tabItems ? (
-            <Tabs items={tabItems} />
-          ) : (
-            <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
-          )}
-        </Modal>
-      )}
-    </>
-  );
+            {tabItems ? (
+              <Tabs items={tabItems} />
+            ) : (
+              <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
+            )}
+          </Modal>
+        )}
+      </>
+    );
 };

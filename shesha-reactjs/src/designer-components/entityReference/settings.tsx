@@ -4,7 +4,7 @@ import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAuto
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import Show from '@/components/show';
 import { Autocomplete } from '@/components/autocomplete';
-import FormAutocomplete from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/formAutocomplete';
 import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { MetadataProvider, useForm } from '@/providers';
 import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';

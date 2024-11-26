@@ -21,6 +21,32 @@ export const settingsForm = new DesignerToolbarSettings()
       id: nanoid(),
       components:
         [...new DesignerToolbarSettings()
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'propertyName',
+            label: 'Property Name',
+            parentId: 'root',
+            hidden: false,
+            validate: { required: false },
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'label',
+            label: 'Label',
+            parentId: 'root',
+            hidden: false,
+            validate: { required: true },
+            version: 3
+          })
+          .addCheckbox({
+            id: nanoid(),
+            label: 'Hide Label',
+            propertyName: 'hideLabel',
+            parentId: 'root',
+            hidden: false,
+            defaultValue: true,
+            version: 2,
+          })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'hidden',
@@ -46,10 +72,35 @@ export const settingsForm = new DesignerToolbarSettings()
             propertyName: 'height',
             parentId: 'root',
             label: 'Height',
-            description: 'The height (px) of the chart. The width will be calculated automatically based on the width. Id not provided, the default height will be used.',
-            defaultValue: 0,
+            description: 'The height (px) of the chart. If not provided, the default height will be used. Minimum height is 201px. For responsiveness, setting the height will automatically set the width to proportionate value.',
             stepNumeric: 1,
-            hidden: false,
+            min: 200,
+            hidden: {
+              _code: "return getSettingValue(data?.width) > 300",
+              _mode: "code",
+              _value: true
+            }
+          })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'width',
+            parentId: 'root',
+            label: 'Width',
+            description: 'The width (px) of the chart. If not provided, the default width will be used. Minimum width is 301px. For responsiveness, setting the width will automatically set the height to proportionate value.',
+            stepNumeric: 1,
+            min: 300,
+            hidden: {
+              _code: "return getSettingValue(data?.height) > 200",
+              _mode: "code",
+              _value: true
+            },
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'showBorder',
+            label: 'Show Border',
+            parentId: 'root',
+            defaultValue: true,
           })
           .toJson()
         ]
@@ -84,6 +135,18 @@ export const settingsForm = new DesignerToolbarSettings()
             ],
             validate: { required: true },
             defaultValue: 'line',
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'isDoughnut',
+            label: 'Is Doughnut',
+            parentId: 'root',
+            hidden: {
+              _code: "return getSettingValue(data?.chartType) !== `pie`",
+              _mode: "code",
+              _value: true
+            },
+            defaultValue: false,
           })
           .addDropdown({
             id: nanoid(),
@@ -139,6 +202,26 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: true,
           })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'legendPosition',
+            parentId: 'root',
+            hidden: {
+              _code: "return getSettingValue(data?.showLegend) !== true",
+              _mode: "code",
+              _value: true
+            },
+            label: 'Legend Position',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Top', value: 'top' },
+              { id: nanoid(), label: 'Bottom', value: 'bottom' },
+              { id: nanoid(), label: 'Left', value: 'left' },
+              { id: nanoid(), label: 'Right', value: 'right' },
+            ],
+            validate: { required: true },
+            defaultValue: 'top',
+          })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showXAxisScale',
@@ -177,26 +260,6 @@ export const settingsForm = new DesignerToolbarSettings()
               _value: true
             }
           })
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'legendPosition',
-            parentId: 'root',
-            hidden: {
-              _code: "return getSettingValue(data?.showLegend) !== true && getSettingValue(data?.dataMode) === `url`",
-              _mode: "code",
-              _value: false
-            },
-            label: 'Legend Position',
-            dataSourceType: 'values',
-            values: [
-              { id: nanoid(), label: 'Top', value: 'top' },
-              { id: nanoid(), label: 'Bottom', value: 'bottom' },
-              { id: nanoid(), label: 'Left', value: 'left' },
-              { id: nanoid(), label: 'Right', value: 'right' },
-            ],
-            validate: { required: true },
-            defaultValue: 'top',
-          })
           .addNumberField({
             id: nanoid(),
             propertyName: 'tension',
@@ -204,6 +267,7 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Tension',
             defaultValue: 0,
             stepNumeric: 0.1,
+            min: 0,
             hidden: {
               _code: "return getSettingValue(data?.chartType) !== `line`",
               _mode: "code",
@@ -212,18 +276,21 @@ export const settingsForm = new DesignerToolbarSettings()
           })
           .addNumberField({
             id: nanoid(),
-            propertyName: 'borderWidth',
+            propertyName: 'strokeWidth',
             parentId: chartSettingsId,
-            label: 'Border width',
+            label: 'Stroke width',
             defaultValue: 0.0,
+            description: 'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
             stepNumeric: 0.1,
+            min: 0,
+            max: 10,
           })
           .addColorPicker({
             id: nanoid(),
             propertyName: 'strokeColor',
             parentId: 'root',
-            label: 'Border Stroke Color',
-            defaultValue: '#000000',
+            label: 'Stroke Color',
+            allowClear: true,
           })
           .toJson()
         ]
@@ -264,10 +331,14 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Axis label',
             labelAlign: 'right',
             parentId: 'root',
-            hidden: false,
             isDynamic: false,
             description: 'Label for the axis property',
             validate: { required: false },
+            hidden: {
+              _code: "return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`",
+              _mode: "code",
+              _value: true
+            },
           })
           .addTextField({
             id: nanoid(),
@@ -275,10 +346,14 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Value axis label',
             labelAlign: 'right',
             parentId: 'root',
-            hidden: false,
             isDynamic: false,
             description: 'Label for the value property',
             validate: { required: false },
+            hidden: {
+              _code: "return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`",
+              _mode: "code",
+              _value: true
+            },
           })
           .toJson()
         ]
@@ -324,13 +399,17 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Axis Property',
             labelAlign: 'right',
             parentId: 'root',
-            hidden: false,
             isDynamic: false,
             description: 'The property to be used on the x-axis.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+            hidden: {
+              _code: "return getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: true
+            },
           })
           .addCheckbox({
             id: nanoid(),
@@ -340,6 +419,7 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
+            
           })
           .addDropdown({
             id: nanoid(),
@@ -369,13 +449,17 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Value Property',
             labelAlign: 'right',
             parentId: 'root',
-            hidden: false,
             isDynamic: false,
             description: 'This is the property that will be used to calculate the data and hence show on the depenedent y-axis.',
             validate: { required: true },
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+            hidden: {
+              _code: "return getSettingValue(data?.dataMode) === `url`",
+              _mode: "code",
+              _value: true
+            },
           })
           .addPropertyAutocomplete({
             id: nanoid(),

@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import FormAutocomplete from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/formAutocomplete';
 import React, { FC, ReactNode, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';

@@ -1,12 +1,10 @@
-import React, { FC, useRef } from 'react';
+import React, { FC } from 'react';
 import { Collapse, Skeleton, theme } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
-import { useParent } from '@/providers/parentProvider';
 
-const { Panel } = Collapse;
 const { useToken } = theme;
 
 export type defaultHeaderType = 'settings' | 'default';
@@ -30,7 +28,6 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   hideWhenEmpty?: boolean;
   parentPanel?: boolean;
   primaryColor?: string;
-  hasBorder?: boolean;
   hasHeaderBorder?: boolean;
   dynamicBorderRadius?: number;
 }
@@ -84,15 +81,15 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   hideCollapseContent,
   hideWhenEmpty = false,
   parentPanel = false,
+  hasHeaderBorder = false,
   dynamicBorderRadius,
 
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
   const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
-  const panelRef = useRef(null);
   const { token } = useToken();
-  const { model: { hasHeaderBorder = true } } = useParent();
+
 
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
@@ -110,23 +107,21 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       parentPanel={parentPanel}
       primaryColor={token.colorPrimary}
       hasHeaderBorder={hasHeaderBorder}
-    >
-      <Panel
-        key="1"
-        collapsible={collapsible}
-        showArrow={showArrow}
-        header={header || ' '}
-        className='sha-panel'
-        ref={panelRef}
-        extra={
-          <span onClick={onContainerClick} className={extraClassName}>
-            {extra}
-          </span>
+      items={[
+        {
+          key: "1",
+          collapsible: collapsible,
+          showArrow: showArrow,
+          label: header || ' ',
+          extra: (
+            <span onClick={onContainerClick} className={extraClassName}>
+              {extra}
+            </span>
+          ),
+          children: <Skeleton loading={loading}>{children}</Skeleton>,
         }
-      >
-        <Skeleton loading={loading}>{children}</Skeleton>
-      </Panel>
-    </StyledCollapse>
+      ]}
+    />
   );
 };
 
