@@ -32,5 +32,5 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent, II
   initialValue?: string;
   passEmptyStringByDefault?: boolean;
   textType?: TextType;
-  enForceSpellCheck?: boolean;
+  spellCheck?: boolean;
 }

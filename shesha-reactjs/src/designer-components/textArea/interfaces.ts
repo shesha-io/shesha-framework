@@ -19,5 +19,5 @@ export interface ITextAreaComponentProps extends IConfigurableFormComponent {
   height?: string;
   width?: string;
   backgroundColor?: string;
-  enForceSpellCheck?: boolean;
+  spellCheck?: boolean;
 }
