@@ -7,6 +7,7 @@ import {
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
+import { useGeneratedTitle } from '../../hooks';
 import { IChartData, IChartDataProps } from '../../model';
 
 interface BarChartProps extends IChartDataProps {
@@ -24,10 +25,10 @@ ChartJS.register(
 );
 
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked, legendProperty, entityType } = useChartDataStateContext();
-
-  const entityTypeArray = entityType.split('.');
-  const entityClassName = entityTypeArray[entityTypeArray.length - 1];
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, stacked,
+   } = useChartDataStateContext();
+   
+  const chartTitle: string = useGeneratedTitle();
 
   if (!data || !data.datasets || !data.labels) {
     if (!data)
@@ -45,15 +46,15 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle ? true : false,
-        text: title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
+        display: showTitle && chartTitle.length > 0 ? true : false,
+        text: chartTitle,
       },
     },
     scales: {
       x: {
         title: {
-          display: showXAxisTitle ? true : false,
-          text: xProperty,
+          display: showXAxisTitle && xProperty?.trim().length > 0 ? true : false,
+          text: xProperty?.trim() ?? ''
         },
         display: showXAxisScale ? true : false,
         stacked: stacked,
@@ -62,8 +63,8 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
       },
       y: {
         title: {
-          display: showYAxisTitle ? true : false,
-          text: `${yProperty} (${aggregationMethod})`,
+          display: showYAxisTitle && yProperty?.trim().length > 0 ? true : false,
+          text: `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
         },
         display: showYAxisScale ? true : false,
         stacked: stacked,

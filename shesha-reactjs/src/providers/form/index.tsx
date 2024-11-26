@@ -84,7 +84,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     props.shaForm.setFormMode(formMode);
   }, [props.shaForm]);
 
-  useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm, formData: props.shaForm.formData });
+  useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm });
 
   const setFormData = useCallback((payload: ISetFormDataPayload) => {
     props.shaForm.setFormData(payload);

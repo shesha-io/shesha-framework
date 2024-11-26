@@ -18,6 +18,7 @@ import EditableTagGroup from '@/designer-components/editableTagGroup';
 import EndpointsAutocompleteComponent from '@/designer-components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '@/designer-components/entityPicker';
 import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
+import NotificationAutocompleteComponent from '@/designer-components/notificationAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
 import Image from '@/designer-components/image';
 import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
@@ -254,6 +255,7 @@ export const getToolboxComponents = (
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
         FormAutocompleteComponent,
+        NotificationAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,

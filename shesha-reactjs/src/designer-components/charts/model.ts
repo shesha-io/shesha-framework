@@ -11,12 +11,15 @@ export interface IChartData {
  * Chart props, used in the chart component and some of its children
  */
 export interface IChartsProps {
+    width?: number;
     height?: number;
+    showBorder?: boolean;
     orderBy?: string;
     orderDirection?: TOrderDirection;
     dataMode?: TDataMode;
     url?: string;
     chartType?: TChartType;
+    isDoughnut?: boolean;
     showTitle?: boolean;
     title?: string;
     name?: string;
@@ -35,7 +38,8 @@ export interface IChartsProps {
     xProperty?: string;
     yProperty?: string;
     tension?: number;
-    borderWidth?: number;
+    borderWidth?: number; // for migration
+    strokeWidth?: number;
     strokeColor?: string;
     simpleOrPivot?: 'simple' | 'pivot';
     showName?: boolean;

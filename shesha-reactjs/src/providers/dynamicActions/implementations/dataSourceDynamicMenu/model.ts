@@ -12,5 +12,4 @@ export interface IDataSourceArguments {
     tooltipProperty?: string;
     maxResultCount?: number;
     buttonType?: string;
-
 }

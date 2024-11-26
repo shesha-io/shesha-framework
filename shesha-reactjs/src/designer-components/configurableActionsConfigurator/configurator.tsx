@@ -10,8 +10,6 @@ import { ActionSelect } from './actionSelect';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 
-const { Panel } = Collapse;
-
 const getActionFullName = (actionOwner: string, actionName: string): string => {
   return actionName
     ? `${actionOwner}:${actionName}`
@@ -75,10 +73,10 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   }, [actionName, actionOwner]);
 
   const filteredActions = props?.allowedActions?.reduce((acc, key) => {
-      if (actions[key]) {
-        acc[key] = actions[key];
-      }
-      return acc;
+    if (actions[key]) {
+      acc[key] = actions[key];
+    }
+    return acc;
   }, {});
 
   return (
@@ -116,13 +114,18 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             </Form.Item >
             {
               value?.handleSuccess && (
-                <Collapse defaultActiveKey={['1']}>
-                  <Panel header="On Success handler" key="1">
-                    <Form.Item name="onSuccess">
-                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item >
-                  </Panel>
-                </Collapse>
+                <Collapse
+                  defaultActiveKey={['1']}
+                  items={[{
+                    key: "1",
+                    label: "On Success handler",
+                    children: (
+                      <Form.Item name="onSuccess">
+                        <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
+                      </Form.Item>
+                    )
+                  }]}
+                />
               )
             }
             <Form.Item name="handleFail" label="Handle Fail" valuePropName='checked'>
@@ -130,13 +133,18 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             </Form.Item>
             {
               value?.handleFail && (
-                <Collapse defaultActiveKey={['1']}>
-                  <Panel header="On Fail handler" key="1">
-                    <Form.Item name="onFail">
-                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                    </Form.Item>
-                  </Panel>
-                </Collapse>
+                <Collapse
+                  defaultActiveKey={['1']}
+                  items={[{
+                    key: "1",
+                    label: "On Fail handler",
+                    children: (
+                      <Form.Item name="onFail">
+                        <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
+                      </Form.Item>
+                    )
+                  }]}
+                />
               )
             }
           </>

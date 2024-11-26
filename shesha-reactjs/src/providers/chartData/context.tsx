@@ -1,13 +1,15 @@
-import { IChartsProps, IFilter, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter, TAggregationMethod, TChartType, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
   height?: number;
+  width?: number;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
   url?: string;
   dataMode?: TDataMode;
-  chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
+  chartType?: TChartType;
+  isDoughnut?: boolean;
   showTitle?: boolean;
   title?: string;
   showLegend?: boolean;
@@ -30,14 +32,17 @@ export interface IChartDataContext {
   showYAxisScale?: boolean;
   showYAxisTitle?: boolean;
   stacked?: boolean;
-  aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+  aggregationMethod?: TAggregationMethod;
   tension?: number;
-  borderWidth?: number;
+  strokeWidth?: number;
   strokeColor?: string;
 
   data?: object[];
   items?: object[];
-  urlTypeData?: object;
+  urlTypeData?: {
+    labels?: string[];
+    datasets?: object[];
+  };
 
   isLoaded?: boolean;
 
@@ -63,7 +68,7 @@ export const INITIAL_STATE: IChartDataContext = {
   height: 0,
   url: '',
   dataMode: 'entityType',
-  chartType: 'pivot',
+  chartType: 'line',
   showTitle: true,
   title: '',
   showLegend: true,
@@ -84,7 +89,7 @@ export const INITIAL_STATE: IChartDataContext = {
   showYAxisTitle: true,
   aggregationMethod: 'count',
   tension: 0,
-  borderWidth: 0,
+  strokeWidth: 0,
 
   data: [],
   items: [],

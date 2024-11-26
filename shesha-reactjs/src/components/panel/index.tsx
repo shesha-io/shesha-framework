@@ -5,8 +5,6 @@ import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
 
-const { Panel } = Collapse;
-
 export interface ICollapsiblePanelProps extends CollapseProps {
   isActive?: boolean;
   header?: React.ReactNode;
@@ -36,7 +34,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * 
  */
 
-const StyledCollapse: any = styled(Collapse)<
+const StyledCollapse: any = styled(Collapse) <
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
 >`
   .ant-collapse-header {
@@ -90,21 +88,21 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       bodyColor={bodyColor}
       headerColor={headerColor}
       hideCollapseContent={hideCollapseContent}
-    >
-      <Panel
-        key="1"
-        collapsible={collapsible}
-        showArrow={showArrow}
-        header={header || ' '}
-        extra={
-          <span onClick={onContainerClick} className={extraClassName}>
-            {extra}
-          </span>
+      items={[
+        {
+          key: "1",
+          collapsible: collapsible,
+          showArrow: showArrow,
+          label: header || ' ',
+          extra: (
+            <span onClick={onContainerClick} className={extraClassName}>
+              {extra}
+            </span>
+          ),
+          children: <Skeleton loading={loading}>{children}</Skeleton>,
         }
-      >
-        <Skeleton loading={loading}>{children}</Skeleton>
-      </Panel>
-    </StyledCollapse>
+      ]}
+    />
   );
 };
 

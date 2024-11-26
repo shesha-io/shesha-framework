@@ -28,6 +28,10 @@ export interface UserApi {
      */
     lastName: string;
     /**
+     * Person Id
+     */
+    personId: string;
+    /**
      * Has role
      */
     hasRoleAsync: (role: string) => Promise<boolean>;
