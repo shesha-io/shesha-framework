@@ -93,7 +93,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 justify-content: flex-start;
                 position: absolute;
                 top: 5px;
-                right: 5px;
+                right: 35px;
                 bottom: 5px;
                 left: 5px;
             }
