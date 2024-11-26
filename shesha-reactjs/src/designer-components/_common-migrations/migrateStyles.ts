@@ -39,7 +39,7 @@ export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T)
                     }
 
                 },
-                radius: { all: prevStyles?.borderRadius },
+                radius: { all: prevStyles?.borderRadius || 8 },
             },
             background: {
                 type: 'color',
@@ -57,7 +57,7 @@ export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T)
                 weight: prevStyles?.fontWeight as string || '400',
             },
             dimensions: {
-                height: addPx(prevStyles?.height) || null,
+                height: addPx(prevStyles?.height) || '32px',
                 width: addPx(prevStyles?.width) || '100%',
                 minHeight: '0px',
                 minWidth: '0px',
