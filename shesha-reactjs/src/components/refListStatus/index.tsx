@@ -47,7 +47,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   const canShowIcon = showIcon && itemData?.icon;
 
-  if (!itemData?.itemValue && !listItem?.loading) return null;
+  if (typeof itemData?.itemValue === 'undefined'  && !listItem?.loading) return null;
 
   return listItem?.loading ? (
     <Skeleton.Button />

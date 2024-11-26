@@ -547,7 +547,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addStandard()\r\n        .addObject(\"option\", \"Selected option\")\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addObject(\"option\", \"Selected option\")\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
           }
         ]
       },

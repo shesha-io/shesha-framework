@@ -45,7 +45,9 @@ export const Dropdown: FC<IDropdownProps> = ({
     //quick fix not to default to empty string or null while working with multi-mode
     const defaultValue = evaluateString(defaultVal, { formData, formMode, globalState }) ?? undefined;
 
-    const value = (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any;
+    const value = typeof val === 'string' 
+      ? (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any
+      : val;
 
     const getOptions = (): ILabelValue[] => {
         return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
@@ -74,8 +76,8 @@ export const Dropdown: FC<IDropdownProps> = ({
     }, [valueFormat, outcomeCustomJs]);
 
     const getLabeledValue = useCallback((value: any, options: ISelectOption<any>[]) => {
-        if (value === undefined) 
-            return undefined;
+        if (typeof value === 'undefined' || value === null)
+            return value;
         const itemValue = incomeValueFunc(value, {});
         const item = options?.find(i => i.value === itemValue);
         return {
