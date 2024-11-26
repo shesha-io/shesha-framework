@@ -13,29 +13,29 @@ export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T)
                 selectedSide: 'all',
                 border: {
                     all: {
-                        width: prevStyles?.borderSize as string,
-                        style: prevStyles?.borderType,
-                        color: prevStyles?.borderColor
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles?.borderType || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     top: {
-                        width: prevStyles?.borderSize as string,
-                        style: prevStyles?.borderStyle,
-                        color: prevStyles?.borderColor
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles?.borderStyle || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     bottom: {
-                        width: prevStyles?.borderSize as string,
-                        style: prevStyles?.borderStyle,
-                        color: prevStyles?.borderColor
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles?.borderStyle || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     left: {
-                        width: prevStyles?.borderSize as string,
-                        style: prevStyles?.borderStyle,
-                        color: prevStyles?.borderColor
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles?.borderStyle || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     right: {
-                        width: prevStyles?.borderSize as string,
-                        style: prevStyles?.borderStyle,
-                        color: prevStyles?.borderColor
+                        width: prevStyles?.borderSize as string || '1px',
+                        style: prevStyles?.borderStyle || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     }
 
                 },

@@ -178,14 +178,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model) => ({
     ...model,
-    textType: 'text',
-
+    textType: 'text'
   }),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
-    .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
+    .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev, 'editable'))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<ITextFieldComponentProps>(5, (prev) => {
       const styles: IInputStyles = {
