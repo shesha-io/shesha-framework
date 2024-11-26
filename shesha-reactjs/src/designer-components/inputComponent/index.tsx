@@ -20,7 +20,7 @@ import { defaultExposedVariables } from '../_settings/settingsControl';
 import { getValueFromString } from '../settingsInput/utils';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
-import { SettingInput } from '../settingsInput/settingsInput';
+import { ISettingsInputProps, SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { startCase } from 'lodash';
 interface IRadioOption {
@@ -216,7 +216,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
 
 
 export interface IInputRowProps {
-    inputs: Array<IInputProps>;
+    inputs: Array<ISettingsInputProps>;
     readOnly: boolean;
     inline?: boolean;
     children?: React.ReactNode;
