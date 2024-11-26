@@ -30,9 +30,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
+    const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
+    const isFormSettings = formSettings?.isSettingsForm;
     const {
       label,
       expandIconPosition,
@@ -44,7 +45,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       isSimpleDesign,
       hideCollapseContent,
       hideWhenEmpty,
-      hasHeaderBorder = true
+      hasHeaderBorder = !isFormSettings
     } = model;
 
     const panelContextState = useContext(PanelContext);

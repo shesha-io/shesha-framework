@@ -3,7 +3,6 @@
     {
       "id": "aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -75,7 +74,6 @@
     {
       "id": "2aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlState",
       "label": "State",
       "labelAlign": "right",
@@ -160,7 +158,6 @@
     {
       "id": "3aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlOptions",
       "label": "Options",
       "labelAlign": "right",
@@ -420,7 +417,6 @@
     {
       "id": "4aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlSizes",
       "label": "Sizes",
       "labelAlign": "right",
@@ -546,7 +542,6 @@
     {
       "id": "5aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlPlugins",
       "label": "Plugins",
       "labelAlign": "right",
@@ -975,7 +970,6 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

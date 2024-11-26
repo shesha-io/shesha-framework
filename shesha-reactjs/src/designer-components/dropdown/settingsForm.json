@@ -3,7 +3,6 @@
     {
       "id": "xjb9Aq4cAijce1v8OhZ0a",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -133,7 +132,6 @@
     {
       "id": "vo4MNuVku-MPmfaD-6JZN",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlData",
       "label": "Data",
       "labelAlign": "right",
@@ -459,7 +457,6 @@
     {
       "id": "75yJPi5tyshcrOt3me9mS",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -562,7 +559,6 @@
     {
       "id": "AASvPn3ioEAnbsJqvV5_c",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -694,7 +690,6 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

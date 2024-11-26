@@ -3,7 +3,6 @@
     {
       "id": "vZLe2HPuWJhlTGoDL3nui6ah7Jt26s",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "panel1",
       "componentName": "pnlDisplay",
       "label": "Display",
@@ -169,7 +168,6 @@
     {
       "id": "0OB_WP7HvaZd4nJJsi5KkU30rQZnN2",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "panel1",
       "componentName": "pnlDataType",
       "label": "Data Type",

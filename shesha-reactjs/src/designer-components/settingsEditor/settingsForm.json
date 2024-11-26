@@ -3,7 +3,6 @@
     {
       "id": "W_m7doMyCpCYwAYDfRh6I",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",

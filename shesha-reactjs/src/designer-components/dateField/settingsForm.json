@@ -3,7 +3,6 @@
     {
       "id": "YdG427sm65_Ww47MFVdxA",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -177,7 +176,6 @@
     {
       "id": "oP0uMf56z-zs32j-jCAhx",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlFormats",
       "label": "Formats",
       "labelAlign": "right",
@@ -376,7 +374,6 @@
     {
       "id": "kE28pclZaV8tpOab8iJyl",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlControlVisibility",
       "label": "Control Visibility",
       "labelAlign": "right",
@@ -639,7 +636,6 @@
     {
       "id": "WJlrXoQpXXzHVvk-VGn-z",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlEvents",
       "label": "Events",
       "labelAlign": "right",
@@ -742,7 +738,6 @@
     {
       "id": "UgwgMBSPX2eKVlZKWGtcc",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",
@@ -792,7 +787,6 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",

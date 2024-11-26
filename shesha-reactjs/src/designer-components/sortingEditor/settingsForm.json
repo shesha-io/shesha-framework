@@ -3,7 +3,6 @@
     {
       "id": "W_m7doMyCpCYwAYDfRh6I",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -108,7 +107,6 @@
     {
       "id": "6eBJvoll3xtLJxdvOAlnB",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Data",
       "labelAlign": "right",
@@ -152,7 +150,6 @@
     {
       "id": "Mpe4Sli-5JNDMZYHqeVnY",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlValidation",
       "label": "Validation",
       "labelAlign": "right",

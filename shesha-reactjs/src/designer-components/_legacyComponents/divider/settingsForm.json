@@ -3,7 +3,6 @@
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -68,7 +67,6 @@
     {
       "id": "2046da88-f36d-430f-9bda-120a6325a794",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",

@@ -3,7 +3,6 @@
     {
       "id": "bbbb4bf6-f76d-4139-a850-c99bf06c8b69",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlDisplay",
       "label": "Display",
       "labelAlign": "right",
@@ -223,7 +222,6 @@
     {
       "id": "038adb3d-6fae-450b-afb5-0855e6a30d06",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",
@@ -300,7 +298,6 @@
     {
       "id": "bbbb960e-77e3-40f2-89cc-f18f94678cce",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlVisibility",
       "label": "Visibility",
       "labelAlign": "right",
@@ -338,7 +335,6 @@
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
-      "hasHeaderBorder": false,
       "propertyName": "pnlSecurity",
       "label": "Security",
       "labelAlign": "right",
