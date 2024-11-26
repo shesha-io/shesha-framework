@@ -15,28 +15,28 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 border: {
                     all: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles.borderType || 'solid',
-                        color: prevStyles.borderColor || '#d9d9d9'
+                        style: prevStyles?.borderType || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     top: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles.borderType || 'solid',
-                        color: prevStyles.borderColor || '#d9d9d9'
+                        style: prevStyles?.borderType || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     bottom: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles.borderType || 'solid',
-                        color: prevStyles.borderColor || '#d9d9d9'
+                        style: prevStyles?.borderType || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     left: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles.borderType || 'solid',
-                        color: prevStyles.borderColor || '#d9d9d9'
+                        style: prevStyles?.borderType || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     },
                     right: {
                         width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles.borderType || 'solid',
-                        color: prevStyles.borderColor || '#d9d9d9'
+                        style: prevStyles?.borderType || 'solid',
+                        color: prevStyles?.borderColor || '#d9d9d9'
                     }
 
                 },
@@ -44,22 +44,22 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
             },
             background: {
                 type: 'color',
-                color: prevStyles.backgroundColor || '#fff',
+                color: prevStyles?.backgroundColor,
                 repeat: 'no-repeat',
                 size: 'cover',
                 position: 'center',
                 gradient: { direction: 'to right', colors: {} }
             },
             font: {
-                color: prevStyles.fontColor || '#000',
+                color: prevStyles?.fontColor || '#000',
                 type: 'Arial',
                 align: 'left',
-                size: prevStyles.fontSize as number || 14,
-                weight: prevStyles.fontWeight as string || '400',
+                size: prevStyles?.fontSize as number || 14,
+                weight: prevStyles?.fontWeight as string || '400',
             },
             dimensions: {
-                height: addPx(prevStyles.height) || null,
-                width: addPx(prevStyles.width) || '100%',
+                height: addPx(prevStyles?.height) || null,
+                width: addPx(prevStyles?.width) || '100%',
                 minHeight: '0px',
                 minWidth: '0px',
                 maxWidth: '100%',
