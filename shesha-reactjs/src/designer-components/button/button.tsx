@@ -72,7 +72,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, storedImageUrl);
+        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
 
@@ -137,7 +137,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-  .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev) })),
+      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev) })),
 };
 
 export default ButtonComponent;

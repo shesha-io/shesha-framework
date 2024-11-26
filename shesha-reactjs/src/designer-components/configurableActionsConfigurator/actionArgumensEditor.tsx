@@ -50,6 +50,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   availableConstants,
 }) => {
   const argumentsEditor = useMemo(() => {
+
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
