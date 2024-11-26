@@ -9,10 +9,19 @@ import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import {
+  evaluateString,
+  getStyle,
+  pickStyleFromModel,
+  validateConfigurableComponentSettings,
+} from '@/providers/form/utils';
 import { ITextFieldComponentProps, IInputStyles, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migrateCustomFunctions,
+  migratePropertyName,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
@@ -76,14 +85,25 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const inputProps: InputProps = {
       className: 'sha-input',
       placeholder: model.placeholder,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      prefix: (
+        <>
+          {model.prefix}
+          {model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}
+        </>
+      ),
+      suffix: (
+        <>
+          {model.suffix}
+          {model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}
+        </>
+      ),
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
       style: finalStyle,
+      spellCheck: model.enForceSpellCheck,
     };
 
     const eventProps = {
@@ -102,19 +122,31 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         model={model}
         initialValue={
           (model.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+          (model.initialValue
+            ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
+            : undefined)
         }
       >
         {(value, onChange) => {
           const customEvent = customEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
-            if (typeof onChange === 'function')
-              onChange(...args);
+            if (typeof onChange === 'function') onChange(...args);
           };
-          return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
-            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+          return inputProps.readOnly ? (
+            <ReadOnlyDisplayFormItem
+              value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value}
+              disabled={model.readOnly}
+            />
+          ) : (
+            <InputComponentType
+              {...inputProps}
+              {...customEvent}
+              disabled={model.readOnly}
+              value={value}
+              onChange={onChangeInternal}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -125,31 +157,31 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     textType: 'text',
     ...model,
   }),
-  migrator: (m) => m
-    .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
-    .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
-    .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
-    .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<ITextFieldComponentProps>(5, (prev) => {
-      const styles: IInputStyles = {
-        size: prev.size,
-        width: prev.width,
-        height: prev.height,
-        hideBorder: prev.hideBorder,
-        borderSize: prev.borderSize,
-        borderRadius: prev.borderRadius,
-        borderColor: prev.borderColor,
-        fontSize: prev.fontSize,
-        fontColor: prev.fontColor,
-        backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox,
-        style: prev.style,
-      };
+  migrator: (m) =>
+    m
+      .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
+      .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
+      .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
+      .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      .add<ITextFieldComponentProps>(5, (prev) => {
+        const styles: IInputStyles = {
+          size: prev.size,
+          width: prev.width,
+          height: prev.height,
+          hideBorder: prev.hideBorder,
+          borderSize: prev.borderSize,
+          borderRadius: prev.borderRadius,
+          borderColor: prev.borderColor,
+          fontSize: prev.fontSize,
+          fontColor: prev.fontColor,
+          backgroundColor: prev.backgroundColor,
+          stylingBox: prev.stylingBox,
+          style: prev.style,
+        };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
-    })
-  ,
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      }),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,
