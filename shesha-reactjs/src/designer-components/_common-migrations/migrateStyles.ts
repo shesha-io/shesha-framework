@@ -1,8 +1,7 @@
 import { addPx } from "../_settings/utils";
-import { ITextFieldComponentProps } from "../textField/interfaces";
-import { IStyleType } from "@/interfaces";
+import { IConfigurableFormComponent, IStyleType } from "@/interfaces";
 
-export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
+export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
         const prevStyles = screen ? prev[screen] : prev;
@@ -14,33 +13,33 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
                 selectedSide: 'all',
                 border: {
                     all: {
-                        width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderType || 'solid',
-                        color: prevStyles?.borderColor || '#d9d9d9'
+                        width: prevStyles?.borderSize as string,
+                        style: prevStyles?.borderType,
+                        color: prevStyles?.borderColor
                     },
                     top: {
-                        width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderType || 'solid',
-                        color: prevStyles?.borderColor || '#d9d9d9'
+                        width: prevStyles?.borderSize as string,
+                        style: prevStyles?.borderStyle,
+                        color: prevStyles?.borderColor
                     },
                     bottom: {
-                        width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderType || 'solid',
-                        color: prevStyles?.borderColor || '#d9d9d9'
+                        width: prevStyles?.borderSize as string,
+                        style: prevStyles?.borderStyle,
+                        color: prevStyles?.borderColor
                     },
                     left: {
-                        width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderType || 'solid',
-                        color: prevStyles?.borderColor || '#d9d9d9'
+                        width: prevStyles?.borderSize as string,
+                        style: prevStyles?.borderStyle,
+                        color: prevStyles?.borderColor
                     },
                     right: {
-                        width: prevStyles?.borderSize as string || '1px',
-                        style: prevStyles?.borderType || 'solid',
-                        color: prevStyles?.borderColor || '#d9d9d9'
+                        width: prevStyles?.borderSize as string,
+                        style: prevStyles?.borderStyle,
+                        color: prevStyles?.borderColor
                     }
 
                 },
-                radius: { all: prevStyles?.borderRadius || 8 },
+                radius: { all: prevStyles?.borderRadius },
             },
             background: {
                 type: 'color',
@@ -75,13 +74,13 @@ export const migratePrevStyles = (prev: ITextFieldComponentProps) => {
         };
     };
 
-    const result: ITextFieldComponentProps = {
+    const result: T = {
         ...prev,
-        desktop: { ...prev.desktop, ...migrateStyles('desktop') },
-        tablet: { ...prev.tablet, ...migrateStyles('tablet') },
-        mobile: { ...prev.mobile, ...migrateStyles('mobile') },
-        inputStyles: migrateStyles()
+        desktop: { ...migrateStyles('desktop') },
+        tablet: { ...migrateStyles('tablet') },
+        mobile: { ...migrateStyles('mobile') },
     };
 
     return result;
+
 }; 
