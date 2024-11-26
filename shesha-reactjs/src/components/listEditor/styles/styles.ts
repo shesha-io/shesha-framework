@@ -83,18 +83,20 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     }
                 }
 
-                .${dragHandle} {
-                    transition: opacity 0.2s;
-                    opacity: 0;
-                    cursor: grab;
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: flex-start;
-                    position: absolute;
-                    width: 90%;
-                    height: 85%;
-                }
+            .${dragHandle} {
+                transition: opacity 0.2s;
+                opacity: 0;
+                cursor: grab;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                bottom: 5px;
+                left: 5px;
+            }
 
                 .${dragIcon} {
                     transition: opacity 0.2s;
