@@ -20,6 +20,7 @@ import EntityPickerComponent from '@/designer-components/entityPicker';
 import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
 import NotificationAutocompleteComponent from '@/designer-components/notificationAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
+import ImagePickerComponent from '@/designer-components/imagePicker';
 import Image from '@/designer-components/image';
 import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
 import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
@@ -244,6 +245,7 @@ export const getToolboxComponents = (
         Section,
         StyleBox,
         CodeEditor,
+        ImagePickerComponent,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
         FormAutocompleteComponent,
