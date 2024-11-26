@@ -90,7 +90,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
       style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
-      spellCheck: model.enForceSpellCheck,
+      spellCheck: model.spellCheck,
     };
 
     const eventProps = {

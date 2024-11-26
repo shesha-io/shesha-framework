@@ -104,7 +104,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       disabled: model.readOnly,
       readOnly: model.readOnly,
       style: finalStyle,
-      spellCheck: model.enForceSpellCheck,
+      spellCheck: model.spellCheck,
     };
 
     const eventProps = {

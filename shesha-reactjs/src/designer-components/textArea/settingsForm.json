@@ -504,9 +504,9 @@
           {
             "id": "dc9a21f8-a611-46ec-94dc-79d2c88c7c19",
             "type": "checkbox",
-            "propertyName": "enForceSpellCheck",
+            "propertyName": "spellCheck",
             "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
-            "label": "Enforce spell check",
+            "label": "Spell Check",
             "version": 3
           }
         ]
