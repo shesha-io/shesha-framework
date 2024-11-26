@@ -35,7 +35,7 @@ export interface IImageStyleProps {
 export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps {
   url?: string;
   storedFileId?: string;
-  uploaded?: string;
+  base64?: string;
   dataSource?: ImageSourceType;
   ownerType?: string;
   ownerId?: string;
@@ -80,13 +80,13 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const uploadedFileUrl = model.uploaded || value;
+          const uploadedFileUrl = model.base64 || value;
 
-          const readonly = model?.readOnly || model.dataSource === 'upload' && Boolean(model.uploaded);
+          const readonly = model?.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
 
           const val = model.dataSource === 'storedFile'
             ? model.storedFileId || value?.id || value
-            : model.dataSource === 'upload'
+            : model.dataSource === 'base64'
               ? uploadedFileUrl
               : model.url || value;
 

@@ -140,8 +140,8 @@
                 "id": "2"
               },
               {
-                "label": "Upload",
-                "value": "upload",
+                "label": "Base64",
+                "value": "base64",
                 "id": "3"
               }
             ],
@@ -166,11 +166,11 @@
           {
             "id": "1ad43b1a-04c5-4658-ac0f-cbcbae6b3bd4",
             "type": "imagePicker",
-            "propertyName": "uploaded",
+            "propertyName": "base64",
             "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
             "label": "Upload Image",
             "hidden": {
-              "_code": "return getSettingValue(data?.dataSource) !== 'upload';",
+              "_code": "return getSettingValue(data?.dataSource) !== 'base64';",
               "_mode": "code",
               "_value": false
             }

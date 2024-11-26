@@ -3,7 +3,7 @@ import { Button, Image, Tooltip, Upload, UploadProps } from 'antd';
 import { toBase64, useSheshaApplication, useStoredFile } from '@/index';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 
-export type ImageSourceType = 'url' | 'storedFile' | 'upload';
+export type ImageSourceType = 'url' | 'storedFile' | 'base64';
 
 export interface IImageFieldProps {
   height?: number | string;
@@ -30,7 +30,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
 
   const isStoredFile = imageSource === 'storedFile';
   const isRawUrl = imageSource === 'url' && Boolean(value);
-  const isBase64 = imageSource === 'upload' && Boolean(value);
+  const isBase64 = imageSource === 'base64' && Boolean(value);
 
   const fetchStoredFile = (url: string) => {
     fetch(`${backendUrl}${url}`,
@@ -65,7 +65,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   }, [imageSource, value, fileUrl]);
 
   const onRemove = () => {
-    if (imageSource === 'upload') {
+    if (imageSource === 'base64') {
       if (onChange)
         onChange(null);
     } else if (imageSource === 'storedFile') {
@@ -77,13 +77,13 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
     accept: props.allowedFileTypes?.join(','),
     showUploadList: false,
     beforeUpload: async (file) => {
-      if (imageSource === 'upload') {
+      if (imageSource === 'base64') {
         if (onChange)
           onChange(await toBase64(file));
       } else if (imageSource === 'storedFile') {
         uploadFile({ file: file }, () => {
           //if (value)
-            //fetchStoredFile();
+          //fetchStoredFile();
         });
       }
     },

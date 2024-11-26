@@ -48,7 +48,7 @@ const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     );
 
     const deleteButton = (
-        <Button size="small" style={{ top: '5px' }} danger onClick={(e) => {
+        <Button size="small" danger onClick={(e) => {
             handleRemove();
             e.stopPropagation();
         }}>
