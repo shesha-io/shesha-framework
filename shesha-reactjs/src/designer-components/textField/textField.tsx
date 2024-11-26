@@ -64,6 +64,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const font = model?.font;
     const shadow = model?.shadow;
     const background = model?.background;
+    const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -85,7 +86,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, storedImageUrl);
+        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
 
@@ -108,7 +109,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
-    const jsStyle = getStyle(model.style, data);
+
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
     const InputComponentType = renderInput(model.textType);
 
