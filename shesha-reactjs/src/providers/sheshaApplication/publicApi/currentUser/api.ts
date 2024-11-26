@@ -14,6 +14,7 @@ export interface IUserProfileInfo {
     readonly userName: string;
     readonly firstName: string;
     readonly lastName: string;
+    readonly personId: string;
 }
 
 export interface ICurrentUserApi {
@@ -22,6 +23,7 @@ export interface ICurrentUserApi {
     readonly userName: string;
     readonly firstName: string;
     readonly lastName: string;
+    readonly personId: string;
     hasPermissionAsync(mpermissionName: string, permissionedEntityId?: IEntityReferenceDto): Promise<boolean>;
     hasRoleAsync(roleName: string): Promise<boolean>;
     getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any>;
@@ -51,6 +53,9 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
     }
     get lastName() {
         return this.#profileInfo?.lastName;
+    }
+    get personId() {
+        return this.#profileInfo?.personId;
     }
     //#endregion
 
