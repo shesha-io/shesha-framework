@@ -10,9 +10,8 @@ export type UseShaFormActionsArgs = {
     name: string;
     isActionsOwner: boolean;
     shaForm: IShaFormInstance;
-    formData: any;
 };
-export const useShaFormActions = ({ name, isActionsOwner, shaForm, formData }: UseShaFormActionsArgs) => {
+export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormActionsArgs) => {
     const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
     const actionDependencies = [actionsOwnerUid];
     const prevFormData = useRef(null);
@@ -25,7 +24,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm, formData }: U
             ownerUid: actionsOwnerUid,
             hasArguments: false,
             executer: () => {
-                prevFormData.current = formData;
+                prevFormData.current = shaForm.formData;
                 shaForm.setFormMode('edit');
                 return Promise.resolve();
             },

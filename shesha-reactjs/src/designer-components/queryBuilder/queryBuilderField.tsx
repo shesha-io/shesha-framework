@@ -61,36 +61,39 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             </span>
           )
         }
-      >
-        <Collapse.Panel
-          header={
-            <Space>
-              <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
-                {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
-              </Button>
-
-              <Show when={hasValue && !readOnly}>
-                <Button
-                  type="primary"
-                  size="small"
-                  danger
-                  onClick={() => {
-                    if (props?.onChange) props.onChange(null);
-                  }}
-                >
-                  Clear
+        items={[
+          {
+            key: "1",
+            label: (
+              <Space>
+                <Button type={readOnly ? 'default' : 'primary'} onClick={() => setModalVisible(true)} size="small">
+                  {`Query Builder ${hasValue ? '(applied)' : ''}`.trim()}
                 </Button>
-              </Show>
-            </Space>
+
+                <Show when={hasValue && !readOnly}>
+                  <Button
+                    type="primary"
+                    size="small"
+                    danger
+                    onClick={() => {
+                      if (props?.onChange) props.onChange(null);
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </Show>
+              </Space>
+            ),
+            children: (
+              <CodeEditor
+                readOnly={true}
+                value={props.value ? JSON.stringify(props.value, null, 2) : null}
+                language='javascript'
+              />
+            )
           }
-          key="1"
-        >
-          <CodeEditor
-            readOnly={true}
-            value={props.value ? JSON.stringify(props.value, null, 2) : null}
-            language='javascript'
-          />
-        </Collapse.Panel>
+        ]}
+      >
       </Collapse>
       <Modal
         open={modalVisible}

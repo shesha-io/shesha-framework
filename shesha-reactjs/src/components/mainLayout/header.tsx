@@ -3,11 +3,11 @@ import classNames from 'classnames';
 import { ConfigurableForm } from '@/components';
 import { useStyles } from './styles/styles';
 import { HEADER_CONFIGURATION } from './constant';
-import { IPersistedFormProps } from '@/providers';
+import { FormFullName } from '@/providers';
 
 interface ILayoutHeaderProps {
   collapsed?: boolean;
-  headerFormId?: IPersistedFormProps;
+  headerFormId?: FormFullName;
 }
 
 const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {
@@ -19,7 +19,7 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {
       <div className={styles.headerWrapper}>
         <ConfigurableForm
           mode={'readonly'}
-          formId={{ name: localHeaderFormId.name, module: localHeaderFormId.module }}
+          formId={ localHeaderFormId }
           showFormInfoOverlay={false}
           showDataLoadingIndicator={false}
           showMarkupLoadingIndicator={false}

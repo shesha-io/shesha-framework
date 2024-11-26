@@ -19,6 +19,7 @@ export interface UserLoginInfoDto {
   mobileNumber?: string | null;
   hasRegistered?: boolean;
   loginProvider?: string | null;
+  personId: string;
   homeUrl?: string | null;
   isSelfServiceUser?: boolean;
   grantedPermissions?: GrantedPermissionDto[] | null;

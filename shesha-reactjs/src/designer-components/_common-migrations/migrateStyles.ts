@@ -57,8 +57,8 @@ export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T)
                 weight: prevStyles?.fontWeight as string || '400',
             },
             dimensions: {
-                height: addPx(prevStyles?.height) || null,
-                width: addPx(prevStyles?.width) || null,
+                height: addPx(prevStyles?.height) || '32px',
+                width: addPx(prevStyles?.width) || '100%',
                 minHeight: '0px',
                 minWidth: '0px',
                 maxWidth: '100%',
@@ -78,9 +78,9 @@ export const migratePrevStyles = <T extends IConfigurableFormComponent>(prev: T)
         ...prev,
         desktop: { ...migrateStyles('desktop') },
         tablet: { ...migrateStyles('tablet') },
-        mobile: { ...migrateStyles('mobile') }
+        mobile: { ...migrateStyles('mobile') },
     };
 
     return result;
-};
 
+}; 

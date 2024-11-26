@@ -7,7 +7,9 @@ import {
   App,
   Button,
   Modal,
-  Tabs
+  Space,
+  Tabs,
+  Typography
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeFilled, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
@@ -139,50 +141,52 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ]
     : undefined;
 
-  return (
-    <>
-      <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} ghost={props.ghost} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {props.label !== " " && (readOnly ? 'View Code' : '...')}
-      </Button>
-      {showDialog && (
-        <Modal
-          open={showDialog}
-          onCancel={onDialogCancel}
-          onOk={onDialogSave}
-          closable={true}
-          title={props.label}
-          okButtonProps={{ hidden: readOnly }}
-          cancelText={readOnly ? 'Close' : undefined}
-          destroyOnClose={true}
-          classNames={{ body: styles.codeEditorModalBody }}
-          className={styles.codeEditorModal}
-          width={null}
-          footer={[
-            <Button key="clear" onClick={onClear} disabled={readOnly}>
-              Clear
-            </Button>,
-            <Button key="cancel" onClick={onDialogCancel}>
-              {readOnly ? 'Close' : 'Cancel'}
-            </Button>,
-            !readOnly && (
-              <Button key="ok" type="primary" onClick={onDialogSave}>
-                OK
-              </Button>
-            ),
-          ]}
-        >
-          <Show when={Boolean(props?.description)}>
-            <Alert message={props?.description} />
-            <br />
-          </Show>
+  return readOnly && !hasValue
+    ? (<Typography.Text disabled>No Code</Typography.Text>)
+    : (
+      <>
+        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} ghost={props.ghost} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {props.label !== " " && (readOnly ? 'View Code' : '...')}
+        </Button>
+        {showDialog && (
+          <Modal
+            open={showDialog}
+            onCancel={onDialogCancel}
+            onOk={onDialogSave}
+            closable={true}
+            title={props.label}
+            okButtonProps={{ hidden: readOnly }}
+            cancelText={readOnly ? 'Close' : undefined}
+            destroyOnClose={true}
+            classNames={{ body: styles.codeEditorModalBody }}
+            className={styles.codeEditorModal}
+            width={null}
+            footer={[
+              <Button key="clear" onClick={onClear} disabled={readOnly}>
+                Clear
+              </Button>,
+              <Button key="cancel" onClick={onDialogCancel}>
+                {readOnly ? 'Close' : 'Cancel'}
+              </Button>,
+              !readOnly && (
+                <Button key="ok" type="primary" onClick={onDialogSave}>
+                  OK
+                </Button>
+              ),
+            ]}
+          >
+            <Show when={Boolean(props?.description)}>
+              <Alert message={props?.description} />
+              <br />
+            </Show>
 
-          {tabItems ? (
-            <Tabs items={tabItems} />
-          ) : (
-            <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
-          )}
-        </Modal>
-      )}
-    </>
-  );
+            {tabItems ? (
+              <Tabs items={tabItems} />
+            ) : (
+              <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
+            )}
+          </Modal>
+        )}
+      </>
+    );
 };

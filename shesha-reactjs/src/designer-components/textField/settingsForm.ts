@@ -51,9 +51,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         label: 'Placeholder',
                                         size: 'small',
                                         jsSetting: true,
-                                        validate: {
-                                            required: true
-                                        }
                                     },
                                     {
                                         inputType: 'textArea',

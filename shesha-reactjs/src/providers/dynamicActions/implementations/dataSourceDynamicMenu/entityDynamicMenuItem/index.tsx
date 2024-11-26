@@ -20,7 +20,7 @@ import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFi
 const settingsMarkup = settingsJson as FormMarkup;
 
 const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType } = settings;
+  const { actionConfiguration, tooltipProperty, labelProperty, entityTypeShortAlias, filter, buttonType } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const { data: FormData } = useFormData();
