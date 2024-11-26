@@ -8,7 +8,7 @@ interface IQueryParams {
 }
 
 export const useTemplates = (settings: IDataSourceArguments) => {
-  const { dataSourceUrl, queryParams, entityTypeShortAlias, maxResultCount } = settings;
+  const { dataSourceUrl, queryParams, entityTypeShortAlias, maxResultCount } = settings ?? {};
   const { data } = useFormData();
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManager(false)?.getPageContext();

@@ -1,21 +1,20 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { Input, App } from 'antd';
+import { Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import moment from 'moment';
 import React, { CSSProperties } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customEventHandler } from '@/components/formDesigner/components/utils';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import {
   evaluateString,
   getStyle,
   pickStyleFromModel,
+  useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import { ITextFieldComponentProps, IInputStyles, TextType } from './interfaces';
+import { ITextFieldComponentProps, IInputStyles } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
   migrateCustomFunctions,
@@ -24,22 +23,12 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
 
 const settingsForm = settingsFormJson as FormMarkup;
-
-const renderInput = (type: TextType) => {
-  switch (type) {
-    case 'password':
-      return Input.Password;
-    default:
-      return Input;
-  }
-};
 
 const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   type: 'textField',
@@ -55,11 +44,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
-    const form = useForm();
-    const { data: formData } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const httpClient = useHttpClient();
-    const { message } = App.useApp();
+    const allData = useAvailableConstantsData();
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
@@ -77,10 +62,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       fontSize: model.fontSize,
       ...stylingBoxAsCSS,
     });
-    const jsStyle = getStyle(model.style, formData);
+    const jsStyle = getStyle(model.style, allData.data);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
-    const InputComponentType = renderInput(model.textType);
+    const InputComponentType = model.textType === 'password' ? Input.Password : Input;
 
     const inputProps: InputProps = {
       className: 'sha-input',
@@ -106,31 +91,24 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       spellCheck: model.enForceSpellCheck,
     };
 
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
-
     return (
       <ConfigurableFormItem
         model={model}
         initialValue={
           (model.passEmptyStringByDefault && '') ||
           (model.initialValue
-            ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
+            ? evaluateString(model.initialValue, {
+                formData: allData.data,
+                formMode: allData.form.formMode,
+                globalState: allData.globalState,
+              })
             : undefined)
         }
       >
         {(value, onChange) => {
-          const customEvent = customEventHandler(eventProps);
+          const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
+            customEvents.onChange(args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };
           return inputProps.readOnly ? (
@@ -141,7 +119,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           ) : (
             <InputComponentType
               {...inputProps}
-              {...customEvent}
+              {...customEvents}
               disabled={model.readOnly}
               value={value}
               onChange={onChangeInternal}

@@ -11,7 +11,7 @@ import { IDataSourceArguments, IWorkflowInstanceStartActionsProps } from '../mod
 const settingsMarkup = settingsJson as FormMarkup;
 
 const useUrlActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ item, settings }) => {
-  const { actionConfiguration, labelProperty, tooltipProperty, buttonType } = settings;
+  const { actionConfiguration, labelProperty, tooltipProperty, buttonType } = settings ?? {};
   const { refetch } = useGet({ path: '', lazy: true });
   const { getTemplateState } = useTemplates(settings);
   const [data, setData] = useState(null);

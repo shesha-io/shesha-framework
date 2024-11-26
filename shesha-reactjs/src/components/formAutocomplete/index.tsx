@@ -282,5 +282,3 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
         </AutoComplete>
     );
 };
-
-export default FormAutocomplete;

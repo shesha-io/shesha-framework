@@ -288,7 +288,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           },
           {
             "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
@@ -360,7 +360,7 @@
             "templateSettings": {
               "functionName": "onFocus"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n    .addString(\"value\", \"Component current value\")\r\n      .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n    .addString(\"value\", \"Component current value\")\r\n      .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           },
           {
             "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
@@ -432,7 +432,7 @@
             "templateSettings": {
               "functionName": "onBlur"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n  .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n  .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           }
         ]
       },

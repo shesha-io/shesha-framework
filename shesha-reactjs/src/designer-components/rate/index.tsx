@@ -1,29 +1,20 @@
 import _ from 'lodash';
 import classNames from 'classnames';
-import moment from 'moment';
 import React from 'react';
-import { customRateEventHandler } from '@/components/formDesigner/components/utils';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 import { getSettings } from './settings';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
-import { App, Rate } from 'antd';
+import { Rate } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import {
- 
-  IConfigurableFormComponent,
-  useForm,
-  useFormData,
-  useGlobalState,
-  useHttpClient,
-} from '@/providers';
+import { IConfigurableFormComponent } from '@/providers';
 import {
   ConfigurableFormItem,
   ShaIcon,
 } from '@/components';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IRateProps extends IConfigurableFormComponent {
@@ -45,24 +36,9 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-    const form = useForm();
-    const { data: formData } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const httpClient = useHttpClient();
-    const { message } = App.useApp();
+    const allData = useAvailableConstantsData();
 
     const { allowClear, icon, count, tooltips, className, style, readOnly } = model;
-
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
 
     if (model.hidden) return null;
 
@@ -71,7 +47,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value,  onChange) => {
-          const customEvent =  customRateEventHandler(eventProps);
+          const customEvent =  customOnChangeValueEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function') 
@@ -86,7 +62,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             count={localCount}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
-            style={getStyle(style, formData)} // Temporary. Make it configurable
+            style={getStyle(style, allData.data)} // Temporary. Make it configurable
             {...customEvent}
             value={value}
             onChange={onChangeInternal}

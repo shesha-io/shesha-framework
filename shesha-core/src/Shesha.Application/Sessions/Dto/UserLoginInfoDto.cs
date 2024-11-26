@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using Shesha.Authorization.Users;
@@ -19,6 +20,7 @@ namespace Shesha.Sessions.Dto
         public bool HasRegistered { get; set; }
         public string LoginProvider { get; set; }
         //public TypeOfAccount? TypeOfAccount { get; set; }
+        public Guid PersonId { get; set; }
         public string HomeUrl { get; set; }
         public bool IsSelfServiceUser { get; set; }
         public List<GrantedPermissionDto> GrantedPermissions { get; set; } = new List<GrantedPermissionDto>();

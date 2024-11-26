@@ -5,7 +5,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import FormAutocomplete from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/formAutocomplete';
 import { IFormAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 

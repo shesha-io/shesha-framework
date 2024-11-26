@@ -35,7 +35,7 @@ export interface IImageStyleProps {
 export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps {
   url?: string;
   storedFileId?: string;
-  base64?: string;
+  uploaded?: string;
   dataSource?: ImageSourceType;
   ownerType?: string;
   ownerId?: string;
@@ -76,24 +76,23 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       ...stylingBoxAsCSS
     });
     const jsStyle = getStyle(model.style, data);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
-  
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const base64 = model.base64 || value;
+          const uploadedFileUrl = model.uploaded || value;
 
-          const readonly = model?.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
+          const readonly = model?.readOnly || model.dataSource === 'upload' && Boolean(model.uploaded);
 
-          const val = model.dataSource === 'storedFile' 
-            ? model.storedFileId || value?.id || value 
-            : model.dataSource === 'base64'
-              ? base64 
+          const val = model.dataSource === 'storedFile'
+            ? model.storedFileId || value?.id || value
+            : model.dataSource === 'upload'
+              ? uploadedFileUrl
               : model.url || value;
 
           const fileProvider = child => {
             return (
-              <StoredFileProvider 
+              <StoredFileProvider
                 value={val}
                 onChange={onChange}
                 fileId={val}
@@ -104,7 +103,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
                 }
                 fileCategory={model.fileCategory}
                 propertyName={!model.context ? model.propertyName : null}
-                //uploadMode={model.useSync ? 'sync' : 'async'}
+              //uploadMode={model.useSync ? 'sync' : 'async'}
               >
                 {child}
               </StoredFileProvider>
@@ -116,18 +115,18 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               condition={model.dataSource === 'storedFile'}
               wrap={fileProvider}
             >
-            <ImageField
-              allowedFileTypes={model?.allowedFileTypes}
-              height={model.height}
-              width={model.width}
-              imageSource={model.dataSource}
-              styles={finalStyle}
-              value={val}
-              readOnly={readonly}
-              onChange={onChange}
-              allowPreview={model?.allowPreview}
-              alt={model?.alt}
-            />
+              <ImageField
+                allowedFileTypes={model?.allowedFileTypes}
+                height={model.height}
+                width={model.width}
+                imageSource={model.dataSource}
+                styles={finalStyle}
+                value={val}
+                readOnly={readonly}
+                onChange={onChange}
+                allowPreview={model?.allowPreview}
+                alt={model?.alt}
+              />
             </ConditionalWrap>
           );
         }}
@@ -146,12 +145,12 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     .add<IImageProps>(2, (prev) => {
       return {
         ...prev,
-        url: Boolean(prev.url) ? {_mode: 'code', _code: prev.url} : null,
-        storedFileId: Boolean(prev.storedFileId) ? {_mode: 'code', _code: prev.storedFileId} : null,
+        url: Boolean(prev.url) ? { _mode: 'code', _code: prev.url } : null,
+        storedFileId: Boolean(prev.storedFileId) ? { _mode: 'code', _code: prev.storedFileId } : null,
       } as any;
     })
-    .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
-    .add<IImageProps>(4, (prev) => ({...prev, dataSource: prev.dataSource as any === 'storedFileId' ? 'storedFile' : prev.dataSource}))
+    .add<IImageProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+    .add<IImageProps>(4, (prev) => ({ ...prev, dataSource: prev.dataSource as any === 'storedFileId' ? 'storedFile' : prev.dataSource }))
     .add<IImageProps>(5, (prev) => {
       const styles: IImageStyleProps = {
         width: prev.width,
@@ -163,7 +162,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         style: prev.style,
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
   settingsFormMarkup: settingsForm,
