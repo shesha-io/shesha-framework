@@ -12,7 +12,7 @@ import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { nanoid } from '@/utils/uuid';
 
-interface IKanbanSettingsState extends IKanbanProps {}
+interface IKanbanSettingsState extends IKanbanProps { }
 
 const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
   const { values } = useSettingsForm<IKanbanProps>();
@@ -42,8 +42,8 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         </SettingsFormItem>
       </MetadataProvider>
       <SettingsFormItem name="maxResultCount" label="Max Result Count" jsSetting>
-          <Input type="number" disabled={readOnly} />
-        </SettingsFormItem>
+        <Input type="number" disabled={readOnly} />
+      </SettingsFormItem>
       <SettingsCollapsiblePanel header="Columns">
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete

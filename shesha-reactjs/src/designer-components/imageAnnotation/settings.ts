@@ -12,8 +12,8 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         ghost: true,
         collapsible: 'header',
         content: {
-          id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-          components: [...new DesignerToolbarSettings()    
+            id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            components: [...new DesignerToolbarSettings()
                 .addContextPropertyAutocomplete({
                     id: "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
                     propertyName: "propertyName",
@@ -98,8 +98,8 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         ghost: true,
         collapsible: 'header',
         content: {
-          id:'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
-          components: [...new DesignerToolbarSettings()    
+            id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+            components: [...new DesignerToolbarSettings()
                 .addCheckbox({
                     id: "3be9da3f-f47e-48ae-b4c3-f5cc36f934d9",
                     propertyName: "isOnImage",
@@ -144,8 +144,8 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         ghost: true,
         collapsible: 'header',
         content: {
-          id:'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
-          components: [...new DesignerToolbarSettings()    
+            id: 'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
+            components: [...new DesignerToolbarSettings()
                 .addNumberField({
                     id: "417ee22e-a49d-44f2-a1c7-fef42ec87503",
                     propertyName: "height",
@@ -193,18 +193,18 @@ export const AnnotationSettingsForm = new DesignerToolbarSettings()
         ghost: true,
         collapsible: 'header',
         content: {
-          id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-          components: [...new DesignerToolbarSettings() 
-            .addPermissionAutocomplete({
-              id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
-              propertyName: 'permissions',
-              label: 'Permissions',
-              labelAlign: 'right',
-              parentId: 'root',
-              hidden: false,
-              validate: {},
-            }).toJson()
-          ]
-    }
+            id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+            components: [...new DesignerToolbarSettings()
+                .addPermissionAutocomplete({
+                    id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+                    propertyName: 'permissions',
+                    label: 'Permissions',
+                    labelAlign: 'right',
+                    parentId: 'root',
+                    hidden: false,
+                    validate: {},
+                }).toJson()
+            ]
+        }
     })
     .toJson();

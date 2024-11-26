@@ -415,7 +415,7 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
-            
+
           })
           .addDropdown({
             id: nanoid(),

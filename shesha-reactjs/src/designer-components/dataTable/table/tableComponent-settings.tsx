@@ -165,23 +165,23 @@ export interface IProps {
 
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
   const { readOnly } = props;
-  
+
   const { model } = useSettingsForm<ITableComponentProps>();
 
-  const crudConstants = useAvailableConstantsMetadata({ 
+  const crudConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData, SheshaConstants.moment
     ]
   });
 
-  const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
+  const onNewRowInitializeConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+  const onRowSaveConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
@@ -191,7 +191,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
     }
   });
 
-  const styleConstants = useAvailableConstantsMetadata({ 
+  const styleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData

@@ -57,7 +57,7 @@ export const progressSettingsForm = new DesignerToolbarSettings()
           description: 'The template function of the content. This function should return string or number',
           wrapInTemplate: true,
           templateSettings: {
-            functionName: 'getFormat',            
+            functionName: 'getFormat',
           },
           availableConstants: {
             dataType: 'object',
@@ -253,8 +253,8 @@ export const progressSettingsForm = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-      components: [...new DesignerToolbarSettings() 
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+      components: [...new DesignerToolbarSettings()
         .addPermissionAutocomplete({
           id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
           propertyName: 'permissions',
@@ -265,5 +265,5 @@ export const progressSettingsForm = new DesignerToolbarSettings()
           validate: {},
         }).toJson()
       ]
-}
-}).toJson();
+    }
+  }).toJson();

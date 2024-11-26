@@ -21,8 +21,8 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-  const labelFormatConstants = useAvailableConstantsMetadata({ 
-    addGlobalConstants: true, 
+  const labelFormatConstants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
     onBuild: (builder) => {
       builder.addObject("item", "Properties of the edited object", undefined);
     }
@@ -30,7 +30,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
+      <SettingsCollapsiblePanel header='Display'  >
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
@@ -112,13 +112,13 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             ]}
             wrapInTemplate={true}
             templateSettings={{
-              functionName: "getFormat",              
+              functionName: "getFormat",
             }}
             availableConstants={labelFormatConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      
+
       <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting

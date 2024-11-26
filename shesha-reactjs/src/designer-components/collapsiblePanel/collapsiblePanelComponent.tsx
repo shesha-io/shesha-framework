@@ -10,7 +10,7 @@ import { evaluateString, pickStyleFromModel, validateConfigurableComponentSettin
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from '@/utils/uuid';
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
@@ -20,15 +20,20 @@ import { removeComponents } from '../_common-migrations/removeComponents';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
+type PanelContextType = 'parent' | 'child' | undefined;
+
+const PanelContext = createContext<PanelContextType>(undefined);
+
 const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentProps> = {
   type: 'collapsiblePanel',
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
+    const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
+    const isFormSettings = formSettings?.isSettingsForm;
     const {
       label,
       expandIconPosition,
@@ -40,7 +45,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       isSimpleDesign,
       hideCollapseContent,
       hideWhenEmpty,
+      hasHeaderBorder = !isFormSettings
     } = model;
+
+    const panelContextState = useContext(PanelContext);
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
@@ -54,39 +62,53 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     };
 
     const headerComponents = model?.header?.components ?? [];
+
+    const hasCustomHeader = model?.hasCustomHeader;
+
     const extra =
-      headerComponents?.length > 0 || formMode === 'designer' ? (
+      ((headerComponents?.length > 0 || formMode === 'designer') && !hasCustomHeader) ? (
         <ComponentsContainer
           containerId={model.header?.id}
           direction="horizontal"
-          dynamicComponents={model?.isDynamic ? headerComponents : []}
+          dynamicComponents={model?.isDynamic ? model.header?.components : []}
         />
       ) : null;
 
+    const panelPosition = !!panelContextState ? 'child' : 'parent';
     return (
       <ParentProvider model={model}>
-        <CollapsiblePanel
-          header={evaluatedLabel}
-          expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
-          collapsedByDefault={collapsedByDefault}
-          extra={extra}
-          collapsible={collapsible === 'header' ? 'header' : 'icon'}
-          showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-          ghost={ghost}
-          dynamicBorderRadius={model?.borderRadius}
-          style={{...getPanelStyle}}
-          className={model.className}
-          bodyColor={bodyColor}
-          headerColor={headerColor}
-          isSimpleDesign={isSimpleDesign}
-          hideCollapseContent={hideCollapseContent}
-          hideWhenEmpty={hideWhenEmpty}
-        >
-          <ComponentsContainer
-            containerId={model.content.id}
-            dynamicComponents={model?.isDynamic ? model?.content.components : []}
-          />
-        </CollapsiblePanel>
+        <PanelContext.Provider value={panelPosition}>
+          <CollapsiblePanel
+            header={hasCustomHeader ?
+              <ComponentsContainer
+                containerId={model.customHeader.id}
+                dynamicComponents={(model?.isDynamic) ? model?.customHeader?.components : []}
+              /> :
+              evaluatedLabel
+            }
+            expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
+            collapsedByDefault={collapsedByDefault}
+            extra={extra}
+            collapsible={collapsible === 'header' ? 'header' : 'icon'}
+            showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
+            ghost={ghost}
+            dynamicBorderRadius={model?.borderRadius}
+            style={{ ...getPanelStyle }}
+            className={model.className}
+            bodyColor={bodyColor}
+            headerColor={headerColor}
+            isSimpleDesign={isSimpleDesign}
+            parentPanel={panelPosition === 'parent'}
+            hasHeaderBorder={hasHeaderBorder}
+            hideCollapseContent={hideCollapseContent}
+            hideWhenEmpty={hideWhenEmpty}
+          >
+            <ComponentsContainer
+              containerId={model.content.id}
+              dynamicComponents={model?.isDynamic ? model?.content.components : []}
+            />
+          </CollapsiblePanel>
+        </PanelContext.Provider>
       </ParentProvider>
     );
   },
@@ -138,8 +160,13 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
       .add<ICollapsiblePanelComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
+      .add<ICollapsiblePanelComponentProps>(7, (prev) => ({
+        ...prev,
+        customHeader: { id: nanoid(), components: [] }
+      }))
+
   ,
-  customContainerNames: ['header', 'content'],
+  customContainerNames: ['header', 'content', 'customHeader'],
 };
 
 export default CollapsiblePanelComponent;

@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "start",
@@ -22,23 +21,23 @@
       "content": {
         "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
         "components": [
-    {
-      "id": "ffe19365-2292-48b6-bbf4-90247d2f81bd",
-      "type": "propertyAutocomplete",
-      "propertyName": "propertyName",
-      "parentId": "root",
-      "label": "Property name",
-      "validate": {
-        "required": true
-      }
-    },
-    {
-      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    }
+          {
+            "id": "ffe19365-2292-48b6-bbf4-90247d2f81bd",
+            "type": "propertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "root",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "root",
+            "label": "Hidden"
+          }
         ]
       }
     },
@@ -92,5 +91,4 @@
       "props": {}
     }
   }
-
 }

@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",
@@ -110,7 +109,6 @@
         ]
       }
     },
-
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "collapsiblePanel",
@@ -119,7 +117,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "start",

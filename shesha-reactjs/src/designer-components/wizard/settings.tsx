@@ -169,8 +169,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
                   layout: "horizontal",
                   isSettingsForm: true,
                   colon: true,
-                  labelCol: {span: 5},
-                  wrapperCol: {span: 13}
+                  labelCol: { span: 5 },
+                  wrapperCol: { span: 13 }
                 }
               };
             }}
@@ -184,7 +184,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
               title: readOnly ? "View Wizard Steps" : "Configure Wizard Steps",
               header: <Alert message={readOnly ? 'Here you can view wizard steps configuration.' : 'Here you can configure the wizard steps by adjusting their settings and ordering.'} />,
             }}
-            actualModelContext={allData} 
+            actualModelContext={allData}
           >
           </ItemListConfiguratorModal>
         </SettingsFormItem>

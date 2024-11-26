@@ -44,7 +44,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
     })
   );
 
-  
+
   const getStyleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
@@ -512,10 +512,10 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
               },
             ]}
             wrapInTemplate={true}
-              templateSettings={{
-                functionName: 'getStyle'
-              }}
-              availableConstants={getStyleConstants}
+            templateSettings={{
+              functionName: 'getStyle'
+            }}
+            availableConstants={getStyleConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>

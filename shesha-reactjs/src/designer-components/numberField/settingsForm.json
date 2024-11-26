@@ -358,120 +358,120 @@
         "_value": ""
       },
       "components": [
-    {
-      "id": "1HN3kJVk0rT-XYjOfKJOv",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "HHiVdA1MDZzDeceTWF4A1",
-        "components": []
-      },
-      "content": {
-        "id": "PsUJNIUY99sSnEs7Fi3C1",
-        "components": [
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "PsUJNIUY99sSnEs7Fi3C1",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
-              {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
-              }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+        {
+          "id": "1HN3kJVk0rT-XYjOfKJOv",
+          "type": "collapsiblePanel",
+          "propertyName": "pnlStyle",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "header": {
+            "id": "HHiVdA1MDZzDeceTWF4A1",
+            "components": []
           },
-          {
-            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-            "type": "dropdown",
-            "propertyName": "size",
-            "parentId": "PsUJNIUY99sSnEs7Fi3C1",
-            "label": "Size",
-            "allowClear": true,
-            "values": [
+          "content": {
+            "id": "PsUJNIUY99sSnEs7Fi3C1",
+            "components": [
               {
-                "label": "Small",
-                "value": "small",
-                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "PsUJNIUY99sSnEs7Fi3C1",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
               },
               {
-                "label": "Middle",
-                "value": "middle",
-                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-              },
-              {
-                "label": "Large",
-                "value": "large",
-                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                "type": "dropdown",
+                "propertyName": "size",
+                "parentId": "PsUJNIUY99sSnEs7Fi3C1",
+                "label": "Size",
+                "allowClear": true,
+                "values": [
+                  {
+                    "label": "Small",
+                    "value": "small",
+                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                  },
+                  {
+                    "label": "Middle",
+                    "value": "middle",
+                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                  },
+                  {
+                    "label": "Large",
+                    "value": "large",
+                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 5,
+                "referenceListId": null,
+                "valueFormat": "listItem"
               }
-            ],
-            "dataSourceType": "values",
-            "version": 5,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
-    },
-    {
-      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlSecurity",
-      "label": "Security",
-      "labelAlign": "right",
-      "parentId": "root",
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "mbzE03mJnv_89oUvkmjPs",
-        "components": []
-      },
-      "content": {
-        "id": "SsWPpiJfTbgl4iHlFA_or",
-        "components": [
-          {
-            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
-            "type": "permissionAutocomplete",
-            "propertyName": "permissions",
-            "parentId": "SsWPpiJfTbgl4iHlFA_or",
-            "label": "Permissions",
-            "validate": {},
-            "version": 1
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+            ]
+          },
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+          "type": "collapsiblePanel",
+          "propertyName": "pnlSecurity",
+          "label": "Security",
+          "labelAlign": "right",
+          "parentId": "root",
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "header": {
+            "id": "mbzE03mJnv_89oUvkmjPs",
+            "components": []
+          },
+          "content": {
+            "id": "SsWPpiJfTbgl4iHlFA_or",
+            "components": [
+              {
+                "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+                "type": "permissionAutocomplete",
+                "propertyName": "permissions",
+                "parentId": "SsWPpiJfTbgl4iHlFA_or",
+                "label": "Permissions",
+                "validate": {},
+                "version": 1
+              }
+            ]
+          },
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": []
+        }
+      ]
     }
-  ]
-  }
   ],
   "formSettings": {
     "layout": "horizontal",

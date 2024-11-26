@@ -233,10 +233,18 @@
   "formSettings": {
     "layout": "horizontal",
     "colon": true,
-    "labelCol": { "span": 8 },
-    "wrapperCol": { "span": 16 },
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
     "displayName": "DEFAULT_FORM_SETTINGS",
-    "__docgenInfo": { "description": "Default form settings", "displayName": "DEFAULT_FORM_SETTINGS", "props": {} },
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    },
     "_formFields": [
       "modelType",
       "postUrl",

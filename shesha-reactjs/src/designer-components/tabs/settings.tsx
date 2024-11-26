@@ -78,25 +78,25 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
       <SettingsCollapsiblePanel header="Configure Tab Panes">
-          <SettingsFormItem name="tabs">
-            <ItemListConfiguratorModal<ITabPaneProps>
-              readOnly={readOnly}
-              initNewItem={onAddNewItem}
-              settingsMarkupFactory={() => tabSettingsMarkup}
+        <SettingsFormItem name="tabs">
+          <ItemListConfiguratorModal<ITabPaneProps>
+            readOnly={readOnly}
+            initNewItem={onAddNewItem}
+            settingsMarkupFactory={() => tabSettingsMarkup}
             itemRenderer={({ item }) => ({
-                  label: item.title || item.label || item.name,
-                  description: item.tooltip,
-                  icon: item.icon
+              label: item.title || item.label || item.name,
+              description: item.tooltip,
+              icon: item.icon
             })}
-              buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
-              modalSettings={{
-                title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
-                header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
-              }}
-              actualModelContext={availableConstants}
-            >
-            </ItemListConfiguratorModal>
-          </SettingsFormItem>
+            buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
+            modalSettings={{
+              title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
+              header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
+            }}
+            actualModelContext={availableConstants}
+          >
+          </ItemListConfiguratorModal>
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header="Style" >

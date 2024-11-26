@@ -35,8 +35,8 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   const { readOnly } = props;
   const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
-  const constants = useAvailableConstantsMetadata({ 
-    addGlobalConstants: true, 
+  const constants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
   });
 
   const [open, setOpen] = useState<boolean>(false);
@@ -53,7 +53,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   return (
     <>
       <SettingsCollapsiblePanel header="Data context">
-        <SettingsFormItem 
+        <SettingsFormItem
           name='componentName'
           label="Component name"
           tooltip='This name will be used as identifier and in the code editor'
