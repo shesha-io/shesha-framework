@@ -232,6 +232,8 @@ stages:
         workingDir: shesha-reactjs
         verbose: true
         customCommand: run build
+      env:
+        NODE_OPTIONS: "--max-old-space-size=8192" # Increase memory limit for the build process
     - task: Npm@1
       displayName: 'Npm Update Version'
       inputs:
