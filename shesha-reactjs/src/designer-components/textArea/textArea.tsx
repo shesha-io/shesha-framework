@@ -5,13 +5,23 @@ import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
-import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import {
+  evaluateString,
+  getStyle,
+  pickStyleFromModel,
+  useAvailableConstantsData,
+  validateConfigurableComponentSettings,
+} from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getEventHandlers } from '@/components/formDesigner/components/utils';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migratePropertyName,
+  migrateCustomFunctions,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
@@ -42,7 +52,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   Factory: ({ model }) => {
-
     const allData = useAvailableConstantsData();
 
     const styling = JSON.parse(model.stylingBox || '{}');
@@ -62,7 +71,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       ...stylingBoxAsCSS,
     });
     const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
@@ -74,6 +83,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
       style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
+      spellCheck: model.spellCheck,
     };
 
     return (
@@ -81,7 +91,13 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         model={model}
         initialValue={
           (model?.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) : undefined)
+          (model.initialValue
+            ? evaluateString(model?.initialValue, {
+                formData: allData.data,
+                formMode: allData.form.formMode,
+                globalState: allData.globalState,
+              })
+            : undefined)
         }
       >
         {(value, onChange) => {
@@ -127,7 +143,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
-      .add<ITextAreaComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+      .add<ITextAreaComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
       .add<ITextAreaComponentProps>(4, (prev) => {
         const styles: IInputStyles = {
           size: prev.size,
@@ -143,9 +159,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           stylingBox: prev.stylingBox,
           style: prev.style,
         };
-        return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
-      })
-    ,
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      }),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

@@ -500,6 +500,14 @@
               "functionName": "validator"
             },
             "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addStandard([\"shesha:formData\"])\r\n        .addObject(\"rule\", \"Validate rules, only support customize validator\", undefined)\r\n        .addString(\"value\", \"Component current value\tobject\", undefined)\r\n        .addFunction(\"callback\", \"Callback called by component\", undefined)\r\n        .build();"
+          },
+          {
+            "id": "dc9a21f8-a611-46ec-94dc-79d2c88c7c19",
+            "type": "checkbox",
+            "propertyName": "spellCheck",
+            "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+            "label": "Spell Check",
+            "version": 3
           }
         ]
       }
