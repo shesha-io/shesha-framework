@@ -502,7 +502,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
             },
             availableConstantsExpression: async ({ metadataBuilder }) => {
               return metadataBuilder.object('constants')
-                .addAllStandard(["shesha:selectedRow"])
+                .addAllStandard()
                 .addString("value", "Component current value")
                 .addObject("event", "Event callback when user input", undefined)
                 .build();
