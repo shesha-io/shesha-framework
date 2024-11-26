@@ -39,6 +39,20 @@ const getDirtyFilter = (state: IDataTableStateContext): ITableFilter[] => {
   return [...(state.tableFilterDirty || state.tableFilter || [])];
 };
 
+const getRowSelection = (rows: object[], selectedId: string): ISelectionProps => {
+  if (!selectedId || !rows || rows.length === 0)
+    return null;
+
+  const rowIndex = rows.findIndex(row => row["id"] === selectedId);
+  return rowIndex > -1
+    ? {
+      row: rows[rowIndex],
+      id: selectedId,
+      index: rowIndex,
+    }
+    : null;
+};
+
 const reducer = handleActions<IDataTableStateContext, any>(
   {
     /** Table Selection */
@@ -50,17 +64,6 @@ const reducer = handleActions<IDataTableStateContext, any>(
       const { payload } = action;
       const selectedRow = state?.selectedRow?.id === payload?.id ? null : payload;
       return { ...state, selectedRow };
-    },
-
-    [DataTableActionEnums.SetHoverRow]: (
-      state: IDataTableStateContext,
-      action: ReduxActions.Action<string>
-    ) => {
-      const { payload } = action;
-      return {
-        ...state,
-        hoverRowId: payload,
-      };
     },
 
     [DataTableActionEnums.SetDraggingState]: (
@@ -259,6 +262,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
         payload: { rows, totalPages, totalRows, totalRowsBeforeFilter },
       } = action;
 
+      const selectedRow = getRowSelection(rows, state.selectedRow?.id);
+
       return {
         ...state,
         tableData: rows,
@@ -266,6 +271,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
         totalRows,
         totalRowsBeforeFilter,
         isFetchingTableData: false,
+        selectedRow: selectedRow,
       };
     },
 

@@ -177,7 +177,7 @@ export const getSettings = (data: any) =>
             availableConstantsExpression: async ({ metadataBuilder }) => {
               return metadataBuilder
                 .object("constants")
-                .addAllStandard(["shesha:selectedRow"])
+                .addAllStandard()
                 .addObject("value", "Component current value", undefined)
                 .build();
             },

@@ -268,7 +268,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addAllStandard(\"shesha:selectedRow\").addObject(\"value\", \"Component current value\", undefined).build();    "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addAllStandard().addString(\"timeString\", \"Time sting value\").addObject(\"value\", \"Component current value\", undefined).build();    "
           }
         ]
       },
