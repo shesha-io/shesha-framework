@@ -6,10 +6,11 @@ import {
     LineController, LineElement, PointElement,
     Title, Tooltip
 } from 'chart.js';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
+import { useGeneratedTitle } from "../../hooks";
 
 interface ILineChartProps extends IChartDataProps {
     data: IChartData;
@@ -27,10 +28,9 @@ ChartJS.register(
 );
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
-    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, legendProperty, strokeColor, dataMode, borderWidth, entityType } = useChartDataStateContext();
+    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, strokeColor, dataMode, strokeWidth } = useChartDataStateContext();
 
-    const entityTypeArray = entityType.split('.');
-    const entityClassName = entityTypeArray[entityTypeArray.length - 1];
+    const chartTitle: string = useGeneratedTitle();
 
     if (!data || !data.datasets || !data.labels) {
         if (!data)
@@ -40,20 +40,22 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
             throw new Error('LineChart: No datasets or labels to display. Please check the data source');
     }
 
-    if (dataMode === 'url') {
-        data?.datasets?.map((dataset: any) => {
-            dataset.borderColor = strokeColor || 'black';
-            dataset.pointRadius = 5;
-            dataset.borderWidth = typeof (borderWidth) === 'number' || borderWidth < 1 ? borderWidth : 1;
-            dataset.tension = tension;
-            return dataset;
-        });
-    } else {
-        data?.datasets?.map((dataset: any) => {
-            dataset.tension = tension;
-            return dataset;
-        });
-    }
+    useEffect(() => {
+        if (dataMode === 'url') {
+            data?.datasets?.map((dataset: any) => {
+                dataset.borderColor = strokeColor || 'black';
+                dataset.pointRadius = 5;
+                dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+                dataset.tension = tension;
+                return dataset;
+            });
+        } else {
+            data?.datasets?.map((dataset: any) => {
+                dataset.tension = tension;
+                return dataset;
+            });
+        }
+    }, [dataMode, data?.datasets, strokeColor, strokeWidth, tension]);
 
     const options: any = {
         responsive: true,
@@ -63,23 +65,23 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
                 position: legendPosition ?? 'top',
             },
             title: {
-                display: showTitle ? true : false,
-                text: title?.trim().length > 0 ? title : `${entityClassName}: ${xProperty} vs ${yProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
+                display: showTitle && chartTitle.length > 0 ? true : false,
+                text: chartTitle,
             }
         },
         scales: {
             x: {
                 title: {
-                    display: showXAxisTitle ? true : false,
-                    text: xProperty, // X-axis title
+                    display: showXAxisTitle && xProperty?.trim().length > 0 ? true : false,
+                    text: xProperty?.trim() ?? ''
                 },
                 display: showXAxisScale ? true : false,
                 offset: true, // Ensure the x-axis does not coincide with the y-axis
             },
             y: {
                 title: {
-                    display: showYAxisTitle ? true : false,
-                    text: `${yProperty} (${aggregationMethod})`,
+                    display: showYAxisTitle && yProperty?.trim().length > 0 ? true : false,
+                    text: `${yProperty?.trim() ?? ''} (${aggregationMethod})`,
                 },
                 display: showYAxisScale ? true : false,
                 beginAtZero: true

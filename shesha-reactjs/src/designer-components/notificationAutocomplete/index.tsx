@@ -5,15 +5,14 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { FormAutocomplete } from '@/components/formAutocomplete';
-import { IFormAutocompleteComponentProps } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { NotificationAutocomplete } from '@/components/notificationAutocomplete';
+import { INotificationAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentProps> = {
-  type: 'formAutocomplete',
-  name: 'Form Autocomplete',
+const NotificationAutocompleteComponent: IToolboxComponent<INotificationAutocompleteComponentProps> = {
+  type: 'notificationAutocomplete',
+  name: 'Notification Autocomplete',
   icon: <FileSearchOutlined />,
   isInput: true,
   isOutput: true,
@@ -23,9 +22,8 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => 
-          <FormAutocomplete
+          <NotificationAutocomplete
             readOnly={model.readOnly}
-            convertToFullId={model.convertToFullId}
             value={value}
             onChange={onChange}
           />}
@@ -34,11 +32,13 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  /*
   migrator: m => m
     .add<IFormAutocompleteComponentProps>(0, prev => ({ ...prev, convertToFullId: true }))
     .add<IFormAutocompleteComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IFormAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
+  */
 };
 
-export default FormAutocompleteComponent;
+export default NotificationAutocompleteComponent;
