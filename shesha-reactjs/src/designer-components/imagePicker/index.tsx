@@ -65,6 +65,7 @@ const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
                 onChange={handleChange}
                 beforeUpload={() => false}
                 disabled={readOnly}
+                accept='.jpg, .png, .gif, .webp, .jpeg'
             >
                 <Space>
                     {uploadButton}
