@@ -316,6 +316,13 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
   );
 };
 
+export const toBase64 = file => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result as string);
+  reader.onerror = reject;
+});
+
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
  *
