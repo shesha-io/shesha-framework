@@ -231,7 +231,7 @@ stages:
         command: custom
         workingDir: shesha-reactjs
         verbose: true
-        customCommand: run build
+        customCommand: run build --max_old_space_size=8192
     - task: Npm@1
       displayName: 'Npm Update Version'
       inputs:
