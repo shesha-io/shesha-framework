@@ -31,7 +31,6 @@ import { IPermissionAutocompleteComponentProps } from '@/designer-components/per
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
-import { nanoid } from 'nanoid';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -124,12 +123,7 @@ export class DesignerToolbarSettings<T> {
   public addCollapsiblePanel(
     props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType)
   ) {
-    const collapsibleProps: typeof props = {
-      ...props,
-      id: nanoid(),
-
-    };
-    return this.addProperty(collapsibleProps, 'collapsiblePanel');
+    return this.addProperty(props, 'collapsiblePanel');
   }
 
   public addDropdown(props: DropdownType | ((data: T) => DropdownType)) {

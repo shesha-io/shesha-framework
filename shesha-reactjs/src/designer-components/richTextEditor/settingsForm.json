@@ -901,7 +901,6 @@
         {
           "id": "1aIMnm2re1exM1M7pEEur9",
           "type": "collapsiblePanel",
-          "hasHeaderBorder": false,
           "propertyName": "pnlTheme",
           "label": "Theme",
           "labelAlign": "right",

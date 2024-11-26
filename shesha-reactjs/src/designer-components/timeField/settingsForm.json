@@ -385,7 +385,6 @@
         {
           "id": "Vsrf7S8ssmciZPHKmADHm",
           "type": "collapsiblePanel",
-          "hasHeaderBorder": false,
           "propertyName": "pnlStyle",
           "label": "Style",
           "labelAlign": "right",

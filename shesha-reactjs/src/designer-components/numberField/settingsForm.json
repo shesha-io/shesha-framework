@@ -361,7 +361,6 @@
         {
           "id": "1HN3kJVk0rT-XYjOfKJOv",
           "type": "collapsiblePanel",
-          "hasHeaderBorder": false,
           "propertyName": "pnlStyle",
           "label": "Style",
           "labelAlign": "right",
@@ -441,7 +440,6 @@
         {
           "id": "6Vw9iiDw9d0MD_Rh5cbIn",
           "type": "collapsiblePanel",
-          "hasHeaderBorder": false,
           "propertyName": "pnlSecurity",
           "label": "Security",
           "labelAlign": "right",

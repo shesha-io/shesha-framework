@@ -523,7 +523,6 @@
         {
           "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
           "type": "collapsiblePanel",
-          "hasHeaderBorder": false,
           "propertyName": "pnlStyle",
           "label": "Style",
           "labelAlign": "right",

@@ -144,7 +144,6 @@
                         {
                             "id": "kqiWeis_L7y_Nvj7-tPuTQos3p5jj6",
                             "type": "collapsiblePanel",
-                            "hasHeaderBorder": false,
                             "propertyName": "panel7",
                             "componentName": "pnlDataLoad",
                             "label": "Data Load",
@@ -419,7 +418,6 @@
                         {
                             "id": "wpWja-q7Yb4spoDFWKBdJ_G0flU1uU",
                             "type": "collapsiblePanel",
-                            "hasHeaderBorder": false,
                             "propertyName": "panel7",
                             "componentName": "pnlDataSave",
                             "label": "Data Save",
@@ -717,7 +715,6 @@
                         {
                             "id": "vi4RicBJMPFiVpClJBNjsb4JP0FylJ",
                             "type": "collapsiblePanel",
-                            "hasHeaderBorder": false,
                             "propertyName": "panel3",
                             "componentName": "panel3",
                             "label": "Events",
