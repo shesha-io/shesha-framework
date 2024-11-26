@@ -49,7 +49,7 @@ type ContextPropertyAutocompleteType = ToolbarSettingsProp &
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type ImagePickerType = ToolbarSettingsProp & Omit<IFileUploadProps, 'hidden' | 'type'>;
+type ImagePickerType = ToolbarSettingsProp;
 
 type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden' | 'type'>;
 
