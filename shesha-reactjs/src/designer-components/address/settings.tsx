@@ -36,7 +36,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Display">
+      <SettingsCollapsiblePanel header="Display">
         <ContextPropertyAutocomplete
           id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
@@ -77,7 +77,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Configuration">
+      <SettingsCollapsiblePanel header="Configuration">
         <SettingsFormItem
           name="minCharactersSearch"
           label="Min Characters Before Search"
@@ -180,7 +180,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </Show>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Events">
+      <SettingsCollapsiblePanel header="Events">
         <SettingsFormItem
           label="On Change"
           name="onChangeCustom"
@@ -221,13 +221,13 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Validation">
+      <SettingsCollapsiblePanel header="Validation">
         <SettingsFormItem name="validate.required" label="Required" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

@@ -216,7 +216,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       </SettingsFormItem>
 
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='CRUD'>
+      <SettingsCollapsiblePanel header='CRUD'>
         <SettingsFormItem
           name="canEditInline"
           label="Can edit inline"
@@ -349,7 +349,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
 
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Layout">
+      <SettingsCollapsiblePanel header="Layout">
         <SettingsFormItem jsSetting
           name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
           <InputNumber />
@@ -393,7 +393,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Empty Table'>
+      <SettingsCollapsiblePanel header='Empty Table'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
           <Input defaultValue={"No Data"} readOnly={readOnly} />
         </SettingsFormItem>
@@ -409,7 +409,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

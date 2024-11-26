@@ -25,7 +25,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Display">
+      <SettingsCollapsiblePanel header="Display">
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
           <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
         </SettingsFormItem>
@@ -44,7 +44,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
       <SettingsFormItem name="maxResultCount" label="Max Result Count" jsSetting>
         <Input type="number" disabled={readOnly} />
       </SettingsFormItem>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Columns">
+      <SettingsCollapsiblePanel header="Columns">
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
@@ -96,7 +96,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <Checkbox disabled={values.readOnly} />
       </SettingsFormItem>
       {/* Column Styles */}
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Column Styles">
+      <SettingsCollapsiblePanel header="Column Styles">
         <SettingsFormItem name="columnStyle" label="Style">
           <CodeEditor
             readOnly={readOnly}
@@ -143,7 +143,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
       </SettingsCollapsiblePanel>
 
       {/* Header Styles */}
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Header Styles">
+      <SettingsCollapsiblePanel header="Header Styles">
         <SettingsFormItem name="headerStyles" label="Style">
           <CodeEditor
             readOnly={readOnly}

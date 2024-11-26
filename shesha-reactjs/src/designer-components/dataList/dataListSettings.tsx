@@ -234,7 +234,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Select>
       </SettingsFormItem>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Render">
+      <SettingsCollapsiblePanel header="Render">
         <SettingsFormItem name="formSelectionMode" label="Form selection mode">
           <Select disabled={readOnly} defaultValue={'none'}>
             <Select.Option key='name' value='name'>Named form</Select.Option>
@@ -355,7 +355,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="CRUD">
+      <SettingsCollapsiblePanel header="CRUD">
         <SettingsFormItem name="canEditInline" label="Can edit inline" jsSetting>
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
@@ -487,7 +487,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       </SettingsCollapsiblePanel>
 
       <Show when={model.orientation === "vertical" || model.orientation === "horizontal"}>
-        <SettingsCollapsiblePanel hasHeaderBorder={false} header="Grouping">
+        <SettingsCollapsiblePanel header="Grouping">
           <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
             <Checkbox disabled={readOnly} />
           </SettingsFormItem>
@@ -515,7 +515,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsCollapsiblePanel>
       </Show>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Empty List'>
+      <SettingsCollapsiblePanel header='Empty List'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
           <Input defaultValue={"No Data"} readOnly={readOnly} />
         </SettingsFormItem>
@@ -531,7 +531,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

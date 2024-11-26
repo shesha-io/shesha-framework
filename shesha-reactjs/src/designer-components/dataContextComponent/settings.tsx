@@ -52,7 +52,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Data context">
+      <SettingsCollapsiblePanel header="Data context">
         <SettingsFormItem
           name='componentName'
           label="Component name"
@@ -150,7 +150,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
 
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

@@ -30,7 +30,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'  >
+      <SettingsCollapsiblePanel header='Display'  >
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
@@ -58,7 +58,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Modal Display'>
+      <SettingsCollapsiblePanel header='Modal Display'>
         <SettingsFormItem name="deleteConfirmationTitle" label="Delete Confirmation Title" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -81,7 +81,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Render'>
+      <SettingsCollapsiblePanel header='Render'>
         {/*<SettingsFormItem name="capturedProperties" label="Captured Properties" jsSetting>
           <Select mode="tags" />
   </SettingsFormItem>*/}
@@ -119,7 +119,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

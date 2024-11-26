@@ -44,6 +44,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       isSimpleDesign,
       hideCollapseContent,
       hideWhenEmpty,
+      hasHeaderBorder = true
     } = model;
 
     const panelContextState = useContext(PanelContext);
@@ -97,6 +98,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             headerColor={headerColor}
             isSimpleDesign={isSimpleDesign}
             parentPanel={panelPosition === 'parent'}
+            hasHeaderBorder={hasHeaderBorder}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
           >

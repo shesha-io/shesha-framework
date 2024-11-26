@@ -21,7 +21,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'>
+      <SettingsCollapsiblePanel header='Display'>
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={values.readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
@@ -54,7 +54,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Items'>
+      <SettingsCollapsiblePanel header='Items'>
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
@@ -68,7 +68,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Styles'>
+      <SettingsCollapsiblePanel header='Styles'>
         <SettingsFormItem name="colorSource" label="Color Source" jsSetting tooltip='Hex and RGB colors are supported'>
           <Select disabled={values.readOnly}>
             <Option value="primary">Primary Color</Option>

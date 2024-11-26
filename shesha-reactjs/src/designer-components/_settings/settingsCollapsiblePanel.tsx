@@ -28,7 +28,7 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
     return (
         <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
             {show
-                ? <CollapsiblePanel ghost={true} expandIconPosition='start' {...props} />
+                ? <CollapsiblePanel ghost={true} expandIconPosition='start' {...props} hasHeaderBorder={false} />
                 : null}
         </SettingsCollapsiblePanelActionsContext.Provider>
     );

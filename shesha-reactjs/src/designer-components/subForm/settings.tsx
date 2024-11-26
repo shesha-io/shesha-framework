@@ -78,7 +78,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'>
+      <SettingsCollapsiblePanel header='Display'>
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
@@ -142,7 +142,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Data source'>
+      <SettingsCollapsiblePanel header='Data source'>
         <SettingsFormItem
           name="dataSource"
           initialValue={'form'}
@@ -383,7 +383,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
           </SettingsFormItem>
         </Show>
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Actions">
+      <SettingsCollapsiblePanel header="Actions">
         <SettingsFormItem
           label="On Created"
           name="onCreated"
@@ -486,7 +486,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Layout">
+      <SettingsCollapsiblePanel header="Layout">
 
         <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
           <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
@@ -520,7 +520,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

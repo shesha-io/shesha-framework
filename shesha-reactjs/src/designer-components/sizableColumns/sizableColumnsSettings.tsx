@@ -27,7 +27,7 @@ const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnCo
       <SettingsFormItem label="Columns" name="columns">
         <SizableColumnsList readOnly={readOnly} />
       </SettingsFormItem>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Style">
+      <SettingsCollapsiblePanel header="Style">
         <SettingsFormItem name="style" label="Style">
           <CodeEditor
             propertyName="style"
@@ -44,7 +44,7 @@ const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnCo
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

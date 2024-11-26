@@ -16,7 +16,6 @@ export const settingsForm = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
-    hasHeaderBorder: false,
     content: {
       id: nanoid(),
       components:
@@ -115,7 +114,6 @@ export const settingsForm = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
-    hasHeaderBorder: false,
     content: {
       id: nanoid(),
       components:
@@ -305,7 +303,6 @@ export const settingsForm = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
-    hasHeaderBorder: false,
     hidden: {
       _code: "return getSettingValue(data?.dataMode) !== `url`",
       _mode: "code",
@@ -368,7 +365,6 @@ export const settingsForm = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
-    hasHeaderBorder: false,
     hidden: {
       _code: "return getSettingValue(data?.dataMode) === `url`",
       _mode: "code",
@@ -419,7 +415,7 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
-            
+
           })
           .addDropdown({
             id: nanoid(),

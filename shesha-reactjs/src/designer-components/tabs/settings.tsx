@@ -40,7 +40,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
 
   return (
     <>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Display'>
+      <SettingsCollapsiblePanel header='Display'>
         <SettingsFormItem name="componentName" label="Component name" required={true}>
           <Input />
         </SettingsFormItem>
@@ -77,7 +77,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Configure Tab Panes">
+      <SettingsCollapsiblePanel header="Configure Tab Panes">
         <SettingsFormItem name="tabs">
           <ItemListConfiguratorModal<ITabPaneProps>
             readOnly={readOnly}
@@ -99,7 +99,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Style" >
+      <SettingsCollapsiblePanel header="Style" >
         <SettingsFormItem
           label="Style"
           name="style"
@@ -133,7 +133,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"

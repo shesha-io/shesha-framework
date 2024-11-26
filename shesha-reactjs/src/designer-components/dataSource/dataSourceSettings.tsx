@@ -43,7 +43,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
           <EndpointsAutocomplete />
         </SettingsFormItem>
       }
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header='Filters'>
+      <SettingsCollapsiblePanel header='Filters'>
         <SettingsFormItem name="maxResultCount" label='Max result count' tooltip='Leave empty to get all records' jsSetting>
           <InputNumber min={0} />
         </SettingsFormItem>
@@ -53,7 +53,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel hasHeaderBorder={false} header="Security">
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting
           label="Permissions"
