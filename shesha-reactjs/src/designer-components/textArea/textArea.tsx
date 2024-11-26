@@ -1,21 +1,18 @@
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
-import { Input, App } from 'antd';
+import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
+import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
 import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { customEventHandler } from '@/components/formDesigner/components/utils';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
@@ -45,11 +42,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   Factory: ({ model }) => {
-    const form = useForm();
-    const { data: formData } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const httpClient = useHttpClient();
-    const { message } = App.useApp();
+
+    const allData = useAvailableConstantsData();
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
@@ -67,7 +61,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       fontSize: model.fontSize,
       ...stylingBoxAsCSS,
     });
-    const jsStyle = getStyle(model.style, formData);
+    const jsStyle = getStyle(model.style, allData.data);
     const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
 
     const textAreaProps: TextAreaProps = {
@@ -82,36 +76,25 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
     };
 
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
-
     return (
       <ConfigurableFormItem
         model={model}
         initialValue={
           (model?.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model?.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+          (model.initialValue ? evaluateString(model?.initialValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) : undefined)
         }
       >
         {(value, onChange) => {
           const showAsJson = Boolean(value) && typeof value === 'object';
 
-          const customEvent = customEventHandler(eventProps);
+          const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
+            customEvents.onChange(args[0]);
             if (typeof onChange === 'function') onChange(...args);
           };
 
           return showAsJson ? (
-            <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvent} />
+            <JsonTextArea value={value} textAreaProps={textAreaProps} customEventHandler={customEvents} />
           ) : model.readOnly ? (
             <ReadOnlyDisplayFormItem value={value} />
           ) : (
@@ -119,7 +102,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
               rows={2}
               {...textAreaProps}
               disabled={model.readOnly}
-              {...customEvent}
+              {...customEvents}
               value={value}
               onChange={onChangeInternal}
             />

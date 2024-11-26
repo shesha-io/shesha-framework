@@ -547,7 +547,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:pageContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addStandard()\r\n        .addObject(\"option\", \"Selected option\")\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
           }
         ]
       },
