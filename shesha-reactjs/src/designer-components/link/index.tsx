@@ -3,7 +3,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData } from '@/providers';
+import { IInputStyles, useForm, useFormData } from '@/providers';
 import settingsFormJson from './settingsForm.json';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/container/interfaces';
@@ -12,7 +12,6 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import ParentProvider from '@/providers/parentProvider/index';
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;

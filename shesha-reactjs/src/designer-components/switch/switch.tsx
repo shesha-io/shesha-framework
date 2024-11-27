@@ -6,7 +6,7 @@ import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormData } from '@/providers';
+import { IInputStyles, useFormData } from '@/providers';
 import { DataTypes } from '@/interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { SwitchSize } from 'antd/lib/switch';
@@ -14,7 +14,6 @@ import { ISwitchComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

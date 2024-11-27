@@ -1,6 +1,6 @@
 import { EditOutlined } from '@ant-design/icons';
 import React from 'react';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import settingsFormJson from './settingsForm.json';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
@@ -10,7 +10,6 @@ import Markdown from './markdown';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

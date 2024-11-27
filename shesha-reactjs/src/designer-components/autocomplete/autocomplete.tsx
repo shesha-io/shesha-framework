@@ -9,7 +9,7 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useDataContextManager, useFormData, useGlobalState, useHttpClient, useNestedPropertyMetadatAccessor } from '@/providers';
+import { IInputStyles, useDataContextManager, useFormData, useGlobalState, useHttpClient, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
 import {
@@ -29,7 +29,6 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-import { IInputStyles } from '../textField/interfaces';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
