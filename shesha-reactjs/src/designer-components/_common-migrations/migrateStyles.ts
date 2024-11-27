@@ -16,7 +16,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
         });
 
         const heightFromSize = prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
-        const fontSizeFromSize = prevStyles?.size === 'small' ? 12 : prevStyles?.size === 'large' ? 16 : null;
+        const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
 
         return {
             size: prevStyles?.size,
