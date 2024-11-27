@@ -137,6 +137,27 @@ export const updateSettingsComponents = (
     });
 };
 
+export const updateSettingsComponentsDict = (
+    toolboxComponents: IToolboxComponents,
+    components: IComponentsDictionary) => {
+    const comps: IConfigurableFormComponent[] = [];
+
+    for (const key in components) {
+        if (components.hasOwnProperty(key)) {
+            comps.push(components[key]);
+        }
+    }
+
+    const updComps = updateSettingsComponents(toolboxComponents, comps);
+
+    const res: IComponentsDictionary = {};
+    updComps.forEach((comp) => {
+        res[comp.id] = comp;
+    });
+
+    return res;
+};
+
 export const addPx = (value) => {
     return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 };
