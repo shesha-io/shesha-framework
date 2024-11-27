@@ -1,4 +1,5 @@
 ﻿using Abp;
+using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Configuration.Startup;
@@ -11,17 +12,20 @@ using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
+using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
-using Shesha.OmoNotifications;
-using Shesha.OmoNotifications.Configuration;
-using Shesha.OmoNotifications.Configuration.Email;
-using Shesha.OmoNotifications.Configuration.Email.Gateways;
-using Shesha.OmoNotifications.Configuration.Sms;
+using Shesha.Notifications.Configuration;
+using Shesha.Notifications.Configuration.Email;
+using Shesha.Notifications.Configuration.Email.Gateways;
+using Shesha.Notifications.Configuration.Sms;
+using Shesha.Notifications.Distribution.NotificationChannels;
+using Shesha.Notifications.Distribution.NotificationGateways;
+using Shesha.Notifications.Distribution.NotificationTypes;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
@@ -40,7 +44,8 @@ namespace Shesha
         typeof(AbpKernelModule),
         typeof(SheshaCoreModule),
         typeof(SheshaGraphQLModule),
-        typeof(AbpAutoMapperModule))]
+        typeof(AbpAutoMapperModule),
+        typeof(AbpAspNetCoreModule))]
     public class SheshaApplicationModule : SheshaSubModule<SheshaFrameworkModule>
     {
         public const int DefaultSingleMessageMaxLength = 160;
@@ -58,12 +63,9 @@ namespace Shesha
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
             IocManager.Register<INotificationSender, NotificationSender>();
 
-            Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
-            Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
-            Configuration.Notifications.Notifiers.Add<SmsRealTimeNotifier>();
-
             Configuration.Authorization.Providers.Add<SheshaAuthorizationProvider>();
             Configuration.Authorization.Providers.Add<DbAuthorizationProvider>();
+
 
             // replace email sender
             Configuration.ReplaceService<ISmtpEmailSenderConfiguration, SmtpEmailSenderSettings>(DependencyLifeStyle.Transient);
@@ -71,8 +73,6 @@ namespace Shesha
             // ToDo: migrate Notification to ABP 6.6.2
             //Configuration.Notifications.Distributers.Clear();
             //Configuration.Notifications.Distributers.Add<ShaNotificationDistributer>();
-
-            Configuration.ReplaceService<INotificationPublisher, ShaNotificationPublisher>(DependencyLifeStyle.Transient);
 
             IocManager.IocContainer.Register(
                 Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient(),
@@ -88,12 +88,12 @@ namespace Shesha
                     Medium = new List<NotificationChannelConfig> { },
                     High = new List<NotificationChannelConfig> { },
                 });
-                s.SmsSettings.WithDefaultValue(new Shesha.OmoNotifications.Configuration.Sms.SmsSettings
+                s.SmsSettings.WithDefaultValue(new Shesha.Notifications.Configuration.Sms.SmsSettings
                 {
                     SmsEnabled = true,
                     PreferredGateway = null
                 });
-                s.EmailSettings.WithDefaultValue(new Shesha.OmoNotifications.Configuration.Email.EmailSettings
+                s.EmailSettings.WithDefaultValue(new Shesha.Notifications.Configuration.Email.EmailSettings
                 {
                     EmailsEnabled = true,
                     PreferredGateway = null
@@ -110,7 +110,7 @@ namespace Shesha
             });
 
             IocManager.RegisterSettingAccessor<ISmsGatewaySettings>(s => {
-                s.ClickatellSettings.WithDefaultValue(new OmoNotifications.Configuration.Sms.Gateways.ClickatellSettings
+                s.ClickatellSettings.WithDefaultValue(new Notifications.Configuration.Sms.Gateways.ClickatellSettings
                 {
                     Host = "api.clickatell.com",
                     SingleMessageMaxLength = DefaultSingleMessageMaxLength,
@@ -180,6 +180,50 @@ namespace Shesha
 
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
+
+            IocManager.IocContainer.Register(Component
+                        .For<IConfigurableItemExport>()
+                        .Named("NotificationChannelExport")
+                        .Forward<IConfigurableItemExport<NotificationChannelConfig>>()
+                        .Forward<INotificationChannelExport>()
+                        .ImplementedBy<NotificationChannelExport>()
+                        .LifestyleTransient())
+                                  .Register(Component
+                        .For<IConfigurableItemImport>()
+                        .Named("NotificationChannelImport")
+                        .Forward<IConfigurableItemImport<NotificationChannelConfig>>()
+                        .Forward<INotificationChannelImport>()
+                        .ImplementedBy<NotificationChannelImport>()
+                        .LifestyleTransient())
+                                  .Register(Component
+                        .For<IConfigurableItemExport>()
+                        .Named("NotificationTypeExport")
+                        .Forward<IConfigurableItemExport<NotificationTypeConfig>>()
+                        .Forward<INotificationTypeExport>()
+                        .ImplementedBy<NotificationTypeExport>()
+                        .LifestyleTransient())
+                                  .Register(Component
+                        .For<IConfigurableItemImport>()
+                        .Named("NotificationTypeImport")
+                        .Forward<IConfigurableItemImport<NotificationTypeConfig>>()
+                        .Forward<INotificationTypeImport>()
+                        .ImplementedBy<NotificationTypeImport>()
+                        .LifestyleTransient())
+                                  .Register(Component
+                        .For<IConfigurableItemExport>()
+                        .Named("NotificationGatewayExport")
+                        .Forward<IConfigurableItemExport<NotificationGatewayConfig>>()
+                        .Forward<INotificationGatewayExport>()
+                        .ImplementedBy<NotificationGatewayExport>()
+                        .LifestyleTransient())
+                                  .Register(Component
+                        .For<IConfigurableItemImport>()
+                        .Named("NotificationGatewayImport")
+                        .Forward<IConfigurableItemImport<NotificationGatewayConfig>>()
+                        .Forward<INotificationGatewayImport>()
+                        .ImplementedBy<NotificationGatewayImport>()
+                        .LifestyleTransient());
+
 
             /* api not used now, this registration causes problems in the IoC. Need to solve IoC problem before uncommenting
             var schemaContainer = IocManager.Resolve<ISchemaContainer>();
