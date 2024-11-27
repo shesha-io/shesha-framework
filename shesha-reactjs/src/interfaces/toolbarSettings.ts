@@ -31,7 +31,6 @@ import { IPermissionAutocompleteComponentProps } from '@/designer-components/per
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
-import { IFileUploadProps } from '@/designer-components/fileUpload';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
