@@ -10,9 +10,9 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
     reader.onerror = reject;
 });
 
-export const getBackgroundStyle = async (input?: IBackgroundValue, url?: string): Promise<React.CSSProperties> => {
+export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
 
-    if (!input) return {};
+    if (!input || jsStyle.background || jsStyle.backgroundColor || jsStyle.backgroundImage) return {};
     const style: React.CSSProperties = {};
 
     if (input.type === 'color') {

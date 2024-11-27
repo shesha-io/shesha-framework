@@ -7,9 +7,9 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { IInputStyles, useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
+import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -64,6 +64,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const font = model?.font;
     const shadow = model?.shadow;
     const background = model?.background;
+    const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -74,7 +75,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     useEffect(() => {
 
       const fetchStyles = async () => {
-
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
             { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
@@ -85,7 +85,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, storedImageUrl);
+        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
 
@@ -108,8 +108,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
-    const jsStyle = getStyle(model.style, data);
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
+
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
@@ -159,8 +159,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               components: {
                 Input: {
                   fontFamily: model?.font?.type,
-                  fontSize: model?.font?.size || 14,
-                  fontWeightStrong: Number(fontStyles.fontWeight) || 400,
+                  fontSize: model?.font?.size,
+                  fontWeightStrong: Number(fontStyles.fontWeight)
                 },
               },
             }}
@@ -176,10 +176,15 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: (model) => ({
-    ...model,
-    textType: 'text'
-  }),
+  initModel: (model) => {
+    return {
+      ...model,
+      textType: 'text',
+      background: { type: 'color', color: '#fff' },
+      font: { weight: '400', size: 14, color: '#000', family: 'Segoe UI' },
+      dimensions: { width: '100%', height: '32px', minHeight: '32px', maxHeight: '32px', minWidth: '100%', maxWidth: '100%' }
+    }
+  },
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
