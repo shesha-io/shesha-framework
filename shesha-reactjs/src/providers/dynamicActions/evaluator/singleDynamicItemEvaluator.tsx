@@ -34,10 +34,13 @@ export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = (
   });
 
   useEffect(() => {
-    item.resolvedItems = evaluatedItems;
-    item.isResolved = true;
-    onEvaluated(evaluatedItems);
-  }, [evaluatedItems]);
+    if (item.resolvedItems !== evaluatedItems){
+      item.resolvedItems = evaluatedItems;
+      item.isResolved = true;
+      onEvaluated(evaluatedItems);
+    }    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evaluatedItems, item.resolvedItems]);
 
   return null;
 };

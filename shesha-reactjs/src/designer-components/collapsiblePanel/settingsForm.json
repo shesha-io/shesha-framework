@@ -43,6 +43,14 @@
             "textType": "text"
           },
           {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412558",
+            "type": "checkbox",
+            "propertyName": "hasCustomHeader",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "label": "Custom Header",
+            "version": 1
+          },
+          {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
             "type": "dropdown",
             "propertyName": "expandIconPosition",
@@ -171,6 +179,7 @@
             "defaultValue": 8,
             "version": 2,
             "textType": "number",
+            "max": 40,
             "jsSetting": false
           },
           {

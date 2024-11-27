@@ -1,4 +1,4 @@
-import { HttpClientApi } from "../http/api";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { SettingConfigurationDto } from "./models";
 import qs from "qs";
 import { IAjaxResponse } from "@/interfaces";

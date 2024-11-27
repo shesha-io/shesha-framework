@@ -1,14 +1,14 @@
-import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
-import ParentProvider from '@/providers/parentProvider';
-import React, { FC } from 'react';
-import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
-import { DebugPanel } from '../debugPanel';
-import { MetadataProvider, useCanvas, useForm } from '@/providers';
-import { useFormDesignerState } from '@/providers/formDesigner';
-import { useStyles } from '../styles/styles';
-import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { MetadataProvider, useCanvas, useForm } from '@/providers';
+import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
+import ParentProvider from '@/providers/parentProvider';
+import React, { FC, useEffect } from 'react';
+import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
+import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
+import { DebugPanel } from '../debugPanel';
+import { useStyles } from '../styles/styles';
+import Toolbox from '../toolbox';
 
 export interface IDesignerMainAreaProps {
 
@@ -16,27 +16,47 @@ export interface IDesignerMainAreaProps {
 
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesignerState();
+    const { setSelectedComponent } = useFormDesignerActions();
     const { form, formMode, formSettings } = useForm();
     const { designerWidth, zoom } = useCanvas();
     const { styles } = useStyles();
 
+    useEffect(() => {
+        if (formMode !== 'designer') {
+            setSelectedComponent(null);
+        }
+    }, [formMode]);
+
     return (
-        <div className={styles.mainArea}>
-            <SidebarContainer
-                leftSidebarProps={
-                    readOnly
-                        ? null
-                        : {
-                            title: 'Builder Widgets',
-                            content: () => <Toolbox />,
-                            placeholder: 'Builder Widgets',
+        <div className={styles.mainArea} style={{
+            borderTop: '1px solid #d3d3d3',
+            ...(formMode !== 'designer' && {
+                maxHeight: '85vh',
+                overflow: 'auto',
+            })
+        }}>
+            <ConditionalWrap
+                condition={formMode === 'designer'}
+                wrap={(children) => (
+                    <SidebarContainer
+                        leftSidebarProps={
+                            readOnly
+                                ? null
+                                : {
+                                    title: 'Builder Widgets',
+                                    content: () => <Toolbox />,
+                                    placeholder: 'Builder Widgets',
+                                }
                         }
-                }
-                rightSidebarProps={{
-                    title: () => <ComponentPropertiesTitle />,
-                    content: () => <ComponentPropertiesPanel />,
-                    placeholder: 'Properties',
-                }}
+                        rightSidebarProps={{
+                            title: () => <ComponentPropertiesTitle />,
+                            content: () => <ComponentPropertiesPanel />,
+                            placeholder: 'Properties',
+                        }}
+                    >
+                        {children}
+                    </SidebarContainer>
+                )}
             >
                 <div style={{ width: designerWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
                     <ConditionalWrap
@@ -53,7 +73,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                     </ConditionalWrap>
 
                 </div>
-            </SidebarContainer>
+            </ConditionalWrap>
         </div>
     );
 };

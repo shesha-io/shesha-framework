@@ -1,4 +1,4 @@
-import { Tooltip, message } from 'antd';
+import { Tooltip, App } from 'antd';
 import moment from 'moment';
 import React from 'react';
 import { IconType, ShaIcon } from '@/components';
@@ -8,11 +8,10 @@ import {
   useDataTable,
   useForm,
   useGlobalState,
+  useHttpClient,
   useShaRouting,
-  useSheshaApplication,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
-import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
 import Link from 'next/link';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
@@ -23,11 +22,12 @@ export interface IActionCellProps<D extends object = {}, V = any> extends ICommo
 export const ActionCell = <D extends object = {}, V = any>(props: IActionCellProps<D, V>) => {
   const { columnConfig } = props;
   const { changeActionedRow } = useDataTable();
-  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const { formData, formMode } = useForm();
   const { globalState } = useGlobalState();
   const { executeAction, prepareArguments } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
+  const { message } = App.useApp();
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
 
@@ -40,7 +40,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     data: formData,
     moment: moment,
     formMode: formMode,
-    http: axiosHttp(backendUrl),
+    http: httpClient,
     message: message,
     globalState: globalState,
   };

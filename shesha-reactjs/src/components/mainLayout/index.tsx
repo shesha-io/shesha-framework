@@ -20,7 +20,7 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
-import { IPersistedFormProps, useSheshaApplication, useTheme } from '@/providers';
+import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
@@ -66,7 +66,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
    * Used to display the statuses of the entity as well as the reference numbers
    */
   headerControls?: ReactNodeOrFunc;
-  headerFormId?: IPersistedFormProps;
+  headerFormId?: FormFullName;
 }
 
 const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
@@ -168,7 +168,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           <LayoutHeader collapsed={collapsed} headerFormId={headerFormId} />
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
-          <>
+          <NodeOrFuncRenderer>
             {breadcrumb}
             <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
@@ -182,7 +182,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
             >
               {children}
             </div>
-          </>
+          </NodeOrFuncRenderer>
         </Content>
 
         {footer && (

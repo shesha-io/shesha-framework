@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import FormAutocomplete from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/formAutocomplete';
 import React, { FC, useState } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SectionSeparator from '@/components/sectionSeparator';
@@ -22,7 +22,7 @@ import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const Option = Select.Option;
 

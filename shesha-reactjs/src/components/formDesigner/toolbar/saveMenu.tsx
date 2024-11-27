@@ -1,26 +1,29 @@
 import React, { FC } from 'react';
 import {
   CheckCircleOutlined,
+  CopyOutlined,
   DownOutlined,
   ExclamationCircleOutlined,
   SaveOutlined
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import { CONFIGURATION_ITEM_STATUS_MAPPING, ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
   App,
   Dropdown,
   MenuProps,
-  Modal
   } from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useFormPersister } from '@/providers/formPersisterProvider';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient } from '@/providers';
 import {
   updateItemStatus,
 } from '@/utils/configurationFramework/actions';
+import { getFormFullName } from '@/utils/form';
+import { StatusTag } from '@/components';
+import { useStyles } from '../styles/styles';
 
 
 type MenuItem = MenuProps['items'][number];
@@ -33,8 +36,12 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { loadForm, saveForm, formProps } = useFormPersister();
   const { formFlatMarkup, formSettings } = useFormDesignerState();
   const toolboxComponents = useFormDesignerComponents();
-  const { backendUrl, httpHeaders } = useSheshaApplication();
-  const { message } = App.useApp();
+  const httpClient = useHttpClient();
+  const { message, modal } = App.useApp();
+
+  const { styles } = useStyles();
+
+  const fullName = formProps ? getFormFullName(formProps.module, formProps.name) : null;
 
   const saveFormInternal = (): Promise<void> => {
     const payload: FormMarkupWithSettings = {
@@ -62,14 +69,18 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
       });
   };
 
+  const copyFormName = () => {
+    navigator.clipboard.writeText(fullName);
+    message.success("Form name copied");
+  };
+
   const onSaveAndSetReadyClick = () => {
     const onOk = () => {
       message.loading('Saving and setting ready..', 0);
       saveFormInternal()
         .then(() => {
           updateItemStatus({
-            backendUrl: backendUrl,
-            httpHeaders: httpHeaders,
+            httpClient,
             id: formProps.id,
             status: ConfigurationItemVersionStatus.Ready,
             onSuccess: () => {
@@ -81,6 +92,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
                 loadForm({ skipCache: true });
               }
             },
+            message,
           }).catch(() => {
             message.destroy();
             message.error('Failed to set form ready');
@@ -91,7 +103,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
           message.error('Failed to save form');
         });
     };
-    Modal.confirm({
+    modal.confirm({
       title: 'Save and Set Ready',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to set this form ready?',
@@ -123,8 +135,28 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   ];
 
   return (
-    <Dropdown.Button icon={<DownOutlined />} menu={{ items: saveMenuItems }} onClick={onSaveClick} type="primary">
-      <SaveOutlined /> Save
-    </Dropdown.Button>
+    <div
+    className={styles.formNameParent}
+    >
+      <Dropdown.Button
+        icon={<DownOutlined />}
+        menu={{ items: saveMenuItems }}
+        onClick={onSaveClick}
+        type="primary"
+      >
+        <SaveOutlined />
+      </Dropdown.Button>
+      <p
+        className={styles.formName}
+        title={fullName}
+        onClick={()=>copyFormName()}
+      >
+        <span className={styles.formTitle}> {fullName}
+        </span>
+        <CopyOutlined color='#555' size={12} title={fullName}/>
+        <StatusTag value={formProps.versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} />
+      </p>
+    </div>
+
   );
 };

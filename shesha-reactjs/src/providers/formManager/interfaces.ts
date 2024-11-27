@@ -24,7 +24,7 @@ export interface UpToDateForm {
     settings: IFormSettings;
 }
 
-const FORM_LOADING_STATES = ['ready', 'loading', 'error'] as const;
+export const FORM_LOADING_STATES = ['ready', 'loading', 'error'] as const;
 export type FormLoadingState = typeof FORM_LOADING_STATES[number];
 
 export interface FormLoadingItem {

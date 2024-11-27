@@ -13,7 +13,7 @@ export const generateNewKey = (json: object) => {
     });
 
     return JSON.parse(stringify);
-  } catch (error) {
+  } catch {
     return json;
   }
 };

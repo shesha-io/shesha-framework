@@ -19,7 +19,8 @@ export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
 export { EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
-export { default as FormAutocomplete } from './formAutocomplete';
+export { FormAutocomplete } from './formAutocomplete';
+export { NotificationAutocomplete } from './notificationAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
 export { default as CustomErrorBoundary } from './customErrorBoundary';
@@ -83,30 +84,23 @@ export { default as ConfigurableComponent } from './appConfigurator/configurable
 export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
 export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
-
 export { ConfigurableForm } from './configurableForm';
 export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurableForm/formWithFlatMarkup';
-
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
-
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
-
 export {
   EntityDtoAutocomplete as Autocomplete,
   EntityDtoAutocomplete,
   RawAutocomplete,
   type IAutocompleteProps,
 } from './autocomplete';
-
 export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
-
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
-
 export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { ConfigurableSidebarMenu } from './configurableSidebarMenu';
 export { ComponentSettingsModal } from './configurableSidebarMenu/settingsModal';
@@ -114,14 +108,13 @@ export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
-export { default as PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-export { ColorPicker } from '@/components/colorPicker';
+export { default as PropertyAutocomplete } from './propertyAutocomplete/propertyAutocomplete';
+export { ColorPicker } from './colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';
-
 export { ListEditor } from './listEditor';
 export { ButtonGroupConfigurator } from './buttonGroupConfigurator';
-
 export { ConfigurableComponentRenderer } from "./configurableComponentRenderer";
+export { PermissionAutocomplete, type IPermissionAutocompleteProps } from './permissionAutocomplete';

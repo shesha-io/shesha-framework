@@ -86,7 +86,7 @@ export function fadeColor(color: string, fadePercentage: number): string {
     const [r, g, b] = getRGBValues(color);
     const alpha = (100 - fadePercentage) / 100;
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  } catch (error) {
+  } catch {
     throw new Error(`Could not parse color: ${color}`);
   }
 }

@@ -14,9 +14,10 @@ import {
   Title, Tooltip,
 } from 'chart.js';
 import React from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Doughnut } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
+import { useGeneratedTitle } from "../../hooks";
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
@@ -44,8 +45,9 @@ ChartJS.register(
 );
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { showLegend, showTitle, legendPosition, isDoughnut, strokeColor, dataMode, strokeWidth } = useChartDataStateContext(); 
 
+  const chartTitle: string = useGeneratedTitle();
 
   if (!data || !data.datasets || !data.labels) {
     if (!data)
@@ -59,16 +61,25 @@ const PieChart = ({ data }: IPieChartProps) => {
     dataset.data = dataset?.data?.map((item) => item === null || item === undefined ? 'undefined' : item);
   });
 
+  if (dataMode === 'url') {
+    data?.datasets?.map((dataset: any) => {
+      dataset.borderColor = strokeColor || 'black';
+      dataset.borderWidth = typeof (strokeWidth) === 'number' || strokeWidth > 1 ? strokeWidth : 1;
+      dataset.strokeColor = strokeColor || 'black';
+      return dataset;
+    });
+  } 
+
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
       legend: {
-        display: showXAxisScale ? true : false,
+        display: showLegend ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle ? true : false,
-        text: title?.trim() || `${yProperty} by ${xProperty} (${aggregationMethod})`,
+        display: showTitle && chartTitle.length > 0,
+        text: chartTitle,
       },
     },
     layout: {
@@ -81,7 +92,7 @@ const PieChart = ({ data }: IPieChartProps) => {
     },
   };
 
-  return <Pie data={data as any} options={options} />;
+  return isDoughnut ? <Doughnut data={data as any} options={options} /> : <Pie data={data as any} options={options} />;
 };
 
 export default PieChart;

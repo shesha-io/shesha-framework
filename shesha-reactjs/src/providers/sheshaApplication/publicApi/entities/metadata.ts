@@ -1,7 +1,7 @@
 import { IHasEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { EntitiesManager } from "./manager";
-import { HttpClientApi } from "../http/api";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { EntityConfigurationDto } from "./models";
 import { DataTypes } from "@/interfaces";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";
@@ -178,10 +178,10 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
         const sortedProps = sortByPath(property.properties);
         for (const prop of sortedProps) {
             if ((prop as IEntityPropertyMetadata).entityItemType === 'entityType' && isEntityReferencePropertyMetadata(prop)) {
-                if (!baseTypesImported){
+                if (!baseTypesImported) {
                     typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
                 }
-                
+
                 const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
                 if (typeDef) {
                     typesImporter.import(typeDef);
@@ -231,7 +231,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
         // entities Api
         typesImporter.import({ typeName: moduleType, filePath: moduleFileName });
-        
+
         sb.append(`${property.path}: ${moduleType};`);
     }
     sb.decIndent();

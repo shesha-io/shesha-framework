@@ -168,7 +168,6 @@ export interface IDataTableStateContext
   selectedRows?: { [key in string]: string }[];
 
   allowReordering: boolean;
-  hoverRowId?: string;
   dragState?: DragState;
 }
 
@@ -227,7 +226,6 @@ export interface IDataTableActionsContext
   setRowData: (rowIndex: number, data: any) => void;
 
   setSelectedRow: (index: number, row: any) => void;
-  setHoverRowId: (id: string) => void;
   setDragState: (dragState: DragState) => void;
   setMultiSelectedRow: (rows: Row[] | Row) => void;
   setColumnWidths: (widths: IColumnWidth[]) => void;

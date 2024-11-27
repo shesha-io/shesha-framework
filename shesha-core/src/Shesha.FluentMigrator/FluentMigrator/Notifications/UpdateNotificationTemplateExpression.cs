@@ -22,7 +22,7 @@ namespace Shesha.FluentMigrator.Notifications
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => 
                 {
-                    var helper = new NotificationDbHelper(DbmsType, connection, transaction);
+                    var helper = new NotificationDbHelper(DbmsType, connection, transaction, QuerySchema);
 
                     if (Template.Name.IsSet)
                         helper.UpdateTemplateName(Id, Template.Name.Value);

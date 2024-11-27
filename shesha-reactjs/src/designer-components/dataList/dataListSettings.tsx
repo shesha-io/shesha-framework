@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import FormAutocomplete from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/formAutocomplete';
 import React, { FC, ReactNode, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
@@ -20,7 +20,7 @@ import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 

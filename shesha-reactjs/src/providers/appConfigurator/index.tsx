@@ -2,7 +2,6 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReduce
 import { useLocalStorage } from '@/hooks';
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import {
-  IConfigurationFrameworkHookArguments,
   IHasConfigurableItemId,
   createNewVersion,
   deleteItem,
@@ -27,6 +26,8 @@ import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
+import { App } from 'antd';
+import { useHttpClient } from '../sheshaApplication/publicApi';
 
 export interface IAppConfiguratorProviderProps { }
 
@@ -102,13 +103,12 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     configurationItemMode: configuratorSettings.mode,
   });
 
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
+  const { message, notification, modal } = App.useApp();
 
   //#region Configuration Framework renamed to Configuration Items
 
   const actionsOwner = 'Configuration Items';
-
-  const cfArgs: IConfigurationFrameworkHookArguments = { backendUrl: backendUrl, httpHeaders: httpHeaders };
 
   const actionDependencies = [state];
   useConfigurableAction<IHasConfigurableItemId>(
@@ -118,15 +118,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          createNewVersion({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return createNewVersion({ id: actionArgs.itemId, httpClient, message, notification, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -140,15 +132,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          setItemReady({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return setItemReady({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -162,15 +146,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          deleteItem({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return deleteItem({ id: actionArgs.itemId, httpClient });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -184,15 +160,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          publishItem({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return publishItem({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -206,15 +174,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          itemCancelVersion({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return itemCancelVersion({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -228,15 +188,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          downloadAsJson({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return downloadAsJson({ id: actionArgs.itemId, httpClient });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },

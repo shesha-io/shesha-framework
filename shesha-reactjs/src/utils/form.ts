@@ -98,7 +98,13 @@ export const hasFiles = (data: any): boolean => {
   return hasFile !== null && hasFile !== undefined; // note: can't check for Boolean(*) because the key may be an empty string
 };
 
+const hasGhostKeys = (form: any): boolean => Boolean(form) && Object.entries(form).some(([key]) => key.includes(GHOST_PAYLOAD_KEY));
+
+// TODO: remove GHOST_PAYLOAD_KEY and all functions that use it
 export const removeGhostKeys = (form: any): any => {
+  if (!hasGhostKeys(form))
+    return form;
+
   const entries = Object.entries(form || {})
     .filter(([key]) => !key.includes(GHOST_PAYLOAD_KEY))
     .map(([key, value]) => {
@@ -135,7 +141,7 @@ export const getFormCacheKey = (formId: FormIdentifier, configurationItemMode: C
     : isFormFullName(formId)
       ? `${formId.module}/${formId.name}`
       : undefined;
-      
+
   return formKey
     ? `${formKey}:${configurationItemMode}`
     : undefined;
@@ -145,7 +151,7 @@ export const getFormCacheKey = (formId: FormIdentifier, configurationItemMode: C
  * Convert size value (numeric or string) to a valid css property value. Numeric values are converted to pixels, string values remain as is.
  */
 export const toSizeCssProp = (value: string | number): string | undefined => {
-  return typeof(value) === 'string' && isNumeric(value) || typeof(value) === 'number'
+  return typeof (value) === 'string' && isNumeric(value) || typeof (value) === 'number'
     ? `${value}px`
     : Boolean(value)
       ? value

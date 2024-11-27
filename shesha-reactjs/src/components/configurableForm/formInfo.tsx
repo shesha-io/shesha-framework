@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { useAppConfigurator } from '@/providers';
+import { useAppConfigurator, useAuth } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { Button } from 'antd';
 import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
@@ -8,6 +8,7 @@ import StatusTag from '@/components/statusTag';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 export interface FormInfoProps {
   /**
@@ -26,9 +27,12 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, children }) => {
+  
   const { id, versionNo, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible, softInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
+
+  const auth = useAuth(false);
 
   const [open, setOpen] = useState(false);
   const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
@@ -42,18 +46,15 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
     setOpen(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setPanelShowing(softInfoBlock);
-  },[softInfoBlock]);
+  }, [softInfoBlock]);
 
-  if(!formProps.id){
+  if (!formProps?.id) {
     return <>{children}</>;
   }
 
-  
-  //Prevent rendering empty info block when there's no info to display
-
-  if(formProps?.id === undefined) {
+  if (auth?.state?.status !== 'ready'){
     return <>{children}</>;
   }
 
@@ -67,17 +68,12 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
         event.stopPropagation();
         if (Boolean(displayEditMode)) setPanelShowing(false);
       }}
-      style={{
-        border: Boolean(displayEditMode) ? '1px #10239e solid' : 'none',
-        position: 'relative',
-        transition: '.1s',
-        padding: '3px',
-      }}
+      className={classNames(styles.shaFormContainer, { [styles.shaEditMode]: displayEditMode })}
     >
 
       <div className={`${styles.shaFormInfoCardParent}`} style={{
         height: Boolean(displayEditMode) ? '40px' : '0px',
-        }}>
+      }}>
         <div
           className={`${styles.shaFormInfoCard}`}
           style={{
@@ -103,7 +99,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
             )}
 
             <p
-              onClick={()=>onModalOpen()}
+              onClick={() => onModalOpen()}
               title={`${getFormFullName(module, name)} v${versionNo}`}
               className={styles.shaFormInfoCardTitle}>
               {getFormFullName(module, name)} v{versionNo}

@@ -9,8 +9,6 @@ namespace Shesha.Persons
     [AutoMapTo(typeof(User), typeof(Person))]
     public class CreatePersonAccountDto
     {
-        [Required(AllowEmptyStrings = false)]
-        [MinLength(5)]
         public virtual string UserName { get; set; }
         [Required]
         public virtual string Password { get; set; }

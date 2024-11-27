@@ -118,7 +118,7 @@ export const getValidDefaultBool = (value: any, defalutValue: boolean = true) =>
 export const getPlainValue = <T = object | any[]>(value: T): T => {
   try {
     return JSON.parse(JSON.stringify(value, getCircularReplacer()));
-  } catch (_e) {
+  } catch {
     return value;
   }
 };
@@ -248,7 +248,7 @@ export const executeFunction = (expression: string, args: { [key: string]: any }
     return expression
       ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
       : null;
-  } catch (_e) {
+  } catch {
     return null;
   }
 };

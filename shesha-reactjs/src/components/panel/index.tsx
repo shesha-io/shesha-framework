@@ -1,11 +1,13 @@
 import React, { FC } from 'react';
-import { Collapse, Skeleton } from 'antd';
+import { Collapse, Skeleton, theme } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
 
-const { Panel } = Collapse;
+const { useToken } = theme;
+
+export type headerType = 'parent' | 'child' | 'default';
 
 export interface ICollapsiblePanelProps extends CollapseProps {
   isActive?: boolean;
@@ -19,11 +21,15 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   noContentPadding?: boolean;
   loading?: boolean;
   collapsedByDefault?: boolean;
+  headerColor?: string;
   bodyColor?: string;
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   hideWhenEmpty?: boolean;
+  parentPanel?: boolean;
+  primaryColor?: string;
   dynamicBorderRadius?: number;
+  panelHeadType?: headerType;
 }
 
 /**
@@ -35,13 +41,18 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * 
  */
 
-const StyledCollapse: any = styled(Collapse)<
+const StyledCollapse: any = styled(Collapse) <
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
+    border-top: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'parent' ? `3px solid  ${primaryColor}` : 'none')};
+    border-left: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'child' ? `3px solid  ${primaryColor}` : 'none')};
+    font-size: ${({ panelHeadType }) => (panelHeadType === 'parent' ? '13px' : '16px')};
+    font-weight: 'bold';
+    background-color: ${({ headerColor }) => headerColor} !important;
+    
   }
-
   .ant-collapse-content {
     .ant-collapse-content-box > .sha-components-container {
       background-color: ${({ bodyColor }) => bodyColor};
@@ -65,14 +76,19 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   collapsible,
   ghost,
   bodyColor = 'unset',
+  headerColor = 'unset',
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
-  dynamicBorderRadius
+  panelHeadType = 'default',
+  dynamicBorderRadius,
+
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
-  const { styles } = useStyles({borderRadius: dynamicBorderRadius});
+  const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
+  const { token } = useToken();
+
 
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
@@ -82,25 +98,28 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       onChange={onChange}
       expandIconPosition={expandIconPosition}
       className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
-      style={{...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius}}
+      style={{ ...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius }}
       ghost={ghost}
       bodyColor={bodyColor}
+      headerColor={headerColor}
       hideCollapseContent={hideCollapseContent}
-    >
-      <Panel
-        key="1"
-        collapsible={collapsible}
-        showArrow={showArrow}
-        header={header || ' '}
-        extra={
-          <span onClick={onContainerClick} className={extraClassName}>
-            {extra}
-          </span>
+      primaryColor={token.colorPrimary}
+      panelHeadType={panelHeadType}
+      items={[
+        {
+          key: "1",
+          collapsible: collapsible,
+          showArrow: showArrow,
+          label: header || ' ',
+          extra: (
+            <span onClick={onContainerClick} className={extraClassName}>
+              {extra}
+            </span>
+          ),
+          children: <Skeleton loading={loading}>{children}</Skeleton>,
         }
-      >
-        <Skeleton loading={loading}>{children}</Skeleton>
-      </Panel>
-    </StyledCollapse>
+      ]}
+    />
   );
 };
 

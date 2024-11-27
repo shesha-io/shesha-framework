@@ -1,3 +1,4 @@
+import ConditionalWrap from '@/components/conditionalWrapper';
 import { useGet } from '@/hooks';
 import { useFormData, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
 import { IRefListPropertyMetadata } from '@/interfaces/metadata';
@@ -13,14 +14,15 @@ import FilterComponent from './components/filterComponent';
 import LineChart from './components/line';
 import PieChart from './components/pie';
 import PolarAreaChart from './components/polarArea';
+import { useBarChartData, useLineChartData, usePieOrPolarAreaChartData, usePivotChartData } from "./hooks";
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData, preparePolarAreaChartData } from './utils';
+import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
-    axisProperty, simpleOrPivot, filterProperties, borderWidth, strokeColor,
-    allowFilter, isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
+  const { chartType, entityType, valueProperty, filters, legendProperty,
+    axisProperty, simpleOrPivot, filterProperties, allowFilter, 
+    isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -71,23 +73,24 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       })
       .then((data) => {
         getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
-          for (const metaItem of metaData.properties as Array<IRefListPropertyMetadata>) {
-            if (metaItem.dataType === 'reference-list-item') {
-              let fieldName = toCamelCase(metaItem.path); // Field to transform in the data
-
-              // Fetch the reference list values for this field
-              getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } }).promise.then((refListItem) => {
-                setData(data.result?.items?.map(item => {
-                  if (item[`${fieldName}`] !== undefined) {
-                    // Replace the numeric value with the corresponding reference list name
-                    const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
-                    item[`${fieldName}`] = referenceName?.trim() || `${item[`${fieldName}`]}`; // Fallback to original value (as string) if not found
+          const refListPromises = (metaData.properties as Array<IRefListPropertyMetadata>)
+            .filter((metaItem: IRefListPropertyMetadata) => metaItem.dataType === 'reference-list-item')
+            .map((metaItem: IRefListPropertyMetadata) => {
+              const fieldName = toCamelCase(metaItem.path);
+              return getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } })
+              .promise
+              .then((refListItem) => {
+                data.result?.items?.forEach((item: any) => {
+                  if (item[fieldName] !== undefined) {
+                    const referenceName = refListItem.items.find((x) => x.itemValue === item[fieldName])?.item;
+                    item[fieldName] = referenceName?.trim() || `${item[fieldName]}`;
                   }
-                  return item;
-                }));
-              }).catch((err: any) => console.error('getReferenceList, err metadata', err));
-            }
-          }
+                });
+              })
+              .catch((err: any) => console.error('getReferenceList, err metadata', err));
+            });
+
+            Promise.all(refListPromises).then(() => setData(data.result.items));
         });
       })
       .then(() => setIsLoaded(true))
@@ -99,6 +102,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       setFilterdData(state.data);
     }
   }, [state.data]);
+
+  const lineChartData = useLineChartData();
+  const barChartData = useBarChartData();
+  const pieOrPolarAreaChartData = usePieOrPolarAreaChartData();
+  const pivotChartData = usePivotChartData();
 
   if (!entityType || !chartType || !valueProperty || !axisProperty) {
     // Collect the missing properties in an array
@@ -145,60 +153,75 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     );
   }
 
-  return (
+  const wrapperDiv = (children: React.ReactNode) => (
     <div className={cx(styles.chartControlContainer)} style={{
-      height: props?.height ?? 'auto'
+      height: props?.height > 200 ? props.height : 'auto',
+      width: props?.width > 300 ? props.width : 'auto',
+      border: props?.showBorder ? '1px solid #ddd' : 'none'
     }}>
-      {allowFilter && (
-        <>
-          <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>
-            <Button size='small' onClick={toggleFilterVisibility}>
-              {state.isFilterVisible ? 'Hide Filter' : 'Show Filter'}
-            </Button>
-            <Button size='small' onClick={resetFilter}>
-              Reset Filter
-            </Button>
-          </Flex>
-          <FilterComponent
-            filters={state.chartFilters}
-            setFilters={setChartFilters}
-            properties={filterProperties?.length > 0 ? filterProperties : getAllProperties(state.filteredData)}
-            isVisible={state.isFilterVisible}
-            onClose={toggleFilterVisibility}
-            onFilter={onFilter}
-            resetFilter={resetFilter}
-          />
-        </>
-      )}
+      <div className={cx(styles['margin-bottom-10'])}>
+        <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>
+          <Button size='small' onClick={toggleFilterVisibility}>
+            {state.isFilterVisible ? 'Hide Filter' : 'Show Filter'}
+          </Button>
+          <Button size='small' onClick={resetFilter}>
+            Reset Filter
+          </Button>
+        </Flex>
+        <FilterComponent
+          filters={state.chartFilters}
+          setFilters={setChartFilters}
+          properties={filterProperties?.length > 0 ? filterProperties : getAllProperties(state.filteredData)}
+          isVisible={state.isFilterVisible}
+          onClose={toggleFilterVisibility}
+          onFilter={onFilter}
+          resetFilter={resetFilter}
+        />
+      </div>
+      {children}
+    </div>
+  );
+
+  return (
+    <ConditionalWrap
+      condition={allowFilter}
+      wrap={(children) => wrapperDiv(children)}
+    >
+      <Flex align='center' justify='center' className={!allowFilter && cx(styles.chartControlContainer)} style={!allowFilter && {
+        height: props?.height > 200 ? props.height : 'auto',
+        width: props?.width > 300 ? props.width : 'auto',
+        border: props?.showBorder ? '1px solid #ddd' : 'none'
+      }}>
       {
         (() => {
           switch (chartType) {
             case 'line':
               data = simpleOrPivot === 'simple'
-                ? prepareLineChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? lineChartData
+                : pivotChartData;
               return <LineChart data={data} />;
             case 'bar':
               data = simpleOrPivot === 'simple'
-                ? prepareBarChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? barChartData
+                : pivotChartData;
               return <BarChart data={data} />;
             case 'pie':
               data = simpleOrPivot === 'simple'
-                ? preparePieChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? pieOrPolarAreaChartData
+                : pivotChartData;
               return <PieChart data={data} />;
             case 'polarArea':
               data = simpleOrPivot === 'simple'
-                ? preparePolarAreaChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod, borderWidth)
-                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, borderWidth);
+                ? pieOrPolarAreaChartData
+                : pivotChartData;
               return <PolarAreaChart data={data} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
           }
         })()
       }
-    </div>
+      </Flex>
+    </ConditionalWrap>
   );
 };
 

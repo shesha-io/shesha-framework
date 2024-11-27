@@ -34,7 +34,7 @@ namespace Shesha.Otp
             return await _otpStorage.GetAsync(operationId);
         }
 
-        public async Task<ISendPinResponse> ResendPinAsync(IResendPinInput input)
+        public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             var otp = await _otpStorage.GetAsync(input.OperationId);
@@ -87,7 +87,7 @@ namespace Shesha.Otp
 
         }
 
-        public async Task<ISendPinResponse> SendPinAsync(ISendPinInput input)
+        public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (string.IsNullOrWhiteSpace(input.SendTo))
@@ -159,7 +159,7 @@ namespace Shesha.Otp
             return response;
         }
 
-        public async Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input)
+        public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (!settings.IgnoreOtpValidation)

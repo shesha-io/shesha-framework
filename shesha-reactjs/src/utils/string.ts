@@ -84,7 +84,7 @@ export function getLastSection(separator: string, value: string) {
 export const getNumericValue = (localValue: any) => {
   try {
     return Number(localValue);
-  } catch (error) {
+  } catch {
     return 0;
   }
 };

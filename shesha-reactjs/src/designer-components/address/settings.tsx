@@ -16,8 +16,7 @@ import { Option } from 'antd/lib/mentions';
 import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
@@ -30,7 +29,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
   const onChangeOrSelectConstants = useAvailableConstantsMetadata({
     standardConstants: [],
     onBuild: (builder) => {
-      builder.addAllStandard([SheshaConstants.selectedRow]).addObject("event", "Event callback when user input", undefined);
+      builder.addAllStandard().addObject("event", "Event callback when user input", undefined);
     }
   });
 
