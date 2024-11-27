@@ -1,16 +1,7 @@
 import moment from 'moment';
-import React, {
-  FC,
-  useEffect,
-  useMemo,
-  useState
-  } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { axiosHttp, get } from '@/utils/fetchers';
-import {
-  Button,
-  App,
-  Spin
-  } from 'antd';
+import { Button, App, Spin } from 'antd';
 import { entitiesGet } from '@/apis/entities';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
@@ -21,7 +12,6 @@ import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoade
 import {
   ButtonGroupItemProps,
   FormIdentifier,
-
   useConfigurableActionDispatcher,
   useForm,
   useGlobalState,
@@ -33,6 +23,7 @@ import { isPropertiesArray } from '@/interfaces/metadata';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { getFormApi } from '@/providers/form/formApi';
+import { ShaIconTypes } from '../iconPicker';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -80,6 +71,9 @@ export interface IEntityReferenceProps {
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
   style?: string;
+  displayType?: 'textTitle' | 'icon' | 'displayProperty';
+  iconName?: ShaIconTypes;
+  textTitle?: string;
 }
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
@@ -255,6 +249,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           formType={formType}
           disabled={props.disabled}
           style={props.style}
+          displayType={props.displayType}
+          iconName={props.iconName}
+          textTitle={props.textTitle}
         />
       );
 
