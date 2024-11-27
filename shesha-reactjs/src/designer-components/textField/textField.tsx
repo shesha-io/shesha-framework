@@ -26,7 +26,6 @@ import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { getScaleValue } from '../_settings/utils';
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -182,7 +181,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     return {
       ...model,
       textType: 'text'
-    }
+    };
   },
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))

@@ -135,7 +135,7 @@ export const getBorderInputs = () => borderSides.map(value => {
             {
                 label: "Border",
                 hideLabel: true,
-                inputType: "button",
+                type: "button",
                 propertyName: "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
@@ -145,11 +145,12 @@ export const getBorderInputs = () => borderSides.map(value => {
                 label: "Select Side",
                 hideLabel: true,
                 propertyName: "border.selectedSide",
-                inputType: "radio",
+                type: "radio",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 buttonGroupOptions: borderSides
             },
             {
+                type: 'text',
                 label: "Width",
                 hideLabel: true,
                 propertyName: `border.border.${side}.width`,
@@ -157,7 +158,7 @@ export const getBorderInputs = () => borderSides.map(value => {
             {
                 label: "Style",
                 propertyName: `border.border.${side}.style`,
-                inputType: "dropdown",
+                type: "dropdown",
                 hideLabel: true,
                 width: 60,
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -166,7 +167,7 @@ export const getBorderInputs = () => borderSides.map(value => {
             {
                 label: `Color ${side}`,
                 propertyName: `border.border.${side}.color`,
-                inputType: "color",
+                type: "color",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
             }
@@ -189,7 +190,7 @@ export const getCornerInputs = () => radiusCorners.map(value => {
                 id: "corner-selector",
                 label: "Corner Radius",
                 propertyName: "border.selectedCorner",
-                inputType: "radio",
+                type: "radio",
                 defaultValue: "all",
                 tooltip: "Select a corner to which the radius will be applied",
                 buttonGroupOptions: borderCorners,

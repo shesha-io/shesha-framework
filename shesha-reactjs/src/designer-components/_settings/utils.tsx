@@ -161,18 +161,3 @@ export const updateSettingsComponentsDict = (
 export const addPx = (value) => {
     return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 };
-
-
-export const getScaleValue = (size: string, height?, fontSize?): object => {
-    console.log("getScaleValue", size, height, fontSize);
-    switch (size) {
-        case 'small':
-            return { height: height || 24, fontSize: fontSize || 12, padding: "0 8px" };
-        case 'middle':
-            return { height: height || 32, fontSize: fontSize || 14, padding: "0 8px" };
-        case 'large':
-            return { height: height || 40, fontSize: fontSize || 16, padding: "0 8px" };
-        default:
-            return null;
-    }
-};

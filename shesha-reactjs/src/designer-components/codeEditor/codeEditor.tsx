@@ -49,6 +49,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     }
   };
 
+  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
+
   const onClear = () => {
     if (hasValue) {
       modal.confirm({
@@ -72,8 +74,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   };
 
   const openEditorDialog = () => setShowDialog(true);
-  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
-
 
   const onDialogCancel = () => {
     if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
@@ -141,7 +141,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ? (<Typography.Text disabled>No Code</Typography.Text>)
     : (
       <>
-        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} ghost={props.ghost} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {props.label !== " " && (readOnly ? 'View Code' : '...')}
         </Button>
         {showDialog && (
