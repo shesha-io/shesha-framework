@@ -17,8 +17,10 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IInputStyles } from '../textField/interfaces';
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
-const settingsForm = settingsFormJson as FormMarkup;
+const settingsForm = settingsFormJson as unknown as FormMarkup;
 
 const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   type: 'numberField',
@@ -47,13 +49,18 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
               value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
             />
           ) : (
-            <NumberFieldControl disabled={model.readOnly} model={model} value={value} onChange={onChange} />
+            <NumberFieldControl
+            disabled={model.readOnly}
+            model={model}
+            value={value}
+            onChange={onChange}
+            />
           );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
+  settingsFormMarkup: (data) => getSettings(data),
   initModel: (model) => ({
     ...model,
   }),
@@ -72,7 +79,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
 
       return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
     })
-  ,
+    .add<INumberFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
