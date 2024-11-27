@@ -35,7 +35,6 @@ using Shesha.Notifications;
 using Shesha.Notifications.Emails.Gateways;
 using Shesha.Notifications.Sms.Gateways;
 using Shesha.Notifications.SMS;
-using Shesha.Notifications.Teams;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -101,7 +100,6 @@ namespace Shesha.Web.Host.Startup
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
-            services.AddScoped<INotificationChannelSender, TeamsChannelSender>();
             services.AddScoped<INotificationChannelSender, EmailChannelSender>();
             services.AddScoped<INotificationChannelSender, SmsChannelSender>();
             services.AddTransient<ClickatellGateway>();
