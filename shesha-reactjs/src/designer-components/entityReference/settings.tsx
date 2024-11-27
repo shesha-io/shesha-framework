@@ -1,4 +1,4 @@
-import { AutoComplete, Checkbox, Input, InputNumber, Select, Switch, } from 'antd';
+import { AutoComplete, Checkbox, Input, InputNumber, Select, Switch } from 'antd';
 import React, { FC, useState } from 'react';
 import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
@@ -17,7 +17,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { ButtonGroupConfigurator } from '@/components';
+import { ButtonGroupConfigurator, IconPicker } from '@/components';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
@@ -31,15 +31,16 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
   const { formSettings } = useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map(i => {
+    formTypes.map((i) => {
       return { value: i };
     })
   );
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
-        <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
+      <SettingsCollapsiblePanel header="Display">
+        <ContextPropertyAutocomplete
+          id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={model}
@@ -62,7 +63,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Entity reference configuration'>
+      <SettingsCollapsiblePanel header="Entity reference configuration">
         <SettingsFormItem name="placeholder" label="Placeholder" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
@@ -79,11 +80,37 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           />
         </SettingsFormItem>
 
-        <MetadataProvider modelType={values?.entityType}>
-          <SettingsFormItem name="displayProperty" label="Display property" jsSetting>
-            <PropertyAutocomplete readOnly={readOnly} autoFillProps={false} />
+        <SettingsFormItem name="displayType" label="Display type" jsSetting>
+          <Select disabled={readOnly}>
+            <Select.Option value="displayProperty">Display property</Select.Option>
+            <Select.Option value="icon">Icon</Select.Option>
+            <Select.Option value="textTitle">Text title</Select.Option>
+          </Select>
+        </SettingsFormItem>
+
+        {values?.displayType === 'displayProperty' && (
+          <MetadataProvider modelType={values?.entityType}>
+            <SettingsFormItem name="displayProperty" label="Display property" jsSetting>
+              <PropertyAutocomplete readOnly={readOnly} autoFillProps={false} />
+            </SettingsFormItem>
+          </MetadataProvider>
+        )}
+
+        {values?.displayType === 'icon' && (
+          <SettingsFormItem name="icon" label="Icon" jsSetting>
+            <IconPicker
+              readOnly={readOnly}
+              defaultValue={values?.iconName}
+              onIconChange={(_, iconName) => onValuesChange({ ...values, iconName })}
+            />
           </SettingsFormItem>
-        </MetadataProvider>
+        )}
+
+        {values?.displayType === 'textTitle' && (
+          <SettingsFormItem name="textTitle" label="Text title" jsSetting>
+            <Input readOnly={readOnly} />
+          </SettingsFormItem>
+        )}
 
         <SettingsFormItem name="entityReferenceType" initialValue={'Quickview'} label="Entity Reference Type">
           <Select disabled={readOnly}>
@@ -105,14 +132,14 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
-              onSearch={t =>
+              onSearch={(t) =>
                 setFormTypesOptions(
                   (t
-                    ? formTypes.filter(f => {
-                      return f.toLowerCase().includes(t.toLowerCase());
-                    })
+                    ? formTypes.filter((f) => {
+                        return f.toLowerCase().includes(t.toLowerCase());
+                      })
                     : formTypes
-                  ).map(i => {
+                  ).map((i) => {
                     return { value: i };
                   })
                 )
@@ -120,7 +147,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
             />
           </SettingsFormItem>
         )}
-        {(values?.formSelectionMode === 'name') && (
+        {values?.formSelectionMode === 'name' && (
           <SettingsFormItem name="formIdentifier" label="Form" jsSetting>
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </SettingsFormItem>
@@ -128,7 +155,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </SettingsCollapsiblePanel>
 
       <Show when={values?.entityReferenceType === 'Quickview'}>
-        <SettingsCollapsiblePanel header='Quickview settings'>
+        <SettingsCollapsiblePanel header="Quickview settings">
           <SettingsFormItem name="quickviewWidth" label="Quickview width" jsSetting>
             <InputNumber min={0} defaultValue={600} step={1} readOnly={readOnly} />
           </SettingsFormItem>
@@ -136,7 +163,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </Show>
 
       <Show when={values?.entityReferenceType === 'Dialog'}>
-        <SettingsCollapsiblePanel header='Dialog settings'>
+        <SettingsCollapsiblePanel header="Dialog settings">
           <SettingsFormItem name="modalTitle" label="Title" jsSetting>
             <Input readOnly={readOnly} />
           </SettingsFormItem>
@@ -149,27 +176,29 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
             </Select>
           </SettingsFormItem>
 
-          <Show when={values?.footerButtons === "custom"}>
+          <Show when={values?.footerButtons === 'custom'}>
             <SettingsFormItem name="buttons" label="Configure Modal Buttons">
               <ButtonGroupConfigurator readOnly={false}></ButtonGroupConfigurator>
             </SettingsFormItem>
           </Show>
 
-          {values?.showModalFooter || values?.footerButtons === "default" &&
-            <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
-              <Select disabled={readOnly}>
-                <Select.Option value="POST">POST</Select.Option>
-                <Select.Option value="PUT">PUT</Select.Option>
-              </Select>
-            </SettingsFormItem>
-          }
+          {values?.showModalFooter ||
+            (values?.footerButtons === 'default' && (
+              <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
+                <Select disabled={readOnly}>
+                  <Select.Option value="POST">POST</Select.Option>
+                  <Select.Option value="PUT">PUT</Select.Option>
+                </Select>
+              </SettingsFormItem>
+            ))}
           <SettingsFormItem name="additionalProperties" label="Additional properties" jsSetting>
             <LabelValueEditor
-              labelName='key'
-              labelTitle='Key'
-              valueName='value'
-              valueTitle='Value'
-              description={'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
+              labelName="key"
+              labelTitle="Key"
+              valueName="value"
+              valueTitle="Value"
+              description={
+                'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                 'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
                 'Id initial value is already initialised with {{entityReference.id}} but you can override it'
               }
@@ -194,7 +223,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
               <Select.Option value="custom">Custom</Select.Option>
             </Select>
           </SettingsFormItem>
-          {values?.modalWidth === 'custom' &&
+          {values?.modalWidth === 'custom' && (
             <>
               <SettingsFormItem name="widthUnits" label="Units" jsSetting>
                 <Select disabled={readOnly}>
@@ -206,33 +235,33 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
                 <InputNumber min={0} readOnly={readOnly} />
               </SettingsFormItem>
             </>
-          }
+          )}
 
           <SettingsFormItem name="handleSuccess" label="Handle Success" valuePropName="checked">
             <Switch />
           </SettingsFormItem>
-          {values?.handleSuccess &&
+          {values?.handleSuccess && (
             <CollapsiblePanel header="On Success handler">
               <SettingsFormItem name="onSuccess" label="On Success">
                 <ConfigurableActionConfigurator editorConfig={null} level={0} />
               </SettingsFormItem>
             </CollapsiblePanel>
-          }
+          )}
 
           <SettingsFormItem name="handleFail" label="Handle Fail" valuePropName="checked">
             <Switch />
           </SettingsFormItem>
-          {values?.handleFail &&
+          {values?.handleFail && (
             <CollapsiblePanel header="On Fail handler">
               <SettingsFormItem name="onFail" label="On Fail">
                 <ConfigurableActionConfigurator editorConfig={null} level={0} />
               </SettingsFormItem>
             </CollapsiblePanel>
-          }
+          )}
         </SettingsCollapsiblePanel>
       </Show>
 
-      <SettingsCollapsiblePanel header='Layout'>
+      <SettingsCollapsiblePanel header="Layout">
         <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
           <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
         </SettingsFormItem>
@@ -260,7 +289,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Visibility'>
+      <SettingsCollapsiblePanel header="Visibility">
         <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
@@ -286,7 +315,5 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
 };
 
 export const EntityReferenceSettingsForm: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
-  return (
-    SettingsForm<IEntityReferenceControlProps>({ ...props, children: <EntityReferenceSettings {...props} /> })
-  );
+  return SettingsForm<IEntityReferenceControlProps>({ ...props, children: <EntityReferenceSettings {...props} /> });
 };
