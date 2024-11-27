@@ -100,7 +100,6 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           <SettingsFormItem name="icon" label="Icon" jsSetting>
             <IconPicker
               readOnly={readOnly}
-              value={values?.iconName}
               defaultValue={values?.iconName}
               onIconChange={(_, iconName) => onValuesChange({ ...values, iconName })}
             />
