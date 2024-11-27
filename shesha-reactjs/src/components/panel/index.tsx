@@ -1,9 +1,13 @@
 import React, { FC } from 'react';
-import { Collapse, Skeleton } from 'antd';
+import { Collapse, Skeleton, theme } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
+
+const { useToken } = theme;
+
+export type headerType = 'parent' | 'child' | 'default';
 
 export interface ICollapsiblePanelProps extends CollapseProps {
   isActive?: boolean;
@@ -22,7 +26,10 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   hideWhenEmpty?: boolean;
+  parentPanel?: boolean;
+  primaryColor?: string;
   dynamicBorderRadius?: number;
+  panelHeadType?: headerType;
 }
 
 /**
@@ -39,9 +46,13 @@ const StyledCollapse: any = styled(Collapse) <
 >`
   .ant-collapse-header {
     visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    background-color: ${({ headerColor }) => headerColor} !important;;
+    border-top: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'parent' ? `3px solid  ${primaryColor}` : 'none')};
+    border-left: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'child' ? `3px solid  ${primaryColor}` : 'none')};
+    font-size: ${({ panelHeadType }) => (panelHeadType === 'parent' ? '13px' : '16px')};
+    font-weight: 'bold';
+    background-color: ${({ headerColor }) => headerColor} !important;
+    
   }
-
   .ant-collapse-content {
     .ant-collapse-content-box > .sha-components-container {
       background-color: ${({ bodyColor }) => bodyColor};
@@ -69,11 +80,15 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
-  dynamicBorderRadius
+  panelHeadType = 'default',
+  dynamicBorderRadius,
+
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
   const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
+  const { token } = useToken();
+
 
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
@@ -88,6 +103,8 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       bodyColor={bodyColor}
       headerColor={headerColor}
       hideCollapseContent={hideCollapseContent}
+      primaryColor={token.colorPrimary}
+      panelHeadType={panelHeadType}
       items={[
         {
           key: "1",

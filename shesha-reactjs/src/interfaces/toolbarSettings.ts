@@ -48,6 +48,8 @@ type ContextPropertyAutocompleteType = ToolbarSettingsProp &
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
+type ImagePickerType = ToolbarSettingsProp;
+
 type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden' | 'type'>;
 
 type IconPickerType = ToolbarSettingsProp & Omit<IIconPickerComponentProps, 'hidden' | 'type'>;
@@ -154,6 +156,10 @@ export class DesignerToolbarSettings<T> {
 
   public addColorPicker(props: ColorPickerType | ((data: T) => PropertyAutocompleteType)) {
     return this.addProperty(props, 'colorPicker');
+  }
+
+  public addImagePicker(props: ImagePickerType | ((data: T) => ImagePickerType)) {
+    return this.addProperty(props, 'imagePicker');
   }
 
   public addTextArea(props: TextAreaType | ((data: T) => TextAreaType)) {
