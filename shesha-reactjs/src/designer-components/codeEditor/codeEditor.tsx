@@ -7,7 +7,6 @@ import {
   App,
   Button,
   Modal,
-  Space,
   Tabs,
   Typography
 } from 'antd';
@@ -51,8 +50,20 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   };
 
   const onClear = () => {
-    setInternalValue(null);
-    if (props.onChange) props.onChange(null);
+    if (hasValue) {
+      modal.confirm({
+        title: 'Clear code editor?',
+        icon: <ExclamationCircleFilled />,
+        content: 'If you clear the code editor, the changes will be lost.',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        onOk() {
+          setInternalValue(null);
+          if (props.onChange) props.onChange(null);
+        }
+      });
+    }
   };
 
   const onDialogSave = () => {
@@ -76,22 +87,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         onOk() {
           setInternalValue(value);
           setShowDialog(false);
-        },
-        footer: <>
-          <Show when={hasValue && !readOnly}>
-            <Button size="small" danger={true} onClick={onClear}>
-              Clear Code
-            </Button>
-          </Show>,
-          <Button key="cancel" onClick={onDialogCancel}>
-            {readOnly ? 'Close' : 'Cancel'}
-          </Button>,
-          !readOnly && (
-          <Button key="ok" type="primary" onClick={onDialogSave}>
-            OK
-          </Button>
-          )
-        </>
+        }
       });
     } else {
       setInternalValue(value);
@@ -162,7 +158,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             className={styles.codeEditorModal}
             width={null}
             footer={[
-              <Button key="clear" onClick={onClear} disabled={readOnly}>
+              hasValue && <Button key="clear" danger onClick={onClear} disabled={readOnly}>
                 Clear
               </Button>,
               <Button key="cancel" onClick={onDialogCancel}>

@@ -25,6 +25,8 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
+import { getScaleValue } from '../_settings/utils';
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -67,7 +69,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -105,7 +107,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles,
+      ...shadowStyles
     });
 
 
@@ -179,10 +181,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   initModel: (model) => {
     return {
       ...model,
-      textType: 'text',
-      background: { type: 'color', color: '#fff' },
-      font: { weight: '400', size: 14, color: '#000', family: 'Segoe UI' },
-      dimensions: { width: '100%', height: '32px', minHeight: '32px', maxHeight: '32px', minWidth: '100%', maxWidth: '100%' }
+      textType: 'text'
     }
   },
   migrator: (m) => m
@@ -207,7 +206,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),
+    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

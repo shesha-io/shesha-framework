@@ -12,8 +12,21 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
 
 export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
 
-    if (!input || jsStyle.background || jsStyle.backgroundColor || jsStyle.backgroundImage) return {};
     const style: React.CSSProperties = {};
+
+    if (input.size) {
+        style.backgroundSize = input.size;
+    }
+
+    if (input.position) {
+        style.backgroundPosition = input.position;
+    }
+
+    if (input.repeat) {
+        style.backgroundRepeat = input.repeat;
+    }
+
+    if (!input || jsStyle.background || jsStyle.backgroundColor || jsStyle.backgroundImage) return style;
 
     if (input.type === 'color') {
         style.backgroundColor = input.color;
@@ -26,19 +39,6 @@ export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React
         style.backgroundImage = `url(${input?.uploadFile?.url})`;
     } else if (input.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
-    }
-
-
-    if (input.size) {
-        style.backgroundSize = input.size;
-    }
-
-    if (input.position) {
-        style.backgroundPosition = input.position;
-    }
-
-    if (input.repeat) {
-        style.backgroundRepeat = input.repeat;
     }
 
     return style;

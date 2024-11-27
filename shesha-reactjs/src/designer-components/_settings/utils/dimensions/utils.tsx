@@ -2,7 +2,7 @@ import React from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined, EllipsisOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
 
-export const getSizeStyle = (input?: IDimensionsValue): React.CSSProperties => {
+export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
     if (!input) return {};
 
     const style: React.CSSProperties = {};
@@ -10,6 +10,10 @@ export const getSizeStyle = (input?: IDimensionsValue): React.CSSProperties => {
 
     sizeProperties.forEach(prop => {
         const sizeValue = input[prop];
+
+        if (sizeValue) {
+            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue) ? `${sizeValue}px` : `${sizeValue}`;
+        }
 
         if (sizeValue) {
             style[prop] = /^\d+(\.\d+)?$/.test(sizeValue) ? `${sizeValue}px` : `${sizeValue}`;
