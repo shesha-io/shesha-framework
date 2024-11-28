@@ -13,7 +13,6 @@ import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
@@ -148,11 +147,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         }
       >
         {(value, onChange) => {
-          const customEvent = customEventHandler(eventProps);
+          const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function')
-              onChange(...args);
+            customEvents.onChange(args[0]);
+            if (typeof onChange === 'function') onChange(...args);
           };
 
           return <ConfigProvider

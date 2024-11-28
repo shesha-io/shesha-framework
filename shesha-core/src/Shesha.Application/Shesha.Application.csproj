@@ -13,6 +13,7 @@
     <Title>Shesha.Application</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>.\Shesha.Application.xml</DocumentationFile>
@@ -27,6 +28,7 @@
     <EmbeddedResource Remove="ObjectMapper\**" />
     <None Remove="Dtos\**" />
     <None Remove="ObjectMapper\**" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
   <ItemGroup>
     <None Remove="ConfigMigrations\package20240123_1429.shaconfig" />

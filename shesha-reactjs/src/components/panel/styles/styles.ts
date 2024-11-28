@@ -33,12 +33,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
       &:not(.${prefixCls}-collapse-ghost) {
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
-            border-left: 3px solid ${token.colorPrimary};
             border-top-left-radius: ${borderRadius ?? token.borderRadiusLG}px;
             border-top-right-radius: ${borderRadius ?? token.borderRadiusLG}px;
             background-color: #f0f0f0;
-            height: 45px;
             margin:'auto 0px';
+            min-height: 50px;
+            height: auto;
+            width: auto;
+            padding: 0;
+            padding-left:10px;
+            padding-top:5px;
           }
         }
       }
@@ -109,7 +113,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
       .${prefixCls}-collapse-arrow {
         padding-top: 3px !important;
         margin-top: -3px !important;
-      }    
+      }  
+      .ant-collapse-expand-icon{
+        margin-right:10px;
+      } 
     `);
 
   return {

@@ -6,6 +6,7 @@
     <Title>Shesha.Import</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -20,6 +21,7 @@
     <Compile Remove="Example\**" />
     <EmbeddedResource Remove="Example\**" />
     <None Remove="Example\**" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

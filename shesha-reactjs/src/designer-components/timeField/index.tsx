@@ -1,20 +1,17 @@
 import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { App } from 'antd';
-import moment from 'moment';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DATE_TIME_FORMAT = 'HH:mm';
@@ -30,27 +27,12 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
   Factory: ({ model }) => {
-    const form = useForm();
-    const { data: formData } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { message } = App.useApp();
-    const httpClient = useHttpClient();
-
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
+    const allData = useAvailableConstantsData();
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const customEvent = customTimeEventHandler(eventProps);
+          const customEvent = customTimeEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function')

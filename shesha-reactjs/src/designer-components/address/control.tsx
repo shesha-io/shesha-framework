@@ -1,15 +1,12 @@
 import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
-import moment from 'moment';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import ValidationErrors from '@/components/validationErrors';
 import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentProps } from './models';
-import { App } from 'antd';
-import { useForm, useGlobalState, useHttpClient } from '@/providers';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
-import { getFormApi } from '@/providers/form/formApi';
+import { useAvailableConstantsData } from '@/index';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;
@@ -25,11 +22,8 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     lazy: true,
   });
 
-  const form = useForm();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const httpClient = useHttpClient();
+  const allData = useAvailableConstantsData();
   const [googlePlaceReady, setGooglePlaceReady] = useState(false);
-  const { message } = App.useApp();
 
   useEffect(() => {
     if (googleMapsApiKey && !window.google) {
@@ -56,19 +50,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   const disableGoogleEvent = (value: string) =>
     (value?.length || 0) < parseInt((minCharactersSearch as string) || '0', 10) - 1;
 
-  const eventProps = {
-    model,
-    form: getFormApi(form),
-    formData: form.formData,
-    globalState,
-    http: httpClient,
-    message,
-    moment,
-    setGlobalState,
-    onChange,
-    onSelect,
-  };
-
   return (
     <Fragment>
       <ValidationErrors error={error} />
@@ -82,7 +63,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         disabled={readOnly}
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
-        {...customAddressEventHandler(eventProps)}
+        {...customAddressEventHandler(model, allData, onChange, onSelect)}
       />
     </Fragment>
   );

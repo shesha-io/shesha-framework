@@ -1,14 +1,13 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { App } from 'antd';
 import React, { useCallback, useMemo } from 'react';
 import { EntityPicker } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
+import { ButtonGroupItemProps } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression, getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
@@ -19,8 +18,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
-import moment from 'moment';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getValueByPropertyName } from '@/utils/object';
 
@@ -55,21 +52,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
    Factory: ({ model }) => {
-    const form = useForm();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const httpClient = useHttpClient();
-    const { data: formData } = useFormData();
-    const { message } = App.useApp();
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
+    const allData = useAvailableConstantsData();
+
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
 
     const displayEntityKey = model.displayEntityKey || '_displayName';
@@ -110,13 +94,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
-    const computedStyle = getStyle(style, formData) ?? {};
+    const computedStyle = getStyle(style, allData.data) ?? {};
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
 
-          const customEvent = customOnChangeValueEventHandler(eventProps);
+          const customEvent = customOnChangeValueEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function')

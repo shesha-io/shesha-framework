@@ -9,6 +9,7 @@
     <Title>Shesha.NHibernate</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,6 +23,7 @@
   <ItemGroup>
     <Compile Remove="Migrations\EnterpriseMigration\M20220719143699.cs" />
     <Compile Remove="Migrations\M20220706160000.cs" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

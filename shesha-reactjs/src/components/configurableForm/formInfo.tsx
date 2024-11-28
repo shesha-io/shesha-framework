@@ -54,7 +54,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, childr
     return <>{children}</>;
   }
 
-  if (auth.state.status !== 'ready'){
+  if (auth?.state?.status !== 'ready'){
     return <>{children}</>;
   }
 
