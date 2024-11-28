@@ -1,8 +1,6 @@
 ﻿using FluentMigrator;
 using Shesha.FluentMigrator;
 
-// INSERT INTO Frwk_UserRegistration (Id, UserId, UserNameOrEmailAddress, CreationTime, IsComplete)
-
 namespace Shesha.Migrations
 {
     [Migration(20240501141000)]
