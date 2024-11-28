@@ -1,11 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+;
 
-export const getSettings = (data: ITextFieldComponentProps) => {
+export const getSettings = (data: any) => {
 
     return {
 
@@ -24,42 +22,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                         title: 'Common',
                         id: 's4gmBg31azZC0UjZjpfTm',
                         components: [...new DesignerToolbarSettings()
-                            .addContextPropertyAutocomplete({
-                                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                                propertyName: 'propertyName',
-                                label: 'Property Name',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                styledLabel: true,
-                                size: 'small',
-                                validate: {
-                                    required: true,
-                                },
-                                jsSetting: true,
-                            })
-                            .addLabelConfigurator({
-                                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                                propertyName: 'hideLabel',
-                                label: 'label',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                hideLabel: true,
-                            })
                             .addSettingsInputRow({
                                 id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        type: 'text',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'placeholder',
-                                        label: 'Placeholder',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'description',
-                                        label: 'Tooltip',
+                                        propertyName: 'componentName',
+                                        label: 'Component Name',
+                                        size: 'large',
                                         jsSetting: true,
                                     },
                                 ],
@@ -71,16 +41,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        type: 'editModeSelector',
-                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'editMode',
-                                        label: 'Edit Mode',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'switch',
-                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                                        inputType: 'switch',
                                         propertyName: 'hidden',
                                         label: 'Hide',
                                         jsSetting: true,
@@ -88,183 +49,26 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                     },
                                 ],
                             })
-                            .addSettingsInputRow({
-                                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                            .addLabelConfigurator({
+                                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                                propertyName: 'hideLabel',
+                                label: 'label',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                hideLabel: true,
+                            })
+                            .addSettingsInputRow({  
+                                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        type: 'dropdown',
-                                        id: 'type-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'textType',
-                                        label: 'Type',
-                                        size: 'small',
+                                        inputType: 'textArea',
+                                        propertyName: 'description',
+                                        label: 'Description',
                                         jsSetting: true,
-                                        dropdownOptions: [
-                                            {
-                                                label: 'text',
-                                                value: 'text',
-                                            },
-                                            {
-                                                label: 'password',
-                                                value: 'password',
-                                            },
-                                        ],
-                                    },
-                                    {
-                                        type: 'text',
-                                        id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'initialValue',
-                                        label: 'Default Value',
-                                        tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                                        jsSetting: true,
+                                        layout: 'horizontal',
                                     },
                                 ],
-                            })
-                            .addSettingsInputRow({
-                                id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'prefix',
-                                        label: 'Prefix',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'iconPicker',
-                                        id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'prefixIcon',
-                                        label: 'Prefix Icon',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'suffix',
-                                        label: 'Suffix',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'iconPicker',
-                                        id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'suffixIcon',
-                                        label: 'Suffix Icon',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '2',
-                        title: 'Validation',
-                        id: '6eBJvoll3xtLJxdvOAlnB',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                propertyName: 'validate.required',
-                                label: 'Required',
-                                inputType: 'switch',
-                                size: 'small',
-                                layout: 'horizontal',
-                                jsSetting: true,
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
-                            })
-                            .addSettingsInputRow({
-                                id: 'qOkkwAnHvKJ0vYXeXMLsd',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                inputs: [
-                                    {
-                                        type: 'number',
-                                        id: 'minLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.minLength',
-                                        label: 'Min Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'number',
-                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.maxLength',
-                                        label: 'Max Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: 'Scip2BCqWk6HniFIJTgtA',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'message-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.message',
-                                        label: 'Message',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'codeEditor',
-                                        id: 'validator-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.validator',
-                                        label: 'Validator',
-                                        labelAlign: 'right',
-                                        tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
-                                    }
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '3',
-                        title: 'Events',
-                        id: 'Cc47W08MWrKdhoGqFKMI2',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
-                                inputType: 'codeEditor',
-                                propertyName: 'onChangeCustom',
-                                label: 'On Change',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
-                                inputType: 'codeEditor',
-                                propertyName: 'onFocusCustom',
-                                label: 'On Focus',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
-                                inputType: 'codeEditor',
-                                propertyName: 'onBlurCustom',
-                                label: 'On Blur',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
                             })
                             .toJson()
                         ]
@@ -308,46 +112,17 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'dropdown',
-                                                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Family',
-                                                                propertyName: 'font.type',
-                                                                hideLabel: true,
-                                                                dropdownOptions: fontTypes,
-                                                            },
-                                                            {
-                                                                type: 'number',
-                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
                                                                 hideLabel: true,
+                                                                inputType: 'number',
                                                                 width: 50,
                                                             },
                                                             {
-                                                                type: 'dropdown',
-                                                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Weight',
-                                                                propertyName: 'font.weight',
-                                                                hideLabel: true,
-                                                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
-                                                                width: 100,
-                                                            },
-                                                            {
-                                                                type: 'color',
-                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
+                                                                inputType: 'color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Align',
-                                                                propertyName: 'font.align',
-                                                                hideLabel: true,
-                                                                width: 60,
-                                                                dropdownOptions: textAlign,
                                                             },
                                                         ],
                                                     })
@@ -367,151 +142,65 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 id: 'dimensionsStylePnl',
                                                 components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowWidth',
-                                                        parentId: 'dimensionsStylePnl',
-                                                        inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'text',
-                                                                id: 'width-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Width",
-                                                                width: 85,
-                                                                propertyName: "dimensions.width",
-                                                                icon: "width",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
-                                                            },
-                                                            {
-                                                                type: 'text',
-                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Min Width",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.minWidth",
-                                                                icon: "minWidth",
-                                                            },
-                                                            {
-                                                                type: 'text',
-                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Max Width",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.maxWidth",
-                                                                icon: "maxWidth",
-                                                            }
-                                                        ]
-                                                    })
-                                                    .addSettingsInputRow({
                                                         id: 'dimensionsStyleRowHeight',
                                                         parentId: 'dimensionsStylePnl',
                                                         inline: true,
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
-                                                                id: 'height-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Height",
-                                                                width: 85,
-                                                                propertyName: "dimensions.height",
-                                                                icon: "height",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                                inputType: 'number',
+                                                                label: 'Title Margin',
+                                                                hideLabel: false,
+                                                                propertyName: 'titleMargin',
+
                                                             },
-                                                            {
-                                                                type: 'text',
-                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Min Height",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.minHeight",
-                                                                icon: "minHeight",
-                                                            },
-                                                            {
-                                                                type: 'text',
-                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Max Height",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.maxHeight",
-                                                                icon: "maxHeight",
-                                                            }
                                                         ]
                                                     })
                                                     .addSettingsInput({
-                                                        id: 'predefinedSizes',
+                                                        id: 'predefinedOrientation',
+                                                        propertyName: 'orientation',
+                                                        label: 'Orientation',
                                                         inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
                                                         width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
+                                                        hidden: false,
+                                                        defaultValue: 'horizontal',
                                                         dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
+                                                            { value: 'horizontal', label: 'Horizontal' },
+                                                            { value: 'vertical', label: 'Vertical' },
                                                         ]
                                                     })
-                                                    .toJson()
-                                                ]
-                                            }
-                                        })
-                                        .addCollapsiblePanel({
-                                            id: 'borderStyleCollapsiblePanel',
-                                            propertyName: 'pnlBorderStyle',
-                                            label: 'Border',
-                                            labelAlign: 'right',
-                                            ghost: true,
-                                            parentId: 'styleRouter',
-                                            collapsible: 'header',
-                                            content: {
-                                                id: 'borderStylePnl',
-                                                components: [...new DesignerToolbarSettings()
                                                     .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        id: 'dimensionsStyleRowWidth',
+                                                        parentId: 'dimensionsStylePnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
+                                                                inputType: 'number',
+                                                                label: 'Line Thickness',
+                                                                hideLabel: false,
+                                                                propertyName: 'lineThickness',
+                                                            },
+                                                            {
+                                                                inputType: 'color',
+                                                                label: 'Color',
                                                                 hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
+                                                                propertyName: 'lineColor',
+                                                            },
+                                                            {
+                                                                inputType: 'switch',
+                                                                label: 'Inline',
+                                                                hideLabel: false,
+                                                                propertyName: 'inline',
+                                                            },
+                                                            {
+                                                                inputType: 'switch',
+                                                                label: 'Dashed',
+                                                                hideLabel: false,
+                                                                propertyName: 'dashed',
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
                                                     .toJson()
                                                 ]
                                             }
@@ -569,10 +258,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
-                                                                id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
+                                                                inputType: "color",
                                                                 hideLabel: true,
                                                                 jsSetting: false,
                                                             }],
@@ -583,8 +271,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-gradientColors",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'multiColorPicker',
-                                                                id: 'backgroundStyle-gradientColors',
+                                                                inputType: "multiColorPicker",
                                                                 propertyName: "background.gradient.colors",
                                                                 label: "Colors",
                                                                 jsSetting: false,
@@ -598,8 +285,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
-                                                                id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
                                                                 label: "URL",
@@ -611,8 +296,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-image",
                                                             parentId: 'backgroundStylePnl',
                                                             inputs: [{
-                                                                type: 'imageUploader',
-                                                                id: 'backgroundStyle-image',
+                                                                inputType: "imageUploader",
                                                                 propertyName: 'background.uploadFile',
                                                                 label: "Image",
                                                                 jsSetting: false,
@@ -627,8 +311,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
-                                                                    id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
                                                                     label: "File ID"
@@ -642,8 +324,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'customDropdown',
-                                                                    id: 'backgroundStyleRow-size',
+                                                                    inputType: "customDropdown",
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
@@ -663,10 +344,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     ],
                                                                 },
                                                                 {
-                                                                    type: 'customDropdown',
-                                                                    id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
+                                                                    inputType: "customDropdown",
                                                                     propertyName: "background.position",
                                                                     dropdownOptions: [
                                                                         {
@@ -708,11 +388,11 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     ],
                                                                 },
                                                                 {
-                                                                    type: 'dropdown',
-                                                                    id: 'backgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
+                                                                    inputType: "dropdown",
+                                                                    width: 70,
                                                                     dropdownOptions: [
                                                                         {
                                                                             value: "repeat",
@@ -756,45 +436,40 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
-                                                                id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
                                                                 width: 60,
+                                                                inputType: 'number',
                                                                 icon: "offsetHorizontal",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
-                                                                id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 width: 60,
+                                                                inputType: 'number',
                                                                 icon: 'offsetVertical',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
-                                                                id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 width: 60,
+                                                                inputType: 'number',
                                                                 icon: 'blur',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
-                                                                id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 width: 60,
+                                                                inputType: 'number',
                                                                 icon: 'spread',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
-                                                                id: 'shadowStyleRow-color',
                                                                 label: 'Color',
+                                                                inputType: 'color',
                                                                 hideLabel: true,
                                                                 propertyName: 'shadow.color',
                                                             },
@@ -838,9 +513,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     .addSettingsInput({
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
-                                                        inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         hideLabel: true,
+                                                        inputType: 'codeEditor',
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })
@@ -860,7 +535,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
                                 inputType: 'permissions',
-                                propertyName: 'permissions',
+                                propertyName: 'pnlSecurity',
                                 label: 'Permissions',
                                 size: 'small',
                                 parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
