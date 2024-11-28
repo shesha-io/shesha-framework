@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Shesha.GraphQL\Shesha.GraphQL.csproj" />
     <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     <ProjectReference Include="..\Shesha.Scheduler\Shesha.Scheduler.csproj" />
+    <ProjectReference Include="..\Shesha.Sms.Clickatell\Shesha.Sms.Clickatell.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />

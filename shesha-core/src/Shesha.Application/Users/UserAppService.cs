@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -511,7 +512,13 @@ namespace Shesha.Users
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
 
-            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.EmailAddress, SendType = OtpSendType.EmailLink, Lifetime = lifetime, RecipientId = encodedUserName });
+            var response = await _otpManager.SendPinAsync(new SendPinInput() 
+            { 
+                SendTo = user.EmailAddress, 
+                SendType = OtpSendType.EmailLink, 
+                Lifetime = lifetime, 
+                RecipientId = encodedUserName 
+            });
 
             user.PasswordResetCode = response.OperationId.ToString();
 

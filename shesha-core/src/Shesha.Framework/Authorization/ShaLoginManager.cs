@@ -184,11 +184,12 @@ namespace Shesha.Authorization
                     var otp = await OtpManager.GetAsync(operationId);
                     if (otp == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
-                    var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
+                    VerifyPinInput verifyPinInput = new VerifyPinInput()
                     {
                         OperationId = operationId,
                         Pin = code
-                    });
+                    };
+                    var verificationResult = await OtpManager.VerifyPinAsync(verifyPinInput);
 
                     var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
                             ? await UserManager.FindByIdAsync(otp.RecipientId)

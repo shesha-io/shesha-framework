@@ -19,12 +19,12 @@ namespace Shesha.Otp
         private readonly IOtpGenerator _otpGenerator;
         private readonly IOtpSettings _otpSettings;
 
-        public OtpManager(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings)
+        public OtpManager(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator otpGenerator, IOtpSettings otpSettings)
         {
             _smsGateway = smsGateway;
             _emailSender = emailSender;
             _otpStorage = otpStorage;
-            _otpGenerator = passwordGenerator;
+            _otpGenerator = otpGenerator;
             _otpSettings = otpSettings;
         }
 
@@ -34,7 +34,7 @@ namespace Shesha.Otp
             return await _otpStorage.GetAsync(operationId);
         }
 
-        public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
+        public async Task<ISendPinResponse> ResendPinAsync(IResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             var otp = await _otpStorage.GetAsync(input.OperationId);
@@ -87,7 +87,7 @@ namespace Shesha.Otp
 
         }
 
-        public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
+        public async Task<ISendPinResponse> SendPinAsync(ISendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (string.IsNullOrWhiteSpace(input.SendTo))
@@ -159,7 +159,7 @@ namespace Shesha.Otp
             return response;
         }
 
-        public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
+        public async Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             if (!settings.IgnoreOtpValidation)

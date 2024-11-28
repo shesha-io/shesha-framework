@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Shesha.Tests.Otp
 {
-    public class OtpManager_Tests: SheshaNhTestBase
+    public class OtpManager_Tests : SheshaNhTestBase
     {
         [Fact]
         public async Task SuccessOtp_TestAsync()
@@ -94,7 +94,7 @@ namespace Shesha.Tests.Otp
 
             return await otp.VerifyPinAsync(verificationInput);
         }
-    
+
         private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput> action)
         {
             var settings = LocalIocManager.Resolve<IOtpSettings>();

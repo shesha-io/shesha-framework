@@ -9,17 +9,17 @@ namespace Shesha.Otp
         /// <summary>
         /// Send one-time-pin
         /// </summary>
-        Task<ISendPinResponse> SendPinAsync(SendPinInput input);
+        Task<ISendPinResponse> SendPinAsync(ISendPinInput input);
 
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
-        Task<ISendPinResponse> ResendPinAsync(ResendPinInput input);
+        Task<ISendPinResponse> ResendPinAsync(IResendPinInput input);
 
         /// <summary>
         /// Verify one-time-pin
         /// </summary>
-        Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input);
+        Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input);
 
         /// <summary>
         /// Get OTP
