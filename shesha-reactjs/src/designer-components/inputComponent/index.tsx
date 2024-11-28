@@ -2,11 +2,8 @@ import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { CodeEditor, ColorPicker, IconType, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { ResultType } from '@/components/codeEditor/models';
-import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { executeScript, IComponentLabelProps, useAvailableConstantsData, useFormData } from '@/index';
+import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -23,64 +20,14 @@ import { Autocomplete } from '@/components/autocomplete';
 import { ISettingsInputProps, SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { startCase } from 'lodash';
-interface IRadioOption {
-    value: string | number;
-    icon?: string | React.ReactNode;
-    title?: string;
-}
 
-interface IDropdownOption {
-    label: string | React.ReactNode;
-    value: string;
-}
-
-export interface IInputProps extends IComponentLabelProps {
-    label: string;
-    propertyName: string;
-    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' |
-    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete' | 'multiColorPicker' | 'propertyAutocomplete';
-    variant?: 'borderless' | 'filled' | 'outlined';
-    buttonGroupOptions?: IRadioOption[];
-    dropdownOptions?: IDropdownOption[];
-    readOnly?: boolean;
-    onChange?: (value: any) => void;
-    hasUnits?: boolean;
-    hidden?: boolean;
-    jsSetting?: boolean;
-    children?: React.ReactNode;
-    tooltip?: string;
-    suffix?: string;
-    size?: SizeType;
-    width?: string | number;
-    hideLabel?: boolean;
-    layout?: 'horizontal' | 'vertical';
-    language?: CodeLanguages;
-    style?: string;
-    wrapperCol?: { span: number };
-    fileName?: string;
-    availableConstantsExpression?: string;
-    resultType?: ResultType;
-    exposedVariables?: string[];
-    dropdownMode?: 'multiple' | 'tags';
-    allowClear?: boolean;
-    className?: string;
-    icon?: string | React.ReactNode;
-    iconAlt?: string | React.ReactNode;
-    inline?: boolean;
-}
-
-interface IInputComponentProps extends IInputProps {
-    value?: any;
-};
-
-export const InputComponent: FC<IInputComponentProps> = (props) => {
+export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
     const { styles } = useStyles();
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions,
+    const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip } = props;
 
@@ -160,7 +107,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
             />;
         case 'customDropdown':
             return <CustomDropdown
-                variant={variant} value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
+                variant={variant} value={value} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textArea':
             return <TextArea readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ top: '4px' }} />;
         case 'codeEditor':
@@ -229,7 +176,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
 
     return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
-            const { inputType: type } = props;
+            const { type } = props;
 
             const width = type === 'number' ? 100 :
                 type === 'button' ? 24 :

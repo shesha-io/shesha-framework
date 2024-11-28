@@ -1,19 +1,17 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { ConfigProvider, Input, App } from 'antd';
+import { ConfigProvider, Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import moment from 'moment';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
+import { getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { IInputStyles, useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IInputStyles, useForm, useGlobalState, useSheshaApplication } from '@/providers';
+import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
@@ -25,6 +23,7 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -50,12 +49,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
     const form = useForm();
-
+    const allData = useAvailableConstantsData();
     const data = model;
 
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const httpClient = useHttpClient();
-    const { message } = App.useApp();
+    const { globalState } = useGlobalState();
+
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
@@ -67,7 +65,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -105,7 +103,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles,
+      ...shadowStyles
     });
 
 
@@ -128,17 +126,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       minLength: model.validate?.minLength,
     };
 
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData: data,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
-
     return (
       <ConfigurableFormItem
         model={model}
@@ -147,9 +134,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         }
       >
         {(value, onChange) => {
-          const customEvent = customEventHandler(eventProps);
+          const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
+            customEvents.onChange(args[0]);
             if (typeof onChange === 'function')
               onChange(...args);
           };
@@ -167,7 +154,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           >
             {inputProps.readOnly
               ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
-              : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
+              : <InputComponentType {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
             }
           </ConfigProvider>;
         }}
@@ -179,11 +166,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   initModel: (model) => {
     return {
       ...model,
-      textType: 'text',
-      background: { type: 'color', color: '#fff' },
-      font: { weight: '400', size: 14, color: '#000', family: 'Segoe UI' },
-      dimensions: { width: '100%', height: '32px', minHeight: '32px', maxHeight: '32px', minWidth: '100%', maxWidth: '100%' }
-    }
+      textType: 'text'
+    };
   },
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
@@ -207,7 +191,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),
+    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

@@ -1,9 +1,9 @@
 import { InputNumber, InputNumberProps, App, ConfigProvider } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
-import { customInputNumberEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
+import { customInputNumberEventHandler, customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { INumberFieldComponentProps } from './interfaces';
 import { getFormApi } from '@/providers/form/formApi';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
@@ -37,7 +37,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   const background = model?.background;
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-  const borderStyles = useMemo(() => getBorderStyle(border), [border]);
+  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -56,7 +56,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
             return URL.createObjectURL(blob);
           }) : '';
 
-      const style = await getBackgroundStyle(background, storedImageUrl);
+      const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
       setBackgroundStyles(style);
     };
 
@@ -81,16 +81,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   
   const jsStyle = getStyle(model.style, model);
   const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
-  const eventProps = {
-    model,
-    form: getFormApi(form),
-    formData: form.formData,
-    globalState,
-    http: httpClient,
-    message,
-    moment,
-    setGlobalState,
-  };
+  const allData = useAvailableConstantsData();
 
   const style = model.style;
 
@@ -102,9 +93,9 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     max: model?.max,
     placeholder: model?.placeholder,
     size: model?.size,
-    style: style ? getStyle(style, form.formData, globalState) : { width: '100%' },
+    style: style ? getStyle(style, allData.data, allData.globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
-    ...customInputNumberEventHandler(eventProps, onChange),
+    ...customOnChangeValueEventHandler(model, allData, onChange),
     defaultValue: model?.defaultValue,
     changeOnWheel: false,
     prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,

@@ -38,13 +38,13 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                                 setColors(newColors);
                             }}
                         >
-                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
+                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='color' id={nanoid()} />
                         </Tag>
                     );
                 })}
             </Row>
 
-            <InputRow inline={true} readOnly={readOnly} inputs={[{ propertyName: 'background.gradient.direction', label: 'Direction', hideLabel: true, width: '120px', inputType: 'dropdown', dropdownOptions: gradientDirectionOptions }]} >
+            <InputRow inline={true} readOnly={readOnly} inputs={[{ propertyName: 'background.gradient.direction', label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions, id: nanoid() }]} >
                 <FormItem>
                     <Button
                         type='primary'

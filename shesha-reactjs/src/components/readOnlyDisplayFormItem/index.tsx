@@ -31,11 +31,11 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
       return typeof render === 'function' ? render() : render;
     }
 
-    if (typeof value === 'undefined' && (type === 'dropdown' || type === 'dropdownMultiple')) {
+    if ((typeof value === 'undefined' || value === null) && (type === 'dropdown' || type === 'dropdownMultiple')) {
       return '';
 
       //eliminating null values
-    } else if (!value && type === 'string') {
+    } else if ((typeof value === 'undefined' || value === null) && type === 'string') {
       return '';
     }
 

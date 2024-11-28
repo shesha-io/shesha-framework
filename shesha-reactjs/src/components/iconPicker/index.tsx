@@ -85,11 +85,11 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   useEffect(() => {
     setLocalSelectedIcon(value || defaultValue);
+    setLocalSelectedIcon(value || defaultValue);
   }, [defaultValue, value]);
 
-
   const toggleModalVisibility = () => {
-    if (!readOnly) setShowModal(visible => !visible);
+    if (!readOnly) setShowModal((visible) => !visible);
   };
 
   const changeIconModes = (e: RadioChangeEvent) => {
@@ -186,7 +186,7 @@ const IconPicker: FC<IIconPickerProps> = ({
           </div>
         </div>
         <div className={styles.shaIconPickerIconList}>
-          {Object.keys(memoizedActiveGroup).map(groupKey => (
+          {Object.keys(memoizedActiveGroup).map((groupKey) => (
             <div className={styles.shaIconPickerIconListGroup} key={groupKey}>
               {memoizedActiveGroup[groupKey]?.length ? (
                 <div className={styles.shaIconPickerIconListGroupHeader}>

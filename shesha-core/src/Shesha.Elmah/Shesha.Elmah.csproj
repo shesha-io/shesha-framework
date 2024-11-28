@@ -7,8 +7,11 @@
     <Title>Shesha.Elmah</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp" Version="9.0.0" />
     <PackageReference Include="ElmahCore" Version="2.1.2" />

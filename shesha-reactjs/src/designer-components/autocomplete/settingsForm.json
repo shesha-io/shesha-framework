@@ -536,7 +536,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard(\"shesha:selectedRow\")\n        .addObject(\"value\", \"Component current value\")\n        .addObject(\"option\", \"Meta data of component current value\")        \t\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard()\n        .addObject(\"value\", \"Component current value\")\n        .addObject(\"option\", \"Meta data of component current value\")        \t\n        .build();"
           }
         ]
       },

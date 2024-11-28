@@ -6,10 +6,12 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>Shesha.Sms.Clickatell</PackageId>
     <Title>Shesha.Sms.Clickatell</Title>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Clickatell\forms\package20230411_1233.shaconfig" />
     <None Remove="Clickatell\forms\package20240612_1014.shaconfig" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Clickatell\forms\package20230411_1233.shaconfig" />

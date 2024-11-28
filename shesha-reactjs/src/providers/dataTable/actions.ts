@@ -62,7 +62,6 @@ export enum DataTableActionEnums {
 
   // selections
   SetSelectedRow = 'SET_SELECTED_ROW',
-  SetHoverRow = 'SET_HOVER_ROW',
   SetDraggingState = 'SET_DRAGGING_STATE',
   SetMultiSelectedRow = 'SET_MULTI_SELECTED_ROW',
 
@@ -74,11 +73,6 @@ export enum DataTableActionEnums {
 
 export const setSelectedRowAction = createAction<ISelectionProps, ISelectionProps>(
   DataTableActionEnums.SetSelectedRow,
-  p => p
-);
-
-export const setHoverRowAction = createAction<string, string>(
-  DataTableActionEnums.SetHoverRow,
   p => p
 );
 

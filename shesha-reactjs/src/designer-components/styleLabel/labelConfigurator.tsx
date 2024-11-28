@@ -3,6 +3,7 @@ import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
 import { SettingInput } from '../settingsInput/settingsInput';
+import { nanoid } from '@/utils/uuid';
 
 
 export interface ILabelProps {
@@ -18,10 +19,10 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly }) => {
     return (
         <>
             <div className={styles.flexWrapper} >
-                <SettingInput label='label Align' hideLabel propertyName='labelAlign' readOnly={value || readOnly} inputType='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} />
-                <SettingInput label="hide Label" hideLabel propertyName='hideLabel' readOnly={readOnly} jsSetting={false} inputType='button' icon={<EyeOutlined />} iconAlt={<EyeInvisibleOutlined />} />
+                <SettingInput label='label Align' hideLabel propertyName='labelAlign' readOnly={value || readOnly} type='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} id={nanoid()} />
+                <SettingInput id={nanoid()} label="hide Label" hideLabel propertyName='hideLabel' readOnly={readOnly} jsSetting={false} type='button' icon={<EyeOutlined />} iconAlt={<EyeInvisibleOutlined />} />
             </div>
-            <SettingInput label="Label" propertyName='label' readOnly={value || readOnly} jsSetting={true} />
+            <SettingInput id={nanoid()} type='text' label="Label" propertyName='label' readOnly={value || readOnly} jsSetting={true} />
         </>
     );
 };

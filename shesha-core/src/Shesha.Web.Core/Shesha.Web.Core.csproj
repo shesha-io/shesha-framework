@@ -16,6 +16,7 @@
     <Title>Shesha.Web.Core</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Application\PublicHolidays\**" />
@@ -24,6 +25,7 @@
     <EmbeddedResource Remove="Authentication\**" />
     <None Remove="Application\PublicHolidays\**" />
     <None Remove="Authentication\**" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Application\Shesha.Application.csproj" />
