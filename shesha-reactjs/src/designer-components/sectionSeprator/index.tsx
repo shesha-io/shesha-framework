@@ -5,9 +5,9 @@ import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from 
 import { useFormData, useGlobalState } from '@/providers';
 import SectionSeparator from '@/components/sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
+import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
