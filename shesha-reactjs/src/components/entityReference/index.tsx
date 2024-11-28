@@ -1,31 +1,21 @@
 import moment from 'moment';
-import React, {
-  FC,
-  useEffect,
-  useMemo,
-  useState
-  } from 'react';
-import { axiosHttp, get } from '@/utils/fetchers';
-import {
-  Button,
-  message,
-  notification,
-  Spin
-  } from 'antd';
+import React, { FC, useEffect, useMemo, useState } from 'react';
+import { get } from '@/utils/fetchers';
+import { Button, App, Spin } from 'antd';
 import { entitiesGet } from '@/apis/entities';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IKeyValue } from '@/interfaces/keyValue';
-import { ShaLink, ValidationErrors } from '@/components';
+import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
   ButtonGroupItemProps,
   FormIdentifier,
-
   useConfigurableActionDispatcher,
   useForm,
   useGlobalState,
+  useHttpClient,
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
@@ -34,6 +24,7 @@ import { isPropertiesArray } from '@/interfaces/metadata';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { getFormApi } from '@/providers/form/formApi';
+import { ShaIconTypes } from '../iconPicker';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -81,12 +72,16 @@ export interface IEntityReferenceProps {
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
   style?: string;
+  displayType?: 'textTitle' | 'icon' | 'displayProperty';
+  iconName?: ShaIconTypes;
+  textTitle?: string;
 }
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
+  const { notification, message } = App.useApp();
 
   const localForm = useForm(false);
   const formData = localForm?.formData;
@@ -94,6 +89,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const { getMetadata } = useMetadataDispatcher();
   const executionContext = useAvailableConstantsData();
 
@@ -198,7 +194,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       moment: moment,
       form: getFormApi(localForm),
       formMode: formMode,
-      http: axiosHttp(backendUrl),
+      http: httpClient,
       message: message,
       globalState: globalState,
     };
@@ -207,6 +203,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: evaluationContext,
     });
+  };
+
+  const renderDisplayByType = () => {
+    if (props.displayType === 'icon') return <ShaIcon iconName={props.iconName} />;
+
+    if (props.displayType === 'textTitle') return props.textTitle;
+
+    return displayText;
   };
 
   const content = useMemo(() => {
@@ -220,20 +224,18 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     if (props.disabled && props.entityReferenceType !== 'Quickview')
-      return (
-        <Button className={styles.entityReferenceBtn} disabled type="link">
-          {displayText}
-        </Button>
-      );
+      <Button className={styles.entityReferenceBtn} disabled style={style} type="link">
+        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+          {renderDisplayByType()}
+        </ShaLink>
+      </Button>;
 
     if (props.entityReferenceType === 'NavigateLink')
-      return (
-        <Button className={styles.entityReferenceBtn} style={style} type="link">
-          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-            {displayText}
-          </ShaLink>
-        </Button>
-      );
+      <Button className={styles.entityReferenceBtn} style={style} type="link">
+        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+          {renderDisplayByType()}
+        </ShaLink>
+      </Button>;
 
     if (props.entityReferenceType === 'Quickview')
       return (
@@ -249,12 +251,15 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           formType={formType}
           disabled={props.disabled}
           style={props.style}
+          displayType={props.displayType}
+          iconName={props.iconName}
+          textTitle={props.textTitle}
         />
       );
 
     return (
       <Button className={styles.entityReferenceBtn} style={style} type="link" onClick={dialogExecute}>
-        {displayText}
+        {renderDisplayByType()}
       </Button>
     );
   }, [formIdentifier, displayText, entityId, props.disabled, property.length]);

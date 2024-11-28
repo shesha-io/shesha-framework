@@ -1,12 +1,8 @@
-import { InputNumber, InputNumberProps, message } from 'antd';
-import moment from 'moment';
+import { InputNumber, InputNumberProps } from 'antd';
 import React, { FC } from 'react';
-import { customInputNumberEventHandler } from '@/components/formDesigner/components/utils';
-import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
-import { getStyle } from '@/providers/form/utils';
-import { axiosHttp } from '@/utils/fetchers';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
+import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { INumberFieldComponentProps } from './interfaces';
-import { getFormApi } from '@/providers/form/formApi';
 
 interface IProps {
   disabled: boolean;
@@ -16,20 +12,7 @@ interface IProps {
 }
 
 const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) => {
-  const form = useForm();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const { backendUrl } = useSheshaApplication();
-
-  const eventProps = {
-    model,
-    form: getFormApi(form),
-    formData: form.formData,
-    globalState,
-    http: axiosHttp(backendUrl),
-    message,
-    moment,
-    setGlobalState,
-  };
+  const allData = useAvailableConstantsData();
 
   const style = model.style;
 
@@ -41,9 +24,9 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     max: model?.max,
     placeholder: model?.placeholder,
     size: model?.size,
-    style: style ? getStyle(style, form.formData, globalState) : { width: '100%' },
+    style: style ? getStyle(style, allData.data, allData.globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
-    ...customInputNumberEventHandler(eventProps, onChange),
+    ...customOnChangeValueEventHandler(model, allData, onChange),
     defaultValue: model?.defaultValue,
     changeOnWheel: false,
   };

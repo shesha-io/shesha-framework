@@ -1,14 +1,13 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Alert, message } from 'antd';
 import React, { useCallback, useMemo } from 'react';
 import { EntityPicker } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { ButtonGroupItemProps } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression, getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
@@ -18,11 +17,9 @@ import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { customEventHandler } from '@/components/formDesigner/components/utils';
-import { axiosHttp } from '@/utils/fetchers';
-import moment from 'moment';
-import { getFormApi } from '@/providers/form/formApi';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getValueByPropertyName } from '@/utils/object';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -55,21 +52,11 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
    Factory: ({ model }) => {
-    const form = useForm();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
-    const { data: formData } = useFormData();
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData,
-      globalState,
-      http: axiosHttp(backendUrl),
-      message,
-      moment,
-      setGlobalState,
-    };
+    const allData = useAvailableConstantsData();
+
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
+
+    const displayEntityKey = model.displayEntityKey || '_displayName';
 
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
@@ -97,34 +84,23 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
         return !!value
-          ? {id: value.id, _displayName: value[model.displayEntityKey] ??  value._displayName, _className: model.entityType}
+          ? {id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ??  value._displayName, _className: model.entityType}
           : null;
       }
       if (model.valueFormat === 'custom') {
         return executeExpression(model.outcomeCustomJs, {...args, value}, null, null );
       }
       return !!value ? value.id : null;
-    }, [model.valueFormat, model.outcomeCustomJs, model.displayEntityKey, model.entityType]);
-
-    if (form.formMode === 'designer' && !model.entityType) {
-      return (
-        <Alert
-          showIcon
-          message="EntityPicker not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
-          type="warning"
-        />
-      );
-    }
+    }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
-    const computedStyle = getStyle(style, formData) ?? {};
+    const computedStyle = getStyle(style, allData.data) ?? {};
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
 
-          const customEvent = customEventHandler(eventProps);
+          const customEvent = customOnChangeValueEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function')
@@ -139,7 +115,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
             style={computedStyle}
             formId={model.id}
             readOnly={model.readOnly}
-            displayEntityKey={model.displayEntityKey}
+            displayEntityKey={displayEntityKey}
             entityType={model.entityType}
             filters={entityPickerFilter}
             mode={model.mode}
@@ -214,6 +190,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),
+
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
@@ -232,6 +209,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         ];
       }
       return null;
+  },
+  validateModel: (model, addModelError) => {
+    if (!model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
   },
 };
 

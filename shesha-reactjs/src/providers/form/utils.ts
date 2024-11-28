@@ -59,13 +59,12 @@ import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
+  HttpClientApi,
   IApplicationApi,
   useDataTableState,
   useGlobalState,
-  useSheshaApplication,
+  useHttpClient,
 } from '@/providers';
-import { axiosHttp } from '@/utils/fetchers';
-import { AxiosInstance } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { IParentProviderProps } from '../parentProvider/index';
@@ -78,6 +77,7 @@ import { IShaFormInstance } from './store/interfaces';
 import { useShaFormInstance } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
 import { removeGhostKeys } from '@/utils/form';
+import { isEmpty } from 'lodash';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -95,8 +95,8 @@ export interface IApplicationContext<Value = any> {
   selectedRow: ISelectionProps;
   /** Moment function */
   moment: Function;
-  /** Axios Http */
-  http: AxiosInstance;
+  /** Http Client */
+  http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
 
@@ -132,12 +132,12 @@ export type AvailableConstantsContext = {
   closestContextId: string;
   globalState: IAnyObject;
   setGlobalState: (payload: ISetStatePayload) => void;
-  backendUrl: string;
   message: MessageInstance;
+  httpClient: HttpClientApi;
 };
+
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
-  const { backendUrl } = useSheshaApplication();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContext(false)?.id;
@@ -147,6 +147,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const selectedRow = useDataTableState(false)?.selectedRow;
 
   const closestShaForm = useShaFormInstance(false);
+  const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
     closestShaForm,
@@ -155,7 +156,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
     closestContextId,
     globalState,
     setGlobalState,
-    backendUrl,
+    httpClient,
     message,
   };
   return result;
@@ -164,6 +165,9 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
 export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
   fullContext: AvailableConstantsContext;
 };
+
+const EMPTY_DATA = {};
+
 export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaForm,
@@ -172,7 +176,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     closestContextId,
     globalState,
     setGlobalState,
-    backendUrl,
+    httpClient,
     message
   } = fullContext;
   const shaFormInstance = shaForm ?? closestShaForm;
@@ -199,10 +203,13 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     globalState: () => globalState,
     setGlobalState: () => setGlobalState,
     moment: () => moment,
-    http: () => axiosHttp(backendUrl),
+    http: () => httpClient,
     message: () => message,
     data: () => {
-      const data = {...shaFormInstance?.formData};
+      if (!shaFormInstance?.formData || isEmpty(shaFormInstance.formData))
+        return EMPTY_DATA; 
+
+      const data = shaFormInstance?.formData;
       return removeGhostKeys(data);
     },
     form: () => {
@@ -308,6 +315,13 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
       parentReadOnly)
   );
 };
+
+export const toBase64 = file => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result as string);
+  reader.onerror = reject;
+});
 
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
@@ -1498,7 +1512,7 @@ export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: 
 
   try {
     return { ...style, ...(executeFunction(model?.style, args) || {}) };
-  } catch (_e) {
+  } catch {
     return style;
   }
 };
@@ -1613,6 +1627,9 @@ export interface EvaluationContext {
   evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
 };
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+  if (!data)
+    return data;
+  
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;

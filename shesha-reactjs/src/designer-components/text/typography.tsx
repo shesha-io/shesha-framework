@@ -16,6 +16,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   numberFormat,
   value,
   style,
+  textAlign,
   ...model
 }) => {
   const { formMode } = useForm();
@@ -37,7 +38,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const computedStyle = getStyle(style, formData) ?? {};
 
   return (
-    <GenericText style={{...computedStyle, display: 'grid', placeItems: model?.textAlign}} {...model}>
+    <GenericText style={{...computedStyle, justifyContent: textAlign, display: 'flex'}} {...model}>
       {content}
     </GenericText>
   );

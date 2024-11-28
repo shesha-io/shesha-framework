@@ -88,6 +88,11 @@ namespace Shesha.Authorization
             _mobileDeviceRepository = mobileDeviceRepository;
         }
 
+        protected virtual ShaLoginResult<TUser> AdditionalVerification(TUser user, TTenant tenant)
+        {
+            return null;
+        }
+
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
         {
             ShaLoginResult<TUser> result = null;
@@ -179,7 +184,12 @@ namespace Shesha.Authorization
                     var otp = await OtpManager.GetAsync(operationId);
                     if (otp == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
-                    var verificationResult = await OtpManager.VerifyPinAsync(operationId, code);
+                    VerifyPinInput verifyPinInput = new VerifyPinInput()
+                    {
+                        OperationId = operationId,
+                        Pin = code
+                    };
+                    var verificationResult = await OtpManager.VerifyPinAsync(verifyPinInput);
 
                     var user = !string.IsNullOrWhiteSpace(otp.RecipientId)
                             ? await UserManager.FindByIdAsync(otp.RecipientId)
@@ -221,7 +231,7 @@ namespace Shesha.Authorization
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
-        {
+        { 
             ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
@@ -327,6 +337,11 @@ namespace Shesha.Authorization
                     if (!(await CheckImeiAsync(imei)))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
                 }
+
+                var addVerification = AdditionalVerification(user, tenant);
+                if (addVerification != null)
+                    return addVerification;
+
                 return await CreateLoginResultAsync(user, tenant);
             });
         }

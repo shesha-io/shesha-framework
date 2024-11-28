@@ -15,7 +15,7 @@ export function useWebStorage<T>(
       item = window ? window[storage].getItem(key) : undefined;
       // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
+    } catch {
       // If error also return initialValue
       return item;
     }

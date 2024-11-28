@@ -33,7 +33,7 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
     };
 
     return (
-        <div className={classNames(styles.listItem, className)}>
+        <div className={classNames(styles.listItem, className)} >
             {!readOnly && (
                 <>
                     <InsertItemMarker
@@ -44,7 +44,7 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
                 </>
             )}
             <span className={styles.dragHandle} onClick={onDragHandleClick}>
-                <MenuOutlined />
+                <MenuOutlined className={styles.dragIcon}/>
             </span>
             <div className={styles.listItemContent}>
                 {children}

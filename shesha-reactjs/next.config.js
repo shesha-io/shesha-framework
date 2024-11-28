@@ -71,6 +71,44 @@ const nextConfig = (phase) => {
       // Uncomment this to suppress all logs.
       // removeConsole: true,
     },
+    webpack: (
+      config
+    ) => {
+      
+      const extendResourceQuery = (rule, index) => {
+        const { resourceQuery: initialQuery } = rule;
+        const notRawQuery = { not: [/\?raw/] };
+        
+        const newQuery = initialQuery
+          ? { and: [(Array.isArray(initialQuery) ? { or: initialQuery } : initialQuery), notRawQuery] }
+          : notRawQuery
+        
+        return { ...rule, resourceQuery: newQuery };
+      };
+
+      const modifyConditions = (rules) => {
+        return rules.map((rule, index) => extendResourceQuery(rule, index));
+      };
+      const existingRules = config.module.rules
+        ? modifyConditions(config.module.rules)
+        : [];
+
+      const newRules = [
+        {
+          resourceQuery: /\?raw/,
+          type: 'asset/source',
+        },
+        ...existingRules,
+      ];
+
+      return {
+        ...config,
+        module: {
+          ...config.module,
+          rules: newRules,
+        }
+      }
+    },
   };
   return withBundleAnalyzer(
     config, {

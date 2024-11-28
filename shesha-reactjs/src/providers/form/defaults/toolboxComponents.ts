@@ -18,7 +18,9 @@ import EditableTagGroup from '@/designer-components/editableTagGroup';
 import EndpointsAutocompleteComponent from '@/designer-components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '@/designer-components/entityPicker';
 import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
+import NotificationAutocompleteComponent from '@/designer-components/notificationAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
+import ImagePickerComponent from '@/designer-components/imagePicker';
 import Image from '@/designer-components/image';
 import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
 import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
@@ -101,6 +103,10 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
+import PropertyRouterComponent from '@/designer-components/propertyRouter';
+import ChevronComponent from '@/designer-components/chevron/chevron';
+import KanbanComponent from '@/designer-components/kanban';
+import ChartComponent from '@/designer-components/charts';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -130,7 +136,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
     },
     {
       name: 'Advanced',
@@ -151,6 +157,8 @@ export const getToolboxComponents = (
         Progress,
         RefListStatusComponent,
         StatusTag,
+        ChevronComponent,
+        KanbanComponent
       ],
     },
     {
@@ -215,6 +223,7 @@ export const getToolboxComponents = (
       visible: devMode,
       name: 'Dev',
       components: [
+        PropertyRouterComponent,
         ThemeEditorComponent,
         MainMenuEditorComponent,
         PermissionAutocompleteComponent,
@@ -236,9 +245,11 @@ export const getToolboxComponents = (
         Section,
         StyleBox,
         CodeEditor,
+        ImagePickerComponent,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
         FormAutocompleteComponent,
+        NotificationAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,

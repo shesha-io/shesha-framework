@@ -1,5 +1,4 @@
 import { MessageInstance } from 'antd/es/message/interface';
-import { AxiosInstance } from 'axios';
 import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
@@ -8,6 +7,9 @@ import { CustomLabeledValue } from '@/components/autocomplete';
 import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 import { FormApi } from '@/providers/form/formApi';
+import { HttpClientApi } from '@/publicJsApis/httpClient';
+import { IApplicationContext, executeScriptSync } from '@/index';
+import { ObservableProxy } from '@/providers/form/observableProxy';
 
 type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
@@ -16,68 +18,35 @@ export interface ICustomEventHandler {
   form: FormApi;
   formData: any;
   globalState: IAnyObject;
-  http: AxiosInstance;
+  http: HttpClientApi;
   message: MessageInstance;
   moment: object;
   setGlobalState: (payload: ISetStatePayload) => void;
-}
+};
 
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onChange: Function;
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;
-}
-
-export const onCustomEventsHandler = <FormCustomEvent = any>(
-  event: FormCustomEvent,
-  customEventAction: string,
-  form: FormApi,
-  formData: any,
-  globalState: IAnyObject,
-  http: AxiosInstance,
-  message: MessageInstance,
-  moment: object,
-  setGlobalState: SetGlobalStateFunc
-) => {
-  /* tslint:disable:function-constructor */
-  const eventFunc = new Function(
-    'data',
-    'event',
-    'form',
-    'globalState',
-    'http',
-    'message',
-    'moment',
-    'setGlobalState',
-    customEventAction
-  );
-
-  return eventFunc(formData, event, form, globalState, http, message, moment, setGlobalState);
 };
 
 type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
 
-export const customEventHandler = <T = any>({
-  model,
-  form,
-  formData,
-  globalState,
-  http,
-  message,
-  moment,
-  setGlobalState,
-}: ICustomEventHandler): EventHandlerAttributes<T> => {
-  const onCustomEvent = (event: any, key: string) =>
-    onCustomEventsHandler(
-      event,
-      model?.[key],
-      form,
-      formData,
-      globalState,
-      http,
-      message,
-      moment,
-      setGlobalState
-    );
+export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext): EventHandlerAttributes<T> => {
+  const onCustomEvent = (event: any, key: string) => {
+    const expression = model?.[key];
+    if (Boolean(expression)) {
+      // if context is an ObservableProxy
+      if (typeof context['addAccessor'] === 'function') {
+        const ctx = context as any as ObservableProxy<IApplicationContext>;
+        ctx.addAccessor('event', () => event);
+        ctx.addAccessor('value', () => event?.currentTarget.value);
+        return executeScriptSync(expression, context);
+      }
+
+      // if context is a simple object
+      return executeScriptSync(expression, {...context, event, value: event?.currentTarget.value});
+    }
+  };
 
   return {
     onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
@@ -89,163 +58,129 @@ export const customEventHandler = <T = any>({
   };
 };
 
-export const customDateEventHandler = ({
-  model,
-  form,
-  formData,
-  globalState,
-  http,
-  message,
-  moment,
-  setGlobalState,
-}: ICustomEventHandler) => ({
+export const customDateEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext) => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
-    const eventFunc = new Function(
-      'data, dateString, form, globalState, http, message, moment, value, setGlobalState',
-      model?.onChangeCustom
-    );
-    return eventFunc(
-      formData,
-      dateString,
-      form,
-      globalState,
-      http,
-      message,
-      moment,
-      value,
-      setGlobalState
-    );
+    const expression = model?.onChangeCustom;
+    if (Boolean(expression)) {
+      // if context is an ObservableProxy
+      if (typeof context['addAccessor'] === 'function') {
+        const ctx = context as any as ObservableProxy<IApplicationContext>;
+        ctx.addAccessor('dateString', () => dateString);
+        ctx.addAccessor('value', () => value);
+        return executeScriptSync(expression, context);
+      }
+
+      // if context is a simple object
+      return executeScriptSync(expression, {...context, dateString, value});
+    }
   },
 });
 
-export const customTimeEventHandler = ({
-  model,
-  form,
-  formData,
-  globalState,
-  http,
-  message,
-  moment,
-  setGlobalState,
-}: ICustomEventHandler) => ({
+export const customTimeEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext) => ({
   onChange: (value: any | null, timeString: string | [string, string]) => {
-    const eventFunc = new Function(
-      'data, timeString, form, globalState, http, message, moment, value, setGlobalState',
-      model?.onChangeCustom
-    );
-    return eventFunc(
-      formData,
-      timeString,
-      form,
-      globalState,
-      http,
-      message,
-      moment,
-      value,
-      setGlobalState
-    );
+    const expression = model?.onChangeCustom;
+    if (Boolean(expression)) {
+      // if context is an ObservableProxy
+      if (typeof context['addAccessor'] === 'function') {
+        const ctx = context as any as ObservableProxy<IApplicationContext>;
+        ctx.addAccessor('timeString', () => timeString);
+        ctx.addAccessor('value', () => value);
+        return executeScriptSync(expression, context);
+      }
+
+      // if context is a simple object
+      return executeScriptSync(expression, {...context, timeString, value});
+    }
   },
 });
 
-export const customDropDownEventHandler = <T = any>({
-  model,
-  form,
-  formData,
-  globalState,
-  http,
-  message,
-  moment,
-  setGlobalState,
-}: ICustomEventHandler) => ({
+export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComponent, context: IApplicationContext) => ({
   onChange: (value: CustomLabeledValue<T>, option: any) => {
-    const eventFunc = new Function(
-      'data, form, globalState, http, message, moment, option, value, setGlobalState',
-      model?.onChangeCustom
-    );
+    const expression = model?.onChangeCustom;
+    if (Boolean(expression)) {
+      // if context is an ObservableProxy
+      if (typeof context['addAccessor'] === 'function') {
+        const ctx = context as any as ObservableProxy<IApplicationContext>;
+        ctx.addAccessor('option', () => option);
+        ctx.addAccessor('value', () => value);
+        return executeScriptSync(expression, context);
+      }
 
-    return eventFunc(
-      formData,
-      form,
-      globalState,
-      http,
-      message,
-      moment,
-      option,
-      value,
-      setGlobalState
-    );
+      // if context is a simple object
+      return executeScriptSync(expression, {...context, option, value});
+    }
   },
 });
 
-export const customInputNumberEventHandler = (
-  {
-    model,
-    form,
-    formData,
-    globalState,
-    http,
-    message,
-    moment,
-    setGlobalState,
-  }: ICustomEventHandler,
-  changeEvent: Function
-) => ({
+export const customOnChangeValueEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext, changeEvent: Function = null) => ({
   onChange: (value: any) => {
-    changeEvent(value);
+    if (typeof changeEvent === 'function')
+      changeEvent(value);
+    const expression = model?.onChangeCustom;
+    if (Boolean(expression)) {
+      // if context is an ObservableProxy
+      if (typeof context['addAccessor'] === 'function') {
+        const ctx = context as any as ObservableProxy<IApplicationContext>;
+        ctx.addAccessor('value', () => value);
+        return executeScriptSync(expression, context);
+      }
 
-    const eventFunc = new Function(
-      'data, form, globalState, http, message, moment, value, setGlobalState',
-      model?.onChangeCustom
-    );
-
-    return eventFunc(formData, form, globalState, http, message, moment, value, setGlobalState);
+      // if context is a simple object
+      return executeScriptSync(expression, {...context, value});
+    }
   },
 });
 
-export const customRateEventHandler = ({
-  model,
-  form,
-  formData,
-  globalState,
-  http,
-  message,
-  moment,
-  setGlobalState,
-}: ICustomEventHandler) => ({
-  onChange: (value: number) => {
-    const eventFunc = new Function(
-      'data, form, globalState, http, message, moment, value, setGlobalState',
-      model?.onChangeCustom
-    );
+export const onCustomEventsHandler = <FormCustomEvent = any>(
+  event: FormCustomEvent,
+  customEventAction: string,
+  form: FormApi,
+  formData: any,
+  globalState: IAnyObject,
+  http: HttpClientApi,
+  message: MessageInstance,
+  moment: object,
+  value: any,
+  setGlobalState: SetGlobalStateFunc
+) => {
+  /* tslint:disable:function-constructor */
+  const eventFunc = new Function(
+    'data',
+    'event',
+    'form',
+    'globalState',
+    'http',
+    'message',
+    'moment',
+    'value',
+    'setGlobalState',
+    customEventAction
+  );
+  return eventFunc(formData, event, form, globalState, http, message, moment, value, setGlobalState);
+};
 
-    return eventFunc(formData, form, globalState, http, message, moment, value, setGlobalState);
-  },
-});
+export const customAddressEventHandler = (
+  model: IConfigurableFormComponent,
+  context: IApplicationContext,
+  onChangeCustom,
+  onSelectCustom
+  ): IGooglePlacesAutocompleteProps => {
+  
+  const onCustomEvent = (event: any, key: string) => {
+    const expression = model?.[key];
+    if (Boolean(expression)) {
+      // if context is an ObservableProxy
+      if (typeof context['addAccessor'] === 'function') {
+        const ctx = context as any as ObservableProxy<IApplicationContext>;
+        ctx.addAccessor('event', () => event);
+        ctx.addAccessor('value', () => event?.currentTarget.value);
+        return executeScriptSync(expression, context);
+      }
 
-export const customAddressEventHandler = ({
-  model,
-  form,
-  formData,
-  globalState,
-  http,
-  message,
-  moment,
-  setGlobalState,
-  onChange: onChangeCustom,
-  onSelect,
-}: ICustomAddressEventHandler): IGooglePlacesAutocompleteProps => {
-  const onCustomEvent = (event: any, key: string) =>
-    onCustomEventsHandler(
-      event,
-      model?.[key],
-      form,
-      formData,
-      globalState,
-      http,
-      message,
-      moment,
-      setGlobalState
-    );
+      // if context is a simple object
+      return executeScriptSync(expression, {...context, event, value: event?.currentTarget.value});
+    }
+  };
 
   const onChange = (e: string) => {
     onChangeCustom(e);
@@ -253,15 +188,16 @@ export const customAddressEventHandler = ({
   };
 
   const onGeocodeChange = (event: IAddressAndCoords) =>
-    onSelect(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
+    onSelectCustom(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
 
   return {
     onChange,
     onGeocodeChange,
   };
 };
+
 export const isValidGuid = (input: string): boolean => {
-  if(!input) return false;
+  if (!input) return false;
   const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return guidRegex.test(input);
 };

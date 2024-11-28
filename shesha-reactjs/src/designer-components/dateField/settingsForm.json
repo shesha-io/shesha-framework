@@ -165,16 +165,6 @@
             "propertyName": "editMode",
             "parentId": "VmAusRlLZo3cYRFk88xnf",
             "label": "Edit mode"
-          },
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "VmAusRlLZo3cYRFk88xnf",
-            "hidden": false,
-            "validate": {},
-            "version": 2
           }
         ]
       },
@@ -269,6 +259,22 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "gCBUNeJjyMzcs1G2RRAK8",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -286,6 +292,16 @@
       "content": {
         "id": "Fd2QdtLi2FOTaZJZvFz3Q",
         "components": [
+          {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          },
           {
             "id": "06ab0599-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
@@ -314,7 +330,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -351,7 +367,7 @@
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
-    },
+    }]},
     {
       "id": "kE28pclZaV8tpOab8iJyl",
       "type": "collapsiblePanel",
@@ -501,7 +517,111 @@
             "templateSettings": {
               "functionName": "isDateDisabled"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addDate(\"current\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addDate(\"current\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
+          },
+          {
+            "id": "41613cbd-1943-4df7-b2e3-e9842ba2c2b3",
+            "type": "dropdown",
+            "propertyName": "disabledTimeMode",
+            "label": "Disabled time mode",
+            "labelAlign": "right",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "hidden": {
+              "_code": "return  !getSettingValue(data.showTime);",
+              "_mode": "code",
+              "_value": false
+            },
+            "dataSourceType": "values",
+            "defaultValue": "none",
+            "values": [
+              {
+                "id": "e58b9b6a-b7d4-4d71-9791-e81326300fa2",
+                "label": "None",
+                "value": "none"
+              },
+              {
+                "id": "918f4978-acda-4f4b-a834-9f5a47221fbb",
+                "label": "Function template",
+                "value": "timeFunctionTemplate"
+              },
+              {
+                "id": "a069ac62-9181-470b-8573-b55af4f4a97a",
+                "label": "Custom function",
+                "value": "customTimeFunction"
+              }
+            ],
+            "description": "",
+            "version": 5,
+            "referenceListId": null,
+            "jsSetting": false,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "692081a5-7e96-401e-90e0-9da5b5bfd836",
+            "type": "dropdown",
+            "propertyName": "disabledTimeTemplate",
+            "label": "Disabled time templates",
+            "labelAlign": "right",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "hidden": {
+              "_code": "return  getSettingValue(data.disabledTimeMode) !== 'timeFunctionTemplate';",
+              "_mode": "code",
+              "_value": false
+            },
+            "dataSourceType": "values",
+            "values": [
+              {
+                "id": "ec349b3e-ef29-467c-96fb-265320ac37a0",
+                "label": "Disabled past times",
+                "value": "disabledPastTime"
+              },
+              {
+                "id": "41db4d59-249d-4ba2-8049-db0fd9fbde14",
+                "label": "Disabled future times",
+                "value": "disabledFutureTime"
+              }
+            ],
+            "description": "",
+            "version": 5,
+            "jsSetting": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "32c21b4d-0b55-43be-9d9a-312370769c3b",
+            "type": "codeEditor",
+            "propertyName": "disabledTimeFunc",
+            "label": "Disabled Time Func",
+            "labelAlign": "right",
+            "parentId": "nU7UhIr28XCaiEFbzhB0n",
+            "hidden": {
+              "_code": "return  getSettingValue(data.disabledTimeMode) !== 'customTimeFunction';",
+              "_mode": "code",
+              "_value": false
+            },
+            "description": "Enter disabled time code. You must return a lamda function with object of DisabledTimes(disabledHours, disabledMinutes, disabledSeconds). Two objects is exposed to work with, namely 'range', 'moment'. Use these variables to write the code that will hide the dates you want.",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [
+              {
+                "name": "range",
+                "description": "Creates an array of numbers (positive and/or negative) progressing from start up to, but not including, end. If end is not specified it’s set to start with start then set to 0. If end is less than start a zero-length range is created unless a negative step is specified.",
+                "type": "function"
+              },
+              {
+                "name": "moment",
+                "description": "Instance of moment.js",
+                "type": "object"
+              }
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "isTimeDisabled"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addFunction(\"range\", \"Creates an array of numbers (positive and/or negative) progressing from start up to, but not including, end. If end is not specified it’s set to start with start then set to 0. If end is less than start a zero-length range is created unless a negative step is specified.\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
           }
         ]
       },
@@ -603,7 +723,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"dateString\", \"Date string value\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
           }
         ]
       },

@@ -13,12 +13,22 @@ namespace Shesha.Migrations
             IfDatabase("SqlServer").Execute.Sql(@"
 insert into Frwk_FrontEndApps (id, Name, Description, AppKey) values (NEWID(), 'Default UI', 'Default frontend application', 'default-app')
 ");
+            IfDatabase("PostgreSql").Execute.Sql(@"
+insert into ""Frwk_FrontEndApps""(""Id"", ""Name"", ""Description"", ""AppKey"") values(gen_random_uuid(), 'Default UI', 'Default frontend application', 'default-app')
+");
 
             IfDatabase("SqlServer").Execute.Sql(@"
 update Frwk_SettingValues set ApplicationId = (select fe.id from Frwk_FrontEndApps fe where fe.AppKey = 'default-app')
 where ApplicationId is null and SettingConfigurationId in 
     (select sc.id from Frwk_SettingConfigurations sc 
         inner join Frwk_ConfigurationItems ci on ci.id = sc.id and ci.Name in ('Shesha.MainMenuSettings', 'Shesha.ThemeSettings'))
+");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"
+update ""Frwk_SettingValues"" set ""ApplicationId"" = (select fe.""Id"" from ""Frwk_FrontEndApps"" fe where fe.""AppKey"" = 'default-app')
+where ""ApplicationId"" is null and ""SettingConfigurationId"" in 
+    (select sc.""Id"" from ""Frwk_SettingConfigurations"" sc 
+        inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = sc.""Id"" and ci.""Name"" in ('Shesha.MainMenuSettings', 'Shesha.ThemeSettings'))
 ");
         }
     }

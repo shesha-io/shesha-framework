@@ -51,7 +51,7 @@ namespace Shesha.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
-        private readonly IOtpAppService _otpService;
+        private readonly IOtpManager _otpManager;
         private readonly IRepository<User, long> _userRepository;
         private readonly ISecuritySettings _securitySettings;
         private readonly IRepository<QuestionAssignment, Guid> _questionRepository;
@@ -65,7 +65,7 @@ namespace Shesha.Users
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
             LogInManager logInManager,
-            IOtpAppService otpService,
+            IOtpManager otpManager,
             ISecuritySettings securitySettings,
             IRepository<User, long> userRepository,
             IRepository<QuestionAssignment, Guid> questionRepository)
@@ -78,7 +78,7 @@ namespace Shesha.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
-            _otpService = otpService;
+            _otpManager = otpManager;
             _userRepository = userRepository;
             _securitySettings = securitySettings;
             _questionRepository = questionRepository;
@@ -269,7 +269,7 @@ namespace Shesha.Users
             // ensure that the user exists
             var user = await GetUniqueUserByMobileNoAsync(mobileNo);
 
-            var otpResponse = await _otpService.SendPinAsync(new SendPinInput() { SendTo = mobileNo, SendType = OtpSendType.Sms });
+            var otpResponse = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = mobileNo, SendType = OtpSendType.Sms });
 
             return new ResetPasswordSendOtpResponse()
             {
@@ -363,7 +363,7 @@ namespace Shesha.Users
 
             var lifetime = securitySettings.ResetPasswordSmsOtpLifetime;
 
-            var response = await _otpService.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
+            var response = await _otpManager.SendPinAsync(new SendPinInput() { SendTo = user.PhoneNumber, SendType = OtpSendType.Sms, Lifetime = lifetime });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
@@ -422,7 +422,11 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Failed to verify OTP provided");
             }
 
-            var otpResponse = await _otpService.VerifyPinAsync(operationId.Value, input.Code);
+            var otpResponse = await _otpManager.VerifyPinAsync(new VerifyPinInput
+            {
+                OperationId = operationId.Value,
+                Pin = input.Code
+            });
 
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
 
@@ -508,7 +512,13 @@ namespace Shesha.Users
 
             var encodedUserName = Convert.ToBase64String(Encoding.UTF8.GetBytes(username));
 
-            var response = await _otpService.SendPinAsync(new SendPinInput() { SendTo = user.EmailAddress, SendType = OtpSendType.EmailLink, Lifetime = lifetime, RecipientId = encodedUserName });
+            var response = await _otpManager.SendPinAsync(new SendPinInput() 
+            { 
+                SendTo = user.EmailAddress, 
+                SendType = OtpSendType.EmailLink, 
+                Lifetime = lifetime, 
+                RecipientId = encodedUserName 
+            });
 
             user.PasswordResetCode = response.OperationId.ToString();
 
@@ -523,7 +533,7 @@ namespace Shesha.Users
         [AbpAllowAnonymous]
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtp(ResetPasswordVerifyOtpInput input)
         {
-            var otp = await _otpService.GetAsync(input.OperationId);
+            var otp = await _otpManager.GetAsync(input.OperationId);
             var personId = otp?.RecipientId.ToGuid() ?? Guid.Empty;
             var user = personId != Guid.Empty
                 ? (await _personRepository.GetAsync(personId))?.User
@@ -533,7 +543,7 @@ namespace Shesha.Users
                 throw new Exception("User not found");
 
             var otpRequest = ObjectMapper.Map<VerifyPinInput>(input);
-            var otpResponse = await _otpService.VerifyPinAsync(otpRequest.OperationId, otpRequest.Pin);
+            var otpResponse = await _otpManager.VerifyPinAsync(otpRequest);
 
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
 

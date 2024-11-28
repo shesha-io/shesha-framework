@@ -1,6 +1,4 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import { message } from 'antd';
-import moment from 'moment';
 import React, { CSSProperties, Key } from 'react';
 import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -9,27 +7,27 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useDataContextManager, useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
-import { useForm } from '@/providers/form';
+import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import {
   evaluateString,
+  executeScriptSync,
   getStyle,
   pickStyleFromModel,
   replaceTags,
+  useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { evaluateDynamicFilters } from '@/utils';
-import { axiosHttp } from '@/utils/fetchers';
 import { IAutocompleteComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
+import { IInputStyles } from '../textField/interfaces';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -48,34 +46,33 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const { queryParams, filter } = model;
-    const form = useForm();
-    const { data } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const pageContext = useDataContextManager(false)?.getPageContext();
-    const { backendUrl } = useSheshaApplication();
+
+    const allData = useAvailableConstantsData();
+
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
       model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
     );
 
-    const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: data }) : model.dataSourceUrl;
+    const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: allData.data }) : model.dataSourceUrl;
 
     const evaluatedFilters = useAsyncMemo(async () => {
-      if (!filter) return '';
+      if (model.dataSourceType !== 'entitiesList' || !filter)
+        return '';
 
       const response = await evaluateDynamicFilters(
         [{ expression: filter } as any],
         [
           {
             match: 'data',
-            data: data,
+            data: allData.data,
           },
           {
             match: 'globalState',
-            data: globalState,
+            data: allData.globalState,
           },
           {
             match: 'pageContext',
-            data: {...pageContext?.getFull()} ?? {},
+            data: { ...allData.pageContext },
           },
         ],
         propertyMetadataAccessor
@@ -84,21 +81,28 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
 
       return JSON.stringify(response[0]?.expression) || '';
-    }, [filter, data, globalState]);
+    }, [filter, allData.data, allData.globalState]);
 
     const getQueryParams = (): IQueryParams => {
       const queryParamObj: IQueryParams = {};
 
-      if (queryParams?.length) {
-        queryParams?.forEach(({ param, value }) => {
-          const valueAsString = value as string;
-          if (param?.length && valueAsString.length) {
-            queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data }) : value;
-          }
-        });
+      if (model.dataSourceType === 'url') {
+        if (queryParams && typeof (queryParams) === 'object') {
+          if (Array.isArray(queryParams)) {
+            queryParams.forEach(({ param, value }) => {
+              const valueAsString = value as string;
+              if (param?.length && valueAsString.length) {
+                queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data: allData.data }) : value;
+              }
+            });
+          } else
+            Object.assign(queryParamObj, queryParams);
+        }
       }
 
-      if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : evaluatedFilters;
+      if (model.dataSourceType === 'entitiesList') {
+        if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : evaluatedFilters;
+      }
 
       return queryParamObj;
     };
@@ -112,10 +116,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       useRawValues
         ? item[value]
         : {
-            id: item[value],
-            _displayName: item[displayText],
-            _className: model.entityTypeShortAlias,
-          };
+          id: item[value],
+          _displayName: item[displayText],
+          _className: model.entityTypeShortAlias,
+        };
 
     const getOptionFromFetchedItem = (item: object): ISelectOption => {
       const { dataSourceType, keyPropName, useRawValues, valuePropName } = model;
@@ -138,54 +142,32 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const getDefaultValue = () => {
       try {
         if (model?.defaultValue) {
-          return new Function(
-            'data, form, globalState, http, message, moment, setGlobalState',
-            model?.defaultValue
-          )(
-            data,
-            getFormApi(form),
-            globalState,
-            axiosHttp(backendUrl),
-            message,
-            moment,
-            setGlobalState
-          );
+          return executeScriptSync(model?.defaultValue, allData);
         }
-      } catch (_e) {
+      } catch {
         return undefined;
       }
     };
 
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData: data,
-      globalState,
-      http: axiosHttp(backendUrl),
-      message,
-      moment,
-      setGlobalState,
-    };
-
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-  
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       fontWeight: model.fontWeight,
-      borderWidth: model.hideBorder ? '0px' : model.borderSize, //this is handled in the entityAutcomplete.tsx
+      borderWidth: model.borderSize,
       borderRadius: model.borderRadius,
-      borderStyle: model.hideBorder ? 'none' : model.borderType,
+      borderStyle: model.borderType,
       borderColor: model.borderColor,
       backgroundColor: model.backgroundColor,
       fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
       ...stylingBoxAsCSS,
     });
-    const jsStyle = getStyle(model.style, data);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
-    
+    const jsStyle = getStyle(model.style, allData.data);
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
     const defaultValue = getDefaultValue();
 
     const autocompleteProps: IAutocompleteProps = {
@@ -215,7 +197,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       allowFreeText: model.allowFreeText,
     };
 
-    const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
+    const formProps = defaultValue ? { model, initialValue: defaultValue } : { model };
 
     // TODO: implement other types of datasources!
 
@@ -223,20 +205,20 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
-          const customEvent =  customDropDownEventHandler(eventProps);
+          const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
-         
-          
+
+
           return (
-          model.useRawValues ? (
-            <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ) : (
-            <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ));
+            model.useRawValues ? (
+              <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
+            ) : (
+              <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
+            ));
         }}
       </ConfigurableFormItem>
     );
@@ -268,6 +250,22 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
+    .add<IAutocompleteComponentProps>(6, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox
+      };
+
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {

@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import FormAutocomplete from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/formAutocomplete';
 import React, { FC } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
@@ -12,7 +12,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 

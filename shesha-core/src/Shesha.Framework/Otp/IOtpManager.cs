@@ -14,12 +14,12 @@ namespace Shesha.Otp
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
-        Task<ISendPinResponse> ResendPinAsync(Guid operationId, int? lifetime);
+        Task<ISendPinResponse> ResendPinAsync(IResendPinInput input);
 
         /// <summary>
         /// Verify one-time-pin
         /// </summary>
-        Task<IVerifyPinResponse> VerifyPinAsync(Guid operationId, string pin);
+        Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input);
 
         /// <summary>
         /// Get OTP

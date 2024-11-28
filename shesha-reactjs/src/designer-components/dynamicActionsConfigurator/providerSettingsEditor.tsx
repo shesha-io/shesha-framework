@@ -9,8 +9,6 @@ import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
 
-const { Panel } = Collapse;
-
 export interface IProviderSettingsEditorProps {
   provider: IDynamicActionsContext;
   value?: any;
@@ -50,44 +48,46 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
   availableConstants,
 }) => {
   const settingsEditor = useMemo(() => {
-    const settingsFormFactory = provider.settingsFormFactory
-      ? provider.settingsFormFactory
-      : provider.settingsFormMarkup
-        ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
+    if (provider) {
+      const settingsFormFactory = provider.settingsFormFactory
+        ? provider.settingsFormFactory
+        : provider.settingsFormMarkup
+          ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
+          : null;
+
+      const onCancel = () => {
+        //
+      };
+
+      const onSave = (values) => {
+        if (onChange) onChange(values);
+      };
+
+      const onValuesChange = (_changedValues, values) => {
+        if (onChange) onChange(values);
+      };
+
+      return settingsFormFactory
+        ? settingsFormFactory({
+          model: value,
+          onSave,
+          onCancel,
+          onValuesChange,
+          readOnly,
+          //exposedVariables,
+          availableConstants,
+        })
         : null;
-
-    const onCancel = () => {
-      //
-    };
-
-    const onSave = (values) => {
-      if (onChange) onChange(values);
-    };
-
-    const onValuesChange = (_changedValues, values) => {
-      if (onChange) onChange(values);
-    };
-
-    return settingsFormFactory
-      ? settingsFormFactory({
-        model: value,
-        onSave,
-        onCancel,
-        onValuesChange,
-        readOnly,
-        //exposedVariables,
-        availableConstants,
-      })
-      : null;
+    }
+    return null;
   }, [provider]);
 
   if (!settingsEditor) return null;
 
   return (
-    <Collapse defaultActiveKey={['1']}>
-      <Panel header="Settings" key="1">
-        {settingsEditor}
-      </Panel>
-    </Collapse>
+    <Collapse
+      defaultActiveKey={['1']}
+      items={[{ key: "1", label: "Settings", children: settingsEditor }]}
+    />
   );
 };

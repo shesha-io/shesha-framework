@@ -132,7 +132,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return false;
       }}
       {...rest}
-      style={{ ...style, width }}
+      style={width === undefined ? {...style} : { ...style, width }}
       onChange={handleChange}
       value={wrapValue(value, options)}
       mode={mode}

@@ -1,5 +1,5 @@
 import { BlockOutlined } from '@ant-design/icons';
-import { Divider, Dropdown, MenuProps, Space, Switch, Tag, Typography } from 'antd';
+import { Dropdown, MenuProps, Tag, Typography } from 'antd';
 import React, { FC, ReactNode, useMemo } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
@@ -48,8 +48,6 @@ export const ConfigurationItemViewModeToggler: FC<IAppEditModeTogglerProps> = ()
   const {
     configurationItemMode,
     switchConfigurationItemMode,
-    formInfoBlockVisible,
-    toggleShowInfoBlock,
   } = useAppConfigurator();
   const { styles } = useStyles();
 
@@ -85,10 +83,6 @@ export const ConfigurationItemViewModeToggler: FC<IAppEditModeTogglerProps> = ()
       dropdownRender={menu => (
         <div className={styles.appModesDropdown}>
           {menu}
-          <Divider style={{ margin: 0 }} />
-          <Space style={{ padding: 8 }}>
-            <Switch checked={formInfoBlockVisible} onChange={checked => toggleShowInfoBlock(checked)} /> Show form info
-          </Space>
         </div>
       )}
     >

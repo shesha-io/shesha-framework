@@ -232,6 +232,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -249,7 +254,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard()\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           },
           {
             "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
@@ -304,6 +309,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -316,7 +326,7 @@
             "templateSettings": {
               "functionName": "onFocus"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n  .addString(\"value\", \"Component current value\")\r\n       .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           },
           {
             "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
@@ -371,6 +381,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -383,7 +398,7 @@
             "templateSettings": {
               "functionName": "onBlur"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n     .addString(\"value\", \"Component current value\")\r\n     .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           }
         ]
       }
@@ -484,11 +499,35 @@
             "templateSettings": {
               "functionName": "validator"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\"])\r\n        .addObject(\"rule\", \"Validate rules, only support customize validator\", undefined)\r\n        .addString(\"value\", \"Component current value\tobject\", undefined)\r\n        .addFunction(\"callback\", \"Callback called by component\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addStandard([\"shesha:formData\"])\r\n        .addObject(\"rule\", \"Validate rules, only support customize validator\", undefined)\r\n        .addString(\"value\", \"Component current value\tobject\", undefined)\r\n        .addFunction(\"callback\", \"Callback called by component\", undefined)\r\n        .build();"
+          },
+          {
+            "id": "dc9a21f8-a611-46ec-94dc-79d2c88c7c19",
+            "type": "checkbox",
+            "propertyName": "spellCheck",
+            "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+            "label": "Spell Check",
+            "version": 3
           }
         ]
       }
     },
+    {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "collapsiblePanel",
@@ -532,7 +571,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -708,7 +747,9 @@
             }
         ]
       }
+    }]
     },
+
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",

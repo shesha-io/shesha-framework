@@ -50,6 +50,14 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   migrator: (m) => m
     .add<IStatisticComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IStatisticComponentProps)
     .add<IStatisticComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IStatisticComponentProps>(2, (prev) => {
+      const styles = {
+        style: prev.style,
+        valueStyle: prev.valueStyle
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
 };
 

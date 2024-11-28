@@ -11,7 +11,7 @@ import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 interface IDataContextSettingsState extends IDataContextComponentProps { }
 

@@ -23,4 +23,5 @@ export interface ITableContextComponentProps extends IConfigurableFormComponent 
     standardSorting?: ISortingItem[];
     allowReordering?: YesNoInherit;
     permanentFilter?: FilterExpression;
+    disableRefresh?: string;
 }

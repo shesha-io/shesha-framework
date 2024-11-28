@@ -724,5 +724,20 @@ namespace Shesha.Reflection
         {
             return type.Assembly.GetConfigurableModuleInfo();
         }
+
+        /// <summary>
+        /// Get properties of the specified <paramref name="containerType"/> without hidden ones (https://learn.microsoft.com/en-us/dotnet/csharp/misc/cs0114)
+        /// </summary>
+        /// <param name="containerType">Type of the container</param>
+        /// <param name="bindingAttr">Binding attribute flags</param>
+        /// <returns></returns>
+        public static List<PropertyInfo> GetPropertiesWithoutHidden(this Type containerType, BindingFlags bindingAttr)
+        {
+            var propertiesWithoutHiddenOnes = containerType.GetProperties(bindingAttr)
+                .GroupBy(prop => prop.Name)
+                .Select(group => group.Aggregate((mostSpecificProp, other) => mostSpecificProp.DeclaringType.IsSubclassOf(other.DeclaringType) ? mostSpecificProp : other))
+                .ToList();
+            return propertiesWithoutHiddenOnes;
+        }
     }
 }

@@ -99,226 +99,6 @@
             "version": 2
           },
           {
-            "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
-            "type": "textField",
-            "propertyName": "height",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Height",
-            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
-            "version": 3,
-            "textType": "text"
-          },
-          {
-            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
-            "type": "textField",
-            "propertyName": "width",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Width",
-            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
-            "version": 3,
-            "textType": "text"
-          },
-          {
-            "id": "ac0cedc0-c3f6-495c-9d91-b0fecc2461fe",
-            "type": "dropdown",
-            "propertyName": "objectFit",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Object Fit",
-            "dataSourceType": "values",
-            "values": [
-              {
-                "label": "Fill",
-                "value": "fill",
-                "id": "1"
-              },
-              {
-                "label": "Contain",
-                "value": "contain",
-                "id": "2"
-              },
-              {
-                "label": "Cover",
-                "value": "cover",
-                "id": "3"
-              },
-              {
-                "label": "None",
-                "value": "none",
-                "id": "4"
-              }
-            ],
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "8f099b08-56c9-494d-ba0f-ae0e649aa290",
-            "type": "dropdown",
-            "propertyName": "objectPosition",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Object Position",
-            "dataSourceType": "values",
-            "values": [
-              {
-                "label": "Top",
-                "value": "top",
-                "id": "1"
-              },
-              {
-                "label": "Bottom",
-                "value": "bottom",
-                "id": "2"
-              },
-              {
-                "label": "Left",
-                "value": "left",
-                "id": "3"
-              },
-              {
-                "label": "Right",
-                "value": "right",
-                "id": "4"
-              },
-              {
-                "label": "Center",
-                "value": "center",
-                "id": "5"
-              },
-              {
-                "label": "Top Left",
-                "value": "top left",
-                "id": "6"
-              },
-              {
-                "label": "Top Right",
-                "value": "top right",
-                "id": "7"
-              },
-              {
-                "label": "Bottom Left",
-                "value": "bottom left",
-                "id": "8"
-              },
-              {
-                "label": "Bottom Right",
-                "value": "bottom right",
-                "id": "9"
-              }
-            ],
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "e34507ac-593a-44b7-bcfa-638ad7aff222",
-            "type": "dropdown",
-            "propertyName": "filter",
-            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Filter",
-            "values": [
-              {
-                "label": "Invert",
-                "value": "invert(100%)",
-                "id": "d244d856-361a-4e93-b3a6-ba06d5dd0e24"
-              },
-              {
-                "label": "Grayscale",
-                "value": "grayscale(100%)",
-                "id": "6a6c6725-76b3-4d71-a81d-607b9e3fa1a5a"
-              },
-              {
-                "label": "Sepia",
-                "value": "sepia(100%)",
-                "id": "2626f8be-b0d2-4719-a27d-dc24e5bd8e62"
-              },
-              {
-                "label": "Blur",
-                "value": "blur(5px)",
-                "id": "3c4f1464-8cc6-495f-bc9e-a86d2ee878c7"
-              }
-            ],
-            "dataSourceType": "values",
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "c39101e9-ddd4-43c9-a9f5-309ac0620acc",
-            "type": "numberField",
-            "propertyName": "opacity",
-            "label": "Opacity",
-            "description": "Opacity ranges from 0 to 1 on an incremental scale",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "min": 0,
-            "max": 1,
-            "version": 3
-          },
-          {
-            "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
-            "type": "numberField",
-            "propertyName": "borderSize",
-            "label": "Border Width",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "version": 3
-          },
-          {
-            "id": "fa37ddbb-27a7-4ab8-b12e-9967764072f2",
-            "type": "numberField",
-            "propertyName": "borderRadius",
-            "label": "Border Radius",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "version": 3
-          },
-          {
-            "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
-            "type": "dropdown",
-            "propertyName": "borderType",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Border Type",
-            "dataSourceType": "values",
-            "values": [
-              {
-                "label": "Solid",
-                "value": "solid",
-                "id": "1"
-              },
-              {
-                "label": "Dashed",
-                "value": "dashed",
-                "id": "2"
-              },
-              {
-                "label": "Dotted",
-                "value": "dotted",
-                "id": "3"
-              }
-            ],
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "type": "colorPicker",
-            "propertyName": "borderColor",
-            "componentName": "borderColor",
-            "label": "Border Color",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true
-          },
-          {
             "id": "da34d70c-7419-4ea7-a715-d42699d26e6e",
             "type": "editModeSelector",
             "propertyName": "editMode",
@@ -385,16 +165,15 @@
           },
           {
             "id": "1ad43b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-            "type": "textArea",
+            "type": "imagePicker",
             "propertyName": "base64",
             "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Base 64 content",
+            "label": "Upload Image",
             "hidden": {
               "_code": "return getSettingValue(data?.dataSource) !== 'base64';",
               "_mode": "code",
               "_value": false
-            },
-            "version": 2
+            }
           }
         ]
       }
@@ -493,63 +272,301 @@
       }
     },
     {
-      "id": "aIMnm2re1exN1M7pEEur11",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlData",
-      "label": "Style",
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "header": {
-        "id": "FizvkIoyeq1cZMqAgbDCC",
-        "components": []
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
       },
-      "content": {
-        "id": "aIMnm2re1exN1M7pEEur11",
-        "components": [
-          {
-            "id": "06ab0588-914d-4d2d-875c-765a495472f8",
-            "type": "codeEditor",
-            "propertyName": "style",
-            "label": "Style",
-            "parentId": "aIMnm2re1exN1M7pEEur11",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [
-              {
-                "name": "data",
-                "description": "Form values",
-                "type": "object"
-              }
-            ],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": {
-              "functionName": "getStyle"
-            },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+      "components": [
+        {
+          "id": "aIMnm2re1exN1M7pEEur11",
+          "type": "collapsiblePanel",
+          "propertyName": "pnlData",
+          "label": "Style",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": false,
+          "isDynamic": false,
+          "version": 4,
+          "expandIconPosition": "start",
+          "collapsible": "header",
+          "ghost": true,
+          "hideWhenEmpty": true,
+          "settingsValidationErrors": [],
+          "header": {
+            "id": "FizvkIoyeq1cZMqAgbDCC",
+            "components": []
           },
-          {
-            "id": "d9adcd79-771f-4585-a09d-9b769f594490",
-            "type": "styleBox",
-            "propertyName": "stylingBox",
-            "parentId": "4c413e8f-a8cd-4567-8723-726ed742bae0",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "jsSetting": false
+          "content": {
+            "id": "aIMnm2re1exN1M7pEEur11",
+            "components": [
+              {
+                "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
+                "type": "textField",
+                "propertyName": "height",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "label": "Height",
+                "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+                "version": 3,
+                "textType": "text"
+              },
+              {
+                "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+                "type": "textField",
+                "propertyName": "width",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "label": "Width",
+                "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+                "version": 3,
+                "textType": "text"
+              },
+              {
+                "id": "ac0cedc0-c3f6-495c-9d91-b0fecc2461fe",
+                "type": "dropdown",
+                "propertyName": "objectFit",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "label": "Object Fit",
+                "dataSourceType": "values",
+                "values": [
+                  {
+                    "label": "Fill",
+                    "value": "fill",
+                    "id": "1"
+                  },
+                  {
+                    "label": "Contain",
+                    "value": "contain",
+                    "id": "2"
+                  },
+                  {
+                    "label": "Cover",
+                    "value": "cover",
+                    "id": "3"
+                  },
+                  {
+                    "label": "None",
+                    "value": "none",
+                    "id": "4"
+                  }
+                ],
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "8f099b08-56c9-494d-ba0f-ae0e649aa290",
+                "type": "dropdown",
+                "propertyName": "objectPosition",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "label": "Object Position",
+                "dataSourceType": "values",
+                "values": [
+                  {
+                    "label": "Top",
+                    "value": "top",
+                    "id": "1"
+                  },
+                  {
+                    "label": "Bottom",
+                    "value": "bottom",
+                    "id": "2"
+                  },
+                  {
+                    "label": "Left",
+                    "value": "left",
+                    "id": "3"
+                  },
+                  {
+                    "label": "Right",
+                    "value": "right",
+                    "id": "4"
+                  },
+                  {
+                    "label": "Center",
+                    "value": "center",
+                    "id": "5"
+                  },
+                  {
+                    "label": "Top Left",
+                    "value": "top left",
+                    "id": "6"
+                  },
+                  {
+                    "label": "Top Right",
+                    "value": "top right",
+                    "id": "7"
+                  },
+                  {
+                    "label": "Bottom Left",
+                    "value": "bottom left",
+                    "id": "8"
+                  },
+                  {
+                    "label": "Bottom Right",
+                    "value": "bottom right",
+                    "id": "9"
+                  }
+                ],
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "e34507ac-593a-44b7-bcfa-638ad7aff222",
+                "type": "dropdown",
+                "propertyName": "filter",
+                "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+                "label": "Filter",
+                "values": [
+                  {
+                    "label": "Invert",
+                    "value": "invert(100%)",
+                    "id": "d244d856-361a-4e93-b3a6-ba06d5dd0e24"
+                  },
+                  {
+                    "label": "Grayscale",
+                    "value": "grayscale(100%)",
+                    "id": "6a6c6725-76b3-4d71-a81d-607b9e3fa1a5a"
+                  },
+                  {
+                    "label": "Sepia",
+                    "value": "sepia(100%)",
+                    "id": "2626f8be-b0d2-4719-a27d-dc24e5bd8e62"
+                  },
+                  {
+                    "label": "Blur",
+                    "value": "blur(5px)",
+                    "id": "3c4f1464-8cc6-495f-bc9e-a86d2ee878c7"
+                  }
+                ],
+                "dataSourceType": "values",
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "c39101e9-ddd4-43c9-a9f5-309ac0620acc",
+                "type": "numberField",
+                "propertyName": "opacity",
+                "label": "Opacity",
+                "description": "Opacity ranges from 0 to 1 on an incremental scale",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "min": 0,
+                "max": 1,
+                "version": 3
+              },
+              {
+                "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
+                "type": "numberField",
+                "propertyName": "borderSize",
+                "label": "Border Width",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "version": 3
+              },
+              {
+                "id": "fa37ddbb-27a7-4ab8-b12e-9967764072f2",
+                "type": "numberField",
+                "propertyName": "borderRadius",
+                "label": "Border Radius",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "version": 3
+              },
+              {
+                "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
+                "type": "dropdown",
+                "propertyName": "borderType",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "label": "Border Type",
+                "dataSourceType": "values",
+                "values": [
+                  {
+                    "label": "Solid",
+                    "value": "solid",
+                    "id": "1"
+                  },
+                  {
+                    "label": "Dashed",
+                    "value": "dashed",
+                    "id": "2"
+                  },
+                  {
+                    "label": "Dotted",
+                    "value": "dotted",
+                    "id": "3"
+                  }
+                ],
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
+                "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+                "type": "colorPicker",
+                "propertyName": "borderColor",
+                "componentName": "borderColor",
+                "label": "Border Color",
+                "labelAlign": "right",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 2,
+                "settingsValidationErrors": [],
+                "title": "",
+                "fontSize": "",
+                "allowClear": true,
+                "showText": true
+              },
+              {
+                "id": "06ab0588-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "style",
+                "label": "Style",
+                "parentId": "aIMnm2re1exN1M7pEEur11",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+                "exposedVariables": [
+                  {
+                    "name": "data",
+                    "description": "Form values",
+                    "type": "object"
+                  }
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getStyle"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              },
+              {
+                "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+                "type": "styleBox",
+                "propertyName": "stylingBox",
+                "parentId": "4c413e8f-a8cd-4567-8723-726ed742bae0",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "jsSetting": false
               }
-        ]
-      }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",

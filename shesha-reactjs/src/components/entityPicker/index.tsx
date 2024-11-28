@@ -9,25 +9,27 @@ import { IEntityPickerProps } from './models';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
+import { getValueByPropertyName } from '@/utils/object';
+import { SheshaError } from '@/utils/errors';
 
 const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
 
   // Check if all data for displaying is loaded
-  const isLoaded = value
+  const isLoaded = value 
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
+
+  const valueId = Array.isArray(value)
+    ? value.map(x => props.incomeValueFunc(x, {}))
+    : props.incomeValueFunc(value, {});
 
   const selection = useEntitySelectionData({
     entityType: entityType,
     propertyName: displayEntityKey,
-    selection: !isLoaded 
-      ? Array.isArray(value)
-        ? value.map(x => props.incomeValueFunc(x, {}))
-        : props.incomeValueFunc(value, {})
-      : null,
+    selection: !isLoaded ? valueId : null,
   });
 
   const selectedItems = isLoaded
@@ -35,7 +37,7 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
     : selection?.rows;
 
   const displayText = useMemo(() => {
-    return selectedItems?.map(ent => ent[displayEntityKey]).join(', ');
+    return selectedItems?.map(ent => getValueByPropertyName(ent, displayEntityKey)).join(', ');
   }, [selectedItems]);
 
   return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
@@ -69,8 +71,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   // Check if all data for displaying is loaded
   const isLoaded = value 
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
   const valueId = Array.isArray(value)
@@ -89,12 +91,11 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
-  if (!entityType) {
-    throw new Error('Please make sure that either entityType is configured for the entity picker to work properly');
-  }
+  if (!entityType) 
+    throw SheshaError.throwPropertyError('entityType');
 
   const handleMultiChange = (selectedValues: string[]) => {
-    const newValues = value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {})));
+    const newValues = Array.isArray(value) ? value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {}))) : null;
     if (onChange) onChange(newValues, null);
   };
 
@@ -120,7 +121,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     } else {
       result = (selectedItems ?? []).map(ent => {
         const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
-        return { label: ent[displayEntityKey], value: key, key };
+        return { label: getValueByPropertyName(ent, displayEntityKey), value: key, key };
       });
     }
 

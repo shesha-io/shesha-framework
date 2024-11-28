@@ -53,7 +53,6 @@ import {
   setMultiSelectedRowAction,
   fetchGroupingColumnsSuccessAction,
   setSortingSettingsAction,
-  setHoverRowAction,
   setDraggingRowAction,
   setStandardSortingAction,
   onGroupAction,
@@ -125,6 +124,12 @@ interface IDataTableProviderBaseProps {
    * Permanent filter exepression. Always applied irrespectively of other filters
    */
   permanentFilter?: FilterExpression;
+
+  /**
+   * Disable refresh data expression
+   * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
+   */
+  disableRefresh?: boolean;
 }
 
 interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBaseProps, IHasRepository, IHasModelType { }
@@ -384,9 +389,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const fetchTableDataInternal = (payload: IGetListDataPayload) => {
-    dispatch(fetchTableDataAction(payload));
-
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
+      dispatch(fetchTableDataAction(payload));
       debouncedFetch(payload);
     }
   };
@@ -425,7 +429,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const refreshTable = () => {
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
       fetchTableData(state);
     }
   };
@@ -579,13 +583,13 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const onSort = (sorting: IColumnSorting[]) => {
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
       dispatch(onSortAction(sorting));
     }
   };
 
   const onGroup = (grouping: ISortingItem[]) => {
-    if (tableIsReady.current === true) {
+    if (tableIsReady.current === true && !props.disableRefresh) {
       dispatch(onGroupAction(grouping));
     }
   };
@@ -712,11 +716,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dispatch(setSelectedRowAction(state.selectedRow?.id !== row?.id ? { index, row, id: row?.id } : null));
   };
 
-  const setHoverRowId = (id: string) => {
-    if (state.hoverRowId !== id)
-      dispatch(setHoverRowAction(id));
-  };
-
   const setDraggingState = (dragState: DragState) => {
     if (state.dragState !== dragState)
       dispatch(setDraggingRowAction(dragState));
@@ -755,7 +754,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     getRepository,
     setRowData,
     setSelectedRow,
-    setHoverRowId,
     setDragState: setDraggingState,
     setMultiSelectedRow,
     requireColumns,

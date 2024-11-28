@@ -52,7 +52,7 @@ export class GqlLoader implements IFormDataLoader {
                 return await this.#endpointsEvaluator.getFormActionUrl({ actionName: StandardEntityActions.read, formSettings: formSettings, mappings: [] });                
             }
             case 'static': {
-                return staticEndpoint;
+                return { ...staticEndpoint, httpVerb: staticEndpoint?.httpVerb || 'get' };
             }
             case 'dynamic': {
                 const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });

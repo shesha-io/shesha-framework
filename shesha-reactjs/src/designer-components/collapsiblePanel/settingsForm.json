@@ -30,7 +30,8 @@
               "required": true
             },
             "version": 2,
-            "textType": "text"
+            "textType": "text",
+            "jsSetting": false
           },
           {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
@@ -40,6 +41,14 @@
             "label": "Label",
             "version": 2,
             "textType": "text"
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412558",
+            "type": "checkbox",
+            "propertyName": "hasCustomHeader",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "label": "Custom Header",
+            "version": 1
           },
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
@@ -160,6 +169,18 @@
             "validate": {},
             "settingsValidationErrors": [],
             "version": 1
+          },
+          {
+            "id": "6bac1a1f-67a2-48b5-a11e-b474e30d282e",
+            "type": "numberField",
+            "propertyName": "borderRadius",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "label": "Border Radius",
+            "defaultValue": 8,
+            "version": 2,
+            "textType": "number",
+            "max": 40,
+            "jsSetting": false
           },
           {
             "id": "d95693e6-f8dc-4f77-9ec4-68a14612cf34",

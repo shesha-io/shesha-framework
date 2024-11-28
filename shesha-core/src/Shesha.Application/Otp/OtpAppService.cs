@@ -26,12 +26,13 @@ namespace Shesha.Otp
         private readonly IRepository<OtpConfig, Guid> _otpConfigRepository;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IOtpAppServiceHelper _otpServiceHelper;
+        private readonly IOtpManager _otpManager;
 
         public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage,
             IOtpGenerator passwordGenerator, IOtpSettings otpSettings,
             IRepository<OtpConfig, Guid> otpConfigRepository,
             IRepository<Person, Guid> personRepository,
-            IOtpAppServiceHelper otpServiceHelper)
+            IOtpAppServiceHelper otpServiceHelper, IOtpManager otpManager)
         {
             _smsGateway = smsGateway;
             _emailSender = emailSender;
@@ -41,81 +42,15 @@ namespace Shesha.Otp
             _otpConfigRepository = otpConfigRepository;
             _personRepository = personRepository;
             _otpServiceHelper = otpServiceHelper;
+            _otpManager = otpManager; 
         }
 
         /// <summary>
         /// Send one-time-pin
         /// </summary>
-        public async Task<ISendPinResponse> SendPinAsync(ISendPinInput input)
+        public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (string.IsNullOrWhiteSpace(input.SendTo))
-                throw new Exception($"{input.SendTo} must be specified");
-
-            string pinCode = "";
-
-            if (input.SendType == OtpSendType.EmailLink)
-            {
-                // TODO: Generate password reset token
-                pinCode = Guid.NewGuid().ToString("N");
-            }
-            else
-            {
-                pinCode = _otpGenerator.GeneratePin();
-            }
-
-
-            // generate new OtpItem and save
-            var otp = new OtpDto()
-            {
-                OperationId = Guid.NewGuid(),
-                Pin = pinCode,
-
-                SendTo = input.SendTo,
-                SendType = input.SendType,
-                RecipientId = input.RecipientId,
-                RecipientType = input.RecipientType,
-                ActionType = input.ActionType,
-            };
-
-            // send otp
-            if (settings.IgnoreOtpValidation)
-            {
-                otp.SendStatus = OtpSendStatus.Ignored;
-            }
-            else
-            {
-                try
-                {
-                    otp.SentOn = DateTime.Now;
-
-                    await _otpServiceHelper.SendInternal(otp);
-
-                    otp.SendStatus = OtpSendStatus.Sent;
-                }
-                catch (Exception e)
-                {
-                    otp.SendStatus = OtpSendStatus.Failed;
-                    otp.ErrorMessage = e.FullMessage();
-                }
-            }
-
-            // set expiration and save
-            var lifeTime = input.Lifetime.HasValue && input.Lifetime.Value != 0
-                ? input.Lifetime.Value
-                : settings.DefaultLifetime;
-
-            otp.ExpiresOn = DateTime.Now.AddSeconds(lifeTime);
-
-            await _otpStorage.SaveAsync(otp);
-
-            // return response
-            var response = new SendPinResponse
-            {
-                OperationId = otp.OperationId,
-                SentTo = otp.SendTo
-            };
-            return response;
+            return await _otpManager.SendPinAsync(input);
         }
 
         /// <summary>
@@ -169,29 +104,11 @@ namespace Shesha.Otp
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="operationId"></param>
-        /// <param name="lifetime"></param>
+        /// <param name="input"></param>
         /// <returns></returns>
-        public async Task<ISendPinResponse> ResendPinAsync(Guid operationId, int? lifetime)
+        public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            var otp = await _otpServiceHelper.GetOtpWithOperationId(operationId);
-            return await _otpServiceHelper.ProcessOtpResendAsync(
-                otp,
-                lifetime,
-                async (otp) => await _otpServiceHelper.SendInternal(otp),
-                async (otp) =>
-                {
-                    await _otpStorage.UpdateAsync(operationId, newOtp =>
-                    {
-                        newOtp.SentOn = DateTime.Now;
-                        newOtp.SendStatus = OtpSendStatus.Sent;
-                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(lifetime ?? settings.DefaultLifetime);
-                        return Task.CompletedTask;
-                    });
-                },
-                lifetime ?? settings.DefaultLifetime
-            );
+            return await _otpManager.ResendPinAsync(input);
         }
 
         /// <summary>
@@ -302,16 +219,14 @@ namespace Shesha.Otp
             return _otpServiceHelper.ValidateOtp(pinDto, pin, settings.IgnoreOtpValidation);
         }
 
-        public async Task<IVerifyPinResponse> VerifyPinAsync(Guid operationId, string pin)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
-            // Retrieve OTP settings
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-
-            // Retrieve OTP details
-            var pinDto = await _otpServiceHelper.RetrieveOtpAsync(operationId);
-
-            // Validate OTP and return the response
-            return _otpServiceHelper.ValidateOtp(pinDto, pin, settings.IgnoreOtpValidation);
+            return await _otpManager.VerifyPinAsync(input);
         }
 
 

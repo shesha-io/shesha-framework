@@ -311,3 +311,4 @@ storybook-static
 **/.next/**
 **/.rollup.cache/**
 
+/shesha-reactjs/next-env.d.ts

@@ -2,7 +2,6 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReduce
 import { useLocalStorage } from '@/hooks';
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import {
-  IConfigurationFrameworkHookArguments,
   IHasConfigurableItemId,
   createNewVersion,
   deleteItem,
@@ -16,11 +15,10 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
+  softToggleInfoBlockAction,
   switchApplicationModeAction,
-  switchConfigurationItemModeAction,
   toggleCloseEditModeConfirmationAction,
   toggleEditModeConfirmationAction,
-  toggleShowInfoBlockAction,
 } from './actions';
 import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
 import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext } from './contexts';
@@ -28,6 +26,8 @@ import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
+import { App } from 'antd';
+import { useHttpClient } from '../sheshaApplication/publicApi';
 
 export interface IAppConfiguratorProviderProps { }
 
@@ -64,7 +64,7 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
     const result = auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
 
     return result;
-  }, [auth, auth?.isLoggedIn]);
+  }, [auth, auth?.isLoggedIn, auth?.state?.status]);
 
   useEffect(() => {
     // sync headers
@@ -103,14 +103,12 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     configurationItemMode: configuratorSettings.mode,
   });
 
-  const { backendUrl, httpHeaders } = useSheshaApplication();
-
+  const httpClient = useHttpClient();
+  const { message, notification, modal } = App.useApp();
 
   //#region Configuration Framework renamed to Configuration Items
 
   const actionsOwner = 'Configuration Items';
-
-  const cfArgs: IConfigurationFrameworkHookArguments = { backendUrl: backendUrl, httpHeaders: httpHeaders };
 
   const actionDependencies = [state];
   useConfigurableAction<IHasConfigurableItemId>(
@@ -120,15 +118,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          createNewVersion({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return createNewVersion({ id: actionArgs.itemId, httpClient, message, notification, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -142,15 +132,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          setItemReady({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return setItemReady({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -164,15 +146,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          deleteItem({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return deleteItem({ id: actionArgs.itemId, httpClient });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -186,15 +160,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          publishItem({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return publishItem({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -208,15 +174,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          itemCancelVersion({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return itemCancelVersion({ id: actionArgs.itemId, httpClient, message, modal });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -230,15 +188,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return new Promise((resolve, reject) => {
-          downloadAsJson({ id: actionArgs.itemId, ...cfArgs })
-            .then(() => {
-              resolve(true);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        });
+        return downloadAsJson({ id: actionArgs.itemId, httpClient });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -261,7 +211,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const toggleShowInfoBlock = (visible: boolean) => {
     configuratorSettings.setIsInformerVisible(visible);
-    dispatch(toggleShowInfoBlockAction(visible));
   };
 
   const switchApplicationMode = (mode: ApplicationMode) => {
@@ -270,7 +219,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
     configuratorSettings.setMode(mode);
-    dispatch(switchConfigurationItemModeAction(mode));
   };
 
   const toggleEditModeConfirmation = (visible: boolean) => {
@@ -281,8 +229,16 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     dispatch(toggleCloseEditModeConfirmationAction(visible));
   };
 
+  const softToggleInfoBlock = (softInfoBlock: boolean) => {
+    dispatch(softToggleInfoBlockAction(softInfoBlock));
+  };
+
   return (
-    <AppConfiguratorStateContext.Provider value={state}>
+    <AppConfiguratorStateContext.Provider value={{
+      ...state,
+      configurationItemMode: configuratorSettings.mode,
+      formInfoBlockVisible: configuratorSettings.isInformerVisible,
+    }}>
       <AppConfiguratorActionsContext.Provider
         value={{
           switchApplicationMode,
@@ -290,6 +246,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
           toggleCloseEditModeConfirmation,
           switchConfigurationItemMode,
           toggleShowInfoBlock,
+          softToggleInfoBlock,
         }}
       >
         {children}

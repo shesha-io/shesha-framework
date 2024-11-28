@@ -15,7 +15,7 @@ namespace Shesha.DynamicEntities
         public void Apply(ControllerModel controller)
         {
             if (!controller.ControllerType.IsGenericType || controller.ControllerType.GetGenericTypeDefinition() !=
-                typeof(DynamicCrudAppService<,,>))
+                typeof(DynamicCrudAppService<,,,,>))
             {
                 // Not a GenericController, ignore.
                 return;

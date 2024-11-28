@@ -5,6 +5,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '@/components/listEditor';
+import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@/index';
 
 export interface IContainerRenderArgs {
   id?: string;
@@ -20,17 +21,19 @@ export interface ISidebarMenuGroupProps {
 
 export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, containerRendering }) => {
   const { styles } = useStyles();
+  const allData = useAvailableConstantsData();
+  const actialItem = useDeepCompareMemo(() => getActualModel(item, allData), [item, {...allData}]);
   return (
     <>
-      {item.icon && <ShaIcon iconName={item.icon as IconType} />}
-      <span className={styles.listItemName}>{item.title}</span>
-      {item.tooltip && (
-        <Tooltip title={item.tooltip}>
+      {actialItem.icon && <ShaIcon iconName={actialItem.icon as IconType} />}
+      <span className={styles.listItemName}>{actialItem.title}</span>
+      {actialItem.tooltip && (
+        <Tooltip title={actialItem.tooltip}>
           <QuestionCircleOutlined className={styles.helpIcon} />
         </Tooltip>
       )}
       {containerRendering({
-        items: item.childItems || [],
+        items: actialItem.childItems || [],
         onChange: (newItems, changeDetails) => {
           onChange({ ...item, childItems: [...newItems] }, changeDetails);
         }

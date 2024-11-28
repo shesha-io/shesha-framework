@@ -23,7 +23,6 @@ const tableClassNames = {
   shaTableEmpty: 'sha-table-empty',
   shaSortable: 'sha-sortable',
   shaDragging: 'sha-dragging',
-  shaHover: 'sha-hover',
   shaTooltipIcon: 'sha-tooltip-icon',
 };
 const tableStyles = {
@@ -58,7 +57,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaTableEmpty,
     shaSortable,
     shaDragging,
-    shaHover,
     shaTooltipIcon,
   } = tableClassNames;
 
@@ -116,12 +114,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           overflow-x: hidden;
 
           > .${shaSortable}:not(.${shaDragging}) {
-            .${tr}.${trBody}.${shaHover} {
+            .${tr}.${trBody}:hover {
               ${hoverableRow}
             }
           }
 
-          > .${tr}.${trBody}.${shaHover} {
+          > .${tr}.${trBody}:hover {
             ${hoverableRow}
           }
 
@@ -209,7 +207,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trBodyGhost} {
-            border: 1px dashed #4099ff;
+            border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
             opacity: 0.7;
           }

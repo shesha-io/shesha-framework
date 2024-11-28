@@ -13,7 +13,7 @@ import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
 import { FormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
-import { setValueByPropertyName } from "@/utils/object";
+import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
@@ -35,23 +35,23 @@ interface ShaFormInstanceArguments {
 
 class PublicFormApi<Values = any> implements FormApi<Values> {
     #form: IShaFormInstance;
-    constructor(form: IShaFormInstance){
+    constructor(form: IShaFormInstance) {
         this.#form = form;
     }
-    addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[]  => {
-      const delayedUpdateData = this.#form?.getDelayedUpdates();
-      if (delayedUpdateData?.length > 0)
-        data['_delayedUpdate'] = delayedUpdateData;
-      return delayedUpdateData;
+    addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[] => {
+        const delayedUpdateData = this.#form?.getDelayedUpdates();
+        if (delayedUpdateData?.length > 0)
+            data['_delayedUpdate'] = delayedUpdateData;
+        return delayedUpdateData;
     };
     setFieldValue = (name: string, value: any) => {
-        this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });        
+        this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
     };
     setFieldsValue = (values: Values) => {
         this.#form.setFormData({ values, mergeValues: true });
     };
     clearFieldsValue = () => {
-      this.#form?.setFormData({ values: {}, mergeValues: false });
+        this.#form?.setFormData({ values: {}, mergeValues: false });
     };
     submit = () => {
         this.#form.antdForm.submit();
@@ -62,7 +62,7 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };
-    get formSettings() { 
+    get formSettings() {
         return this.#form.settings;
     };
     get formMode() {
@@ -152,9 +152,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.events = {};
         this.formData = {};
     }
-    
+
     getDelayedUpdates = () => {
-      return this.dataSubmitContext?.getDelayedUpdates() || [];
+        return this.dataSubmitContext?.getDelayedUpdates() || [];
     };
 
     setDataSubmitContext = (context: IDataSubmitContext) => {
@@ -176,7 +176,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = values;
         if (this.onValuesChange)
             this.onValuesChange(values, values);
-        this.events.onValuesUpdate?.({data: removeGhostKeys({...values})});
+        this.events.onValuesUpdate?.({ data: removeGhostKeys({ ...values }) });
     };
 
     setFormData = (payload: ISetFormDataPayload) => {
@@ -185,7 +185,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return;
 
         const newData = payload.mergeValues && this.formData
-            ? { ...this.formData, ...values }
+            ? deepMergeValues(this.formData, values)
             : values;
 
         if (mergeValues) {
@@ -364,13 +364,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.log('LOG: initialValues', initialValues);
             this.initialValues = initialValues;
             this.formData = initialValues;
-            if (initialValues){
+            if (initialValues) {
                 this.antdForm.resetFields();
                 this.antdForm.setFieldsValue(initialValues);
             }
-
-            if (this.events.onBeforeDataLoad)
-                await this.events.onBeforeDataLoad();
 
             this.markupLoadingState = { status: 'ready' };
             this.forceRootUpdate();
@@ -456,21 +453,28 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     initByFormId = async (payload: InitByFormIdPayload): Promise<void> => {
         const { configurationItemMode, formId, formArguments } = payload;
 
-        if (isSameFormIds(this.formId, formId) && this.configurationItemMode === configurationItemMode) {
-            return;
+        const formNotChanged = isSameFormIds(this.formId, formId) && this.configurationItemMode === configurationItemMode;
+        if (!formNotChanged) {
+            this.log('LOG: initByFormId - load form', payload);
+
+            this.formId = formId;
+            this.configurationItemMode = configurationItemMode;
+
+            await this.loadFormByIdAsync({ initialValues: payload.initialValues });
+        } else
+            this.log('LOG: initByFormId - load form skipped', payload);
+
+        if (this.markupLoadingState.status === "ready") {
+            this.log('LOG: initByFormId - load data', payload);
+            this.formArguments = formArguments;
+            if (this.events.onBeforeDataLoad)
+                await this.events.onBeforeDataLoad();
+
+            await this.loadData(formArguments);
+
+            if (this.events.onAfterDataLoad)
+                await this.events.onAfterDataLoad();
         }
-
-        this.log('LOG: initByFormId', payload);
-
-        this.formId = formId;
-        this.configurationItemMode = configurationItemMode;
-        this.formArguments = formArguments;
-
-        await this.loadFormByIdAsync({ initialValues: payload.initialValues });
-        await this.loadData(formArguments);
-
-        if (this.events.onAfterDataLoad)
-            await this.events.onAfterDataLoad();
     };
 
     private get dataLoader(): IFormDataLoader {
@@ -535,7 +539,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         const { customSubmitCaller } = payload;
 
         const { formData: data, antdForm } = this;
-        const { getDelayedUpdates } = this.dataSubmitContext ?? {};        
+        const { getDelayedUpdates } = this.dataSubmitContext ?? {};
 
         if (this.useDataSubmitter) {
             this.dataSubmitState = { status: 'loading', hint: 'Saving data...', error: null };
@@ -617,10 +621,10 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 antdForm: antdFormInstance,
                 metadataDispatcher: metadataDispatcher,
             });
-            const accessors = wrapConstantsData({ 
-                fullContext, 
+            const accessors = wrapConstantsData({
+                fullContext,
                 shaForm: instance,
-                queryStringGetter: getQueryParams,                
+                queryStringGetter: getQueryParams,
             });
             const allConstants = makeObservableProxy<IApplicationContext>(accessors);
 

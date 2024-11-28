@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { AutoCompletePlaces } from '@/components/';
+import { AutoCompletePlaces, NodeOrFuncRenderer } from '@/components/';
 import { EditOutlined } from '@ant-design/icons';
 import { Input, Button } from 'antd';
 import FormItem, { FormItemProps } from 'antd/lib/form/FormItem';
@@ -39,7 +39,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
     try {
       if (Boolean(children)) return children;
       return 'N/A';
-    } catch (error) {
+    } catch {
       return 'Invalid';
     }
   };
@@ -49,7 +49,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
       className={classNames(styles.displayFormItem, className, { [styles.autocompleteFormItem]: mode === 'autocomplete' })}
       {...rest}
     >
-      <>
+      <NodeOrFuncRenderer>
         {!state.isEdit && renderChildren()}
         {state.isEdit && (
           <>
@@ -81,7 +81,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
             )}
           </>
         )}
-      </>
+      </NodeOrFuncRenderer>
     </FormItem>
   );
 };

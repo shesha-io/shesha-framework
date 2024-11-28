@@ -43,7 +43,7 @@ export const formattedDate = (date: string) => {
     const dateValue = new Date(date);
 
     return moment(dateValue).format('YYYY/MM/DD HH:mm');
-  } catch (error) {
+  } catch {
     return '';
   }
 };
@@ -53,7 +53,7 @@ export const shortDob = (date: string) => {
     const dateValue = new Date(date);
 
     return moment(dateValue).format('YYYY/MM/DD');
-  } catch (error) {
+  } catch {
     return '';
   }
 };
@@ -63,7 +63,7 @@ export const LongDob = (date: string) => {
     const dateValue = new Date(date);
 
     return moment(dateValue).format('DD MMM YYYY');
-  } catch (error) {
+  } catch {
     return '';
   }
 };

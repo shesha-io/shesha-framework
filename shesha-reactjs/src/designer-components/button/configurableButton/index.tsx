@@ -12,10 +12,11 @@ import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
+  dynamicItem?: any;  
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
-  const { actionConfiguration } = props;
+  const { actionConfiguration, dynamicItem } = props;
   const evaluationContext = useAvailableConstantsData();
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
@@ -35,7 +36,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...actionConfiguration },
-          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext },
+          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext, dynamicItem }
         })
           .finally(() => {
             setLoading(false);

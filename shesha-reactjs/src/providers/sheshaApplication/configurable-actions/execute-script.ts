@@ -94,6 +94,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
         functionName: "executeScriptAsync",
         useAsyncDeclaration: true,        
       },
+      resultTypeExpression: 'return metadataBuilder.anyObject();',
       availableConstants: props.availableConstants,
       /**
        * @deprecated to be removed

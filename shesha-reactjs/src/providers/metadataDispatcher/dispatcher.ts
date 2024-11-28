@@ -5,7 +5,7 @@ import { IEntityMetadataFetcher } from "./entities/models";
 import camelcase from 'camelcase';
 import { asPropertiesArray, isDataPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
 import { MetadataDtoAjaxResponse, PropertyMetadataDto } from "@/apis/metadata";
-import { HttpClientApi } from "../sheshaApplication/publicApi";
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import qs from "qs";
 
 interface IPropertyPathWithMetadata {

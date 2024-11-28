@@ -1,6 +1,5 @@
-import { Modal } from 'antd';
+import { App } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
@@ -9,17 +8,18 @@ import {
   IShowConfirmationArguments,
   showConfirmationArgumentsForm,
 } from './configurable-actions/show-confirmation-arguments';
-import { IShowModalActionArguments, dialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
+import { ICloseModalActionArguments, IShowModalActionArguments, closeDialogArgumentsForm, showDialogArgumentsForm } from './configurable-actions/show-dialog-arguments';
 import {
   DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   DynamicModalActionsContext,
   DynamicModalInstanceContext,
   DynamicModalStateContext,
 } from './contexts';
-import { IModalProps } from './models';
+import { IModalInstance, IModalProps } from './models';
 import DynamicModalReducer from './reducer';
 import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
+import { DynamicModalRenderer } from './renderer';
 
 export interface IDynamicModalProviderProps { }
 
@@ -28,6 +28,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
   const actionDependencies = [state];
+  const { modal } = App.useApp();
 
   useConfigurableAction<IShowConfirmationArguments>(
     {
@@ -37,7 +38,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       hasArguments: true,
       executer: (actionArgs, _context) => {
         return new Promise((resolve, reject) => {
-          Modal.confirm({
+          modal.confirm({
             title: actionArgs.title,
             content: actionArgs.content,
             okText: actionArgs.okText ?? 'Yes',
@@ -120,7 +121,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           });
         });
       },
-      argumentsFormMarkup: dialogArgumentsForm,
+      argumentsFormMarkup: showDialogArgumentsForm,
       evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
@@ -141,41 +142,37 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   const getLatestVisibleInstance = () => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
-    let highestIndexKey = null;
+    let highestInstance: IModalInstance = null;
 
     for (let i = 0; i < keys.length; i++) {
-      if (
-        instances[keys[i]]?.isVisible &&
-        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
-      ) {
-        highestIndexKey = keys[i];
-      }
+      const instance = instances[keys[i]];
+      if (instance?.isVisible && (highestInstance === null || instance?.index > highestInstance?.index))
+        highestInstance = instance;
     };
-
-    return highestIndexKey ? instances[highestIndexKey] : null;
+    return highestInstance;
   };
 
   //#region Close the latest Dialog
-  useConfigurableAction<IShowModalActionArguments>(
+  useConfigurableAction<ICloseModalActionArguments>(
     {
       name: 'Close Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
-      hasArguments: false,
-      executer: () => {
+      hasArguments: true,
+      executer: (actionArgs) => {
         return new Promise((resolve, reject) => {
           const latestInstance = getLatestVisibleInstance();
 
           if (latestInstance) {
             removeModal(latestInstance?.id);
-            latestInstance.onClose();
+            latestInstance.onClose(actionArgs.showDialogResult === 'true');
             resolve({});
           } else {
             reject('There is no open dialog to close');
           }
         });
       },
-      // argumentsFormMarkup: {},
+      argumentsFormMarkup: closeDialogArgumentsForm,
     },
     actionDependencies
   );
@@ -189,43 +186,12 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     return Boolean(state.instances[id]);
   };
 
-  const renderInstances = () => {
-    const rendered = [];
-    for (const id in state.instances) {
-      if (state.instances.hasOwnProperty(id)) {
-        const instance = state.instances[id];
-
-        const instanceProps = instance.props;
-        rendered.push(
-          <DynamicModalInstanceContext.Provider
-            key={instance.id}
-            value={{
-              instance,
-              close: () => {
-                removeModal(instance.id);
-              }
-            }}
-          >
-            <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
-          </DynamicModalInstanceContext.Provider>
-        );
-      }
-    }
-    return rendered;
-  };
-
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider
-        value={{
-          open,
-          createModal,
-          removeModal,
-          modalExists,
-        }}
-      >
-        {renderInstances()}
-        {children}
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }} >
+        <DynamicModalRenderer id='root'>
+          {children}
+        </DynamicModalRenderer>
       </DynamicModalActionsContext.Provider>
     </DynamicModalStateContext.Provider>
   );

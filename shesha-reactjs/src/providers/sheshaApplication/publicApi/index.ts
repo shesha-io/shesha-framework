@@ -1,10 +1,10 @@
 import { ApplicationApi, IApplicationApi } from './applicationApi';
 import { EntityConfigurationDto } from './entities/models';
-import { HttpClientApi } from './http/api';
+import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { useHttpClient } from './http/hooks';
 
-export { 
-    ApplicationApi, 
+export {
+    ApplicationApi,
     type IApplicationApi,
     type HttpClientApi,
     type EntityConfigurationDto,
