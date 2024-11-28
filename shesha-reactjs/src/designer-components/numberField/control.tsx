@@ -1,11 +1,9 @@
-import { InputNumber, InputNumberProps, App, ConfigProvider } from 'antd';
-import moment from 'moment';
+import { InputNumber, InputNumberProps, ConfigProvider } from 'antd';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
-import { customInputNumberEventHandler, customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
-import { useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
+import { useSheshaApplication } from '@/providers';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { INumberFieldComponentProps } from './interfaces';
-import { getFormApi } from '@/providers/form/formApi';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
@@ -23,10 +21,6 @@ interface IProps {
 }
 
 const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) => {
-  const form = useForm();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const httpClient = useHttpClient();
-  const { message } = App.useApp();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
@@ -35,6 +29,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   const font = model?.font;
   const shadow = model?.shadow;
   const background = model?.background;
+  const jsStyle = getStyle(model.style, model);
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
@@ -79,7 +74,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     ...shadowStyles,
   });
   
-  const jsStyle = getStyle(model.style, model);
   const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
   const allData = useAvailableConstantsData();
 

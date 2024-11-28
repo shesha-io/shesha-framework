@@ -73,12 +73,12 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         size: prev.size,
         hideBorder: prev.hideBorder,
         stylingBox: prev.stylingBox,
-        style: prev.style
+        style: prev.style,
       };
 
       return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
     })
-    .add<INumberFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),
+    .add<INumberFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, {dimensions: {width: '100%'}}) })),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
