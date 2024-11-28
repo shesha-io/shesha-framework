@@ -12,33 +12,33 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
 
 export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
 
-    if (!input || jsStyle.background || jsStyle.backgroundColor || jsStyle.backgroundImage) return {};
     const style: React.CSSProperties = {};
 
-    if (input.type === 'color') {
-        style.backgroundColor = input.color;
-    } else if (input.type === 'gradient') {
+    if (input?.size) {
+        style.backgroundSize = input?.size;
+    }
+
+    if (input?.position) {
+        style.backgroundPosition = input?.position;
+    }
+
+    if (input?.repeat) {
+        style.backgroundRepeat = input?.repeat;
+    }
+
+    if (!input || jsStyle?.background || jsStyle?.backgroundColor || jsStyle?.backgroundImage) return style;
+
+    if (input?.type === 'color') {
+        style.backgroundColor = input?.color;
+    } else if (input?.type === 'gradient') {
         const colors = input?.gradient?.colors || [];
-        style.backgroundImage = `linear-gradient(${input.gradient?.direction || 'to right'}, ${Object.values(colors).filter(color => color !== undefined && color !== '').join(', ')})`;
-    } else if (input.type === 'url') {
-        style.backgroundImage = `url(${input.url})`;
-    } else if (input.type === 'image') {
+        style.backgroundImage = `linear-gradient(${input?.gradient?.direction || 'to right'}, ${Object.values(colors).filter(color => color !== undefined && color !== '').join(', ')})`;
+    } else if (input?.type === 'url') {
+        style.backgroundImage = `url(${input?.url})`;
+    } else if (input?.type === 'image') {
         style.backgroundImage = `url(${input?.uploadFile?.url})`;
-    } else if (input.type === 'storedFile') {
+    } else if (input?.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
-    }
-
-
-    if (input.size) {
-        style.backgroundSize = input.size;
-    }
-
-    if (input.position) {
-        style.backgroundPosition = input.position;
-    }
-
-    if (input.repeat) {
-        style.backgroundRepeat = input.repeat;
     }
 
     return style;

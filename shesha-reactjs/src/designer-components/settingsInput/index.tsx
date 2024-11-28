@@ -11,11 +11,10 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
     name: 'SettingsInput',
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
-        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly, hidden } = model;
+        const { label, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly, hidden } = model;
         return hidden ? null : (
             <SettingInput size='small'
                 label={label}
-                inputType={inputType}
                 dropdownOptions={dropdownOptions}
                 buttonGroupOptions={buttonGroupOptions}
                 hasUnits={hasUnits} propertyName={property}
@@ -23,7 +22,8 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
                 readOnly={readOnly}
                 jsSetting={model.jsSetting}
                 layout={model.layout}
-                {...model} />
+                {...model}
+                type={model.inputType} />
 
         );
     }
