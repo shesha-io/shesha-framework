@@ -30,6 +30,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   const shadow = model?.shadow;
   const background = model?.background;
   const jsStyle = getStyle(model.style, model);
+  const allData = useAvailableConstantsData();
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
@@ -75,7 +76,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   });
   
   const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
-  const allData = useAvailableConstantsData();
 
   const style = model.style;
 

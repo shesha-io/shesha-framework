@@ -125,7 +125,6 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     rules: model.hidden ? [] : getValidationRules(model, { formData }),
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
-    layout: model.layout,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 
