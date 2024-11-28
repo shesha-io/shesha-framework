@@ -21,8 +21,8 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     const style: React.CSSProperties = {};
 
     // Handle border
-    if (input.border) {
-        const { all, top, right, bottom, left } = input.border;
+    if (input?.border) {
+        const { all, top, right, bottom, left } = input?.border;
 
         const handleBorderPart = (part, prefix: string) => {
             if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part.width);
@@ -37,12 +37,12 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
         handleBorderPart(left, 'borderLeft');
     }
 
-    if (input.hideBorder) style.border = 'none';
+    if (input?.hideBorder) style.border = 'none';
 
 
     // Handle border radius
-    if (input.radius) {
-        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
+    if (input?.radius) {
+        const { all, topLeft, topRight, bottomLeft, bottomRight } = input?.radius;
         style.borderRadius = `${all}px`;
         style.borderRadius = `${topLeft || all || 8}px ${topRight || all || 8}px ${bottomRight || all || 8}px ${bottomLeft || all || 8}px`;
     }
