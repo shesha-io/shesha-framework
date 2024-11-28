@@ -1,14 +1,13 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { ConfigProvider, Input, App } from 'antd';
+import { ConfigProvider, Input } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import moment from 'moment';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
+import { getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { IInputStyles, useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IInputStyles, useForm, useGlobalState, useSheshaApplication } from '@/providers';
+import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -50,12 +49,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
     const form = useForm();
-
+    const allData = useAvailableConstantsData();
     const data = model;
 
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const httpClient = useHttpClient();
-    const { message } = App.useApp();
+    const { globalState } = useGlobalState();
+
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
@@ -128,17 +126,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       minLength: model.validate?.minLength,
     };
 
-    const eventProps = {
-      model,
-      form: getFormApi(form),
-      formData: data,
-      globalState,
-      http: httpClient,
-      message,
-      moment,
-      setGlobalState,
-    };
-
     return (
       <ConfigurableFormItem
         model={model}
@@ -150,7 +137,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (...args: any[]) => {
             customEvents.onChange(args[0]);
-            if (typeof onChange === 'function') onChange(...args);
+            if (typeof onChange === 'function')
+              onChange(...args);
           };
 
           return <ConfigProvider
@@ -166,7 +154,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           >
             {inputProps.readOnly
               ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
-              : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
+              : <InputComponentType {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
             }
           </ConfigProvider>;
         }}
