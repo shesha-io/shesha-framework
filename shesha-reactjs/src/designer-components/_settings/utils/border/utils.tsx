@@ -15,8 +15,8 @@ import {
 import { IDropdownOption } from "../background/interfaces";
 import { addPx } from "../../utils";
 
-export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
-    if (!input) return {};
+export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
+    if (!input || jsStyle.border) return {};
 
     const style: React.CSSProperties = {};
 
@@ -25,9 +25,9 @@ export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
         const { all, top, right, bottom, left } = input.border;
 
         const handleBorderPart = (part, prefix: string) => {
-            if (part?.width) style[`${prefix}Width`] = addPx(part.width);
-            if (part?.style) style[`${prefix}Style`] = part.style || 'solid';
-            if (part?.color) style[`${prefix}Color`] = part.color || 'black';
+            if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part.width);
+            if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = part.style || 'solid';
+            if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part.color || 'black';
         };
 
         handleBorderPart(all, 'border');
@@ -135,22 +135,22 @@ export const getBorderInputs = () => borderSides.map(value => {
             {
                 label: "Border",
                 hideLabel: true,
-                inputType: "button",
+                type: "button",
                 propertyName: "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
                 tooltip: "Select a border side to which the style will be applied",
-
             },
             {
                 label: "Select Side",
                 hideLabel: true,
                 propertyName: "border.selectedSide",
-                inputType: "radio",
+                type: "radio",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 buttonGroupOptions: borderSides
             },
             {
+                type: 'text',
                 label: "Width",
                 hideLabel: true,
                 propertyName: `border.border.${side}.width`,
@@ -158,7 +158,7 @@ export const getBorderInputs = () => borderSides.map(value => {
             {
                 label: "Style",
                 propertyName: `border.border.${side}.style`,
-                inputType: "dropdown",
+                type: "dropdown",
                 hideLabel: true,
                 width: 60,
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -167,7 +167,7 @@ export const getBorderInputs = () => borderSides.map(value => {
             {
                 label: `Color ${side}`,
                 propertyName: `border.border.${side}.color`,
-                inputType: "color",
+                type: "color",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
             }
@@ -190,7 +190,7 @@ export const getCornerInputs = () => radiusCorners.map(value => {
                 id: "corner-selector",
                 label: "Corner Radius",
                 propertyName: "border.selectedCorner",
-                inputType: "radio",
+                type: "radio",
                 defaultValue: "all",
                 tooltip: "Select a corner to which the radius will be applied",
                 buttonGroupOptions: borderCorners,

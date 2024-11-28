@@ -14,6 +14,7 @@ import { App } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import {
+  IInputStyles,
   useForm,
   useFormData,
   useGlobalState,
@@ -22,7 +23,6 @@ import {
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

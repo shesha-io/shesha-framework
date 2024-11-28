@@ -7,9 +7,9 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { IInputStyles, useForm, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
+import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -25,6 +25,7 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -67,7 +68,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -75,7 +76,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     useEffect(() => {
 
       const fetchStyles = async () => {
-
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
             { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
@@ -106,11 +106,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles,
+      ...shadowStyles
     });
 
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
@@ -160,8 +160,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               components: {
                 Input: {
                   fontFamily: model?.font?.type,
-                  fontSize: model?.font?.size || 14,
-                  fontWeightStrong: Number(fontStyles.fontWeight) || 400,
+                  fontSize: model?.font?.size,
+                  fontWeightStrong: Number(fontStyles.fontWeight)
                 },
               },
             }}
@@ -177,10 +177,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: (model) => ({
-    ...model,
-    textType: 'text'
-  }),
+  initModel: (model) => {
+    return {
+      ...model,
+      textType: 'text'
+    };
+  },
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -203,7 +205,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev) })),
+    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

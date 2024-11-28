@@ -6,7 +6,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
+import { IInputStyles, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDateFieldProps } from './interfaces';
@@ -19,7 +19,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { DatePickerWrapper } from './datePickerWrapper';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

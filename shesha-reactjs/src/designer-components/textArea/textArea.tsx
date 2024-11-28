@@ -6,7 +6,7 @@ import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
+import { IInputStyles, useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import moment from 'moment';
 import { ITextAreaComponentProps } from './interfaces';
@@ -19,7 +19,6 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

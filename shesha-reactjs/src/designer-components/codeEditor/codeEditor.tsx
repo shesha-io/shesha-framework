@@ -7,7 +7,6 @@ import {
   App,
   Button,
   Modal,
-  Space,
   Tabs,
   Typography
 } from 'antd';
@@ -50,9 +49,23 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     }
   };
 
+  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
+
   const onClear = () => {
-    setInternalValue(null);
-    if (props.onChange) props.onChange(null);
+    if (hasValue) {
+      modal.confirm({
+        title: 'Clear code editor?',
+        icon: <ExclamationCircleFilled />,
+        content: 'If you clear the code editor, the changes will be lost.',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        onOk() {
+          setInternalValue(null);
+          if (props.onChange) props.onChange(null);
+        }
+      });
+    }
   };
 
   const onDialogSave = () => {
@@ -61,8 +74,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   };
 
   const openEditorDialog = () => setShowDialog(true);
-  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
-
 
   const onDialogCancel = () => {
     if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
@@ -76,22 +87,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         onOk() {
           setInternalValue(value);
           setShowDialog(false);
-        },
-        footer: <>
-          <Show when={hasValue && !readOnly}>
-            <Button size="small" danger={true} onClick={onClear}>
-              Clear Code
-            </Button>
-          </Show>,
-          <Button key="cancel" onClick={onDialogCancel}>
-            {readOnly ? 'Close' : 'Cancel'}
-          </Button>,
-          !readOnly && (
-          <Button key="ok" type="primary" onClick={onDialogSave}>
-            OK
-          </Button>
-          )
-        </>
+        }
       });
     } else {
       setInternalValue(value);
@@ -145,7 +141,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ? (<Typography.Text disabled>No Code</Typography.Text>)
     : (
       <>
-        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} ghost={props.ghost} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {props.label !== " " && (readOnly ? 'View Code' : '...')}
         </Button>
         {showDialog && (
@@ -162,7 +158,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
             className={styles.codeEditorModal}
             width={null}
             footer={[
-              <Button key="clear" onClick={onClear} disabled={readOnly}>
+              hasValue && <Button key="clear" danger onClick={onClear} disabled={readOnly}>
                 Clear
               </Button>,
               <Button key="cancel" onClick={onDialogCancel}>

@@ -47,13 +47,16 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
+                                        type: 'text',
+                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
-                                        inputType: 'textArea',
+                                        type: 'textArea',
+                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'description',
                                         label: 'Tooltip',
                                         jsSetting: true,
@@ -67,14 +70,16 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        inputType: 'editModeSelector',
+                                        type: 'editModeSelector',
+                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'editMode',
                                         label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
-                                        inputType: 'switch',
+                                        type: 'switch',
+                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'hidden',
                                         label: 'Hide',
                                         jsSetting: true,
@@ -88,7 +93,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        inputType: 'dropdown',
+                                        type: 'dropdown',
+                                        id: 'type-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'textType',
                                         label: 'Type',
                                         size: 'small',
@@ -105,6 +111,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         ],
                                     },
                                     {
+                                        type: 'text',
+                                        id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'initialValue',
                                         label: 'Default Value',
                                         tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
@@ -117,12 +125,15 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
+                                        type: 'text',
+                                        id: 'prefix-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'prefix',
                                         label: 'Prefix',
                                         jsSetting: true,
                                     },
                                     {
-                                        inputType: 'iconPicker',
+                                        type: 'iconPicker',
+                                        id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'prefixIcon',
                                         label: 'Prefix Icon',
                                         jsSetting: true,
@@ -135,12 +146,15 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
+                                        type: 'text',
+                                        id: 'suffix-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'suffix',
                                         label: 'Suffix',
                                         jsSetting: true,
                                     },
                                     {
-                                        inputType: 'iconPicker',
+                                        type: 'iconPicker',
+                                        id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'suffixIcon',
                                         label: 'Suffix Icon',
                                         jsSetting: true,
@@ -159,9 +173,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                             .addSettingsInput({
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                inputType: 'switch',
                                 propertyName: 'validate.required',
                                 label: 'Required',
+                                inputType: 'switch',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
@@ -172,18 +186,20 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
+                                        type: 'number',
+                                        id: 'minLength-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.minLength',
                                         label: 'Min Length',
                                         size: 'small',
                                         jsSetting: true,
-                                        inputType: "number",
                                     },
                                     {
+                                        type: 'number',
+                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.maxLength',
                                         label: 'Max Length',
                                         size: 'small',
                                         jsSetting: true,
-                                        inputType: "number",
                                     },
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -193,13 +209,16 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
+                                        type: 'text',
+                                        id: 'message-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.message',
                                         label: 'Message',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
-                                        inputType: 'codeEditor',
+                                        type: 'codeEditor',
+                                        id: 'validator-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.validator',
                                         label: 'Validator',
                                         labelAlign: 'right',
@@ -288,38 +307,43 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
+                                                                type: 'dropdown',
+                                                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Family',
                                                                 propertyName: 'font.type',
-                                                                inputType: 'dropdown',
                                                                 hideLabel: true,
                                                                 dropdownOptions: fontTypes,
                                                             },
                                                             {
+                                                                type: 'number',
+                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
                                                                 hideLabel: true,
-                                                                inputType: 'number',
                                                                 width: 50,
                                                             },
                                                             {
+                                                                type: 'dropdown',
+                                                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Weight',
                                                                 propertyName: 'font.weight',
                                                                 hideLabel: true,
-                                                                inputType: 'dropdown',
                                                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
                                                                 dropdownOptions: fontWeights,
                                                                 width: 100,
                                                             },
                                                             {
+                                                                type: 'color',
+                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
-                                                                inputType: 'color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
                                                             },
                                                             {
+                                                                type: 'dropdown',
+                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Align',
                                                                 propertyName: 'font.align',
-                                                                inputType: 'dropdown',
                                                                 hideLabel: true,
                                                                 width: 60,
                                                                 dropdownOptions: textAlign,
@@ -348,6 +372,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
+                                                                type: 'text',
+                                                                id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
@@ -356,6 +382,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
 
                                                             },
                                                             {
+                                                                type: 'text',
+                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -363,6 +391,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 icon: "minWidth",
                                                             },
                                                             {
+                                                                type: 'text',
+                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -378,6 +408,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
+                                                                type: 'text',
+                                                                id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
@@ -385,6 +417,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
+                                                                type: 'text',
+                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -392,6 +426,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 icon: "minHeight",
                                                             },
                                                             {
+                                                                type: 'text',
+                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
                                                                 hideLabel: true,
@@ -402,9 +438,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     })
                                                     .addSettingsInput({
                                                         id: 'predefinedSizes',
+                                                        inputType: 'dropdown',
                                                         propertyName: 'size',
                                                         label: 'Size',
-                                                        inputType: 'dropdown',
                                                         width: '150px',
                                                         hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
                                                         dropdownOptions: [
@@ -435,9 +471,10 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
+                                                                type: 'button',
+                                                                id: 'borderStyleRow-hideBorder',
                                                                 label: "Border",
                                                                 hideLabel: true,
-                                                                inputType: "button",
                                                                 propertyName: "border.hideBorder",
                                                                 icon: "EyeOutlined",
                                                                 iconAlt: "EyeInvisibleOutlined"
@@ -531,9 +568,10 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
+                                                                type: 'color',
+                                                                id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
-                                                                inputType: "color",
                                                                 hideLabel: true,
                                                                 jsSetting: false,
                                                             }],
@@ -544,7 +582,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-gradientColors",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                inputType: "multiColorPicker",
+                                                                type: 'multiColorPicker',
+                                                                id: 'backgroundStyle-gradientColors',
                                                                 propertyName: "background.gradient.colors",
                                                                 label: "Colors",
                                                                 jsSetting: false,
@@ -558,6 +597,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
+                                                                type: 'text',
+                                                                id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
                                                                 label: "URL",
@@ -569,7 +610,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyle-image",
                                                             parentId: 'backgroundStylePnl',
                                                             inputs: [{
-                                                                inputType: "imageUploader",
+                                                                type: 'imageUploader',
+                                                                id: 'backgroundStyle-image',
                                                                 propertyName: 'background.uploadFile',
                                                                 label: "Image",
                                                                 jsSetting: false,
@@ -584,6 +626,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
+                                                                    type: 'text',
+                                                                    id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
                                                                     label: "File ID"
@@ -597,7 +641,8 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    inputType: "customDropdown",
+                                                                    type: 'customDropdown',
+                                                                    id: 'backgroundStyleRow-size',
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
@@ -617,9 +662,10 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     ],
                                                                 },
                                                                 {
+                                                                    type: 'customDropdown',
+                                                                    id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
-                                                                    inputType: "customDropdown",
                                                                     propertyName: "background.position",
                                                                     dropdownOptions: [
                                                                         {
@@ -661,11 +707,11 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     ],
                                                                 },
                                                                 {
+                                                                    type: 'dropdown',
+                                                                    id: 'backgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    inputType: "dropdown",
-                                                                    width: 70,
                                                                     dropdownOptions: [
                                                                         {
                                                                             value: "repeat",
@@ -709,40 +755,45 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
+                                                                type: 'number',
+                                                                id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                inputType: 'number',
                                                                 icon: "offsetHorizontal",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
+                                                                type: 'number',
+                                                                id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                inputType: 'number',
                                                                 icon: 'offsetVertical',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
+                                                                type: 'number',
+                                                                id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                inputType: 'number',
                                                                 icon: 'blur',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
+                                                                type: 'number',
+                                                                id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                inputType: 'number',
                                                                 icon: 'spread',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
+                                                                type: 'color',
+                                                                id: 'shadowStyleRow-color',
                                                                 label: 'Color',
-                                                                inputType: 'color',
                                                                 hideLabel: true,
                                                                 propertyName: 'shadow.color',
                                                             },
@@ -786,9 +837,9 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                     .addSettingsInput({
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                        inputType: 'codeEditor',
                                                         propertyName: 'style',
                                                         hideLabel: true,
-                                                        inputType: 'codeEditor',
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })

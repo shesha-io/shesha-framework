@@ -73,7 +73,24 @@ export interface IStyleType {
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
   style?: IConfigurableFormComponent["style"];
+  size?: SizeType;
 }
+
+export interface IInputStyles extends IStyleType {
+  borderSize?: string | number;
+  borderRadius?: number;
+  borderType?: string;
+  borderColor?: string;
+  fontColor?: string;
+  fontWeight?: string | number;
+  fontSize?: string | number;
+  stylingBox?: string;
+  height?: string | number;
+  width?: string | number;
+  backgroundColor?: string;
+  hideBorder?: boolean;
+  style?: string;
+};
 
 export type ConfigurableFormComponentTypes =
   | 'alert'
