@@ -179,7 +179,7 @@ namespace Shesha.Notifications
             if (channel != null)
             {
                 // Send notification to a specific channel
-                await ProcessAndSendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority,channel, attachments);
+                await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority,channel, attachments);
             }
             else
             {
@@ -188,7 +188,7 @@ namespace Shesha.Notifications
 
                 foreach (var channelConfig in channels)
                 {
-                    await ProcessAndSendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channelConfig, attachments);
+                    await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channelConfig, attachments);
                 }
             }
 
@@ -274,7 +274,7 @@ namespace Shesha.Notifications
         /// <param name="attachments"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        private async Task ProcessAndSendNotificationToChannel<TData>(Notification notification, TData data, Person fromPerson, Person toPerson, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData: NotificationData
+        private async Task SendNotificationToChannel<TData>(Notification notification, TData data, Person fromPerson, Person toPerson, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData: NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
 
@@ -318,7 +318,7 @@ namespace Shesha.Notifications
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            var sender = new NotificationSender(senderChannelInterface);
+            var sender = StaticContext.IocManager.Resolve<NotificationSender>(senderChannelInterface);
 
             if (type.IsTimeSensitive)
             {

@@ -5,6 +5,7 @@ using Abp.Domain.Uow;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Notifications.Dto;
+using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Shesha.Notifications.Jobs
             var senderChannelInterface = _channelSenders.FirstOrDefault(x => x.GetType().Name == args.SenderTypeName);
             if (senderChannelInterface == null)
                 throw new Exception($"No sender found for sender type: {args.SenderTypeName}");
-            var sender = new NotificationSender(senderChannelInterface);
+            var sender = StaticContext.IocManager.Resolve<NotificationSender>(senderChannelInterface);
             await sender.SendAsync(fromPerson, toPerson, notificationMessage, true);
         }
     }

@@ -71,9 +71,9 @@ namespace Shesha.Notifications.SMS
             return await gateway.SendAsync(GetRecipientId(toPerson), message.Message);
         }
 
-        public async Task<bool> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
+        public async Task<Tuple<bool, string>> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
         {
-            return await Task.FromResult(false);
+            return await Task.FromResult(new Tuple<bool, string>(false, "Broadcast Implementation not yet implemented!"));
         }
     }
 }

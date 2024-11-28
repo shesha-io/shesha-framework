@@ -114,13 +114,13 @@ namespace Shesha.Notifications
         public async Task SendBroadcastAsync(Notification notification, string subject, string messageContent, List<EmailAttachment> attachments)
         {
             int attempt = 0;
-            bool sentSuccessfully = false;
+            Tuple<bool, string> sentSuccessfully = new Tuple<bool, string>(false, "");
             var _notificationMessageRepository = StaticContext.IocManager.Resolve<IRepository<NotificationMessage, Guid>>();
 
             // Get all notification messages associated with the notification
             var messages = _notificationMessageRepository.GetAll().Where(m => m.PartOf.Id == notification.Id).ToList();
 
-            while (attempt < MaxRetries && !sentSuccessfully)
+            while (attempt < MaxRetries && !sentSuccessfully.Item1)
             {
                 try
                 {
@@ -129,7 +129,7 @@ namespace Shesha.Notifications
 
                     foreach (var message in messages)
                     {
-                        if (sentSuccessfully)
+                        if (sentSuccessfully.Item1)
                         {
                             // Update the status to Sent for successful messages
                             message.Status = RefListNotificationStatus.Sent;
@@ -141,7 +141,7 @@ namespace Shesha.Notifications
                             Console.WriteLine($"Attempt {attempt + 1} to send notification failed.");
                             message.Status = RefListNotificationStatus.Failed;
                             message.RetryCount = attempt;
-                            message.ErrorMessage = $"Failed to send notification on attempt {attempt + 1}.";
+                            message.ErrorMessage = $"Failed to send notification on attempt {attempt + 1}. Message: {sentSuccessfully.Item2}";
                         }
 
                         // Save changes to each message
@@ -156,7 +156,7 @@ namespace Shesha.Notifications
                         }
                     }
 
-                    if (sentSuccessfully)
+                    if (sentSuccessfully.Item1)
                     {
                         // If any message was successfully sent, exit the loop
                         break;
@@ -175,7 +175,7 @@ namespace Shesha.Notifications
                 }
             }
 
-            if (!sentSuccessfully)
+            if (!sentSuccessfully.Item1)
             {
                 Console.WriteLine($"Failed to send notification after {MaxRetries} attempts.");
             }

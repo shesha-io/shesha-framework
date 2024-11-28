@@ -82,7 +82,7 @@ namespace Shesha.Notifications.Jobs
             var senderChannelInterface = _channelSenders.FirstOrDefault(x => x.GetType().Name == channel.SenderTypeName);
             if (senderChannelInterface == null)
                 throw new Exception($"No sender found for sender type: {channel.SenderTypeName}");
-            var sender = new NotificationSender(senderChannelInterface);
+            var sender = StaticContext.IocManager.Resolve<NotificationSender>(senderChannelInterface);
             await sender.SendBroadcastAsync(notification, message.Subject, message.Message, message.Attachments);
         }
 

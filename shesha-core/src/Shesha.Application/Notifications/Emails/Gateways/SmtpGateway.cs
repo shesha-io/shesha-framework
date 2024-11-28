@@ -68,7 +68,7 @@ namespace Shesha.Notifications.Emails.Gateways
             };
         }
 
-        public Task<bool> BroadcastAsync(string topicSubscribers, string subject, string message, List<EmailAttachment> attachments = null)
+        public Task<Tuple<bool, string>> BroadcastAsync(string topicSubscribers, string subject, string message, List<EmailAttachment> attachments = null)
         {
             using (var mail = BuildMessageWith(null, topicSubscribers, subject, message, true))
             {
@@ -82,13 +82,13 @@ namespace Shesha.Notifications.Emails.Gateways
                 try
                 {
                     SendEmail(mail);
-                    return Task.FromResult(true);
+                    return Task.FromResult(new Tuple<bool, string>(true, "Successfully Sent!"));
                 }
                 catch (Exception e)
                 {
                     // Log the exception
                     Logger.Error("Failed to send email", e);
-                    return Task.FromResult(false);
+                    return Task.FromResult(new Tuple<bool, string>(true, e.Message));
                 }
             };
         }

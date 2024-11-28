@@ -15,6 +15,6 @@ namespace Shesha.Notifications
     {
         string GetRecipientId(Person person);
         Task<bool> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, bool isBodyHtml, string cc, bool throwException = false, List<EmailAttachment> attachments = null);
-        Task<bool> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null);
+        Task<Tuple<bool, string>> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null);
     }
 }

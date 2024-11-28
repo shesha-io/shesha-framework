@@ -86,14 +86,14 @@ namespace Shesha.Notifications
             return await gateway.SendAsync(GetRecipientId(fromPerson), GetRecipientId(toPerson), message, isBodyHtml, cc, throwException, attachments);
         }
 
-        public async Task<bool> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
+        public async Task<Tuple<bool, string>> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
             if (!settings.EmailsEnabled)
             {
                 Logger.Warn("Emails are disabled");
-                return await Task.FromResult(false);
+                return await Task.FromResult(new Tuple<bool, string>(false, "Emails are disabled"));
             }
 
             var gateway = _emailGatewayFactory.GetGateway(settings.PreferredGateway.GatewayTypeName);

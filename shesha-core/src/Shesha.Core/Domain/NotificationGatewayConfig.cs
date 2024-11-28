@@ -21,7 +21,7 @@ namespace Shesha.Domain
 
         private void Init()
         {
-            VersionStatus = ConfigurationItemVersionStatus.Live;
+            VersionStatus = ConfigurationItemVersionStatus.Draft;
         }
 
         /// <summary>
