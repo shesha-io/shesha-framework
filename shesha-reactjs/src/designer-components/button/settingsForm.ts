@@ -53,21 +53,23 @@ export const getSettings = (data) => {
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 inputs: [
                   {
+                    id: 'icon-s4gmBg31azZC0UjZjpfTm',
+                    type: 'iconPicker',
                     propertyName: 'icon',
                     label: 'Icon',
-                    inputType: 'iconPicker',
                     size: 'small',
                     jsSetting: true,
                   },
                   {
+                    id: 'iconPosition-s4gmBg31azZC0UjZjpfTm',
                     propertyName: 'iconPosition',
                     label: 'Icon Position',
                     size: 'small',
                     jsSetting: true,
-                    inputType: 'dropdown',
-                    dropdownOptions: [
-                      { label: 'start', value: 'start' },
-                      { label: 'end', value: 'end' },
+                    type: 'radio',
+                    buttonGroupOptions: [
+                      { title: 'start', value: 'start', icon: 'LeftOutlined' },
+                      { title: 'end', value: 'end', icon: 'RightOutlined' },
                     ],
                   },
                 ],
@@ -89,14 +91,16 @@ export const getSettings = (data) => {
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
-                    inputType: 'editModeSelector',
+                    type: 'editModeSelector',
+                    id: 'editMode-s4gmBg31azZC0UjZjpfTm',
                     propertyName: 'editMode',
                     label: 'Edit Mode',
                     size: 'small',
                     jsSetting: true,
                   },
                   {
-                    inputType: 'switch',
+                    type: 'switch',
+                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
                     propertyName: 'hidden',
                     label: 'Hide',
                     jsSetting: true,
@@ -111,6 +115,81 @@ export const getSettings = (data) => {
                 hidden: false,
                 validate: {},
                 settingsValidationErrors: [],
+              })
+              .addSettingsInputRow({
+                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'dropdown',
+                    id: 'type-s4gmBg31azZC0UjZjpfTm',
+                    propertyName: 'textType',
+                    label: 'Type',
+                    size: 'small',
+                    jsSetting: true,
+                    dropdownOptions: [
+                      {
+                        label: 'text',
+                        value: 'text',
+                      },
+                      {
+                        label: 'password',
+                        value: 'password',
+                      },
+                    ],
+                  },
+                  {
+                    type: 'text',
+                    id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
+                    propertyName: 'initialValue',
+                    label: 'Default Value',
+                    tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
+                    jsSetting: true,
+                  },
+                ],
+              })
+              .addSettingsInputRow({
+                id: 'prefix-s4gmBg31azZC0UjZjpfTm',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                inputs: [
+                  {
+                    type: 'text',
+                    id: 'prefix-s4gmBg31azZC0UjZjpfTm',
+                    propertyName: 'prefix',
+                    label: 'Prefix',
+                    jsSetting: true,
+                  },
+                  {
+                    type: 'iconPicker',
+                    id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
+                    propertyName: 'prefixIcon',
+                    label: 'Prefix Icon',
+                    jsSetting: true,
+                  },
+                ],
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInputRow({
+                id: 'suffix-s4gmBg31azZC0UjZjpfTm',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                inputs: [
+                  {
+                    type: 'text',
+                    id: 'suffix-s4gmBg31azZC0UjZjpfTm',
+                    propertyName: 'suffix',
+                    label: 'Suffix',
+                    jsSetting: true,
+                  },
+                  {
+                    type: 'iconPicker',
+                    id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
+                    propertyName: 'suffixIcon',
+                    label: 'Suffix Icon',
+                    jsSetting: true,
+                  },
+                ],
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -154,38 +233,43 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
+                                type: 'dropdown',
+                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Family',
                                 propertyName: 'font.type',
-                                inputType: 'dropdown',
                                 hideLabel: true,
                                 dropdownOptions: fontTypes,
                               },
                               {
+                                type: 'number',
+                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Size',
                                 propertyName: 'font.size',
                                 hideLabel: true,
-                                inputType: 'number',
                                 width: 50,
                               },
                               {
+                                type: 'dropdown',
+                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Weight',
                                 propertyName: 'font.weight',
                                 hideLabel: true,
-                                inputType: 'dropdown',
                                 tooltip: "Controls text thickness (light, normal, bold, etc.)",
                                 dropdownOptions: fontWeights,
                                 width: 100,
                               },
                               {
+                                type: 'color',
+                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Color',
-                                inputType: 'color',
-                                hideLabel: true,
                                 propertyName: 'font.color',
+                                hideLabel: true,
                               },
                               {
+                                type: 'dropdown',
+                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Align',
                                 propertyName: 'font.align',
-                                inputType: 'dropdown',
                                 hideLabel: true,
                                 width: 60,
                                 dropdownOptions: textAlign,
@@ -214,6 +298,8 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
+                                type: 'number',
+                                id: 'dimensionsStyleRowWidth',
                                 label: "Width",
                                 width: 85,
                                 propertyName: "dimensions.width",
@@ -222,6 +308,8 @@ export const getSettings = (data) => {
 
                               },
                               {
+                                type: 'number',
+                                id: 'dimensionsStyleRowMinWidth',
                                 label: "Min Width",
                                 width: 85,
                                 hideLabel: true,
@@ -229,6 +317,8 @@ export const getSettings = (data) => {
                                 icon: "minWidth",
                               },
                               {
+                                type: 'number',
+                                id: 'dimensionsStyleRowMaxWidth',
                                 label: "Max Width",
                                 width: 85,
                                 hideLabel: true,
@@ -244,6 +334,8 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
+                                type: 'number',
+                                id: 'dimensionsStyleRowHeight',
                                 label: "Height",
                                 width: 85,
                                 propertyName: "dimensions.height",
@@ -251,6 +343,8 @@ export const getSettings = (data) => {
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
                               {
+                                type: 'number',
+                                id: 'dimensionsStyleRowMinHeight',
                                 label: "Min Height",
                                 width: 85,
                                 hideLabel: true,
@@ -258,6 +352,8 @@ export const getSettings = (data) => {
                                 icon: "minHeight",
                               },
                               {
+                                type: 'number',
+                                id: 'dimensionsStyleRowMaxHeight',
                                 label: "Max Height",
                                 width: 85,
                                 hideLabel: true,
@@ -268,6 +364,7 @@ export const getSettings = (data) => {
                           })
                           .addSettingsInput({
                             id: 'predefinedSizes',
+                            parentId: 'dimensionsStylePnl',
                             propertyName: 'size',
                             label: 'Size',
                             inputType: 'dropdown',
@@ -301,6 +398,8 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
+                                type: 'button',
+                                id: 'borderStyleRow-hideBorder',
                                 label: "Border",
                                 hideLabel: true,
                                 inputType: "button",
@@ -397,9 +496,10 @@ export const getSettings = (data) => {
                               id: "backgroundStyleRow-color",
                               parentId: "backgroundStylePnl",
                               inputs: [{
+                                type: 'color',
+                                id: 'backgroundStyleRow-color',
                                 label: "Color",
                                 propertyName: "background.color",
-                                inputType: "color",
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
@@ -410,7 +510,8 @@ export const getSettings = (data) => {
                               id: "backgroundStyle-gradientColors",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                inputType: "multiColorPicker",
+                                type: 'multiColorPicker',
+                                id: 'backgroundStyle-gradientColors',
                                 propertyName: "background.gradient.colors",
                                 label: "Colors",
                                 jsSetting: false,
@@ -424,6 +525,8 @@ export const getSettings = (data) => {
                               id: "backgroundStyle-url",
                               parentId: "backgroundStylePnl",
                               inputs: [{
+                                type: 'text',
+                                id: 'backgroundStyle-url',
                                 propertyName: "background.url",
                                 jsSetting: false,
                                 label: "URL",
@@ -435,7 +538,8 @@ export const getSettings = (data) => {
                               id: "backgroundStyle-image",
                               parentId: 'backgroundStylePnl',
                               inputs: [{
-                                inputType: "imageUploader",
+                                type: 'imageUploader',
+                                id: 'backgroundStyle-image',
                                 propertyName: 'background.uploadFile',
                                 label: "Image",
                                 jsSetting: false,
@@ -450,7 +554,8 @@ export const getSettings = (data) => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  jsSetting: false,
+                                  type: 'text',
+                                  id: 'backgroundStyleRow-storedFile',
                                   propertyName: "background.storedFile.id",
                                   label: "File ID"
                                 }
@@ -463,7 +568,8 @@ export const getSettings = (data) => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  inputType: "customDropdown",
+                                  type: 'customDropdown',
+                                  id: 'backgroundStyleRow-size',
                                   label: "Size",
                                   hideLabel: true,
                                   propertyName: "background.size",
@@ -485,7 +591,8 @@ export const getSettings = (data) => {
                                 {
                                   label: "Position",
                                   hideLabel: true,
-                                  inputType: "customDropdown",
+                                  type: 'customDropdown',
+                                  id: 'backgroundStyleRow-position',
                                   propertyName: "background.position",
                                   dropdownOptions: [
                                     {
@@ -530,7 +637,8 @@ export const getSettings = (data) => {
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  inputType: "dropdown",
+                                  type: 'customDropdown',
+                                  id: 'backgroundStyleRow-repeat',
                                   width: 70,
                                   dropdownOptions: [
                                     {
@@ -575,6 +683,8 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
+                                type: 'number',
+                                id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
                                 width: 60,
@@ -583,6 +693,8 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.offsetX',
                               },
                               {
+                                type: 'number',
+                                id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
                                 width: 60,
@@ -591,6 +703,8 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.offsetY',
                               },
                               {
+                                type: 'number',
+                                id: 'shadowStyleRow-blur',
                                 label: 'Blur',
                                 hideLabel: true,
                                 width: 60,
@@ -599,6 +713,8 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.blurRadius',
                               },
                               {
+                                type: 'number',
+                                id: 'shadowStyleRow-spread',
                                 label: 'Spread',
                                 hideLabel: true,
                                 width: 60,
@@ -607,8 +723,9 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.spreadRadius',
                               },
                               {
+                                type: 'color',
+                                id: 'shadowStyleRow-color',
                                 label: 'Color',
-                                inputType: 'color',
                                 hideLabel: true,
                                 propertyName: 'shadow.color',
                               },

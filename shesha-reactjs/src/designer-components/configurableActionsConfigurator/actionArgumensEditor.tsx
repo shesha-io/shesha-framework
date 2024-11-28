@@ -51,6 +51,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
 }) => {
   const argumentsEditor = useMemo(() => {
 
+
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
@@ -90,6 +91,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     <Collapse
       defaultActiveKey={['1']}
       key={action.name}
+      size='small'
       items={[{ key: "1", label: "Arguments", children: argumentsEditor }]}
     />
   );

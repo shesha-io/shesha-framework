@@ -11,6 +11,7 @@ import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvail
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
+import { nanoid } from '@/utils/uuid';
 
 const { Panel } = Collapse;
 
@@ -113,7 +114,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         )}
         {selectedAction && (
           <>
-            <SettingInput propertyName='handleSuccess' label='Handle Success' inputType='switch' />
+            <SettingInput propertyName='handleSuccess' label='Handle Success' type='switch' id={nanoid()} />
             {
               value?.handleSuccess && (
                 <Collapse defaultActiveKey={['1']}>
@@ -125,7 +126,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
                 </Collapse>
               )
             }
-            <SettingInput propertyName='handleFail' label='Handle Fail' inputType='switch' />
+            <SettingInput propertyName='handleFail' label='Handle Fail' type='switch' id={nanoid()} />
             {
               value?.handleFail && (
                 <Collapse defaultActiveKey={['1']}>
