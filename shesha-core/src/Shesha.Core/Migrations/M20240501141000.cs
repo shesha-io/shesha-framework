@@ -89,8 +89,7 @@ namespace Shesha.Migrations
                     RETURN NULL;
                 END;
                 $BODY$;
-");
-
+            ");
         }
     }
 }
