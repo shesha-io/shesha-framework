@@ -8,12 +8,14 @@
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Nullable>annotations</Nullable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="GraphQL\Json\**" />
     <EmbeddedResource Remove="GraphQL\Json\**" />
     <None Remove="GraphQL\Json\**" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

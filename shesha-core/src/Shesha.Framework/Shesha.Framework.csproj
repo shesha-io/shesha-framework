@@ -12,6 +12,7 @@
     <Title>Shesha.Framework</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,6 +33,7 @@
     <None Remove="Domain\Specifications\**" />
     <None Remove="Migrations\PostgreSql\Scripts\**" />
     <None Remove="Services\ApplicationParts\**" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
