@@ -26,6 +26,8 @@ export const getSettings = (data: any) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
+                                        id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                        type: 'text',
                                         propertyName: 'componentName',
                                         label: 'Component Name',
                                         size: 'large',
@@ -40,7 +42,9 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
+                                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                         inputType: 'switch',
+                                        type: 'switch',
                                         propertyName: 'showSizeChanger',
                                         label: 'Show Size Changer',
                                         size: 'small',
@@ -48,6 +52,8 @@ export const getSettings = (data: any) => {
                                         defaultValue: true,
                                     },
                                     {
+                                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                                        type: 'switch',
                                         inputType: 'switch',
                                         propertyName: 'showTotalItems',
                                         label: 'Show Total Items',
@@ -56,6 +62,8 @@ export const getSettings = (data: any) => {
                                         defaultValue: true,
                                     },
                                     {
+                                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                                        type: 'switch',
                                         inputType: 'switch',
                                         propertyName: 'hidden',
                                         label: 'Hide',
