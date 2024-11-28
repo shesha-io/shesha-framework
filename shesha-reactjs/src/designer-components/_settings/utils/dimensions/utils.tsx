@@ -20,8 +20,8 @@ export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
         }
     });
 
-    if (input.overflow) {
-        style.overflow = input.overflow;
+    if (input?.overflow) {
+        style.overflow = input?.overflow;
     };
 
     return style;
