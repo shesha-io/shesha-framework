@@ -26,11 +26,11 @@ namespace Shesha.Notifications.SMS
     {
         private readonly INotificationSettings _notificationSettings;
         private readonly IRepository<NotificationGatewayConfig, Guid> _notificationGatewayRepository;
-        private readonly SmsGatewayFactory _smsGatewayFactory;
+        private readonly ISmsGatewayFactory _smsGatewayFactory;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public SmsChannelSender(INotificationSettings notificationSettings, SmsGatewayFactory smsGatewayFactory, IRepository<NotificationGatewayConfig, Guid> notificationGatewayRepository)
+        public SmsChannelSender(INotificationSettings notificationSettings, ISmsGatewayFactory smsGatewayFactory, IRepository<NotificationGatewayConfig, Guid> notificationGatewayRepository)
         {
             _notificationSettings = notificationSettings;
             _smsGatewayFactory = smsGatewayFactory;

@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Emails.Gateways
 {
-    public class EmailGatewayFactory
+    public class EmailGatewayFactory: IEmailGatewayFactory
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<IEmailGateway> _emailGateways;
 
-        public EmailGatewayFactory(IServiceProvider serviceProvider)
+        public EmailGatewayFactory(IEnumerable<IEmailGateway> emailGateways)
         {
-            _serviceProvider = serviceProvider;
+            _emailGateways = emailGateways;
         }
 
         public IEmailGateway GetGateway(string gatewayName)
         {
-            return gatewayName switch
-            {
-                "SmtpGateway" => _serviceProvider.GetService<SmtpGateway>(),
-                // Add other gateways here
-                _ => throw new NotSupportedException($"Gateway {gatewayName} is not supported.")
-            };
+            var gateway = _emailGateways.FirstOrDefault(g => g.Name.Equals(gatewayName, StringComparison.OrdinalIgnoreCase));
+
+            if (gateway == null)
+                throw new NotSupportedException($"Gateway '{gatewayName}' is not supported. Available gateways: {string.Join(", ", _emailGateways.Select(g => g.Name))}");
+
+            return gateway;
         }
     }
 }

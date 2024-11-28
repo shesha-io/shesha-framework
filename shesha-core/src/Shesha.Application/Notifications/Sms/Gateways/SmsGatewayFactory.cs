@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shesha.Notifications.Emails.Gateways;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +8,23 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Sms.Gateways
 {
-    public class SmsGatewayFactory
+    public class SmsGatewayFactory: ISmsGatewayFactory
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<ISmsGateway> _smsGateways;
 
-        public SmsGatewayFactory(IServiceProvider serviceProvider)
+        public SmsGatewayFactory(IEnumerable<ISmsGateway> smsGateways)
         {
-            _serviceProvider = serviceProvider;
+            _smsGateways = smsGateways;
         }
 
         public ISmsGateway GetGateway(string gatewayName)
         {
-            return gatewayName switch
-            {
-                "ClickatellGateway" => _serviceProvider.GetService<ClickatellGateway>(),
-                // Add other gateways here
-                _ => throw new NotSupportedException($"Gateway {gatewayName} is not supported.")
-            };
+            var gateway = _smsGateways.FirstOrDefault(g => g.Name.Equals(gatewayName, StringComparison.OrdinalIgnoreCase));
+
+            if (gateway == null)
+                throw new NotSupportedException($"Gateway '{gatewayName}' is not supported. Available gateways: {string.Join(", ", _smsGateways.Select(g => g.Name))}");
+
+            return gateway;
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Shesha.Notifications.Sms.Gateways
 {
     public interface ISmsGateway
     {
+        string Name { get; }
         Task<bool> SendAsync(string fromPerson, string message);
         Task<bool> BroadcastAsync(string topicSubscribers, string subject, string message, List<EmailAttachment> attachments = null);
     }

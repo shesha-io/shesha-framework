@@ -16,6 +16,8 @@ namespace Shesha.Notifications.Sms.Gateways
 {
     public class ClickatellGateway: ISmsGateway
     {
+        public string Name => "ClickatellGateway";
+
         private readonly ISmsGatewaySettings _smsGatewaySettings;
         private readonly INotificationSettings _notificationSettings;
         public ClickatellGateway(ISmsGatewaySettings smsGatewaySettings, INotificationSettings notificationSettings)

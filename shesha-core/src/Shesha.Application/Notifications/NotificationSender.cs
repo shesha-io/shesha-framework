@@ -23,19 +23,34 @@ namespace Shesha.Notifications
     public class NotificationSender: INotificationSender
     {
         private readonly INotificationChannelSender _channelSender;
+        private readonly IIocManager _iocManager;
+        private readonly IRepository<NotificationMessage, Guid> _notificationMessageRepository;
+        private readonly IRepository<NotificationMessageAttachment, Guid> _attachmentRepository;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly ISessionProvider _sessionProvider;
+        private readonly IStoredFileService _fileService;
 
         public readonly int MaxRetries = 3;
 
-        public NotificationSender(INotificationChannelSender channelSender)
+        public NotificationSender(INotificationChannelSender channelSender, 
+            IIocManager iocManager,
+            IRepository<NotificationMessage, Guid> notificationMessageRepository,
+            IRepository<NotificationMessageAttachment, Guid> attachmentRepository,
+            IUnitOfWorkManager unitOfWorkManager,
+            ISessionProvider sessionProvider,
+            IStoredFileService fileService)
         {
             _channelSender = channelSender;
+            _iocManager = iocManager;
+            _notificationMessageRepository = notificationMessageRepository;
+            _attachmentRepository = attachmentRepository;
+            _unitOfWorkManager = unitOfWorkManager;
+            _sessionProvider = sessionProvider;
+            _fileService = fileService;
         }
 
         private async Task<List<EmailAttachment>> GetAttachmentsAsync(NotificationMessage message)
         {
-            var _attachmentRepository = StaticContext.IocManager.Resolve<IRepository<NotificationMessageAttachment, Guid>>();
-            var _fileService = StaticContext.IocManager.Resolve<IStoredFileService>();
-
             var attachments = await _attachmentRepository.GetAll().Where(a => a.Message.Id == message.Id).ToListAsync();
 
             var result = attachments.Select(a => new EmailAttachment(a.FileName, _fileService.GetStream(a.File))).ToList();
@@ -46,9 +61,6 @@ namespace Shesha.Notifications
         [UnitOfWork]
         public async Task SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, bool isBodyHtml)
         {
-            var _notificationMessageRepository = StaticContext.IocManager.Resolve<IRepository<NotificationMessage, Guid>>();
-            var _unitOfWorkManager = StaticContext.IocManager.Resolve<IUnitOfWorkManager>();
-            var _sessionProvider = StaticContext.IocManager.Resolve<ISessionProvider>();
             var attachments = await GetAttachmentsAsync(message);
             int attempt = 0;
             bool sentSuccessfully = false;
@@ -115,7 +127,6 @@ namespace Shesha.Notifications
         {
             int attempt = 0;
             Tuple<bool, string> sentSuccessfully = new Tuple<bool, string>(false, "");
-            var _notificationMessageRepository = StaticContext.IocManager.Resolve<IRepository<NotificationMessage, Guid>>();
 
             // Get all notification messages associated with the notification
             var messages = _notificationMessageRepository.GetAll().Where(m => m.PartOf.Id == notification.Id).ToList();
@@ -145,9 +156,9 @@ namespace Shesha.Notifications
                         }
 
                         // Save changes to each message
-                        using (var uow = StaticContext.IocManager.Resolve<IUnitOfWorkManager>().Begin())
+                        using (var uow = _unitOfWorkManager.Begin())
                         {
-                            using (var transaction = StaticContext.IocManager.Resolve<ISessionProvider>().Session.BeginTransaction())
+                            using (var transaction = _sessionProvider.Session.BeginTransaction())
                             {
                                 await _notificationMessageRepository.UpdateAsync(message);
                                 transaction.Commit();

@@ -24,12 +24,12 @@ namespace Shesha.Notifications
     public class EmailChannelSender : INotificationChannelSender
     {
         private readonly INotificationSettings _notificationSettings;
-        private readonly EmailGatewayFactory _emailGatewayFactory;
+        private readonly IEmailGatewayFactory _emailGatewayFactory;
         private readonly IRepository<NotificationGatewayConfig, Guid> _notificationGatewayRepository;
         private readonly IRepository<UserTopicSubscription, Guid> _userTopicSubscriptionRepository;
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public EmailChannelSender(INotificationSettings notificationSettings, EmailGatewayFactory emailGatewayFactory, IRepository<NotificationGatewayConfig, Guid> notificationGatewayRepository, IRepository<UserTopicSubscription, Guid> userTopicSubscriptionRepository)
+        public EmailChannelSender(INotificationSettings notificationSettings, IEmailGatewayFactory emailGatewayFactory, IRepository<NotificationGatewayConfig, Guid> notificationGatewayRepository, IRepository<UserTopicSubscription, Guid> userTopicSubscriptionRepository)
         {
             _notificationSettings = notificationSettings;
             _userTopicSubscriptionRepository = userTopicSubscriptionRepository;

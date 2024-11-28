@@ -17,6 +17,8 @@ namespace Shesha.Notifications.Emails.Gateways
 {
     public class SmtpGateway : IEmailGateway
     {
+        public string Name => "SmtpGateway";
+
         private readonly IEmailGatewaySettings _emailGatewaySettings;
         private readonly INotificationSettings _notificationSettings;
 
