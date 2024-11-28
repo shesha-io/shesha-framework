@@ -16,7 +16,7 @@ import { IDropdownOption } from "../background/interfaces";
 import { addPx } from "../../utils";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
-    if (!input || jsStyle.border) return {};
+    if (!input || jsStyle?.border) return {};
 
     const style: React.CSSProperties = {};
 

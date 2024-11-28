@@ -26,7 +26,7 @@ export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React
         style.backgroundRepeat = input.repeat;
     }
 
-    if (!input || jsStyle.background || jsStyle.backgroundColor || jsStyle.backgroundImage) return style;
+    if (!input || jsStyle?.background || jsStyle?.backgroundColor || jsStyle?.backgroundImage) return style;
 
     if (input.type === 'color') {
         style.backgroundColor = input.color;
