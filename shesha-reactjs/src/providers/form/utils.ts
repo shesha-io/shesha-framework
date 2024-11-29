@@ -1231,7 +1231,7 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
   if (metadata.description) mappedModel.description = metadata.description;
 
   // map configurable properties
-  if (metadata.readonly === true) mappedModel.readOnly = true;
+  if (metadata.readonly === true) mappedModel.editMode = 'readOnly';
   if (metadata.isVisible === false) mappedModel.hidden = true;
   if (!mappedModel.validate)
     mappedModel.validate = {};
