@@ -274,21 +274,27 @@ namespace Shesha.Tests.Users
                     await uow.CompleteAsync();
 
                     // Check if response is an OkObjectResult
-                    if (response is OkObjectResult okResult)
+                    if (response is AuthenticateResultModel okResult)
                     {
                         // Cast the result to dynamic
-                        dynamic result = okResult.Value;
-
                         // Check for the redirect case
-                        if (result.Redirect == true)
+                        if (response.ResultType == AuthenticateResultType.Redirect || response.ResultType == AuthenticateResultType.RedirectNoAuth)
                         {
+                            var url = response.ResultType == AuthenticateResultType.Redirect
+                                ? ""
+                                : response.ResultType == AuthenticateResultType.RedirectNoAuth
+                                    ? "no-auth"
+                                    : "";
                             // Handle the redirect case in your test (e.g., simulate navigation or log it)
-                            Console.WriteLine($"Redirect to: {result.Url}");
+                            if (!response.RedirectUrl.IsNullOrEmpty())
+                                Console.WriteLine($"Redirect to: {url}/{response.RedirectUrl}");
+                            if (!response.RedirectModule.IsNullOrEmpty())
+                                Console.WriteLine($"Redirect to: {url}/{response.RedirectModule}/{response.RedirectForm}");
                             return false; // Return false to indicate that redirection occurred and login was not completed
                         }
 
                         // Handle successful login by checking for an access token
-                        return !string.IsNullOrWhiteSpace(result.AccessToken);
+                        return !string.IsNullOrWhiteSpace(response.AccessToken);
                     }
 
                     return false; // Return false if the response is not as expected
