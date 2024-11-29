@@ -213,6 +213,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     return displayText;
   };
 
+  const navigationStyling = { ...style, marginTop: style?.marginTop ? style.marginTop : '3px' };
+
   const content = useMemo(() => {
     if (!((formIdentifier && renderDisplayByType() && entityId) || props.entityReferenceType === 'Quickview'))
       return (
@@ -234,7 +236,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <Button className={styles.entityReferenceBtn} style={style} type="link">
+        <Button className={styles.entityReferenceBtn} style={navigationStyling} type="link">
           <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
             {renderDisplayByType()}
           </ShaLink>
