@@ -15,7 +15,7 @@ const ReferenceListCellInternal = <D extends object = {}, V = any>(props: IRefer
 
 export const ReferenceListCell = <D extends object = {}, V = any>(props: IReferenceListCellProps<D, V>) => {
   const itemValue = asNumber(props.value);
-  if (!itemValue || !props.columnConfig) return null;
+  if (typeof itemValue === 'undefined' || itemValue === null || !props.columnConfig) return null;
 
   return (<ReferenceListCellInternal {...props} />);
 };
