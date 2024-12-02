@@ -49,7 +49,7 @@ export const getSettings = (data) => {
                 jsSetting: true,
               })
               .addSettingsInputRow({
-                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 inputs: [
                   {
@@ -115,81 +115,6 @@ export const getSettings = (data) => {
                 hidden: false,
                 validate: {},
                 settingsValidationErrors: [],
-              })
-              .addSettingsInputRow({
-                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'dropdown',
-                    id: 'type-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'textType',
-                    label: 'Type',
-                    size: 'small',
-                    jsSetting: true,
-                    dropdownOptions: [
-                      {
-                        label: 'text',
-                        value: 'text',
-                      },
-                      {
-                        label: 'password',
-                        value: 'password',
-                      },
-                    ],
-                  },
-                  {
-                    type: 'text',
-                    id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'initialValue',
-                    label: 'Default Value',
-                    tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                    jsSetting: true,
-                  },
-                ],
-              })
-              .addSettingsInputRow({
-                id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                inputs: [
-                  {
-                    type: 'text',
-                    id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'prefix',
-                    label: 'Prefix',
-                    jsSetting: true,
-                  },
-                  {
-                    type: 'iconPicker',
-                    id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'prefixIcon',
-                    label: 'Prefix Icon',
-                    jsSetting: true,
-                  },
-                ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
-              .addSettingsInputRow({
-                id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                inputs: [
-                  {
-                    type: 'text',
-                    id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'suffix',
-                    label: 'Suffix',
-                    jsSetting: true,
-                  },
-                  {
-                    type: 'iconPicker',
-                    id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'suffixIcon',
-                    label: 'Suffix Icon',
-                    jsSetting: true,
-                  },
-                ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -298,7 +223,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'number',
+                                type: 'text',
                                 id: 'dimensionsStyleRowWidth',
                                 label: "Width",
                                 width: 85,
@@ -308,7 +233,7 @@ export const getSettings = (data) => {
 
                               },
                               {
-                                type: 'number',
+                                type: 'text',
                                 id: 'dimensionsStyleRowMinWidth',
                                 label: "Min Width",
                                 width: 85,
@@ -317,7 +242,7 @@ export const getSettings = (data) => {
                                 icon: "minWidth",
                               },
                               {
-                                type: 'number',
+                                type: 'text',
                                 id: 'dimensionsStyleRowMaxWidth',
                                 label: "Max Width",
                                 width: 85,
@@ -334,7 +259,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'number',
+                                type: 'text',
                                 id: 'dimensionsStyleRowHeight',
                                 label: "Height",
                                 width: 85,
@@ -343,7 +268,7 @@ export const getSettings = (data) => {
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
                               {
-                                type: 'number',
+                                type: 'text',
                                 id: 'dimensionsStyleRowMinHeight',
                                 label: "Min Height",
                                 width: 85,
@@ -352,7 +277,7 @@ export const getSettings = (data) => {
                                 icon: "minHeight",
                               },
                               {
-                                type: 'number',
+                                type: 'text',
                                 id: 'dimensionsStyleRowMaxHeight',
                                 label: "Max Height",
                                 width: 85,
