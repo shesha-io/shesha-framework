@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { CodeEditor, ColorPicker, IconType, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, IconType, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
@@ -20,6 +20,7 @@ import { Autocomplete } from '@/components/autocomplete';
 import { ISettingsInputProps, SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { startCase } from 'lodash';
+import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -124,13 +125,15 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <Button disabled={readOnly} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
 
         case 'editModeSelector':
-
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
-
+        case 'buttonGroupConfigurator':
+            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+        case 'dynamicItemsConfigurator':
+            <DynamicActionsConfigurator readOnly={readOnly} value={value} onChange={onChange} />
         case 'typeAutocomplete':
             return <Autocomplete.Raw
                 dataSourceType="url"

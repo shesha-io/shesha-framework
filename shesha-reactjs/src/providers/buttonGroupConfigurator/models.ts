@@ -2,7 +2,7 @@ import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
-import { EditMode } from '@/index';
+import { EditMode, IStyleType } from '@/index';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -53,10 +53,15 @@ export interface IButtonGroupItemBase {
   borderColor?: string;
   borderStyle?: 'dotted' | 'solid' | 'dashed';
   borderRadius?: number;
+
 }
 
-export interface IButtonGroupItem extends IButtonGroupItemBase {
+export interface IButtonGroupItem extends IButtonGroupItemBase, IStyleType {
   itemSubType: ToolbarItemSubType;
+  desktop?: IStyleType;
+  tablet?: IStyleType;
+  mobile?: IStyleType;
+  screen?: 'desktop' | 'tablet' | 'mobile';
 }
 
 export interface IButtonItem extends IButtonGroupItem {

@@ -241,6 +241,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    console.log('ButtonGroup', props);
     return (
         <DynamicActionsEvaluator items={props.items}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}

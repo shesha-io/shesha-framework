@@ -1,13 +1,14 @@
 import React, { FC, useMemo } from 'react';
 import { Empty } from 'antd';
 import itemSettingsJson from './itemSettings.json';
-import itemGroupSettingsJson from './itemGroupSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { ButtonGroupItemProps } from '@/providers';
 import { sheshaStyles } from '@/styles';
+import { getGroupSettings } from './itemGroupSettings';
+import { getItemSettings } from './itemSettings';
 
 export interface IButtonGroupPropertiesProps {
   item?: ButtonGroupItemProps;
@@ -31,9 +32,9 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
 
     const markup =
       item.itemType === 'item'
-        ? (itemSettingsJson as FormMarkup)
+        ? (getItemSettings(item) as FormMarkup)
         : item.itemType === 'group'
-          ? (itemGroupSettingsJson as FormMarkup)
+          ? (getGroupSettings(item) as FormMarkup)
           : [];
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
