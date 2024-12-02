@@ -42,7 +42,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
 }) => {
   const { styles } = useStyles();
   const memoized = useMemo(() => {
-    if (!override && !value && !color) {
+    if (!override && (typeof value === 'undefined' || value === null) && !color) {
       return {};
     }
 

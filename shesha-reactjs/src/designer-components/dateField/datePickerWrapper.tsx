@@ -87,6 +87,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     (onChange as RangePickerChangeEvent)(dates, formatString);
   };
 
+  const handleOnOk = (value: moment.Moment | null) => handleDatePickerChange(value, value?.format(pickerFormat));
+
   const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
 
   const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
@@ -125,6 +127,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       disabledTime={disabledTime(props, formData, globalState)}
       onChange={handleDatePickerChange}
+      onOk={handleOnOk}
       variant={hideBorder ? 'borderless' : undefined}
       showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}
