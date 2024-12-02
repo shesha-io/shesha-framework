@@ -9,7 +9,7 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
-import ImageUploader, { ImagePicker } from '@/designer-components/imageUploader';
+import { ImagePicker } from '@/designer-components/imageUploader';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 import { useStyles } from './styles';
 import { customIcons } from './icons';
