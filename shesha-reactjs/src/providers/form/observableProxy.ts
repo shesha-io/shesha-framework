@@ -2,6 +2,7 @@ export type ValueAccessor<TValue = any> = () => TValue;
 
 export interface ProxyWithRefresh<T> {
     refreshAccessors: (accessors: ProxyPropertiesAccessors<T>) => void;
+    addAccessor: (key: string, accessor: ValueAccessor<T>) => void;
 };
 
 export type ProxyPropertiesAccessors<Type> = {
@@ -35,6 +36,12 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
                 this._propAccessors.set(key, value as ValueAccessor);
             }
         });
+    };
+
+    addAccessor = (key: string, accessor: ValueAccessor) => {
+        if (typeof (accessor) === 'function') {
+          this._propAccessors.set(key, accessor);
+        }
     };
 
     constructor(accessors: ProxyPropertiesAccessors<T>) {

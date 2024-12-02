@@ -76,6 +76,7 @@
     "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^10.0.1",
+    "@simbathesailor/use-what-changed": "^2.0.0",
     "@stylistic/eslint-plugin": "^2.10.1",
     "@svgr/rollup": "^8.0.1",
     "@testing-library/jest-dom": "^6.4.2",

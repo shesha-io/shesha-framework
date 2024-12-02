@@ -49,7 +49,7 @@ const getFilter = (term: string) => {
     };
     return JSON.stringify(filter);
 };
-const NOTIFICATION_CONFIG_ENTITY_TYPE = 'Shesha.Domain.Notification';
+const NOTIFICATION_CONFIG_ENTITY_TYPE = 'Shesha.Domain.NotificationTypeConfig';
 const NOTIFICATION_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
 
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {

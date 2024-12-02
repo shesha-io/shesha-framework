@@ -1,19 +1,7 @@
-import React, {
-  FC,
-  PropsWithChildren,
-  useEffect,
-  useMemo,
-  useState
-  } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import ValidationErrors from '@/components/validationErrors';
-import {
-  Button,
-  App,
-  Popover,
-  PopoverProps,
-  Spin
-  } from 'antd';
-import { ConfigurableForm } from '@/components/';
+import { Button, App, Popover, PopoverProps, Spin } from 'antd';
+import { ConfigurableForm, ShaIcon } from '@/components/';
 import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useFormConfiguration } from '@/providers/form/api';
@@ -24,6 +12,7 @@ import { getQuickViewInitialValues } from './utils';
 import { useStyles } from '../entityReference/styles/styles';
 import { getStyle } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider';
+import { ShaIconTypes } from '../iconPicker';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -51,6 +40,9 @@ export interface IQuickViewProps extends PropsWithChildren {
 
   disabled?: boolean;
   style?: string;
+  displayType?: 'textTitle' | 'icon' | 'displayProperty';
+  iconName?: ShaIconTypes;
+  textTitle?: string;
 }
 
 const formItemLayout = {
@@ -79,7 +71,10 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   popoverProps,
   dataProperties = [],
   disabled,
-  style
+  style,
+  displayType,
+  iconName,
+  textTitle,
 }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
@@ -120,7 +115,10 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     return formMarkup && formData ? (
       <FormItemProvider namePrefix={undefined}>
         <MetadataProvider id="dynamic" modelType={formMarkup?.formSettings.modelType}>
-          <ParentProvider formMode='readonly' model={{editMode: 'readOnly', readOnly: true} /* force readonly to show popup dialog always read only */}> 
+          <ParentProvider
+            formMode="readonly"
+            model={{ editMode: 'readOnly', readOnly: true } /* force readonly to show popup dialog always read only */}
+          >
             <ConfigurableForm
               mode="readonly"
               {...formItemLayout}
@@ -140,6 +138,22 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       return <div style={cssStyle}>{children}</div>;
     }
 
+    if (displayType === 'icon') {
+      return <ShaIcon iconName={iconName} />;
+    }
+
+    if (displayType === 'textTitle') {
+      return (
+        <Button className={styles.entityReferenceBtn} style={textTitle ? cssStyle : null} type="link">
+          {textTitle ?? (
+            <span>
+              <Spin size="small" /> Loading...
+            </span>
+          )}
+        </Button>
+      );
+    }
+
     return (
       <Button className={styles.entityReferenceBtn} style={formTitle ? cssStyle : null} type="link">
         {formTitle ?? (
@@ -152,11 +166,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   };
 
   if (disabled)
-   return (
-    <Button className={styles.entityReferenceBtn} disabled type="link">
-      {formTitle}
+    return (
+      <Button className={styles.entityReferenceBtn} disabled type="link">
+        {formTitle}
       </Button>
-      );
+    );
 
   return (
     <Popover
@@ -181,7 +195,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   }, [props.className, props.formType, formConfig]);
 
   return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig}/>
+    <QuickView {...props} formIdentifier={formConfig} />
   ) : (
     <Button type="link">
       <span>

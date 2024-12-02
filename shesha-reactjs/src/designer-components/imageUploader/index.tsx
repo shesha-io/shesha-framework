@@ -1,9 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { SyncOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Upload } from 'antd';
+import { DeleteOutlined, FileAddOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Space, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
-import { toBase64 } from '../_settings/utils/background/utils';
 import { useStyles } from './style';
+import { IToolboxComponent } from '@/interfaces';
+import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { toBase64, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IFileUploadProps } from '../fileUpload';
+import { getSettings } from './settingsForm';
 
 interface IImageUploaderProps {
     onChange: (value: any) => void;
@@ -11,10 +15,9 @@ interface IImageUploaderProps {
     readOnly: boolean;
 }
 
-const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
+export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     const [fileList, setFileList] = useState<UploadFile[]>(value ? [{ ...value }] : []);
     const { styles } = useStyles();
-
 
     const uploadBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -34,13 +37,22 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
 
     const handleRemove = () => {
         setFileList([]);
-        onChange({});
+        onChange({ url: "", name: "" });
     };
 
 
     const uploadButton = (
         <Button size="small" ref={uploadBtnRef} style={{ top: '5px' }}>
             {fileList.length === 0 ? <UploadOutlined title='upload' /> : <SyncOutlined title='Replace' />}
+        </Button>
+    );
+
+    const deleteButton = (
+        <Button size="small" style={{ top: '5px' }} danger onClick={(e) => {
+            handleRemove()
+            e.stopPropagation();
+        }}>
+            <DeleteOutlined title='delete' />
         </Button>
     );
 
@@ -54,10 +66,35 @@ const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
                 beforeUpload={() => false}
                 disabled={readOnly}
             >
-                {uploadButton}
+                <Space>
+                    {uploadButton}
+                    {fileList.length !== 0 && deleteButton}
+                </Space>
             </Upload>
         </div>
     );
 };
 
-export default ImageUploader;
+const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
+    type: 'imagePicker',
+    name: 'Image Picker',
+    icon: <FileAddOutlined />,
+    isInput: true,
+    isOutput: true,
+    Factory: ({ model }) => {
+
+        return (
+            <ConfigurableFormItem model={model}>
+                {(value, onChange) => {
+                    return (
+                        <ImagePicker onChange={onChange} value={value} readOnly={model.readOnly} />
+                    );
+                }}
+            </ConfigurableFormItem>
+        );
+    },
+    settingsFormMarkup: () => getSettings(),
+    validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+};
+
+export default ImagePickerComponent;

@@ -67,7 +67,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   } = props;
 
   const { styles } = useStyles();
-  const { hoverRowId, setHoverRowId, dragState: draggingRowId, setDragState } = useDataTableStore();
+  const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
 
   const handleRowClick = () => {
@@ -79,16 +79,6 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   };
 
   prepareRow(row);
-
-  // Review if deselecting is required for click outside
-  /*useEffect(() => {
-    const onClickOutside = (event) => {
-      if (tableRef.current && !tableRef.current.contains(event.target)) {
-        onClick(null);
-      }
-    };
-    document.addEventListener('click', onClickOutside);
-  }, []);*/
 
   const rowId = row.original.id ?? row.id;
 
@@ -107,18 +97,9 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       displayComponents={inlineDisplayComponents}
     >
       <div
-        //key={rowId}
         onMouseEnter={() => {
-          if (!draggingRowId){
-            if (hoverRowId !== rowId)
-              setHoverRowId(rowId);
-          } else {
-            if (draggingRowId === 'finished')
-              setDragState(null);
-          }
-        }}
-        onMouseLeave={() => {
-          setHoverRowId(null);
+          if (dragState === 'finished')
+            setDragState(null);
         }}
         ref={tableRef}
         onClick={handleRowClick}
@@ -129,12 +110,11 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
           styles.trBody,
           { [styles.trOdd]: index % 2 === 0 },
           { [styles.trSelected]: selectedRowIndex === row?.index },
-          { [styles.shaHover]: hoverRowId === rowId },
         )}
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell cell={cell} key={cellIndex} row={row.cells} rowIndex={index}/>;
+          return <RowCell cell={cell} key={cellIndex} row={row.cells} rowIndex={index} />;
         })}
       </div>
     </CrudProvider>

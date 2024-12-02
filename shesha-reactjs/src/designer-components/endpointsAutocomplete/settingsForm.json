@@ -281,6 +281,7 @@
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
       ],
+      "availableConstantsExpression": "    return metadataBuilder\n        .object(\"constants\")\n        .addAllStandard()\n        .addObject(\"value\", \"Component current value\")\n        .addObject(\"option\", \"Meta data of component current value\")        \t\n        .build();",
       "version": 3,
       "language": "typescript"
     },
