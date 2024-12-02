@@ -26,6 +26,43 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
     formRef.current?.resetFields();
   });
 
+  const objectMarkup = JSON.parse(JSON.stringify(markup));
+
+  const newMarkUp = Array.isArray(objectMarkup)
+    ? objectMarkup.map((item: any) => ({
+      ...item,
+      type: "settingsInput",
+      inputType: item.type,
+      dropdownOptions: item?.values?.map((item: any) => ({
+        ...item,
+        label: item?.label,
+        icon: item?.icon
+      })),
+      buttonGroupOptions: item?.items?.map((item: any) => ({
+        ...item,
+        title: item?.label,
+        icon: item?.icon
+      }))
+
+    }))
+    : {
+      ...objectMarkup,
+      components: objectMarkup.components.map((item: any) => ({
+        ...item,
+        type: "settingsInput",
+        inputType: item.type,
+        dropdownOptions: item?.values?.map((item: any) => ({
+          ...item,
+          label: item?.label,
+          icon: item?.icon
+        })),
+        buttonGroupOptions: item?.items?.map((item: any) => ({
+          ...item,
+          icon: item?.icon
+        }))
+      }))
+    };
+
   return (
     <ConfigurableForm
       labelCol={{ span: 24 }}
@@ -33,7 +70,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
       onFinish={onSave}
-      markup={markup}
+      markup={newMarkUp as FormMarkup}
       initialValues={model}
       onValuesChange={onValuesChange}
     />

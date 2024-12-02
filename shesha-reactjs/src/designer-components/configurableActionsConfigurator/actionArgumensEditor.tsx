@@ -71,6 +71,11 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     };
 
     const actualValue = getActualActionArguments(action, value);
+    if (actualValue?.argumentsFormMarkup?.components) actualValue.argumentsFormMarkup.components = actualValue?.argumentsFormMarkup?.components.map((component) => ({
+      ...component,
+      type: 'settingsInput',
+      inputType: component.inputType
+    }));
 
     return settingsFormFactory
       ? settingsFormFactory({
@@ -91,7 +96,6 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     <Collapse
       defaultActiveKey={['1']}
       key={action.name}
-      size='small'
       items={[{ key: "1", label: "Arguments", children: argumentsEditor }]}
     />
   );
