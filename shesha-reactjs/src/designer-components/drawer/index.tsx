@@ -3,7 +3,6 @@ import { IToolboxComponent } from '@/interfaces';
 import { SwapOutlined } from '@ant-design/icons';
 import ShaDrawer from './drawer';
 import { IDrawerProps } from './models';
-import { getSettings } from './settings';
 import { getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
@@ -12,6 +11,7 @@ import {
 import { useFormData, useGlobalState } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
