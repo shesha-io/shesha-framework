@@ -18,7 +18,7 @@ const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                <LabelConfiguratorComponent readOnly={model.readOnly} />
+                <LabelConfiguratorComponent readOnly={model.readOnly} label={model.label} />
             </ConfigurableFormItem>
         );
     },
