@@ -50,8 +50,6 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   availableConstants,
 }) => {
   const argumentsEditor = useMemo(() => {
-
-
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
@@ -71,11 +69,6 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     };
 
     const actualValue = getActualActionArguments(action, value);
-    if (actualValue?.argumentsFormMarkup?.components) actualValue.argumentsFormMarkup.components = actualValue?.argumentsFormMarkup?.components.map((component) => ({
-      ...component,
-      type: 'settingsInput',
-      inputType: component.inputType
-    }));
 
     return settingsFormFactory
       ? settingsFormFactory({

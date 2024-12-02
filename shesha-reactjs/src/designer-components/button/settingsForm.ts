@@ -44,7 +44,7 @@ export const getSettings = (data) => {
               .addSettingsInput({
                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                 inputType: 'textArea',
-                propertyName: 'description',
+                propertyName: 'tooltip',
                 label: 'Tooltip',
                 jsSetting: true,
               })

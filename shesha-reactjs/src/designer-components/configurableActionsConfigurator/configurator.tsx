@@ -84,6 +84,8 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     return acc;
   }, {});
 
+  const styledLabel = StyledLabel({ label: label as string });
+
   return (
     <div
       style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
@@ -97,7 +99,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <Form.Item name="actionFullName" label={label} tooltip={description}>
+        <Form.Item name="actionFullName" label={styledLabel} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </Form.Item>
         {selectedAction && selectedAction.hasArguments && (

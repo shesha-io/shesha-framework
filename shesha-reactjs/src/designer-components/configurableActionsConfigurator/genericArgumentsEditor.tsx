@@ -3,6 +3,7 @@ import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
+import { ISettingsInputProps } from '../settingsInput/settingsInput';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
@@ -32,22 +33,18 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
     ? objectMarkup.map((item: any) => ({
       ...item,
       type: "settingsInput",
-      inputType: item.type,
+      inputType: item.type === 'settingsInput' ? item.inputType : item.type,
       dropdownOptions: item?.values?.map((item: any) => ({
         ...item,
         label: item?.label,
         icon: item?.icon
       })),
-      buttonGroupOptions: item?.items?.map((item: any) => ({
-        ...item,
-        title: item?.label,
-        icon: item?.icon
-      }))
+      buttonGroupOptions: item.buttonGroupOptions
 
     }))
     : {
       ...objectMarkup,
-      components: objectMarkup.components.map((item: any) => ({
+      components: objectMarkup.components.map((item: any): ISettingsInputProps => ({
         ...item,
         type: "settingsInput",
         inputType: item.type,
@@ -69,6 +66,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
+      layout='vertical'
       onFinish={onSave}
       markup={newMarkUp as FormMarkup}
       initialValues={model}
