@@ -83,7 +83,7 @@ export default {
       modulesOnly: true,
     }),
     typescript({
-      noEmitOnError: true,
+      //noEmitOnError: true,
       tsconfig: './tsconfig.rollup.json'
     }),
     commonjs({
