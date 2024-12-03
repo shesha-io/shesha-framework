@@ -58,10 +58,6 @@ export interface IButtonGroupItemBase {
 
 export interface IButtonGroupItem extends IButtonGroupItemBase, IStyleType {
   itemSubType: ToolbarItemSubType;
-  desktop?: IStyleType;
-  tablet?: IStyleType;
-  mobile?: IStyleType;
-  screen?: 'desktop' | 'tablet' | 'mobile';
 }
 
 export interface IButtonItem extends IButtonGroupItem {

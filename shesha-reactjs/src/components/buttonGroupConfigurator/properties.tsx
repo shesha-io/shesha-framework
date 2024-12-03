@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react';
 import { Empty } from 'antd';
-import itemSettingsJson from './itemSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
@@ -29,7 +28,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
   const editor = useMemo(() => {
     const emptyEditor = null;
     if (!item) return emptyEditor;
-
+    
     const markup =
       item.itemType === 'item'
         ? (getItemSettings(item) as FormMarkup)

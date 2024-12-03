@@ -121,9 +121,10 @@ export const borderCorners = [
     }
 ];
 
-export const getBorderInputs = () => borderSides.map(value => {
+export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map(value => {
     const side = value.value;
-    const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);';
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);'
+        : 'return  getSettingValue(data?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data?.border?.hideBorder);';
 
     return {
         id: `borderStyleRow-${side}`,
@@ -175,7 +176,7 @@ export const getBorderInputs = () => borderSides.map(value => {
     };
 });
 
-export const getCornerInputs = () => radiusCorners.map(value => {
+export const getCornerInputs = (isResponsive: boolean = true) => radiusCorners.map(value => {
     const corner = value.value;
     const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";`;
 
