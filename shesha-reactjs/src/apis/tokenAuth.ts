@@ -1,5 +1,7 @@
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 
+export type AuthenticateResultType = 0 | 1 | 2;
+
 export interface AuthenticateResultModel {
   accessToken?: string | null;
   encryptedAccessToken?: string | null;
@@ -10,6 +12,10 @@ export interface AuthenticateResultModel {
   deviceName?: string | null;
   redirect?: Boolean;
   url?: string;
+  resultType?: AuthenticateResultType;
+  redirectUrl?: string;
+  redirectModule?: string;
+  redirectForm?: string;
 }
 
 export interface AuthenticateResultModelAjaxResponse extends IAjaxResponse<AuthenticateResultModel> {}

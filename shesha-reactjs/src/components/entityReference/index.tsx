@@ -213,8 +213,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     return displayText;
   };
 
+  const navigationStyling = { ...style, marginTop: style?.marginTop ? style.marginTop : '3px' };
+
   const content = useMemo(() => {
-    if (!((formIdentifier && displayText && entityId) || props.entityReferenceType === 'Quickview'))
+    if (!((formIdentifier && renderDisplayByType() && entityId) || props.entityReferenceType === 'Quickview'))
       return (
         <Button className={styles.entityReferenceBtn} type="link">
           <span>
@@ -224,18 +226,22 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     if (props.disabled && props.entityReferenceType !== 'Quickview')
-      <Button className={styles.entityReferenceBtn} disabled style={style} type="link">
-        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-          {renderDisplayByType()}
-        </ShaLink>
-      </Button>;
+      return (
+        <Button className={styles.entityReferenceBtn} disabled style={style} type="link">
+          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+            {renderDisplayByType()}
+          </ShaLink>
+        </Button>
+      );
 
     if (props.entityReferenceType === 'NavigateLink')
-      <Button className={styles.entityReferenceBtn} style={style} type="link">
-        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-          {renderDisplayByType()}
-        </ShaLink>
-      </Button>;
+      return (
+        <Button className={styles.entityReferenceBtn} style={navigationStyling} type="link">
+          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+            {renderDisplayByType()}
+          </ShaLink>
+        </Button>
+      );
 
     if (props.entityReferenceType === 'Quickview')
       return (

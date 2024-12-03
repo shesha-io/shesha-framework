@@ -103,9 +103,24 @@ export class Authenticator implements IAuthenticator {
 
     #checkRegistrationCompletion = (response: AuthenticateResultModelAjaxResponse): Promise<AuthenticateResultModelAjaxResponse> => {
         return new Promise((resolve, reject) => {
-            if (response?.result?.redirect) {
-                this.#redirect(`/no-auth/${response.result.url}`);
-                reject(new Error('Redirecting to another page.'));
+            if (response?.result?.resultType === 2) {
+                if (Boolean(response?.result?.redirectUrl)) {
+                  this.#redirect(`/no-auth/${response.result.url}`);
+                  reject(new Error('Redirecting to another page.'));
+                }
+                if(Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
+                  this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}`);
+                  reject(new Error('Redirecting to another form.'));
+                }
+            } else if (response?.result?.resultType === 1) {
+                if (Boolean(response?.result?.redirectUrl)) {
+                  this.#redirect(response.result.redirectUrl);
+                  reject(new Error('Redirecting to another page.'));
+                }
+                if(Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
+                  this.#redirect(`/dynamic/${response.result.redirectModule}/${response.result.redirectForm}`);
+                  reject(new Error('Redirecting to another form.'));
+                }
             } else {
                 resolve(response);
             }
