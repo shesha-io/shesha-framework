@@ -9,7 +9,7 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
-import ImageUploader from '@/designer-components/imageUploader';
+import { ImagePicker } from '@/designer-components/imageUploader';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 import { useStyles } from './styles';
 import { customIcons } from './icons';
@@ -115,7 +115,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'iconPicker':
             return <IconPickerWrapper iconSize={20} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
-            return <ImageUploader
+            return <ImagePicker
                 value={value}
                 readOnly={readOnly}
                 onChange={onChange}
