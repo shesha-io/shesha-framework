@@ -198,19 +198,6 @@ export const getItemSettings = (data) => {
                                     required: true
                                 },
                             })
-                            .addSettingsInput({
-                                id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                                inputType: 'switch',
-                                hidden: false,
-                                value: {
-                                    _mode: "code",
-                                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                                    _value: ""
-                                },
-                                label: 'Screen',
-                                propertyName: 'screen',
-                                jsSetting: true,
-                            })
                             .toJson()
                         ]
                     },
