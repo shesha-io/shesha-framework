@@ -95,7 +95,7 @@ namespace Shesha.DynamicEntities.Binder
         {
             var entityType = entity.GetType().StripCastleProxyType();
 
-            var properties = entityType.GetProperties().Where(p => p.CanWrite).ToList();
+            var properties = entityType.GetProperties().ToList();
             var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
             if (!entityIdValue.IsNullOrEmpty() && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
@@ -121,7 +121,7 @@ namespace Shesha.DynamicEntities.Binder
                 .Where(x => !jProps.Any(p => p.Name == x)).ToList();
             foreach (var mprop in missedFormFields)
             {
-                var property = properties.FirstOrDefault(x => x.Name.ToCamelCase() == mprop);
+                var property = properties.FirstOrDefault(x => !x.IsReadOnly() && x.Name.ToCamelCase() == mprop);
                 if (property != null)
                 {
                     if (property.PropertyType.IsEntity())
@@ -169,6 +169,10 @@ namespace Shesha.DynamicEntities.Binder
                     }
                     if (property != null)
                     {
+                        // skip Read only properties
+                        if (property.IsReadOnly())
+                            continue;
+
                         var propConfig = _entityPropertyRepository.GetAll().FirstOrDefault(x => x.EntityConfig == config && x.Name == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
