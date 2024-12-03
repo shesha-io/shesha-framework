@@ -418,10 +418,10 @@ stages:
       condition: eq(variables['System.PullRequest.IsFork'], 'false')    
       inputs:
         jdkversion: 'JAVA_HOME_17_X64'
-    - task: SonarQubePublish@5
-      condition: eq(variables['System.PullRequest.IsFork'], 'false')
-      inputs:
-        pollingTimeoutSec: '300'
+    # - task: SonarQubePublish@5
+    #   condition: eq(variables['System.PullRequest.IsFork'], 'false')
+    #   inputs:
+    #     pollingTimeoutSec: '300'
   - job: Job_5
     dependsOn: Job_4
     displayName: Build_Functional_Shesha_PublicPortal
