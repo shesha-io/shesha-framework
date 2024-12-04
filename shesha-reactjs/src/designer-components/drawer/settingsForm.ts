@@ -81,35 +81,23 @@ export const getSettings = (data: any) => {
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                               label: 'Ok Action',
                             })
-                            .addTextField({
-                              id: nanoid(),
-                              propertyName: 'okText',
-                              parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
-                              label: 'Ok Text',
-                              description: 'The text that will be displayed on the Ok button',
-                            })
-                            .addCodeEditor({
+                            .addSettingsInput(
+                              {
+                                id: nanoid(),
+                                propertyName: 'okText',
+                                parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
+                                label: 'Ok Text',
+                                description: 'The text that will be displayed on the Ok button',
+                              },
+                            )
+                            .addSettingsInput({
                               id: nanoid(),
                               propertyName: 'okButtonCustomEnabled',
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                               label: 'Custom Enabled',
+                              inputType: 'codeEditor',
                               description: 'Enter custom enabled of the Ok button',
-                              exposedVariables: [
-                                {
-                                  id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                                  name: 'data',
-                                  description: 'Form data',
-                                  type: 'object',
-                                },
-                                {
-                                  id: '65b71112-d412-401f-af15-1d3080f85319',
-                                  name: 'globalState',
-                                  description: 'The global state',
-                                  type: 'object',
-                                },
-                              ],
                             })
-            
                             .addSectionSeparator({
                               id: nanoid(),
                               propertyName: 'cancelButtonSeparator',
@@ -122,33 +110,20 @@ export const getSettings = (data: any) => {
                               label: 'Ok Cancel',
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                             })
-                            .addTextField({
+                            .addSettingsInput({
                               id: nanoid(),
                               propertyName: 'cancelText',
                               label: 'Cancel Text',
                               description: 'The text that will be displayed on the Cancel button',
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                             })
-                            .addCodeEditor({
+                            .addSettingsInput({
                               id: nanoid(),
                               propertyName: 'cancelButtonCustomEnabled',
-                              parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                               label: 'Custom Enabled',
+                              inputType: 'codeEditor',
                               description: 'Enter custom enabled of the Cancel button',
-                              exposedVariables: [
-                                {
-                                  id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                                  name: 'data',
-                                  description: 'Form data',
-                                  type: 'object',
-                                },
-                                {
-                                  id: '65b71112-d412-401f-af15-1d3080f85319',
-                                  name: 'globalState',
-                                  description: 'The global state',
-                                  type: 'object',
-                                },
-                              ],
+                              parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                             })
                             .toJson(),
                         })
