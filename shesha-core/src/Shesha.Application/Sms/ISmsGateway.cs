@@ -11,7 +11,7 @@ namespace Shesha.Sms
         /// <summary>
         /// Send sms to specified mobile number
         /// </summary>
-        Task SendSmsAsync(string mobileNumber, string body);
+        Task<Tuple<bool, string>> SendSmsAsync(string mobileNumber, string body);
 
         Task<object> GetSettingsAsync();
         Task SetSettingsAsync(object settings);

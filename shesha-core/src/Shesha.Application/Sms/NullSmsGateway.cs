@@ -26,18 +26,23 @@ namespace Shesha.Sms
             Logger = NullLogger.Instance;
         }
 
-        public Task SendSmsAsync(string mobileNumber, string body)
+        public Task<Tuple<bool,string>> SendSmsAsync(string mobileNumber, string body)
         {
             Logger.InfoFormat("SMS stub. Sending SMS to {0}: {1}", mobileNumber, body);
 
             if (string.IsNullOrEmpty(mobileNumber))
-                throw new Exception("Can't send message, mobile number is empty");
+            { 
+                Logger.ErrorFormat("Can't send message, mobile number is empty");
+                return Task.FromResult(new Tuple<bool, string>(false, "Can't send message, mobile number is empty"));
+            }
 
             if (string.IsNullOrEmpty(body))
-                throw new Exception("Can't send empty message");
+            { 
+                Logger.ErrorFormat("Can't send empty message");
+                return Task.FromResult(new Tuple<bool, string>(false, "Can't send empty message"));
+            }
 
-            // Do nothing
-            return Task.CompletedTask;
+            return Task.FromResult(new Tuple<bool, string>(true, "Message Sent from Null Gateway"));
         }
 
         public Task<object> GetSettingsAsync()
