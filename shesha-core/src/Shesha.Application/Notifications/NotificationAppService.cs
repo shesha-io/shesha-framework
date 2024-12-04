@@ -72,61 +72,6 @@ namespace Shesha.Notifications
             _notificationTopicRepository = notificationTopicRepository;
         }
 
-        public class TestData : NotificationData
-        {
-            public string subject { get; set; }
-            public string name { get; set; }
-            public string body { get; set; }
-        }
-
-        public async Task OmoTest()
-        {
-            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => x.Name == "Warning");
-            var fromPerson = await _personRepository.FirstOrDefaultAsync(x => x.FirstName == "System");
-            var toPerson = await _personRepository.FirstOrDefaultAsync(x => x.EmailAddress1 == "omolemo.lethuloe@boxfusion.io");
-            var channel = await _notificationChannelRepository.FirstOrDefaultAsync(x => x.Name == "SMS");
-            var getAttachments = await _storedFileService.GetAttachmentsAsync(fromPerson.Id, "Shesha.Domain.Person");
-
-            var attachments = getAttachments.Select(x => new NotificationAttachmentDto()
-            {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
-
-
-            var testing = new TestData()
-            {
-                name = "Omolemo",
-                subject = "Test Subject",
-                body = "Test Body"
-            };
-            var triggeringEntity = new GenericEntityReference(fromPerson);
-            await SendNotification(type, fromPerson, toPerson, data: testing, RefListNotificationPriority.High, attachments, triggeringEntity, channel);
-        }
-
-        public async Task OmoBroadcastTest()
-        {
-            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => x.Name == "Warning");
-            var topic = await _notificationTopicRepository.FirstOrDefaultAsync(x => x.Name == "Service Requests");
-            var getAttachments = await _storedFileService.GetAttachmentsAsync(topic.Id, "Shesha.Core.NotificationTopic");
-
-            var attachments = getAttachments.Select(x => new NotificationAttachmentDto()
-            {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
-
-
-            var testing = new TestData()
-            {
-                name = "Omolemo",
-                subject = "Test Subject",
-                body = "Test Body"
-            };
-            var triggeringEntity = new GenericEntityReference(topic);
-            await SendBroadcastNotification(type, topic, data: testing, RefListNotificationPriority.High, attachments, triggeringEntity);
-        }
-
         /// <summary>
         /// 
         /// </summary>
