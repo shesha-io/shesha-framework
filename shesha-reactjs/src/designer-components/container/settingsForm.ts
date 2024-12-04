@@ -26,26 +26,6 @@ import {
 //         id: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
 //         components: [
 //           ...new DesignerToolbarSettings()
-//             .addTextField({
-//               id: '6d39921b-d20e-49cf-bc54-ec584f63be5c',
-//               propertyName: 'componentName',
-//               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-//               label: 'Component name',
-//               validate: { required: true },
-//               jsSetting: false
-//             })
-//             .addCheckbox({
-//               id: 'bf1823d6-dca4-408a-b7d8-5b42eacb076d',
-//               propertyName: 'hidden',
-//               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-//               label: 'Hidden',
-//             })
-//             .addEditMode({
-//               id: 'abc823d6-dca4-408a-b7d8-5b42eacb1234',
-//               propertyName: 'editMode',
-//               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-//               label: 'Edit mode',
-//             })
 //             .addCheckbox({
 //               id: 'c9900272-11c6-4484-be5b-e48c859f86e4',
 //               propertyName: 'noDefaultStyling',
@@ -89,38 +69,6 @@ import {
 //               validate: {
 //                 required: true,
 //               },
-//             })
-//             .addDropdown({
-//               id: '5699c634-286d-4d7e-a804-8405d2cb1721',
-//               propertyName: 'flexDirection',
-//               label: 'Flex Direction',
-//               labelAlign: 'right',
-//               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-//               hidden: {
-//                 _code: "return  getSettingValue(data?.display) !== 'flex';",
-//                 _mode: 'code',
-//                 _value: false,
-//               } as any,
-//               dataSourceType: 'values',
-//               values: FLEX_DIRECTION,
-//               description:
-//                 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
-//             })
-//             .addDropdown({
-//               id: '2706b1e3-83dd-43a9-8800-183ec05f6359',
-//               propertyName: 'flexWrap',
-//               label: 'Flex Wrap',
-//               labelAlign: 'right',
-//               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-//               hidden: {
-//                 _code: "return getSettingValue(data?.display) !== 'flex';",
-//                 _mode: 'code',
-//                 _value: false,
-//               } as any,
-//               dataSourceType: 'values',
-//               values: FLEX_WRAP,
-//               description:
-//                 'The flex-wrap CSS property sets whether flex items are forced onto one line or can wrap onto multiple lines. If wrapping is allowed, it sets the direction that lines are stacked.',
 //             })
 //             .addTextField({
 //               id: 'bccb0c08-6d9e-4257-9c40-129974850f4c',
@@ -816,9 +764,9 @@ export const getSettings = (data) => {
                 components: [
                   ...new DesignerToolbarSettings()
                     .addCollapsiblePanel({
-                      id: 'fontStyleCollapsiblePanel',
-                      propertyName: 'pnlFontStyle',
-                      label: 'Font',
+                      id: 'displayCollapsiblePanel',
+                      propertyName: 'pnlDisplayStyle',
+                      label: 'Display',
                       labelAlign: 'right',
                       parentId: 'styleRouter',
                       ghost: true,
@@ -826,55 +774,107 @@ export const getSettings = (data) => {
                       content: {
                         id: 'fontStylePnl',
                         components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            id: 'display-s4gmBg31azZC0UjZjpfTm',
+                            propertyName: 'display',
+                            label: 'Display',
+                            parentId: 'displayCollapsiblePanel',
+                            inputType: 'radio',
+                            description: 'The display CSS property sets whether an element is treated as a block or inline element and the layout used for its children, such as flow layout, grid or flex.',
+                            validate: {
+                              required: true,
+                            },
+                            buttonGroupOptions: [
+                              { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
+                              { value: 'block', title: 'Block', icon: 'BorderOutlined' },
+                              { value: 'flex', title: 'Flex', icon: 'flex' },
+                              { value: 'inline-grid', title: 'Inline Grid', icon: 'TableOutlined' }
+                            ]
+                          })
                           .addSettingsInputRow({
                             id: 'try26voxhs-HxJ5k5ngYE',
-                            parentId: 'fontStylePnl',
+                            parentId: 'displayCollapsiblePanel',
                             inline: true,
-                            propertyName: 'font',
+                            hidden: {
+                              _code: "return getSettingValue(data?.display) !== 'flex';",
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
                                 type: 'dropdown',
-                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Family',
-                                propertyName: 'font.type',
+                                id: 'flex-direction-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Flex Direction',
+                                propertyName: 'flexDirection',
                                 hideLabel: true,
-                                dropdownOptions: fontTypes,
-                              },
-                              {
-                                type: 'number',
-                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Size',
-                                propertyName: 'font.size',
-                                hideLabel: true,
-                                width: 50,
+                                dropdownOptions: FLEX_DIRECTION,
+                                description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
+
                               },
                               {
                                 type: 'dropdown',
-                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Weight',
-                                propertyName: 'font.weight',
+                                id: 'flex-wrap-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Flex Wrap',
+                                propertyName: 'flexWrap',
                                 hideLabel: true,
-                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                dropdownOptions: fontWeights,
-                                width: 100,
+                                dropdownOptions: FLEX_WRAP
                               },
+                            ],
+                          })
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: 'displayCollapsiblePanel',
+                            inline: true,
+                            hidden: {
+                              _code: "return getSettingValue(data?.display) === 'block';",
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inputs: [
                               {
-                                type: 'color',
-                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Color',
-                                hideLabel: true,
-                                propertyName: 'font.color',
+                                type: 'text',
+                                id: 'gap-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Gap',
+                                propertyName: 'gap',
+                                description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
                               },
                               {
                                 type: 'dropdown',
-                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Align',
-                                propertyName: 'font.align',
-                                hideLabel: true,
-                                width: 60,
-                                dropdownOptions: textAlign,
+                                id: 'align-items-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Align Items',
+                                propertyName: 'alignItems',
+                                dropdownOptions: ALIGN_ITEMS
                               },
+                              {
+                                type: 'dropdown',
+                                id: 'align-self-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Align Self',
+                                propertyName: 'alignSelf',
+                                dropdownOptions: ALIGN_SELF
+                              },
+                              {
+                                type: 'dropdown',
+                                id: 'justify-content-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Justify Content',
+                                propertyName: 'justifyContent',
+                                dropdownOptions: JUSTIFY_CONTENT
+                              },
+                              {
+                                type: 'dropdown',
+                                id: 'justify-self-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Justify Self',
+                                propertyName: 'justifySelf',
+                                dropdownOptions: JUSTIFY_SELF
+                              },
+                              {
+                                type: 'dropdown',
+                                id: 'text-justify-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Text Justify',
+                                propertyName: 'textJustify',
+                                dropdownOptions: TEXT_JUSTIFY
+                              }
                             ],
                           })
                           .toJson()

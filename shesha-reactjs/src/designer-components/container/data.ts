@@ -1,3 +1,4 @@
+import { IStyleType } from '@/index';
 import { nanoid } from '@/utils/uuid';
 
 export const JUSTIFY_ITEMS = [
@@ -146,3 +147,13 @@ export const ALIGN_SELF = [
   { id: nanoid(), label: 'revert-layer', value: 'revert-layer' },
   { id: nanoid(), label: 'unset', value: 'unset' },
 ];
+
+
+export const defaultStyles = (): IStyleType => {
+  return {
+    background: { type: 'color', color: '#fff' },
+    dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    border: { selectedCorner: 'all', selectedSide: 'all', border: { all: { width: '1px', color: '#000', style: 'solid' } } },
+    shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 }
+  };
+};

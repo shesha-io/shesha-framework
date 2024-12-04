@@ -13,6 +13,8 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { CSSProperties } from 'styled-components';
 import { toSizeCssProp } from '@/utils/form';
 import { useTheme } from 'antd-style';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './data';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -165,6 +167,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         .add<IContainerComponentProps>(6, (prev) => {
           return {...prev, shadowStyle: 'none'};
         })
+      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
 };
 
