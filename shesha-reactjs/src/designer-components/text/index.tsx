@@ -5,10 +5,10 @@ import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { ITextTypographyProps } from './models';
-import { settingsFormMarkup } from './settings';
 import TypographyComponent from './typography';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -22,8 +22,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       {(value) => <TypographyComponent {...model} value={model?.contentDisplay === 'name' ? value : model?.content} />}
     </ConfigurableFormItem>
   ),
-  settingsFormMarkup,
-  validateSettings: model => validateConfigurableComponentSettings(settingsFormMarkup, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: model => ({
     code: false,
     copyable: false,
