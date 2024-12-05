@@ -36,7 +36,7 @@ namespace Shesha.Sms
         /// <param name="mobileNumber"></param>
         /// <param name="body"></param>
         /// <returns></returns>
-        public abstract Task SendSmsAsync(string mobileNumber, string body);
+        public abstract Task<Tuple<bool, string>> SendSmsAsync(string mobileNumber, string body);
 
         /// <summary>
         /// Set gateway settings

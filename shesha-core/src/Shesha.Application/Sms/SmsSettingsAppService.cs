@@ -82,11 +82,11 @@ namespace Shesha.Sms
                 ? _typeFinder.Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && SmsUtils.GetGatewayAlias(t) == input.Gateway).FirstOrDefault()
                 : null;
 
-            var gatewayUid = gatewayType?.GetClassUid();
+            var gatewayName = gatewayType?.GetDisplayName();
 
             await _settings.SmsSettings.SetValueAsync(new SmsSettings
             {
-                SmsGateway = gatewayUid,
+                SmsGateway = gatewayName,
                 RedirectAllMessagesTo = input.RedirectAllMessagesTo,
             });
             
