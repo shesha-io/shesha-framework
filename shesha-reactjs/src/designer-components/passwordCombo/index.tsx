@@ -13,10 +13,9 @@ import { IToolboxComponent } from '@/interfaces';
 import { LockOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { PasswordCombo } from './passwordCombo';
-import { useForm } from '@/providers';
+import { IInputStyles, useForm } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

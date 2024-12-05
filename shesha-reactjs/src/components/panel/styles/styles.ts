@@ -35,8 +35,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
           > .${prefixCls}-collapse-header {
             border-top-left-radius: ${borderRadius ?? token.borderRadiusLG}px;
             border-top-right-radius: ${borderRadius ?? token.borderRadiusLG}px;
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
             background-color: #f0f0f0;
             margin:'auto 0px';
             min-height: 50px;
