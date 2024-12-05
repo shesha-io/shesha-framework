@@ -35,6 +35,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     okText,
     cancelText,
     components,
+    style,
     isDynamic,
     okButtonCustomEnabled,
     cancelButtonCustomEnabled,
@@ -127,6 +128,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
       placement={placement}
       width={width}
       onClose={closeDrawer}
+      style={style}
       title={label}
       size="large"
       footer={
