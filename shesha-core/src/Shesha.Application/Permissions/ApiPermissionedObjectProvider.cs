@@ -1,12 +1,17 @@
 ﻿using Abp.Application.Services;
+using Abp.AspNetCore.Mvc.Authorization;
 using Abp.AspNetCore.Mvc.Extensions;
+using Abp.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Modules;
 using Abp.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Shesha.Authorization;
 using Shesha.ConfigurationItems;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -94,7 +99,7 @@ namespace Shesha.Permissions
 
         private string GetMd5(PermissionedObjectDto dto)
         {
-            return $"{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
+            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{string.Join(',', dto.Permissions)}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
                 .ToMd5Fingerprint();
         }
 
@@ -138,13 +143,48 @@ namespace Shesha.Permissions
                 {
                     if (objectType != null && objectType != ShaPermissionedObjectsTypes.WebApi) continue;
 
+                    var hardcoded = false;
+                    var access = Domain.Enums.RefListPermissionedAccess.Inherited;
+                    var permissions = new List<string>();
+                    var shaAttr = service.GetCustomAttribute<SheshaAuthorizeAttribute>(true);
+                    if (shaAttr != null)
+                    {
+                        access = shaAttr.Access;
+                        if (shaAttr.Access == Domain.Enums.RefListPermissionedAccess.RequiresPermissions)
+                        {
+                            access = shaAttr.Permissions.Any()
+                                ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
+                                : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
+                            permissions = shaAttr.Permissions.ToList();
+                        }
+                    }
+                    var abpAttr = service.GetCustomAttribute<AbpAuthorizeAttribute>(true);
+                    if (abpAttr != null)
+                    {
+                        access = abpAttr.Permissions.Any()
+                            ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
+                            : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
+                        permissions = abpAttr.Permissions.ToList();
+                        hardcoded = true;
+                    }
+                    var abpMvcAttr = service.GetCustomAttribute<AbpMvcAuthorizeAttribute>(true);
+                    if (abpMvcAttr != null)
+                    {
+                        access = abpMvcAttr.Permissions.Any()
+                            ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
+                            : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
+                        permissions = abpMvcAttr.Permissions.ToList();
+                        hardcoded = true;
+                    }
+                    if (service.HasAttribute<AllowAnonymousAttribute>(true))
+                    {
+                        access = Domain.Enums.RefListPermissionedAccess.AllowAnonymous;
+                        hardcoded = true;
+                    }
+
                     var serviceName = service.Name;
-                    serviceName = serviceName.EndsWith("AppService")
-                        ? serviceName.Replace("AppService", "")
-                        : serviceName;
-                    serviceName = serviceName.EndsWith("Controller")
-                        ? serviceName.Replace("Controller", "")
-                        : serviceName;
+                    serviceName = serviceName.EndsWith("AppService") ? serviceName.Replace("AppService", "") : serviceName;
+                    serviceName = serviceName.EndsWith("Controller") ? serviceName.Replace("Controller", "") : serviceName;
 
                     var parent = new PermissionedObjectDto()
                     {
@@ -154,6 +194,9 @@ namespace Shesha.Permissions
                         Name = GetName(service, serviceName),
                         Type = ShaPermissionedObjectsTypes.WebApi,
                         Description = GetDescription(service),
+                        Access = access,
+                        Permissions = permissions,
+                        Hardcoded = hardcoded,
                     };
                     parent.Md5 = GetMd5(parent);
                     allApiPermissions.Add(parent);
@@ -163,6 +206,44 @@ namespace Shesha.Permissions
                     foreach (var methodInfo in methods)
                     {
                         var methodName = methodInfo.Action.Name.RemovePostfix("Async");
+                        var methodHardcoded = hardcoded;
+                        access = Domain.Enums.RefListPermissionedAccess.Inherited;
+                        permissions = new List<string>();
+                        shaAttr = methodInfo.Action.GetCustomAttribute<SheshaAuthorizeAttribute>(true);
+                        if (shaAttr != null)
+                        {
+                            access = shaAttr.Access;
+                            if (shaAttr.Access == Domain.Enums.RefListPermissionedAccess.RequiresPermissions)
+                            {
+                                access = shaAttr.Permissions.Any()
+                                    ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
+                                    : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
+                                permissions = shaAttr.Permissions.ToList();
+                            }
+                        }
+                        abpAttr = methodInfo.Action.GetCustomAttribute<AbpAuthorizeAttribute>(true);
+                        if (abpAttr != null)
+                        {
+                            access = abpAttr.Permissions.Any()
+                                ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
+                                : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
+                            permissions = abpAttr.Permissions.ToList();
+                            methodHardcoded = true;
+                        }
+                        abpMvcAttr = methodInfo.Action.GetCustomAttribute<AbpMvcAuthorizeAttribute>(true);
+                        if (abpMvcAttr != null)
+                        {
+                            access = abpMvcAttr.Permissions.Any()
+                                ? Domain.Enums.RefListPermissionedAccess.RequiresPermissions
+                                : Domain.Enums.RefListPermissionedAccess.AnyAuthenticated;
+                            permissions = abpMvcAttr.Permissions.ToList();
+                            methodHardcoded = true;
+                        }
+                        if (methodInfo.Action.HasAttribute<AllowAnonymousAttribute>(true))
+                        {
+                            access = Domain.Enums.RefListPermissionedAccess.AllowAnonymous;
+                            methodHardcoded = true;
+                        }
 
                         var child = new PermissionedObjectDto()
                         {
@@ -173,6 +254,9 @@ namespace Shesha.Permissions
                             Type = ShaPermissionedObjectsTypes.WebApiAction,
                             Parent = parent.Object,
                             Description = GetDescription(methodInfo.Action),
+                            Access = access,
+                            Permissions = permissions,
+                            Hardcoded = methodHardcoded,
                         };
 
                         child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);

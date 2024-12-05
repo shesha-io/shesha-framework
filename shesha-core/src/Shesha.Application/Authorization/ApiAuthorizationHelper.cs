@@ -6,6 +6,7 @@ using Abp.Dependency;
 using Abp.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Configuration.Security;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -22,16 +23,19 @@ namespace Shesha.Authorization
 
         private readonly IAuthorizationConfiguration _authConfiguration;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
+        private readonly ISecuritySettings _securitySettings;
 
         public ApiAuthorizationHelper(
             IFeatureChecker featureChecker,
             IAuthorizationConfiguration authConfiguration,
             IObjectPermissionChecker objectPermissionChecker,
-            ILocalizationManager localizationManager
-            ): base(featureChecker, authConfiguration)
+            ILocalizationManager localizationManager,
+            ISecuritySettings securitySettings
+            ) : base(featureChecker, authConfiguration)
         {
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
+            _securitySettings = securitySettings;
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
@@ -63,7 +67,7 @@ namespace Shesha.Authorization
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                Domain.Enums.RefListPermissionedAccess.AllowAnonymous
+                _securitySettings.SecuritySettings.GetValue().DefaultEndpointAccess
             );
         }
     }
