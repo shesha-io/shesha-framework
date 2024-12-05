@@ -139,7 +139,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     }
 
     if (displayType === 'icon') {
-      return <ShaIcon iconName={iconName} />;
+      return (
+        <Button className={styles.entityReferenceBtn} style={textTitle ? cssStyle : null} type="link">
+          <ShaIcon iconName={iconName} />
+        </Button>
+      );
     }
 
     if (displayType === 'textTitle') {

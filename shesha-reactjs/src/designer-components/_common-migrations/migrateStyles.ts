@@ -36,16 +36,14 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 radius: { all: prevStyles?.borderRadius || 8 },
             },
             background: {
-                ...prev?.background,
-                type: prev?.background?.type || 'color',
-                color: prevStyles?.backgroundColor || prev?.background?.color,
+                type: defaults?.background?.type || 'color',
+                color: prevStyles?.backgroundColor || defaults?.background?.color,
                 repeat: 'no-repeat',
                 size: 'cover',
                 position: 'center',
                 gradient: { direction: 'to right', colors: {} }
             },
             font: {
-                ...prev?.font,
                 color: prevStyles?.fontColor || prev?.font?.color || '#000',
                 type: prev?.font?.type || 'Segoe UI',
                 align: prev?.font?.align || 'left',
@@ -53,7 +51,6 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 weight: prevStyles?.fontWeight as string || prev?.font?.weight || '400',
             },
             dimensions: {
-                ...prev?.dimensions,
                 width: addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
                 height: addPx(prevStyles?.height) || heightFromSize || addPx(prev?.dimensions?.height) || defaults?.dimensions?.height,
                 minHeight: addPx(prev?.dimensions?.minHeight) || defaults?.dimensions?.minHeight,
@@ -62,7 +59,6 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 maxWidth: addPx(prev?.dimensions?.maxWidth) || defaults?.dimensions?.maxWidth,
             },
             shadow: {
-                ...prev?.shadow,
                 offsetX: 0,
                 offsetY: 0,
                 color: '#000',

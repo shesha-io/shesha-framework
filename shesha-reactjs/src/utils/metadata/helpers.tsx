@@ -6,6 +6,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
 import { toCamelCase } from '../string';
+import React from 'react';
 
 export const getIconByDataType = (dataType: string): IconType => {
   switch (dataType) {
@@ -45,7 +46,7 @@ export const getIconByPropertyMetadata = (metadata: IPropertyMetadata) => {
   if (metadata.dataType === DataTypes.objectReference) return JsonOutlined(null);
 
   var iconType = getIconByDataType(metadata.dataType);
-  if (iconType) return ShaIcon({ iconName: iconType });
+  if (iconType) return <ShaIcon iconName={iconType} />;
   return null;
 };
 

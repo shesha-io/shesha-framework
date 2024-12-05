@@ -66,9 +66,9 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     };
 
     const editModes = [
-        { value: 'editable', icon: 'edit', title: 'Editable' },
-        { value: 'readOnly', icon: 'readonly', title: 'Read only' },
-        { value: 'inherit', icon: 'inherit', title: 'Inherit' }
+        { value: 'editable', icon: 'editIcon', title: 'Editable' },
+        { value: 'readOnly', icon: 'readonlyIcon', title: 'Read only' },
+        { value: 'inherit', icon: 'inheritIcon', title: 'Inherit' }
     ];
 
     const editor = availableConstantsExpression?.trim()
