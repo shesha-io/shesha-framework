@@ -17,6 +17,7 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { getPositionStyle } from '../_settings/utils/position/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -35,15 +36,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const border = model?.border;
     const shadow = model?.shadow;
     const background = model?.background;
+    const position = model?.position;
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+    const positionstyle = useMemo(() => getPositionStyle(position), [position]);
 
     useEffect(() => {
-
       const fetchStyles = async () => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
@@ -60,7 +62,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       };
 
       fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+    }, [background, background.gradient.colors, backendUrl, httpHeaders, jsStyle]);
 
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
@@ -74,7 +76,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
     });
 
 
@@ -104,10 +106,14 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           containerId={model.id}
           className={model.className}
           wrapperStyle={{
+            ...positionstyle,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
             ...finalStyle,
           }}
-          style={getStyle(model?.style, formData)}
+          style={{
+            ...getStyle(model?.style, formData),
+            ...positionstyle,
+          }}
           dynamicComponents={model?.isDynamic ? model?.components : []}
           {...flexAndGridStyles}
         />

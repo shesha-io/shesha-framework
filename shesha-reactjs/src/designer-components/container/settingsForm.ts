@@ -14,6 +14,7 @@ import {
 
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { getPositionInputs } from '../_settings/utils/position/utils';
 
 export const getSettings = (data) => {
 
@@ -92,6 +93,51 @@ export const getSettings = (data) => {
                 components: [
                   ...new DesignerToolbarSettings()
                     .addCollapsiblePanel({
+                      id: 'positionCollapsiblePanel',
+                      propertyName: 'pnlPosition',
+                      label: 'Position',
+                      labelAlign: 'right',
+                      parentId: 'styleRouter',
+                      ghost: true,
+                      collapsible: 'header',
+                      content: {
+                        id: 'positionStylePnl',
+                        components: [...new DesignerToolbarSettings()
+                          .addSettingsInput({
+                            id: 'position-s4gmBg31azZC0UjZjpfTm',
+                            propertyName: 'position.value',
+                            label: 'Position',
+                            parentId: 'positionCollapsiblePanel',
+                            inputType: 'dropdown',
+                            description: 'The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.',
+                            validate: {
+                              required: true,
+                            },
+                            dropdownOptions: [
+                              { value: 'relative', label: 'Relative' },
+                              { value: 'absolute', label: 'Absolute' },
+                              { value: 'fixed', label: 'Fixed' },
+                              { value: 'sticky', label: 'Sticky' },
+                              { value: 'static', label: 'Static' }
+                            ]
+                          })
+                          .addSettingsInputRow(
+                            getPositionInputs()[0] as any
+                          )
+                          .addSettingsInputRow(
+                            getPositionInputs()[1] as any
+                          )
+                          .addSettingsInputRow(
+                            getPositionInputs()[2] as any
+                          )
+                          .addSettingsInputRow(
+                            getPositionInputs()[3] as any
+                          )
+                          .toJson()
+                        ]
+                      }
+                    })
+                    .addCollapsiblePanel({
                       id: 'displayCollapsiblePanel',
                       propertyName: 'pnlDisplayStyle',
                       label: 'Display',
@@ -124,7 +170,7 @@ export const getSettings = (data) => {
                             parentId: 'displayCollapsiblePanel',
                             inline: true,
                             hidden: {
-                              _code: "return getSettingValue(data?.display) !== 'flex';",
+                              _code: "console.log('The Data'); return getSettingValue(data?.display) !== 'flex';",
                               _mode: 'code',
                               _value: false,
                             } as any,
