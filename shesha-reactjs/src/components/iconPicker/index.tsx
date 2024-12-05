@@ -11,7 +11,6 @@ import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
 import { humanizeString } from '@/utils/string';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
-import { ColorPicker } from '../colorPicker';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconModes = 'outlined' | 'filled' | 'twoFaced';
@@ -83,7 +82,7 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   useEffect(() => {
     setLocalSelectedIcon(typeof value === 'object' ? value.props.iconName : value || defaultValue);
-    onIconChange(<ShaIcon iconName={defaultValue} style={{ fontSize: 30 }} {...props} />, defaultValue)
+    onIconChange(<ShaIcon iconName={defaultValue} style={{ fontSize: 30 }} {...props} />, defaultValue);
   }, [defaultValue, value]);
 
 

@@ -129,4 +129,4 @@ export const getSettings = () => {
             wrapperCol: { span: 24 }
         }
     };
-}
+};
