@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { nanoid } from 'nanoid';
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
