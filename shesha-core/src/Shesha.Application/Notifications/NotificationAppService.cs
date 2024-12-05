@@ -1,536 +1,396 @@
-﻿using Abp;
+﻿using Abp.Application.Services.Dto;
 using Abp.BackgroundJobs;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Notifications;
+using Abp.UI;
+using Hangfire;
+using Hangfire.Storage;
+using Newtonsoft.Json.Linq;
+using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
+using Shesha.Notifications.Configuration;
+using Shesha.Notifications.Helpers;
+using Shesha.Notifications.Jobs;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Shesha.Notifications;
-
-/// <summary>
-/// Notification application service
-/// </summary>
-public class NotificationAppService : DynamicCrudAppService<Notification, DynamicDto<Notification, Guid>, Guid>, INotificationAppService
+namespace Shesha.Notifications
 {
-    private readonly INotificationPublisher _notificationPublisher;
-    private readonly IBackgroundJobManager _backgroundJobManager;
-    private readonly IStoredFileService _fileService;
-    private readonly INotificationPublicationContext _notificationPublicationContext;
-    private readonly IRepository<Notification, Guid> _repository;
-    private readonly IRepository<NotificationTemplate, Guid> _templateRepository;
-    private readonly IRepository<Person, Guid> _personRepository;
-
-    public NotificationAppService(IRepository<Notification, Guid> repository, INotificationPublisher notificationPublisher, IBackgroundJobManager backgroundJobManager, IStoredFileService fileService, INotificationPublicationContext notificationPublicationContext, IRepository<NotificationTemplate, Guid> templateRepository, IRepository<Person, Guid> personRepository) : base(repository)
+    public class NotificationAppService: SheshaAppServiceBase
     {
-        _notificationPublisher = notificationPublisher;
-        _backgroundJobManager = backgroundJobManager;
-        _fileService = fileService;
-        _notificationPublicationContext = notificationPublicationContext;
-        _repository = repository;
-        _templateRepository = templateRepository;
-        _personRepository = personRepository;
+        private readonly IEnumerable<INotificationChannelSender> _channelSenders;
+        private readonly IRepository<NotificationTypeConfig, Guid> _notificationTypeRepository;
+        private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
+        private readonly IRepository<NotificationTemplate, Guid> _messageTemplateRepository;
+        private readonly IRepository<NotificationMessage, Guid> _notificationMessageRepository;
+        private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreference;
+        private readonly IRepository<UserTopicSubscription, Guid> _userTopicSubscriptionRepository;
+        private readonly IRepository<NotificationTopic, Guid> _notificationTopicRepository;
+        private readonly IRepository<StoredFile, Guid> _storedFileRepository;
+        private readonly IRepository<Person, Guid> _personRepository;
+        private readonly INotificationSettings _notificationSettings;
+        private readonly IStoredFileService _storedFileService;
+        private readonly IBackgroundJobManager _backgroundJobManager;
 
-    }
-
-    /// inheritedDoc
-    public async Task PublishAsync(string notificationName,
-        NotificationData data,
-        List<Person> recipients,
-        GenericEntityReference sourceEntity = null)
-    {
-        if (recipients == null)
-            throw new Exception($"{nameof(recipients)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var userIds = recipients.Where(p => p.User != null)
-            .Select(p => new UserIdentifier(AbpSession.TenantId, p.User.Id))
-            .ToArray();
-        if (!userIds.Any())
-            return;
-
-        await _notificationPublisher.PublishAsync(notificationName,
-            data,
-            userIds: userIds,
-            entityIdentifier: entityIdentifier
-        );
-    }
-
-
-    #region Direct email notifications
-
-    /// <summary>
-    /// Publish email notification
-    /// </summary>
-    /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="emailAddress">Recipient email address</param>
-    /// <param name="attachments">Notification attachments</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishEmailNotificationAsync<TData>(string notificationName,
-        TData data,
-        string emailAddress,
-        List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-        if (string.IsNullOrWhiteSpace(emailAddress))
-            throw new Exception($"{nameof(emailAddress)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
+        public NotificationAppService(IEnumerable<INotificationChannelSender> channelSenders,
+                                   IRepository<NotificationTypeConfig, Guid> notificationTypeRepository,
+                                   IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
+                                   IRepository<UserNotificationPreference, Guid> userNotificationPreference,
+                                   IRepository<NotificationTemplate, Guid> messageTemplateRepository,
+                                   IRepository<Person, Guid> personRepository,
+                                   IRepository<StoredFile, Guid> storedFileRepository,
+                                   IRepository<UserTopicSubscription, Guid> userTopicSubscriptionRepository,
+                                   IStoredFileService storedFileService,
+                                   IRepository<NotificationMessage, Guid> notificationMessageRepository,
+                                   IRepository<NotificationTopic, Guid> notificationTopicRepository,
+                                   INotificationSettings notificationSettings,
+                                   IBackgroundJobManager backgroundJobManager)
+                 
         {
-            SendType = RefListNotificationType.Email,
-            RecipientText = emailAddress,
-            Attachments = attachments,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
-    }
-
-
-    /// <summary>
-    /// Publish email notification
-    /// </summary>
-    /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="recipient">The person the email should go to</param>
-    /// <param name="attachments">Notification attachments</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishEmailNotificationAsync<TData>(string notificationName,
-        TData data,
-        Person recipient,
-        List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-
-        if (recipient == null)
-            throw new Exception($"{nameof(recipient)} must not be null");
-
-        if (string.IsNullOrWhiteSpace(recipient.EmailAddress1) && string.IsNullOrWhiteSpace(recipient.EmailAddress2))
-            throw new Exception($"No email address available for {recipient.FullName}");
-
-        var emailAddress = string.IsNullOrWhiteSpace(recipient.EmailAddress1) ? recipient.EmailAddress2 : recipient.EmailAddress1;
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.Email,
-            RecipientText = emailAddress,
-            Attachments = attachments,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
-    }
-
-    /// <summary>
-    /// Publish email notification using explicitly specified template
-    /// </summary>
-    /// <param name="templateId">Id of the template</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="emailAddress">Recipient email address</param>
-    /// <param name="attachments">Attachments</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <param name="cc"></param>
-    /// <returns></returns>
-    public async Task PublishEmailNotificationAsync<TData>(Guid templateId,
-        TData data,
-        string emailAddress,
-        List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null,
-        string cc = "") where TData : NotificationData
-    {
-        if (string.IsNullOrWhiteSpace(emailAddress))
-            throw new Exception($"{nameof(emailAddress)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.Email,
-            RecipientText = emailAddress,
-            TemplateId = templateId,
-            Attachments = attachments,
-            Cc = cc,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
-    }
-
-
-    /// <summary>
-    /// Publish email notification using explicitly specified template
-    /// </summary>
-    /// <param name="templateId">Id of the template</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="recipient">Receiptient of the notification</param>
-    /// <param name="attachments">Attachments</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <param name="cc"></param>
-    /// <returns></returns>
-    public async Task PublishEmailNotificationAsync<TData>(Guid templateId,
-        TData data,
-        Person recipient,
-        List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null,
-        string cc = "") where TData : NotificationData
-    {
-        if (recipient == null)
-            throw new Exception($"{nameof(recipient)} must not be null");
-
-        if (string.IsNullOrWhiteSpace(recipient.EmailAddress1) && string.IsNullOrWhiteSpace(recipient.EmailAddress2))
-            throw new Exception($"No email address available for {recipient.FullName}");
-
-        var emailAddress = string.IsNullOrWhiteSpace(recipient.EmailAddress1) ? recipient.EmailAddress2 : recipient.EmailAddress1;
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.Email,
-            RecipientId = recipient?.Id ?? null,
-            RecipientText = emailAddress,
-            TemplateId = templateId,
-            Attachments = attachments,
-            Cc = cc,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
-    }
-
-    #endregion
-
-    #region Direct sms notifications
-
-    /// <summary>
-    /// Publish sms notification
-    /// </summary>
-    /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="mobileNo">Recipient mobile number</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishSmsNotificationAsync<TData>(string notificationName,
-        TData data,
-        string mobileNo,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-        if (string.IsNullOrWhiteSpace(mobileNo))
-            throw new Exception($"{nameof(mobileNo)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.SMS,
-            RecipientText = mobileNo,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
-    }
-
-    /// <summary>
-    /// Publish sms notification
-    /// </summary>
-    /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="recipient">Receiptient of the notification</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishSmsNotificationAsync<TData>(string notificationName,
-        TData data,
-        Person recipient,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-        if (recipient == null)
-            throw new Exception($"{nameof(recipient)} must not be null");
-
-        if (string.IsNullOrWhiteSpace(recipient.MobileNumber1) && string.IsNullOrWhiteSpace(recipient.MobileNumber2))
-            throw new Exception($"No mobile number available for {recipient.FullName}");
-
-        var mobileNumber = string.IsNullOrWhiteSpace(recipient.MobileNumber1) ? recipient.MobileNumber2 : recipient.MobileNumber1;
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.SMS,
-            RecipientId = recipient?.Id ?? null,
-            RecipientText = mobileNumber,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
-    }
-
-    /// <summary>
-    /// Publish sms notification using explicitly specified template
-    /// </summary>
-    /// <param name="templateId">Id of the template</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="mobileNo">Recipient mobile number</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishSmsNotificationAsync<TData>(Guid templateId,
-        TData data,
-        string mobileNo,
-        GenericEntityReference sourceEntity = null
-        ) where TData : NotificationData
-    {
-        if (string.IsNullOrWhiteSpace(mobileNo))
-            throw new Exception($"{nameof(mobileNo)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.SMS,
-            RecipientText = mobileNo,
-            TemplateId = templateId,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
-    }
-
-    /// <summary>
-    /// Publish sms notification using explicitly specified template
-    /// </summary>
-    /// <param name="templateId">Id of the template</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="recipient">Receiptient of the notification</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishSmsNotificationAsync<TData>(Guid templateId,
-        TData data,
-        Person recipient,
-        GenericEntityReference sourceEntity = null
-        ) where TData : NotificationData
-    {
-        if (recipient == null)
-            throw new Exception($"{nameof(recipient)} must not be null");
-
-        if (string.IsNullOrWhiteSpace(recipient.MobileNumber1) && string.IsNullOrWhiteSpace(recipient.MobileNumber2))
-            throw new Exception($"No mobile number available for {recipient.FullName}");
-
-        var mobileNumber = string.IsNullOrWhiteSpace(recipient.MobileNumber1) ? recipient.MobileNumber2 : recipient.MobileNumber1;
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.SMS,
-            RecipientId = recipient?.Id ?? null,
-            RecipientText = mobileNumber,
-            TemplateId = templateId,
-        };
-
-        wrappedData.SetSourceEntity(sourceEntity);
-
-        await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
-    }
-
-    //private static EntityIdentifier GetEntityIdentifier(object entity)
-    //{
-    //    EntityIdentifier entityIdentifier = null;
-    //    if (entity is not null)
-    //    {
-    //        if (entity is Entity<Guid>)
-    //            entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<Guid>)entity).Id);
-    //        else if (entity is Entity<long>)
-    //            entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<long>)entity).Id);
-    //        else if (entity is Entity<int>)
-    //            entityIdentifier = new EntityIdentifier(entity.GetType(), ((Entity<int>)entity).Id);
-    //    }
-
-    //    return entityIdentifier;
-    //}
-
-    private static EntityIdentifier GetEntityIdentifier(GenericEntityReference genericEntity)
-    {
-        EntityIdentifier entityIdentifier = null;
-
-        if (genericEntity != null)
-        {
-            Entity<Guid> entity = genericEntity;
-            entityIdentifier = new EntityIdentifier(entity.GetType(), entity.Id);
+            _channelSenders = channelSenders;
+            _notificationTypeRepository = notificationTypeRepository;
+            _notificationChannelRepository = notificationChannelRepository;
+            _userNotificationPreference = userNotificationPreference;
+            _messageTemplateRepository = messageTemplateRepository;
+            _notificationSettings = notificationSettings;
+            _personRepository = personRepository;
+            _storedFileService = storedFileService;
+            _notificationMessageRepository = notificationMessageRepository;
+            _userTopicSubscriptionRepository = userTopicSubscriptionRepository;
+            _backgroundJobManager = backgroundJobManager;
+            _storedFileRepository = storedFileRepository;
+            _notificationTopicRepository = notificationTopicRepository;
         }
 
-        return entityIdentifier;
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Note: for temporary usage only
-    /// </summary>
-    /// <param name="ids"></param>
-    /// <returns></returns>
-    public async Task ReSendAbpNotification(List<Guid> ids)
-    {
-        foreach (var id in ids)
+        public class TestData : NotificationData
         {
-            await _backgroundJobManager.EnqueueAsync<NotificationDistributionJob, NotificationDistributionJobArgs>(
-                new NotificationDistributionJobArgs(
-                    id
-                )
-            );
+            public string subject { get; set; }
+            public string name { get; set; }
+            public string body { get; set; }
         }
-    }
 
-    /// <summary>
-    /// Save notification attachment
-    /// </summary>
-    public async Task<NotificationAttachmentDto> SaveAttachmentAsync(string fileName, Stream stream)
-    {
-        var file = await _fileService.SaveFileAsync(stream, fileName);
-        return new NotificationAttachmentDto()
+        public async Task<List<DynamicDto<NotificationChannelConfig, Guid>>> OmoTest()
         {
-            FileName = fileName,
-            StoredFileId = file.Id
-        };
-    }
+            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => x.Name == "Warning");
+            var fromPerson = await _personRepository.FirstOrDefaultAsync(x => x.FirstName == "System");
+            var toPerson = await _personRepository.FirstOrDefaultAsync(x => x.EmailAddress1 == "omolemo.lethuloe@boxfusion.io");
+            var channel = await _notificationChannelRepository.FirstOrDefaultAsync(x => x.Name == "SMS");
+            var getAttachments = await _storedFileService.GetAttachmentsAsync(fromPerson.Id, "Shesha.Domain.Person");
 
-    #region new notififiers
-    /// <summary>
-    /// Send Notification to specified person
-    /// </summary>
-    public async Task<Guid?> SendNotification<TData>(string notificationName, Person recipient, TData data, RefListNotificationType? notificationType = null, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "") where TData : NotificationData
-    {
-
-        if (notificationType != null)
-        {
-            return await SendNotificationByType(notificationName, (int)notificationType, recipient, data, sourceEntity, attachments, cc);
-        }
-        else
-        {
-            if (recipient.PreferredContactMethod != null)
+            var attachments = getAttachments.Select(x => new NotificationAttachmentDto()
             {
-                return await SendNotificationByType(notificationName, (int)recipient.PreferredContactMethod, recipient, data, sourceEntity, attachments, cc);
+                FileName = x.FileName,
+                StoredFileId = x.Id,
+            }).ToList();
+
+
+            var testing = new TestData()
+            {
+                name = "Omolemo",
+                subject = "Test Subject",
+                body = "Test Body"
+            };
+            var triggeringEntity = new GenericEntityReference(fromPerson);
+            return await SendNotification(type, fromPerson, toPerson, data: testing, RefListNotificationPriority.High, attachments, triggeringEntity, channel);
+        }
+
+        public async Task<List<DynamicDto<NotificationChannelConfig, Guid>>> OmoBroadcastTest()
+        {
+            var type = await _notificationTypeRepository.FirstOrDefaultAsync(x => x.Name == "Warning");
+            var topic = await _notificationTopicRepository.FirstOrDefaultAsync(x => x.Name == "Service Requests");
+            var getAttachments = await _storedFileService.GetAttachmentsAsync(topic.Id, "Shesha.Core.NotificationTopic");
+
+            var attachments = getAttachments.Select(x => new NotificationAttachmentDto()
+            {
+                FileName = x.FileName,
+                StoredFileId = x.Id,
+            }).ToList();
+
+
+            var testing = new TestData()
+            {
+                name = "Omolemo",
+                subject = "Test Subject",
+                body = "Test Body"
+            };
+            var triggeringEntity = new GenericEntityReference(topic);
+            return await SendBroadcastNotification(type, topic, data: testing, RefListNotificationPriority.High, attachments, triggeringEntity);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="type"></param>
+        /// <param name="topic"></param>
+        /// <param name="data"></param>
+        /// <param name="priority"></param>
+        /// <param name="attachments"></param>
+        /// <param name="triggeringEntity"></param>
+        /// <param name="channel"></param>
+        /// <returns></returns>
+        public async Task<List<DynamicDto<NotificationChannelConfig, Guid>>> SendBroadcastNotification<TData>(NotificationTypeConfig type, NotificationTopic topic, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData: NotificationData
+        {
+            var notification = await SaveOrUpdateEntityAsync<Notification>(null, item =>
+            {
+                item.NotificationType = type;
+                item.NotificationTopic = topic;
+                item.NotificationData = data.ToString();
+                item.Priority = (RefListNotificationPriority)priority;
+                item.TriggeringEntity = triggeringEntity;
+            });
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            var users = await _userTopicSubscriptionRepository.GetAllListAsync(x => x.Topic.Id == topic.Id);
+
+            if (channel != null)
+            {
+                var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channel.SupportedFormat == x.MessageFormat);
+                var subject = TemplateHelper.ReplacePlaceholders(template.TitleTemplate, data);
+                var message = TemplateHelper.ReplacePlaceholders(template.BodyTemplate, data);
+
+                await _backgroundJobManager.EnqueueAsync<BroadcastNotificationJobQueuer, BroadcastNotificationJobArgs>(new BroadcastNotificationJobArgs()
+                {
+                    TemplateId = template.Id,
+                    NotificationId = notification.Id,
+                    ChannelId = channel.Id,
+                    Subject = subject,
+                    Message = message,
+                    Attachments = attachments
+                });
             }
             else
             {
-                await SendNotificationByType(notificationName, (int)RefListNotificationType.SMS, recipient, data, sourceEntity, attachments);
-                return await SendNotificationByType(notificationName, (int)RefListNotificationType.Email, recipient, data, sourceEntity, attachments, cc);
+                var subscriptions = await _userTopicSubscriptionRepository.GetAllListAsync(x => x.Topic.Id == topic.Id);
+
+                if (subscriptions != null && subscriptions.Any())
+                {
+                    foreach (var user in users)
+                    {
+                        var userChannels = await GetChannelsAsync(type, user.User, priority);
+
+                        foreach (var channelConfig in userChannels)
+                        {
+                            var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
+                            var subject = TemplateHelper.ReplacePlaceholders(template.TitleTemplate, data);
+                            var message = TemplateHelper.ReplacePlaceholders(template.BodyTemplate, data);
+
+                            await _backgroundJobManager.EnqueueAsync<BroadcastNotificationJobQueuer, BroadcastNotificationJobArgs>(new BroadcastNotificationJobArgs()
+                            {
+                                TemplateId = template.Id,
+                                NotificationId = notification.Id,
+                                ChannelId = channelConfig.Id,
+                                Subject = subject,
+                                Message = message,
+                                Attachments = attachments
+                            });
+                        }
+                    }
+
+                }
             }
+
+            return await MapToDynamicDtoListAsync<NotificationChannelConfig, Guid>(new List<NotificationChannelConfig>());
         }
-    }
 
-    private async Task<Guid?> SendNotificationByType<TData>(string notificationName, int notificationType, Person person, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "") where TData : NotificationData
-    {
-        var notification = await _repository.FirstOrDefaultAsync(e => e.Name == notificationName);
-        var templates = await _templateRepository.GetAllListAsync(e => e.Notification == notification);
-
-        var template = templates.FirstOrDefault(e => (int)e.SendType == notificationType);
-        if (template != null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="type"></param>
+        /// <param name="fromPerson"></param>
+        /// <param name="toPerson"></param>
+        /// <param name="data"></param>
+        /// <param name="priority"></param>
+        /// <param name="attachments"></param>
+        /// <param name="triggeringEntity"></param>
+        /// <param name="channel"></param>
+        /// <returns></returns>
+        public async Task<List<DynamicDto<NotificationChannelConfig, Guid>>> SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData: NotificationData
         {
-            switch (notificationType)
+            var notification = await SaveOrUpdateEntityAsync<Notification>(null, item =>
             {
-                case (int)RefListNotificationType.Email:
-                    return await SendEmailAsync(template.Id, recipient: person, data, sourceEntity: sourceEntity, attachments: attachments, cc: cc);
-                case (int)RefListNotificationType.SMS:
-                    return await SendSmsAsync(template.Id, recipient: person, data, sourceEntity: sourceEntity);
-                default:
-                    break;
+                item.NotificationType = type;
+                item.FromPerson = fromPerson;
+                item.ToPerson = toPerson;
+                item.NotificationData = data.ToString();
+                item.TriggeringEntity = triggeringEntity;
+                item.Priority = (RefListNotificationPriority)priority;
+            });
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            if (channel != null)
+            {
+                // Send notification to a specific channel
+                await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority,channel, attachments);
             }
+            else
+            {
+                // Send notification to all determined channels
+                var channels = await GetChannelsAsync(type, toPerson, (RefListNotificationPriority)priority);
+
+                foreach (var channelConfig in channels)
+                {
+                    await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channelConfig, attachments);
+                }
+            }
+
+            // Return the list of channels used for sending notifications as DynamicDto
+            return await MapToDynamicDtoListAsync<NotificationChannelConfig, Guid>(new List<NotificationChannelConfig>());
         }
 
-        return null;
-    }
-
-    private async Task<Guid?> SendSmsAsync<TData>(Guid notificationTemplate, string mobileNumber, TData data, GenericEntityReference sourceEntity = null, Person recipient = null) where TData : NotificationData
-    {
-        Guid? messageId = Guid.Empty;
-
-        using (_notificationPublicationContext.BeginScope())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="recipient"></param>
+        /// <param name="priority"></param>
+        /// <returns></returns>
+        private async Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, Person recipient, RefListNotificationPriority priority)
         {
-            await PublishSmsNotificationAsync(
-            templateId: notificationTemplate,
-            data: data,
-            mobileNo: mobileNumber,
-            sourceEntity: sourceEntity
+            List<NotificationChannelConfig> results = new List<NotificationChannelConfig>();
+
+            // Step 1: Check User Notification Preferences
+            var userPreferences = await _userNotificationPreference.GetAllListAsync(
+                x => x.User.Id == recipient.Id && x.NotificationType.Id == type.Id
             );
 
-            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
+            if (userPreferences != null && userPreferences.Any())
+            {
+                // Flatten and return DefaultChannel from user preferences if available
+                return userPreferences.Select(x => x.DefaultChannel).ToList();
+            }
+
+            // Step 2: Check Override Channels in NotificationTypeConfig
+            if (!string.IsNullOrEmpty(type.OverrideChannels))
+            {
+                try
+                {
+                    var overrideChannelIds = JsonSerializer.Deserialize<Guid[]>(type.OverrideChannels);
+
+                    // Fetch channels by IDs if the repository supports it
+                    var channels = await _notificationChannelRepository
+                        .GetAll()
+                        .Where(channel => overrideChannelIds.Contains(channel.Id))
+                        .ToListAsync();
+
+                    if (channels.Any())
+                    {
+                        return channels;
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    new UserFriendlyException("Error deserializing override channels", ex);
+                    // Log deserialization error (ex.Message) and continue to fallback
+                    // Optionally handle the error depending on requirements
+                }
+                return results;
+            }
+
+            // Step 3: Fallback - Return default channels based on priority (if applicable)
+            var notificationSettings = await _notificationSettings.NotificationSettings.GetValueAsync();
+            switch (priority)
+            {
+                case RefListNotificationPriority.Low:
+                    return notificationSettings.Low;
+                case RefListNotificationPriority.Medium:
+                    return notificationSettings.Medium;
+                case RefListNotificationPriority.High:
+                    return notificationSettings.High;
+                default:
+                    return new List<NotificationChannelConfig>();
+            };
         }
 
-        return messageId;
-    }
-
-    private async Task<Guid?> SendSmsAsync<TData>(Guid notificationTemplate, Person recipient, TData data, GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-        Guid? messageId = Guid.Empty;
-
-        using (_notificationPublicationContext.BeginScope())
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="notification"></param>
+        /// <param name="data"></param>
+        /// <param name="fromPerson"></param>
+        /// <param name="toPerson"></param>
+        /// <param name="type"></param>
+        /// <param name="priority"></param>
+        /// <param name="channelConfig"></param>
+        /// <param name="attachments"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        private async Task SendNotificationToChannel<TData>(Notification notification, TData data, Person fromPerson, Person toPerson, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData: NotificationData
         {
-            await PublishSmsNotificationAsync(
-            templateId: notificationTemplate,
-            data: data,
-            sourceEntity: sourceEntity,
-            recipient: recipient
-            );
+            var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
 
-            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
+            if (template == null)
+                throw new UserFriendlyException($"There is no {type.Name} template found for the {channelConfig.Name} channel");
+
+            var senderChannelInterface = _channelSenders.FirstOrDefault(x => x.GetType().Name == channelConfig.SenderTypeName);
+
+            if (senderChannelInterface == null)
+                throw new UserFriendlyException($"Sender not found for channel {channelConfig.Name}");
+
+            // Create a new notification message
+            var message = await SaveOrUpdateEntityAsync<NotificationMessage>(null, item =>
+            {
+                item.PartOf = notification;
+                item.Channel = channelConfig;
+                item.Subject = TemplateHelper.ReplacePlaceholders(template.TitleTemplate,data);
+                item.Message = TemplateHelper.ReplacePlaceholders(template.BodyTemplate, data);
+                item.RetryCount = 0;
+                item.ReadStatus = RefListNotificationReadStatus.Unread;
+                item.Direction = RefListNotificationDirection.Outgoing;
+                item.Status = RefListNotificationStatus.Preparing;
+            });
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            // save attachments if specified
+            if (attachments != null)
+            {
+                foreach (var attachmentDto in attachments)
+                {
+                    var file = await _storedFileRepository.GetAsync(attachmentDto.StoredFileId);
+
+                    await SaveOrUpdateEntityAsync<NotificationMessageAttachment>(null, item =>
+                    {
+                        item.Message = message;
+                        item.File = file;
+                        item.FileName = attachmentDto.FileName;
+                    });
+                }
+            }
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            var sender = StaticContext.IocManager.Resolve<NotificationSender>(senderChannelInterface);
+
+            if (type.IsTimeSensitive)
+            {
+                await sender.SendAsync(fromPerson, toPerson, message, true);
+            }
+            else
+            {
+                await _backgroundJobManager.EnqueueAsync<DirectNotificationJobQueuer, DirectNotificationJobArgs>(new DirectNotificationJobArgs()
+                {
+                    SenderTypeName = channelConfig.SenderTypeName,
+                    FromPerson = fromPerson.Id,
+                    ToPerson = toPerson.Id,
+                    Message = message.Id
+                });
+            }
+
+            await CurrentUnitOfWork.SaveChangesAsync();
         }
-
-        return messageId;
     }
-
-    private async Task<Guid?> SendEmailAsync<TData>(Guid notificationTemplate, string emailAddress, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "" ) where TData : NotificationData
-    {
-        Guid? messageId = Guid.Empty;
-
-        using (_notificationPublicationContext.BeginScope())
-        {
-            await PublishEmailNotificationAsync(
-                templateId: notificationTemplate,
-                data: data,
-                attachments: attachments,
-                emailAddress: emailAddress,
-                sourceEntity: sourceEntity,
-                cc: cc);
-
-            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
-        }
-
-        return messageId;
-    }
-
-    private async Task<Guid?> SendEmailAsync<TData>(Guid notificationTemplate, Person recipient, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, string cc = "") where TData : NotificationData
-    {
-        Guid? messageId = Guid.Empty;
-        using (_notificationPublicationContext.BeginScope())
-        {
-            await PublishEmailNotificationAsync(
-                templateId: notificationTemplate,
-                data: data,
-                attachments: attachments,
-                sourceEntity: sourceEntity,
-                recipient: recipient,
-                cc: cc);
-
-            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
-        }
-
-        return messageId;
-    }
-    #endregion
 }

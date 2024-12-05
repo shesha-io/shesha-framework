@@ -31,6 +31,10 @@ using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
+using Shesha.Notifications;
+using Shesha.Notifications.Emails.Gateways;
+using Shesha.Notifications.Sms.Gateways;
+using Shesha.Notifications.SMS;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -57,6 +61,8 @@ namespace Shesha.Web.Host.Startup
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<INotificationSender, NotificationSender>();
+
             // Should be before AddMvcCore
             services.AddSingleton<IActionDescriptorChangeProvider>(SheshaActionDescriptorChangeProvider.Instance);
             services.AddSingleton(SheshaActionDescriptorChangeProvider.Instance);
@@ -95,6 +101,14 @@ namespace Shesha.Web.Host.Startup
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
+
+            services.AddTransient<INotificationChannelSender, EmailChannelSender>();
+            services.AddTransient<INotificationChannelSender, SmsChannelSender>();
+
+            services.AddTransient<IEmailGateway, SmtpGateway>();
+            services.AddTransient<ISmsGateway, ClickatellGateway>();
+            services.AddTransient<IEmailGatewayFactory,EmailGatewayFactory>();
+            services.AddTransient<ISmsGatewayFactory ,SmsGatewayFactory>();
 
             services.AddSignalR();
 

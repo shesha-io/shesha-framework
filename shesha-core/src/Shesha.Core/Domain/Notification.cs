@@ -1,54 +1,52 @@
 ﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Repositories;
-using FluentValidation;
 using Shesha.Domain.Attributes;
-using Shesha.Extensions;
+using Shesha.Domain.Enums;
+using Shesha.EntityReferences;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
-    [Entity(FriendlyName = "Notification")]
-    public class Notification : FullAuditedEntity<Guid>
+    [Entity(TypeShortAlias = "Shesha.Core.Notification")]
+    public class Notification: FullAuditedEntity<Guid>
     {
-        [NotMapped]
-        public virtual string FullName => !string.IsNullOrEmpty(Namespace) ? Namespace + ": " + Name : !string.IsNullOrEmpty(Name) ? Name : Id.ToString();
-
-        [Required]
-        [StringLength(255)]
-        [EntityDisplayName]
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual string Name { get; set; }
-
-        [StringLength(255)]
-        public virtual string Namespace { get; set; }
-
-        [DataType(DataType.MultilineText)]
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual NotificationTypeConfig NotificationType { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual Person ToPerson { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual Person FromPerson { get; set; }
+        /// <summary>
+        /// Serialized Json of the notification data
+        /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string Description { get; set; }
+        public virtual string NotificationData { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ReferenceList("Shesha.Core", "NotificationPriority")]
+        public virtual RefListNotificationPriority Priority { get; set; }
+        /// <summary>
+        /// The entity that the notification pertains to
+        /// </summary>
+        public virtual GenericEntityReference TriggeringEntity { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual NotificationTopic NotificationTopic { get; set; }
     }
-
-    public class NotificationValidator : AbstractValidator<Notification>
-    {
-        private readonly IRepository<Notification, Guid> _repository;
-
-        public NotificationValidator(IRepository<Notification, Guid> repository)
-        {
-            _repository = repository;
-            RuleFor(x => x.Name).NotEmpty().MustAsync(UniqueNameAsync).WithMessage("Notification with name '{PropertyValue}' already exists.");
-        }
-
-        private async Task<bool> UniqueNameAsync(Notification notification, string name, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return true;
-
-            var alreadyExist = await _repository.GetAll().Where(m => m.Name.ToLower() == name.ToLower() && m.Id != notification.Id).AnyAsync();
-            return !alreadyExist;
-        }
-    }
-
 }
