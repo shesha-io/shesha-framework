@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shesha.Notifications.Dto;
+using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Sms
@@ -11,7 +12,7 @@ namespace Shesha.Sms
         /// <summary>
         /// Send sms to specified mobile number
         /// </summary>
-        Task<Tuple<bool, string>> SendSmsAsync(string mobileNumber, string body);
+        Task<SendStatus> SendSmsAsync(string mobileNumber, string body);
 
         Task<object> GetSettingsAsync();
         Task SetSettingsAsync(object settings);

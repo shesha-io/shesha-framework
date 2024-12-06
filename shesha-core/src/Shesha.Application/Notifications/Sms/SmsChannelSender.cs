@@ -6,6 +6,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.Notifications.Configuration;
+using Shesha.Notifications.Dto;
 using Shesha.Notifications.Helpers;
 using Shesha.Services;
 using Shesha.Sms;
@@ -25,13 +26,15 @@ namespace Shesha.Notifications.SMS
     {
         private readonly ISmsSettings _smsSettings;
         private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
+        private readonly ISmsGateway _smsGateway;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public SmsChannelSender(ISmsSettings smsSettings,IRepository<NotificationChannelConfig, Guid> notificationChannelRepository)
+        public SmsChannelSender(ISmsSettings smsSettings,IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, ISmsGateway smsGateway)
         {
             _smsSettings = smsSettings;
             _notificationChannelRepository = notificationChannelRepository;
+            _smsGateway = smsGateway;
         }
 
         /// <summary>
@@ -53,24 +56,29 @@ namespace Shesha.Notifications.SMS
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
-        public async Task<Tuple<bool, string>> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, bool isBodyHtml, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
             if (!settings.IsSmsEnabled)
             {
                 Logger.Warn("SMSs are disabled");
-                return await Task.FromResult(new Tuple<bool, string>(false, "SMSs are disabled."));
+                return await Task.FromResult(new SendStatus(){
+                    IsSuccess= false,
+                    Message = "SMSs are disabled"
+                });
             }
 
-            var sender = StaticContext.IocManager.Resolve<ISmsGateway>();
-
-            return await sender.SendSmsAsync(GetRecipientId(toPerson), message.Message);
+            return await _smsGateway.SendSmsAsync(GetRecipientId(toPerson), message.Message);
         }
 
-        public async Task<Tuple<bool, string>> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
         {
-            return await Task.FromResult(new Tuple<bool, string>(false, "Broadcast Implementation not yet implemented!"));
+            return await Task.FromResult(new SendStatus()
+            {
+                IsSuccess = false,
+                Message = "Broadcast Implementation not yet implemented!"
+            });
         }
     }
 }

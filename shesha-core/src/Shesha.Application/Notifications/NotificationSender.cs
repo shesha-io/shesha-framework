@@ -12,6 +12,8 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.NHibernate;
+using Shesha.Notifications.Dto;
+using Shesha.Notifications.Jobs;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -62,90 +64,96 @@ namespace Shesha.Notifications
         }
 
         [UnitOfWork]
-        public async Task SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, bool isBodyHtml)
+        public async Task SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, INotificationChannelSender notificationChannelSender)
         {
             var attachments = await GetAttachmentsAsync(message);
-            int attempt = 0;
-            Tuple<bool, string> sendStatus = new Tuple<bool, string>(false, "");
 
-            while (attempt < MaxRetries && !sendStatus.Item1)
+            try
             {
-                try
+                var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, message, "", attachments);
+
+                // Update the message status based on send result
+                if (sendStatus.IsSuccess)
                 {
-                    // Attempt to send the message
-                    sendStatus = await _channelSender.SendAsync(fromPerson, toPerson, message, isBodyHtml, "", attachments);
+                    message.Status = RefListNotificationStatus.Sent;
+                    message.RetryCount = 0; // No retry as this is the first (successful) attempt
+                    message.ErrorMessage = null; // Clear any previous error
 
-                    if (sendStatus.Item1)
-                    {
-                        // Successful send, exit the loop
-                        message.Status = RefListNotificationStatus.Sent;
-                        message.RetryCount = attempt;
-                        message.ErrorMessage = null; // Clear error message
-
-                        break;
-                    }
-                    else
-                    {
-                        Logger.ErrorFormat($"Attempt {attempt + 1} to send notification failed. Message: {sendStatus.Item2}");
-                    }
+                    await _notificationMessageRepository.UpdateAsync(message);
                 }
-                catch (Exception ex)
+                else
                 {
-                    message.ErrorMessage = $"Exception on attempt {attempt + 1} to send notification: {ex.Message}";
-                    Logger.ErrorFormat($"Exception on attempt {attempt + 1} to send notification: {ex.Message}");
-                }
+                    // Increment the retry count for the message
+                    message.RetryCount++;
 
-                // Increment retry count and save to the database
-                attempt++;
-                message.RetryCount = attempt;
-                message.ErrorMessage = $"Failed to send notification after {attempt} attempts. Message: {sendStatus.Item2}";
-                message.Status = RefListNotificationStatus.Failed;
+                    await _notificationMessageRepository.UpdateAsync(message);
 
-                using (var uow = _unitOfWorkManager.Begin())
-                {
+                    _unitOfWorkManager.Current.SaveChanges();
 
-                    using (var transaction = _sessionProvider.Session.BeginTransaction())
-                    {
-                        await _notificationMessageRepository.UpdateAsync(message);
-                        transaction.Commit();
-                    }
-                    await uow.CompleteAsync();
+                    // Schedule the next attempt through the background job
+                    ScheduleDirectRetryJob(message, notificationChannelSender);
                 }
 
-                // Introduce a delay before the next retry attempt
-                if (attempt < MaxRetries)
-                {
-                    await Task.Delay(1000); // Backoff delay
-                }
+                // Update message status in the database
+                await _notificationMessageRepository.UpdateAsync(message);
+
+                _unitOfWorkManager.Current.SaveChanges();
             }
-
-            if (!sendStatus.Item1)
+            catch (Exception ex)
             {
-                Logger.ErrorFormat($"Failed to send notification after {MaxRetries} attempts. Message: {sendStatus.Item2}");
-                //throw new Exception("Failed to send notification after maximum retry attempts.");
+                message.Status = RefListNotificationStatus.Failed;
+                message.ErrorMessage = $"Exception while sending notification: {ex.Message}";
+
+                await _notificationMessageRepository.UpdateAsync(message);
+
+                Logger.Error($"Exception while sending notification {message.Id}: {ex.Message}");
+
+                // Schedule a retry job if an exception occurs
+                ScheduleDirectRetryJob(message, notificationChannelSender);
             }
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="notificationChannelSender"></param>
+        /// <returns></returns>
+        private void ScheduleDirectRetryJob(NotificationMessage message, INotificationChannelSender notificationChannelSender)
+        {
+            var jobArgs = new DirectNotificationJobArgs
+            {
+                FromPerson = message.PartOf.FromPerson.Id,
+                ToPerson = message.PartOf.ToPerson.Id,     
+                Message = message.Id,
+                SenderTypeName = notificationChannelSender.GetType().Name,
+                Attempt = message.RetryCount
+            };
+
+            // Schedule the next retry job with a delay
+            BackgroundJob.Enqueue<DirectNotificationJobQueuer>(x => x.ExecuteAsync(jobArgs));
+        }
+
         [UnitOfWork]
-        public async Task SendBroadcastAsync(Notification notification, string subject, string messageContent, List<EmailAttachment> attachments)
+        public async Task SendBroadcastAsync(Notification notification, string subject, string messageContent, List<EmailAttachment> attachments, INotificationChannelSender notificationChannelSender)
         {
             int attempt = 0;
-            Tuple<bool, string> sendStatus = new Tuple<bool, string>(false, "");
+            SendStatus sendStatus = new SendStatus();
 
             // Get all notification messages associated with the notification
             var messages = _notificationMessageRepository.GetAll().Where(m => m.PartOf.Id == notification.Id).ToList();
 
-            while (attempt < MaxRetries && !sendStatus.Item1)
+            while (attempt < MaxRetries && !sendStatus.IsSuccess)
             {
                 try
                 {
                     // Attempt to send the message via the channel sender
-                    sendStatus = await _channelSender.BroadcastAsync(notification.NotificationTopic, subject, messageContent, attachments);
+                    sendStatus = await notificationChannelSender.BroadcastAsync(notification.NotificationTopic, subject, messageContent, attachments);
 
                     foreach (var message in messages)
                     {
-                        if (sendStatus.Item1)
+                        if (sendStatus.IsSuccess)
                         {
                             // Update the status to Sent for successful messages
                             message.Status = RefListNotificationStatus.Sent;
@@ -154,10 +162,10 @@ namespace Shesha.Notifications
                         }
                         else
                         {
-                            Logger.ErrorFormat($"Attempt {attempt + 1} to send notification failed. Message: {sendStatus.Item2}");
+                            Logger.ErrorFormat($"Attempt {attempt + 1} to send notification failed. Message: {sendStatus.Message}");
                             message.Status = RefListNotificationStatus.Failed;
                             message.RetryCount = attempt;
-                            message.ErrorMessage = $"Failed to send notification on attempt {attempt + 1}. Message: {sendStatus.Item2}";
+                            message.ErrorMessage = $"Failed to send notification on attempt {attempt + 1}. Message: {sendStatus.Message}";
                         }
 
                         // Save changes to each message
@@ -172,7 +180,7 @@ namespace Shesha.Notifications
                         }
                     }
 
-                    if (sendStatus.Item1)
+                    if (sendStatus.IsSuccess)
                     {
                         // If any message was successfully sent, exit the loop
                         break;
@@ -191,9 +199,9 @@ namespace Shesha.Notifications
                 }
             }
 
-            if (!sendStatus.Item1)
+            if (!sendStatus.IsSuccess)
             {
-                Logger.ErrorFormat($"Failed to send notification after {MaxRetries} attempts. Message: {sendStatus.Item2}");
+                Logger.ErrorFormat($"Failed to send notification after {MaxRetries} attempts. Message: {sendStatus.Message}");
             }
         }
     }

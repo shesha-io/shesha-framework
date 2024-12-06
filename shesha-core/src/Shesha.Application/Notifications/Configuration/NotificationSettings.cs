@@ -16,18 +16,18 @@ namespace Shesha.Notifications.Configuration
     public class NotificationSettings
     {
         /// <summary>
-        /// Low priority notifications
+        /// Low priority notifications channels
         /// </summary>
-        public List<NotificationChannelConfig> Low { get; set; }
+        public List<Guid> Low { get; set; }
 
         /// <summary>
-        /// Normal notifications
+        /// Normal notifications channels
         /// </summary>
-        public List<NotificationChannelConfig> Medium { get; set; }
+        public List<Guid> Medium { get; set; }
 
         /// <summary>
-        /// Urgent notifications
+        /// Urgent notifications channels
         /// </summary>
-        public List<NotificationChannelConfig> High { get; set; }
+        public List<Guid> High { get; set; }
     }
 }

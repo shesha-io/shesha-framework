@@ -9,6 +9,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.Notifications.Configuration;
+using Shesha.Notifications.Dto;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -62,7 +63,7 @@ namespace Shesha.Notifications
             return enabled;
         }
 
-        public async Task<Tuple<bool, string>> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, bool isBodyHtml, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             //if (message.Length > MaxMessageSize)
             //    throw new ArgumentException("Message exceeds the maximum allowed size for Email.");
@@ -71,10 +72,14 @@ namespace Shesha.Notifications
             if (!settings.EmailsEnabled)
             {
                 Logger.Warn("Emails are disabled");
-                return await Task.FromResult(new Tuple<bool, string>(false, "Emails are disabled."));
+                return new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = "Emails are disabled."
+                };
             }
 
-            using (var mail = BuildMessageWith(GetRecipientId(fromPerson), GetRecipientId(toPerson), message.Subject, message.Message, isBodyHtml, cc))
+            using (var mail = BuildMessageWith(GetRecipientId(fromPerson), GetRecipientId(toPerson), message.Subject, message.Message, cc))
             {
                 if (attachments != null)
                 {
@@ -86,20 +91,28 @@ namespace Shesha.Notifications
                 try
                 {
                     SendEmail(mail);
-                    return await Task.FromResult(new Tuple<bool, string>(true, "Successfully Sent!")) ;
+                    return new SendStatus()
+                    {
+                        IsSuccess = true,
+                        Message = "Successfully Sent!"
+                    };
                 }
                 catch (Exception e)
                 {
                     // Log the exception
                     Logger.Error("Failed to send email", e);
-                    return await Task.FromResult(new Tuple<bool, string>(false, e.Message));
+                    return new SendStatus()
+                    {
+                        IsSuccess = false,
+                        Message = e.Message
+                    };
                 }
             };
         }
 
-        public Task<Tuple<bool, string>> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
+        public Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
         {
-            using (var mail = BuildMessageWith(null, GetRecipients(topic).Result, subject, message, true))
+            using (var mail = BuildMessageWith(null, GetRecipients(topic).Result, subject, message, ""))
             {
                 if (attachments != null)
                 {
@@ -111,13 +124,21 @@ namespace Shesha.Notifications
                 try
                 {
                     SendEmail(mail);
-                    return Task.FromResult(new Tuple<bool, string>(true, "Successfully Sent!"));
+                    return Task.FromResult(new SendStatus()
+                    {
+                        IsSuccess = true,
+                        Message = "Successfully Sent!"
+                    });
                 }
                 catch (Exception e)
                 {
                     // Log the exception
                     Logger.Error("Failed to send email", e);
-                    return Task.FromResult(new Tuple<bool, string>(true, e.Message));
+                    return Task.FromResult(new SendStatus()
+                    {
+                        IsSuccess = false,
+                        Message = e.Message
+                    });
                 }
             };
         }
@@ -161,17 +182,16 @@ namespace Shesha.Notifications
         /// <param name="toAddress"></param>
         /// <param name="subject"></param>
         /// <param name="body"></param>
-        /// <param name="isBodyHtml"></param>
         /// <param name="cc"></param>
         /// <returns></returns>
-        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, string cc = "")
+        private MailMessage BuildMessageWith(string fromAddress, string toAddress, string subject, string body, string cc = "")
         {
             var smtpSettings = _emailSettings.SmtpSettings.GetValue();
             var message = new MailMessage
             {
                 Subject = (subject ?? "").Replace("\r", " ").Replace("\n", " ").RemoveDoubleSpaces(),
-                Body = isBodyHtml ? body.WrapAsHtmlDocument() : body,
-                IsBodyHtml = isBodyHtml,
+                Body = body.WrapAsHtmlDocument(),
+                IsBodyHtml = true,
             };
 
             message.From = string.IsNullOrWhiteSpace(fromAddress) ? new MailAddress(smtpSettings.DefaultFromAddress) : new MailAddress(fromAddress);

@@ -14,5 +14,6 @@ namespace Shesha.Notifications.Dto
         public Guid Message { get; set; }
         public bool HtmlSupport { get; set; }
         public string SenderTypeName { get; set; }
+        public int Attempt { get; set; }
     }
 }

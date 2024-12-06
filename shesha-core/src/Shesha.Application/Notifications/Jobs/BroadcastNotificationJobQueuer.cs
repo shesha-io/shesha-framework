@@ -33,7 +33,7 @@ namespace Shesha.Notifications.Jobs
         private readonly IStoredFileService _fileService;
         private readonly ISessionProvider _sessionProvider;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-
+        private readonly INotificationSender _notificationSender;
 
         public BroadcastNotificationJobQueuer(IRepository<NotificationTopic, Guid> notificationTopicRepository, 
                                               IRepository<Notification, Guid> notificationRepository, 
@@ -46,7 +46,8 @@ namespace Shesha.Notifications.Jobs
                                               IEnumerable<INotificationChannelSender> channelSenders,
                                               IStoredFileService fileService,
                                               ISessionProvider sessionProvider,
-                                              IUnitOfWorkManager unitOfWorkManager)
+                                              IUnitOfWorkManager unitOfWorkManager,
+                                              INotificationSender notificationSender)
         {
             _notificationMessage = notificationMessage;
             _notificationTopicRepository = notificationTopicRepository;
@@ -60,6 +61,7 @@ namespace Shesha.Notifications.Jobs
             _fileService = fileService;
             _sessionProvider = sessionProvider;
             _unitOfWorkManager = unitOfWorkManager;
+            _notificationSender = notificationSender;
         }
 
         /// <summary>
@@ -83,8 +85,7 @@ namespace Shesha.Notifications.Jobs
             if (senderChannelInterface == null)
                 throw new Exception($"No sender found for sender type: {channel.SenderTypeName}");
 
-            var sender = StaticContext.IocManager.Resolve<NotificationSender>(senderChannelInterface);
-            await sender.SendBroadcastAsync(notification, message.Subject, message.Message, message.Attachments);
+            await _notificationSender.SendBroadcastAsync(notification, message.Subject, message.Message, message.Attachments, senderChannelInterface);
         }
 
 

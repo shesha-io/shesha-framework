@@ -1,6 +1,7 @@
 ﻿using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
+using Shesha.Notifications.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Shesha.Notifications
     public interface INotificationChannelSender
     {
         string GetRecipientId(Person person);
-        Task<Tuple<bool, string>> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, bool isBodyHtml, string cc, List<EmailAttachment> attachments = null);
-        Task<Tuple<bool, string>> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null);
+        Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc, List<EmailAttachment> attachments = null);
+        Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null);
     }
 }

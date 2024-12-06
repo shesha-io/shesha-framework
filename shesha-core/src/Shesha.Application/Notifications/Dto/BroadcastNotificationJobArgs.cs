@@ -13,7 +13,6 @@ namespace Shesha.Notifications.Dto
     {
         public Guid NotificationId { get; set; }
         public Guid TemplateId { get; set; }
-        public bool HtmlSupport { get; set; }
         public Guid ChannelId { get; set; }
         public string Subject { get; set; }
         public string Message { get; set; }

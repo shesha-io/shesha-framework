@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Logging;
 using Shesha.Attributes;
+using Shesha.Notifications.Dto;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -32,7 +33,7 @@ namespace Shesha.Sms.Clickatell
         /// <param name="mobileNumber">Mobile number to send message to. Must be a South African number.</param>
         /// <param name="body">Message to be sent.</param>
         /// <returns>Returns true if message was accepted by the gateway, else returns false.</returns>
-        public override async Task<Tuple<bool, string>> SendSmsAsync(string mobileNumber, string body)
+        public override async Task<SendStatus> SendSmsAsync(string mobileNumber, string body)
         {
             var settings = await _settings.ClickatellGateway.GetValueAsync();
 
@@ -59,16 +60,28 @@ namespace Shesha.Sms.Clickatell
                 if (response.IsSuccessStatusCode && responseContent.StartsWith("ID"))
                 {
                     Logger.InfoFormat("SMS successfully sent, response: {0}", response);
-                    return new Tuple<bool, string>(true, "SMS Successfully Sent!");
+                    return new SendStatus()
+                    {
+                        IsSuccess = true,
+                        Message = "SMS Successfully Sent!"
+                    };
                 }
 
                 Logger.ErrorFormat($"Failed to send SMS. Response: {responseContent}");
-                return new Tuple<bool, string>(false, $"Failed to send SMS. Response: {responseContent}");
+                return new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = $"Failed to send SMS. Response: {responseContent}"
+                };
             }
             catch (Exception ex)
             {
                 Logger.ErrorFormat($"An error occurred: {ex.Message}");
-                return new Tuple<bool, string>(false, $"An error occurred: {ex.Message}");
+                return new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
 

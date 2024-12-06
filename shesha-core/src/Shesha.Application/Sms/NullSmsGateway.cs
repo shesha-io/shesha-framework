@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Castle.Core.Logging;
 using Shesha.Attributes;
+using Shesha.Notifications.Dto;
 
 namespace Shesha.Sms
 {
@@ -26,23 +27,35 @@ namespace Shesha.Sms
             Logger = NullLogger.Instance;
         }
 
-        public Task<Tuple<bool,string>> SendSmsAsync(string mobileNumber, string body)
+        public Task<SendStatus> SendSmsAsync(string mobileNumber, string body)
         {
             Logger.InfoFormat("SMS stub. Sending SMS to {0}: {1}", mobileNumber, body);
 
             if (string.IsNullOrEmpty(mobileNumber))
             { 
                 Logger.ErrorFormat("Can't send message, mobile number is empty");
-                return Task.FromResult(new Tuple<bool, string>(false, "Can't send message, mobile number is empty"));
+                return Task.FromResult(new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = "Can't send message, mobile number is empty"
+                });
             }
 
             if (string.IsNullOrEmpty(body))
             { 
                 Logger.ErrorFormat("Can't send empty message");
-                return Task.FromResult(new Tuple<bool, string>(false, "Can't send empty message"));
+                return Task.FromResult(new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = "Can't send empty message"
+                });
             }
 
-            return Task.FromResult(new Tuple<bool, string>(true, "Message Sent from Null Gateway"));
+            return Task.FromResult(new SendStatus()
+            {
+                IsSuccess = true,
+                Message = "Message Sent from Null Gateway"
+            });
         }
 
         public Task<object> GetSettingsAsync()
