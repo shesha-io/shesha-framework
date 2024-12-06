@@ -8,6 +8,7 @@ using ElmahCore.Mvc;
 using GraphQL;
 using GraphQL.NewtonsoftJson;
 using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -105,11 +106,27 @@ namespace Shesha.Web.Host.Startup
             services.AddHttpContextAccessor();
             services.AddHangfire(config =>
             {
-                config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-            });
-            services.AddHangfireServer();
+                var dbms = _appConfiguration.GetDbmsType();
+                var connStr = _appConfiguration.GetDefaultConnectionString();
 
-            //services.AddScoped<SheshaSchema>();
+                switch (dbms)
+                {
+                    case DbmsType.SQLServer:
+                        {
+                            config.UseSqlServerStorage(connStr);
+                            break;
+                        }
+                    case DbmsType.PostgreSQL:
+                        {
+                            config.UsePostgreSqlStorage(options => {
+                                options.UseNpgsqlConnection(connStr);
+                            });
+                            break;
+                        }
+                }
+            });
+            services.AddHangfireServer(config => {
+            });
 
             // add Shesha GraphQL
             services.AddSheshaGraphQL();
@@ -133,11 +150,6 @@ namespace Shesha.Web.Host.Startup
 
             // note: already registered in the ABP
             AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
-
-            // use NHibernate session per request
-            //app.UseNHibernateSessionPerRequest();
-
-            app.UseHangfireDashboard();
 
             app.UseConfigurationFramework();
 
