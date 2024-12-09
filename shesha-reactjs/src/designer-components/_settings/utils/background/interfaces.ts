@@ -6,11 +6,11 @@ export interface IBackgroundValue {
     size?: 'cover' | 'contain' | 'auto' | string;
     position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right' | string;
     repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
-    gradient?: { direction: string, colors: {} };
+    gradient?: { direction: string; colors: {} };
     color?: string;
     url?: string;
     uploadFile?: UploadFile;
-    storedFile?: { id: string, ownerId: string, fileCatergory: string, ownerType: string };
+    storedFile?: { id: string; ownerId: string; fileCatergory: string; ownerType: string };
 }
 
 export interface IBackgroundProps extends IConfigurableFormComponent {
