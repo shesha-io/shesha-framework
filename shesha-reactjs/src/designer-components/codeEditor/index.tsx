@@ -26,7 +26,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     dataType === DataTypes.string && (dataFormat === StringFormats.javascript || dataFormat === StringFormats.json),
   Factory: ({ model }) => {
     const editorProps: ICodeEditorProps = {
-      ...model,
+      ...model as any,
     };
     const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: model.availableConstantsExpression });
 

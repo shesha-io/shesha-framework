@@ -24,8 +24,8 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef();
 
-  formSettings.labelCol = { span: formSettings?.labelCol?.span || theme.labelSpan };
-  formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme.componentSpan };
+  formSettings.labelCol = { span: formSettings?.labelCol?.span || theme?.labelSpan };
+  formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme?.componentSpan };
 
   const onSave = values => {
     if (!readOnly) {

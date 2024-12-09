@@ -7,7 +7,7 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useNestedPropertyMetadatAccessor } from '@/providers';
+import { IInputStyles, useNestedPropertyMetadatAccessor } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import {
   evaluateString,
@@ -27,7 +27,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-import { IInputStyles } from '../textField/interfaces';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace

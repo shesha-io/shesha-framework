@@ -7,13 +7,12 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import settingsFormJson from './settingsForm.json';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useFormData } from '@/providers';
+import { IInputStyles, useFormData } from '@/providers';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

@@ -265,8 +265,10 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
       */
     }
 
+
     // update setting value to actual
     if (isPropertySettings(value)) {
+
       switch (value._mode) {
         case 'code': {
           return Boolean(value._code) ? calcFunction(value, allData) : undefined;
@@ -1629,7 +1631,7 @@ export interface EvaluationContext {
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
   if (!data)
     return data;
-  
+
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;

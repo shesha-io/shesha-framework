@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
@@ -26,7 +26,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -93,10 +92,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           (model?.passEmptyStringByDefault && '') ||
           (model.initialValue
             ? evaluateString(model?.initialValue, {
-                formData: allData.data,
-                formMode: allData.form.formMode,
-                globalState: allData.globalState,
-              })
+              formData: allData.data,
+              formMode: allData.form.formMode,
+              globalState: allData.globalState,
+            })
             : undefined)
         }
       >
