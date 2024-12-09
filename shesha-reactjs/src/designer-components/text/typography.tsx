@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Alert } from 'antd';
-import { evaluateString, getStyle } from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { GenericText } from './genericText';
 import { ITextTypographyProps } from './models';
 import { useForm, useFormData } from '@/providers';
@@ -35,10 +35,9 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
     return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
   }
 
-  const computedStyle = getStyle(style, formData) ?? {};
 
   return (
-    <GenericText style={{...computedStyle, justifyContent: textAlign, display: 'flex'}} {...model}>
+    <GenericText style={{...(typeof style === 'object' ? style : {}), justifyContent: textAlign, display: 'flex'}} {...model}>
       {content}
     </GenericText>
   );
