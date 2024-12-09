@@ -14,8 +14,6 @@ export interface IShaRoutingActionsContext {
 
 export type ShaRouting = IShaRoutingStateContext & IShaRoutingActionsContext;;
 
-export const SHA_ROUTING_CONTEXT_INITIAL_STATE: IShaRoutingStateContext = {};
-
-export const ShaRoutingStateContext = createNamedContext<IShaRoutingStateContext>(SHA_ROUTING_CONTEXT_INITIAL_STATE, "ShaRoutingStateContext");
+export const ShaRoutingStateContext = createNamedContext<IShaRoutingStateContext>(undefined, "ShaRoutingStateContext");
 
 export const ShaRoutingActionsContext = createNamedContext<IShaRoutingActionsContext>(undefined, "ShaRoutingActionsContext");
