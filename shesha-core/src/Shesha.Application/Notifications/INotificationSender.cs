@@ -11,6 +11,5 @@ namespace Shesha.Notifications
     public interface INotificationSender
     {
         Task SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, INotificationChannelSender notificationChannelSender);
-        Task SendBroadcastAsync(Notification notification, string subject, string messageContent, List<EmailAttachment> attachments, INotificationChannelSender notificationChannelSender);
     }
 }

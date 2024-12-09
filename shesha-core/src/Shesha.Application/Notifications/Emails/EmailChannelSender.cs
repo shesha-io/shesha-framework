@@ -38,13 +38,6 @@ namespace Shesha.Notifications
             return person.EmailAddress1;
         }
 
-        public async Task<string> GetRecipients(NotificationTopic topic)
-        {
-            var recipients = await _userTopicSubscriptionRepository.GetAll().Where(s => s.Topic.Id == topic.Id).Select(s => GetRecipientId(s.User)).ToListAsync();
-            return string.Join(";", recipients);
-        }
-
-
         private async Task<EmailSettings> GetSettings()
         {
             return await _emailSettings.EmailSettings.GetValueAsync();
@@ -65,8 +58,6 @@ namespace Shesha.Notifications
 
         public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
-            //if (message.Length > MaxMessageSize)
-            //    throw new ArgumentException("Message exceeds the maximum allowed size for Email.");
             var settings = await GetSettings();
 
             if (!settings.EmailsEnabled)
@@ -99,46 +90,12 @@ namespace Shesha.Notifications
                 }
                 catch (Exception e)
                 {
-                    // Log the exception
                     Logger.Error("Failed to send email", e);
                     return new SendStatus()
                     {
                         IsSuccess = false,
                         Message = e.Message
                     };
-                }
-            };
-        }
-
-        public Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
-        {
-            using (var mail = BuildMessageWith(null, GetRecipients(topic).Result, subject, message, ""))
-            {
-                if (attachments != null)
-                {
-                    foreach (var attachment in attachments)
-                    {
-                        mail.Attachments.Add(new Attachment(attachment.Stream, attachment.FileName));
-                    }
-                }
-                try
-                {
-                    SendEmail(mail);
-                    return Task.FromResult(new SendStatus()
-                    {
-                        IsSuccess = true,
-                        Message = "Successfully Sent!"
-                    });
-                }
-                catch (Exception e)
-                {
-                    // Log the exception
-                    Logger.Error("Failed to send email", e);
-                    return Task.FromResult(new SendStatus()
-                    {
-                        IsSuccess = false,
-                        Message = e.Message
-                    });
                 }
             };
         }
@@ -151,9 +108,21 @@ namespace Shesha.Notifications
         /// <param name="mail"></param>
         private void SendEmail(MailMessage mail)
         {
-            using (var smtpClient = GetSmtpClient().Result)
+            try
             {
-                smtpClient.Send(mail);
+                using (var smtpClient = GetSmtpClient().Result)
+                {
+                    smtpClient.Send(mail);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error sending email: {ex.Message}", ex);
+                throw new InvalidOperationException($"An error occurred while sending the email. Message: {ex.Message} ", ex);
+            }
+            finally
+            {
+                mail.Dispose();
             }
         }
 
@@ -194,22 +163,41 @@ namespace Shesha.Notifications
                 IsBodyHtml = true,
             };
 
+            if (string.IsNullOrWhiteSpace(fromAddress) || !StringHelper.IsValidEmail(fromAddress))
+            {
+                throw new ArgumentException("Invalid 'from' email address.");
+            }
+
             message.From = string.IsNullOrWhiteSpace(fromAddress) ? new MailAddress(smtpSettings.DefaultFromAddress) : new MailAddress(fromAddress);
 
             string[] tos = toAddress.Split(';');
 
             foreach (string to in tos)
             {
-                message.To.Add(new MailAddress(to));
+                if (StringHelper.IsValidEmail(to))
+                {
+                    message.To.Add(new MailAddress(to.Trim()));
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid 'to' email address: {to}");
+                }
             }
 
-            // Add "carbon copies" to email if defined
             if (!string.IsNullOrEmpty(cc))
             {
                 string[] copies = cc.Split(',');
                 foreach (var copyAddress in copies)
                 {
-                    message.CC.Add(new MailAddress(copyAddress.Trim()));
+                    var trimmedCopy = copyAddress.Trim();
+                    if (StringHelper.IsValidEmail(trimmedCopy))
+                    {
+                        message.CC.Add(new MailAddress(trimmedCopy));
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Invalid 'cc' email address: {trimmedCopy}");
+                    }
                 }
             }
 
