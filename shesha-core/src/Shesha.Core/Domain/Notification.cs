@@ -38,7 +38,6 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        [ReferenceList("Shesha.Core", "NotificationPriority")]
         public virtual RefListNotificationPriority Priority { get; set; }
         /// <summary>
         /// The entity that the notification pertains to

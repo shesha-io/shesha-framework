@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain.Enums
 {
-    [ReferenceList("Shesha.Core", "ChannelSupportedMechanism")]
+    [ReferenceList("ChannelSupportedMechanism")]
     public enum RefListChannelSupportedMechanism : long
     {
         Direct = 1,
         BulkSend = 2,
-        Broadcast = 3
-        // Add other formats as needed
+        Broadcast = 4
     }
 }

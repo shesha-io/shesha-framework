@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain.Enums
 {
-    [ReferenceList("Shesha.Core", "NotificationPriority")]
+    [ReferenceList("NotificationPriority")]
     public enum RefListNotificationPriority : long
     {
         High = 1,

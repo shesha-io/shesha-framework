@@ -2,9 +2,11 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Castle.Core.Logging;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Hangfire;
+using NHibernate.Engine;
 using NHibernate.Linq;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
@@ -13,17 +15,19 @@ using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.NHibernate;
 using Shesha.Notifications.Dto;
-using Shesha.Notifications.Jobs;
+using Shesha.Notifications.Exceptions;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
-    public class NotificationSender: INotificationSender
+    public class NotificationSender: INotificationSender, ITransientDependency
     {
         private readonly INotificationChannelSender _channelSender;
         private readonly IIocManager _iocManager;
@@ -70,76 +74,66 @@ namespace Shesha.Notifications
         /// <param name="message"></param>
         /// <param name="notificationChannelSender"></param>
         /// <returns></returns>
-        [UnitOfWork]
+        [AutomaticRetry(Attempts = 3)]
         public async Task SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, INotificationChannelSender notificationChannelSender)
         {
             var attachments = await GetAttachmentsAsync(message);
 
+            // Use TrySendAsync to handle the send attempt
+            var sendResult = await TrySendAsync(fromPerson, toPerson, message, notificationChannelSender, attachments);
+
+            if (sendResult.IsSuccess)
+            {
+                message.Status = RefListNotificationStatus.Sent;
+                message.ErrorMessage = null; // Clear any previous error
+                message.DateSent = DateTime.Now;
+            }
+            else
+            {
+                message.RetryCount++;
+                message.Status = message.RetryCount < 3 ? RefListNotificationStatus.WaitToRetry : RefListNotificationStatus.Failed;
+                message.ErrorMessage = sendResult.Message;
+
+                if (message.Status == RefListNotificationStatus.WaitToRetry)
+                    throw new ShaMessageFailedWaitRetryException(message.Id);
+            }
+
+            message.RecipientText = notificationChannelSender.GetRecipientId(toPerson);
+
+            await _notificationMessageRepository.UpdateAsync(message);
+            _unitOfWorkManager.Current.SaveChanges();
+        }
+
+        /// <summary>
+        /// Attempts to send a notification and handles exceptions internally.
+        /// </summary>
+        private async Task<SendStatus> TrySendAsync(
+            Person fromPerson,
+            Person toPerson,
+            NotificationMessage message,
+            INotificationChannelSender notificationChannelSender,
+            List<EmailAttachment> attachments)
+        {
             try
             {
                 var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, message, "", attachments);
 
-                // Update the message status based on send result
-                if (sendStatus.IsSuccess)
+                return new SendStatus
                 {
-                    message.Status = RefListNotificationStatus.Sent;
-                    message.RetryCount = 0; // No retry as this is the first (successful) attempt
-                    message.ErrorMessage = null; // Clear any previous error
-                    message.RecipientText = notificationChannelSender.GetRecipientId(toPerson);
-
-                    await _notificationMessageRepository.UpdateAsync(message);
-                }
-                else
-                {
-                    // Increment the retry count for the message
-                    message.RetryCount++;
-
-                    await _notificationMessageRepository.UpdateAsync(message);
-
-                    _unitOfWorkManager.Current.SaveChanges();
-
-                    // Schedule the next attempt through the background job
-                    ScheduleDirectRetryJob(message, notificationChannelSender);
-                }
-
-                await _notificationMessageRepository.UpdateAsync(message);
-
-                _unitOfWorkManager.Current.SaveChanges();
+                    IsSuccess = sendStatus.IsSuccess,
+                    Message = sendStatus.IsSuccess ? null : $"Failed to send notification: {sendStatus.Message}"
+                };
             }
             catch (Exception ex)
             {
-                message.Status = RefListNotificationStatus.Failed;
-                message.ErrorMessage = $"Exception while sending notification: {ex.Message}";
-                message.RetryCount++;
-
-                await _notificationMessageRepository.UpdateAsync(message);
-
                 Logger.Error($"Exception while sending notification {message.Id}: {ex.Message}");
 
-                // Schedule a retry job if an exception occurs
-                ScheduleDirectRetryJob(message, notificationChannelSender);
+                return new SendStatus
+                {
+                    IsSuccess = false,
+                    Message = $"Exception while sending notification: {ex.Message}"
+                };
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="notificationChannelSender"></param>
-        /// <returns></returns>
-        private void ScheduleDirectRetryJob(NotificationMessage message, INotificationChannelSender notificationChannelSender)
-        {
-            var jobArgs = new DirectNotificationJobArgs
-            {
-                FromPerson = message.PartOf.FromPerson.Id,
-                ToPerson = message.PartOf.ToPerson.Id,     
-                Message = message.Id,
-                SenderTypeName = notificationChannelSender.GetType().Name,
-                Attempt = message.RetryCount
-            };
-
-            // Schedule the next retry job
-            BackgroundJob.Enqueue<DirectNotificationJobQueuer>(x => x.ExecuteAsync(jobArgs));
         }
     }
 }

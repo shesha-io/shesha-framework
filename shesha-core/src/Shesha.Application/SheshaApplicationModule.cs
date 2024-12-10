@@ -56,7 +56,6 @@ namespace Shesha
             Configuration.Auditing.IsEnabled = false;
 
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
-            IocManager.Register<INotificationSender, NotificationSender>();
 
             Configuration.Authorization.Providers.Add<SheshaAuthorizationProvider>();
             Configuration.Authorization.Providers.Add<DbAuthorizationProvider>();
@@ -77,9 +76,9 @@ namespace Shesha
             {
                 s.NotificationSettings.WithDefaultValue(new NotificationSettings
                 {
-                    Low = new List<Guid> { },
-                    Medium = new List<Guid> { },
-                    High = new List<Guid> { },
+                    Low = new List<NotificationChannelIdentifier> { },
+                    Medium = new List<NotificationChannelIdentifier> { },
+                    High = new List<NotificationChannelIdentifier> { },
                 });
 
             });

@@ -15,7 +15,6 @@ using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Helpers;
-using Shesha.Notifications.Jobs;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -145,7 +144,6 @@ namespace Shesha.Notifications
                 item.ReadStatus = RefListNotificationReadStatus.Unread;
                 item.Direction = RefListNotificationDirection.Outgoing;
                 item.Status = RefListNotificationStatus.Preparing;
-                item.DateSent = DateTime.Now;
             });
 
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -174,14 +172,7 @@ namespace Shesha.Notifications
             }
             else
             {
-                await _backgroundJobManager.EnqueueAsync<DirectNotificationJobQueuer, DirectNotificationJobArgs>(new DirectNotificationJobArgs()
-                {
-                    SenderTypeName = channelConfig.SenderTypeName,
-                    FromPerson = fromPerson.Id,
-                    ToPerson = toPerson.Id,
-                    Message = message.Id,
-                    Attempt = 0
-                });
+                BackgroundJob.Enqueue(() => _notificationSender.SendAsync(fromPerson, toPerson, message, senderChannelInterface));
             }
 
             await CurrentUnitOfWork.SaveChangesAsync();

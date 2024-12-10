@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.UI;
 using NHibernate.Linq;
+using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Notifications.Configuration;
@@ -64,11 +65,11 @@ namespace Shesha.Notifications
             switch (priority)
             {
                 case RefListNotificationPriority.Low:
-                    return notificationSettings.Low.Select(x => _notificationChannelRepository.Get(x)).ToList();
+                    return notificationSettings.Low.Select(x => _notificationChannelRepository.FirstOrDefault(c => new ByNameAndModuleSpecification<NotificationChannelConfig>(x.Name, x.Module).IsSatisfiedBy(c))).ToList();
                 case RefListNotificationPriority.Medium:
-                    return notificationSettings.Medium.Select(x => _notificationChannelRepository.Get(x)).ToList();
+                    return notificationSettings.Medium.Select(x => _notificationChannelRepository.FirstOrDefault(c => new ByNameAndModuleSpecification<NotificationChannelConfig>(x.Name, x.Module).IsSatisfiedBy(c))).ToList();
                 case RefListNotificationPriority.High:
-                    return notificationSettings.High.Select(x => _notificationChannelRepository.Get(x)).ToList();
+                    return notificationSettings.High.Select(x => _notificationChannelRepository.FirstOrDefault(c => new ByNameAndModuleSpecification<NotificationChannelConfig>(x.Name, x.Module).IsSatisfiedBy(c))).ToList();
                 default:
                     throw new UserFriendlyException("Channel not specified!");
             };

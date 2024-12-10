@@ -39,12 +39,10 @@ namespace Shesha.Domain
         /// <summary>
         /// Direction (outgoing/incoming)
         /// </summary>
-        [ReferenceList("Shesha.Core", "NotificationDirection")]
         public virtual RefListNotificationDirection? Direction { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [ReferenceList("Shesha.Core", "NotificationReadStatus")]
         public virtual RefListNotificationReadStatus? ReadStatus { get; set; }
         /// <summary>
         /// 
@@ -65,7 +63,6 @@ namespace Shesha.Domain
         /// <summary>
         /// Status (outgoing/sent/failed etc)
         /// </summary>
-        [ReferenceList("Shesha.Core", "NotificationStatus")]
         public virtual RefListNotificationStatus Status { get; set; }
     }
 }

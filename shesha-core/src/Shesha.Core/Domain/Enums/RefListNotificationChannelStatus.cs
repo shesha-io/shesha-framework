@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Domain.Enums
-{
-    [ReferenceList("Shesha.Core", "NotificationChannelStatus")]
+    {
+    [ReferenceList("NotificationChannelStatus")]
     public enum RefListNotificationChannelStatus : long
     {
         Enabled = 1,

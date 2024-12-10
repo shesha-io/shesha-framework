@@ -13,9 +13,7 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate")]
     public class NotificationTemplate : FullAuditedEntity<Guid>
     {
-        [ReferenceList("Shesha.Core", "NotificationMessageFormat")]
         public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
-
         public virtual NotificationTypeConfig PartOf { get; set; }
         [StringLength(2000)]
         public virtual string TitleTemplate { get; set; }

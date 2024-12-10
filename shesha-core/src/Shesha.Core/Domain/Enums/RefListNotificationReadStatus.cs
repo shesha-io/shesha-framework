@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Domain.Enums
 {
-    [ReferenceList("Shesha.Core", "NotificationReadStatus")]
+    [ReferenceList("NotificationReadStatus")]
     public enum RefListNotificationReadStatus: long
     {
         Unread = 0,
