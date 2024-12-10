@@ -49,7 +49,7 @@ export const getSettings = (data: IRateProps) => {
                     type: 'number',
                     id: nanoid(),
                     propertyName: 'count',
-                    label: 'Count',
+                    label: 'Max Rating',
                   },
                     {
                       type: 'iconPicker',
