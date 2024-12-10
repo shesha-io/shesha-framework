@@ -4,7 +4,7 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useFormData, useGlobalState } from '@/providers';
-import { getSettings } from './settings';
+import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
