@@ -140,28 +140,22 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			// note: already registered in the ABP
 			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
 
-
 			app.UseConfigurationFramework();
 
 			app.UseAbp(options =>
 			{
 				options.UseAbpRequestLocalization = false;
-			}); // Initializes ABP framework.​
-				//app.UseCors(_defaultCorsPolicyName); // Enable CORS!
-				// global cors policy
+			}); 
+
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 				.SetIsOriginAllowed(origin => true) // allow any origin
 				.AllowCredentials()); // allow credentials​
 			app.UseStaticFiles();
-
 			app.UseAuthentication();
-
 			app.UseAbpRequestLocalization();
-
 			app.UseRouting();
-
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
