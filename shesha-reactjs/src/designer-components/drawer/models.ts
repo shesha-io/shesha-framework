@@ -2,9 +2,11 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
+import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;
+  showHeader?: boolean;
 
   showOkayBtn?: boolean;
   onOkAction?: IConfigurableActionConfiguration;
@@ -29,6 +31,12 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   fontColor?: string;
   backgroundColor?: string;
   fontSize?: number;
+  headerStyle?: string;
+  footerStyle?: string;
+  shadow?: IShadowValue;
+  headerShadow?: IShadowValue;
+  headerBackground?: IBackgroundValue;
+
 
 
   components?: IConfigurableFormComponent[];

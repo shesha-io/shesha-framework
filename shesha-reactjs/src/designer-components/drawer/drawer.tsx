@@ -1,28 +1,46 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { FC, Fragment, useState } from 'react';
+import React, { CSSProperties, FC, Fragment, useState } from 'react';
 import {
   Alert,
   Button,
   Drawer,
-  DrawerProps,
   Space
   } from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IDrawerProps } from './models';
 import {
   useConfigurableAction,
   useConfigurableActionDispatcher,
 } from '@/providers/configurableActionsDispatcher';
+import { IConfigurableFormComponent } from '@/providers';
 
-export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, Omit<DrawerProps, 'id'> { }
+interface IShaDrawer {
+  id?: string;
+  propertyName?: string;
+  label?: string;
+  onOkAction?: IConfigurableActionConfiguration;
+  onCancelAction?: IConfigurableActionConfiguration;
+  okText?: string;
+  cancelText?: string;
+  components?: IConfigurableFormComponent[];
+  style?: CSSProperties;
+  isDynamic?: boolean;
+  okButtonCustomEnabled?: string;
+  cancelButtonCustomEnabled?: string;
+  showHeader?: boolean;
+  headerStyle?: CSSProperties;
+  placement?: 'top' | 'right' | 'bottom' | 'left';
+  width?:  string | number;
+  height?: string | number;
+  readOnly?: boolean;
+}
 
 interface IShaDrawerState {
   open?: boolean;
 }
 
-const ShaDrawer: FC<IShaDrawerProps> = props => {
+const ShaDrawer: FC<IShaDrawer> = props => {
   const {
     id,
     placement,
@@ -39,8 +57,9 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     isDynamic,
     okButtonCustomEnabled,
     cancelButtonCustomEnabled,
+    showHeader,
+    headerStyle,
   } = props;
-
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
   const { executeAction } = useConfigurableActionDispatcher();
@@ -122,13 +141,16 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     );
   }
 
+
   return (
     <Drawer
       open={state?.open}
       placement={placement}
       width={width}
       onClose={closeDrawer}
+      headerStyle={{display: showHeader ? 'block' : 'none', ...headerStyle}}
       style={style}
+      //footerStyle={footerStyles}
       title={label}
       size="large"
       footer={
@@ -144,11 +166,11 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
       }
     >
       <ParentProvider model={props}>
-        <ComponentsContainer
-          containerId={id}
-          dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
-        />
-      </ParentProvider>
+          <ComponentsContainer
+            containerId={id}
+            dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
+          />
+        </ParentProvider>
     </Drawer>
   );
 };
