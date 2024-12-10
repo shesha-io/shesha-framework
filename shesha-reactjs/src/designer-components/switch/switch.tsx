@@ -1,9 +1,9 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useFormData } from '@/providers';
 import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
@@ -13,7 +13,6 @@ import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
