@@ -27,7 +27,6 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     const { data: formData } = useFormData();
     const allData = useAvailableConstantsData();
 
-
     const style = getStyle(model?.style, formData);
 
     return (
