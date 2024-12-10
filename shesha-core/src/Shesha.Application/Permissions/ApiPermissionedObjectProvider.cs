@@ -176,7 +176,7 @@ namespace Shesha.Permissions
                         permissions = abpMvcAttr.Permissions.ToList();
                         hardcoded = true;
                     }
-                    if (service.HasAttribute<AllowAnonymousAttribute>(true))
+                    if (service.HasAttribute<AllowAnonymousAttribute>(true) || service.HasAttribute<AbpAllowAnonymousAttribute>(true))
                     {
                         access = Domain.Enums.RefListPermissionedAccess.AllowAnonymous;
                         hardcoded = true;
@@ -239,7 +239,7 @@ namespace Shesha.Permissions
                             permissions = abpMvcAttr.Permissions.ToList();
                             methodHardcoded = true;
                         }
-                        if (methodInfo.Action.HasAttribute<AllowAnonymousAttribute>(true))
+                        if (methodInfo.Action.HasAttribute<AllowAnonymousAttribute>(true) || methodInfo.Action.HasAttribute<AbpAllowAnonymousAttribute>(true))
                         {
                             access = Domain.Enums.RefListPermissionedAccess.AllowAnonymous;
                             methodHardcoded = true;
