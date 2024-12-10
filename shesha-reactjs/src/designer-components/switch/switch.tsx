@@ -14,6 +14,7 @@ import { ISwitchComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -49,8 +50,8 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
       label: 'Switch',
     };
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
     .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))
