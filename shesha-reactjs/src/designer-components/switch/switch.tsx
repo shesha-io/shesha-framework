@@ -5,7 +5,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useFormData } from '@/providers';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { SwitchSize } from 'antd/lib/switch';
@@ -13,6 +13,7 @@ import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
@@ -21,20 +22,28 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model: passedModel }) => {
     const { size, ...model } = passedModel;
     const { data: formData } = useFormData();
+    const allData = useAvailableConstantsData();
+
 
     const style = getStyle(model?.style, formData);
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
+          const customEvents = getEventHandlers(model, allData);
+          const onChangeInternal = (...args: any[]) => {
+            customEvents.onChange(args[0]);
+            if (typeof onChange === 'function')
+              onChange(...args);
+          };
+
           return model.readOnly ? (
               <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
             ) : (
-              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChange} />
+              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChangeInternal} />
             );
         }}
       </ConfigurableFormItem>
