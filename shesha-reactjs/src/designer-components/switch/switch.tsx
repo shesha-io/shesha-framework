@@ -1,22 +1,18 @@
-import { SwitcherOutlined } from '@ant-design/icons';
-import { Switch } from 'antd';
-import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup } from '@/providers/form/models';
-import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, useFormData } from '@/providers';
-import { DataTypes } from '@/interfaces/dataTypes';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { SwitchSize } from 'antd/lib/switch';
-import { ISwitchComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IInputStyles, useFormData } from '@/providers';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { SwitcherOutlined } from '@ant-design/icons';
+import { Switch } from 'antd';
+import { SwitchSize } from 'antd/lib/switch';
+import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',

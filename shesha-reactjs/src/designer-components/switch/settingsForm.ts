@@ -5,7 +5,9 @@ import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: ISwitchComponentProps) => {
   const searchableTabsId = nanoid();
-  const commonTabId = nanoid();
+  const commonTabId = nanoid(); 
+  const eventsTabId = nanoid();
+  const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   return {
     components: new DesignerToolbarSettings(data)
@@ -35,7 +37,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                 .addLabelConfigurator({
                   id: nanoid(),
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
                 })
@@ -75,6 +77,124 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       jsSetting: true,
                     }
                   ]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'appearance',
+            title: 'Appearance',
+            id: appearanceTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addPropertyRouter({
+                  id: 'styleRouter',
+                  propertyName: 'propertyRouter1',
+                  componentName: 'propertyRouter',
+                  label: 'Property router1',
+                  labelAlign: 'right',
+                  parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                  hidden: false,
+                  propertyRouteName: {
+                    _mode: "code",
+                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                    _value: ""
+                  },
+                  components: [
+                    ...new DesignerToolbarSettings()
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlDimensions',
+                        label: 'Dimensions',
+                        parentId: 'styleRouter',
+                        labelAlign: 'right',
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              id: nanoid(),
+                              inputType: 'dropdown',
+                              propertyName: 'size',
+                              label: 'Size',
+                              width: '150px',
+                              hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
+                              dropdownOptions: [
+                                { value: 'small', label: 'Small' },
+                                { value: 'medium', label: 'Medium' },
+                                { value: 'large', label: 'Large' },
+                              ]
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: 'customStyleCollapsiblePanel',
+                        propertyName: 'customStyle',
+                        label: 'Custom Style',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: 'styleRouter',
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              hideLabel: true,
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .toJson() 
+                  ]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  parentId: eventsTabId
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  parentId: eventsTabId
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  parentId: eventsTabId
                 })
                 .toJson()
             ]
