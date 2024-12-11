@@ -2,7 +2,9 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs } from '../_settings/utils/border/utils';
+import { getCornerInputs } from '../_settings/utils/border/utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: ITextFieldComponentProps) => {
 
@@ -712,24 +714,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "repeat",
-                                                                            label: "repeat"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-x",
-                                                                            label: "repeatX"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-y",
-                                                                            label: "repeatY"
-                                                                        },
-                                                                        {
-                                                                            value: "no-repeat",
-                                                                            label: "noRepeat"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })
@@ -826,7 +811,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -839,7 +824,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
-                                                        hideLabel: true,
+                                                        hideLabel: false,
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })
