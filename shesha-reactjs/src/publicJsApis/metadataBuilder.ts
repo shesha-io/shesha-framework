@@ -2,6 +2,12 @@ import { IMetadata, IObjectMetadata } from "./metadata";
 
 export type PropertiesBuilder<TObjectBuilder extends IObjectMetadataBuilder = IObjectMetadataBuilder> = (builder: TObjectBuilder) => void;
 
+export enum Environment {
+  None = 'none',
+  FrontEnd = 'front-end',
+  BackEnd = 'back-end',
+}
+
 export interface StandardConstantWithCustomName {
   uid: string;
   name: string;
@@ -38,5 +44,5 @@ export interface IMetadataBuilder<TObjectBuilder extends IObjectMetadataBuilder 
   string(): IMetadata;
   number(): IMetadata;
   date(): IMetadata;
-  boolean(): IMetadata;
+  boolean(): IMetadata; 
 }
