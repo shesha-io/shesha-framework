@@ -5,9 +5,11 @@ import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from 
 import { useFormData, useGlobalState } from '@/providers';
 import SectionSeparator from '@/components/sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
-import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from '../textField/utils';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -46,6 +48,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
     .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: "left" }))
     .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null }))
+    .add<ISectionSeparatorComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+
   ,
 };
 
