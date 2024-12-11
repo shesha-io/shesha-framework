@@ -403,25 +403,25 @@ stages:
     #     projectKey: 'Boxfusion_Shesha-Web-v3.0'
     #     projectName: 'Shesha Web v3.0'
     #     projectVersion: '$(versionNo)'
-    - task: SonarCloudPrepare@1
-      condition: eq(variables['System.PullRequest.IsFork'], 'false')
-      inputs:
-        SonarCloud: 'Sonarcloud' # This is the name of the service connection you created
-        organization: 'boxfusion'
-        scannerMode: 'CLI'
-        configMode: 'manual'
-        cliProjectKey: 'Boxfusion_Shesha-Web-v3.0'
-        cliProjectName: 'Shesha Web v3.0'
-        cliProjectVersion: '$(versionNo)'
-        cliSources: '$(System.DefaultWorkingDirectory)' # This is the relative path to your source code
-    - task: SonarCloudAnalyze@1
-      condition: eq(variables['System.PullRequest.IsFork'], 'false')    
-      inputs:
-        jdkversion: 'JAVA_HOME_17_X64'
-    - task: SonarQubePublish@5
-      condition: eq(variables['System.PullRequest.IsFork'], 'false')
-      inputs:
-        pollingTimeoutSec: '300'
+    # - task: SonarCloudPrepare@1
+    #   condition: eq(variables['System.PullRequest.IsFork'], 'false')
+    #   inputs:
+    #     SonarCloud: 'Sonarcloud' # This is the name of the service connection you created
+    #     organization: 'boxfusion'
+    #     scannerMode: 'CLI'
+    #     configMode: 'manual'
+    #     cliProjectKey: 'Boxfusion_Shesha-Web-v3.0'
+    #     cliProjectName: 'Shesha Web v3.0'
+    #     cliProjectVersion: '$(versionNo)'
+    #     cliSources: '$(System.DefaultWorkingDirectory)' # This is the relative path to your source code
+    # - task: SonarCloudAnalyze@1
+    #   condition: eq(variables['System.PullRequest.IsFork'], 'false')    
+    #   inputs:
+    #     jdkversion: 'JAVA_HOME_17_X64'
+    # - task: SonarQubePublish@5
+    #   condition: eq(variables['System.PullRequest.IsFork'], 'false')
+    #   inputs:
+    #     pollingTimeoutSec: '300'
   - job: Job_5
     dependsOn: Job_4
     displayName: Build_Functional_Shesha_PublicPortal
