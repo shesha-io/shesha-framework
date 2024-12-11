@@ -3,7 +3,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
-import { IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
+import { Environment, IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
 import { IObjectMetadataBuilder as IInternalObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 export interface IExecutableCodeEditor {
@@ -26,6 +26,7 @@ export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type
   language?: CodeLanguages;
   availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);
   resultType?: IMetadata | (() => Promise<IMetadata>);
+  environment?: Environment;
 }
 
 export type GetAvailableConstantsArgs = {
@@ -44,6 +45,7 @@ export type GetResultTypeFunc = (args: GetResultTypeArgs) => Promise<IMetadata>;
 export interface ICodeEditorComponentProps extends IConfigurableFormComponent, IExecutableCodeEditor {
   mode?: 'dialog' | 'inline';
 
+  environment?: Environment;
   language?: CodeLanguages;
   availableConstantsExpression?: string | GetAvailableConstantsFunc;
   availableConstants?: IObjectMetadata;
