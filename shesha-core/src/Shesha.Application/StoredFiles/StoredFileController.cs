@@ -9,6 +9,7 @@ using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.OutputCaching;
+using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Exceptions;
@@ -29,7 +30,7 @@ namespace Shesha.StoredFiles
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AbpMvcAuthorize()]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class StoredFileController : ControllerBase, ITransientDependency
     {
         private readonly IStoredFileService _fileService;

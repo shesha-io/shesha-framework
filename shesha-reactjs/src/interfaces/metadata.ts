@@ -1,6 +1,7 @@
 import { FormFullName } from "@/providers";
 import { DataTypes } from "./dataTypes";
 import { IDictionary } from "./shesha";
+import { DataTypeInfo } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 export interface IMemberType {
   dataType?: string | null;
@@ -23,7 +24,20 @@ export interface TypeImport {
   filePath: string;
 };
 
-export interface TypeAndLocation {
+export interface GenericTypeDeclaration {
+  /** 
+   * Final type declaration constructed taking into account all modifiers and generic types. 
+   * @example
+   * { typeName: 'Date', typeDeclaration: 'Nullable<Date>' }
+   */
+  typeDeclaration?: string;
+  /**
+   * Type dependencies to be imported. Is used for generic types
+   */
+  dependencies?: TypeImport[];
+}
+
+export interface TypeAndLocation extends GenericTypeDeclaration {
   typeName: string;
   filePath?: string;
   metadata?: IModelMetadata;
@@ -199,16 +213,33 @@ export interface IContainerWithNestedProperties {
   properties: NestedProperties;
 }
 
-export interface IEntityMetadata extends IMetadata, IContainerWithNestedProperties, IHasEntityType {
+export interface VariableDef {
+  name: string;
+  dataType: DataTypeInfo;
+}
+
+export interface IMethodMetadata {
+  name: string;
+  description?: string;
+  isAsync: boolean;
+  arguments?: VariableDef[];
+  returnType?: DataTypeInfo;
+};
+
+export interface IHasMethods {
+  methods?: IMethodMetadata[];
+}
+
+export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
+  
+}
+
+export interface IEntityMetadata extends IObjectMetadata, IHasEntityType {
   md5?: string;
   changeTime?: Date;
   aliases?: string[];
   specifications: ISpecification[];
   apiEndpoints: IDictionary<IApiEndpoint>;
-}
-
-export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperties {
-  
 }
 
 export interface IContextMetadata extends IMetadata, IContainerWithNestedProperties {

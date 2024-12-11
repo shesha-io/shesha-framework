@@ -1,10 +1,30 @@
 import { DataTypes, FormFullName } from "@/interfaces";
-import { IArrayMetadata, IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, TypeImport, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import {
+    GenericTypeDeclaration,
+    IArrayMetadata,
+    IEntityMetadata,
+    IHasEntityType,
+    IMethodMetadata,
+    IObjectMetadata,
+    IPropertyMetadata,
+    ITypeDefinitionBuilder,
+    ModelTypeIdentifier,
+    NestedProperties,
+    TypeAndLocation,
+    TypeDefinition,
+    TypeImport,
+    isEntityMetadata,
+    isIHasEntityType,
+    isPropertiesArray,
+    isPropertiesLoader
+} from "@/interfaces/metadata";
 import camelcase from "camelcase";
 import { isEmptyString, verifiedCamelCase } from "../string";
 import { StringBuilder } from "./stringBuilder";
 import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
+import { CODE, entitiesCode } from "@/publicJsApis";
+import { Environment } from "@/publicJsApis/metadataBuilder";
 
 export interface BuildResult {
     content: string;
@@ -14,8 +34,19 @@ export interface BuildContext {
 }
 
 type OnUseComplexTypeHandler = (typeImport: TypeImport) => void;
-type BuildTypeContext = {
-    onUseComplexType: OnUseComplexTypeHandler;
+export type BuildTypeContext = {
+    environment?: Environment;
+    onUseComplexType?: OnUseComplexTypeHandler;
+};
+
+type TypeBuildRequest = {
+    typeAccessor: string;
+    typesImporter: TypesImporter;
+    metadata: IEntityMetadata;
+    fileName: string;
+};
+type CommonTypeBuildRequest = TypeBuildRequest & {
+    backEndTypeName: string;
 };
 
 type AsyncPropertyHandler = (property: IPropertyMetadata) => Promise<void>;
@@ -96,7 +127,110 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         this.#internalRegisterFile(fileName, content);
     };
 
-    getEntityType = async (typeId: ModelTypeIdentifier): Promise<TypeAndLocation> => {
+    makeEntitiesBaseTypes = () => {
+        this.makeFile(CODE.ENTITY_BASE_TYPES_PATH, entitiesCode);
+    };
+
+    buildCommonTypeAsync = async (request: CommonTypeBuildRequest): Promise<string> => {
+        const { typeAccessor, typesImporter, metadata, fileName, backEndTypeName } = request;
+        const sb = new StringBuilder();
+
+        typesImporter.import({ typeName: CODE.ENVIRONMENT_TYPE, filePath: CODE.ENTITY_BASE_TYPES_PATH });
+
+        this.#appendCommentBlock(sb, [metadata.entityType, metadata.description]);
+        sb.append(`export type ${typeAccessor}<Env extends ${CODE.ENVIRONMENT_TYPE} = ${CODE.ENVIRONMENT_TYPE}.None> = {`);
+        sb.incIndent();
+        await this.#iterateProperties(metadata.properties, async (prop) => {
+            const propertyName = verifiedCamelCase(prop.path);
+            const dataType = await this.#getTypescriptType(prop, {
+                onUseComplexType: (typeInfo) => {
+                    typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
+                }
+            });
+
+            if (dataType) {
+                if (dataType.filePath !== fileName)
+                    typesImporter.import(dataType);
+
+                const isEntity = dataType.metadata && isEntityMetadata(dataType.metadata);
+                const typeName = isEntity
+                    ? `${dataType.typeName}<Env>`
+                    : dataType.typeName;
+
+                this.#appendCommentBlock(sb, [prop.label, prop.description]);
+                sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${typeName};`);
+            }
+        });
+        sb.decIndent();
+        if (backEndTypeName) {
+            sb.append(`& (Env extends Environment.BackEnd ? ${backEndTypeName} : {});`);
+        } else {
+            sb.append("};");
+        }
+        return sb.build();
+    };
+
+    #makeAsync = (typeName: string, isAsync: boolean): string => {
+        return isAsync
+            ? `Promise<${typeName}>`
+            : typeName;
+    };
+
+    #buildMethodReturnTypeAsync = async (method: IMethodMetadata, typesImporter: TypesImporter): Promise<string> => {
+        const returnType: TypeAndLocation = method.returnType 
+            ? await this.#getTypescriptType(method.returnType)
+            : undefined;
+
+        if (returnType?.filePath)
+            typesImporter.import(returnType);
+
+        const typeName = returnType?.typeName ?? 'void';
+        return this.#makeAsync(typeName, method.isAsync);
+    };
+
+    #buildMethodArgumentsAsync = async (_method: IMethodMetadata, _typesImporter: TypesImporter): Promise<string> => {
+        return '';
+    };
+
+    buildBackEndTypeAsync = async (request: TypeBuildRequest): Promise<string> => {
+        const { typeAccessor, metadata, typesImporter } = request;
+
+        // TODO: implement arguments support
+        const supportedMethods = (metadata.methods ?? []).filter(m => !m.arguments || m.arguments.length === 0);
+        if (supportedMethods.length === 0)
+            return undefined;
+
+        const sb = new StringBuilder();
+        sb.append(`export type ${typeAccessor} = {`);
+        sb.incIndent();
+        for (const method of supportedMethods) {
+            const methodName = verifiedCamelCase(method.name);
+
+            const returnType = await this.#buildMethodReturnTypeAsync(method, typesImporter);
+            const methodArgs = await this.#buildMethodArgumentsAsync(method, typesImporter);
+
+            sb.append(`${methodName}: (${methodArgs}) => ${returnType};`);
+        }
+        sb.decIndent();
+        sb.append("};");
+        return sb.build();
+    };
+
+    #getEnvironmentSpecificEntityTypeDeclaration = (typeName: string, environment: Environment): GenericTypeDeclaration => {
+        const envName = environment === Environment.BackEnd
+            ? CODE.ENVIRONMENT_BACK_END
+            : environment === Environment.FrontEnd
+                ? CODE.ENVIRONMENT_FRONT_END
+                : undefined;
+        return !envName
+            ? undefined
+            : {
+                typeDeclaration: `${typeName}<${envName}>`,
+                dependencies: [{ typeName: CODE.ENVIRONMENT_TYPE, filePath: CODE.ENTITY_BASE_TYPES_PATH }]
+            };
+    };
+
+    getEntityType = async (typeId: ModelTypeIdentifier, context?: BuildTypeContext): Promise<TypeAndLocation> => {
         if (!typeId)
             return null;
 
@@ -119,37 +253,37 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         if (this.isFileExists(fileName))
             return { typeName: typeAccessor, filePath: fileName, metadata: entityMetadata };
 
+        // import base interfaces
+        this.makeEntitiesBaseTypes();
+
         const typesImporter = new TypesImporter();
-        const sb = new StringBuilder();
-        this.#appendCommentBlock(sb, [entityMetadata.entityType, entityMetadata.description]);
-        sb.append(`export interface ${typeAccessor} {`);
-        sb.incIndent();
-        await this.#iterateProperties(entityMetadata.properties, async (prop) => {
-            const propertyName = verifiedCamelCase(prop.path);
-            const dataType = await this.#getTypescriptType(prop, { onUseComplexType: (typeInfo) => {
-                typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
-            } });
 
-            if (dataType) {
-                if (dataType.filePath !== fileName)
-                    typesImporter.import(dataType);
-
-                this.#appendCommentBlock(sb, [prop.label, prop.description]);
-                sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
-            }
+        const buildRequest: TypeBuildRequest = {
+            typesImporter,
+            typeAccessor,
+            metadata: entityMetadata,
+            fileName: fileName
+        };
+        const backEndType = `${typeAccessor}Backend`;
+        const backEndCode = await this.buildBackEndTypeAsync({ ...buildRequest, typeAccessor: backEndType });
+        const commonTypeCode = await this.buildCommonTypeAsync({
+            ...buildRequest,
+            backEndTypeName: backEndCode ? backEndType : undefined
         });
-        sb.decIndent();
-        sb.append("}");
-        const exportSection = sb.build();
 
         const importSection = typesImporter.generateImports();
-        const content = importSection
-            ? `${importSection}\n\n${exportSection}`
-            : exportSection;
 
-        this.#internalRegisterFile(fileName, content);
+        const content = [importSection, backEndCode, commonTypeCode].filter(x => x).join('\n\n');
 
-        return { typeName, filePath: fileName, metadata: entityMetadata };
+        this.makeFile(fileName, content);
+
+        const envSpecificDeclaration = this.#getEnvironmentSpecificEntityTypeDeclaration(typeAccessor, context?.environment);
+        return {
+            typeName: typeName,
+            filePath: fileName,
+            metadata: entityMetadata,
+            ...envSpecificDeclaration
+        };
     };
 
     #getTypeIdentifier = (property: IPropertyMetadata): ModelTypeIdentifier => {
@@ -185,7 +319,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                     };
                     const itemType = await this.#getTypescriptType(itemTypeFixed);
 
-                    if (itemType?.typeName){
+                    if (itemType?.typeName) {
                         if (itemType.filePath && context?.onUseComplexType)
                             context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
                         return { typeName: `${itemType.typeName}[]` };
@@ -197,14 +331,14 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             }
             case DataTypes.referenceListItem: {
                 return { typeName: `number[]` };
-            }            
+            }
         }
-        
-        if (property.itemsType){
+
+        if (property.itemsType) {
             const itemTypeFixed = { ...property.itemsType, path: property.itemsType['name'] ?? property.itemsType.path };
             const itemType = await this.#getTypescriptType(itemTypeFixed);
 
-            if (itemType){
+            if (itemType) {
                 if (itemType.filePath && context?.onUseComplexType)
                     context.onUseComplexType({ typeName: itemType.typeName, filePath: itemType.filePath });
                 return { typeName: `${itemType.typeName}[]` };
@@ -214,9 +348,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return { typeName: "any[]" };
     };
 
-    #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
+    #getEntityPropertyType = async (property: IPropertyMetadata, context?: BuildTypeContext): Promise<TypeAndLocation> => {
         const typeId = this.#getTypeIdentifier(property);
-        return await this.getEntityType(typeId);
+        return await this.getEntityType(typeId, context);
     };
 
     #generateFileName = (keyType: string) => {
@@ -252,7 +386,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 ? `${importSection}\n\n${exportSection}`
                 : exportSection;
 
-            this.#internalRegisterFile(fileName, content);
+            this.makeFile(fileName, content);
         }
 
         return { typeName, filePath: fileName };
@@ -263,7 +397,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             const definition = await property.typeDefinitionLoader({ typeDefinitionBuilder: this });
 
             definition.files.forEach(file => {
-                this.#internalRegisterFile(file.fileName, file.content);
+                this.makeFile(file.fileName, file.content);
             });
             const fileName = definition.files.length > 0
                 ? definition.files[0].fileName
@@ -288,7 +422,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             case DataTypes.any:
                 return { typeName: 'any' };
             case DataTypes.entityReference:
-                return await this.#getEntityPropertyType(property);
+                return await this.#getEntityPropertyType(property, context);
             case DataTypes.object:
                 return await this.#getObjectType(property.path, property.properties);
             case DataTypes.array:
@@ -298,21 +432,31 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         }
     };
 
+    #getDataTypeDeclaration = (dataType: TypeAndLocation, isNullable: boolean): string => {
+        const type = dataType.typeDeclaration ? dataType.typeDeclaration : dataType.typeName;
+
+        return isNullable
+            ? `${type} | null`
+            : type;
+    };
+
     /**
      * Build type definition for specified list of properties
      */
-    async buildConstants(properties: NestedProperties): Promise<BuildResult> {
+    async buildConstants(properties: NestedProperties, context?: BuildTypeContext): Promise<BuildResult> {
         const typesImporter = new TypesImporter();
         const sb = new StringBuilder();
 
         await this.#iterateProperties(properties, async (prop) => {
-            const dataType = await this.#getTypescriptType(prop);
+            const dataType = await this.#getTypescriptType(prop, context);
             if (dataType) {
                 typesImporter.import(dataType);
 
                 this.#appendCommentBlock(sb, [prop.label, prop.description]);
 
-                const typeDefinition = dataType.typeName + (prop.isNullable ? ' | null' : '');
+                typesImporter.importAll(dataType.dependencies);
+                const typeDefinition = this.#getDataTypeDeclaration(dataType, prop.isNullable);
+
                 sb.append(`export const ${prop.path}: ${typeDefinition};`);
             }
         });
@@ -337,7 +481,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         const definition = await typeDefinitionLoader({ typeDefinitionBuilder: this });
 
         definition.files.forEach(file => {
-            this.#internalRegisterFile(file.fileName, file.content);
+            this.makeFile(file.fileName, file.content);
         });
 
         const fileName = definition.files.length > 0

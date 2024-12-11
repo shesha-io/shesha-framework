@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NetTopologySuite.Geometries;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -349,32 +350,47 @@ namespace Shesha.Metadata
 
             if (IsList(propType))
             {
-                var paramType = propType.GetGenericArguments()[0];
+                var paramType = GetListElementType(propType);
+
+                var elementDataType = GetDataTypeByPropertyType(paramType, null);
+                /*
                 var format = paramType.IsClass
                     ? paramType.IsEntityType()
                         ? ArrayFormats.EntityReference
                         : paramType.IsJsonEntityType()
                             ? ArrayFormats.ObjectReference
-                            : ArrayFormats.Object
+                            : GetDataTypeByPropertyType(paramType, null)?.DataType
                     : null;
-                return new DataTypeInfo(DataTypes.Array, format, format != null ? paramType.FullName : null);
+                */
+                return new DataTypeInfo(DataTypes.Array, elementDataType?.DataType, elementDataType?.DataFormat);
             } else
                 if (propType.IsClass)
                 {
                     if (propType.IsJsonEntityType())
-                        return new DataTypeInfo(DataTypes.ObjectReference);
+                        return new DataTypeInfo(DataTypes.ObjectReference, propType.FullName);
                     else
-                        return new DataTypeInfo(DataTypes.Object);
+                        return new DataTypeInfo(DataTypes.Object, propType.FullName);
                 }
             return null;
         }
 
-        private bool IsList(Type type) 
+        public static bool IsList(Type type) 
         {
             return type.ImplementsGenericInterface(typeof(IList<>)) ||
                 type.ImplementsGenericInterface(typeof(ICollection<>)) ||
                 type.ImplementsGenericInterface(typeof(IEnumerable<>)) ||
                 type.GetInterface(nameof(IEnumerable)) != null;
+        }
+
+        public static Type GetListElementType(Type type) 
+        {
+            if (!IsList(type))
+                return null;
+
+            var genericArgs = type.GetGenericArguments();
+            return genericArgs.Any()
+                ? type.GetGenericArguments()[0]
+                : type.GetElementType();
         }
    }
 }
