@@ -1,8 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.NotificationMessages.Dto;
-using Shesha.Notifications;
 using System;
 using System.Threading.Tasks;
 
@@ -11,30 +10,18 @@ namespace Shesha.NotificationMessages;
 /// <summary>
 /// Notifications audit service
 /// </summary>
-public class NotificationMessageAppService : SheshaCrudServiceBase<NotificationMessage, NotificationMessageDto, Guid>
+public class NotificationMessageAppService : SheshaCrudServiceBase<NotificationMessage, DynamicDto<NotificationMessage, Guid>, Guid>
 {
-    private readonly IShaNotificationDistributer _distributer;
-
-    public NotificationMessageAppService(IRepository<NotificationMessage, Guid> repository, IShaNotificationDistributer distributer) : base(repository)
+    public NotificationMessageAppService(IRepository<NotificationMessage, Guid> repository) : base(repository)
     {
-        _distributer = distributer;
     }
 
     /// <summary>
-    /// Resend notification message with specified <paramref name="id"/>
+    /// 
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<bool> Resend(Guid id)
-    {
-        var notificationMessage = await Repository.GetAsync(id);
-
-        var dto = ObjectMapper.Map<NotificationMessageDto>(notificationMessage);
-        await _distributer.ResendMessageAsync(dto);
-
-        return true;
-    }
-
+    /// <exception cref="ArgumentNullException"></exception>
     public async Task<DynamicDto<NotificationMessage, Guid>> MarkAsReadAsync(Guid id)
     {
         if (id == Guid.Empty)
@@ -42,8 +29,8 @@ public class NotificationMessageAppService : SheshaCrudServiceBase<NotificationM
 
         var entity = await SaveOrUpdateEntityAsync<NotificationMessage>(id, item =>
         {
-            item.Opened = true;
-            item.LastOpened = DateTime.UtcNow;
+            item.ReadStatus = RefListNotificationReadStatus.Read;
+            item.FirstDateRead = DateTime.UtcNow;
         });
 
         return await MapToDynamicDtoAsync<NotificationMessage, Guid>(entity);

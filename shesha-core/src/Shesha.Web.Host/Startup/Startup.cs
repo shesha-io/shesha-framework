@@ -31,6 +31,8 @@ using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
+using Shesha.Notifications.SMS;
+using Shesha.Notifications;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -59,6 +61,9 @@ namespace Shesha.Web.Host.Startup
             // Should be before AddMvcCore
             services.AddSingleton<IActionDescriptorChangeProvider>(SheshaActionDescriptorChangeProvider.Instance);
             services.AddSingleton(SheshaActionDescriptorChangeProvider.Instance);
+
+            services.AddTransient<INotificationChannelSender, EmailChannelSender>();
+            services.AddTransient<INotificationChannelSender, SmsChannelSender>();
 
             services.Configure<IISServerOptions>(options =>
             {

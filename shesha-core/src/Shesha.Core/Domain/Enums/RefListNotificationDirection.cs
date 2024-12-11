@@ -2,7 +2,7 @@
 
 namespace Shesha.Domain.Enums
 {
-    [ReferenceList("Shesha.Core", "NotificationDirection")]
+    [ReferenceList("NotificationDirection")]
     public enum RefListNotificationDirection
     {
         Incoming = 1,
