@@ -116,10 +116,6 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
   };
 
   useEffect(() => {
-    updateState();
-  }, [refListPromise]);
-
-  useEffect(() => {
     // if the reflist is not loaded on first rendering - use promise to return data
     if (refListPromise.isPending)
       refListPromise.promise
@@ -129,7 +125,9 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
         .catch(() => {
           updateState();
         });
-  }, []);
+    else
+      updateState();
+  }, [refListPromise]);
 
   return state;
 };

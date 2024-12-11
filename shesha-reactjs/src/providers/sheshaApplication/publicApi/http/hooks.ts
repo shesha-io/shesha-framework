@@ -10,9 +10,8 @@ export class AxiosHttpClient implements HttpClientApi {
         if (!config)
             return this.#axiosConfig;
 
-        const headers = config.headers === undefined
-            ? this.#axiosConfig.headers
-            : config.headers;
+        const headers = {...(config.omitStandardHeaders ? {} : this.#axiosConfig.headers), ...config.headers};
+
         const timeout = config.timeout === undefined
             ? this.#axiosConfig.timeout
             : config.timeout;

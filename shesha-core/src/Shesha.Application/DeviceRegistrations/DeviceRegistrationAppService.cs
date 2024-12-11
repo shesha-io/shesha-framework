@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Shesha.Authorization;
 using Shesha.DeviceRegistrations.Dto;
 using Shesha.Domain;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.DeviceRegistrations
 {
-    [AbpAuthorize()]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class DeviceRegistrationAppService : SheshaAppServiceBase, IDeviceRegistrationAppService
     {
         private readonly IRepository<DeviceRegistration, Guid> _repository;

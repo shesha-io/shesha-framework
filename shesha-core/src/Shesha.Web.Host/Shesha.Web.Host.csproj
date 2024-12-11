@@ -46,6 +46,7 @@
     <PackageReference Include="GraphQL.Server.All" Version="6.1.0" />
     <PackageReference Include="GraphQL.Server.Ui.Playground" Version="6.1.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.10" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0">
       <PrivateAssets>All</PrivateAssets>

@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
@@ -35,6 +36,7 @@ namespace Shesha.Web.FormsDesigner.Services
 {
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationDto, UpdateFormConfigurationDto, GetFormByIdInput>
     {
+
         public const string MovePermissionName = "";
         public const string CopyPermissionName = "";
 
@@ -131,6 +133,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <returns></returns>
         /// <exception cref="FormNotFoundException"></exception>
         [HttpPost]
+        [AllowAnonymous]
         public async Task<List<FormByFullNamePermissionsDto>> CheckPermissionsAsync(GetFormByFullNameInput[] input)
         {
             var result = new List<FormByFullNamePermissionsDto>();
@@ -157,6 +160,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <returns></returns>
         /// <exception cref="FormNotFoundException"></exception>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<FormConfigurationDto> GetByNameAsync(GetFormByFullNameInput input)
         {
             var mode = _cfRuntime.ViewMode;
