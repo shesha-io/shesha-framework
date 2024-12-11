@@ -28,6 +28,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   exposedVariables,
   readOnly = false,
   language = 'typescript',
+  environment,
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
@@ -97,6 +98,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       availableConstants={props.availableConstants}
       resultType={props.resultType}
       style={mode === 'dialog' ? { height: "100%" } : undefined}
+      environment={environment}
     />
   );
 
