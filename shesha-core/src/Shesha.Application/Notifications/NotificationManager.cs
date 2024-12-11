@@ -5,12 +5,14 @@ using Abp.UI;
 using NHibernate.Linq;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Notifications.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
@@ -39,40 +41,59 @@ namespace Shesha.Notifications
         /// <returns></returns>
         public async Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, Person recipient, RefListNotificationPriority priority)
         {
-            List<NotificationChannelConfig> results = new List<NotificationChannelConfig>();
-
-            // Check User Notification Preferences
+            // Step 1: Check User Notification Preferences
             var userPreferences = await _userNotificationPreference.GetAllListAsync(
                 x => x.User.Id == recipient.Id && x.NotificationType.Id == type.Id
             );
 
             if (userPreferences != null && userPreferences.Any())
             {
-                // Flatten and return DefaultChannel from user preferences if available
+                // Return DefaultChannel from user preferences if available
                 return userPreferences.Select(x => x.DefaultChannel).ToList();
             }
 
+            // Step 2: Check for Parsed Override Channels
             if (type.ParsedOverrideChannels.Any())
             {
-                return await _notificationChannelRepository
+                var overrideChannels = await _notificationChannelRepository
                     .GetAll()
-                    .Where(channel => type.ParsedOverrideChannels.Contains(new NotificationChannelIdentifier(channel.Module.Name, channel.Name)))
+                    .Where(channel => type.ParsedOverrideChannels.Contains(
+                        new NotificationChannelIdentifier(channel.Module.Name, channel.Name)))
                     .ToListAsync();
+
+                return overrideChannels;
             }
 
-            // Fallback - Return default channels based on priority (if applicable)
+            // Step 3: Fallback to default channels based on priority
             var notificationSettings = await _notificationSettings.NotificationSettings.GetValueAsync();
-            switch (priority)
+
+            var selectedNotifications = priority switch
             {
-                case RefListNotificationPriority.Low:
-                    return notificationSettings.Low.Select(x => _notificationChannelRepository.FirstOrDefault(c => new ByNameAndModuleSpecification<NotificationChannelConfig>(x.Name, x.Module).IsSatisfiedBy(c))).ToList();
-                case RefListNotificationPriority.Medium:
-                    return notificationSettings.Medium.Select(x => _notificationChannelRepository.FirstOrDefault(c => new ByNameAndModuleSpecification<NotificationChannelConfig>(x.Name, x.Module).IsSatisfiedBy(c))).ToList();
-                case RefListNotificationPriority.High:
-                    return notificationSettings.High.Select(x => _notificationChannelRepository.FirstOrDefault(c => new ByNameAndModuleSpecification<NotificationChannelConfig>(x.Name, x.Module).IsSatisfiedBy(c))).ToList();
-                default:
-                    throw new UserFriendlyException("Channel not specified!");
+                RefListNotificationPriority.Low => notificationSettings.Low,
+                RefListNotificationPriority.Medium => notificationSettings.Medium,
+                RefListNotificationPriority.High => notificationSettings.High,
+                _ => throw new UserFriendlyException("Channel not specified!")
             };
+
+            // Deserialize notification identifiers
+            var notificationIdentifiers = selectedNotifications
+                .Select(json => JsonSerializer.Deserialize<NotificationChannelIdentifier>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }))
+                .ToList();
+
+            var liveChannels = _notificationChannelRepository
+                .GetAll()
+                .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
+
+            var result = notificationIdentifiers
+                .SelectMany(identifier => liveChannels
+                    .Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(identifier.Name, identifier.Module).ToExpression()))
+                .ToList();
+
+            return result;
         }
+
     }
 }

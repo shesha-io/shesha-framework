@@ -60,6 +60,13 @@ namespace Shesha.Notifications
         {
             var settings = await GetSettings();
 
+            if (settings == null)
+                return new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = "Email settings are not configured"
+                };
+
             if (!settings.EmailsEnabled)
             {
                 Logger.Warn("Emails are disabled");

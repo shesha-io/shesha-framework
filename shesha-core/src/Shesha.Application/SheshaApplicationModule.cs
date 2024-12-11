@@ -76,9 +76,9 @@ namespace Shesha
             {
                 s.NotificationSettings.WithDefaultValue(new NotificationSettings
                 {
-                    Low = new List<NotificationChannelIdentifier> { },
-                    Medium = new List<NotificationChannelIdentifier> { },
-                    High = new List<NotificationChannelIdentifier> { },
+                    Low = new List<string> { },
+                    Medium = new List<string> { },
+                    High = new List<string> { },
                 });
 
             });
