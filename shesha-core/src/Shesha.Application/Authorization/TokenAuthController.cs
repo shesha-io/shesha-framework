@@ -66,16 +66,20 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<IActionResult> Authenticate([FromBody] AuthenticateModel model)
+        public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
             var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
 
             if (registration != null && !registration.IsComplete)
             {
-                // Return a custom result indicating a client-side redirect
-                var redirectUrl = $"{registration.AdditionalRegistrationInfoForm.Module}/{registration.AdditionalRegistrationInfoForm.Name}";
-                return Ok(new { Redirect = true, Url = redirectUrl });
+                // Return a result indicating a client-side redirect
+                return new AuthenticateResultModel
+                {
+                    ResultType = AuthenticateResultType.RedirectNoAuth,
+                    RedirectModule = registration.AdditionalRegistrationInfoForm.Module,
+                    RedirectForm = registration.AdditionalRegistrationInfoForm.Name
+                };
             }
 
             // Attempt login authentication
@@ -88,7 +92,7 @@ namespace Shesha.Authorization
 
             // Return the authenticate result
             var authenticateResult = await GetAuthenticateResultAsync(loginResult, model.IMEI);
-            return Ok(authenticateResult);
+            return authenticateResult;
         }
 
         private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 
@@ -115,7 +119,8 @@ namespace Shesha.Authorization
                 ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
                 UserId = loginResult.User.Id,
                 PersonId = personId,
-                DeviceName = device?.Name
+                DeviceName = device?.Name,
+                ResultType = AuthenticateResultType.Success
             };
         }
 
