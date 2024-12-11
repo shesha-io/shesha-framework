@@ -1,12 +1,13 @@
-import { IRadioOption } from "@/designer-components/settingsInput/settingsInput";
 import { IStyleType } from "@/index";
 import { addPx } from "../../utils";
+import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 
 const positions: IRadioOption[] = [
     { value: 'top', title: '', icon: 'UpSquareOutlined' },
     { value: 'right', title: '', icon: 'RightSquareOutlined' },
     { value: 'left', title: '', icon: 'LeftSquareOutlined' },
     { value: 'bottom', title: '', icon: 'DownSquareOutlined' }
+
 ];
 
 export const getPositionStyle = (input?: IStyleType['position']): React.CSSProperties => {
