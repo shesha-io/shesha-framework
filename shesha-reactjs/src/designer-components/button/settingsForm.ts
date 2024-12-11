@@ -3,6 +3,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { buttonTypes } from './util';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
 
@@ -228,7 +229,7 @@ export const getSettings = (data) => {
                                 label: "Width",
                                 width: 85,
                                 propertyName: "dimensions.width",
-                                icon: "width",
+                                icon: "widthIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                               },
@@ -239,7 +240,7 @@ export const getSettings = (data) => {
                                 width: 85,
                                 hideLabel: true,
                                 propertyName: "dimensions.minWidth",
-                                icon: "minWidth",
+                                icon: "minWidthIcon",
                               },
                               {
                                 type: 'text',
@@ -248,7 +249,7 @@ export const getSettings = (data) => {
                                 width: 85,
                                 hideLabel: true,
                                 propertyName: "dimensions.maxWidth",
-                                icon: "maxWidth",
+                                icon: "maxWidthIcon",
                               }
                             ]
                           })
@@ -264,7 +265,7 @@ export const getSettings = (data) => {
                                 label: "Height",
                                 width: 85,
                                 propertyName: "dimensions.height",
-                                icon: "height",
+                                icon: "heightIcon",
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
                               {
@@ -274,7 +275,7 @@ export const getSettings = (data) => {
                                 width: 85,
                                 hideLabel: true,
                                 propertyName: "dimensions.minHeight",
-                                icon: "minHeight",
+                                icon: "minHeightIcon",
                               },
                               {
                                 type: 'text',
@@ -283,7 +284,7 @@ export const getSettings = (data) => {
                                 width: 85,
                                 hideLabel: true,
                                 propertyName: "dimensions.maxHeight",
-                                icon: "maxHeight",
+                                icon: "maxHeightIcon",
                               }
                             ]
                           })
@@ -388,33 +389,7 @@ export const getSettings = (data) => {
                               propertyName: "background.type",
                               inputType: "radio",
                               tooltip: "Select a type of background",
-                              buttonGroupOptions: [
-                                {
-                                  value: "color",
-                                  icon: "FormatPainterOutlined",
-                                  title: "Color"
-                                },
-                                {
-                                  value: "gradient",
-                                  icon: "BgColorsOutlined",
-                                  title: "Gradient"
-                                },
-                                {
-                                  value: "image",
-                                  icon: "PictureOutlined",
-                                  title: "Image"
-                                },
-                                {
-                                  value: "url",
-                                  icon: "LinkOutlined",
-                                  title: "URL"
-                                },
-                                {
-                                  value: "storedFile",
-                                  icon: "DatabaseOutlined",
-                                  title: "Stored File"
-                                }
-                              ],
+                              buttonGroupOptions: backgroundTypeOptions,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
@@ -498,20 +473,7 @@ export const getSettings = (data) => {
                                   label: "Size",
                                   hideLabel: true,
                                   propertyName: "background.size",
-                                  dropdownOptions: [
-                                    {
-                                      value: "cover",
-                                      label: "Cover"
-                                    },
-                                    {
-                                      value: "contain",
-                                      label: "Contain"
-                                    },
-                                    {
-                                      value: "auto",
-                                      label: "Auto"
-                                    }
-                                  ],
+                                  dropdownOptions: sizeOptions,
                                 },
                                 {
                                   label: "Position",
@@ -519,44 +481,7 @@ export const getSettings = (data) => {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-position',
                                   propertyName: "background.position",
-                                  dropdownOptions: [
-                                    {
-                                      value: "center",
-                                      label: "Center"
-                                    },
-                                    {
-                                      value: "top",
-                                      label: "Top"
-                                    },
-                                    {
-                                      value: "left",
-                                      label: "Left"
-                                    },
-                                    {
-                                      value: "right",
-                                      label: "Right"
-                                    },
-                                    {
-                                      value: "bottom",
-                                      label: "Bottom"
-                                    },
-                                    {
-                                      value: "top left",
-                                      label: "Top Left"
-                                    },
-                                    {
-                                      value: "top right",
-                                      label: "Top Right"
-                                    },
-                                    {
-                                      value: "bottom left",
-                                      label: "Bottom Left"
-                                    },
-                                    {
-                                      value: "bottom right",
-                                      label: "Bottom Right"
-                                    }
-                                  ],
+                                  dropdownOptions: positionOptions,
                                 },
                                 {
                                   label: "Repeat",
@@ -565,24 +490,7 @@ export const getSettings = (data) => {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-repeat',
                                   width: 70,
-                                  dropdownOptions: [
-                                    {
-                                      value: "repeat",
-                                      label: "repeat"
-                                    },
-                                    {
-                                      value: "repeat-x",
-                                      label: "repeatX"
-                                    },
-                                    {
-                                      value: "repeat-y",
-                                      label: "repeatY"
-                                    },
-                                    {
-                                      value: "no-repeat",
-                                      label: "noRepeat"
-                                    }
-                                  ],
+                                  dropdownOptions: repeatOptions,
                                 }
                               ]
                             })
@@ -614,7 +522,7 @@ export const getSettings = (data) => {
                                 hideLabel: true,
                                 width: 60,
                                 inputType: 'number',
-                                icon: "offsetHorizontal",
+                                icon: "offsetHorizontalIcon",
                                 propertyName: 'shadow.offsetX',
                               },
                               {
@@ -624,7 +532,7 @@ export const getSettings = (data) => {
                                 hideLabel: true,
                                 width: 60,
                                 inputType: 'number',
-                                icon: 'offsetVertical',
+                                icon: 'offsetVerticalIcon',
                                 propertyName: 'shadow.offsetY',
                               },
                               {
@@ -634,7 +542,7 @@ export const getSettings = (data) => {
                                 hideLabel: true,
                                 width: 60,
                                 inputType: 'number',
-                                icon: 'blur',
+                                icon: 'blurIcon',
                                 propertyName: 'shadow.blurRadius',
                               },
                               {
@@ -644,7 +552,7 @@ export const getSettings = (data) => {
                                 hideLabel: true,
                                 width: 60,
                                 inputType: 'number',
-                                icon: 'spread',
+                                icon: 'spreadIcon',
                                 propertyName: 'shadow.spreadRadius',
                               },
                               {

@@ -21,6 +21,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './util';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -137,7 +138,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev) })),
+      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default ButtonComponent;
