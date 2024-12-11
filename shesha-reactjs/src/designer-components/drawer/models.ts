@@ -3,6 +3,7 @@ import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
+import { IFontValue } from '../_settings/utils/font/interfaces';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;
@@ -36,6 +37,9 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   shadow?: IShadowValue;
   headerShadow?: IShadowValue;
   headerBackground?: IBackgroundValue;
+  font?: IFontValue;
+  footerShadow?: IShadowValue;
+  footerBackground?: IBackgroundValue;
 
 
 

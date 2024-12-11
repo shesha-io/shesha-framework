@@ -26,7 +26,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const { size, border, background, headerBackground,style, shadow, headerShadow, headerStyle, ...props } = model;
+    const { size, border, background, headerBackground, style, shadow, headerShadow, headerStyle, footerStyle, footerBackground, footerShadow, ...props } = model;
 
     const jsStyle = getStyle(style, data);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -36,61 +36,85 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
     const headerJsStyle = getStyle(headerStyle, data);
     const [headerBackgroundStyles, setHeaderBackgroundStyles] = useState({});
     const headerShadowStyles = useMemo(() => getShadowStyle(headerShadow), [headerShadow]);
-    const headerStyles = getStyle(headerStyle, data);
+
+    const footerJsStyle = getStyle(footerStyle, data);
+    const footerShadowStyles = useMemo(() => getShadowStyle(footerShadow), [footerShadow]);
+    const [footerBackgroundStyles, setFooterBackgroundStyles] = useState({});
 
     useEffect(() => {
       const fetchStyles = async () => {
-      getBackgroundImageUrl(background, backendUrl, httpHeaders)
-      .then( async (url) => {
-         return await getBackgroundStyle(background, jsStyle, url);
-      }).then((style) => {
-        setBackgroundStyles(style);
-      });
-    };
+        getBackgroundImageUrl(background, backendUrl, httpHeaders)
+          .then(async (url) => {
+            return await getBackgroundStyle(background, jsStyle, url);
+          })
+          .then((style) => {
+            setBackgroundStyles(style);
+          });
+      };
       fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+    }, [background, backendUrl, httpHeaders]);
 
     useEffect(() => {
       const fetchStyles = async () => {
-      getBackgroundImageUrl(headerBackground, backendUrl, httpHeaders)
-      .then( async (url) => {
-         return await getBackgroundStyle(headerBackground, headerJsStyle, url);
-      }).then((style) => {
-        setHeaderBackgroundStyles(style);
-      });
-    };
+        getBackgroundImageUrl(headerBackground, backendUrl, httpHeaders)
+          .then(async (url) => {
+            return await getBackgroundStyle(headerBackground, headerJsStyle, url);
+          })
+          .then((style) => {
+            setHeaderBackgroundStyles(style);
+          });
+      };
       fetchStyles();
-    }, [headerBackground, headerBackground?.gradient?.colors, backendUrl, httpHeaders]);
+    }, [headerBackground, backendUrl, httpHeaders]);
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+        getBackgroundImageUrl(footerBackground, backendUrl, httpHeaders)
+          .then(async (url) => {
+            return await getBackgroundStyle(footerBackground, footerJsStyle, url);
+          })
+          .then((style) => {
+            setFooterBackgroundStyles(style);
+          });
+      };
+      fetchStyles();
+    }, [footerBackground, backendUrl, httpHeaders]);
 
     if (
       (model?.background?.type === 'storedFile' &&
-      model?.background.storedFile?.id &&
-      !isValidGuid(model?.background.storedFile.id)) ||
+        model?.background.storedFile?.id &&
+        !isValidGuid(model?.background.storedFile.id)) ||
       (model?.headerBackground?.type === 'storedFile' &&
         model?.headerBackground.storedFile?.id &&
-        !isValidGuid(model?.headerBackground.storedFile.id)) 
-      
+        !isValidGuid(model?.headerBackground.storedFile.id))
     ) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...shadowStyles,
       ...stylingBoxAsCSS,
       ...borderStyles,
       ...backgroundStyles,
-      ...jsStyle
+      ...jsStyle,
     });
 
     const additionalHeaderStyles: CSSProperties = removeUndefinedProps({
       ...headerShadowStyles,
       ...headerBackgroundStyles,
-      ...headerStyles
+      ...headerJsStyle,
     });
 
-    return <ShaDrawer style={additionalStyles} headerStyle={additionalHeaderStyles} {...props}/>;
+    const additionalFooterStyles: CSSProperties = removeUndefinedProps({
+      ...footerShadowStyles,
+      ...footerBackgroundStyles,
+      ...footerJsStyle,
+    });
+
+    return <ShaDrawer style={additionalStyles} headerStyle={additionalHeaderStyles}  footerStyle={additionalFooterStyles} {...props} />;
   },
   settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) =>

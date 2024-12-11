@@ -30,15 +30,25 @@ export const getSettings = (data: any) => {
                   jsSetting: true,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'text',
-                  propertyName: 'label',
-                  label: 'Header Title',
-                  size: 'large',
-                  jsSetting: true,
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'headerTitle-s4gmBg31azZC0UjZjpfTm',
+                      type: 'text',
+                      propertyName: 'label',
+                      label: 'Header Title',
+                      size: 'large',
+                      jsSetting: true,
+                    }
+                  ],
+                  hidden: {
+                    _code: 'return  !getSettingValue(data?.showHeader);',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,                 
+                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addCollapsiblePanel({
                   id: 'placement-s4gmBg31azZC0UjZjpfTm',
@@ -87,25 +97,31 @@ export const getSettings = (data: any) => {
                           id: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                           propertyName: 'containerComponents',
                           direction: 'vertical',
-                          hidden: { _code: 'return  !getSettingValue(data?.showFooter);', _mode: 'code', _value: false } as any,
+                          hidden: {
+                            _code: 'return  !getSettingValue(data?.showFooter);',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
                           parentId: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
                           components: new DesignerToolbarSettings()
-                            .addSectionSeparator({ id: nanoid(), propertyName: 'okButtonSeparator', label: 'Ok button' })
+                            .addSectionSeparator({
+                              id: nanoid(),
+                              propertyName: 'okButtonSeparator',
+                              label: 'Ok button',
+                            })
                             .addConfigurableActionConfigurator({
                               id: nanoid(),
                               propertyName: 'onOkAction',
                               parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
                               label: 'Ok Action',
                             })
-                            .addSettingsInput(
-                              {
-                                id: nanoid(),
-                                propertyName: 'okText',
-                                parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Ok Text',
-                                description: 'The text that will be displayed on the Ok button',
-                              },
-                            )
+                            .addSettingsInput({
+                              id: nanoid(),
+                              propertyName: 'okText',
+                              parentId: 'ccc24bf6-f76d-4139-a850-c99bf06c8b69',
+                              label: 'Ok Text',
+                              description: 'The text that will be displayed on the Ok button',
+                            })
                             .addSettingsInput({
                               id: nanoid(),
                               propertyName: 'okButtonCustomEnabled',
@@ -266,346 +282,401 @@ export const getSettings = (data: any) => {
                         parentId: 'styleRouter',
                         collapsible: 'header',
                         content: {
-                            id: 'backgroundStylePnl',
-                            components: [
-                                ...new DesignerToolbarSettings()
-                                    .addSettingsInput({
-                                        id: "backgroundStyleRow-selectType",
-                                        parentId: "backgroundStylePnl",
-                                        label: "Type",
-                                        jsSetting: false,
-                                        propertyName: "background.type",
-                                        inputType: "radio",
-                                        tooltip: "Select a type of background",
-                                        buttonGroupOptions: [
-                                            {
-                                                value: "color",
-                                                icon: "FormatPainterOutlined",
-                                                title: "Color"
-                                            },
-                                            {
-                                                value: "gradient",
-                                                icon: "BgColorsOutlined",
-                                                title: "Gradient"
-                                            },
-                                            {
-                                                value: "image",
-                                                icon: "PictureOutlined",
-                                                title: "Image"
-                                            },
-                                            {
-                                                value: "url",
-                                                icon: "LinkOutlined",
-                                                title: "URL"
-                                            },
-                                            {
-                                                value: "storedFile",
-                                                icon: "DatabaseOutlined",
-                                                title: "Stored File"
-                                            }
-                                        ],
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    })
-                                    .addSettingsInputRow({
-                                        id: "backgroundStyleRow-color",
-                                        parentId: "backgroundStylePnl",
-                                        inputs: [{
-                                            type: 'color',
-                                            id: 'backgroundStyleRow-color',
-                                            label: "Color",
-                                            propertyName: "background.color",
-                                            hideLabel: true,
-                                            jsSetting: false,
-                                        }],
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    })
-                                    .addSettingsInputRow({
-                                        id: "backgroundStyle-gradientColors",
-                                        parentId: "backgroundStylePnl",
-                                        inputs: [{
-                                            type: 'multiColorPicker',
-                                            id: 'backgroundStyle-gradientColors',
-                                            propertyName: "background.gradient.colors",
-                                            label: "Colors",
-                                            jsSetting: false,
-                                        }
-                                        ],
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                        hideLabel: true,
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    })
-                                    .addSettingsInputRow({
-                                        id: "backgroundStyle-url",
-                                        parentId: "backgroundStylePnl",
-                                        inputs: [{
-                                            type: 'text',
-                                            id: 'backgroundStyle-url',
-                                            propertyName: "background.url",
-                                            jsSetting: false,
-                                            label: "URL",
-                                        }],
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    })
-                                    .addSettingsInputRow({
-                                        id: "backgroundStyle-image",
-                                        parentId: 'backgroundStylePnl',
-                                        inputs: [{
-                                            type: 'imageUploader',
-                                            id: 'backgroundStyle-image',
-                                            propertyName: 'background.uploadFile',
-                                            label: "Image",
-                                            jsSetting: false,
-                                        }],
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    })
-                                    .addSettingsInputRow({
-                                        id: "backgroundStyleRow-storedFile",
-                                        parentId: 'backgroundStylePnl',
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        inputs: [
-                                            {
-                                                type: 'text',
-                                                id: 'backgroundStyle-storedFile',
-                                                jsSetting: false,
-                                                propertyName: "background.storedFile.id",
-                                                label: "File ID"
-                                            }
-                                        ]
-                                    })
-                                    .addSettingsInputRow({
-                                        id: "backgroundStyleRow-controls",
-                                        parentId: 'backgroundStyleRow',
-                                        inline: true,
-                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        inputs: [
-                                            {
-                                                type: 'customDropdown',
-                                                id: 'backgroundStyleRow-size',
-                                                label: "Size",
-                                                hideLabel: true,
-                                                propertyName: "background.size",
-                                                dropdownOptions: [
-                                                    {
-                                                        value: "cover",
-                                                        label: "Cover"
-                                                    },
-                                                    {
-                                                        value: "contain",
-                                                        label: "Contain"
-                                                    },
-                                                    {
-                                                        value: "auto",
-                                                        label: "Auto"
-                                                    }
-                                                ],
-                                            },
-                                            {
-                                                type: 'customDropdown',
-                                                id: 'backgroundStyleRow-position',
-                                                label: "Position",
-                                                hideLabel: true,
-                                                propertyName: "background.position",
-                                                dropdownOptions: [
-                                                    {
-                                                        value: "center",
-                                                        label: "Center"
-                                                    },
-                                                    {
-                                                        value: "top",
-                                                        label: "Top"
-                                                    },
-                                                    {
-                                                        value: "left",
-                                                        label: "Left"
-                                                    },
-                                                    {
-                                                        value: "right",
-                                                        label: "Right"
-                                                    },
-                                                    {
-                                                        value: "bottom",
-                                                        label: "Bottom"
-                                                    },
-                                                    {
-                                                        value: "top left",
-                                                        label: "Top Left"
-                                                    },
-                                                    {
-                                                        value: "top right",
-                                                        label: "Top Right"
-                                                    },
-                                                    {
-                                                        value: "bottom left",
-                                                        label: "Bottom Left"
-                                                    },
-                                                    {
-                                                        value: "bottom right",
-                                                        label: "Bottom Right"
-                                                    }
-                                                ],
-                                            },
-                                            {
-                                                type: 'dropdown',
-                                                id: 'backgroundStyleRow-repeat',
-                                                label: "Repeat",
-                                                hideLabel: true,
-                                                propertyName: "background.repeat",
-                                                dropdownOptions: [
-                                                    {
-                                                        value: "repeat",
-                                                        label: "repeat"
-                                                    },
-                                                    {
-                                                        value: "repeat-x",
-                                                        label: "repeatX"
-                                                    },
-                                                    {
-                                                        value: "repeat-y",
-                                                        label: "repeatY"
-                                                    },
-                                                    {
-                                                        value: "no-repeat",
-                                                        label: "noRepeat"
-                                                    }
-                                                ],
-                                            }
-                                        ]
-                                    })
-                                    .toJson()
-                            ],
-                        }
-                      })
-                      .addCollapsiblePanel({
-                      id: 'borderStyleCollapsiblePanel',
-                      propertyName: 'pnlBorderStyle',
-                      label: 'Border',
-                      labelAlign: 'right',
-                      ghost: true,
-                      parentId: 'styleRouter',
-                      collapsible: 'header',
-                      content: {
-                          id: 'borderStylePnl',
-                          components: [...new DesignerToolbarSettings()
-                              .addSettingsInputRow({
-                                  id: `borderStyleRow`,
-                                  parentId: 'borderStylePnl',
-                                  hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                  inputs: [
-                                      {
-                                          type: 'button',
-                                          id: 'borderStyleRow-hideBorder',
-                                          label: "Border",
-                                          hideLabel: true,
-                                          propertyName: "border.hideBorder",
-                                          icon: "EyeOutlined",
-                                          iconAlt: "EyeInvisibleOutlined"
-                                      },
-                                  ]
+                          id: 'backgroundStylePnl',
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInput({
+                                id: 'backgroundStyleRow-selectType',
+                                parentId: 'backgroundStylePnl',
+                                label: 'Type',
+                                jsSetting: false,
+                                propertyName: 'background.type',
+                                inputType: 'radio',
+                                tooltip: 'Select a type of background',
+                                buttonGroupOptions: [
+                                  {
+                                    value: 'color',
+                                    icon: 'FormatPainterOutlined',
+                                    title: 'Color',
+                                  },
+                                  {
+                                    value: 'gradient',
+                                    icon: 'BgColorsOutlined',
+                                    title: 'Gradient',
+                                  },
+                                  {
+                                    value: 'image',
+                                    icon: 'PictureOutlined',
+                                    title: 'Image',
+                                  },
+                                  {
+                                    value: 'url',
+                                    icon: 'LinkOutlined',
+                                    title: 'URL',
+                                  },
+                                  {
+                                    value: 'storedFile',
+                                    icon: 'DatabaseOutlined',
+                                    title: 'Stored File',
+                                  },
+                                ],
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                               })
-                              .addSettingsInputRow(
-                                  getBorderInputs()[0] as any
-                              )
-                              .addSettingsInputRow(
-                                  getBorderInputs()[1] as any
-                              )
-                              .addSettingsInputRow(
-                                  getBorderInputs()[2] as any
-                              )
-                              .addSettingsInputRow(
-                                  getBorderInputs()[3] as any
-                              )
-                              .addSettingsInputRow(
-                                  getBorderInputs()[4] as any
-                              )
-                              .addSettingsInputRow(
-                                  getCornerInputs()[0] as any
-                              )
-                              .addSettingsInputRow(
-                                  getCornerInputs()[1] as any
-                              )
-                              .addSettingsInputRow(
-                                  getCornerInputs()[2] as any
-                              )
-                              .addSettingsInputRow(
-                                  getCornerInputs()[3] as any
-                              )
-                              .addSettingsInputRow(
-                                  getCornerInputs()[4] as any
-                              )
-                              .toJson()
-                          ]
-                      }
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-color',
+                                parentId: 'backgroundStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'color',
+                                    id: 'backgroundStyleRow-color',
+                                    label: 'Color',
+                                    propertyName: 'background.color',
+                                    hideLabel: true,
+                                    jsSetting: false,
+                                  },
+                                ],
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyle-gradientColors',
+                                parentId: 'backgroundStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'multiColorPicker',
+                                    id: 'backgroundStyle-gradientColors',
+                                    propertyName: 'background.gradient.colors',
+                                    label: 'Colors',
+                                    jsSetting: false,
+                                  },
+                                ],
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                hideLabel: true,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyle-url',
+                                parentId: 'backgroundStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'text',
+                                    id: 'backgroundStyle-url',
+                                    propertyName: 'background.url',
+                                    jsSetting: false,
+                                    label: 'URL',
+                                  },
+                                ],
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyle-image',
+                                parentId: 'backgroundStylePnl',
+                                inputs: [
+                                  {
+                                    type: 'imageUploader',
+                                    id: 'backgroundStyle-image',
+                                    propertyName: 'background.uploadFile',
+                                    label: 'Image',
+                                    jsSetting: false,
+                                  },
+                                ],
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-storedFile',
+                                parentId: 'backgroundStylePnl',
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'text',
+                                    id: 'backgroundStyle-storedFile',
+                                    jsSetting: false,
+                                    propertyName: 'background.storedFile.id',
+                                    label: 'File ID',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-controls',
+                                parentId: 'backgroundStyleRow',
+                                inline: true,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'customDropdown',
+                                    id: 'backgroundStyleRow-size',
+                                    label: 'Size',
+                                    hideLabel: true,
+                                    propertyName: 'background.size',
+                                    dropdownOptions: [
+                                      {
+                                        value: 'cover',
+                                        label: 'Cover',
+                                      },
+                                      {
+                                        value: 'contain',
+                                        label: 'Contain',
+                                      },
+                                      {
+                                        value: 'auto',
+                                        label: 'Auto',
+                                      },
+                                    ],
+                                  },
+                                  {
+                                    type: 'customDropdown',
+                                    id: 'backgroundStyleRow-position',
+                                    label: 'Position',
+                                    hideLabel: true,
+                                    propertyName: 'background.position',
+                                    dropdownOptions: [
+                                      {
+                                        value: 'center',
+                                        label: 'Center',
+                                      },
+                                      {
+                                        value: 'top',
+                                        label: 'Top',
+                                      },
+                                      {
+                                        value: 'left',
+                                        label: 'Left',
+                                      },
+                                      {
+                                        value: 'right',
+                                        label: 'Right',
+                                      },
+                                      {
+                                        value: 'bottom',
+                                        label: 'Bottom',
+                                      },
+                                      {
+                                        value: 'top left',
+                                        label: 'Top Left',
+                                      },
+                                      {
+                                        value: 'top right',
+                                        label: 'Top Right',
+                                      },
+                                      {
+                                        value: 'bottom left',
+                                        label: 'Bottom Left',
+                                      },
+                                      {
+                                        value: 'bottom right',
+                                        label: 'Bottom Right',
+                                      },
+                                    ],
+                                  },
+                                  {
+                                    type: 'dropdown',
+                                    id: 'backgroundStyleRow-repeat',
+                                    label: 'Repeat',
+                                    hideLabel: true,
+                                    propertyName: 'background.repeat',
+                                    dropdownOptions: [
+                                      {
+                                        value: 'repeat',
+                                        label: 'repeat',
+                                      },
+                                      {
+                                        value: 'repeat-x',
+                                        label: 'repeatX',
+                                      },
+                                      {
+                                        value: 'repeat-y',
+                                        label: 'repeatY',
+                                      },
+                                      {
+                                        value: 'no-repeat',
+                                        label: 'noRepeat',
+                                      },
+                                    ],
+                                  },
+                                ],
+                              })
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
-                          id: 'shadowStyleCollapsiblePanel',
-                          propertyName: 'pnlShadowStyle',
-                          label: 'Shadow',
-                          labelAlign: 'right',
-                          ghost: true,
-                          parentId: 'styleRouter',
-                          collapsible: 'header',
-                          content: {
-                              id: 'shadowStylePnl',
-                              components: [...new DesignerToolbarSettings()
-                                  .addSettingsInputRow({
-                                      id: 'shadowStyleRow',
-                                      parentId: 'shadowStylePnl',
-                                      inline: true,
-                                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                      inputs: [
-                                          {
-                                              type: 'number',
-                                              id: 'shadowStyleRow-offsetX',
-                                              label: 'Offset X',
-                                              hideLabel: true,
-                                              width: 60,
-                                              icon: "offsetHorizontalIcon",
-                                              propertyName: 'shadow.offsetX',
-                                          },
-                                          {
-                                              type: 'number',
-                                              id: 'shadowStyleRow-offsetY',
-                                              label: 'Offset Y',
-                                              hideLabel: true,
-                                              width: 60,
-                                              icon: 'offsetVerticalIcon',
-                                              propertyName: 'shadow.offsetY',
-                                          },
-                                          {
-                                              type: 'number',
-                                              id: 'shadowStyleRow-blurRadius',
-                                              label: 'Blur',
-                                              hideLabel: true,
-                                              width: 60,
-                                              icon: 'blurIcon',
-                                              propertyName: 'shadow.blurRadius',
-                                          },
-                                          {
-                                              type: 'number',
-                                              id: 'shadowStyleRow-spreadRadius',
-                                              label: 'Spread',
-                                              hideLabel: true,
-                                              width: 60,
-                                              icon: 'spreadIcon',
-                                              propertyName: 'shadow.spreadRadius',
-                                          },
-                                          {
-                                              type: 'color',
-                                              id: 'shadowStyleRow-color',
-                                              label: 'Color',
-                                              hideLabel: true,
-                                              propertyName: 'shadow.color',
-                                          },
-                                      ],
-                                  })
-                                  .toJson()
-                              ]
-                          }
+                        id: 'borderStyleCollapsiblePanel',
+                        propertyName: 'pnlBorderStyle',
+                        label: 'Border',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: 'styleRouter',
+                        collapsible: 'header',
+                        content: {
+                          id: 'borderStylePnl',
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: `borderStyleRow`,
+                                parentId: 'borderStylePnl',
+                                hidden: {
+                                  _code:
+                                    'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'button',
+                                    id: 'borderStyleRow-hideBorder',
+                                    label: 'Border',
+                                    hideLabel: true,
+                                    propertyName: 'border.hideBorder',
+                                    icon: 'EyeOutlined',
+                                    iconAlt: 'EyeInvisibleOutlined',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow(getBorderInputs()[0] as any)
+                              .addSettingsInputRow(getBorderInputs()[1] as any)
+                              .addSettingsInputRow(getBorderInputs()[2] as any)
+                              .addSettingsInputRow(getBorderInputs()[3] as any)
+                              .addSettingsInputRow(getBorderInputs()[4] as any)
+                              .addSettingsInputRow(getCornerInputs()[0] as any)
+                              .addSettingsInputRow(getCornerInputs()[1] as any)
+                              .addSettingsInputRow(getCornerInputs()[2] as any)
+                              .addSettingsInputRow(getCornerInputs()[3] as any)
+                              .addSettingsInputRow(getCornerInputs()[4] as any)
+                              .toJson(),
+                          ],
+                        },
+                      })
+                      .addCollapsiblePanel({
+                        id: 'shadowStyleCollapsiblePanel',
+                        propertyName: 'pnlShadowStyle',
+                        label: 'Shadow',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: 'styleRouter',
+                        collapsible: 'header',
+                        content: {
+                          id: 'shadowStylePnl',
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: 'shadowStyleRow',
+                                parentId: 'shadowStylePnl',
+                                inline: true,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'number',
+                                    id: 'shadowStyleRow-offsetX',
+                                    label: 'Offset X',
+                                    hideLabel: true,
+                                    width: 60,
+                                    icon: 'offsetHorizontalIcon',
+                                    propertyName: 'shadow.offsetX',
+                                  },
+                                  {
+                                    type: 'number',
+                                    id: 'shadowStyleRow-offsetY',
+                                    label: 'Offset Y',
+                                    hideLabel: true,
+                                    width: 60,
+                                    icon: 'offsetVerticalIcon',
+                                    propertyName: 'shadow.offsetY',
+                                  },
+                                  {
+                                    type: 'number',
+                                    id: 'shadowStyleRow-blurRadius',
+                                    label: 'Blur',
+                                    hideLabel: true,
+                                    width: 60,
+                                    icon: 'blurIcon',
+                                    propertyName: 'shadow.blurRadius',
+                                  },
+                                  {
+                                    type: 'number',
+                                    id: 'shadowStyleRow-spreadRadius',
+                                    label: 'Spread',
+                                    hideLabel: true,
+                                    width: 60,
+                                    icon: 'spreadIcon',
+                                    propertyName: 'shadow.spreadRadius',
+                                  },
+                                  {
+                                    type: 'color',
+                                    id: 'shadowStyleRow-color',
+                                    label: 'Color',
+                                    hideLabel: true,
+                                    propertyName: 'shadow.color',
+                                  },
+                                ],
+                              })
+                              .toJson(),
+                          ],
+                        },
                       })
                       .addCollapsiblePanel({
                         id: 'styleCollapsiblePanel',
@@ -671,303 +742,373 @@ export const getSettings = (data: any) => {
                           id: 'stylePnl-M500-911MFR',
                           components: [
                             ...new DesignerToolbarSettings()
-                            .addCollapsiblePanel({
-                              id: 'headerbackgroundStyleCollapsiblePanel',
-                              propertyName: 'pnlBackgroundStyle',
-                              label: 'Background',
-                              labelAlign: 'right',
-                              ghost: true,
-                              parentId: 'styleRouter',
-                              collapsible: 'header',
-                              content: {
+                              .addCollapsiblePanel({
+                                id: 'headerbackgroundStyleCollapsiblePanel',
+                                propertyName: 'pnlBackgroundStyle',
+                                label: 'Background',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
                                   id: 'backgroundStylePnl',
                                   components: [
-                                      ...new DesignerToolbarSettings()
-                                          .addSettingsInput({
-                                              id: "backgroundStyleRow-selectType",
-                                              parentId: "backgroundStylePnl",
-                                              label: "Type",
-                                              jsSetting: false,
-                                              propertyName: "headerBackground.type",
-                                              inputType: "radio",
-                                              tooltip: "Select a type of background",
-                                              buttonGroupOptions: [
-                                                  {
-                                                      value: "color",
-                                                      icon: "FormatPainterOutlined",
-                                                      title: "Color"
-                                                  },
-                                                  {
-                                                      value: "gradient",
-                                                      icon: "BgColorsOutlined",
-                                                      title: "Gradient"
-                                                  },
-                                                  {
-                                                      value: "image",
-                                                      icon: "PictureOutlined",
-                                                      title: "Image"
-                                                  },
-                                                  {
-                                                      value: "url",
-                                                      icon: "LinkOutlined",
-                                                      title: "URL"
-                                                  },
-                                                  {
-                                                      value: "storedFile",
-                                                      icon: "DatabaseOutlined",
-                                                      title: "Stored File"
-                                                  }
-                                              ],
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                          })
-                                          .addSettingsInputRow({
-                                              id: "backgroundStyleRow-color",
-                                              parentId: "backgroundStylePnl",
-                                              inputs: [{
-                                                  type: 'color',
-                                                  id: 'backgroundStyleRow-color',
-                                                  label: "Color",
-                                                  propertyName: "headerBackground.color",
-                                                  hideLabel: true,
-                                                  jsSetting: false,
-                                              }],
-                                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                          })
-                                          .addSettingsInputRow({
-                                              id: "backgroundStyle-gradientColors",
-                                              parentId: "backgroundStylePnl",
-                                              inputs: [{
-                                                  type: 'multiColorPicker',
-                                                  id: 'backgroundStyle-gradientColors',
-                                                  propertyName: "headerBackground.gradient.colors",
-                                                  label: "Colors",
-                                                  jsSetting: false,
-                                              }
-                                              ],
-                                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                              hideLabel: true,
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                          })
-                                          .addSettingsInputRow({
-                                              id: "backgroundStyle-url",
-                                              parentId: "backgroundStylePnl",
-                                              inputs: [{
-                                                  type: 'text',
-                                                  id: 'backgroundStyle-url',
-                                                  propertyName: "headerBackground.url",
-                                                  jsSetting: false,
-                                                  label: "URL",
-                                              }],
-                                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                          })
-                                          .addSettingsInputRow({
-                                              id: "backgroundStyle-image",
-                                              parentId: 'backgroundStylePnl',
-                                              inputs: [{
-                                                  type: 'imageUploader',
-                                                  id: 'backgroundStyle-image',
-                                                  propertyName: 'headerBackground.uploadFile',
-                                                  label: "Image",
-                                                  jsSetting: false,
-                                              }],
-                                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                          })
-                                          .addSettingsInputRow({
-                                              id: "backgroundStyleRow-storedFile",
-                                              parentId: 'backgroundStylePnl',
-                                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                              inputs: [
-                                                  {
-                                                      type: 'text',
-                                                      id: 'backgroundStyle-storedFile',
-                                                      jsSetting: false,
-                                                      propertyName: "headerBackground.storedFile.id",
-                                                      label: "File ID"
-                                                  }
-                                              ]
-                                          })
-                                          .addSettingsInputRow({
-                                              id: "backgroundStyleRow-controls",
-                                              parentId: 'backgroundStyleRow',
-                                              inline: true,
-                                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                              inputs: [
-                                                  {
-                                                      type: 'customDropdown',
-                                                      id: 'backgroundStyleRow-size',
-                                                      label: "Size",
-                                                      hideLabel: true,
-                                                      propertyName: "headerBackground.size",
-                                                      dropdownOptions: [
-                                                          {
-                                                              value: "cover",
-                                                              label: "Cover"
-                                                          },
-                                                          {
-                                                              value: "contain",
-                                                              label: "Contain"
-                                                          },
-                                                          {
-                                                              value: "auto",
-                                                              label: "Auto"
-                                                          }
-                                                      ],
-                                                  },
-                                                  {
-                                                      type: 'customDropdown',
-                                                      id: 'backgroundStyleRow-position',
-                                                      label: "Position",
-                                                      hideLabel: true,
-                                                      propertyName: "headerBackground.position",
-                                                      dropdownOptions: [
-                                                          {
-                                                              value: "center",
-                                                              label: "Center"
-                                                          },
-                                                          {
-                                                              value: "top",
-                                                              label: "Top"
-                                                          },
-                                                          {
-                                                              value: "left",
-                                                              label: "Left"
-                                                          },
-                                                          {
-                                                              value: "right",
-                                                              label: "Right"
-                                                          },
-                                                          {
-                                                              value: "bottom",
-                                                              label: "Bottom"
-                                                          },
-                                                          {
-                                                              value: "top left",
-                                                              label: "Top Left"
-                                                          },
-                                                          {
-                                                              value: "top right",
-                                                              label: "Top Right"
-                                                          },
-                                                          {
-                                                              value: "bottom left",
-                                                              label: "Bottom Left"
-                                                          },
-                                                          {
-                                                              value: "bottom right",
-                                                              label: "Bottom Right"
-                                                          }
-                                                      ],
-                                                  },
-                                                  {
-                                                      type: 'dropdown',
-                                                      id: 'backgroundStyleRow-repeat',
-                                                      label: "Repeat",
-                                                      hideLabel: true,
-                                                      propertyName: "headerBackground.repeat",
-                                                      dropdownOptions: [
-                                                          {
-                                                              value: "repeat",
-                                                              label: "repeat"
-                                                          },
-                                                          {
-                                                              value: "repeat-x",
-                                                              label: "repeatX"
-                                                          },
-                                                          {
-                                                              value: "repeat-y",
-                                                              label: "repeatY"
-                                                          },
-                                                          {
-                                                              value: "no-repeat",
-                                                              label: "noRepeat"
-                                                          }
-                                                      ],
-                                                  }
-                                              ]
-                                          })
-                                          .toJson()
-                                  ],
-                              }
-                            })
-                          .addCollapsiblePanel({
-                              id: 'headerShadowStyleCollapsiblePanel',
-                              propertyName: 'pnlShadowStyle',
-                              label: 'Shadow',
-                              labelAlign: 'right',
-                              ghost: true,
-                              parentId: 'styleRouter',
-                              collapsible: 'header',
-                              content: {
-                                  id: 'shadowStylePnl',
-                                  components: [...new DesignerToolbarSettings()
-                                      .addSettingsInputRow({
-                                          id: 'shadowStyleRow',
-                                          parentId: 'shadowStylePnl',
-                                          inline: true,
-                                          readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                          inputs: [
-                                              {
-                                                  type: 'number',
-                                                  id: 'HeadershadowStyleRow-offsetX',
-                                                  label: 'Offset X',
-                                                  hideLabel: true,
-                                                  width: 60,
-                                                  icon: "offsetHorizontalIcon",
-                                                  propertyName: 'headerShadow.offsetX',
-                                              },
-                                              {
-                                                  type: 'number',
-                                                  id: 'HeadershadowStyleRow-offsetY',
-                                                  label: 'Offset Y',
-                                                  hideLabel: true,
-                                                  width: 60,
-                                                  icon: 'offsetVerticalIcon',
-                                                  propertyName: 'headerShadow.offsetY',
-                                              },
-                                              {
-                                                  type: 'number',
-                                                  id: 'HeadershadowStyleRow-blurRadius',
-                                                  label: 'Blur',
-                                                  hideLabel: true,
-                                                  width: 60,
-                                                  icon: 'blurIcon',
-                                                  propertyName: 'headerShadow.blurRadius',
-                                              },
-                                              {
-                                                  type: 'number',
-                                                  id: 'HeadershadowStyleRow-spreadRadius',
-                                                  label: 'Spread',
-                                                  hideLabel: true,
-                                                  width: 60,
-                                                  icon: 'spreadIcon',
-                                                  propertyName: 'headerShadow.spreadRadius',
-                                              },
-                                              {
-                                                  type: 'color',
-                                                  id: 'HeadershadowStyleRow-color',
-                                                  label: 'Color',
-                                                  hideLabel: true,
-                                                  propertyName: 'headerShadow.color',
-                                              },
-                                          ],
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        id: 'backgroundStyleRow-selectType',
+                                        parentId: 'backgroundStylePnl',
+                                        label: 'Type',
+                                        jsSetting: false,
+                                        propertyName: 'headerBackground.type',
+                                        inputType: 'radio',
+                                        tooltip: 'Select a type of background',
+                                        buttonGroupOptions: [
+                                          {
+                                            value: 'color',
+                                            icon: 'FormatPainterOutlined',
+                                            title: 'Color',
+                                          },
+                                          {
+                                            value: 'gradient',
+                                            icon: 'BgColorsOutlined',
+                                            title: 'Gradient',
+                                          },
+                                          {
+                                            value: 'image',
+                                            icon: 'PictureOutlined',
+                                            title: 'Image',
+                                          },
+                                          {
+                                            value: 'url',
+                                            icon: 'LinkOutlined',
+                                            title: 'URL',
+                                          },
+                                          {
+                                            value: 'storedFile',
+                                            icon: 'DatabaseOutlined',
+                                            title: 'Stored File',
+                                          },
+                                        ],
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
                                       })
-                                      .toJson()
-                                  ]
-                              }
-                          })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyleRow-color',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'color',
+                                            id: 'backgroundStyleRow-color',
+                                            label: 'Color',
+                                            propertyName: 'headerBackground.color',
+                                            hideLabel: true,
+                                            jsSetting: false,
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "color";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyle-gradientColors',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'multiColorPicker',
+                                            id: 'backgroundStyle-gradientColors',
+                                            propertyName: 'headerBackground.gradient.colors',
+                                            label: 'Colors',
+                                            jsSetting: false,
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "gradient";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        hideLabel: true,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyle-url',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'text',
+                                            id: 'backgroundStyle-url',
+                                            propertyName: 'headerBackground.url',
+                                            jsSetting: false,
+                                            label: 'URL',
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "url";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyle-image',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'imageUploader',
+                                            id: 'backgroundStyle-image',
+                                            propertyName: 'headerBackground.uploadFile',
+                                            label: 'Image',
+                                            jsSetting: false,
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "image";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyleRow-storedFile',
+                                        parentId: 'backgroundStylePnl',
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerBackground?.type) !== "storedFile";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
+                                          {
+                                            type: 'text',
+                                            id: 'backgroundStyle-storedFile',
+                                            jsSetting: false,
+                                            propertyName: 'headerBackground.storedFile.id',
+                                            label: 'File ID',
+                                          },
+                                        ],
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyleRow-controls',
+                                        parentId: 'backgroundStyleRow',
+                                        inline: true,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
+                                          {
+                                            type: 'customDropdown',
+                                            id: 'backgroundStyleRow-size',
+                                            label: 'Size',
+                                            hideLabel: true,
+                                            propertyName: 'headerBackground.size',
+                                            dropdownOptions: [
+                                              {
+                                                value: 'cover',
+                                                label: 'Cover',
+                                              },
+                                              {
+                                                value: 'contain',
+                                                label: 'Contain',
+                                              },
+                                              {
+                                                value: 'auto',
+                                                label: 'Auto',
+                                              },
+                                            ],
+                                          },
+                                          {
+                                            type: 'customDropdown',
+                                            id: 'backgroundStyleRow-position',
+                                            label: 'Position',
+                                            hideLabel: true,
+                                            propertyName: 'headerBackground.position',
+                                            dropdownOptions: [
+                                              {
+                                                value: 'center',
+                                                label: 'Center',
+                                              },
+                                              {
+                                                value: 'top',
+                                                label: 'Top',
+                                              },
+                                              {
+                                                value: 'left',
+                                                label: 'Left',
+                                              },
+                                              {
+                                                value: 'right',
+                                                label: 'Right',
+                                              },
+                                              {
+                                                value: 'bottom',
+                                                label: 'Bottom',
+                                              },
+                                              {
+                                                value: 'top left',
+                                                label: 'Top Left',
+                                              },
+                                              {
+                                                value: 'top right',
+                                                label: 'Top Right',
+                                              },
+                                              {
+                                                value: 'bottom left',
+                                                label: 'Bottom Left',
+                                              },
+                                              {
+                                                value: 'bottom right',
+                                                label: 'Bottom Right',
+                                              },
+                                            ],
+                                          },
+                                          {
+                                            type: 'dropdown',
+                                            id: 'backgroundStyleRow-repeat',
+                                            label: 'Repeat',
+                                            hideLabel: true,
+                                            propertyName: 'headerBackground.repeat',
+                                            dropdownOptions: [
+                                              {
+                                                value: 'repeat',
+                                                label: 'repeat',
+                                              },
+                                              {
+                                                value: 'repeat-x',
+                                                label: 'repeatX',
+                                              },
+                                              {
+                                                value: 'repeat-y',
+                                                label: 'repeatY',
+                                              },
+                                              {
+                                                value: 'no-repeat',
+                                                label: 'noRepeat',
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      })
+                                      .toJson(),
+                                  ],
+                                },
+                              })
+                              .addCollapsiblePanel({
+                                id: 'headerShadowStyleCollapsiblePanel',
+                                propertyName: 'pnlShadowStyle',
+                                label: 'Shadow',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
+                                  id: 'shadowStylePnl',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInputRow({
+                                        id: 'shadowStyleRow',
+                                        parentId: 'shadowStylePnl',
+                                        inline: true,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-offsetX',
+                                            label: 'Offset X',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'offsetHorizontalIcon',
+                                            propertyName: 'headerShadow.offsetX',
+                                          },
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-offsetY',
+                                            label: 'Offset Y',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'offsetVerticalIcon',
+                                            propertyName: 'headerShadow.offsetY',
+                                          },
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-blurRadius',
+                                            label: 'Blur',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'blurIcon',
+                                            propertyName: 'headerShadow.blurRadius',
+                                          },
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-spreadRadius',
+                                            label: 'Spread',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'spreadIcon',
+                                            propertyName: 'headerShadow.spreadRadius',
+                                          },
+                                          {
+                                            type: 'color',
+                                            id: 'HeadershadowStyleRow-color',
+                                            label: 'Color',
+                                            hideLabel: true,
+                                            propertyName: 'headerShadow.color',
+                                          },
+                                        ],
+                                      })
+                                      .toJson(),
+                                  ],
+                                },
+                              })
                               .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'headerStyle',
                                 hideLabel: true,
                                 label: 'Header Style',
-                                description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
+                                description:
+                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              })
                               .toJson(),
                           ],
                         },
@@ -985,15 +1126,373 @@ export const getSettings = (data: any) => {
                           id: 'stolePnl-M500-911MFR',
                           components: [
                             ...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: 'custom-css-412c-8461-sc1d55e5c073',
-                              inputType: 'codeEditor',
-                              propertyName: 'footerStyle',
-                              hideLabel: true,
-                              label: 'Footer Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                          })
+                              .addCollapsiblePanel({
+                                id: 'footerBackgroundStyleCollapsiblePanel',
+                                propertyName: 'pnlBackgroundStyle',
+                                label: 'Background',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
+                                  id: 'backgroundStylePnl',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        id: 'backgroundStyleRow-selectType',
+                                        parentId: 'backgroundStylePnl',
+                                        label: 'Type',
+                                        jsSetting: false,
+                                        propertyName: 'footerBackground.type',
+                                        inputType: 'radio',
+                                        tooltip: 'Select a type of background',
+                                        buttonGroupOptions: [
+                                          {
+                                            value: 'color',
+                                            icon: 'FormatPainterOutlined',
+                                            title: 'Color',
+                                          },
+                                          {
+                                            value: 'gradient',
+                                            icon: 'BgColorsOutlined',
+                                            title: 'Gradient',
+                                          },
+                                          {
+                                            value: 'image',
+                                            icon: 'PictureOutlined',
+                                            title: 'Image',
+                                          },
+                                          {
+                                            value: 'url',
+                                            icon: 'LinkOutlined',
+                                            title: 'URL',
+                                          },
+                                          {
+                                            value: 'storedFile',
+                                            icon: 'DatabaseOutlined',
+                                            title: 'Stored File',
+                                          },
+                                        ],
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'footerbackgroundStyleRow-color',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'color',
+                                            id: 'backgroundStyleRow-color',
+                                            label: 'Color',
+                                            propertyName: 'footerBackground.color',
+                                            hideLabel: true,
+                                            jsSetting: false,
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "color";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'backgroundStyle-gradientColors',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'multiColorPicker',
+                                            id: 'backgroundStyle-gradientColors',
+                                            propertyName: 'footerBackground.gradient.colors',
+                                            label: 'Colors',
+                                            jsSetting: false,
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "gradient";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        hideLabel: true,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'footerBackgroundStyle-url',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'text',
+                                            id: 'backgroundStyle-url',
+                                            propertyName: 'headerBackground.url',
+                                            jsSetting: false,
+                                            label: 'URL',
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "url";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'footerbackgroundStyle-image',
+                                        parentId: 'backgroundStylePnl',
+                                        inputs: [
+                                          {
+                                            type: 'imageUploader',
+                                            id: 'backgroundStyle-image',
+                                            propertyName: 'headerBackground.uploadFile',
+                                            label: 'Image',
+                                            jsSetting: false,
+                                          },
+                                        ],
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "image";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'footerbackgroundStyleRow-storedFile',
+                                        parentId: 'backgroundStylePnl',
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "storedFile";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
+                                          {
+                                            type: 'text',
+                                            id: 'footerbackgroundStyle-storedFile',
+                                            jsSetting: false,
+                                            propertyName: 'footerBackground.storedFile.id',
+                                            label: 'File ID',
+                                          },
+                                        ],
+                                      })
+                                      .addSettingsInputRow({
+                                        id: 'footerBackground-controls',
+                                        parentId: 'backgroundStyleRow',
+                                        inline: true,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
+                                          {
+                                            type: 'customDropdown',
+                                            id: 'backgroundStyleRow-size',
+                                            label: 'Size',
+                                            hideLabel: true,
+                                            propertyName: 'footerBackground.size',
+                                            dropdownOptions: [
+                                              {
+                                                value: 'cover',
+                                                label: 'Cover',
+                                              },
+                                              {
+                                                value: 'contain',
+                                                label: 'Contain',
+                                              },
+                                              {
+                                                value: 'auto',
+                                                label: 'Auto',
+                                              },
+                                            ],
+                                          },
+                                          {
+                                            type: 'customDropdown',
+                                            id: 'footerbackgroundStyleRow-position',
+                                            label: 'Position',
+                                            hideLabel: true,
+                                            propertyName: 'footerBackground.position',
+                                            dropdownOptions: [
+                                              {
+                                                value: 'center',
+                                                label: 'Center',
+                                              },
+                                              {
+                                                value: 'top',
+                                                label: 'Top',
+                                              },
+                                              {
+                                                value: 'left',
+                                                label: 'Left',
+                                              },
+                                              {
+                                                value: 'right',
+                                                label: 'Right',
+                                              },
+                                              {
+                                                value: 'bottom',
+                                                label: 'Bottom',
+                                              },
+                                              {
+                                                value: 'top left',
+                                                label: 'Top Left',
+                                              },
+                                              {
+                                                value: 'top right',
+                                                label: 'Top Right',
+                                              },
+                                              {
+                                                value: 'bottom left',
+                                                label: 'Bottom Left',
+                                              },
+                                              {
+                                                value: 'bottom right',
+                                                label: 'Bottom Right',
+                                              },
+                                            ],
+                                          },
+                                          {
+                                            type: 'dropdown',
+                                            id: 'ffooterbackgroundStyleRow-repeat',
+                                            label: 'Repeat',
+                                            hideLabel: true,
+                                            propertyName: 'footerBackground.repeat',
+                                            dropdownOptions: [
+                                              {
+                                                value: 'repeat',
+                                                label: 'repeat',
+                                              },
+                                              {
+                                                value: 'repeat-x',
+                                                label: 'repeatX',
+                                              },
+                                              {
+                                                value: 'repeat-y',
+                                                label: 'repeatY',
+                                              },
+                                              {
+                                                value: 'no-repeat',
+                                                label: 'noRepeat',
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      })
+                                      .toJson(),
+                                  ],
+                                },
+                              })
+                              .addCollapsiblePanel({
+                                id: 'footerShadowStyleCollapsiblePanel',
+                                propertyName: 'footerpnlShadowStyle',
+                                label: 'Shadow',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: 'styleRouter',
+                                collapsible: 'header',
+                                content: {
+                                  id: 'footershadowStylePnl',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInputRow({
+                                        id: 'footershadowStyleRow',
+                                        parentId: 'shadowStylePnl',
+                                        inline: true,
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        inputs: [
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-offsetX',
+                                            label: 'Offset X',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'offsetHorizontalIcon',
+                                            propertyName: 'footerShadow.offsetX',
+                                          },
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-offsetY',
+                                            label: 'Offset Y',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'offsetVerticalIcon',
+                                            propertyName: 'footerShadow.offsetY',
+                                          },
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-blurRadius',
+                                            label: 'Blur',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'blurIcon',
+                                            propertyName: 'footerShadow.blurRadius',
+                                          },
+                                          {
+                                            type: 'number',
+                                            id: 'HeadershadowStyleRow-spreadRadius',
+                                            label: 'Spread',
+                                            hideLabel: true,
+                                            width: 60,
+                                            icon: 'spreadIcon',
+                                            propertyName: 'footerShadow.spreadRadius',
+                                          },
+                                          {
+                                            type: 'color',
+                                            id: 'HeadershadowStyleRow-color',
+                                            label: 'Color',
+                                            hideLabel: true,
+                                            propertyName: 'footerShadow.color',
+                                          },
+                                        ],
+                                      })
+                                      .toJson(),
+                                  ],
+                                },
+                              })
+                              .addSettingsInput({
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                id: 'custom-css-412c-8461-sc1d55e5c073',
+                                inputType: 'codeEditor',
+                                propertyName: 'footerStyle',
+                                hideLabel: true,
+                                label: 'Footer Style',
+                                description:
+                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              })
                               .toJson(),
                           ],
                         },

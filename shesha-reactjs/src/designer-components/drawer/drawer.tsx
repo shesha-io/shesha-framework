@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { CSSProperties, FC, Fragment, useState } from 'react';
+import React, { CSSProperties, FC, Fragment, ReactNode, useState } from 'react';
 import {
   Alert,
   Button,
@@ -18,7 +18,7 @@ import { IConfigurableFormComponent } from '@/providers';
 interface IShaDrawer {
   id?: string;
   propertyName?: string;
-  label?: string;
+  label?: string | ReactNode;
   onOkAction?: IConfigurableActionConfiguration;
   onCancelAction?: IConfigurableActionConfiguration;
   okText?: string;
@@ -30,6 +30,7 @@ interface IShaDrawer {
   cancelButtonCustomEnabled?: string;
   showHeader?: boolean;
   headerStyle?: CSSProperties;
+  footerStyle?: CSSProperties;
   placement?: 'top' | 'right' | 'bottom' | 'left';
   width?:  string | number;
   height?: string | number;
@@ -59,6 +60,7 @@ const ShaDrawer: FC<IShaDrawer> = props => {
     cancelButtonCustomEnabled,
     showHeader,
     headerStyle,
+    footerStyle,
   } = props;
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
@@ -141,16 +143,13 @@ const ShaDrawer: FC<IShaDrawer> = props => {
     );
   }
 
-
   return (
     <Drawer
       open={state?.open}
       placement={placement}
       width={width}
       onClose={closeDrawer}
-      headerStyle={{display: showHeader ? 'block' : 'none', ...headerStyle}}
-      style={style}
-      //footerStyle={footerStyles}
+      styles={{ header: { display: showHeader ? 'block' : 'none', ...headerStyle }, footer: footerStyle, body: style }}
       title={label}
       size="large"
       footer={
