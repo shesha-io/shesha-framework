@@ -2,6 +2,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
@@ -530,24 +531,7 @@ export const getSettings = (data: any) => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    dropdownOptions: [
-                                      {
-                                        value: 'repeat',
-                                        label: 'repeat',
-                                      },
-                                      {
-                                        value: 'repeat-x',
-                                        label: 'repeatX',
-                                      },
-                                      {
-                                        value: 'repeat-y',
-                                        label: 'repeatY',
-                                      },
-                                      {
-                                        value: 'no-repeat',
-                                        label: 'noRepeat',
-                                      },
-                                    ],
+                                    dropdownOptions: repeatOptions,
                                   },
                                 ],
                               })
@@ -999,24 +983,7 @@ export const getSettings = (data: any) => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'headerBackground.repeat',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'repeat',
-                                                label: 'repeat',
-                                              },
-                                              {
-                                                value: 'repeat-x',
-                                                label: 'repeatX',
-                                              },
-                                              {
-                                                value: 'repeat-y',
-                                                label: 'repeatY',
-                                              },
-                                              {
-                                                value: 'no-repeat',
-                                                label: 'noRepeat',
-                                              },
-                                            ],
+                                            dropdownOptions: repeatOptions,
                                           },
                                         ],
                                       })
@@ -1383,24 +1350,7 @@ export const getSettings = (data: any) => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'footerBackground.repeat',
-                                            dropdownOptions: [
-                                              {
-                                                value: 'repeat',
-                                                label: 'repeat',
-                                              },
-                                              {
-                                                value: 'repeat-x',
-                                                label: 'repeatX',
-                                              },
-                                              {
-                                                value: 'repeat-y',
-                                                label: 'repeatY',
-                                              },
-                                              {
-                                                value: 'no-repeat',
-                                                label: 'noRepeat',
-                                              },
-                                            ],
+                                            dropdownOptions: repeatOptions,
                                           },
                                         ],
                                       })
