@@ -65,7 +65,7 @@ export interface IComponentValidationRules {
 }
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
-export type PositionType = 'relative' | 'absolute' | 'fixed' | 'sticky';
+export type PositionType = 'relative' | 'fixed';
 
 export interface IStyleType {
   border?: IBorderValue;

@@ -150,9 +150,10 @@ export const ALIGN_SELF = [
 
 
 export const defaultStyles = (): IStyleType => {
+
   return {
     background: { type: 'color', color: '#fff' },
-    dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       selectedCorner: 'all', selectedSide: 'all',
       border: {
@@ -161,6 +162,8 @@ export const defaultStyles = (): IStyleType => {
       },
       radius: { all: 4 }
     },
-    shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 }
+    shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
+    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
+    
   };
 };

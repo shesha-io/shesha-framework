@@ -115,10 +115,7 @@ export const getSettings = (data) => {
                             },
                             dropdownOptions: [
                               { value: 'relative', label: 'Relative' },
-                              { value: 'absolute', label: 'Absolute' },
-                              { value: 'fixed', label: 'Fixed' },
-                              { value: 'sticky', label: 'Sticky' },
-                              { value: 'static', label: 'Static' }
+                              { value: 'fixed', label: 'Fixed' }
                             ]
                           })
                           .addSettingsInputRow(
@@ -159,8 +156,8 @@ export const getSettings = (data) => {
                               required: true,
                             },
                             buttonGroupOptions: [
-                              { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
                               { value: 'block', title: 'Block', icon: 'BorderOutlined' },
+                              { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
                               { value: 'flex', title: 'Flex', icon: 'flex' },
                               { value: 'inline-grid', title: 'Inline Grid', icon: 'TableOutlined' }
                             ]

@@ -31,7 +31,7 @@ export const getPositionInputs = () => positions.map(value => {
         id: `borderStyleRow-${label}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+        readOnly: false,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
@@ -40,7 +40,7 @@ export const getPositionInputs = () => positions.map(value => {
                 propertyName: "position.offset",
                 type: "radio",
                 defaultValue: "all",
-                tooltip: "Select a corner to which the radius will be applied",
+                tooltip: "Select a direction to apply the offset",
                 buttonGroupOptions: positions,
             },
             {
@@ -51,7 +51,6 @@ export const getPositionInputs = () => positions.map(value => {
                 width: 65,
                 defaultValue: 0,
                 inputType: 'number',
-                tooltip: "Select a corner to which the radius will be applied",
                 propertyName: `position.${label}`
             }]
     };

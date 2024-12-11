@@ -109,10 +109,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...positionstyle,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
             ...finalStyle,
+            ...positionstyle,
           }}
           style={{
             ...getStyle(model?.style, formData),
-            ...positionstyle,
           }}
           dynamicComponents={model?.isDynamic ? model?.components : []}
           {...flexAndGridStyles}
@@ -128,7 +128,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ...prev,
         direction: prev['direction'] ?? 'vertical',
         justifyContent: prev['justifyContent'] ?? 'left',
-        display: prev['display'] /* ?? 'block'*/,
+        display: prev['display'] ?? 'block',
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
       }))
