@@ -215,7 +215,7 @@ namespace Shesha.Notifications
         }
 
         [AutomaticRetry(Attempts = 3, DelaysInSeconds = new int[] { 10, 20, 20})]
-        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
+        private async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
