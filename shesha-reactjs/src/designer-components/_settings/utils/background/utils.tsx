@@ -1,5 +1,5 @@
 import React from "react";
-import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, LinkOutlined, PicCenterOutlined, TableOutlined, UploadOutlined } from "@ant-design/icons";
+import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
 
 
@@ -79,11 +79,11 @@ export const backgroundTypeOptions: IRadioOption[] = [
     { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
 ];
 
-export const repeatOptions: IRadioOption[] = [
-    { value: 'no-repeat', title: 'No Repeat', icon: <PicCenterOutlined /> },
-    { value: 'repeat', title: 'Repeat', icon: <TableOutlined /> },
-    { value: 'repeat-x', title: 'Repeat X', icon: <InsertRowBelowOutlined /> },
-    { value: 'repeat-y', title: 'Repeat Y', icon: <InsertRowLeftOutlined /> },
+export const repeatOptions: IDropdownOption[] = [
+    { value: 'no-repeat', label: 'noRepeatIcon' },
+    { value: 'repeat', label: 'RepeatIcon' },
+    { value: 'repeat-x', label: 'RepeatXIcon' },
+    { value: 'repeat-y', label: 'RepeatYIcon' },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];

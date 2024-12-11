@@ -2,7 +2,8 @@ import React from 'react';
 
 import { IToolboxComponent } from "@/interfaces";
 import { SettingOutlined } from "@ant-design/icons";
-import { ISettingsInputProps, SettingInput } from './settingsInput';
+import { SettingInput } from './settingsInput';
+import { ISettingsInputProps } from './interfaces';
 
 const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
     type: 'settingsInput',
