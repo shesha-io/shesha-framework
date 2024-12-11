@@ -33,7 +33,7 @@ export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, c
         </Tooltip>
       )}
       {containerRendering({
-        items: actialItem.childItems || [],
+        items: item.childItems || [],
         onChange: (newItems, changeDetails) => {
           onChange({ ...item, childItems: [...newItems] }, changeDetails);
         }
