@@ -1,21 +1,18 @@
-import { SwitcherOutlined } from '@ant-design/icons';
-import { Switch } from 'antd';
-import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup } from '@/providers/form/models';
-import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, useFormData } from '@/providers';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { SwitchSize } from 'antd/lib/switch';
-import { ISwitchComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { IToolboxComponent } from '@/interfaces';
+import { IInputStyles, useFormData } from '@/providers';
+import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { SwitcherOutlined } from '@ant-design/icons';
+import { Switch } from 'antd';
+import { SwitchSize } from 'antd/lib/switch';
+import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { ISwitchComponentProps } from './interfaces';
+import { getSettings } from './settingsForm';
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
@@ -24,20 +21,27 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model: passedModel }) => {
     const { size, ...model } = passedModel;
     const { data: formData } = useFormData();
+    const allData = useAvailableConstantsData();
 
     const style = getStyle(model?.style, formData);
 
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
+          const customEvents = getEventHandlers(model, allData);
+          const onChangeInternal = (...args: any[]) => {
+            customEvents.onChange(args[0]);
+            if (typeof onChange === 'function')
+              onChange(...args);
+          };
+
           return model.readOnly ? (
               <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
             ) : (
-              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChange} />
+              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChangeInternal} />
             );
         }}
       </ConfigurableFormItem>
@@ -49,8 +53,8 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
       label: 'Switch',
     };
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
     .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))
