@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Shesha.Application.Services.Dto;
@@ -15,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.ShaRoleAppointedPersons
 {
-    [AbpAuthorize(PermissionNames.Pages_Roles)]
+    [SheshaAuthorize(Shesha.Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Pages_Roles)]
     public class ShaRoleAppointedPersonActionsAppService : SheshaCrudServiceBase<ShaRoleAppointedPerson, ShaRoleAppointedPersonDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleAppointedPersonDto, ShaRoleAppointedPersonDto>, IShaRoleAppointedPersonAppService
     {
         private readonly IRepository<ShaRole, Guid> _roleRepository;

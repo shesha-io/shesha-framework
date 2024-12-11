@@ -14,6 +14,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration;
+using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Languages;
 using Shesha.NHibernate;
@@ -47,9 +48,9 @@ namespace Shesha
 
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                SheshaConsts.ConnectionStringName
-            );
+            var config = Configuration.Modules.ShaNHibernate();
+
+            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
             // Use database for language management
             Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
