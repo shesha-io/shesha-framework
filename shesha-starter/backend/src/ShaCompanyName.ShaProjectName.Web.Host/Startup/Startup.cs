@@ -111,7 +111,9 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
                         }
                     case DbmsType.PostgreSQL:
                         {
-                            config.UsePostgreSqlStorage(connStr);
+                            config.UsePostgreSqlStorage(options => {
+                                options.UseNpgsqlConnection(connStr);
+                            });
                             break;
                         }
                 }

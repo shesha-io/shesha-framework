@@ -6,7 +6,7 @@ import { entitiesGet } from '@/apis/entities';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IKeyValue } from '@/interfaces/keyValue';
-import { ShaLink, ValidationErrors } from '@/components';
+import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
@@ -205,8 +205,18 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     });
   };
 
+  const renderDisplayByType = () => {
+    if (props.displayType === 'icon') return <ShaIcon iconName={props.iconName} />;
+
+    if (props.displayType === 'textTitle') return props.textTitle;
+
+    return displayText;
+  };
+
+  const navigationStyling = { ...style, marginTop: style?.marginTop ? style.marginTop : '3px' };
+
   const content = useMemo(() => {
-    if (!((formIdentifier && displayText && entityId) || props.entityReferenceType === 'Quickview'))
+    if (!((formIdentifier && renderDisplayByType() && entityId) || props.entityReferenceType === 'Quickview'))
       return (
         <Button className={styles.entityReferenceBtn} type="link">
           <span>
@@ -217,16 +227,18 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
-        <Button className={styles.entityReferenceBtn} disabled type="link">
-          {displayText}
+        <Button className={styles.entityReferenceBtn} disabled style={style} type="link">
+          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+            {renderDisplayByType()}
+          </ShaLink>
         </Button>
       );
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <Button className={styles.entityReferenceBtn} style={style} type="link">
+        <Button className={styles.entityReferenceBtn} style={navigationStyling} type="link">
           <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-            {displayText}
+            {renderDisplayByType()}
           </ShaLink>
         </Button>
       );
@@ -253,7 +265,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     return (
       <Button className={styles.entityReferenceBtn} style={style} type="link" onClick={dialogExecute}>
-        {displayText}
+        {renderDisplayByType()}
       </Button>
     );
   }, [formIdentifier, displayText, entityId, props.disabled, property.length]);

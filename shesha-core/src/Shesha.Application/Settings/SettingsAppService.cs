@@ -109,6 +109,7 @@ namespace Shesha.Settings
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public Task<List<SettingConfigurationDto>> GetConfigurationsAsync()
         {
             var settings = _settingDefinitionManager.GetAll();
