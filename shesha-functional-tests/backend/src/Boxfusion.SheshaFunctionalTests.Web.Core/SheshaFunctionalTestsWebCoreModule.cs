@@ -56,9 +56,6 @@ namespace Boxfusion.SheshaFunctionalTests
             
             config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
-            // use this line to switch to PostgreSql
-            //config.UsePostgreSql();
-
             ConfigureTokenAuth();
         }
 

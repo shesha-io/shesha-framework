@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.ShaRoles
 {
-    [AbpAuthorize()]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class ShaRoleAppService : SheshaCrudServiceBase<ShaRole, ShaRoleDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateShaRoleDto, ShaRoleDto>, IShaRoleAppService
     {
         private readonly IShaPermissionChecker _shaPermissionChecker;
@@ -76,7 +76,7 @@ namespace Shesha.ShaRoles
         /// Checks if current user is granted for a role.
         /// </summary>
         [HttpGet]
-        [AbpAuthorize()]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
         public async Task<bool> IsRoleGrantedAsync(IsRoleGrantedInput input)
         {
             var userId = AbpSession.GetUserId();

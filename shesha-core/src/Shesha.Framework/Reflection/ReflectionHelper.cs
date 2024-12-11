@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
+using Abp.Reflection;
 using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -15,6 +16,7 @@ using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Shesha.Reflection
 {
@@ -745,6 +747,44 @@ namespace Shesha.Reflection
                 .Select(group => group.Aggregate((mostSpecificProp, other) => mostSpecificProp.DeclaringType.IsSubclassOf(other.DeclaringType) ? mostSpecificProp : other))
                 .ToList();
             return propertiesWithoutHiddenOnes;
+        }
+
+        public static List<MethodInfo> GetExtensionMethods(Assembly assembly, Type extendedType)
+        {
+            var isGenericTypeDefinition = extendedType.IsGenericType && extendedType.IsTypeDefinition;
+
+            var types = assembly.GetTypes().Where(type => type.IsSealed && !type.IsGenericType && !type.IsNested).ToList();
+            var result = new List<MethodInfo>();
+
+            foreach (var type in types)
+            {
+                var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Where(method =>
+                    {
+                        var firstParam = method.GetParameters().FirstOrDefault();
+
+                        return method.IsDefined(typeof(ExtensionAttribute), false) &&
+                            firstParam != null &&
+                            (isGenericTypeDefinition
+                                ? firstParam.ParameterType.IsGenericType && firstParam.ParameterType.GetGenericTypeDefinition().IsAssignableFrom(extendedType)
+                                : firstParam.ParameterType.IsAssignableFrom(extendedType));
+                    })
+                    .ToList();
+                result.AddRange(methods);
+            }
+
+            return result;
+        }
+
+        public static List<MethodInfo> GetExtensionMethods(IAssemblyFinder assemblyFinder, Type extendedType) 
+        {
+            return assemblyFinder.GetAllAssemblies().SelectMany(a => GetExtensionMethods(a, extendedType)).ToList();
+        }
+
+        public static List<Type> GetExtensionTypes(Assembly assembly, Type extendedType)
+        {
+            var methods = GetExtensionMethods(assembly, extendedType);
+            return methods.Select(method => method.DeclaringType).Distinct().OfType<Type>().ToList();
         }
     }
 }

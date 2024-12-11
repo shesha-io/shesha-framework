@@ -18,6 +18,7 @@ import { useLocalStorage } from "@/hooks";
 import { buildCodeEditorEnvironmentAsync } from "./codeFiles";
 import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { CodeEditorLoadingProgressor } from "../loadingProgressor";
+import { Environment } from "@/publicJsApis/metadataBuilder";
 
 // you can change the source of the monaco files
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs', } });
@@ -97,6 +98,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         readOnly = false,
         style,
         templateSettings = CODE_TEMPLATE_DEFAULTS,
+        environment = Environment.None,
     } = props;
     const monacoInst = useRef<Monaco>();
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
@@ -106,7 +108,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const [isDevMode] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
-    
+
     const metadataFetcher = useCallback((typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name }), [getMetadata]);
 
     const subscriptions = useRef<IDisposable[]>([]);
@@ -143,17 +145,21 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             wrapInTemplate,
             fileName,
             availableConstants,
-            templateSettings,
             resultType,
             metadataFetcher,
             directory: fileNamesState.modelDir,
+            environment,
+            functionName: templateSettings?.functionName ?? "func",
+            useAsyncDeclaration: templateSettings?.useAsyncDeclaration,
         });
     }, [wrapInTemplate,
         fileName,
         availableConstants,
-        templateSettings,
+        templateSettings?.functionName,
+        templateSettings?.useAsyncDeclaration,
         resultType,
-        metadataFetcher]);
+        metadataFetcher,
+        environment]);
 
     const addExtraLib = (monaco: Monaco, content: string, filePath?: string): IDisposable => {
         const uri = monaco.Uri.parse(filePath);
@@ -257,7 +263,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             addExtraLib(monaco, content, fileName.startsWith('/') ? fileName : prefixLibPath(fileName));
         };
         const { sourceFiles } = codeEditorEnvironment;
-        
+
         sourceFiles.forEach((sourceFile) => {
             registerFile(sourceFile.filePath, sourceFile.content);
         });
@@ -299,22 +305,24 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
     const renderCodeEditor = () => {
         return codeEditorEnvironment
-        ? (
-            <CodeEditorMayHaveTemplate
-                path={fileNamesState.modelFilePath}
-                language={props.language}
-                theme="vs-dark"
-                value={value}
-                onChange={onChange}
-                options={{
-                    automaticLayout: true,
-                    readOnly: finalReadOnly,
-                }}
-                onMount={onEditorMount}
-                template={codeEditorEnvironment.template}
-            />
-        )
-        : <CodeEditorLoadingProgressor message="Load environment..."/>;
+            ? (
+                <>
+                    <CodeEditorMayHaveTemplate
+                        path={fileNamesState.modelFilePath}
+                        language={props.language}
+                        theme="vs-dark"
+                        value={value}
+                        onChange={onChange}
+                        options={{
+                            automaticLayout: true,
+                            readOnly: finalReadOnly,
+                        }}
+                        onMount={onEditorMount}
+                        template={codeEditorEnvironment.template}
+                    />
+                </>
+            )
+            : <CodeEditorLoadingProgressor message="Load environment..." />;
     };
 
     return showTree

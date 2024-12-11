@@ -4,7 +4,7 @@ import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
 import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode } from '@/publicJsApis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -142,8 +142,8 @@ export const registerMetadataBuilderAction: MetadataBuilderAction = (builder, na
     const definition: TypeDefinition = {
       typeName: 'IMetadataBuilder',
       files: [
-        { content: metadataBuilderSourceCode, fileName: 'apis/metadataBuilder.d.ts' },
-        { content: metadataSourceCode, fileName: 'apis/metadata.d.ts' }
+        { content: metadataBuilderSourceCode, fileName: CODE.METADATA_BUILDER_PATH },
+        { content: metadataSourceCode, fileName: CODE.METADATA_PATH }
       ],
     };
     return Promise.resolve(definition);

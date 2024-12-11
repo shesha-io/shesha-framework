@@ -28,6 +28,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
 
   return (
     <ConfigurableForm
+      layout='vertical'
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}

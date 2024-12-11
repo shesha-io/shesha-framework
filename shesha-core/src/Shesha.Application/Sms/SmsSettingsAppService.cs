@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using Shesha.Authorization;
 using Shesha.Reflection;
 using Shesha.Sms.Configuration;
 using Shesha.Sms.Dtos;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace Shesha.Sms
 {
     [Obsolete("Use generic SettingsAppService instead")]
-    [AbpAuthorize()]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class SmsSettingsAppService: SheshaAppServiceBase, ITransientDependency
     {
         private readonly ITypeFinder _typeFinder;

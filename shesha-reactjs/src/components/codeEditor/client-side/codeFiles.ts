@@ -1,24 +1,26 @@
 import { asPropertiesArray, IObjectMetadata, isPropertiesArray, isPropertiesLoader, ModelTypeIdentifier, NestedProperties, PropertiesPromise } from "@/interfaces/metadata";
 import { makeCodeTemplate, TextTemplate } from "./utils";
-import { CodeTemplateSettings, isArrayType, isEntityType, isObjectType, ResultType } from "../models";
+import { isArrayType, isEntityType, isObjectType, ResultType } from "../models";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { isEmptyString, trimSuffix } from "@/utils/string";
 import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
+import { Environment } from "@/publicJsApis/metadataBuilder";
 
 export interface ISourceCodeFile {
     content: string;
     filePath: string;
 }
 
-// isFileExists
 export type BuildSourceCodeFilesArgs = {
     wrapInTemplate: boolean;
     fileName: string;
     directory: string;
     availableConstants?: IObjectMetadata;
-    templateSettings?: CodeTemplateSettings;
     resultType?: ResultType;
     metadataFetcher: (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
+    environment: Environment;
+    useAsyncDeclaration?: boolean;
+    functionName?: string;
 };
 export type BuildSourceCodeFilesResponse = {
     template: (code: string) => TextTemplate;
@@ -58,7 +60,7 @@ const getResultTypeName = (typeName: string, isAsync: boolean) => {
 };
 
 export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFilesArgs): Promise<BuildSourceCodeFilesResponse> => {
-    const { metadataFetcher, availableConstants, resultType, wrapInTemplate, fileName, directory } = args;
+    const { metadataFetcher, availableConstants, resultType, wrapInTemplate, fileName, directory, environment } = args;
     const response: BuildSourceCodeFilesResponse = {
         template: undefined,
         sourceFiles: []
@@ -75,9 +77,8 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     const variablesFileName = getVariablesFileName(fileName);
 
     const tsBuilder = new TypesBuilder(metadataFetcher, isFileExists, registerFile);
-    // build exposed variables
     try {
-        const constantsDeclaration = await tsBuilder.buildConstants(properties);
+        const constantsDeclaration = await tsBuilder.buildConstants(properties, { environment });
         if (constantsDeclaration.content && !isEmptyString(constantsDeclaration.content)) {
             registerFile(`/${directory}/${variablesFileName}`, constantsDeclaration.content);
             //const constantsModel = addExtraLib(monaco, constantsDeclaration.content, fileNamesState.exposedVarsPath);
@@ -129,7 +130,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     }
 
     if (wrapInTemplate) {
-        const { useAsyncDeclaration, functionName } = args.templateSettings;
+        const { useAsyncDeclaration, functionName } = args;
 
         const variablesImportBlock = getVariablesImportBlock(availableConstants, trimSuffix(variablesFileName, DTS_EXTENSION));
         const finalResultTypeName = getResultTypeName(resultTypeName, useAsyncDeclaration);

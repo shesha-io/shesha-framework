@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { TypeAndLocation } from "./models";
 import { trimSuffix } from "../string";
+import { TypeImport } from "@/interfaces/metadata";
 
 export const DTS_EXTENSION = '.d.ts';
 
@@ -18,6 +19,11 @@ export class TypesImporter {
         else
             fileImport.add(type.typeName);
     }
+
+    importAll(types?: TypeImport[]) {
+        if (types)
+            types.forEach(type => this.import(type));
+    }    
 
     static cleanupFileNameForImport = (path: string) => {
         return path.endsWith(DTS_EXTENSION) 

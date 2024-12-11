@@ -35,6 +35,8 @@ namespace Shesha.Metadata.Dtos
         /// </summary>
         public List<PropertyMetadataDto> Properties { get; set; } = new List<PropertyMetadataDto>();
 
+        public List<MethodMetadataDto> Methods { get; set; } = new List<MethodMetadataDto>();
+
         /// <summary>
         /// Specifications, applicable for entities
         /// </summary>

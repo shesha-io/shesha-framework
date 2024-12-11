@@ -36,7 +36,7 @@ using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
 namespace Shesha.Users
 {
-    [AbpAuthorize(PermissionNames.Pages_Users)]
+    [SheshaAuthorize(Shesha.Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Pages_Users)]
 
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
