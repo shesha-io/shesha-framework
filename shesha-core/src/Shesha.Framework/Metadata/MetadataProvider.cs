@@ -1,9 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.ObjectMapping;
+using Abp.Reflection;
 using Abp.Runtime.Validation;
+using Abp.Threading;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.VisualBasic;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities;
@@ -32,6 +35,7 @@ namespace Shesha.Metadata
         private readonly IModelConfigurationManager _modelConfigurationProvider;
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
         private readonly IObjectMapper _mapper;
+        private readonly IAssemblyFinder _assemblyFinder;
 
         public MetadataProvider(
             IEntityConfigurationStore entityConfigurationStore,
@@ -39,7 +43,8 @@ namespace Shesha.Metadata
             IModelConfigurationManager modelConfigurationProvider,
             IHardcodeMetadataProvider hardcodeMetadataProvider,
             IObjectMapper mapper,
-            IIocResolver iocResolver
+            IIocResolver iocResolver,
+            IAssemblyFinder assemblyFinder
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
@@ -47,6 +52,7 @@ namespace Shesha.Metadata
             _modelConfigurationProvider = modelConfigurationProvider;
             _hardcodeMetadataProvider = hardcodeMetadataProvider;
             _mapper = mapper;
+            _assemblyFinder = assemblyFinder;
 
             _actionDescriptorCollectionProvider = iocResolver.IsRegistered<IActionDescriptorCollectionProvider>()
                 ? iocResolver.Resolve<IActionDescriptorCollectionProvider>()
@@ -68,6 +74,7 @@ namespace Shesha.Metadata
                 DataType = isEntity ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
+                Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
                 ClassName = containerType.FullName,
 
@@ -91,6 +98,85 @@ namespace Shesha.Metadata
             }
 
             return dto;
+        }
+
+        private async Task<List<MethodMetadataDto>> GetMethodsAsync(Type containerType)
+        {
+            var assemblies = _assemblyFinder.GetAllAssemblies();
+
+            var methods = ReflectionHelper.GetExtensionMethods(_assemblyFinder, containerType)
+                .Where(m => !m.GetGenericArguments().Any() && !m.HasAttribute<ObsoleteAttribute>() &&
+                    MethodSupported(m, (type) =>
+                    {
+                        var dt = _hardcodeMetadataProvider.GetDataTypeByPropertyType(type, null);
+                        if (dt == null)
+                            return false;
+
+                        switch (dt.DataType)
+                        {
+                            case DataTypes.Object:
+                            case DataTypes.ObjectReference:
+                                return assemblies.Contains(type.Assembly);
+                            case DataTypes.Array:
+                                {
+                                    var elementType = HardcodeMetadataProvider.GetListElementType(type);
+                                    return elementType != null && assemblies.Contains(elementType.Assembly);
+                                }
+                            default:
+                                return true;
+                        }
+                    }))
+                .ToList();
+
+            var methodDtos = new List<MethodMetadataDto>();
+            foreach (var m in methods) 
+            {
+                var dto = new MethodMetadataDto
+                {
+                    Name = m.Name,
+                    Description = m.GetDescription(),
+                    Arguments = await GetMethodArgumentsAsync(m),
+                    ReturnType = await GetMethodReturnTypeAsync(m),
+                    IsAsync = m.IsAsync(),
+                };
+                methodDtos.Add(dto);
+            }
+
+            return methodDtos;
+        }
+
+        private bool MethodSupported(MethodInfo method, Func<Type, bool> typeSupported)
+        {
+            if (method.ReturnType != null && !typeSupported(method.ReturnType))
+                return false;
+
+            if (method.GetParameters().Any(p => !typeSupported(p.ParameterType)))
+                return false;
+
+            return true;
+        }
+
+        private Task<DataTypeInfo> GetMethodReturnTypeAsync(MethodInfo method)
+        {
+            var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null);
+            return Task.FromResult(result);
+        }
+
+        private Task<List<VariableDef>> GetMethodArgumentsAsync(MethodInfo method)
+        {
+            var result = new List<VariableDef>();
+            
+            var parameters = method.GetParameters().Skip(1);
+            foreach (var parameter in parameters) 
+            {
+                result.Add(new VariableDef 
+                { 
+                     Name = parameter.Name,
+                     DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null),
+                });
+            }
+            
+            return Task.FromResult(result);
         }
 
         public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType)

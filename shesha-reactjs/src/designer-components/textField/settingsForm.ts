@@ -4,6 +4,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: ITextFieldComponentProps) => {
 
@@ -713,24 +714,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "repeat",
-                                                                            label: "repeat"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-x",
-                                                                            label: "repeatX"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-y",
-                                                                            label: "repeatY"
-                                                                        },
-                                                                        {
-                                                                            value: "no-repeat",
-                                                                            label: "noRepeat"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })

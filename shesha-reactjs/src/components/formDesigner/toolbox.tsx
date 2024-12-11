@@ -35,7 +35,7 @@ const Toolbox: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbox}>
-      <Tabs defaultActiveKey="1" type="card" items={[...builderItems]} />
+      <Tabs style={{paddingBottom: '50px'}} defaultActiveKey="1" type="card" items={[...builderItems]} />
     </div>
   );
 };

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
-    [AbpAuthorize()]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class PermissionAppService : SheshaAppServiceBase
     {
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
@@ -198,7 +198,7 @@ namespace Shesha.Permissions
         /// Checks if current user is granted for a permission.
         /// </summary>
         [HttpGet]
-        [AbpAuthorize()]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
         public async Task<bool> IsPermissionGranted(IsPermissionGrantedInput input) 
         {
             if (input.PermissionedEntityId.IsNullOrEmpty() || input.PermissionedEntityClass.IsNullOrEmpty())

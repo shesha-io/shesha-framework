@@ -1,4 +1,5 @@
-﻿using Shesha.Configuration.Runtime.Exceptions;
+﻿using JetBrains.Annotations;
+using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,14 @@ namespace Shesha.Metadata
         /// </summary>
         /// <returns></returns>
         DataTypeInfo GetDataType(PropertyInfo propInfo);
+
+        /// <summary>
+        /// Get data type by property type
+        /// </summary>
+        /// <param name="propType"></param>
+        /// <param name="propInfo"></param>
+        /// <returns></returns>
+        DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo propInfo);
 
         /// <summary>
         /// Returns true if the property is a framework related one

@@ -1,8 +1,8 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
 import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
-import { PropertiesBuilder, StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
+import { Environment, PropertiesBuilder, StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
 import { registerMetadataBuilderAction } from "./standardProperties";
-import { 
+import {
     IMetadataBuilder as IPublicMetadataBuilder,
     IObjectMetadataBuilder as IPublicObjectMetadataBuilder,
 } from '@/publicJsApis/metadataBuilder';
@@ -32,6 +32,7 @@ export type WellKnownConstantDescriptor = {
 };
 
 export interface IMetadataBuilderInternal extends IMetadataBuilder {
+    readonly environment: Environment;
     readonly metadataFetcher: MetadataFetcher;
     readonly standardProperties: Map<string, WellKnownConstantDescriptor>;
 }
@@ -204,16 +205,18 @@ const getMetadataTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefiniti
         files: [{
             content: metadataSourceCode,
             fileName: "apis/metadata.d.ts",
-        }],        
+        }],
     });
 };
 
 export class MetadataBuilder implements IMetadataBuilderInternal {
     readonly metadataFetcher: MetadataFetcher;
     readonly standardProperties: Map<string, WellKnownConstantDescriptor> = new Map<string, WellKnownConstantDescriptor>();
+    environment: Environment;
 
     constructor(metadataFetcher: MetadataFetcher) {
         this.metadataFetcher = metadataFetcher;
+        this.environment = Environment.None;
     }
     simpleType(): IMetadata {
         throw new Error("Method not implemented.");
@@ -242,7 +245,7 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
             description: description,
             dataType: DataTypes.array,
             dataFormat: itemMetadata.dataType,
-            itemsType: itemMetadata,            
+            itemsType: itemMetadata,
         };
         return arrayMetadata;
     };
