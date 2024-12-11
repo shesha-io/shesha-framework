@@ -40,11 +40,13 @@
             "items": [
                 {
                     "label": "Edit",
-                    "value": "edit"
+                    "value": "edit",
+                    "icon": "edit"
                 },
                 {
                     "label": "Read only",
-                    "value": "readonly"
+                    "value": "readonly",
+                    "icon": "readonly"
                 }
             ],
             "validate": {},

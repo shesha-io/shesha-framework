@@ -28,7 +28,7 @@
     <EmbeddedResource Remove="ObjectMapper\**" />
     <None Remove="Dtos\**" />
     <None Remove="ObjectMapper\**" />
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="ConfigMigrations\package20240123_1429.shaconfig" />
@@ -69,6 +69,8 @@
     <None Remove="ConfigMigrations\package20241104_1722.shaconfig" />
     <None Remove="ConfigMigrations\package20241113_1549.shaconfig" />
     <None Remove="ConfigMigrations\package20241125_1110.shaconfig" />
+    <None Remove="ConfigMigrations\package20241203_1422.shaconfig" />
+    <None Remove="ConfigMigrations\package20241205_1605.shaconfig" />
     <None Remove="Excel\template.xlsx" />
     <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
     <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
@@ -102,6 +104,8 @@
     <EmbeddedResource Include="ConfigMigrations\package20241104_1722.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20241113_1549.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20241125_1110.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20241203_1422.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20241205_1605.shaconfig" />
     <EmbeddedResource Include="Excel\template.xlsx" />
     <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />

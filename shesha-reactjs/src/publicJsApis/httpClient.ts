@@ -22,9 +22,11 @@ export type ResponseType =
  * Http request configuration
  */
 export interface HttpRequestConfig {
-    /* Request headers */
+    /** Request headers */
     headers?: Record<string, string>;
-    /* Timeout in milliseconds */
+    /** If true, standard headers will be omitted */
+    omitStandardHeaders?: boolean;
+    /** Timeout in milliseconds */
     timeout?: number;
     responseType?: ResponseType;
 }

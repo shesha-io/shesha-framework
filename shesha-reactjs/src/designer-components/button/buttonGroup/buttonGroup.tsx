@@ -31,8 +31,8 @@ import { useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
-import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
+import { addPx } from '@/designer-components/_settings/utils';
 
 type MenuItem = MenuProps['items'][number];
 

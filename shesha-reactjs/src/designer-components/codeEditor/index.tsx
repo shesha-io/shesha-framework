@@ -13,6 +13,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
 import { useResultTypeEvaluator } from './hooks/useResultType';
 import { useConstantsEvaluator } from './hooks/useConstantsEvaluator';
+import { Environment } from '@/publicJsApis/metadataBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -57,6 +58,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<ICodeEditorComponentProps>(3, (prev) => ({ ...prev, language: prev.language ?? "typescript" }))
+    .add<ICodeEditorComponentProps>(4, (prev) => ({ ...prev, environment: prev.environment ?? (prev.language === "typescript" ? Environment.FrontEnd : Environment.None) }))
   ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {

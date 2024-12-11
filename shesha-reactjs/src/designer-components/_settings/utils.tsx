@@ -1,5 +1,7 @@
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
+import React from "react";
 import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
+import { useStyles } from "./styles/styles";
 
 /**
  * Checks if the provided data is an instance of IPropertySetting.
@@ -160,4 +162,10 @@ export const updateSettingsComponentsDict = (
 
 export const addPx = (value) => {
     return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+};
+
+export const StyledLabel = ({ label }: { label: string }) => {
+    const { styles } = useStyles();
+
+    return <span className={styles.label}>{label}</span>;
 };

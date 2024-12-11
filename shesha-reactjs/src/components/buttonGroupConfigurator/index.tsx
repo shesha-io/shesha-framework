@@ -4,6 +4,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { useMedia } from 'react-use';
 import { ButtonGroupSettingsEditor } from './buttonGroupSettingsEditor';
 import { deepCopyViaJson } from '@/utils/object';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IToolbarSettingsModal {
   readOnly: boolean;
@@ -13,13 +14,14 @@ export interface IToolbarSettingsModal {
 }
 
 interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
-
+  size?: SizeType;
 }
 
 export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   value,
   onChange,
   readOnly,
+  size,
   title = 'Buttons Configuration',
 }) => {
   const isSmall = useMedia('(max-width: 480px)');
@@ -43,12 +45,12 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
   return (
     <Fragment>
-      <Button onClick={openModal}>{readOnly ? 'View Button Group' : 'Customize Button Group'}</Button>
+      <Button size={size} onClick={openModal}>{readOnly ? 'View Button Group' : 'Customize Button Group'}</Button>
 
       <Modal
         width={isSmall ? '90%' : '60%'}
         styles={{ body: { height: '70vh' } }}
-        
+
         open={showModal}
         title={title}
 

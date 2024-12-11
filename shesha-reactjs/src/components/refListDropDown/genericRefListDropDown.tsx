@@ -41,7 +41,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   };
 
   const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
-    if (localValue === undefined) return undefined;
+    if (localValue === undefined) 
+      return (mode === 'multiple' || mode === 'tags') ? [] : undefined;
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {

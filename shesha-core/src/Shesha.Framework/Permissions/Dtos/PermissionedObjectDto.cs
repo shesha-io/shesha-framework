@@ -17,7 +17,10 @@ namespace Shesha.Permissions
             Access = RefListPermissionedAccess.Inherited;
             Hidden = false;
             AdditionalParameters = new Dictionary<string, string>();
+            Hardcoded = false;
         }
+
+        public virtual bool? Hardcoded { get; set; }
 
         public string Object { get; set; }
 
