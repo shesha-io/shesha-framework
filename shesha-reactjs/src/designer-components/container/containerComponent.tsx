@@ -160,7 +160,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       .add<IContainerComponentProps>(6, (prev) => {
         return { ...prev, shadowStyle: 'none' };
       })
-      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { ...defaultStyles()}), }))
   ,
 };
 

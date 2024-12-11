@@ -1,5 +1,6 @@
 import { IRadioOption } from "@/designer-components/settingsInput/settingsInput";
 import { IStyleType } from "@/index";
+import { addPx } from "../../utils";
 
 const positions: IRadioOption[] = [
     { value: 'top', title: '', icon: 'UpSquareOutlined' },
@@ -15,11 +16,10 @@ export const getPositionStyle = (input?: IStyleType['position']): React.CSSPrope
     const { value, top, left, right, bottom } = input;
 
     style.position = value;
-    style.top = top;
-    style.left = left;
-    style.right = right;
-    style.bottom = bottom;
-
+    style.top = addPx(top);
+    style.left = addPx(left);
+    style.right = addPx(right);
+    style.bottom = addPx(bottom);
 
     return style;
 };

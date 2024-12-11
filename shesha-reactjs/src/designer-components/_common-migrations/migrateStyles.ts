@@ -74,7 +74,8 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                     bottom: 0,
                     right: 0
                 }
-            })
+            }),
+            ...(defaults?.display && { display: defaults?.display || 'block' }),
         };
     };
 

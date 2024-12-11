@@ -148,7 +148,7 @@ export const getSettings = (data) => {
                           .addSettingsInput({
                             id: 'display-s4gmBg31azZC0UjZjpfTm',
                             propertyName: 'display',
-                            label: 'Display',
+                            label: 'Layout Type',
                             parentId: 'displayCollapsiblePanel',
                             inputType: 'radio',
                             description: 'The display CSS property sets whether an element is treated as a block or inline element and the layout used for its children, such as flow layout, grid or flex.',
@@ -163,42 +163,11 @@ export const getSettings = (data) => {
                             ]
                           })
                           .addSettingsInputRow({
-                            id: 'try26voxhs-HxJ5k5ngYE',
+                            id: 'flex-try26voxhs-HxJ5k5ngYE',
                             parentId: 'displayCollapsiblePanel',
                             inline: true,
                             hidden: {
-                              _code: "console.log('The Data'); return getSettingValue(data?.display) !== 'flex';",
-                              _mode: 'code',
-                              _value: false,
-                            } as any,
-                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: 'flex-direction-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Flex Direction',
-                                propertyName: 'flexDirection',
-                                hideLabel: true,
-                                dropdownOptions: FLEX_DIRECTION,
-                                description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
-
-                              },
-                              {
-                                type: 'dropdown',
-                                id: 'flex-wrap-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Flex Wrap',
-                                propertyName: 'flexWrap',
-                                hideLabel: true,
-                                dropdownOptions: FLEX_WRAP
-                              },
-                            ],
-                          })
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: 'displayCollapsiblePanel',
-                            inline: true,
-                            hidden: {
-                              _code: "return getSettingValue(data?.display) === 'block';",
+                              _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "flex";',
                               _mode: 'code',
                               _value: false,
                             } as any,
@@ -213,6 +182,58 @@ export const getSettings = (data) => {
                               },
                               {
                                 type: 'dropdown',
+                                id: 'flex-direction-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Flex Direction',
+                                propertyName: 'flexDirection',
+                                dropdownOptions: FLEX_DIRECTION,
+                                description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).',
+
+                              },
+                              {
+                                type: 'dropdown',
+                                id: 'flex-wrap-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Flex Wrap',
+                                propertyName: 'flexWrap',
+                                dropdownOptions: FLEX_WRAP
+                              },
+
+                            ],
+                          })
+                          .addSettingsInputRow({
+                            id: 'grid-26voxhs-HxJ5k5ngYE',
+                            parentId: 'displayCollapsiblePanel',
+                            hidden: {
+                              _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "grid" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.display) !== "inline-grid";',
+                              _mode: 'code',
+                              _value: false,
+                            } as any,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inputs: [
+                              {
+                                type: 'text',
+                                id: 'gap-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Gap',
+                                propertyName: 'gap',
+                                description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`',
+                              },
+                              {
+                                type: 'text',
+                                id: 'grid-columns-count-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'gridColumnsCount',
+                                parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+                                label: 'Grid Columns Count',
+                                description: 'Number of columns each grid should have',
+                              },
+                            ],
+                          })
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: 'displayCollapsiblePanel',
+                            inline: false,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inputs: [
+                              {
+                                type: 'dropdown',
                                 id: 'align-items-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Align Items',
                                 propertyName: 'alignItems',
@@ -224,7 +245,14 @@ export const getSettings = (data) => {
                                 label: 'Align Self',
                                 propertyName: 'alignSelf',
                                 dropdownOptions: ALIGN_SELF
-                              },
+                              },]
+                          })
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: 'displayCollapsiblePanel',
+                            inline: false,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'justify-content-s4gmBg31azZC0UjZjpfTm',
@@ -239,13 +267,28 @@ export const getSettings = (data) => {
                                 propertyName: 'justifySelf',
                                 dropdownOptions: JUSTIFY_SELF
                               },
+                            ]
+                          })
+                          .addSettingsInputRow({
+                            id: nanoid(),
+                            parentId: 'displayCollapsiblePanel',
+                            inline: false,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            inputs: [
                               {
                                 type: 'dropdown',
                                 id: 'text-justify-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Text Justify',
                                 propertyName: 'textJustify',
                                 dropdownOptions: TEXT_JUSTIFY
-                              }
+                              },
+                              {
+                                type: 'dropdown',
+                                id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Justify Items',
+                                propertyName: 'justifyItems',
+                                dropdownOptions: JUSTIFY_ITEMS
+                              },
                             ],
                           })
                           .addSettingsInputRow({
@@ -256,13 +299,6 @@ export const getSettings = (data) => {
                             inputs: [
                               {
                                 type: 'dropdown',
-                                id: 'justify-items-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Justify Items',
-                                propertyName: 'justifyItems',
-                                dropdownOptions: JUSTIFY_ITEMS
-                              },
-                              {
-                                type: 'dropdown',
                                 id: 'overflow-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Overflow',
                                 propertyName: 'overflow',
@@ -270,17 +306,14 @@ export const getSettings = (data) => {
                                   {
                                     label: "Auto",
                                     value: "auto",
-                                    id: nanoid()
                                   },
                                   {
                                     label: "Hidden",
                                     value: "hidden",
-                                    id: nanoid()
                                   },
                                   {
                                     label: "Scroll",
                                     value: "scroll",
-                                    id: nanoid()
                                   }
                                 ]
                               }

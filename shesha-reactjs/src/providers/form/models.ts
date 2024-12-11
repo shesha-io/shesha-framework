@@ -2,7 +2,7 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
+import { DesignerToolbarSettings, IAsyncValidationError, ICommonContainerProps, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
@@ -75,6 +75,7 @@ export interface IStyleType {
   dimensions?: IDimensionsValue;
   style?: IConfigurableFormComponent["style"];
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
+  display?: ICommonContainerProps['display'];
   size?: SizeType;
 }
 
