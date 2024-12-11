@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
@@ -14,7 +15,7 @@ namespace Shesha.Otp;
 /// <summary>
 /// One-time-pin audit service
 /// </summary>
-[AbpAuthorize()]
+[SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
 public class OtpAuditItemAppService: DynamicCrudAppService<OtpAuditItem, DynamicDto<OtpAuditItem, Guid>, Guid>
 {
     public OtpAuditItemAppService(IRepository<OtpAuditItem, Guid> repository) : base(repository)

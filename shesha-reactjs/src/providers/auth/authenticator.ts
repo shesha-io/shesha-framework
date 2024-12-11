@@ -66,8 +66,8 @@ export class Authenticator implements IAuthenticator {
         this.#onSetRequestHeaders = args.onSetRequestHeaders;
     }
 
-    init = () => {
-        //
+    applyRouter = (router: IRouter) => {
+        this.#router = router;
     };
 
     #redirect = (url: string) => {
@@ -105,21 +105,21 @@ export class Authenticator implements IAuthenticator {
         return new Promise((resolve, reject) => {
             if (response?.result?.resultType === 2) {
                 if (Boolean(response?.result?.redirectUrl)) {
-                  this.#redirect(`/no-auth/${response.result.url}`);
-                  reject(new Error('Redirecting to another page.'));
+                    this.#redirect(`/no-auth/${response.result.url}`);
+                    reject(new Error('Redirecting to another page.'));
                 }
-                if(Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
-                  this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}`);
-                  reject(new Error('Redirecting to another form.'));
+                if (Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
+                    this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}`);
+                    reject(new Error('Redirecting to another form.'));
                 }
             } else if (response?.result?.resultType === 1) {
                 if (Boolean(response?.result?.redirectUrl)) {
-                  this.#redirect(response.result.redirectUrl);
-                  reject(new Error('Redirecting to another page.'));
+                    this.#redirect(response.result.redirectUrl);
+                    reject(new Error('Redirecting to another page.'));
                 }
-                if(Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
-                  this.#redirect(`/dynamic/${response.result.redirectModule}/${response.result.redirectForm}`);
-                  reject(new Error('Redirecting to another form.'));
+                if (Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
+                    this.#redirect(`/dynamic/${response.result.redirectModule}/${response.result.redirectForm}`);
+                    reject(new Error('Redirecting to another form.'));
                 }
             } else {
                 resolve(response);
@@ -196,6 +196,7 @@ export class Authenticator implements IAuthenticator {
             this.#updateState('ready', null, null);
 
             const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
+
             return {
                 userProfile: userProfile,
                 url: redirectUrl ?? this.#router.fullPath
@@ -283,7 +284,7 @@ export class Authenticator implements IAuthenticator {
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticator[] => {
-    const authenticatorRef = React.useRef<IAuthenticator>();
+    const authenticatorRef = React.useRef<Authenticator>();
     const [, forceUpdate] = React.useState({});
 
     if (!authenticatorRef.current) {
@@ -294,6 +295,8 @@ export const useAuthenticatorInstance = (args: AuthenticatorArgs): IAuthenticato
         const instance = new Authenticator(args, forceReRender);
 
         authenticatorRef.current = instance;
+    } else {
+        authenticatorRef.current.applyRouter(args.router);
     }
 
     return [authenticatorRef.current];
