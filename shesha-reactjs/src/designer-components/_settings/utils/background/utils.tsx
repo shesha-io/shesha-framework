@@ -65,9 +65,9 @@ export const backgroundTypeOptions: IRadioOption[] = [
 
 export const repeatOptions: IDropdownOption[] = [
     { value: 'no-repeat', label: 'noRepeatIcon' },
-    { value: 'repeat', label: 'RepeatIcon' },
-    { value: 'repeat-x', label: 'RepeatXIcon' },
-    { value: 'repeat-y', label: 'RepeatYIcon' },
+    { value: 'repeat', label: 'repeatIcon' },
+    { value: 'repeat-x', label: 'repeatXIcon' },
+    { value: 'repeat-y', label: 'repeatYIcon' },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
