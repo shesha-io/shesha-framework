@@ -79,7 +79,7 @@ namespace Shesha.Authorization
                     ResultType = AuthenticateResultType.RedirectNoAuth,
                     RedirectModule = registration.AdditionalRegistrationInfoForm.Module,
                     RedirectForm = registration.AdditionalRegistrationInfoForm.Name,
-                    UserId = (long)registration.UserId
+                    UserId = registration.UserId
                 };
             }
 
