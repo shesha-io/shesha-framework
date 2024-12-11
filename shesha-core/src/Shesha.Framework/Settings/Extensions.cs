@@ -6,6 +6,7 @@ using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Settings
@@ -81,7 +82,11 @@ namespace Shesha.Settings
                 propType.IsSubtypeOfGeneric(typeof(IEnumerable<>))
                 )
             {
-                var paramType = propType.GetGenericArguments()[0];
+                var genericArgs = propType.GetGenericArguments();
+                var paramType = genericArgs.Any()
+                    ? propType.GetGenericArguments()[0]
+                    : propType.GetElementType();
+
                 var format = paramType.IsClass
                     ? paramType.IsEntityType()
                         ? ArrayFormats.EntityReference

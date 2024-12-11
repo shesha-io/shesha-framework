@@ -18,7 +18,7 @@ namespace Shesha.Domain
         /// <summary>
         /// User's Id, if <see cref="UserNameOrEmailAddress"/> was a valid username or email address.
         /// </summary>
-        public virtual long? UserId { get; set; }
+        public virtual long UserId { get; set; }
 
         /// <summary>
         /// User name or email address

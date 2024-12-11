@@ -1,24 +1,23 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
-using Shesha.Authorization;
-using Shesha.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
+using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Editions;
+using Shesha.MultiTenancy.Dto;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.MultiTenancy
 {
-    [AbpAuthorize(PermissionNames.Pages_Tenants)]
+    [SheshaAuthorize(Shesha.Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Pages_Tenants)]
     public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, PagedTenantResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
     {
         private readonly TenantManager _tenantManager;

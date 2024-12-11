@@ -28,6 +28,14 @@
     "parentId": "root"
   },
   {
+    "id": "123j4y44LJNbfCstHIIJ9fwY",
+    "type": "numberField",
+    "propertyName": "defaultAccess",
+    "label": "Default access",
+    "labelAlign": "right",
+    "parentId": "root"
+  },
+  {
     "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
     "type": "configurableActionConfigurator",
     "propertyName": "onSelectAction",

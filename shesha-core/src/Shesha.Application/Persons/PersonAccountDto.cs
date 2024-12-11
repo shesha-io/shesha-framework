@@ -40,5 +40,7 @@ namespace Shesha.Persons
         public ReferenceListItemValueDto TypeOfAccount { get; set; }
 
         public string GoToUrlAfterRegistration { get; set; }
+
+        public long UserId { get; set; }
     }
 }

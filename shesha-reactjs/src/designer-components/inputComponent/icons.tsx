@@ -161,5 +161,8 @@ export const customIcons = {
                 10.7445ZM5 19H6.098L11.8518 13.2463L12.5668 13.9613L6.51925 20H4V17.4808L10.04 11.4345L10.7537 12.1482L5 17.902V19Z" fill="currentColor" />
             <line x1="5.35355" y1="4.64645" x2="19.3536" y2="18.6464" stroke="currentColor" />
         </g>
-    </svg>
+    </svg>,
+    flex: <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M68-302.23v-355.54h215.38v355.54H68Zm304.31 0v-355.54h215.38v355.54H372.31Zm304.31
+     0v-355.54H892v355.54H676.62Zm-556.62-52h111.39v-251.54H120v251.54Zm612.46 0H840v-251.54H732.46v251.54Z" /></svg>
+
 };

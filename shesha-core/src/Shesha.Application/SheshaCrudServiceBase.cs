@@ -22,6 +22,7 @@ using Shesha.QuickSearch;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using Shesha.Web;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -177,11 +178,11 @@ namespace Shesha
                     ? await GetGqlTopLevelPropertiesAsync()
                     : await CleanupPropertiesAsync(input.Properties);
 
-            var query = $@"query{{
-  {schemaName}(id: ""{input.Id}"") {{
-    {properties}
-  }}
-}}";
+            var query = input.Id.GetType() == typeof(Int64)
+                || input.Id.GetType() == typeof(Int32)
+                || input.Id.GetType() == typeof(int)
+                ? $@"query{{{schemaName}(id: {input.Id}) {{{properties}}}}}"
+                : $@"query{{{schemaName}(id: ""{input.Id}"") {{{properties}}}}}";
 
             var result = await DocumentExecuter.ExecuteAsync(s =>
             {

@@ -128,6 +128,7 @@ namespace Shesha.UserManagements
 
             var personAccount = ObjectMapper.Map<PersonAccountDto>(person);
             personAccount.GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration;
+            personAccount.UserId = user.Id;
 
             var userRegistration = new ShaUserRegistration
             {

@@ -17,6 +17,10 @@ namespace Shesha.UserManagements.Configurations
         /// <summary>
         /// 
         /// </summary>
+        public bool RequireEmailVerification { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public string GoToUrlAfterRegistration { get; set; }
         /// <summary>
         /// 

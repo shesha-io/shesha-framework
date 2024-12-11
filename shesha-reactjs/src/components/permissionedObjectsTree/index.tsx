@@ -15,6 +15,8 @@ export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
   height?: string;
 
+  defaultAccess?: number;
+
   /**
    * A callback for when the value of this component changes
    */
@@ -33,7 +35,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   const [searchText, setSearchText] = useLocalStorage('shaPermissionedObjects.toolbox.objects.search.' + props.objectsType, '');
   const [groupBy, setGroupBy] = useLocalStorage('shaPermissionedObjects.toolbox.objects.grouping.' + props.objectsType, '-');
   //const [objectsType, setObjectsType] = useLocalStorage('shaPermissionedObjects.toolbox.objects.type', null);
-  const objectsType = 'Shesha.WebApi';
+  //const objectsType = 'Shesha.WebApi';
 
   const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
 
@@ -41,14 +43,14 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   const allData = useRef<any>({});
   allData.current = useAvailableConstantsData();
 
-  const fetcher = usePermissionedObjectGetAllTree({ queryParams: { type: objectsType ?? props.objectsType }, lazy: true });
+  const fetcher = usePermissionedObjectGetAllTree({ queryParams: { type: props.objectsType }, lazy: true });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
 
   const [objectId, setObjectId] = useState("");
 
   useEffect(() => {
     fetcher.refetch();
-  }, [objectsType]);
+  }, [props.objectsType]);
 
   useEffect(() => {
     if (!isFetchingData) {
@@ -153,9 +155,14 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
           ? 3
           : item.access === 4 || item.access === 2 && parent?.access === 4 // Requires permissions
             ? 4
-            : item.access === 5 || item.access === 2 && parent?.access === 5 //Allow anonymous
+            : item.access === 5 || item.access === 2 && parent?.access === 5 // Allow anonymous
               ? 5
-              : 3; // Any authenticated
+              : !props.defaultAccess
+                ? 5 // Allow anonymous
+                : props.defaultAccess;
+    const name = item.hardcoded === true
+      ? <span style={{fontWeight: 'bold'}}>{item.name}</span>
+      : <>{item.name}</>;
     return (
       <>
         {(item.type === "Shesha.WebApi" ? <ApiOutlined /> : <InterfaceOutlined />)}
@@ -163,8 +170,8 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
           className='sha-component-title' 
           style={access === 1 ? { textDecoration: 'line-through', color: 'gray', paddingLeft: '10px'} : {paddingLeft: '10px'}}
         >
-          {item.description && <Tooltip title={item.description}>{item.name}</Tooltip>}
-          {!item.description && item.name}
+          {item.description && <Tooltip title={item.description}>{name}</Tooltip>}
+          {!item.description && name}
           </span>
           {access === 4 && <span style={{color: 'green'}}> (permissioned)</span>}
           {access === 5 && <span style={{color: 'red'}}> (unsecured)</span>}

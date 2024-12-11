@@ -9,7 +9,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 6,
+      "version": 7,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -162,10 +162,14 @@
             "label": "Edit mode"
           }
         ]
+      },
+      "customHeader": {
+        "id": "7SI7srbIDSby_2Qu1LoZTYmnKOQvJV",
+        "components": []
       }
     },
     {
-      "id": "wJB7j7Hgiw7dkmxWvseLRl9UigSB9t",
+      "id": "cyWUxYA-u3l5B52uLuK8ZgoktETdMa",
       "type": "dropdown",
       "propertyName": "language",
       "componentName": "language",
@@ -218,7 +222,7 @@
         "_value": false
       },
       "isDynamic": false,
-      "version": 6,
+      "version": 7,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -264,6 +268,47 @@
             "justifyContent": "left",
             "flexWrap": "wrap",
             "components": [
+              {
+                "id": "wJB7j7Hgiw7dkmxWvseLRl9UigSB9t",
+                "type": "dropdown",
+                "propertyName": "environment",
+                "componentName": "environment",
+                "label": "Environment",
+                "labelAlign": "right",
+                "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 7,
+                "dataSourceType": "values",
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "simple",
+                "settingsValidationErrors": [],
+                "placeholder": "",
+                "description": "",
+                "defaultValue": "",
+                "mode": [
+                  "single"
+                ],
+                "values": [
+                  {
+                    "label": "None",
+                    "value": "none"
+                  },
+                  {
+                    "label": "FrontEnd",
+                    "value": "front-end"
+                  },
+                  {
+                    "label": "BackEnd",
+                    "value": "back-end"
+                  }
+                ],
+                "validate": {},
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
+              },
               {
                 "id": "L2MCtMu_bnRIr9-5S5Mp7EVQHnmG72",
                 "type": "checkbox",
@@ -322,7 +367,7 @@
                 "hidden": false,
                 "isDynamic": false,
                 "mode": "dialog",
-                "version": 3,
+                "version": 4,
                 "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
@@ -334,7 +379,8 @@
                 "wrapInTemplate": true,
                 "language": "typescript",
                 "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\n        .addAllStandard()\n        .addStandard(\"shesha:metadataBuilder\")\n        .build();",
-                "resultTypeExpression": "    return metadataBuilder.metadata();"
+                "resultTypeExpression": "    return metadataBuilder.metadata();",
+                "environment": "front-end"
               },
               {
                 "id": "wyBAGG_zgniuhrUFhVawlX6H5NUqZ2",
@@ -347,7 +393,7 @@
                 "hidden": false,
                 "isDynamic": false,
                 "mode": "dialog",
-                "version": 3,
+                "version": 4,
                 "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
@@ -359,7 +405,8 @@
                 "wrapInTemplate": true,
                 "language": "typescript",
                 "availableConstantsExpression": "    return metadataBuilder.object()\r\n        .addStandard([\"shesha:metadataBuilder\", \"shesha:form\", \"shesha:formData\"])\r\n        .build();",
-                "resultTypeExpression": "    return metadataBuilder.metadata();"
+                "resultTypeExpression": "    return metadataBuilder.metadata();",
+                "environment": "front-end"
               }
             ],
             "settingsValidationErrors": [],
@@ -379,7 +426,11 @@
         ]
       },
       "componentName": "",
-      "className": ""
+      "className": "",
+      "customHeader": {
+        "id": "9R4Z14AnCW7l_UhqHFNdFyhqMPKX1T",
+        "components": []
+      }
     },
     {
       "id": "EdDq7GYOJy2O2TIOads9rczqkjh6t6",
@@ -390,7 +441,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 6,
+      "version": 7,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -416,7 +467,11 @@
           }
         ]
       },
-      "components": []
+      "components": [],
+      "customHeader": {
+        "id": "15aczVzdxVdJT-LUVl7aPx3mzf6fnA",
+        "components": []
+      }
     },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
@@ -426,7 +481,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "isDynamic": false,
-      "version": 6,
+      "version": 7,
       "expandIconPosition": "start",
       "header": {
         "id": "mbzE03mJnv_89oUvkmjPs",
@@ -449,7 +504,11 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "customHeader": {
+        "id": "ozVXbAHJ0eWc0qHfDcNxvUfjLTBOEA",
+        "components": []
+      }
     }
   ],
   "formSettings": {

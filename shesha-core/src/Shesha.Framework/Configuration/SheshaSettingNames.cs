@@ -17,5 +17,7 @@
         public const string MainMenuSettings = "Shesha.MainMenuSettings";
 
         public const string DefaultUrl = "Shesha.DefaultUrl";
+
+        public const string DefaultEndpointAccess = "Shesha.DefaultEndpointAccess";
     }
 }

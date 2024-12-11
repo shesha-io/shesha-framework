@@ -11,6 +11,11 @@ namespace Shesha.Domain
     public class PermissionedObject : FullAuditedEntity<Guid>
     {
         /// <summary>
+        /// True if permissioned object is is defined in the code and cannot be changed
+        /// </summary>
+        public virtual bool? Hardcoded { get; set; }
+
+        /// <summary>
         /// Text identifier of the object (for example, the full name of the class)
         /// </summary>
         [NotNull]
