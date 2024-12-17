@@ -133,7 +133,7 @@ export const getSettings = (data: IAlertComponentProps) => {
           },
           {
             key: 'appearance',
-            title: 'Appearacnce',
+            title: 'Appearance',
             id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
