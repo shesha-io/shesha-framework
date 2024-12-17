@@ -377,7 +377,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: "Width",
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
-                                                                icon: "width",
+                                                                icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                             },
@@ -388,7 +388,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.minWidth",
-                                                                icon: "minWidth",
+                                                                icon: "minWidthIcon",
                                                             },
                                                             {
                                                                 type: 'text',
@@ -397,7 +397,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.maxWidth",
-                                                                icon: "maxWidth",
+                                                                icon: "maxWidthIcon",
                                                             }
                                                         ]
                                                     })
@@ -413,7 +413,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: "Height",
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
-                                                                icon: "height",
+                                                                icon: "heightIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
@@ -423,7 +423,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.minHeight",
-                                                                icon: "minHeight",
+                                                                icon: "minHeightIcon",
                                                             },
                                                             {
                                                                 type: 'text',
@@ -432,7 +432,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.maxHeight",
-                                                                icon: "maxHeight",
+                                                                icon: "maxHeightIcon",
                                                             }
                                                         ]
                                                     })
@@ -760,7 +760,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: "offsetHorizontal",
+                                                                icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
@@ -769,7 +769,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: 'offsetVertical',
+                                                                icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
@@ -778,7 +778,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: 'blur',
+                                                                icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
@@ -787,7 +787,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: 'spread',
+                                                                icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {

@@ -51,6 +51,13 @@ namespace Shesha.Reflection
             return @interface.IsAssignableFrom(type);
         }
 
+        public static bool IsReadOnly(this PropertyInfo memberInfo, bool inherit = false)
+        {
+            return !memberInfo.CanWrite
+                || memberInfo.HasAttribute<ReadOnlyAttribute>()
+                || memberInfo.HasAttribute<ReadonlyPropertyAttribute>();
+        }
+
         /// <summary>
         /// Returns true if the specified <paramref name="memberInfo"/> is marked with the specified attribute
         /// </summary>

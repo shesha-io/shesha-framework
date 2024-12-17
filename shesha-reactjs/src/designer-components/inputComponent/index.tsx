@@ -17,9 +17,10 @@ import { defaultExposedVariables } from '../_settings/settingsControl';
 import { getValueFromString } from '../settingsInput/utils';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
-import { ISettingsInputProps, SettingInput } from '../settingsInput/settingsInput';
+import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { startCase } from 'lodash';
+import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
@@ -30,7 +31,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const { data: formData } = useFormData();
     const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
 
     const iconElement = (icon, size?, hint?) => {
         return icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}>{customIcons[icon]}</Tooltip> : icon === 'sectionSeparator' ?
@@ -67,9 +68,9 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     };
 
     const editModes = [
-        { value: 'editable', icon: 'edit', title: 'Editable' },
-        { value: 'readOnly', icon: 'readonly', title: 'Read only' },
-        { value: 'inherit', icon: 'inherit', title: 'Inherit' }
+        { value: 'editable', icon: 'editIcon', title: 'Editable' },
+        { value: 'readOnly', icon: 'readonlyIcon', title: 'Read only' },
+        { value: 'inherit', icon: 'inheritIcon', title: 'Inherit' }
     ];
 
     const editor = availableConstantsExpression?.trim()
@@ -134,10 +135,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'dynamicItemsConfigurator':
             <DynamicActionsConfigurator readOnly={readOnly} value={value} onChange={onChange} />
-        case 'typeAutocomplete':
+        case 'autocomplete':
             return <Autocomplete.Raw
-                dataSourceType="url"
-                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                dataSourceType={dataSourceType}
+                dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
                 value={value}
                 size={size}
