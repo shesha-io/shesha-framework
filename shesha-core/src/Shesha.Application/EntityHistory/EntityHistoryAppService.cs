@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Shesha.Authorization;
 using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Shesha.EntityHistory
     /// <summary>
     /// Entity history application service
     /// </summary>
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class EntityHistoryAppService : ApplicationService, IEntityHistoryAppService
     {
         private readonly IEntityHistoryProvider _entityHistoryProvider;

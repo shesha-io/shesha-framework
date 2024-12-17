@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.UI;
+using Shesha.Authorization;
 using Shesha.Authorization.Users;
 using Shesha.Configuration;
 using Shesha.Configuration.Security;
@@ -24,7 +25,7 @@ namespace Shesha.SecurityQuestions
             _setting = setting;
         }
 
-        [AbpAuthorize()]
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
         public override async Task<UserAnswerDto> CreateAsync(UserAnswerDto input)
         {
             var currentUserId = AbpSession.UserId;

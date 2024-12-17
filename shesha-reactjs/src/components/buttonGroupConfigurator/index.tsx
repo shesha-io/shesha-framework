@@ -15,7 +15,7 @@ export interface IToolbarSettingsModal {
 }
 
 interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
-
+  size?: SizeType;
 }
 
 export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
@@ -46,7 +46,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
   return (
     <Fragment>
-      <Button onClick={openModal} size={size}>{readOnly ? 'View Button Group' : 'Customize Button Group'}</Button>
+      <Button size={size} onClick={openModal}>{readOnly ? 'View Button Group' : 'Customize Button Group'}</Button>
 
       <Modal
         width={isSmall ? '90%' : '60%'}

@@ -4,6 +4,7 @@ import { CodeLanguages } from "@/designer-components/codeEditor/types";
 import { IObjectMetadata } from "@/interfaces";
 import { CSSProperties } from "react";
 import { IArrayMetadata, IEntityMetadata, IMetadata } from "@/interfaces/metadata";
+import { Environment } from "@/publicJsApis/metadataBuilder";
 
 export interface IHasCodeTemplate {
     template: TemplateEvaluator;
@@ -49,6 +50,7 @@ export interface ICodeEditorProps {
     templateSettings?: CodeTemplateSettings;
     availableConstants?: IObjectMetadata;
     resultType?: ResultType;
+    environment?: Environment;
 }
 
 export const CODE_TEMPLATE_DEFAULTS: CodeTemplateSettings = {

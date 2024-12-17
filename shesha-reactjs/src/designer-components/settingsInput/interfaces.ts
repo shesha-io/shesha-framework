@@ -16,9 +16,9 @@ interface IDropdownOption {
 }
 
 interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'dynamicItemsConfigurator' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete';
+    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'dynamicItemsConfigurator'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
@@ -56,4 +56,9 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    modelType?: string;
+    min?: number;
+    max?: number;
+    fieldsUnavailableHint?: string;
+    items?: [];
 };

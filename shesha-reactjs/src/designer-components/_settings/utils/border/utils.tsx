@@ -21,24 +21,19 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     const style: React.CSSProperties = {};
 
     // Handle border
-    if (input?.border) {
-        const { all, top, right, bottom, left } = input?.border;
+    const { all, top, right, bottom, left } = input?.border;
 
-        const handleBorderPart = (part, prefix: string) => {
-            if (part?.width && !jsStyle?.[prefix] && !jsStyle?.[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part.width);
-            if (part?.style && !jsStyle?.[prefix] && !jsStyle?.[`${prefix}Style`]) style[`${prefix}Style`] = part.style || 'solid';
-            if (part?.color && !jsStyle?.[prefix] && !jsStyle?.[`${prefix}Color`]) style[`${prefix}Color`] = part.color || 'black';
-        };
+    const handleBorderPart = (part, prefix: string) => {
+        if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = input?.hideBorder ? 0 : addPx(part.width);
+        if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = part.style || 'solid';
+        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part.color || 'black';
+    };
 
-        handleBorderPart(all, 'border');
-        handleBorderPart(top, 'borderTop');
-        handleBorderPart(right, 'borderRight');
-        handleBorderPart(bottom, 'borderBottom');
-        handleBorderPart(left, 'borderLeft');
-    }
-
-    if (input?.hideBorder) style.border = 'none';
-
+    handleBorderPart(all, 'border');
+    handleBorderPart(top, 'borderTop');
+    handleBorderPart(right, 'borderRight');
+    handleBorderPart(bottom, 'borderBottom');
+    handleBorderPart(left, 'borderLeft');
 
     // Handle border radius
     if (input?.radius) {
@@ -54,7 +49,7 @@ export const borderStyles: IDropdownOption[] = [
     { value: 'solid', label: <MinusOutlined /> },
     { value: 'dashed', label: <DashOutlined /> },
     { value: 'dotted', label: <SmallDashOutlined /> },
-    { value: 'none', label: <CloseOutlined /> },
+    { value: 'none', label: <CloseOutlined /> }
 ];
 
 export const radiusCorners: IDropdownOption[] = [

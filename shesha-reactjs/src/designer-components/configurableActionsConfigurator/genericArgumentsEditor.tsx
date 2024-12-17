@@ -62,11 +62,11 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
 
   return (
     <ConfigurableForm
+      layout='vertical'
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
-      layout='vertical'
       onFinish={onSave}
       markup={newMarkUp as FormMarkup}
       initialValues={model}

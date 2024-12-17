@@ -139,7 +139,7 @@
     "ts-jest": "^29.1.2",
     "tsc-alias": "^1.8.8",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.7.2",
     "typescript-plugin-css-modules": "^5.0.2"
   },
   "files": [
