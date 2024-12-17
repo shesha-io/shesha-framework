@@ -1,3 +1,4 @@
+import { repeatOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settings/utils/font/utils';
 import { buttonTypes } from '@/designer-components/button/util';
@@ -268,7 +269,7 @@ export const getItemSettings = (data) => {
                                                         label: "Width",
                                                         width: 85,
                                                         propertyName: "dimensions.width",
-                                                        icon: "width",
+                                                        icon: "widthIcon",
                                                         tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                     },
@@ -279,7 +280,7 @@ export const getItemSettings = (data) => {
                                                         width: 85,
                                                         hideLabel: true,
                                                         propertyName: "dimensions.minWidth",
-                                                        icon: "minWidth",
+                                                        icon: "minWidthIcon",
                                                     },
                                                     {
                                                         type: 'text',
@@ -288,7 +289,7 @@ export const getItemSettings = (data) => {
                                                         width: 85,
                                                         hideLabel: true,
                                                         propertyName: "dimensions.maxWidth",
-                                                        icon: "maxWidth",
+                                                        icon: "maxWidthIcon",
                                                     }
                                                 ]
                                             })
@@ -304,7 +305,7 @@ export const getItemSettings = (data) => {
                                                         label: "Height",
                                                         width: 85,
                                                         propertyName: "dimensions.height",
-                                                        icon: "height",
+                                                        icon: "heightIcon",
                                                         tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                     },
                                                     {
@@ -314,7 +315,7 @@ export const getItemSettings = (data) => {
                                                         width: 85,
                                                         hideLabel: true,
                                                         propertyName: "dimensions.minHeight",
-                                                        icon: "minHeight",
+                                                        icon: "minHeightIcon",
                                                     },
                                                     {
                                                         type: 'text',
@@ -323,7 +324,7 @@ export const getItemSettings = (data) => {
                                                         width: 85,
                                                         hideLabel: true,
                                                         propertyName: "dimensions.maxHeight",
-                                                        icon: "maxHeight",
+                                                        icon: "maxHeightIcon",
                                                     }
                                                 ]
                                             })
@@ -358,7 +359,7 @@ export const getItemSettings = (data) => {
                                             .addSettingsInputRow({
                                                 id: `borderStyleRow`,
                                                 parentId: 'borderStylePnl',
-                                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                hidden: { _code: 'return  !getSettingValue(data?.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
@@ -388,19 +389,19 @@ export const getItemSettings = (data) => {
                                                 getBorderInputs(false)[4] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs(false)[0] as any
+                                                getCornerInputs()[0] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs(false)[1] as any
+                                                getCornerInputs()[1] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs(false)[2] as any
+                                                getCornerInputs()[2] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs(false)[3] as any
+                                                getCornerInputs()[3] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs(false)[4] as any
+                                                getCornerInputs()[4] as any
                                             )
                                             .toJson()
                                         ]
@@ -623,24 +624,7 @@ export const getItemSettings = (data) => {
                                                             label: "Repeat",
                                                             hideLabel: true,
                                                             propertyName: "background.repeat",
-                                                            dropdownOptions: [
-                                                                {
-                                                                    value: "repeat",
-                                                                    label: "repeat"
-                                                                },
-                                                                {
-                                                                    value: "repeat-x",
-                                                                    label: "repeatX"
-                                                                },
-                                                                {
-                                                                    value: "repeat-y",
-                                                                    label: "repeatY"
-                                                                },
-                                                                {
-                                                                    value: "no-repeat",
-                                                                    label: "noRepeat"
-                                                                }
-                                                            ],
+                                                            dropdownOptions: repeatOptions,
                                                         }
                                                     ]
                                                 })
@@ -671,7 +655,7 @@ export const getItemSettings = (data) => {
                                                         label: 'Offset X',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        icon: "offsetHorizontal",
+                                                        icon: "offsetHorizontalIcon",
                                                         propertyName: 'shadow.offsetX',
                                                     },
                                                     {
@@ -680,7 +664,7 @@ export const getItemSettings = (data) => {
                                                         label: 'Offset Y',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        icon: 'offsetVertical',
+                                                        icon: 'offsetVerticalIcon',
                                                         propertyName: 'shadow.offsetY',
                                                     },
                                                     {
@@ -689,7 +673,7 @@ export const getItemSettings = (data) => {
                                                         label: 'Blur',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        icon: 'blur',
+                                                        icon: 'blurIcon',
                                                         propertyName: 'shadow.blurRadius',
                                                     },
                                                     {
@@ -698,7 +682,7 @@ export const getItemSettings = (data) => {
                                                         label: 'Spread',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        icon: 'spread',
+                                                        icon: 'spreadIcon',
                                                         propertyName: 'shadow.spreadRadius',
                                                     },
                                                     {

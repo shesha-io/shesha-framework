@@ -171,7 +171,7 @@ export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map
     };
 });
 
-export const getCornerInputs = (isResponsive: boolean = true) => radiusCorners.map(value => {
+export const getCornerInputs = () => radiusCorners.map(value => {
     const corner = value.value;
     const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";`;
 

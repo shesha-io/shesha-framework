@@ -60,10 +60,8 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     borderColor: borderColor,
     borderStyle: borderStyle,
     borderRadius: addPx(borderRadius),
-    border: { selectedSide: 'all', width: borderWidth, color: borderColor, style: borderStyle }
+    border: { selectedSide: 'all', border: { all: { width: borderWidth, color: borderColor, style: borderStyle } } }
   };
-
-  console.log('Item model::', model);
 
   const jsStyle = getStyle(model.style);
   const dimensions = migratePrevStyles(model, initialValues())?.dimensions;
@@ -107,7 +105,6 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     ...jsStyle
   };
 
-  console.log('newStyles', newStyles, "Model", model);
   return (
     <>
       {item.itemSubType === 'button' && (

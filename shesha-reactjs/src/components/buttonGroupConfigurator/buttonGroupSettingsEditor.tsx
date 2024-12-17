@@ -9,7 +9,6 @@ import { useStyles } from '@/designer-components/_common/styles/listConfigurator
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { initialValues } from './utils';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -82,10 +81,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       label: `Button ${itemNo}`,
       itemSubType: 'button',
       buttonType: 'link',
-      editMode: 'inherited',
-      desktop: initialValues(),
-      tablet: initialValues(),
-      mobile: initialValues()
+      editMode: 'inherited'
     };
 
     return newItem;
