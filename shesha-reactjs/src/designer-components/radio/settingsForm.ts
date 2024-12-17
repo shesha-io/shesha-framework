@@ -74,7 +74,7 @@ export const getSettings = (data: any) => {
                                 ],
                             })
                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                id: 'paloeholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hidden: { _code: 'return  getSettingValue(data?.dataSourceType) !== "values";', _mode: 'code', _value: false } as any,
                                 inputs: [
@@ -91,6 +91,28 @@ export const getSettings = (data: any) => {
                                         mode: "dialog"
                                     }   
                                     
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
+                            .addSettingsInputRow({
+                                id: 'referenceList-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                hidden: { _code: 'return  getSettingValue(data?.dataSourceType) !== "url";', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        type: 'codeEditor',
+                                        id: 'dataSourceUrl-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'dataSourceUrl',
+                                        label: 'Data Source Url',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'codeEditor',
+                                        id: 'reducerFunc-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'reducerFunc',
+                                        label: 'Reducer Function',
+                                        jsSetting: true,
+                                    }
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
