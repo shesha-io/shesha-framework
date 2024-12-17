@@ -32,11 +32,20 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
 
-    const iconElement = (icon, size?, hint?) => {
-        return icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}>{customIcons[icon]}</Tooltip> : icon === 'sectionSeparator' ?
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
-                <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
-            </div> : icon;
+    const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
+
+        if (typeof icon === 'string') {
+            return icons[icon] ?
+                <ShaIcon iconName={icon as IconType} style={style} /> :
+                customIcons[icon] ?
+                    <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
+                    : icon === 'sectionSeparator' ?
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
+                            <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
+                        </div> : icon;
+        }
+
+        return icon;
     };
 
     const allData = useAvailableConstantsData();

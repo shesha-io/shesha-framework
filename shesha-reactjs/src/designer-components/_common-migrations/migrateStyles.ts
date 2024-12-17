@@ -64,7 +64,18 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 color: '#000',
                 blurRadius: 0,
                 spreadRadius: 0
-            }
+            },
+            ...(defaults.position && {
+                position: {
+                    value: 'relative',
+                    offset: 'top',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0
+                }
+            }),
+            ...(defaults?.display && { display: defaults?.display || 'block' }),
         };
     };
 
