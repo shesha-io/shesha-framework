@@ -9,7 +9,8 @@ import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1'; 
+import Marquee from 'react-fast-marquee';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
@@ -26,13 +27,13 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
     const evaluatedDescription = evaluateString(description, formData);
 
     if (model.hidden) return null;
-    
     return (
       <Alert
         className="sha-alert"
-        message={<div dangerouslySetInnerHTML={{ __html: evaluatedMessage}}/>}
+        message={model.marquee ? (<Marquee pauseOnHover gradient={false}><div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} /></Marquee>) : <div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} />}
+        banner={model.banner}
         type={alertType}
-        description={evaluatedDescription}
+        description={!model.banner && evaluatedDescription}
         showIcon={showIcon}
         style={getStyle(style, formData)} // Temporary. Make it configurable
         closable={closable}
