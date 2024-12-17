@@ -4,7 +4,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { getActualModel, useAvailableConstantsData } from '@/index';
+import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@/index';
 
 const { Text } = Typography;
 
@@ -15,7 +15,7 @@ export interface ISidebarMenuItemProps {
 export const SidebarListItem: FC<ISidebarMenuItemProps> = ({ item }) => {
   const { styles } = useStyles();
   const allData = useAvailableConstantsData();
-  const actialItem = getActualModel(item, allData);
+  const actialItem = useDeepCompareMemo(() => getActualModel(item, allData), [item, {...allData}]); // use spread to get the values of the ObservableProxy fields
 
   return (
     <>
