@@ -76,16 +76,6 @@ export const getSettings = (data) => {
                 ],
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .addSettingsInput({
-                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                propertyName: 'buttonType',
-                label: 'Type',
-                validate: {
-                  required: true,
-                },
-                inputType: 'dropdown',
-                dropdownOptions: buttonTypes,
-              })
               .addSettingsInputRow({
                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -140,6 +130,16 @@ export const getSettings = (data) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                      propertyName: 'buttonType',
+                      label: 'Type',
+                      validate: {
+                        required: true,
+                      },
+                      inputType: 'dropdown',
+                      dropdownOptions: buttonTypes,
+                    })
                     .addCollapsiblePanel({
                       id: 'fontStyleCollapsiblePanel',
                       propertyName: 'pnlFontStyle',
@@ -312,6 +312,7 @@ export const getSettings = (data) => {
                       label: 'Border',
                       labelAlign: 'right',
                       ghost: true,
+                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
                       content: {
@@ -375,6 +376,7 @@ export const getSettings = (data) => {
                       label: 'Background',
                       labelAlign: 'right',
                       ghost: true,
+                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
                       content: {
@@ -504,6 +506,7 @@ export const getSettings = (data) => {
                       label: 'Shadow',
                       labelAlign: 'right',
                       ghost: true,
+                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
                       content: {

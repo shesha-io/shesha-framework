@@ -53,7 +53,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
 
     const jsStyle = getStyle(model.style, data);
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -78,7 +78,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       };
 
       fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders, jsStyle]);
 
 
     if (!grantedPermission && formMode !== 'designer') {
@@ -87,10 +87,10 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
 
     const newStyles = {
       ...dimensionsStyles,
-      ...borderStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && borderStyles),
       ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
+      ...(['primary', 'default'].includes(model.buttonType) && backgroundStyles),
+      ...(['primary', 'default'].includes(model.buttonType) && shadowStyles),
       ...stylingBoxAsCSS,
       ...jsStyle
     };
@@ -138,7 +138,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default ButtonComponent;
