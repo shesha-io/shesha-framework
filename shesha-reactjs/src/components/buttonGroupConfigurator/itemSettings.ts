@@ -1,8 +1,7 @@
-import { borderCorners, borderSides, borderStyles, getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settings/utils/font/utils';
 import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
 export const getItemSettings = (data) => {

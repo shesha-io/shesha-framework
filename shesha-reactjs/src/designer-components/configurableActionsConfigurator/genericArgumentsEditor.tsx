@@ -3,7 +3,7 @@ import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
-import { ISettingsInputProps } from '../settingsInput/settingsInput';
+import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
