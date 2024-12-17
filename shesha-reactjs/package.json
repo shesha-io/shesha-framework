@@ -34,7 +34,8 @@
     "prepare": "husky"
   },
   "overrides": {
-    "eslint": "^9.14.0"
+    "eslint": "^9.14.0",
+    "rc-resize-observer": "1.4.0"
   },
   "resolutions": {
     "jodit-react": "4.1.2",
