@@ -138,7 +138,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'dynamicItemsConfigurator':
-            <DynamicActionsConfigurator readOnly={readOnly} value={value} onChange={onChange} />
+            <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}

@@ -71,7 +71,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
   const background = migratePrevStyles(model, initialValues())?.background;
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -94,7 +94,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     };
 
     fetchStyles();
-  }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+  }, [background, background?.gradient?.colors, backendUrl, httpHeaders, jsStyle]);
 
   const newStyles = {
     ...dimensionsStyles,

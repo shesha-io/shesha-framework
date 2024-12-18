@@ -1,9 +1,10 @@
-import { repeatOptions } from '@/designer-components/_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settings/utils/font/utils';
 import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+import _ from 'lodash';
 
 export const getItemSettings = (data) => {
 
@@ -50,126 +51,142 @@ export const getItemSettings = (data) => {
                                     "required": true
                                 }
                             })
-                            .addSettingsInput({
-                                id: 'name-8b38-4b82-b192-563259afc159',
+                            .addContainer({
+                                id: 'common-button-settings-container',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputType: 'text',
-                                propertyName: 'name',
-                                label: 'Name',
-                                jsSetting: false,
-                                hidden: data?.itemSubType !== 'button',
-                                validate: {
-                                    required: true
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                    _mode: 'code',
+                                    _value: false
                                 },
-                            })
-                            .addSettingsInputRow({
-                                id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: data?.readOnly,
-                                hidden: data?.itemSubType !== 'button',
-                                inputs: [
-                                    {
-                                        id: "A-qcRVk-qlnGDLtFvK-2X",
-                                        type: "text",
-                                        propertyName: "label",
-                                        parentId: "root",
-                                        label: "Label"
-                                    },
-                                    {
-                                        id: "rupsZ1fuRwqetjQ0BC5sk",
-                                        type: "textArea",
-                                        propertyName: "tooltip",
-                                        label: "Group Tooltip",
-                                        labelAlign: "right",
-                                        parentId: "root",
-                                        hidden: false,
-                                        allowClear: false
-                                    }
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInputRow({
+                                            id: 'name-8b38-4b82-b192-563259afc159',
+                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            readOnly: data?.readOnly,
+
+                                            inputs: [{
+                                                id: 'name-8b38-4b82-b192-563259afc159',
+                                                type: 'text',
+                                                propertyName: 'name',
+                                                label: 'Name',
+                                                jsSetting: false,
+                                                validate: {
+                                                    required: true
+                                                }
+                                            }]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            readOnly: data?.readOnly,
+                                            hidden: data?.itemSubType !== 'button',
+                                            inputs: [
+                                                {
+                                                    id: "A-qcRVk-qlnGDLtFvK-2X",
+                                                    type: "text",
+                                                    propertyName: "label",
+                                                    parentId: "root",
+                                                    label: "Label"
+                                                },
+                                                {
+                                                    id: "rupsZ1fuRwqetjQ0BC5sk",
+                                                    type: "textArea",
+                                                    propertyName: "tooltip",
+                                                    label: "Group Tooltip",
+                                                    labelAlign: "right",
+                                                    parentId: "root",
+                                                    hidden: false,
+                                                    allowClear: false
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInputRow({
+                                            id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
+                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            inputs: [
+                                                {
+                                                    id: 'icon-s4gmBg31azZC0UjZjpfTm',
+                                                    type: 'iconPicker',
+                                                    propertyName: 'icon',
+                                                    label: 'Icon',
+                                                    size: 'small',
+                                                    jsSetting: true,
+                                                },
+                                                {
+                                                    id: 'iconPosition-s4gmBg31azZC0UjZjpfTm',
+                                                    propertyName: 'iconPosition',
+                                                    label: 'Icon Position',
+                                                    size: 'small',
+                                                    jsSetting: true,
+                                                    type: 'radio',
+                                                    buttonGroupOptions: [
+                                                        { title: 'start', value: 'start', icon: 'LeftOutlined' },
+                                                        { title: 'end', value: 'end', icon: 'RightOutlined' },
+                                                    ],
+                                                },
+                                            ],
+                                            readOnly: data.readOnly,
+                                        })
+                                        .addSettingsInputRow({
+                                            id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            readOnly: data?.readOnly,
+                                            inputs: [
+                                                {
+                                                    type: 'editModeSelector',
+                                                    id: 'editMode-s4gmBg31azZC0UjZjpfTm',
+                                                    propertyName: 'editMode',
+                                                    label: 'Edit Mode',
+                                                    size: 'small',
+                                                    jsSetting: true,
+                                                },
+                                                {
+                                                    type: 'switch',
+                                                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                                                    propertyName: 'hidden',
+                                                    label: 'Hide',
+                                                    jsSetting: true,
+                                                    layout: 'horizontal',
+                                                },
+                                            ],
+                                        })
+                                        .addConfigurableActionConfigurator({
+                                            id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+                                            propertyName: 'actionConfiguration',
+                                            label: 'Action configuration',
+                                            validate: {},
+                                            settingsValidationErrors: [],
+                                        }).toJson()
                                 ]
                             })
                             .addSettingsInputRow({
-                                id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                hidden: data?.itemSubType !== 'button',
-                                inputs: [
-                                    {
-                                        id: 'icon-s4gmBg31azZC0UjZjpfTm',
-                                        type: 'iconPicker',
-                                        propertyName: 'icon',
-                                        label: 'Icon',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        id: 'iconPosition-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'iconPosition',
-                                        label: 'Icon Position',
-                                        size: 'small',
-                                        jsSetting: true,
-                                        type: 'radio',
-                                        buttonGroupOptions: [
-                                            { title: 'start', value: 'start', icon: 'LeftOutlined' },
-                                            { title: 'end', value: 'end', icon: 'RightOutlined' },
-                                        ],
-                                    },
-                                ],
-                                readOnly: data.readOnly,
-                            })
-                            .addSettingsInput({
-                                id: "LKVj_90JMwALpmLN_6iZn",
-                                inputType: "dropdown",
-                                propertyName: "buttonType",
-                                label: "Button Type",
-                                labelAlign: "right",
-                                parentId: "root",
-                                hidden: data?.itemSubType !== 'button',
-                                validate: {},
-                                dropdownOptions: buttonTypes,
-                                jsSetting: false
-                            })
-                            .addSettingsInputRow({
-                                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: data?.readOnly,
-                                hidden: data?.itemSubType !== 'button',
-                                inputs: [
-                                    {
-                                        type: 'editModeSelector',
-                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'editMode',
-                                        label: 'Edit Mode',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'switch',
-                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'hidden',
-                                        label: 'Hide',
-                                        jsSetting: true,
-                                        layout: 'horizontal',
-                                    },
-                                ],
-                            })
-                            .addConfigurableActionConfigurator({
-                                id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
-                                propertyName: 'actionConfiguration',
-                                label: 'Action configuration',
-                                hidden: data?.itemSubType !== 'button',
-                                validate: {},
-                                settingsValidationErrors: [],
-                            })
-                            .addSettingsInput({
                                 id: 'dynamic-items-config-8b38-4b82-b192-563259afc159',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputType: 'dynamicItemsConfigurator',
-                                propertyName: 'nadynamicItemsConfigurationme',
-                                label: 'Name',
-                                jsSetting: false,
-                                hidden: data?.itemSubType !== 'dynamic',
-                                validate: {
-                                    required: true
+                                readOnly: false,
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.itemSubType) !== "dynamic";',
+                                    _mode: 'code',
+                                    _value: false
                                 },
+                                inputs: [{
+                                    id: "BobKODSk3NmsjzWl2E8ED",
+                                    type: "dynamicItemsConfigurator",
+                                    propertyName: "dynamicItemsConfiguration",
+                                    componentName: "configurableActionConfigurator1",
+                                    label: "",
+                                    labelAlign: "right",
+                                    parentId: "P4lhbrJsly_2yCjgicaql",
+                                    hidden: false,
+                                    isDynamic: false,
+                                    settingsValidationErrors: [],
+                                    _formFields: [
+                                        "propertyName",
+                                        "description",
+                                        "customVisibility"
+                                    ]
+                                }]
                             })
                             .toJson()
                         ]
@@ -180,6 +197,25 @@ export const getItemSettings = (data) => {
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [
                             ...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                    id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                                    readOnly: false,
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                        _mode: 'code',
+                                        _value: false
+                                    },
+                                    inputs: [{
+                                        id: 'buttonType-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'buttonType',
+                                        label: 'Type',
+                                        validate: {
+                                            required: true,
+                                        },
+                                        type: 'dropdown',
+                                        dropdownOptions: buttonTypes
+                                    }],
+                                })
                                 .addCollapsiblePanel({
                                     id: 'fontStyleCollapsiblePanel',
                                     propertyName: 'pnlFontStyle',
@@ -188,6 +224,11 @@ export const getItemSettings = (data) => {
                                     parentId: 'styleRouter',
                                     ghost: true,
                                     collapsible: 'header',
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                        _mode: 'code',
+                                        _value: false
+                                    },
                                     content: {
                                         id: 'fontStylePnl',
                                         components: [...new DesignerToolbarSettings()
@@ -196,7 +237,7 @@ export const getItemSettings = (data) => {
                                                 parentId: 'fontStylePnl',
                                                 inline: true,
                                                 propertyName: 'font',
-                                                readOnly: data?.readOnly,
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
                                                         type: 'dropdown',
@@ -228,8 +269,8 @@ export const getItemSettings = (data) => {
                                                         type: 'color',
                                                         id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                         label: 'Color',
-                                                        hideLabel: true,
                                                         propertyName: 'font.color',
+                                                        hideLabel: true,
                                                     },
                                                     {
                                                         type: 'dropdown',
@@ -254,6 +295,11 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     collapsible: 'header',
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                        _mode: 'code',
+                                        _value: false
+                                    },
                                     content: {
                                         id: 'dimensionsStylePnl',
                                         components: [...new DesignerToolbarSettings()
@@ -261,11 +307,11 @@ export const getItemSettings = (data) => {
                                                 id: 'dimensionsStyleRowWidth',
                                                 parentId: 'dimensionsStylePnl',
                                                 inline: true,
-                                                readOnly: data?.readOnly,
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
                                                         type: 'text',
-                                                        id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                                        id: 'dimensionsStyleRowWidth',
                                                         label: "Width",
                                                         width: 85,
                                                         propertyName: "dimensions.width",
@@ -275,7 +321,7 @@ export const getItemSettings = (data) => {
                                                     },
                                                     {
                                                         type: 'text',
-                                                        id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                                        id: 'dimensionsStyleRowMinWidth',
                                                         label: "Min Width",
                                                         width: 85,
                                                         hideLabel: true,
@@ -284,7 +330,7 @@ export const getItemSettings = (data) => {
                                                     },
                                                     {
                                                         type: 'text',
-                                                        id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                                        id: 'dimensionsStyleRowMaxWidth',
                                                         label: "Max Width",
                                                         width: 85,
                                                         hideLabel: true,
@@ -297,11 +343,11 @@ export const getItemSettings = (data) => {
                                                 id: 'dimensionsStyleRowHeight',
                                                 parentId: 'dimensionsStylePnl',
                                                 inline: true,
-                                                readOnly: data?.readOnly,
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
                                                         type: 'text',
-                                                        id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                                        id: 'dimensionsStyleRowHeight',
                                                         label: "Height",
                                                         width: 85,
                                                         propertyName: "dimensions.height",
@@ -310,7 +356,7 @@ export const getItemSettings = (data) => {
                                                     },
                                                     {
                                                         type: 'text',
-                                                        id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                        id: 'dimensionsStyleRowMinHeight',
                                                         label: "Min Height",
                                                         width: 85,
                                                         hideLabel: true,
@@ -319,7 +365,7 @@ export const getItemSettings = (data) => {
                                                     },
                                                     {
                                                         type: 'text',
-                                                        id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                        id: 'dimensionsStyleRowMaxHeight',
                                                         label: "Max Height",
                                                         width: 85,
                                                         hideLabel: true,
@@ -330,11 +376,12 @@ export const getItemSettings = (data) => {
                                             })
                                             .addSettingsInput({
                                                 id: 'predefinedSizes',
-                                                inputType: 'dropdown',
+                                                parentId: 'dimensionsStylePnl',
                                                 propertyName: 'size',
                                                 label: 'Size',
+                                                inputType: 'dropdown',
                                                 width: '150px',
-                                                hidden: data?.dimensions?.width || data?.dimensions?.height,
+                                                hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
                                                 dropdownOptions: [
                                                     { value: 'small', label: 'Small' },
                                                     { value: 'medium', label: 'Medium' },
@@ -351,6 +398,7 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
+                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) !== "button" || ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -359,7 +407,7 @@ export const getItemSettings = (data) => {
                                             .addSettingsInputRow({
                                                 id: `borderStyleRow`,
                                                 parentId: 'borderStylePnl',
-                                                hidden: { _code: 'return  !getSettingValue(data?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
@@ -367,6 +415,7 @@ export const getItemSettings = (data) => {
                                                         id: 'borderStyleRow-hideBorder',
                                                         label: "Border",
                                                         hideLabel: true,
+                                                        inputType: "button",
                                                         propertyName: "border.hideBorder",
                                                         icon: "EyeOutlined",
                                                         iconAlt: "EyeInvisibleOutlined"
@@ -374,19 +423,19 @@ export const getItemSettings = (data) => {
                                                 ]
                                             })
                                             .addSettingsInputRow(
-                                                getBorderInputs(false)[0] as any
+                                                getBorderInputs()[0] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs(false)[1] as any
+                                                getBorderInputs()[1] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs(false)[2] as any
+                                                getBorderInputs()[2] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs(false)[3] as any
+                                                getBorderInputs()[3] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs(false)[4] as any
+                                                getBorderInputs()[4] as any
                                             )
                                             .addSettingsInputRow(
                                                 getCornerInputs()[0] as any
@@ -413,6 +462,7 @@ export const getItemSettings = (data) => {
                                     label: 'Background',
                                     labelAlign: 'right',
                                     ghost: true,
+                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) !== "button" || ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -427,34 +477,8 @@ export const getItemSettings = (data) => {
                                                     propertyName: "background.type",
                                                     inputType: "radio",
                                                     tooltip: "Select a type of background",
-                                                    buttonGroupOptions: [
-                                                        {
-                                                            value: "color",
-                                                            icon: "FormatPainterOutlined",
-                                                            title: "Color"
-                                                        },
-                                                        {
-                                                            value: "gradient",
-                                                            icon: "BgColorsOutlined",
-                                                            title: "Gradient"
-                                                        },
-                                                        {
-                                                            value: "image",
-                                                            icon: "PictureOutlined",
-                                                            title: "Image"
-                                                        },
-                                                        {
-                                                            value: "url",
-                                                            icon: "LinkOutlined",
-                                                            title: "URL"
-                                                        },
-                                                        {
-                                                            value: "storedFile",
-                                                            icon: "DatabaseOutlined",
-                                                            title: "Stored File"
-                                                        }
-                                                    ],
-                                                    readOnly: data.readOnly,
+                                                    buttonGroupOptions: backgroundTypeOptions,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-color",
@@ -467,12 +491,8 @@ export const getItemSettings = (data) => {
                                                         hideLabel: true,
                                                         jsSetting: false,
                                                     }],
-                                                    hidden: {
-                                                        _value: false,
-                                                        _code: "return getSettingValue(data?.background.type) !== 'color';",
-                                                        _mode: "code"
-                                                    },
-                                                    readOnly: data.readOnly,
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyle-gradientColors",
@@ -485,13 +505,9 @@ export const getItemSettings = (data) => {
                                                         jsSetting: false,
                                                     }
                                                     ],
-                                                    hidden: {
-                                                        _value: false,
-                                                        _code: "return getSettingValue(data?.background.type) !== 'gradient';",
-                                                        _mode: "code"
-                                                    },
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                     hideLabel: true,
-                                                    readOnly: data.readOnly,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyle-url",
@@ -503,12 +519,8 @@ export const getItemSettings = (data) => {
                                                         jsSetting: false,
                                                         label: "URL",
                                                     }],
-                                                    hidden: {
-                                                        _value: false,
-                                                        _code: "return getSettingValue(data?.background.type) !== 'url';",
-                                                        _mode: "code"
-                                                    },
-                                                    readOnly: data.readOnly,
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyle-image",
@@ -520,27 +532,18 @@ export const getItemSettings = (data) => {
                                                         label: "Image",
                                                         jsSetting: false,
                                                     }],
-                                                    hidden: {
-                                                        _value: false,
-                                                        _code: "return getSettingValue(data?.background.type) !== 'image';",
-                                                        _mode: "code"
-                                                    },
-                                                    readOnly: data.readOnly,
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-storedFile",
                                                     parentId: 'backgroundStylePnl',
-                                                    hidden: {
-                                                        _value: false,
-                                                        _code: "return getSettingValue(data?.background.type) !== 'storedFile';",
-                                                        _mode: "code"
-                                                    },
-                                                    readOnly: data.readOnly,
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {
                                                             type: 'text',
-                                                            id: 'backgroundStyle-storedFile',
-                                                            jsSetting: false,
+                                                            id: 'backgroundStyleRow-storedFile',
                                                             propertyName: "background.storedFile.id",
                                                             label: "File ID"
                                                         }
@@ -550,7 +553,7 @@ export const getItemSettings = (data) => {
                                                     id: "backgroundStyleRow-controls",
                                                     parentId: 'backgroundStyleRow',
                                                     inline: true,
-                                                    readOnly: data.readOnly,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {
                                                             type: 'customDropdown',
@@ -558,72 +561,23 @@ export const getItemSettings = (data) => {
                                                             label: "Size",
                                                             hideLabel: true,
                                                             propertyName: "background.size",
-                                                            dropdownOptions: [
-                                                                {
-                                                                    value: "cover",
-                                                                    label: "Cover"
-                                                                },
-                                                                {
-                                                                    value: "contain",
-                                                                    label: "Contain"
-                                                                },
-                                                                {
-                                                                    value: "auto",
-                                                                    label: "Auto"
-                                                                }
-                                                            ],
+                                                            dropdownOptions: sizeOptions,
                                                         },
                                                         {
-                                                            type: 'customDropdown',
-                                                            id: 'backgroundStyleRow-position',
                                                             label: "Position",
                                                             hideLabel: true,
+                                                            type: 'customDropdown',
+                                                            id: 'backgroundStyleRow-position',
                                                             propertyName: "background.position",
-                                                            dropdownOptions: [
-                                                                {
-                                                                    value: "center",
-                                                                    label: "Center"
-                                                                },
-                                                                {
-                                                                    value: "top",
-                                                                    label: "Top"
-                                                                },
-                                                                {
-                                                                    value: "left",
-                                                                    label: "Left"
-                                                                },
-                                                                {
-                                                                    value: "right",
-                                                                    label: "Right"
-                                                                },
-                                                                {
-                                                                    value: "bottom",
-                                                                    label: "Bottom"
-                                                                },
-                                                                {
-                                                                    value: "top left",
-                                                                    label: "Top Left"
-                                                                },
-                                                                {
-                                                                    value: "top right",
-                                                                    label: "Top Right"
-                                                                },
-                                                                {
-                                                                    value: "bottom left",
-                                                                    label: "Bottom Left"
-                                                                },
-                                                                {
-                                                                    value: "bottom right",
-                                                                    label: "Bottom Right"
-                                                                }
-                                                            ],
+                                                            dropdownOptions: positionOptions,
                                                         },
                                                         {
-                                                            type: 'dropdown',
-                                                            id: 'backgroundStyleRow-repeat',
                                                             label: "Repeat",
                                                             hideLabel: true,
                                                             propertyName: "background.repeat",
+                                                            type: 'customDropdown',
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            width: 70,
                                                             dropdownOptions: repeatOptions,
                                                         }
                                                     ]
@@ -638,6 +592,7 @@ export const getItemSettings = (data) => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
+                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) !== "button" || ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -647,7 +602,7 @@ export const getItemSettings = (data) => {
                                                 id: 'shadowStyleRow',
                                                 parentId: 'shadowStylePnl',
                                                 inline: true,
-                                                readOnly: data.readOnly,
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
                                                         type: 'number',
@@ -655,6 +610,7 @@ export const getItemSettings = (data) => {
                                                         label: 'Offset X',
                                                         hideLabel: true,
                                                         width: 60,
+                                                        inputType: 'number',
                                                         icon: "offsetHorizontalIcon",
                                                         propertyName: 'shadow.offsetX',
                                                     },
@@ -664,24 +620,27 @@ export const getItemSettings = (data) => {
                                                         label: 'Offset Y',
                                                         hideLabel: true,
                                                         width: 60,
+                                                        inputType: 'number',
                                                         icon: 'offsetVerticalIcon',
                                                         propertyName: 'shadow.offsetY',
                                                     },
                                                     {
                                                         type: 'number',
-                                                        id: 'shadowStyleRow-blurRadius',
+                                                        id: 'shadowStyleRow-blur',
                                                         label: 'Blur',
                                                         hideLabel: true,
                                                         width: 60,
+                                                        inputType: 'number',
                                                         icon: 'blurIcon',
                                                         propertyName: 'shadow.blurRadius',
                                                     },
                                                     {
                                                         type: 'number',
-                                                        id: 'shadowStyleRow-spreadRadius',
+                                                        id: 'shadowStyleRow-spread',
                                                         label: 'Spread',
                                                         hideLabel: true,
                                                         width: 60,
+                                                        inputType: 'number',
                                                         icon: 'spreadIcon',
                                                         propertyName: 'shadow.spreadRadius',
                                                     },
@@ -703,6 +662,11 @@ export const getItemSettings = (data) => {
                                     propertyName: 'stylingBox',
                                     label: 'Margin & Padding',
                                     labelAlign: 'right',
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                        _mode: 'code',
+                                        _value: false
+                                    },
                                     ghost: true,
                                     collapsible: 'header',
                                     content: {
@@ -724,17 +688,22 @@ export const getItemSettings = (data) => {
                                     label: 'Custom Style',
                                     labelAlign: 'right',
                                     ghost: true,
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                                        _mode: 'code',
+                                        _value: false
+                                    },
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
                                         id: 'stylePnl-M500-911MFR',
                                         components: [...new DesignerToolbarSettings()
                                             .addSettingsInput({
-                                                readOnly: data.readOnly,
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 id: 'custom-css-412c-8461-4c8d55e5c073',
-                                                inputType: 'codeEditor',
                                                 propertyName: 'style',
                                                 hideLabel: true,
+                                                inputType: 'codeEditor',
                                                 label: 'Style',
                                                 description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                             })
@@ -742,8 +711,45 @@ export const getItemSettings = (data) => {
                                         ]
                                     }
                                 })
-                                .toJson()]
-                    }, ,
+                                .addSettingsInputRow({
+                                    id: 'separatorStyleRow',
+                                    parentId: 'button-styles-container',
+                                    readOnly: false,
+                                    hidden: {
+                                        _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
+                                        _mode: 'code',
+                                        _value: false
+                                    },
+                                    inputs: [
+                                        {
+                                            type: 'text',
+                                            id: 'separatorStyleRowWidth',
+                                            label: "Width",
+                                            width: 85,
+                                            propertyName: "separator.width",
+                                            icon: "widthIcon",
+                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                        },
+                                        {
+                                            type: 'text',
+                                            id: 'separatorStyleRowHeight',
+                                            label: "Thickness",
+                                            width: 85,
+                                            propertyName: "separator.height",
+                                            icon: "heightIcon",
+                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                        },
+                                        {
+                                            type: 'color',
+                                            id: 'separatorStyleRowColor',
+                                            label: "Color",
+                                            propertyName: "separator.color",
+                                            icon: "colorIcon",
+                                        }
+                                    ]
+                                }).toJson()
+                        ]
+                    },
                     {
                         key: '3',
                         title: 'Security',
