@@ -115,8 +115,8 @@ namespace Shesha.Migrations
                     END $$;
                 ");
 
-                // For PostgreSQL, we also need to drop default values set using ALTER COLUMN
-                Execute.Sql(@"
+            // For PostgreSQL, we also need to drop default values set using ALTER COLUMN
+            IfDatabase("PostgreSql").Execute.Sql(@"
                     DO $$ 
                     DECLARE
                         r RECORD;
