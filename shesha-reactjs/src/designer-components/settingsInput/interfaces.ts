@@ -4,18 +4,18 @@ import { ResultType } from '@/components/codeEditor/models';
 import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 
-interface IRadioOption {
+export interface IRadioOption {
     value: string | number;
     icon?: string | React.ReactNode;
     title?: string;
 }
 
-interface IDropdownOption {
+export interface IDropdownOption {
     label: string | React.ReactNode;
     value: string;
 }
 
-interface InputType {
+export interface InputType {
     type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor';
