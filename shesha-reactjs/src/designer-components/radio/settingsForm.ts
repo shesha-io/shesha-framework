@@ -97,6 +97,21 @@ export const getSettings = (data: any) => {
                             .addSettingsInputRow({
                                 id: 'referenceList-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                                hidden: { _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        type: 'referenceListAutocomplete',
+                                        id: 'referenceList-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'referenceListId',
+                                        label: 'Reference List',
+                                        jsSetting: true,
+                                    }
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
+                            .addSettingsInputRow({
+                                id: 'referenceList-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hidden: { _code: 'return  getSettingValue(data?.dataSourceType) !== "url";', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
