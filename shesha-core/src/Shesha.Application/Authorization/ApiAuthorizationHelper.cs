@@ -45,7 +45,8 @@ namespace Shesha.Authorization
                 return;
             }
 
-            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>())
+            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
+                || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
                 return;
 
             var shaServiceType = typeof(ApplicationService);
@@ -60,6 +61,11 @@ namespace Shesha.Authorization
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
+            var settings = _securitySettings?.SecuritySettings?.GetValue()?.DefaultEndpointAccess;
+
+            if (settings == null)
+                throw new NullReferenceException("Cannot get DefaultEndpointAccess");
+
             // ToDo: add RequireAll flag
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
@@ -67,7 +73,7 @@ namespace Shesha.Authorization
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                _securitySettings.SecuritySettings.GetValue().DefaultEndpointAccess
+                settings
             );
         }
     }

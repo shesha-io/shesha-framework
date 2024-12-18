@@ -18,7 +18,7 @@ export interface IDropdownOption {
 export interface InputType {
     type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig';
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
@@ -45,7 +45,12 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     fileName?: string;
     availableConstantsExpression?: string;
     resultType?: ResultType;
+    labelTitle?: string;
+    labelName?: string;
+    valueTitle?: string;
+    valueName?: string;
     value?: any;
+    mode?: any;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
     allowClear?: boolean;

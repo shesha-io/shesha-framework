@@ -5,7 +5,7 @@ import { IEntityReferenceDto, IErrorInfo, ILoginForm } from "@/interfaces";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from "@/apis/tokenAuth";
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from "@/apis/session";
-import { getQueryParam, isSameUrls } from "@/utils/url";
+import { getQueryParam, isSameUrls, removeURLParameter } from "@/utils/url";
 import { IRouter } from "../shaRouting";
 import React from "react";
 import { IAccessToken, IHttpHeaders } from "@/interfaces/accessToken";
@@ -109,7 +109,7 @@ export class Authenticator implements IAuthenticator {
                     reject(new Error('Redirecting to another page.'));
                 }
                 if (Boolean(response?.result?.redirectModule) && Boolean(response?.result?.redirectForm)) {
-                    this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}`);
+                    this.#redirect(`/no-auth/${response.result.redirectModule}/${response.result.redirectForm}?user=${response.result.userId}`);
                     reject(new Error('Redirecting to another form.'));
                 }
             } else if (response?.result?.resultType === 1) {
@@ -162,8 +162,16 @@ export class Authenticator implements IAuthenticator {
         this.#rerender();
     };
 
+    #stripReturnUrl = (url: string): string => {
+        return url
+            ? removeURLParameter(url, RETURN_URL_KEY)
+            : url;
+    };
+
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
-        if (isSameUrls(currentPath, this.#unauthorizedRedirectUrl)) {
+        const currentUrlWithoutReturn = this.#stripReturnUrl(currentPath);
+
+        if (isSameUrls(currentUrlWithoutReturn, this.#unauthorizedRedirectUrl)) {
             const returnUrlParam = this.#router.query[RETURN_URL_KEY];
             const returnUrl = returnUrlParam
                 ? decodeURIComponent(returnUrlParam.toString())
