@@ -1,7 +1,7 @@
 import { addPx } from "../_settings/utils";
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & IConfigurableFormComponent & { block?: boolean };
+type ExtendedType = IStyleType & IConfigurableFormComponent & { width?: any };
 
 
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {
@@ -51,7 +51,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 weight: prevStyles?.fontWeight as string || prev?.font?.weight || '400',
             },
             dimensions: {
-                width: prev.block ? '100%' : addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
+                width: typeof prev.width === 'object' ? '100%' : addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
                 height: addPx(prevStyles?.height) || heightFromSize || addPx(prev?.dimensions?.height) || defaults?.dimensions?.height,
                 minHeight: addPx(prev?.dimensions?.minHeight) || defaults?.dimensions?.minHeight,
                 maxHeight: addPx(prev?.dimensions?.maxHeight) || defaults?.dimensions?.maxHeight,

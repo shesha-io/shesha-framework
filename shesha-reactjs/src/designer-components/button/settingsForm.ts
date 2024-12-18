@@ -288,18 +288,30 @@ export const getSettings = (data) => {
                               }
                             ]
                           })
-                          .addSettingsInput({
+                          .addSettingsInputRow({
                             id: 'predefinedSizes',
                             parentId: 'dimensionsStylePnl',
-                            propertyName: 'size',
-                            label: 'Size',
-                            inputType: 'dropdown',
-                            width: '150px',
-                            hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                            dropdownOptions: [
-                              { value: 'small', label: 'Small' },
-                              { value: 'medium', label: 'Medium' },
-                              { value: 'large', label: 'Large' },
+                            readOnly: false,
+                            inputs: [{
+                              id: 'predefinedSizes-size',
+                              type: 'dropdown',
+                              propertyName: 'size',
+                              label: 'Size',
+                              width: '150px',
+                              hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
+                              dropdownOptions: [
+                                { value: 'small', label: 'Small' },
+                                { value: 'medium', label: 'Medium' },
+                                { value: 'large', label: 'Large' },
+                              ]
+                            },
+                            {
+                              type: 'switch',
+                              propertyName: 'block',
+                              label: 'Block',
+                              id: 'block',
+                              hidden: true,
+                            }
                             ]
                           })
                           .toJson()

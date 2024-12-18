@@ -18,7 +18,6 @@ export const Dropdown: FC<IDropdownProps> = ({
     incomeCustomJs,
     outcomeCustomJs,
     labelCustomJs,
-
     dataSourceType,
     values,
     onChange,
