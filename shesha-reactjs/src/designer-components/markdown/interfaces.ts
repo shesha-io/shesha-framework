@@ -3,6 +3,7 @@ import { IFontValue } from '../_settings/utils/font/interfaces';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
+import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 
 export interface IMarkdownProps extends IConfigurableFormComponent {
   content: string;
@@ -20,6 +21,7 @@ export interface IMarkdownProps extends IConfigurableFormComponent {
   borderSize: number;
   borderRadius: number;
   borderColor: string;
+  dimensions: IDimensionsValue;
 }
 
 export interface IMarkdownComponentProps {
