@@ -1,6 +1,7 @@
 ﻿using FluentMigrator;
 using NUglify;
 using Shesha.FluentMigrator;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,151 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
+            // Drop constraints based on database type
+            IfDatabase("SqlServer").Execute.Sql(@"
+                    -- Get all table names we're working with
+                    DECLARE @TableNames TABLE (TableName sysname);
+                    INSERT INTO @TableNames VALUES 
+                        ('Core_NotificationMessages'),
+                        ('Core_NotificationTemplates'),
+                        ('Core_Notifications');
+
+                    DECLARE @SQL NVARCHAR(MAX) = '';
+
+                    -- Drop all foreign keys referencing our tables (including audit columns)
+                    SELECT @SQL = @SQL + 'ALTER TABLE ' + OBJECT_SCHEMA_NAME(parent_object_id) + '.' + OBJECT_NAME(parent_object_id) + 
+                        ' DROP CONSTRAINT ' + name + ';' + CHAR(13)
+                    FROM sys.foreign_keys fk
+                    WHERE referenced_object_id IN (SELECT OBJECT_ID(TableName) FROM @TableNames)
+                       OR parent_object_id IN (SELECT OBJECT_ID(TableName) FROM @TableNames);
+
+                    -- Drop all default constraints
+                    SELECT @SQL = @SQL + 'ALTER TABLE ' + OBJECT_SCHEMA_NAME(parent_object_id) + '.' + OBJECT_NAME(parent_object_id) +
+                        ' DROP CONSTRAINT ' + name + ';' + CHAR(13)
+                    FROM sys.default_constraints dc
+                    WHERE parent_object_id IN (SELECT OBJECT_ID(TableName) FROM @TableNames);
+
+                    -- Drop check constraints
+                    SELECT @SQL = @SQL + 'ALTER TABLE ' + OBJECT_SCHEMA_NAME(parent_object_id) + '.' + OBJECT_NAME(parent_object_id) +
+                        ' DROP CONSTRAINT ' + name + ';' + CHAR(13)
+                    FROM sys.check_constraints cc
+                    WHERE parent_object_id IN (SELECT OBJECT_ID(TableName) FROM @TableNames);
+
+                    -- Drop primary keys
+                    SELECT @SQL = @SQL + 'ALTER TABLE ' + OBJECT_SCHEMA_NAME(parent_object_id) + '.' + OBJECT_NAME(parent_object_id) +
+                        ' DROP CONSTRAINT ' + name + ';' + CHAR(13)
+                    FROM sys.key_constraints kc
+                    WHERE parent_object_id IN (SELECT OBJECT_ID(TableName) FROM @TableNames)
+                    AND type = 'PK';
+
+                    -- Execute all drops
+                    EXEC sp_executesql @SQL;
+                ");
+
+            IfDatabase("PostgreSql").
+                Execute.Sql(@"
+                    DO $$ 
+                    DECLARE
+                        r RECORD;
+                    BEGIN
+                        -- Drop foreign keys
+                        FOR r IN (SELECT tc.table_schema, 
+                                       tc.constraint_name, 
+                                       tc.table_name
+                                FROM information_schema.table_constraints tc
+                                WHERE tc.constraint_type = 'FOREIGN KEY'
+                                  AND (tc.table_name IN ('Core_NotificationMessages', 
+                                                       'Core_NotificationTemplates', 
+                                                       'Core_Notifications')
+                                   OR EXISTS (
+                                      SELECT 1 
+                                      FROM information_schema.constraint_column_usage ccu
+                                      WHERE ccu.constraint_name = tc.constraint_name
+                                        AND ccu.table_name IN ('Core_NotificationMessages', 
+                                                             'Core_NotificationTemplates', 
+                                                             'Core_Notifications')
+                                   )))
+                        LOOP
+                            EXECUTE 'ALTER TABLE ' || quote_ident(r.table_schema) || '.' || quote_ident(r.table_name) 
+                                || ' DROP CONSTRAINT ' || quote_ident(r.constraint_name);
+                        END LOOP;
+
+                        -- Drop primary keys
+                        FOR r IN (SELECT tc.table_schema, 
+                                       tc.constraint_name, 
+                                       tc.table_name
+                                FROM information_schema.table_constraints tc
+                                WHERE tc.constraint_type = 'PRIMARY KEY'
+                                  AND tc.table_name IN ('Core_NotificationMessages', 
+                                                      'Core_NotificationTemplates', 
+                                                      'Core_Notifications'))
+                        LOOP
+                            EXECUTE 'ALTER TABLE ' || quote_ident(r.table_schema) || '.' || quote_ident(r.table_name) 
+                                || ' DROP CONSTRAINT ' || quote_ident(r.constraint_name);
+                        END LOOP;
+
+                        -- Drop default constraints and check constraints
+                        FOR r IN (SELECT tc.table_schema, 
+                                       tc.constraint_name, 
+                                       tc.table_name
+                                FROM information_schema.table_constraints tc
+                                WHERE tc.constraint_type IN ('CHECK', 'DEFAULT')
+                                  AND tc.table_name IN ('Core_NotificationMessages', 
+                                                      'Core_NotificationTemplates', 
+                                                      'Core_Notifications'))
+                        LOOP
+                            EXECUTE 'ALTER TABLE ' || quote_ident(r.table_schema) || '.' || quote_ident(r.table_name) 
+                                || ' DROP CONSTRAINT IF EXISTS ' || quote_ident(r.constraint_name);
+                        END LOOP;
+                    END $$;
+                ");
+
+                // For PostgreSQL, we also need to drop default values set using ALTER COLUMN
+                Execute.Sql(@"
+                    DO $$ 
+                    DECLARE
+                        r RECORD;
+                    BEGIN
+                        FOR r IN (
+                            SELECT table_schema, table_name, column_name
+                            FROM information_schema.columns
+                            WHERE table_name IN ('Core_NotificationMessages', 
+                                               'Core_NotificationTemplates', 
+                                               'Core_Notifications')
+                            AND column_default IS NOT NULL
+                        )
+                        LOOP
+                            EXECUTE 'ALTER TABLE ' || quote_ident(r.table_schema) || '.' || 
+                                    quote_ident(r.table_name) || 
+                                    ' ALTER COLUMN ' || quote_ident(r.column_name) || 
+                                    ' DROP DEFAULT';
+                        END LOOP;
+                    END $$;
+                ");
+
+            // Now rename existing tables to their "Old" names
+            Rename.Table("Core_NotificationMessages").To("Core_OldNotificationMessages");
+            Rename.Table("Core_NotificationTemplates").To("Core_OldNotificationTemplates");
+            Rename.Table("Core_Notifications").To("Core_OldNotifications");
+
+            // Add primary keys to old tables to maintain referential integrity during migration
+            Create.PrimaryKey("PK_Core_OldNotificationMessages")
+                .OnTable("Core_OldNotificationMessages")
+                .Column("Id");
+            Create.PrimaryKey("PK_Core_OldNotificationTemplates")
+                .OnTable("Core_OldNotificationTemplates")
+                .Column("Id");
+            Create.PrimaryKey("PK_Core_OldNotifications")
+                .OnTable("Core_OldNotifications")
+                .Column("Id");
+
+            // Restore the foreign key for attachments on the old table
+            Create.ForeignKey("FK_Core_NotificationMessageAttachments_MessageId_Core_OldNotificationMessages_Id")
+                .FromTable("Core_NotificationMessageAttachments")
+                .ForeignColumn("MessageId")
+                .ToTable("Core_OldNotificationMessages")
+                .PrimaryColumn("Id");
+
             // NotificationTypes
             Create.Table("Core_NotificationTypeConfigs")
                    .WithIdAsGuid()
@@ -71,8 +217,8 @@ namespace Shesha.Migrations
                 .WithForeignKeyColumn("TopicId", "Core_NotificationTopics")
                 .WithForeignKeyColumn("UserId", "Core_Persons");
 
-            // New NotificationTemplates
-            Create.Table("Core_NewNotificationTemplates")
+            // Create new tables with final names (without 'New' prefix)
+            Create.Table("Core_NotificationTemplates")
                   .WithIdAsGuid()
                   .WithFullAuditColumns()
                   .WithForeignKeyColumn("PartOfId", "Core_NotificationTypeConfigs")
@@ -80,8 +226,7 @@ namespace Shesha.Migrations
                   .WithColumn("BodyTemplate").AsString(int.MaxValue).Nullable()
                   .WithColumn("MessageFormatLkp").AsInt64().Nullable();
 
-            // New Notifications
-            Create.Table("Core_NewNotifications")
+            Create.Table("Core_Notifications")
                   .WithIdAsGuid()
                   .WithFullAuditColumns()
                   .WithColumn("Name").AsString().Nullable()
@@ -95,11 +240,10 @@ namespace Shesha.Migrations
                   .WithColumn("TriggeringEntityClassName").AsString(1000).Nullable()
                   .WithColumn("TriggeringEntityDisplayName").AsString(1000).Nullable();
 
-            // New NotificationMessages
-            Create.Table("Core_NewNotificationMessages")
+            Create.Table("Core_NotificationMessages")
                   .WithIdAsGuid()
                   .WithFullAuditColumns()
-                  .WithForeignKeyColumn("PartOfId", "Core_NewNotifications")
+                  .WithForeignKeyColumn("PartOfId", "Core_Notifications")
                   .WithForeignKeyColumn("ChannelId", "Core_NotificationChannelConfigs")
                   .WithColumn("RecipientText").AsString(int.MaxValue).Nullable()
                   .WithColumn("Subject").AsString(1000).Nullable()
@@ -118,11 +262,12 @@ namespace Shesha.Migrations
                   .WithColumn(DatabaseConsts.ExtSysSyncError).AsStringMax().Nullable()
                   .WithColumn(DatabaseConsts.ExtSysSyncStatusLkp).AsInt32().Nullable();
 
-            Alter.Table("Core_NewNotificationMessages")
+            Alter.Table("Core_NotificationMessages")
                   .AddTenantIdColumnAsNullable();
 
+            // Data migration
             Execute.Sql(@"
-                INSERT INTO Core_NewNotifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName) 
+                INSERT INTO Core_Notifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName) 
                 SELECT 
 	                NEWID(),
 	                nm.CreationTime,
@@ -132,13 +277,13 @@ namespace Shesha.Migrations
                     nm.SourceEntityId,
                     nm.SourceEntityClassName,
                     nm.SourceEntityDisplayName
-                FROM Core_Notifications n
-                LEFT JOIN Core_NotificationMessages nm ON n.Id = nm.NotificationId
+                FROM Core_OldNotifications n
+                LEFT JOIN Core_OldNotificationMessages nm ON n.Id = nm.NotificationId
                 WHERE nm.IsDeleted = 0 AND n.IsDeleted = 0;
             ");
 
             Execute.Sql(@"
-                INSERT INTO Core_NewNotificationMessages (Id, CreationTime, PartOfId, ChannelId, RecipientText, Subject, Message,RetryCount, DirectionLkp, ReadStatusLkp, FirstDateRead,DateSent, ErrorMessage, StatusLkp)
+                INSERT INTO Core_NotificationMessages (Id, CreationTime, PartOfId, ChannelId, RecipientText, Subject, Message, RetryCount, DirectionLkp, ReadStatusLkp, FirstDateRead, DateSent, ErrorMessage, StatusLkp)
                 SELECT 
 	                Id,
 	                CreationTime,
@@ -160,30 +305,30 @@ namespace Shesha.Migrations
                     SendDate,
                     ErrorMessage,
                     StatusLkp
-                FROM Core_NotificationMessages
+                FROM Core_OldNotificationMessages
                 WHERE IsDeleted = 0;
             ");
 
-
             Execute.Sql(@"
-                INSERT INTO Core_NewNotificationTemplates (Id, TitleTemplate, BodyTemplate, MessageFormatLkp)
+                INSERT INTO Core_NotificationTemplates (Id, TitleTemplate, BodyTemplate, MessageFormatLkp)
                 SELECT 
 	                Id,
 	                Subject,
 	                Body,
 	                BodyFormatLkp
-                FROM Core_NotificationTemplates
+                FROM Core_OldNotificationTemplates
                 WHERE IsDeleted = 0;
             ");
 
+            // Finally, update the NotificationMessageAttachments foreign key to point to new table
+            Execute.Sql(@"
+                ALTER TABLE Core_NotificationMessageAttachments 
+                DROP CONSTRAINT FK_Core_NotificationMessageAttachments_MessageId_Core_OldNotificationMessages_Id;
 
-            Rename.Table("Core_NotificationMessages").To("Core_OldNotificationMessages");
-            Rename.Table("Core_NotificationTemplates").To("Core_OldNotificationTemplates");
-            Rename.Table("Core_Notifications").To("Core_OldNotifications");
-
-            Rename.Table("Core_NewNotifications").To("Core_Notifications");
-            Rename.Table("Core_NewNotificationMessages").To("Core_NotificationMessages");
-            Rename.Table("Core_NewNotificationTemplates").To("Core_NotificationTemplates");
+                ALTER TABLE Core_NotificationMessageAttachments 
+                ADD CONSTRAINT FK_Core_NotificationMessageAttachments_MessageId_Core_NotificationMessages_Id
+                FOREIGN KEY (MessageId) REFERENCES Core_NotificationMessages(Id);
+            ");
         }
         public override void Down()
         {

@@ -1,11 +1,15 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Abp.Domain.Repositories;
+using FluentValidation;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Domain
@@ -20,4 +24,33 @@ namespace Shesha.Domain
         [StringLength(int.MaxValue)]
         public virtual string BodyTemplate { get; set; }
     }
+
+    public class NotificationTemplateValidator : AbstractValidator<NotificationTemplate>
+    {
+        private readonly IRepository<NotificationTemplate, Guid> _repository;
+
+        public NotificationTemplateValidator(IRepository<NotificationTemplate, Guid> repository)
+        {
+            _repository = repository;
+
+            RuleFor(x => x.MessageFormat).NotEmpty();
+            RuleFor(x => x.PartOf).NotNull();
+            RuleFor(x => x)
+                .MustAsync(UniqueMessageFormatAsync)
+                .WithMessage("A template with the same message format and notification type already exists.");
+        }
+
+        private async Task<bool> UniqueMessageFormatAsync(NotificationTemplate template, CancellationToken cancellationToken)
+        {
+            if (template.MessageFormat == null || template.PartOf == null)
+                return true;
+
+            var alreadyExist = await _repository.GetAll()
+                .Where(m => m.PartOf == template.PartOf && m.MessageFormat == template.MessageFormat && m.Id != template.Id)
+                .AnyAsync();
+
+            return !alreadyExist;
+        }
+    }
+
 }
