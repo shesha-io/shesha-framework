@@ -5,6 +5,7 @@ import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
+import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
@@ -95,4 +96,5 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   font: IFontValue;
   shadow: IShadowValue;
   dimensions: IDimensionsValue;  
+  background?: IBackgroundValue;
 }

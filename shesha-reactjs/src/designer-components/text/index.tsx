@@ -1,6 +1,6 @@
 import { LineHeightOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import React, { CSSProperties, useMemo } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -10,14 +10,15 @@ import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrat
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getStyle, IInputStyles, pickStyleFromModel } from '@/index';
+import { getStyle, IInputStyles, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from '../textField/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { ConfigProvider, InputProps } from 'antd';
 import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { getBackgroundStyle } from '../_settings/utils/background/utils';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -27,26 +28,50 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   isInput: false,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => {
+    const { backendUrl, httpHeaders } = useSheshaApplication();
     const data = model;
     const font = model?.font;
     const border = model?.border;
     const shadow = model?.shadow;
     const dimensions = model?.dimensions;
     const jsStyle = getStyle(model.style, data);
-    
-    const backgroundStyles = getStyle(model.backgroundColor, data);
+    const background = model?.background;
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const [backgroundStyles, setBackgroundStyles] = useState({});
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+            .then((response) => {
+              return response.blob();
+            })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            }) : '';
+
+        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+        setBackgroundStyles(style);
+      };
+
+      fetchStyles();
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+
+    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+      return <ValidationErrors error="The provided StoredFileId is invalid" />;
+    }
+    
     const additionalStyles: CSSProperties = removeUndefinedProps({
-        ...stylingBoxAsCSS,
+      ...stylingBoxAsCSS,
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles,
+      textShadow: `${shadow?.offsetX}px ${shadow?.offsetY}px ${shadow?.blurRadius}px ${shadow?.color}`,
       ...dimensionsStyles
     });
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
@@ -64,6 +89,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       content: model.content,
       font: model.font,
       textAlign: model.font.align,
+      type: model.contentType,
     });
 
     
