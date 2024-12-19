@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 
 export const getSettings = (data: any) => {
   return {
@@ -57,7 +57,6 @@ export const getSettings = (data: any) => {
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   inputType: 'textArea',
                   propertyName: 'description',
-                  // hidden: {_code: "console.log('The Data', data); ", _mode: 'code', _value: true } as any,
                   label: 'Tooltip',
                   jsSetting: true,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -109,7 +108,7 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-                    .addCollapsiblePanel({
+                      .addCollapsiblePanel({
                         id: 'lineStyleCollapsiblePanel',
                         propertyName: 'lineStyle',
                         label: 'Line Style',
@@ -121,7 +120,7 @@ export const getSettings = (data: any) => {
                           id: 'stylePnl-M500-911MFR',
                           components: [
                             ...new DesignerToolbarSettings()
-                            .addCollapsiblePanel({
+                              .addCollapsiblePanel({
                                 id: 'linefontStyleCollapsiblePanel',
                                 propertyName: 'linepnlFontStyle',
                                 label: 'Font',
@@ -153,45 +152,39 @@ export const getSettings = (data: any) => {
                                             width: 50,
                                           },
                                           {
-                                            type: 'dropdown',
-                                            id: 'fontWeight-s40gmBg31azZC0UjZjpfTm',
-                                            label: 'Weight',
-                                            propertyName: 'lineFont.weight',
-                                            hideLabel: true,
-                                            tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                            dropdownOptions: fontWeights,
-                                            width: 100,
-                                          },
-                                          {
                                             type: 'color',
                                             id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
                                             label: 'Color',
                                             hideLabel: true,
                                             propertyName: 'lineFont.color',
-                                          }
+                                          },
                                         ],
                                       })
                                       .toJson(),
                                   ],
                                 },
                               })
-                            .addSettingsInputRow({
+                              .addSettingsInputRow({
                                 id: `lineStyleRow`,
                                 parentId: 'lineStylePnl',
                                 inline: true,
                                 hidden: false,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                readOnly: {
+                                  _code: 'return getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                                 inputs: [
-                                    {
-                                        type: 'switch',
-                                        id: 'dashed',
-                                        label: "Dashed",
-                                        hideLabel: false,
-                                        propertyName: "dashed",
-                                        layout: 'horizontal',
-                                    },
-                                ]
-                            })
+                                  {
+                                    type: 'switch',
+                                    id: 'dashed',
+                                    label: 'Dashed',
+                                    hideLabel: false,
+                                    propertyName: 'dashed',
+                                    layout: 'horizontal',
+                                  },
+                                ],
+                              })
                               .toJson(),
                           ],
                         },
@@ -205,47 +198,65 @@ export const getSettings = (data: any) => {
                         ghost: true,
                         collapsible: 'header',
                         content: {
-                            id: 'dimensionsStylePnl',
-                            components: [...new DesignerToolbarSettings()
-                                .addSettingsInputRow({
-                                    id: 'dimensionsStyleRowWidth',
-                                    parentId: 'dimensionsStylePnl',
-                                    inline: true,
-                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    inputs: [
-                                        {
-                                            type: 'text',
-                                            id: 'width-s4gmBg31azZC0UjZjpfTm',
-                                            label: "Width",
-                                            width: 85,
-                                            propertyName: "lineWidth",
-                                            icon: "widthIcon",
-                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
-                                        },
-                                    ]
-                                })
-                                .addSettingsInputRow({
-                                    id: 'dimensionsStyleRowHeight',
-                                    parentId: 'dimensionsStylePnl',
-                                    inline: true,
-                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    inputs: [
-                                        {
-                                            type: 'text',
-                                            id: 'height-s4gmBg31azZC0UjZjpfTm',
-                                            label: "Height",
-                                            width: 85,
-                                            propertyName: "lineHeight",
-                                            icon: "heightIcon",
-                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                        },
-                                    ]
-                                })
-                                .toJson()
-                            ]
-                        }
-                    })
+                          id: 'dimensionsStylePnl',
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addSettingsInputRow({
+                                id: 'dimensionsStyleRowWidth',
+                                parentId: 'dimensionsStylePnl',
+                                inline: true,
+                                hidden: {
+                                  _code: 'return  getSettingValue(data?.orientation) === "vertical";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'text',
+                                    id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Width',
+                                    width: 85,
+                                    propertyName: 'lineWidth',
+                                    icon: 'widthIcon',
+                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  },
+                                ],
+                              })
+                              .addSettingsInputRow({
+                                id: 'dimensionsStyleRowHeight',
+                                parentId: 'dimensionsStylePnl',
+                                inline: true,
+                                hidden: {
+                                  _code: 'return  getSettingValue(data?.orientation) === "horizontal";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'text',
+                                    id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Height',
+                                    width: 85,
+                                    propertyName: 'lineHeight',
+                                    icon: 'heightIcon',
+                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                                  },
+                                ],
+                              })
+                              .toJson(),
+                          ],
+                        },
+                      })
                       .addCollapsiblePanel({
                         id: 'titleStyleCollapsiblePanel',
                         propertyName: 'titleStyle',
@@ -272,7 +283,7 @@ export const getSettings = (data: any) => {
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInputRow({
-                                        id: 'try26voxhs-HxJ5k5ngYE',
+                                        id: 'trye26voxhs-HxJ5k5ngYE',
                                         parentId: 'fontStylePnl',
                                         inline: true,
                                         propertyName: 'font',
@@ -314,15 +325,6 @@ export const getSettings = (data: any) => {
                                             label: 'Color',
                                             hideLabel: true,
                                             propertyName: 'font.color',
-                                          },
-                                          {
-                                            type: 'dropdown',
-                                            id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                            label: 'Align',
-                                            propertyName: 'font.align',
-                                            hideLabel: true,
-                                            width: 60,
-                                            dropdownOptions: textAlign,
                                           },
                                         ],
                                       })

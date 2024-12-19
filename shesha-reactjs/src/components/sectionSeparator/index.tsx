@@ -11,8 +11,6 @@ export interface ISectionSeparatorProps {
   containerStyle?: CSSProperties;
   titleStyle?: CSSProperties;
   tooltip?: string;
-  fontSize?: number;
-  fontColor?: string;
   inline?: boolean;
   dashed?: boolean;
   lineColor?: string;
@@ -29,13 +27,10 @@ export interface ISectionSeparatorProps {
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   id,
   labelAlign = 'left',
-  fontSize = 14,
-  fontColor = '#000',
-  fontWeight = '500',
   inline,
   dashed,
   lineColor,
-  lineThickness = 2,
+  lineThickness,
   lineWidth,
   lineHeight,
   orientation,
@@ -95,7 +90,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       <div className={styles.titleContainer} style={{ alignItems: 'center', display: 'flex', width: '100%' }
       }>
         <div style={{ ...getLineStyles(true), ...baseStyle }}></div>
-        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap', color: fontColor, fontSize, fontWeight }
+        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap' }
         }>
           {title}
           < Show when={Boolean(tooltip?.trim())}>
