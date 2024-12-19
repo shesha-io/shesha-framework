@@ -19,6 +19,7 @@ export interface PermissionedObjectDto {
   dependency?: string | null;
   children?: PermissionedObjectDto[] | null;
   hidden?: boolean;
+  hardcoded?: boolean | null;
 }
 
 export type PermissionedObjectDtoListAjaxResponse = IAjaxResponse<PermissionedObjectDto[] | null>;

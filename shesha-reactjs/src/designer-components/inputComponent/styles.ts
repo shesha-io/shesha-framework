@@ -16,22 +16,10 @@ export const useStyles = createStyles(({ css, cx }) => {
         `);
 
 
-    const unitSelector = cx(css`
-        .ant-select-selector {
-        padding: 0 !important;
-        padding-inline-end: 5px !important;
-        align-self: auto !important;
-        line-height: auto !important;
-        align-self: top !important;
-        padding-left: 0 !important;
-    }
-    `);
-
     const icon = cx(css`
         --icon-fill-color: #1C1B1F;
     `);
     return {
-        unitSelector,
         inlineInputs,
         rowInputs,
         icon

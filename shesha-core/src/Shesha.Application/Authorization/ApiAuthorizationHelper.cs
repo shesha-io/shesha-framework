@@ -6,6 +6,7 @@ using Abp.Dependency;
 using Abp.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Configuration.Security;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -22,16 +23,19 @@ namespace Shesha.Authorization
 
         private readonly IAuthorizationConfiguration _authConfiguration;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
+        private readonly ISecuritySettings _securitySettings;
 
         public ApiAuthorizationHelper(
             IFeatureChecker featureChecker,
             IAuthorizationConfiguration authConfiguration,
             IObjectPermissionChecker objectPermissionChecker,
-            ILocalizationManager localizationManager
-            ): base(featureChecker, authConfiguration)
+            ILocalizationManager localizationManager,
+            ISecuritySettings securitySettings
+            ) : base(featureChecker, authConfiguration)
         {
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
+            _securitySettings = securitySettings;
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
@@ -41,7 +45,8 @@ namespace Shesha.Authorization
                 return;
             }
 
-            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>())
+            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
+                || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
                 return;
 
             var shaServiceType = typeof(ApplicationService);
@@ -56,6 +61,11 @@ namespace Shesha.Authorization
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
+            var settings = _securitySettings?.SecuritySettings?.GetValue()?.DefaultEndpointAccess;
+
+            if (settings == null)
+                throw new NullReferenceException("Cannot get DefaultEndpointAccess");
+
             // ToDo: add RequireAll flag
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
@@ -63,7 +73,7 @@ namespace Shesha.Authorization
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                Domain.Enums.RefListPermissionedAccess.AllowAnonymous
+                settings
             );
         }
     }
