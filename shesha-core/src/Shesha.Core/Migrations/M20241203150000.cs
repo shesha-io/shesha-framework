@@ -266,7 +266,7 @@ namespace Shesha.Migrations
                   .AddTenantIdColumnAsNullable();
 
             // Data migration
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 INSERT INTO Core_Notifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName) 
                 SELECT 
 	                NEWID(),
@@ -282,7 +282,7 @@ namespace Shesha.Migrations
                 WHERE nm.IsDeleted = 0 AND n.IsDeleted = 0;
             ");
 
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 INSERT INTO Core_NotificationMessages (Id, CreationTime, PartOfId, ChannelId, RecipientText, Subject, Message, RetryCount, DirectionLkp, ReadStatusLkp, FirstDateRead, DateSent, ErrorMessage, StatusLkp)
                 SELECT 
 	                Id,
@@ -309,7 +309,7 @@ namespace Shesha.Migrations
                 WHERE IsDeleted = 0;
             ");
 
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 INSERT INTO Core_NotificationTemplates (Id, TitleTemplate, BodyTemplate, MessageFormatLkp)
                 SELECT 
 	                Id,
@@ -321,13 +321,110 @@ namespace Shesha.Migrations
             ");
 
             // Finally, update the NotificationMessageAttachments foreign key to point to new table
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 ALTER TABLE Core_NotificationMessageAttachments 
                 DROP CONSTRAINT FK_Core_NotificationMessageAttachments_MessageId_Core_OldNotificationMessages_Id;
 
                 ALTER TABLE Core_NotificationMessageAttachments 
                 ADD CONSTRAINT FK_Core_NotificationMessageAttachments_MessageId_Core_NotificationMessages_Id
                 FOREIGN KEY (MessageId) REFERENCES Core_NotificationMessages(Id);
+            ");
+
+            // PostgreSQL
+            IfDatabase("PostgreSQL").Execute.Sql(@"
+                -- Migrate core notifications from old to new schema
+                INSERT INTO ""Core_Notifications"" (
+                    ""Id"", 
+                    ""CreationTime"", 
+                    ""Name"", 
+                    ""ToPersonId"", 
+                    ""FromPersonId"", 
+                    ""TriggeringEntityId"", 
+                    ""TriggeringEntityClassName"", 
+                    ""TriggeringEntityDisplayName""
+                ) 
+                SELECT 
+                    gen_random_uuid(),
+                    nm.""CreationTime"",
+                    n.""Name"",
+                    nm.""RecipientId"",
+                    nm.""SenderId"",
+                    nm.""SourceEntityId"",
+                    nm.""SourceEntityClassName"",
+                    nm.""SourceEntityDisplayName""
+                FROM ""Core_OldNotifications"" n
+                LEFT JOIN ""Core_OldNotificationMessages"" nm ON n.""Id"" = nm.""NotificationId""
+                WHERE nm.""IsDeleted"" = false AND n.""IsDeleted"" = false;
+            ");
+
+            IfDatabase("PostgreSQL").Execute.Sql(@"
+                -- Migrate notification messages with channel mapping
+                INSERT INTO ""Core_NotificationMessages"" (
+                    ""Id"",
+                    ""CreationTime"",
+                    ""PartOfId"",
+                    ""ChannelId"",
+                    ""RecipientText"",
+                    ""Subject"",
+                    ""Message"",
+                    ""RetryCount"",
+                    ""DirectionLkp"",
+                    ""ReadStatusLkp"",
+                    ""FirstDateRead"",
+                    ""DateSent"",
+                    ""ErrorMessage"",
+                    ""StatusLkp""
+                )
+                SELECT 
+                    ""Id"",
+                    ""CreationTime"",
+                    ""NotificationId"",
+                    CASE 
+                        WHEN ""SendTypeLkp"" = 1 THEN 
+                            (SELECT ""Id"" FROM ""Core_NotificationChannelConfigs"" ncc WHERE ncc.""Core_SenderTypeName"" = 'EmailChannelSender')
+                        WHEN ""SendTypeLkp"" = 2 THEN 
+                            (SELECT ""Id"" FROM ""Core_NotificationChannelConfigs"" ncc WHERE ncc.""Core_SenderTypeName"" = 'SmsChannelSender')
+                        ELSE NULL
+                    END,
+                    ""RecipientText"",
+                    ""Subject"",
+                    ""Body"",
+                    ""TryCount"",
+                    ""DirectionLkp"",
+                    CASE WHEN ""Opened"" = true THEN 0 ELSE 1 END,
+                    ""LastOpened"",
+                    ""SendDate"",
+                    ""ErrorMessage"",
+                    ""StatusLkp""
+                FROM ""Core_OldNotificationMessages""
+                WHERE ""IsDeleted"" = false;
+            ");
+
+            IfDatabase("PostgreSQL").Execute.Sql(@"
+                -- Migrate notification templates
+                INSERT INTO ""Core_NotificationTemplates"" (
+                    ""Id"",
+                    ""TitleTemplate"",
+                    ""BodyTemplate"",
+                    ""MessageFormatLkp""
+                )
+                SELECT 
+                    ""Id"",
+                    ""Subject"",
+                    ""Body"",
+                    ""BodyFormatLkp""
+                FROM ""Core_OldNotificationTemplates""
+                WHERE ""IsDeleted"" = false;
+            ");
+
+            IfDatabase("PostgreSQL").Execute.Sql(@"
+                -- Update foreign key constraint for notification message attachments
+                ALTER TABLE ""Core_NotificationMessageAttachments"" 
+                DROP CONSTRAINT ""FK_Core_NotificationMessageAttachments_MessageId_Core_OldNotificationMessages_Id"";
+
+                ALTER TABLE ""Core_NotificationMessageAttachments"" 
+                ADD CONSTRAINT ""FK_Core_NotificationMessageAttachments_MessageId_Core_NotificationMessages_Id""
+                FOREIGN KEY (""MessageId"") REFERENCES ""Core_NotificationMessages""(""Id"");
             ");
         }
         public override void Down()
