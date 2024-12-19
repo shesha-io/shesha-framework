@@ -1,6 +1,12 @@
-﻿namespace Shesha.Sms.Clickatell
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shesha.Notifications.Helpers
 {
-    internal static class MobileHelper
+    public static class MobileHelper
     {
         public static string CleanupMobileNo(string mobileNumber)
         {

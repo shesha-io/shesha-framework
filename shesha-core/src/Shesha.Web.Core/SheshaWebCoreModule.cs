@@ -2,6 +2,7 @@
 using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.SignalR;
 using Abp.AutoMapper;
+using Abp.FluentValidation;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
@@ -33,7 +34,8 @@ namespace Shesha
         typeof(AbpAutoMapperModule),
         typeof(SheshaElmahModule),
         typeof(SheshaSchedulerModule),
-        typeof(SheshaApplicationModule)
+        typeof(SheshaApplicationModule),
+        typeof(AbpFluentValidationModule)
      )]
     public class SheshaWebCoreModule : AbpModule
     {
