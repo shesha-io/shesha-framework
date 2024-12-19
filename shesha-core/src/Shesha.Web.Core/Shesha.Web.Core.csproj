@@ -39,6 +39,7 @@
   <ItemGroup>
     <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="9.0.0" />
+	<PackageReference Include="Abp.FluentValidation" Version="9.0.0" />
     <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
     <PackageReference Include="GraphQL" Version="5.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
