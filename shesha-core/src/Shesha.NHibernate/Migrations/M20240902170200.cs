@@ -21,7 +21,7 @@ namespace Shesha.Migrations
                 .WithColumn("UserNameOrEmailAddress").AsString(255).Nullable();
 
             // Insert UserRegistration for existing Persons
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 INSERT INTO Frwk_UserRegistration (Id, UserId, UserNameOrEmailAddress, CreationTime, IsComplete)
                 SELECT 
                     NEWID() AS Id, 
@@ -35,6 +35,22 @@ namespace Shesha.Migrations
                     AbpUsers u ON p.UserId = u.Id
                 WHERE 
                     p.UserId IS NOT NULL;
+            ");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"
+                INSERT INTO ""Frwk_UserRegistration"" (""Id"", ""UserId"", ""UserNameOrEmailAddress"", ""CreationTime"", ""IsComplete"")
+                SELECT 
+                    uuid_generate_v4(), 
+                    p.""UserId"", 
+                    u.""UserName"", 
+                    p.""CreationTime"", 
+                    true AS IsComplete
+                FROM 
+                    ""Core_Persons"" p
+                INNER JOIN 
+                    ""AbpUsers"" u ON p.""UserId"" = u.""Id""
+                WHERE 
+                    p.""UserId"" IS NOT NULL;
             ");
         }
     }

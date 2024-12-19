@@ -141,11 +141,12 @@ from data
 where
 	not exists (select 1 from ""Frwk_ConfigurationItems"" ci where ci.""Name"" = data.""Name"" and ci.""ItemType"" = data.""ItemType"")
 	and not exists (select 1 from data rd where rd.""Name"" = data.""Name"" and data.""CreationTime"" < rd.""CreationTime"");
+");
 
-DROP INDEX ""IX_Core_ShaRoles_CreatorUserId] ON [dbo].[Core_ShaRoles];
-DROP INDEX ""IX_Core_ShaRoles_DeleterUserId] ON [dbo].[Core_ShaRoles];
-DROP INDEX ""IX_Core_ShaRoles_LastModifierUserId] ON [dbo].[Core_ShaRoles];
-DROP INDEX ""IX_Core_ShaRoles_TenantId] ON [dbo].[Core_ShaRoles];
+			IfDatabase("PostgreSql").Execute.Sql(@"DROP INDEX ""IX_Core_ShaRoles_CreatorUserId"";
+DROP INDEX ""IX_Core_ShaRoles_DeleterUserId"";
+DROP INDEX ""IX_Core_ShaRoles_LastModifierUserId"";
+DROP INDEX ""IX_Core_ShaRoles_TenantId"";
 
 ALTER TABLE ""Core_ShaRoles"" DROP CONSTRAINT ""FK_Core_ShaRoles_CreatorUserId_AbpUsers_Id"";
 ALTER TABLE ""Core_ShaRoles"" DROP CONSTRAINT ""FK_Core_ShaRoles_DeleterUserId_AbpUsers_Id"";
@@ -155,15 +156,13 @@ ALTER TABLE ""Core_ShaRoles"" DROP CONSTRAINT ""FK_Core_ShaRoles_TenantId_AbpTen
 alter table ""Core_ShaRoles"" drop column ""CreationTime"";
 alter table ""Core_ShaRoles"" drop column ""CreatorUserId"";
 alter table ""Core_ShaRoles"" drop column ""LastModificationTime"";
-alter table ""Core_ShaRoles"" drop column ""lastModifierUserId"";
+alter table ""Core_ShaRoles"" drop column ""LastModifierUserId"";
 alter table ""Core_ShaRoles"" drop column ""IsDeleted"";
 alter table ""Core_ShaRoles"" drop column ""DeleterUserId"";
 alter table ""Core_ShaRoles"" drop column ""DeletionTime"";
 alter table ""Core_ShaRoles"" drop column ""TenantId"";
 
-ALTER TABLE ""Core_ShaRoles"" ADD CONSTRAINT ""FK_Core_ShaRoles_Frwk_ConfigurationItems"" FOREIGN KEY(""Id"")
-REFERENCES ""Frwk_ConfigurationItems"" (""Id"")
-");
+ALTER TABLE ""Core_ShaRoles"" ADD CONSTRAINT ""FK_Core_ShaRoles_Frwk_ConfigurationItems"" FOREIGN KEY(""Id"") REFERENCES ""Frwk_ConfigurationItems"" (""Id"");");
 
         }
     }
