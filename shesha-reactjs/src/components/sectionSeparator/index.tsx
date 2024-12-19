@@ -21,7 +21,7 @@ export interface ISectionSeparatorProps {
   marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
-  fontWeight?: string;
+  fontSize?: string | number;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
