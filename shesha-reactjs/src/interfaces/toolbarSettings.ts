@@ -31,7 +31,6 @@ import { IPermissionAutocompleteComponentProps } from '@/designer-components/per
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
-import { ILabelProps } from '@/designer-components/styleLabel/labelConfigurator';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
@@ -106,8 +105,6 @@ type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, '
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
 
 type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' | 'type'>;
-
-type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
@@ -259,10 +256,6 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addLabelConfigurator(props: LabelStyleType | ((data: T) => LabelStyleType)) {
-    return this.addProperty(props, 'labelConfigurator');
-  }
-
-  public addLabel(props: LabelType | ((data: T) => LabelType)) {
     return this.addProperty(props, 'labelConfigurator');
   }
 

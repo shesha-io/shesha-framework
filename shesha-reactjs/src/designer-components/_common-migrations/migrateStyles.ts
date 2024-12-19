@@ -65,7 +65,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 blurRadius: 0,
                 spreadRadius: 0
             },
-            ...(defaults.position && {
+            ...(defaults?.position && {
                 position: {
                     value: 'relative',
                     offset: 'top',
