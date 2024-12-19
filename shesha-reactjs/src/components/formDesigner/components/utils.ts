@@ -44,7 +44,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, event, value: event?.currentTarget.value});
+      return executeScriptSync(expression, { ...context, event, value: event?.currentTarget.value });
     }
   };
 
@@ -71,7 +71,7 @@ export const customDateEventHandler = (model: IConfigurableFormComponent, contex
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, dateString, value});
+      return executeScriptSync(expression, { ...context, dateString, value });
     }
   },
 });
@@ -89,7 +89,7 @@ export const customTimeEventHandler = (model: IConfigurableFormComponent, contex
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, timeString, value});
+      return executeScriptSync(expression, { ...context, timeString, value });
     }
   },
 });
@@ -107,7 +107,7 @@ export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComp
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, option, value});
+      return executeScriptSync(expression, { ...context, option, value });
     }
   },
 });
@@ -126,7 +126,7 @@ export const customOnChangeValueEventHandler = (model: IConfigurableFormComponen
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, value});
+      return executeScriptSync(expression, { ...context, value });
     }
   },
 });
@@ -164,8 +164,8 @@ export const customAddressEventHandler = (
   context: IApplicationContext,
   onChangeCustom,
   onSelectCustom
-  ): IGooglePlacesAutocompleteProps => {
-  
+): IGooglePlacesAutocompleteProps => {
+
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
     if (Boolean(expression)) {
@@ -178,7 +178,7 @@ export const customAddressEventHandler = (
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, event, value: event?.currentTarget.value});
+      return executeScriptSync(expression, { ...context, event, value: event?.currentTarget.value });
     }
   };
 

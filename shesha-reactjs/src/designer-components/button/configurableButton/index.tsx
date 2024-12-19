@@ -12,7 +12,7 @@ import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
-  dynamicItem?: any;  
+  dynamicItem?: any;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {

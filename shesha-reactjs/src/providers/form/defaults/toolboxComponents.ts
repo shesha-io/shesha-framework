@@ -103,8 +103,12 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
+import LabelConfigurator from '@/designer-components/styleLabel';
+import SearchableTabs from '@/designer-components/propertiesTabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
+import SettingsInput from '@/designer-components/settingsInput';
+import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
 
@@ -244,6 +248,10 @@ export const getToolboxComponents = (
         Buttons,
         Section,
         StyleBox,
+        LabelConfigurator,
+        SearchableTabs,
+        SettingsInput,
+        SettingsInputRow,
         CodeEditor,
         ImagePickerComponent,
         ComponentSelectorComponent,
