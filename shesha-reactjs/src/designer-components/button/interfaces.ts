@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 
-export interface IButtonComponentProps extends IButtonItem, IConfigurableFormComponent {}
+export interface IButtonComponentProps extends IButtonItem, IConfigurableFormComponent, IStyleType { }

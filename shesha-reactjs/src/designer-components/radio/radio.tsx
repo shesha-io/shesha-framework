@@ -11,9 +11,8 @@ import { IRadioProps } from './utils';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useFormData } from '@/providers';
+import { IInputStyles, useFormData } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

@@ -8,7 +8,7 @@ import { Flex } from 'antd';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { useKanbanActions } from '../utils';
 import { useStyles } from '../styles/styles';
-import { addPx } from '@/designer-components/button/util';
+import { addPx } from '@/designer-components/_settings/utils';
 
 interface KanbanColumnProps {
   column: any;

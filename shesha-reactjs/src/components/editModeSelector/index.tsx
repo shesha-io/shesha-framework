@@ -6,10 +6,11 @@ export interface IReadOnlyModeSelectorProps {
   value?: boolean | EditMode;
   readOnly?: boolean;
   onChange?: (value: EditMode) => void;
+  size?: 'small' | 'middle' | 'large';
 }
 
 const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
-  
+
   const val: EditMode = props.value === false
     ? 'readOnly'
     : !props.value || props.value === true
@@ -17,7 +18,7 @@ const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
       : props.value;
 
   return (
-    <Select disabled={props.readOnly} value={val} onChange={props.onChange}>
+    <Select disabled={props.readOnly} value={val} onChange={props.onChange} size={props.size}>
       <Select.Option key='editable' value="editable">Editable</Select.Option>
       <Select.Option key='readOnly' value="readOnly">Read only</Select.Option>
       <Select.Option key='inherited' value="inherited">Inherited</Select.Option>

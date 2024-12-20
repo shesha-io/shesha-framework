@@ -6,9 +6,9 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { getActualModel, getStyle } from '@/providers/form/utils';
-import { addPx } from '@/designer-components/button/util';
 import classNames from 'classnames';
 import { useDeepCompareMemo } from '@/hooks';
+import { addPx } from '@/designer-components/_settings/utils';
 
 const { Text } = Typography;
 

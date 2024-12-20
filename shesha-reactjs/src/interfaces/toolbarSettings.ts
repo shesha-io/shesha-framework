@@ -30,7 +30,12 @@ import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfac
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
+import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
+import { ILabelProps } from '@/designer-components/styleLabel/labelConfigurator';
+import { ITabsComponentProps } from '@/designer-components/tabs/models';
+import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
+import { ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -91,6 +96,7 @@ type ColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
+type ITabsComponentPropsType = ToolbarSettingsProp & Omit<ITabsComponentProps, 'hidden' | 'type'>;
 type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'hidden' | 'type'>;
 
 type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
@@ -99,7 +105,15 @@ type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, '
 
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
 
+type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' | 'type'>;
+
+type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
+
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
+
+type SettingInputType = ToolbarSettingsProp & Omit<ISettingsInputProps, 'hidden' | 'type'>;
+
+type SettingInputRowType = ToolbarSettingsProp & Omit<ISettingsInputRowProps, 'hidden' | 'type'>;
 
 type PropertyRouterType = ToolbarSettingsProp & Omit<IPropertyRouterProps, 'hidden' | 'type'>;
 
@@ -126,6 +140,10 @@ export class DesignerToolbarSettings<T> {
     props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType)
   ) {
     return this.addProperty(props, 'collapsiblePanel');
+  }
+
+  public addSearchableTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
+    return this.addProperty(props, 'searchableTabs');
   }
 
   public addDropdown(props: DropdownType | ((data: T) => DropdownType)) {
@@ -240,12 +258,28 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'styleBox');
   }
 
+  public addLabelConfigurator(props: LabelStyleType | ((data: T) => LabelStyleType)) {
+    return this.addProperty(props, 'labelConfigurator');
+  }
+
+  public addLabel(props: LabelType | ((data: T) => LabelType)) {
+    return this.addProperty(props, 'labelConfigurator');
+  }
+
   public addSlider(props: SliderType | ((data: T) => SliderType)) {
     return this.addProperty(props, 'slider');
   }
 
   public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
     return this.addProperty(props, 'divider');
+  }
+
+  public addSettingsInput(props: SettingInputType | ((data: T) => SettingInputType)) {
+    return this.addProperty(props, 'settingsInput');
+  }
+
+  public addSettingsInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
+    return this.addProperty(props, 'settingsInputRow');
   }
 
   public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {
