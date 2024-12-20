@@ -128,6 +128,7 @@ namespace Shesha
                 s.UserManagementSettings.WithDefaultValue(new UserManagementSettings
                 {
                    SupportedRegistrationMethods = SupportedRegistrationMethods.MobileNumber,
+                   RequireEmailVerification = false,
                    GoToUrlAfterRegistration = "/",
                    UserEmailAsUsername = false,
                    AdditionalRegistrationInfo = false,
