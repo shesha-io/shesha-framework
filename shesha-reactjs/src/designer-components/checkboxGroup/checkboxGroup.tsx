@@ -3,19 +3,17 @@ import React from 'react';
 import { useFormData } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
-import settingsFormJson from './settingsForm.json';
 import { ICheckboxGroupProps } from './utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 
-const settingsForm = settingsFormJson as FormMarkup;
 
 interface IEnhancedICheckboxGoupProps extends Omit<ICheckboxGroupProps, 'style'> {
   style?: string;
@@ -40,8 +38,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: model => {
     const customProps: IEnhancedICheckboxGoupProps = {
       ...model,
