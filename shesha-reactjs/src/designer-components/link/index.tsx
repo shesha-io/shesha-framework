@@ -13,10 +13,10 @@ import { ContainerDirection } from '@/components/formDesigner/common/interfaces'
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from '../textField/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 import { removeUndefinedProps } from '@/utils/object';
+import { defaultStyles } from './utils';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;
@@ -145,8 +145,8 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       })
       .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ILinkProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-      .add<ILinkProps>(4, (prev) => {
+      .add<ILinkProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      .add<ILinkProps>(5, (prev) => {
         const styles: IInputStyles = {
           style: prev.style,
         };
