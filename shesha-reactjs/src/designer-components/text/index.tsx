@@ -10,7 +10,7 @@ import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrat
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getStyle, IInputStyles, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
+import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from '../textField/utils';
 import { removeUndefinedProps } from '@/utils/object';
@@ -81,7 +81,6 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: { ...finalStyle, ...jsStyle },
       maxLength: model.validate?.maxLength,
       max: model.validate?.maxLength,
       minLength: model.validate?.minLength,
@@ -89,7 +88,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       content: model.content,
       font: model.font,
       textAlign: model.font.align,
-      type: model.contentType,
+      contentType: model.contentType,
+      contentDisplay: model.contentDisplay,
     });
 
     
@@ -107,10 +107,11 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
             },
           }}
         >
+
           <TypographyComponent
             {...inputProps}
-            contentDisplay={model?.contentDisplay}
-            textType={model?.textType}
+            textType={model.textType}
+            styles={{ ...finalStyle, ...jsStyle }}
             value={model?.contentDisplay === 'name' ? value : model?.content}
           />
         </ConfigProvider>
@@ -154,6 +155,14 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<ITextTypographyProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    .add<ITextTypographyProps>(7, (prev) => {
+      const styles: IStyleType = {
+        font: {
+          weight: prev.strong ? '700' : '400',
+        }
+      };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
   ,
 };
 

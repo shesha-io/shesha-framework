@@ -75,8 +75,8 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     underline: model?.underline,
     keyboard: model?.keyboard,
     italic: model?.italic,
-    type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
-    style: {
+    typeOfText: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
+    styles: {
       margin: 'unset',
       ...fontSizeStyle,
       ...paddingStyle,

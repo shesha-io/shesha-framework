@@ -1,4 +1,4 @@
-import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
+import { EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
@@ -59,42 +59,34 @@ export interface ITypographyProps {
   underline?: boolean;
   keyboard?: boolean;
   italic?: boolean;
-  type?: BaseType;
-  style?: CSSProperties;
-}
-
-export interface ITextTypographyProps extends IConfigurableFormComponent {
-  textType: 'span' | 'paragraph' | 'title';
-  content: string;
-  contentType?: ContentType;
-  contentDisplay: ContentDisplay;
-  color?: string;
-  backgroundColor?: string;
-  level?: LevelType | TypographyFontSize;
-  fontSize?: TypographyFontSize;
-  padding?: TypographyPaddingSize;
+  styles?: CSSProperties;
+  contentDisplay?: ContentDisplay;
   dataType?: 'string' | 'date-time' | 'number' | 'boolean';
   dateFormat?: string;
   numberFormat?: string;
-  code?: boolean;
-  italic?: boolean;
-  copyable?: boolean;
-  delete?: boolean;
-  ellipsis?: boolean;
-  mark?: boolean;
-  underline?: boolean;
-  keyboard?: boolean;
-  strong?: boolean;
   value?: any;
   textAlign?: string;
+  level?: LevelType | TypographyFontSize;
+  textType: 'span' | 'paragraph' | 'title';
+  content?: string;
+  contentType?: ContentType;
+  color?: string;
+  backgroundColor?: string;
+  fontSize?: TypographyFontSize;
+  padding?: TypographyPaddingSize;
   border?: IBorderValue;
   hideBorder?: boolean;
   borderSize?: number;
   borderRadius?: number;
   borderColor?: string;
   fontColor?: string;
-  font: IFontValue;
-  shadow: IShadowValue;
-  dimensions: IDimensionsValue;  
+  font?: IFontValue;
+  shadow?: IShadowValue;
+  dimensions?: IDimensionsValue;  
   background?: IBackgroundValue;
+  strong?: boolean;
+
+}
+
+export interface ITextTypographyProps extends ITypographyProps, IConfigurableFormComponent {
 }
