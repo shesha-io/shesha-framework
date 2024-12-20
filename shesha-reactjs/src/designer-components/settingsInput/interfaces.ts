@@ -61,4 +61,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
+    autoFillProps?: boolean;
 };

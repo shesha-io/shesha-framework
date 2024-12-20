@@ -258,6 +258,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ...model,
       entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       valueFormat: 'simple',
+      editMode: 'inherited'
     };
   },
   getFieldsToFetch: (propertyName, rawModel) => {
