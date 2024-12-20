@@ -1,29 +1,36 @@
 # Release Notes
-## Enhancements
-- **Ehanced Form Settings**: Introduced configurable form lifecycle management, providing more flexibility in form handling.
-  - **Appearance**: Contains all settings related to form view (layout, size etc).
-  - **Data**: Contains settings related to data processing and form lifecylce.
-  - **Security**: Security related settings.
-- **Enhanced App Settings Page**: Expanded the App Settings page to manage front-end specific settings in addition to general settings, including Default URL, Theme, and Main Menu configurations.
-  - **Default URL**: This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page.
-  - **Main Menu Settings**: Here you can configure the sidebar menu items by adjusting their settings and ordering.
-  - **Theme Settings**: Here you customise the theme color of the application.
-- **Enhanced Button Component**: Added additional styling properties to the Button Component for improved customization.
-- **Exposed getAnonymousForms Endpoint**: Made the getAnonymousForms endpoint accessible for easier integration.
-- **Improved JavaScript Settings Component**: Updated the JS settings component for better performance and user experience.
-- **Configurable User Profile**: Allowed additional configurations to be configured below the user logged information.
-- Added `addDelayedUpdateData` variable which is required for files when using a script method.
-- **Style Section Hidden in Table**: The style section is now hidden for Textfield and Autocomplete components when rendered within a table.
-- **Font Weight on Table Column Names**: Increased the font weight to 600 for table column names to enhance visibility and readability.
-- **Reset Wizard State Action**: Exposed an action on Wizard actions that allows resetting the wizard state.
 
-## Bug Fixes
-- **Component Label Issue**: Fixed an issue where components (Address, Entity Reference, Subform, ChildEntitiesTag Group) did not append the label by default when a property name was selected.
-- **Base64 Image Rendering**: Resolved a problem with Base64 images not rendering in the Image component and container background property.
-- **CRUD Operations Column Expansion**: Corrected the unexpected expansion of CRUD operations columns when using the toogle columns selector option.
-- **Table View Component Issue**: Fixed the "add item" modal in the newly created Table view component, which was not closeable by default.
-- **Permission Configurations Import**: Addressed a bug causing the application to break when importing permission configurations with ConfigMigrations.
-- **setFormData Initialization**: Resolved an issue where setFormData used on Initialization did not append values to the specified field in forms.
-- **Backend Endpoint Management**: Fixed the issue where the backend did not properly remove or reinstate endpoints when disabled or enabled.
-- **Duplicate Records from Button Clicks**: Fixed a bug causing duplicate records due to multiple clicks on the default, custom buttons and datalist during network delays.
-- **Notes Component Overflow Issue**: Fixed an issue where clicking 'More' on long notes caused them to overlap outside the line section on the Notes component.
+## 💪 Enhancements
+
+- **Notifications Framework Refactoring and Enhancement**: Refactored and enhanced the Notifications Framework.
+- **Close Dialog Action Improvement**: Improved "Close dialog" action by adding "Show dialog result" functionality.
+- **Reference List Rendering**: Enabled `referenceList`components to render '0' values.
+- **Dynamic Menu Item Behavior**: Made dynamic menu item behavior configurable.
+- **Data Refresh Control in DataTable**: Introduced 'Disable refresh data' expression setting in `dataTableContext` for enhanced control.
+- **Form Builder Panel Removal**: Removed form builder panels by default in preview mode.
+- **Endpoint Access Override**: Allowed overriding of endpoint access defined in code when updated from the frontend.
+- **User ID API Addition**: Added `user.personId` front-end API to retrieve the current user's `personId`.
+- **User Registration and Authentication Configurability**: Made User Registration and Authentication behavior configurable for greater flexibility.
+- **Event Handlers Enhancement**: Enhanced components' event handlers to use the full list of available variables.
+- **Image Uploads from Configurations**: Enabled image uploads from configuration settings when base64 option is used.
+
+## 🐞 Bug Fixes
+
+- **DataList Component Crash**: Fixed DataList component crash when "Can Add Inline" configuration was set to "Yes."
+- **Datalist Form Info Disappearance**: Corrected datalist form info not disappearing after 3 seconds in edit mode.
+- **Entity Reference Links Issue**: Resolved issue with Entity Reference component links being disabled when Edit Mode was set to 'Readonly.'
+- **Data Loss in Filtered ChildTable**: Fixed data loss in filtered childTable when 'Edit' and 'Cancel Edit' were clicked on the parent form.
+- **Header Background Color**: Addressed header background color not applying with new panel styling.
+- **Sizable Columns Crash**: Resolved crash in sizable columns component when adding a new column.
+- **Form Information on Logout**: Ensured form information is hidden upon logout.
+- **Modal Designer Locking**: Locked modal designer within the browser window to prevent scrolling during form edits.
+- **Redirection After Logout**: Fixed redirection issue where users were sent to the previous page instead of the configured home URL/default landing page after logout.
+- **Integer ID Validation**: Addressed integer ID validation error when loading a form using the integer ID.
+- **Endpoint Failure on Readonly Forms**: Fixed endpoint failure when re-updating a form with a `readOnly` property without page refresh.
+- **Cancelled Edit Reversion**: Resolved issue where cancelling an edit reverted to old changes instead of the latest saved data.
+- **Home URL Routing**: Corrected Home URL routing to navigate to the specified dynamic URL instead of the default landing page.
+
+## Configuration Forms
+
+- **ShaRoleAppointedPerson Endpoint Update**: Updated ShaRoleAppointedPerson delete configuration to use the correct endpoint.
+- **New Version Creation Redirection**: Fixed issue where creating a new version did not redirect to the designer after version creation.
