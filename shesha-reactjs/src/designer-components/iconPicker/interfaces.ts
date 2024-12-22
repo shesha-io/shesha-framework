@@ -1,7 +1,8 @@
 import { ShaIconTypes } from '@/components/iconPicker';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { CSSProperties } from 'react';
 
-export interface IIconPickerComponentProps extends IConfigurableFormComponent {
+export interface IIconPickerComponentProps extends IConfigurableFormComponent, IInputStyles {
     readOnly?: boolean;
     fontSize?: number;
     color?: string;
@@ -14,4 +15,5 @@ export interface IIconPickerComponentProps extends IConfigurableFormComponent {
     stylingBox?: string;
     defaultIcon?: ShaIconTypes;
     textAlign?: string;
-}
+    additionalStyles?: CSSProperties;
+};
