@@ -238,7 +238,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     // TODO: implement other types of datasources!
 
-    console.log('autocompleteProps ::', autocompleteProps);
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
