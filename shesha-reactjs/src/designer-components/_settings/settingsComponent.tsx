@@ -7,7 +7,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
 import { SettingComponentContainer } from './settingContainer/settingComponentContainer';
-import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@/index';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
@@ -24,13 +24,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
   icon: <SettingOutlined />,
   Factory: ({ model }) => {
 
-    const sourceComponent = ShaForm.useChildComponents(model.id)[0];
-
-    const allData = useAvailableConstantsData();
-
-    const actualSourceComponent = useDeepCompareMemo(() => {
-      return getActualModel(sourceComponent, allData, model.readOnly);
-    }, [sourceComponent, allData.lastUpdated]);
+    const actualSourceComponent = useActualContextData(ShaForm.useChildComponents(model.id)[0], model.readOnly);
 
     const component: IConfigurableFormComponent = useMemo(() => {
       return {

@@ -47,7 +47,7 @@ export class PropertyTouchAccessor extends BaseAccessor<PropertyTouchAccessor, a
 
         this.addTouchedProp(accessor);
 
-        if (typeof child === 'object')
+        if (child !== null && typeof child === 'object')
             return new PropertyTouchAccessor(child, this, accessor);
           
         if (this._parent && this._parent.touched) 

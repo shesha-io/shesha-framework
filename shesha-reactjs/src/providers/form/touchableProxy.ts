@@ -1,4 +1,4 @@
-import { ProxyPropertiesAccessors, ProxyWithRefresh, TypedProxy, ValueAccessor } from "./observableProxy";
+import { ProxyPropertiesAccessors, ProxyWithRefresh, ValueAccessor } from "./observableProxy";
 import { IPropertyTouched, PropertyTouchAccessor } from "./propertyAccessor";
 
 export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched {
@@ -52,7 +52,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
           const props = key.split('.');
           let prop = props.shift();
           let data = this.getPropertyValue(prop);
-          if (!data) {
+          if (data === null || data === undefined) {
               changed = true;
               return;
           }
@@ -88,6 +88,12 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
         });
 
         return this.#checkChanged();
+    };
+
+    setAdditionalData = (data: any) => {
+      for (let key in data) 
+        if (Object.hasOwn(data, key)) 
+          this.addAccessor(key, () => data[key]);
     };
 
     constructor(accessors: ProxyPropertiesAccessors<T>) {
@@ -132,7 +138,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     }
 }
 
-export const makeTouchableProxy = <T = object>(accessors: ProxyPropertiesAccessors<T>): TypedProxy<T> => {
+export const makeTouchableProxy = <T = object>(accessors: ProxyPropertiesAccessors<T>): TouchableProxy<T> => {
     const result = new TouchableProxy(accessors);
-    return (result as any) as TypedProxy<T>;
+    return result;
 };

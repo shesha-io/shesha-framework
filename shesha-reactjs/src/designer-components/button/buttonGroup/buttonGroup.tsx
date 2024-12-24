@@ -18,7 +18,6 @@ import {
 import { ConfigurableButton } from '../configurableButton';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
-    getActualModel,
     getStyle,
     IApplicationContext,
     useAvailableConstantsData
@@ -26,7 +25,6 @@ import {
 import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupProps } from './models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useDeepCompareMemo } from '@/hooks';
 import { useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
@@ -35,8 +33,6 @@ import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
 
 type MenuItem = MenuProps['items'][number];
-
-type PrepareItemFunc = (item: ButtonGroupItemProps, parentReadOnly: boolean) => ButtonGroupItemProps;
 
 type MenuButton = ButtonGroupItemProps & {
     childItems?: MenuButton[];
@@ -75,14 +71,13 @@ const createMenuItem = (
     props: MenuButton,
     getIsVisible: VisibilityEvaluator,
     appContext: IApplicationContext,
-    prepareItem: PrepareItemFunc,
     form: FormInstance<any>
 ): MenuItem => {
     const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
     const childItems = props.childItems && props.childItems.length > 0
-        ? props.childItems.map(x => prepareItem(x, props.readOnly)).filter(getIsVisible)?.map((props) => createMenuItem(props, getIsVisible, appContext, prepareItem, form))
+        ? props.childItems.filter(getIsVisible)?.map((props) => createMenuItem(props, getIsVisible, appContext, form))
         : null;
 
     return isDivider
@@ -106,16 +101,15 @@ interface InlineItemBaseProps {
 
 interface InlineItemProps extends InlineItemBaseProps {
     item: ButtonGroupItemProps;
-    prepareItem: PrepareItemFunc;
     form?: FormInstance<any>;
 }
 const InlineItem: FC<InlineItemProps> = (props) => {
-    const { item, uuid, getIsVisible, appContext, prepareItem, form } = props;
+    const { item, uuid, getIsVisible, appContext, form } = props;
 
     if (isGroup(item)) {
-        const menuItems = item.childItems.map(x => prepareItem(x, item.readOnly))
+        const menuItems = item.childItems
             .filter(item => (getIsVisible(item)))
-            .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, prepareItem, form)));
+            .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
         return (
             <Dropdown
                 key={uuid}
@@ -153,7 +147,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
-export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, disabled, form }) => {
+export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, form }) => {
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -193,20 +187,9 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
 
-    const prepareItem: PrepareItemFunc = (item, parentReadOnly) => {
-        if (item.editMode === undefined)
-            item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
-        const result = getActualModel(item, allData, parentReadOnly);
-        return { ...result };
-    };
+    const filteredItems = items?.filter(getIsVisible);
 
-    const actualItems = useDeepCompareMemo(() =>
-        items?.map((item) => prepareItem(item, disabled))
-        , [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
-
-    const filteredItems = actualItems?.filter(getIsVisible);
-
-    if (actualItems.length === 0 && isDesignMode)
+    if (items.length === 0 && isDesignMode)
         return (
             <Alert
                 className="sha-designer-warning"
@@ -220,13 +203,13 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
             <Button.Group size={size}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
-                        (<InlineItem item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
+                        (<InlineItem item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)
                     )}
                 </Space>
             </Button.Group>
         );
     } else {
-        const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
+        const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, form));
         return (
             <div className={styles.shaResponsiveButtonGroupContainer}>
                 <Menu

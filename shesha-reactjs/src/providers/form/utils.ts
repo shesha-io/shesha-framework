@@ -15,7 +15,7 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
-import { getFullPath } from '@/utils/metadata';
+import { getFullPath } from '@/utils/metadata/helpers';
 import { IAnyObject } from './../../interfaces/anyObject';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
@@ -139,6 +139,13 @@ export type AvailableConstantsContext = {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+
+export const toBase64 = file => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result as string);
+  reader.onerror = reject;
+});
 
 export function executeScript<TResult = any>(
   expression: string,
@@ -295,54 +302,69 @@ export const useApplicationContextData = (): ContextGetData => {
   return application?.getData();
 };
 
-const getSettingValue = (value: any, allData: any, calcFunction: (setting: IPropertySetting, allData: any) => any) => {
-  if (!value) return value;
+const getSettingValue = (
+  propertyName,
+  value: any,
+  allData: any,
+  calcFunction: (setting: IPropertySetting, allData: any) => any,
+  parentReadOnly: boolean = undefined, 
+  propertyFilter?: (name: string) => boolean,
+  processedObjects?: any[]
+) => {
+  if (!processedObjects)
+    processedObjects = [];
 
-  if (typeof value === 'object') {
+  if (!value || typeof propertyFilter === 'function' && !propertyFilter(propertyName))
+    return value;
+
+  if (typeof value === 'object'
+    && processedObjects.indexOf(value) === -1 // skip already processed objects to avoid infinite loop
+  ) {
     // If array - update all items
     if (Array.isArray(value)) {
-      return value;
-      // TODO: infinity loop
-      /*
-      if (value.length === 0) return value;
-      const v = value.map((x) => {
-        return getActualModel(x, allData);
-      });
+      const v = value.length === 0
+        ? value
+        : value.map((x) => {
+            /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
+            return getActualModel(x, allData, parentReadOnly, propertyFilter, processedObjects);
+          });
+      processedObjects.push(v);
       return v;
-      */
     }
 
     // update setting value to actual
     if (isPropertySettings(value)) {
-      switch (value._mode) {
-        case 'code': {
-          return Boolean(value._code) ? calcFunction(value, allData) : undefined;
-        }
-        case 'value':
-          return value._value;
-      }
+      const v = value._mode === 'code'
+        ? Boolean(value._code) ? calcFunction(value, allData) : undefined
+        : value._mode === 'value'
+          ? value._value
+          : undefined;
+      processedObjects.push(v);
+      return v;
     }
 
     // update nested objects
     /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
-    return getActualModel(value, allData);
-  }
+    const v = getActualModel(value, allData, parentReadOnly, propertyFilter, processedObjects);
+    processedObjects.push(v);
+    return v;
+}
   return value;
 };
 
 const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting, allData: any) => Function) => {
-  return getSettingValue(val, allData, calcValue);
+  return getSettingValue('', val, allData, calcValue);
 };
 
 const calcValue = (setting: IPropertySetting, allData: any) => {
-  const getSettingValue = (val: any) => getValue(val, allData, calcValue);
+  const getSettingValueInScript = (val: any) => getValue(val, allData, calcValue);
   try {
     if (allData.addAccessor && allData instanceof TouchableProxy) {
       allData.addAccessor('staticValue', () => setting?._value);
-      allData.addAccessor('getSettingValue', () => getSettingValue);
+      allData.addAccessor('getSettingValue', () => getSettingValueInScript);
     } else {
       allData.staticValue = setting?._value;
-      allData.getSettingValue = getSettingValue;
+      allData.getSettingValue = getSettingValueInScript;
     }
     const res = executeScriptSync(setting?._code, allData);
     return res;
@@ -361,13 +383,6 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
   );
 };
 
-export const toBase64 = file => new Promise<string>((resolve, reject) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result as string);
-  reader.onerror = reject;
-});
-
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
  *
@@ -375,11 +390,27 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
+export const getActualModel = <T>(
+  model: T,
+  allData: any,
+  parentReadOnly: boolean = undefined,
+  propertyFilter?: (name: string) => boolean,
+  processedObjects?: any[]
+): T => {
+  if (!processedObjects)
+    processedObjects = [];
+
+  if (Array.isArray(model)) {
+    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processedObjects);
+  }
+
+  if (typeof model !== 'object' || model === null || model === undefined)
+    return model;
+
   const m = {} as T;
   for (var propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
-    m[propName] = getSettingValue(model[propName], allData, calcValue);
+    m[propName] = getSettingValue(propName, model[propName], allData, calcValue, parentReadOnly, propertyFilter, processedObjects);
   }
 
   const readOnly = typeof parentReadOnly === 'undefined' ? allData?.formMode === 'readonly' : parentReadOnly;
@@ -395,21 +426,12 @@ export const isCommonContext = (name: string): boolean => {
   return r.filter(i => i === name)?.length > 0;
 };
 
-export const getActualModelWithParent = <T>(
-  model: T,
-  allData: any,
-  parent: IParentProviderProps
-): T => {
-  const parentReadOnly =
-    allData.form?.formMode !== 'designer'
-    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
-
-  const actualModel = getActualModel(model, allData, parentReadOnly);
-  return actualModel;
-};
+export const getParentReadOnly = (parent: IParentProviderProps, allData: any): boolean => 
+  allData.form?.formMode !== 'designer'
+  && (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
-  return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
+  return { ...model, [propertyName]: getSettingValue(propertyName, model[propertyName], allData, calcValue) } as T;
 };
 
 //const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');

@@ -11,12 +11,11 @@ export interface IButtonGroupListItemProps {
   index: number[];
   nestedRenderer?: (args: NestedItemsRenderingArgs<ButtonGroupItemProps>) => React.ReactNode | null;
   initNewItem: (items: ButtonGroupItemProps[]) => ButtonGroupItemProps;
-  actualModelContext?: any;
 }
 
-export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onChange, index, nestedRenderer, initNewItem, actualModelContext }) => {
+export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onChange, index, nestedRenderer, initNewItem }) => {
   if (isItem(item))
-    return <ButtonGroupItem key={item.id} item={item} actualModelContext={actualModelContext} />;
+    return <ButtonGroupItem key={item.id} item={item} />;
 
   if (isGroup(item))
     return (
@@ -30,8 +29,7 @@ export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onCha
             ...args,
             initNewItem: initNewItem,
           });
-        }}
-        actualModelContext={actualModelContext}
+        }}        
       />
     );
 

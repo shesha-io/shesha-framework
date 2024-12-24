@@ -1,20 +1,25 @@
-import React, { FC, MutableRefObject, useRef } from 'react';
-import { IApplicationContext, getActualModelWithParent, useAvailableConstantsContexts, wrapConstantsData } from '@/providers/form/utils';
-import { IConfigurableFormComponent } from '@/interfaces';
-import { useParent } from '@/providers/parentProvider/index';
+import React, { FC, MutableRefObject } from 'react';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { useCanvas, useForm, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
-import { TouchableProxy, makeTouchableProxy } from '@/providers/form/touchableProxy';
-import { isEqual } from '@/hooks/useDeepCompareEffect';
-import { TypedProxy } from '@/providers/form/observableProxy';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
 }
+
+// skip some properties by default
+// nested components will be handled by their own FormComponent
+// action configuration details will be handled by their own FormComponent
+const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string) => {
+  return (component.actualModelPropertyFilter ? component.actualModelPropertyFilter(name) : true)
+    && propertiesToSkip.indexOf(name) === -1;
+};
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   const formInstance = useForm();
@@ -23,41 +28,14 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const fullContext = useAvailableConstantsContexts();
-  const accessors = wrapConstantsData({ fullContext });
-  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
-  if (!contextProxyRef.current)
-    contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
-  else
-    contextProxyRef.current.refreshAccessors(accessors);
-
-  const proxy = contextProxyRef.current as any as TouchableProxy<IApplicationContext<any>>;
-  const allData = contextProxyRef.current as any as IApplicationContext<any>;
-  
-  const actualModelRef = useRef<IConfigurableFormComponent>(componentModel);
-
-  const parent = useParent(false);
-
-  const prevModel = useRef<IConfigurableFormComponent>();
-
   const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-      ? { ...componentModel, ...componentModel?.[activeDevice] }
-      : componentModel;
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
+    : componentModel;
 
-  if (proxy.changed || !isEqual(prevModel.current, deviceModel)) {
-    console.log('calc ActualModel: ', deviceModel);
+  const toolboxComponent = getToolboxComponent(componentModel.type);
 
-    actualModelRef.current = getActualModelWithParent(
-      { ...deviceModel, editMode: typeof deviceModel.editMode === 'undefined' ? undefined : deviceModel.editMode }, // add editMode property if not exists
-      allData, parent
-    );
-  }
+  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name));
 
-  prevModel.current = {...deviceModel};
-
-  const actualModel = actualModelRef.current;
-
-  const toolboxComponent = getToolboxComponent(actualModel.type);
   if (!toolboxComponent) 
     return <ComponentError errors={{
         hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type
