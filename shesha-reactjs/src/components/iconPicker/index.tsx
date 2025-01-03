@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { FC, forwardRef, ReactNode, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
 import ShaIcon from '@/components/shaIcon';
@@ -49,6 +49,7 @@ export interface IIconPickerProps extends IconBaseProps {
   twoToneColor?: string;
 
   defaultValue?: ShaIconTypes;
+
 }
 
 interface IOption {
@@ -59,14 +60,14 @@ interface IOption {
 /**
  * A component for selecting icons, usually for form
  */
-const IconPicker: FC<IIconPickerProps> = ({
+const IconPicker = forwardRef(({
   selectBtnSize = 'middle',
   value,
   onIconChange,
   readOnly = false,
   defaultValue,
   ...props
-}) => {
+}: IIconPickerProps, ref) => {
   const { styles } = useStyles();
   const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(defaultValue);
   const [showModal, setShowModal] = useState(false);
@@ -112,6 +113,10 @@ const IconPicker: FC<IIconPickerProps> = ({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    toggleModalVisibility,
+  }));
+
   const memoizedActiveGroup = useMemo(() => {
     if (searchQuery) {
       const activeGroup = searchOption?.group;
@@ -134,7 +139,6 @@ const IconPicker: FC<IIconPickerProps> = ({
       <div>
         {localSelectedIcon ? (
           <span
-            onClick={toggleModalVisibility}
             className={classNames(styles.shaIconPickerSelectedIcon, { 'sha-readonly': readOnly })}
           >
             <ShaIcon
@@ -208,6 +212,6 @@ const IconPicker: FC<IIconPickerProps> = ({
       </Modal>
     </div>
   );
-};
+});
 
 export default IconPicker;
