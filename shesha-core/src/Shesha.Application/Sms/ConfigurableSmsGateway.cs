@@ -1,4 +1,5 @@
 ﻿using Abp.Configuration;
+using Shesha.Notifications.Dto;
 using System;
 using System.Threading.Tasks;
 
@@ -36,7 +37,7 @@ namespace Shesha.Sms
         /// <param name="mobileNumber"></param>
         /// <param name="body"></param>
         /// <returns></returns>
-        public abstract Task SendSmsAsync(string mobileNumber, string body);
+        public abstract Task<SendStatus> SendSmsAsync(string mobileNumber, string body);
 
         /// <summary>
         /// Set gateway settings

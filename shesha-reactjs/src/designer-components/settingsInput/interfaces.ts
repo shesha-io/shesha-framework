@@ -4,21 +4,21 @@ import { ResultType } from '@/components/codeEditor/models';
 import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 
-interface IRadioOption {
+export interface IRadioOption {
     value: string | number;
     icon?: string | React.ReactNode;
     title?: string;
 }
 
-interface IDropdownOption {
+export interface IDropdownOption {
     label: string | React.ReactNode;
     value: string;
 }
 
-interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'dynamicItemsConfigurator'
+export interface InputType {
+    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig';
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
@@ -45,7 +45,12 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     fileName?: string;
     availableConstantsExpression?: string;
     resultType?: ResultType;
+    labelTitle?: string;
+    labelName?: string;
+    valueTitle?: string;
+    valueName?: string;
     value?: any;
+    mode?: any;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
     allowClear?: boolean;

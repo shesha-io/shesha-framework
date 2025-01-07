@@ -10,7 +10,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Execute.Sql(@"delete from ""Frwk_PermissionedObjects"" where ""AccessLkp"" = 2 and ""type"" like 'Shesha.WebApi%'");
+            Execute.Sql(@"delete from ""Frwk_PermissionedObjects"" where ""AccessLkp"" = 2 and ""Type"" like 'Shesha.WebApi%'");
 
             Alter.Table("Frwk_PermissionedObjects").AddColumn("Hardcoded").AsBoolean().Nullable();
         }

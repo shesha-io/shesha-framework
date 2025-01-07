@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
@@ -36,11 +36,20 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
 
-    const iconElement = (icon, size?, hint?) => {
-        return icons[icon] ? <ShaIcon iconName={icon as IconType} /> : customIcons[icon] ? <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}>{customIcons[icon]}</Tooltip> : icon === 'sectionSeparator' ?
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
-                <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
-            </div> : icon;
+    const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
+
+        if (typeof icon === 'string') {
+            return icons[icon] ?
+                <ShaIcon iconName={icon as IconType} style={style} /> :
+                customIcons[icon] ?
+                    <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
+                    : icon === 'sectionSeparator' ?
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
+                            <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
+                        </div> : icon;
+        }
+
+        return icon;
     };
 
     const allData = useAvailableConstantsData();
@@ -154,6 +163,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'editableTagGroupProps':
+            return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
             return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':
@@ -165,6 +176,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 value={value}
                 onChange={onChange}
             />;
+        case 'labelValueEditor': 
+         return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':

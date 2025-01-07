@@ -1,9 +1,11 @@
 ﻿using Castle.Core.Logging;
 using Shesha.Attributes;
+using Shesha.Notifications.Dto;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -31,93 +33,55 @@ namespace Shesha.Sms.Clickatell
         /// <param name="mobileNumber">Mobile number to send message to. Must be a South African number.</param>
         /// <param name="body">Message to be sent.</param>
         /// <returns>Returns true if message was accepted by the gateway, else returns false.</returns>
-        public override async Task SendSmsAsync(string mobileNumber, string body)
+        public override async Task<SendStatus> SendSmsAsync(string mobileNumber, string body)
         {
-            if (string.IsNullOrEmpty(mobileNumber))
-                throw new Exception("Can't send message, mobile number is empty");
+            var settings = await _settings.ClickatellGateway.GetValueAsync();
 
-            if (string.IsNullOrEmpty(body))
-                throw new Exception("Can't send empty message");
+            // Send SMS API logic here
+            using var httpClient = new HttpClient();
 
-            // Removing any spaces and any other common characters in a phone number.
-            mobileNumber = MobileHelper.CleanupmobileNo(mobileNumber);
+            // Build the request URL
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["api_id"] = settings.ApiId;
+            query["user"] = settings.Username;
+            query["password"] = settings.Password;
+            query["to"] = MobileHelper.CleanupMobileNo(mobileNumber);
+            query["text"] = HttpUtility.UrlEncode(body);
 
-            var gatewaySettings = await _settings.ClickatellGateway.GetValueAsync();
+            var url = $"https://api.clickatell.com/http/sendmsg?{query}";
 
-            var sb = new StringBuilder();
-            sb.Append("https://" + gatewaySettings.Host + "/http/sendmsg?api_id=");
-            sb.Append(gatewaySettings.ApiId);
-            sb.Append("&user=");
-            sb.Append(gatewaySettings.Username);
-            sb.Append("&password=");
-            sb.Append(gatewaySettings.Password);
-            sb.Append("&to=");
-            sb.Append(mobileNumber);
-            sb.Append("&text=");
-            sb.Append(HttpUtility.UrlEncode(body));
-
-            if (body.Length > gatewaySettings.SingleMessageMaxLength)
+            try
             {
-                var splitCount = body.Length / gatewaySettings.MessagePartLength;
-                if (splitCount * gatewaySettings.MessagePartLength < body.Length)
-                    splitCount++;
+                // Send the GET request
+                var response = await httpClient.GetAsync(url);
 
-                sb.Append("&concat=" + splitCount);
-            }
+                var responseContent = await response.Content.ReadAsStringAsync();
 
-            Logger.InfoFormat("Sending SMS to {0}: {1}", mobileNumber, body);
-
-            string response = await DownloadUrlAsync(sb.ToString(), gatewaySettings);
-
-            // If response format is 'ID: XXXXXXXXXXXXXXXX' where XXXXXXXXXXXXXX is a message id then request has been successful.
-            if (!response.StartsWith("ID:"))
-            {
-                var exceptionMessage = $"Could not send SMS to {mobileNumber}. Response: {response}";
-                Logger.ErrorFormat(exceptionMessage);
-
-                throw new Exception("Could not send SMS to " + mobileNumber + ". Please contact system administrator", new Exception(response));
-            }
-
-            Logger.InfoFormat("SMS successfully sent, response: {0}", response);
-        }
-
-        public async Task<string> DownloadUrlAsync(string url, GatewaySettings gatewaySettings)
-        {
-            #pragma warning disable SYSLIB0014
-            var request = WebRequest.Create(url); // todo: replace with HttpClient
-            #pragma warning restore SYSLIB0014
-
-            if (gatewaySettings.UseProxy)
-            {
-                var proxy = new WebProxy
+                if (response.IsSuccessStatusCode && responseContent.StartsWith("ID"))
                 {
-                    Address = new Uri(gatewaySettings.WebProxyAddress)
+                    Logger.InfoFormat("SMS successfully sent, response: {0}", response);
+                    return new SendStatus()
+                    {
+                        IsSuccess = true,
+                        Message = "SMS Successfully Sent!"
+                    };
+                }
+
+                Logger.ErrorFormat($"Failed to send SMS. Response: {responseContent}");
+                return new SendStatus()
+                {
+                    IsSuccess = false,
+                    Message = $"Failed to send SMS. Response: {responseContent}"
                 };
-                request.Proxy = proxy;
-
-                if (gatewaySettings.UseDefaultProxyCredentials)
-                {
-                    proxy.Credentials = CredentialCache.DefaultCredentials;
-                    proxy.UseDefaultCredentials = true;
-                }
-                else
-                {
-                    proxy.Credentials = new NetworkCredential(gatewaySettings.WebProxyUsername, gatewaySettings.WebProxyPassword);
-                }
             }
-
-            using (var response = await request.GetResponseAsync())
+            catch (Exception ex)
             {
-                await using (var receiveStream = response.GetResponseStream())
+                Logger.ErrorFormat($"An error occurred: {ex.Message}");
+                return new SendStatus()
                 {
-                    if (receiveStream == null)
-                        return null;
-
-                    var readStream = new StreamReader(receiveStream, Encoding.GetEncoding("utf-8"));
-                    var strResponse = await readStream.ReadToEndAsync();
-
-                    return strResponse;
-                }
+                    IsSuccess = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
 
