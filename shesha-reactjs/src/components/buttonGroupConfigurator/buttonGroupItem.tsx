@@ -118,7 +118,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
             size={size}
             block={block}
             disabled={readOnly}
-            style={{ ...newStyles, pointerEvents: "none" }}
+            style={{ ...newStyles }}
           >
             {label}
           </Button>

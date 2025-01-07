@@ -6,19 +6,19 @@ import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
 export interface IStandardApisProps {
-    
+
 }
 
 const StandardApisItems: ButtonGroupItemProps[] = [
-    { id: 'r1', name: 'http', label: 'Http client', itemType: 'item', itemSubType: 'button', sortOrder: 0 },
-    { id: 'r2', name: 'message', label: 'message', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
-    { id: 'r3', name: 'moment', label: 'moment', itemType: 'item', itemSubType: 'button', sortOrder: 2 },
+    { id: 'r1', name: 'http', label: 'Http client', itemType: 'item', itemSubType: 'button', sortOrder: 0, type: '' },
+    { id: 'r2', name: 'message', label: 'message', itemType: 'item', itemSubType: 'button', sortOrder: 1, type: '' },
+    { id: 'r3', name: 'moment', label: 'moment', itemType: 'item', itemSubType: 'button', sortOrder: 2, type: '' },
 ];
 
 const useStandardApis: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
     const { item } = args;
-    
+
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         // if (!isEntityMetadata(metadata))
         //     return [];
@@ -34,7 +34,7 @@ const standardApisHoc: DynamicRenderingHoc = (WrappedComponent) => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return StandardApisItems;
         }, []);
-    
+
         return (<WrappedComponent {...props} items={testItems} />);
     };
 };

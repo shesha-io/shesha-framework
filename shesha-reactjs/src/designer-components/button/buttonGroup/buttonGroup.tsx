@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -38,7 +38,7 @@ import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/u
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
+import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -51,7 +51,6 @@ type MenuButton = ButtonGroupItemProps & {
 const renderButton = (props: ButtonGroupItemProps, uuid: string, appContext: IApplicationContext, form?: FormInstance<any>) => {
 
     const { size, buttonType } = props;
-
 
     return (
         <ConfigurableButton
@@ -192,60 +191,70 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
 
-    const prepareItem: PrepareItemFunc = (item, parentReadOnly) => {
+    const prepareItem: PrepareItemFunc = useCallback((item, parentReadOnly) => {
         if (item.editMode === undefined)
             item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
         const result = getActualModel(item, allData, parentReadOnly);
         return { ...result };
-    };
+    }, [allData]);
 
-    const actualItems = useDeepCompareMemo(() =>
-        items?.map((item) => {
+    const actualItems = useDeepCompareMemo(() => {
+        return items?.map((item) => {
             const model = { ...item, type: '' };
             const jsStyle = getStyle(model.style);
             const dimensions = migratePrevStyles(model, initialValues()).dimensions;
             const border = migratePrevStyles(model, initialValues())?.border;
             const font = migratePrevStyles(model, initialValues())?.font;
             const shadow = migratePrevStyles(model, initialValues())?.shadow;
-            const background = migratePrevStyles(model, initialValues())?.background;
 
             const dimensionsStyles = getSizeStyle(dimensions);
-            const borderStyles = getBorderStyle(border, jsStyle);;
+            const borderStyles = getBorderStyle(border, jsStyle);
             const fontStyles = getFontStyle(font);
             const shadowStyles = getShadowStyle(shadow);
-            let backgroundStyles = {};
-
-
-            const fetchStyles = async () => {
-                const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-                    ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-                        { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-                        .then((response) => {
-                            return response.blob();
-                        })
-                        .then((blob) => {
-                            return URL.createObjectURL(blob);
-                        }) : '';
-
-                const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-                backgroundStyles = style;
-            };
-
-            fetchStyles();
 
             const newStyles = {
                 ...dimensionsStyles,
                 ...borderStyles,
                 ...fontStyles,
-                ...backgroundStyles,
                 ...shadowStyles,
-                ...jsStyle
+                ...jsStyle,
             };
-            return prepareItem({ ...item, styles: newStyles }, disabled);
-        })
-        , [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
-    const filteredItems = actualItems?.filter(getIsVisible);
+            return prepareItem({ ...item, styles: newStyles }, disabled);
+        });
+    }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+
+    // State to store updated items with background styles
+    const [finalItems, setFinalItems] = useState(actualItems);
+
+    useEffect(() => {
+        const fetchBackgroundStyles = async () => {
+            const updatedItems = await Promise.all(
+                actualItems.map(async (item) => {
+                    const background = migratePrevStyles(item, initialValues())?.background;
+
+                    // Fetch background style asynchronously
+                    const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+                    
+                    const backgroundStyle = getBackgroundStyle(background, getStyle(item.style), storedImageUrl);
+
+                    const updatedStyles = {
+                        ...item.styles,
+                        ...backgroundStyle,
+                    };
+
+                    return prepareItem({ ...item, styles: updatedStyles }, disabled);
+                })
+            );
+
+            // Update state with the fully prepared items
+            setFinalItems(updatedItems);
+        };
+
+        fetchBackgroundStyles();
+    }, [actualItems, backendUrl, disabled, httpHeaders, prepareItem]);
+
+    const filteredItems = finalItems?.filter(getIsVisible);
 
     if (actualItems.length === 0 && isDesignMode)
         return (
@@ -255,6 +264,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
                 type="warning"
             />
         );
+
 
     if (isInline) {
         return (

@@ -7,18 +7,18 @@ import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
 export interface IReportingActionsProps {
-    
+
 }
 
 const ReportTestItems: ButtonGroupItemProps[] = [
-    { id: 'r1', name: 'btn1', label: 'report item 1', itemType: 'item', itemSubType: 'button', sortOrder: 0 },
-    { id: 'r2', name: 'btn2', label: 'report item 2', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
-    { id: 'r3', name: 'btn3', label: 'report item 3', itemType: 'item', itemSubType: 'button', sortOrder: 2 },
+    { id: 'r1', name: 'btn1', label: 'report item 1', itemType: 'item', itemSubType: 'button', sortOrder: 0, type: '' },
+    { id: 'r2', name: 'btn2', label: 'report item 2', itemType: 'item', itemSubType: 'button', sortOrder: 1, type: '' },
+    { id: 'r3', name: 'btn3', label: 'report item 3', itemType: 'item', itemSubType: 'button', sortOrder: 2, type: '' },
 ];
 
 const useReportingActions: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
-    
+
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         if (!isEntityMetadata(metadata))
             return [];
@@ -34,8 +34,8 @@ const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return ReportTestItems;
         }, []);
-    
-        return (<WrappedComponent {...props} items={testItems} hocType={'report'}/>);
+
+        return (<WrappedComponent {...props} items={testItems} hocType={'report'} />);
     };
 };
 
