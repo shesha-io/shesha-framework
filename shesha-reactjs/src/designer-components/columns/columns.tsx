@@ -8,7 +8,6 @@ import { IFormComponentContainer, useFormData, useGlobalState, useSheshaApplicat
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { removeUndefinedProps } from '@/utils/object';
-import { nanoid } from '@/utils/uuid';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
@@ -105,16 +104,11 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     );
   },
   initModel: (model) => {
+    const { background, font, dimensions, ...rest } = defaultStyles();
     const tabsModel: IColumnsComponentProps = {
       ...model,
       propertyName: 'Custom Name',
-      columns: [
-        { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
-        { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
-      ],
-      gutterX: 12,
-      gutterY: 12,
-      stylingBox: "{\"marginBottom\":\"5\"}"
+      ...rest,
     };
 
     return tabsModel;
