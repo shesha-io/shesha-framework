@@ -141,7 +141,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
           columns
         };
       })
-      .add<IColumnsComponentProps>(5, (prev) => {
+      .add<IColumnsComponentProps>(4, (prev) => {
         const styles: IColumnsInputProps = {
           size: prev.size,
           width: prev.width,
@@ -155,7 +155,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IColumnsComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IColumnsComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   settingsFormMarkup: (data) => getSettings(data),
   customContainerNames: ['columns'],
   getContainers: (model) => {
