@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
@@ -158,6 +158,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'editableTagGroupProps':
+            return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
             return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':
