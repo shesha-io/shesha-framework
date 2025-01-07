@@ -2,7 +2,7 @@
 {
     internal static class MobileHelper
     {
-        public static string CleanupmobileNo(string mobileNumber)
+        public static string CleanupMobileNo(string mobileNumber)
         {
             // Removing any spaces and any other common characters in a phone number.
             mobileNumber = mobileNumber.Replace(" ", "");
