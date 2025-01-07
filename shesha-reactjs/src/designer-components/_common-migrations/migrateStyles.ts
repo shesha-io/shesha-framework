@@ -22,7 +22,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
             size: prevStyles?.size,
             border: {
                 ...prev?.border,
-                hideBorder: prevStyles?.hideBorder,
+                hideBorder: prevStyles?.hideBorder || false,
                 selectedCorner: 'all',
                 selectedSide: 'all',
                 border: {

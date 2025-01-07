@@ -11,6 +11,7 @@ export interface IToolbarSettingsModal {
   value?: ButtonGroupItemProps[];
   onChange?: (newValue: ButtonGroupItemProps[]) => void;
   title?: ReactNode | string;
+  size?: SizeType;
 }
 
 interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
