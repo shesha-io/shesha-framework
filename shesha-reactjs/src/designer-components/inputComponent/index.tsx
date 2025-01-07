@@ -26,6 +26,7 @@ import { SettingInput } from '../settingsInput/settingsInput';
 import { getValueFromString } from '../settingsInput/utils';
 import { customIcons } from './icons';
 import { useStyles } from './styles';
+import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -145,6 +146,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
+        case 'buttonGroupConfigurator':
+            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+        case 'dynamicItemsConfigurator':
+            <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}

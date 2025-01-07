@@ -9,6 +9,7 @@ import { useStyles } from '@/designer-components/_common/styles/listConfigurator
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
 import { useAvailableConstantsData } from '@/providers/form/utils';
+import { initialValues } from './utils';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -31,6 +32,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 
       const group: IButtonGroup = {
         id: nanoid(),
+        type: '',
         itemType: 'group',
         sortOrder: itemsCount,
         name: `group${itemNo}`,
@@ -81,7 +83,9 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       label: `Button ${itemNo}`,
       itemSubType: 'button',
       buttonType: 'link',
-      editMode: 'inherited'
+      editMode: 'inherited',
+      type: '',
+      ...initialValues()
     };
 
     return newItem;
@@ -95,7 +99,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       readOnly={readOnly}
       header={<Alert message={readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'} />}
       itemProperties={(itemProps) => (<ButtonGroupProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
-      groupHeader={ButtonGroupEditorHeader}      
+      groupHeader={ButtonGroupEditorHeader}
     >
       {({ item, itemOnChange, index, nestedRenderer }) => (
         <ButtonGroupListItem
