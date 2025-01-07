@@ -145,14 +145,14 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       })
       .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ILinkProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-      .add<ILinkProps>(5, (prev) => {
+      .add<ILinkProps>(4, (prev) => {
         const styles: IInputStyles = {
           style: prev.style,
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
+      })
+      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };
 
 export default LinkComponent;
