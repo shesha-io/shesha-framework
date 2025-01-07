@@ -32,6 +32,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 
       const group: IButtonGroup = {
         id: nanoid(),
+        type: '',
         itemType: 'group',
         sortOrder: itemsCount,
         name: `group${itemNo}`,
@@ -83,6 +84,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
       itemSubType: 'button',
       buttonType: 'link',
       editMode: 'inherited',
+      type: '',
       ...initialValues()
     };
 

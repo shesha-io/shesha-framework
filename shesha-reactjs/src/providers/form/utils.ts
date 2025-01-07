@@ -286,7 +286,6 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
 };
 
 const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting, allData: any) => Function) => {
-  console.log("Value::", val);
   return getSettingValue(val, allData, calcValue);
 };
 

@@ -197,24 +197,15 @@ export const getItemSettings = (data) => {
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInputRow({
+                                .addSettingsInput({
                                     id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                    readOnly: false,
-                                    hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
-                                        _mode: 'code',
-                                        _value: false
+                                    propertyName: 'buttonType',
+                                    label: 'Type',
+                                    validate: {
+                                        required: true,
                                     },
-                                    inputs: [{
-                                        id: 'buttonType-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'buttonType',
-                                        label: 'Type',
-                                        validate: {
-                                            required: true,
-                                        },
-                                        type: 'dropdown',
-                                        dropdownOptions: buttonTypes
-                                    }],
+                                    inputType: 'dropdown',
+                                    dropdownOptions: buttonTypes,
                                 })
                                 .addCollapsiblePanel({
                                     id: 'fontStyleCollapsiblePanel',
@@ -224,11 +215,6 @@ export const getItemSettings = (data) => {
                                     parentId: 'styleRouter',
                                     ghost: true,
                                     collapsible: 'header',
-                                    hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
-                                        _mode: 'code',
-                                        _value: false
-                                    },
                                     content: {
                                         id: 'fontStylePnl',
                                         components: [...new DesignerToolbarSettings()
@@ -295,11 +281,6 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     collapsible: 'header',
-                                    hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
-                                        _mode: 'code',
-                                        _value: false
-                                    },
                                     content: {
                                         id: 'dimensionsStylePnl',
                                         components: [...new DesignerToolbarSettings()
@@ -398,7 +379,7 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) !== "button" || ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -407,7 +388,7 @@ export const getItemSettings = (data) => {
                                             .addSettingsInputRow({
                                                 id: `borderStyleRow`,
                                                 parentId: 'borderStylePnl',
-                                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                hidden: { _code: 'return  !getSettingValue(data.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
@@ -423,34 +404,34 @@ export const getItemSettings = (data) => {
                                                 ]
                                             })
                                             .addSettingsInputRow(
-                                                getBorderInputs()[0] as any
+                                                getBorderInputs(false)[0] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs()[1] as any
+                                                getBorderInputs(false)[1] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs()[2] as any
+                                                getBorderInputs(false)[2] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs()[3] as any
+                                                getBorderInputs(false)[3] as any
                                             )
                                             .addSettingsInputRow(
-                                                getBorderInputs()[4] as any
+                                                getBorderInputs(false)[4] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs()[0] as any
+                                                getCornerInputs(false)[0] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs()[1] as any
+                                                getCornerInputs(false)[1] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs()[2] as any
+                                                getCornerInputs(false)[2] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs()[3] as any
+                                                getCornerInputs(false)[3] as any
                                             )
                                             .addSettingsInputRow(
-                                                getCornerInputs()[4] as any
+                                                getCornerInputs(false)[4] as any
                                             )
                                             .toJson()
                                         ]
@@ -462,7 +443,7 @@ export const getItemSettings = (data) => {
                                     label: 'Background',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) !== "button" || ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -491,7 +472,7 @@ export const getItemSettings = (data) => {
                                                         hideLabel: true,
                                                         jsSetting: false,
                                                     }],
-                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "color";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
@@ -505,7 +486,7 @@ export const getItemSettings = (data) => {
                                                         jsSetting: false,
                                                     }
                                                     ],
-                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                     hideLabel: true,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
@@ -519,7 +500,7 @@ export const getItemSettings = (data) => {
                                                         jsSetting: false,
                                                         label: "URL",
                                                     }],
-                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "url";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
@@ -532,13 +513,13 @@ export const getItemSettings = (data) => {
                                                         label: "Image",
                                                         jsSetting: false,
                                                     }],
-                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "image";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-storedFile",
                                                     parentId: 'backgroundStylePnl',
-                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {
@@ -592,7 +573,7 @@ export const getItemSettings = (data) => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  getSettingValue(data?.itemSubType) !== "button" || ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -662,11 +643,6 @@ export const getItemSettings = (data) => {
                                     propertyName: 'stylingBox',
                                     label: 'Margin & Padding',
                                     labelAlign: 'right',
-                                    hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
-                                        _mode: 'code',
-                                        _value: false
-                                    },
                                     ghost: true,
                                     collapsible: 'header',
                                     content: {
@@ -688,11 +664,6 @@ export const getItemSettings = (data) => {
                                     label: 'Custom Style',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
-                                        _mode: 'code',
-                                        _value: false
-                                    },
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
@@ -711,44 +682,7 @@ export const getItemSettings = (data) => {
                                         ]
                                     }
                                 })
-                                .addSettingsInputRow({
-                                    id: 'separatorStyleRow',
-                                    parentId: 'button-styles-container',
-                                    readOnly: false,
-                                    hidden: {
-                                        _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
-                                        _mode: 'code',
-                                        _value: false
-                                    },
-                                    inputs: [
-                                        {
-                                            type: 'text',
-                                            id: 'separatorStyleRowWidth',
-                                            label: "Width",
-                                            width: 85,
-                                            propertyName: "separator.width",
-                                            icon: "widthIcon",
-                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                        },
-                                        {
-                                            type: 'text',
-                                            id: 'separatorStyleRowHeight',
-                                            label: "Thickness",
-                                            width: 85,
-                                            propertyName: "separator.height",
-                                            icon: "heightIcon",
-                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                        },
-                                        {
-                                            type: 'color',
-                                            id: 'separatorStyleRowColor',
-                                            label: "Color",
-                                            propertyName: "separator.color",
-                                            icon: "colorIcon",
-                                        }
-                                    ]
-                                }).toJson()
-                        ]
+                                .toJson()]
                     },
                     {
                         key: '3',

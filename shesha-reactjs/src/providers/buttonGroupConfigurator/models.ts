@@ -25,6 +25,7 @@ export type ButtonActionType =
 
 export interface IButtonGroupItemBase extends IStyleType {
   id: string;
+  type: string;
   name: string;
   block?: boolean;
   label?: string | React.ReactNode;

@@ -59,8 +59,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     borderWidth: addPx(borderWidth),
     borderColor: borderColor,
     borderStyle: borderStyle,
-    borderRadius: addPx(borderRadius),
-    border: { selectedSide: 'all', border: { all: { width: borderWidth, color: borderColor, style: borderStyle } } }
+    borderRadius: addPx(borderRadius)
   };
 
   const jsStyle = getStyle(model.style);
