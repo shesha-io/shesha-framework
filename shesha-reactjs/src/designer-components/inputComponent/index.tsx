@@ -13,7 +13,7 @@ import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } fro
 import TextArea from 'antd/es/input/TextArea';
 import camelcase from 'camelcase';
 import { startCase } from 'lodash';
-import { FC, default as React, default as React, useCallback } from 'react';
+import { FC, default as React, useCallback } from 'react';
 import { defaultExposedVariables } from '../_settings/settingsControl';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import ColumnsList from '../columns/columnsList';
