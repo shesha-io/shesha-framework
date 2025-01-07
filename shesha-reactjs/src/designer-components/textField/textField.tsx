@@ -1,28 +1,28 @@
-import { CodeOutlined } from '@ant-design/icons';
-import { ConfigProvider, Input } from 'antd';
-import { InputProps } from 'antd/lib/input';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm, useGlobalState, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITextFieldComponentProps, TextType } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { useStyles } from './styles';
+import { CodeOutlined } from '@ant-design/icons';
+import { ConfigProvider, Input } from 'antd';
+import { InputProps } from 'antd/lib/input';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { getBackgroundStyle } from '../_settings/utils/background/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { ITextFieldComponentProps, TextType } from './interfaces';
 import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 
 const renderInput = (type: TextType) => {
@@ -105,7 +105,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...backgroundStyles,
       ...shadowStyles
     });
-
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
     const InputComponentType = renderInput(model.textType);

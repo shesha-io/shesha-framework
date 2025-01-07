@@ -1,8 +1,8 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
-import { CodeLanguages } from '../codeEditor/types';
 import { ResultType } from '@/components/codeEditor/models';
 import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import { CodeLanguages } from '../codeEditor/types';
 
 export interface IRadioOption {
     value: string | number;
@@ -18,8 +18,9 @@ export interface IDropdownOption {
 export interface InputType {
     type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'referenceListAutocomplete'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor';
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList' | 'labelValueEditor';
 }
+
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
     label: string;

@@ -1,30 +1,31 @@
-import React, { FC, useCallback } from 'react';
-import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
-import TextArea from 'antd/es/input/TextArea';
-import { IObjectMetadata } from '@/interfaces/metadata';
-import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
-import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
-import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
-import camelcase from 'camelcase';
+import { Autocomplete } from '@/components/autocomplete';
+import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
+import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
 import { ImagePicker } from '@/designer-components/imageUploader';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
-import { useStyles } from './styles';
-import { customIcons } from './icons';
-import { defaultExposedVariables } from '../_settings/settingsControl';
-import { getValueFromString } from '../settingsInput/utils';
-import CustomDropdown from '../_settings/utils/CustomDropdown';
-import { Autocomplete } from '@/components/autocomplete';
-import { SettingInput } from '../settingsInput/settingsInput';
-import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
+import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
+import { IObjectMetadata } from '@/interfaces/metadata';
+import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
+import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
+import TextArea from 'antd/es/input/TextArea';
+import camelcase from 'camelcase';
 import { startCase } from 'lodash';
-import { ISettingsInputProps } from '../settingsInput/interfaces';
-import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
-import { QueryBuilder } from '../queryBuilder/queryBuilder';
+import React, { FC, useCallback } from 'react';
+import { defaultExposedVariables } from '../_settings/settingsControl';
+import CustomDropdown from '../_settings/utils/CustomDropdown';
+import ColumnsList from '../columns/columnsList';
+import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
-import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
+import { QueryBuilder } from '../queryBuilder/queryBuilder';
+import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
+import { ISettingsInputProps } from '../settingsInput/interfaces';
+import { SettingInput } from '../settingsInput/settingsInput';
+import { getValueFromString } from '../settingsInput/utils';
+import { customIcons } from './icons';
+import { useStyles } from './styles';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -159,6 +160,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'columnsList':
+            return <ColumnsList {...props} readOnly={readOnly} />;
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete {...props} readOnly={readOnly} />;
         case 'propertyAutocomplete':
