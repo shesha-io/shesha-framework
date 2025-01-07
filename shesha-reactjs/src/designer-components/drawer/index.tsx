@@ -16,7 +16,7 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { defaultStyles } from './utils';
+import { defaultStyles, initialStyle } from './utils';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
@@ -26,7 +26,20 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const { size, border, background, headerBackground, style, shadow, headerShadow, headerStyle, footerStyle, footerBackground, footerShadow, ...props } = model;
+    const {
+      size,
+      border,
+      background,
+      headerBackground,
+      style,
+      shadow,
+      headerShadow,
+      headerStyle,
+      footerStyle,
+      footerBackground,
+      footerShadow,
+      ...props
+    } = model;
 
     const jsStyle = getStyle(style, data);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -117,7 +130,14 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       ...footerJsStyle,
     });
 
-    return <ShaDrawer style={additionalStyles} headerStyle={additionalHeaderStyles}  footerStyle={additionalFooterStyles} {...props} />;
+    return (
+      <ShaDrawer
+        style={additionalStyles}
+        headerStyle={additionalHeaderStyles}
+        footerStyle={additionalFooterStyles}
+        {...props}
+      />
+    );
   },
   settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) =>
@@ -145,7 +165,12 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IDrawerProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IDrawerProps>(4, (prev) => ({
+        ...migratePrevStyles(prev, defaultStyles()),
+        desktop: { ...migratePrevStyles(prev, defaultStyles()).desktop, ...initialStyle },
+        tablet: { ...migratePrevStyles(prev, defaultStyles()).tablet, ...initialStyle },
+        mobile: { ...migratePrevStyles(prev, defaultStyles()).mobile, ...initialStyle },
+      })),
   initModel: (model) => {
     const customProps: IDrawerProps = {
       ...model,
