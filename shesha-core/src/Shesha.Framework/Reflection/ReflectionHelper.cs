@@ -266,7 +266,7 @@ namespace Shesha.Reflection
         /// <returns>Returns <paramref name="type"/> if type is not a proxy class, else returns the BaseType of type.</returns>
         public static Type StripCastleProxyType(this Type type)
         {
-            var strippers = IocManager.Instance.ResolveAll<IProxyStripper>();
+            var strippers = StaticContext.IocManager.ResolveAll<IProxyStripper>();
             var currentType = type;
             foreach (var stripper in strippers) 
             {
