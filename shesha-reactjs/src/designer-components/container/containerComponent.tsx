@@ -62,7 +62,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       };
 
       fetchStyles();
-    }, [background, background.gradient.colors, backendUrl, httpHeaders, jsStyle]);
+    }, [background, backendUrl, httpHeaders, jsStyle]);
 
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
@@ -160,7 +160,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       .add<IContainerComponentProps>(6, (prev) => {
         return { ...prev, shadowStyle: 'none' };
       })
-      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { ...defaultStyles()}), }))
+      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { ...defaultStyles() }), }))
   ,
 };
 
