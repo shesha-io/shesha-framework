@@ -24,6 +24,7 @@ import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
+import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -143,6 +144,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
+        case 'buttonGroupConfigurator':
+            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+        case 'dynamicItemsConfigurator':
+            <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}
