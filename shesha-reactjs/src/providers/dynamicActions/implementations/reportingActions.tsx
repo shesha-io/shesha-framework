@@ -11,9 +11,9 @@ export interface IReportingActionsProps {
 }
 
 const ReportTestItems: ButtonGroupItemProps[] = [
-    { id: 'r1', name: 'btn1', label: 'report item 1', itemType: 'item', itemSubType: 'button', sortOrder: 0, type: '' },
-    { id: 'r2', name: 'btn2', label: 'report item 2', itemType: 'item', itemSubType: 'button', sortOrder: 1, type: '' },
-    { id: 'r3', name: 'btn3', label: 'report item 3', itemType: 'item', itemSubType: 'button', sortOrder: 2, type: '' },
+    { id: 'r1', name: 'btn1', label: 'report item 1', itemType: 'item', itemSubType: 'button', sortOrder: 0 },
+    { id: 'r2', name: 'btn2', label: 'report item 2', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
+    { id: 'r3', name: 'btn3', label: 'report item 3', itemType: 'item', itemSubType: 'button', sortOrder: 2 },
 ];
 
 const useReportingActions: DynamicItemsEvaluationHook = (args) => {
