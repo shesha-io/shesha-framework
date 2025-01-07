@@ -15,15 +15,15 @@ export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, back
         propertyName?.storedFile?.id && propertyName?.type === 'storedFile'
             ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${propertyName?.storedFile?.id}`, {
                 headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-              })
+            })
                 .then((response) => {
-                  return response.blob();
+                    return response.blob();
                 })
                 .then((blob) => {
-                  return URL.createObjectURL(blob);
+                    return URL.createObjectURL(blob);
                 })
             : ''
-    );  
+    );
 };
 
 export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
@@ -81,9 +81,9 @@ export const backgroundTypeOptions: IRadioOption[] = [
 
 export const repeatOptions: IDropdownOption[] = [
     { value: 'no-repeat', label: 'noRepeatIcon' },
-    { value: 'repeat', label: 'RepeatIcon' },
-    { value: 'repeat-x', label: 'RepeatXIcon' },
-    { value: 'repeat-y', label: 'RepeatYIcon' },
+    { value: 'repeat', label: 'repeatIcon' },
+    { value: 'repeat-x', label: 'repeatXIcon' },
+    { value: 'repeat-y', label: 'repeatYIcon' },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
