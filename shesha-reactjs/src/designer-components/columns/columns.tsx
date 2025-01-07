@@ -20,6 +20,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { IColumnsComponentProps, IColumnsInputProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { nanoid } from '@/utils/uuid';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
@@ -40,6 +41,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    console.log('border', border);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -81,34 +83,41 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });  
 
     return (
-      <Row gutter={[gutterX, gutterY]} style={{...getLayoutStyle(model, { data, globalState }), ...finalStyle}}>
-        <ParentProvider model={model}>
-          {columns &&
-            columns.map((col, index) => (
-              <Col
-                key={index}
-                md={col.flex}
-                offset={col.offset}
-                pull={col.pull}
-                push={col.push}
-                className="sha-designer-column"
-              >
-                <ComponentsContainer
-                  containerId={col.id}
-                  dynamicComponents={model?.isDynamic ? col?.components : []}
-                />
-              </Col>
-            ))}
-        </ParentProvider>
-      </Row>
+      <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
+        <Row gutter={[gutterX, gutterY]}>
+          <ParentProvider model={model}>
+            {columns &&
+              columns.map((col, index) => (
+                <Col
+                  key={index}
+                  md={col.flex}
+                  offset={col.offset}
+                  pull={col.pull}
+                  push={col.push}
+                  className="sha-designer-column"
+                >
+                  <ComponentsContainer
+                    containerId={col.id}
+                    dynamicComponents={model?.isDynamic ? col?.components : []}
+                  />
+                </Col>
+              ))}
+          </ParentProvider>
+        </Row>
+      </div>
     );
   },
   initModel: (model) => {
-    const { background, font, dimensions, ...rest } = defaultStyles();
     const tabsModel: IColumnsComponentProps = {
       ...model,
-      propertyName: 'Custom Name',
-      ...rest,
+      propertyName: 'custom Name',
+      columns: [
+        { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
+        { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
+      ],
+      gutterX: 12,
+      gutterY: 12,
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;
@@ -137,15 +146,19 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       })
       .add<IColumnsComponentProps>(4, (prev) => {
         const styles: IColumnsInputProps = {
-          size: prev.size,
           width: prev.width,
           height: prev.height,
           hideBorder: prev.hideBorder,
           borderSize: prev.borderSize,
-          borderRadius: prev.borderRadius,
           borderColor: prev.borderColor,
           backgroundColor: prev.backgroundColor,
           stylingBox: prev.stylingBox,
+          borderRadius: prev.borderRadius,
+          border: {
+            radius: {
+              all: prev.borderRadius
+            }
+          }
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
