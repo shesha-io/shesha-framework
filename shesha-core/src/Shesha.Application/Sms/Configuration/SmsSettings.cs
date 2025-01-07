@@ -12,6 +12,10 @@ namespace Shesha.Sms.Configuration
     public class SmsSettings
     {
         /// <summary>
+        /// Is Enabled
+        /// </summary>
+        public bool IsSmsEnabled { get; set; }
+        /// <summary>
         /// SMS Gateway
         /// </summary>
         public string SmsGateway { get; set; }

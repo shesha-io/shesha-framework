@@ -3,14 +3,14 @@ import { FormItemProps, FormProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/formDesignerUtils';
 import { getStyle } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { IFormSettings, SILENT_KEY } from '@/providers/form/models';
+import { IFormSettings, IStyleType, SILENT_KEY } from '@/providers/form/models';
 
 export interface IFormPropOptions {
   hidden: boolean;
   formData: any;
 }
 
-export interface IPasswordComponentProps extends IConfigurableFormComponent {
+export interface IPasswordComponentProps extends IConfigurableFormComponent, IStyleType {
   placeholder?: string;
   confirmDescription?: string;
   confirmPlaceholder?: string;
