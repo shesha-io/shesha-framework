@@ -1,4 +1,4 @@
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { Autocomplete } from '@/components/autocomplete';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
@@ -13,7 +13,7 @@ import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } fro
 import TextArea from 'antd/es/input/TextArea';
 import camelcase from 'camelcase';
 import { startCase } from 'lodash';
-import React, { FC, useCallback } from 'react';
+import { FC, default as React, default as React, useCallback } from 'react';
 import { defaultExposedVariables } from '../_settings/settingsControl';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import ColumnsList from '../columns/columnsList';
@@ -160,6 +160,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'editableTagGroupProps':
+            return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'columnsList':
             return <ColumnsList {...props} readOnly={readOnly} />;
         case 'referenceListAutocomplete':
