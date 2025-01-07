@@ -25,6 +25,7 @@ import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
+import SizableColumnsList from '../sizableColumns/sizableColumnList';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -159,6 +160,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'sizableColumnsConfig':
+            return <SizableColumnsList {...props} readOnly={readOnly} />;            
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete {...props} readOnly={readOnly} />;
         case 'editableTagGroupProps':

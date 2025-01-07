@@ -594,7 +594,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   id: nanoid(),
-                  inputType: 'columnsList',
+                  inputType: 'sizableColumnsConfig',
                   propertyName: 'columns',
                   label: 'Columns',
                   labelAlign: 'right',
