@@ -46,13 +46,13 @@ export interface IButtonGroupItemBase {
   width?: string;
   height?: string;
   backgroundColor?: string;
-  fontSize?: string;
+  fontSize?: number;
   color?: string;
   fontWeight?: string;
   borderWidth?: string;
   borderColor?: string;
   borderStyle?: 'dotted' | 'solid' | 'dashed';
-  borderRadius?: string;
+  borderRadius?: number;
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {

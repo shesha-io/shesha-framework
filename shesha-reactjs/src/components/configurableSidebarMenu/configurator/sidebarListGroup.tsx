@@ -22,7 +22,7 @@ export interface ISidebarMenuGroupProps {
 export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, containerRendering }) => {
   const { styles } = useStyles();
   const allData = useAvailableConstantsData();
-  const actialItem = useDeepCompareMemo(() => getActualModel(item, allData), [item, {...allData}]);
+  const actialItem = useDeepCompareMemo(() => getActualModel(item, allData), [item, {...allData}]); // use spread to get the values of the ObservableProxy fields
   return (
     <>
       {actialItem.icon && <ShaIcon iconName={actialItem.icon as IconType} />}

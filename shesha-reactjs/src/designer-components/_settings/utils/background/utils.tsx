@@ -10,6 +10,22 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
     reader.onerror = reject;
 });
 
+export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, backendUrl: string, httpHeaders: any) => {
+    return (
+        propertyName?.storedFile?.id && propertyName?.type === 'storedFile'
+            ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${propertyName?.storedFile?.id}`, {
+                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+            })
+                .then((response) => {
+                    return response.blob();
+                })
+                .then((blob) => {
+                    return URL.createObjectURL(blob);
+                })
+            : ''
+    );
+};
+
 export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
 
     const style: React.CSSProperties = {};

@@ -34,7 +34,7 @@ import { ILabelComponentProps } from '@/designer-components/styleLabel/interface
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
-import { ISettingsInputProps } from '@/designer-components/settingsInput/settingsInput';
+import { ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;

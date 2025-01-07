@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { CodeEditor, ColorPicker, IconType, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
@@ -17,9 +17,13 @@ import { defaultExposedVariables } from '../_settings/settingsControl';
 import { getValueFromString } from '../settingsInput/utils';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
-import { ISettingsInputProps, SettingInput } from '../settingsInput/settingsInput';
+import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { startCase } from 'lodash';
+import { ISettingsInputProps } from '../settingsInput/interfaces';
+import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
+import { QueryBuilder } from '../queryBuilder/queryBuilder';
+import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -29,7 +33,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const { data: formData } = useFormData();
     const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
 
@@ -112,7 +116,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
+            return <InputNumber min={props.min} max={props.max} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
             />;
         case 'customDropdown':
             return <CustomDropdown
@@ -131,28 +135,42 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             />;
         case 'button':
             return <Button disabled={readOnly} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
-
+        case 'buttonGroupConfigurator':
+            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
-
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
-
-        case 'typeAutocomplete':
+        case 'autocomplete':
             return <Autocomplete.Raw
-                dataSourceType="url"
-                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                dataSourceType={dataSourceType}
+                dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
                 value={value}
                 size={size}
+                {...{ ...props, style: {} }}
             />;
-
+        case 'queryBuilder':
+            return <QueryBuilderWrapper>
+                <QueryBuilder {...props} hideLabel={true} readOnly={props.readOnly}></QueryBuilder>
+            </QueryBuilderWrapper>;
+        case 'columnsConfig':
+            return <ColumnsConfig size={size} />;
         case 'propertyAutocomplete':
             return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':
             return <ContextPropertyAutocomplete {...props} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
+        case 'formAutocomplete':
+            return <FormAutocomplete
+                readOnly={readOnly}
+                convertToFullId={false}
+                value={value}
+                onChange={onChange}
+            />;
+        case 'labelValueEditor': 
+         return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
