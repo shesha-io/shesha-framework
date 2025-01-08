@@ -109,7 +109,6 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   initModel: (model) => {
     const tabsModel: IColumnsComponentProps = {
       ...model,
-      propertyName: 'custom Name',
       columns: [
         { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
         { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
