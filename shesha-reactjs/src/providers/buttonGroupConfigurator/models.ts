@@ -25,7 +25,6 @@ export type ButtonActionType =
 
 export interface IButtonGroupItemBase extends IStyleType {
   id: string;
-  type: string;
   name: string;
   block?: boolean;
   label?: string | React.ReactNode;
@@ -58,11 +57,11 @@ export interface IButtonGroupItemBase extends IStyleType {
   styles?: React.CSSProperties;
 }
 
-export interface IButtonGroupItem extends IButtonGroupItemBase, IStyleType {
+export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
 }
 
-export interface IButtonItem extends IButtonGroupItem {
+export interface IButtonItem extends Omit<IButtonGroupItem, 'type'> {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 

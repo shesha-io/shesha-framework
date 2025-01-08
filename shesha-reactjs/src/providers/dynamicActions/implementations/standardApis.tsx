@@ -10,9 +10,9 @@ export interface IStandardApisProps {
 }
 
 const StandardApisItems: ButtonGroupItemProps[] = [
-    { id: 'r1', name: 'http', label: 'Http client', itemType: 'item', itemSubType: 'button', sortOrder: 0, type: '' },
-    { id: 'r2', name: 'message', label: 'message', itemType: 'item', itemSubType: 'button', sortOrder: 1, type: '' },
-    { id: 'r3', name: 'moment', label: 'moment', itemType: 'item', itemSubType: 'button', sortOrder: 2, type: '' },
+    { id: 'r1', name: 'http', label: 'Http client', itemType: 'item', itemSubType: 'button', sortOrder: 0 },
+    { id: 'r2', name: 'message', label: 'message', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
+    { id: 'r3', name: 'moment', label: 'moment', itemType: 'item', itemSubType: 'button', sortOrder: 2 },
 ];
 
 const useStandardApis: DynamicItemsEvaluationHook = (args) => {

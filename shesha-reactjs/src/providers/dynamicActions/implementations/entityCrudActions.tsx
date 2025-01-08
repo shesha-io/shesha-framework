@@ -11,8 +11,8 @@ export interface IEntityCrudActionsProps {
 }
 
 const EntityTestItems: ButtonGroupItemProps[] = [
-    { id: '1', name: 'btn1', label: 'entity action 1', itemType: 'item', itemSubType: 'button', sortOrder: 0, buttonType: 'link', type: '' },
-    { id: '2', name: 'btn2', label: 'entity action 2', itemType: 'item', itemSubType: 'button', sortOrder: 1, type: '' },
+    { id: '1', name: 'btn1', label: 'entity action 1', itemType: 'item', itemSubType: 'button', sortOrder: 0, buttonType: 'link' },
+    { id: '2', name: 'btn2', label: 'entity action 2', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
 ];
 
 const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
@@ -29,8 +29,7 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 label: `Create new`,
                 itemType: 'item',
                 itemSubType: 'button',
-                sortOrder: 0,
-                type: ''
+                sortOrder: 0
             },
             {
                 id: 'read',
@@ -38,8 +37,7 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 label: `View details`,
                 itemType: 'item',
                 itemSubType: 'button',
-                sortOrder: 1,
-                type: ''
+                sortOrder: 1
             },
             {
                 id: 'update',
@@ -47,8 +45,7 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 label: `Edit`,
                 itemType: 'item',
                 itemSubType: 'button',
-                sortOrder: 2,
-                type: ''
+                sortOrder: 2
             },
             {
                 id: 'delete',
@@ -56,8 +53,7 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
                 label: `Delete`,
                 itemType: 'item',
                 itemSubType: 'button',
-                sortOrder: 3,
-                type: ''
+                sortOrder: 3
             },
         ];
         return result;

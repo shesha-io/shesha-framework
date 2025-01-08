@@ -110,7 +110,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
     if (isGroup(item)) {
         const menuItems = item.childItems.map(x => prepareItem(x, item.readOnly))
             .filter(item => (getIsVisible(item)))
-            .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link', type: '' }, getIsVisible, appContext, prepareItem, form)));
+            .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, prepareItem, form)));
         return (
             <Dropdown
                 key={uuid}
@@ -235,7 +235,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 
                     // Fetch background style asynchronously
                     const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-                    
+
                     const backgroundStyle = getBackgroundStyle(background, getStyle(item.style), storedImageUrl);
 
                     const updatedStyles = {
