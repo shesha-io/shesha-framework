@@ -72,7 +72,6 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   const context = !!state?.context && mode === 'context' ? state?.context : undefined;
 
   const styledLabel = (label: string) => <span className={styles.label}>{label}</span>;
-  ;
   const contextlabel = model.styledLabel ? styledLabel("Context") : <label>Context</label>;
   const componentlabel = model.styledLabel ? styledLabel("Component Name") : <label>Component name</label>;
   const propertylabel = model.styledLabel ? styledLabel("Property Name") : <label>Property name</label>;

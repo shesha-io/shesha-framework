@@ -15,18 +15,18 @@ export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, back
         propertyName?.storedFile?.id && propertyName?.type === 'storedFile'
             ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${propertyName?.storedFile?.id}`, {
                 headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
-              })
+            })
                 .then((response) => {
-                  return response.blob();
+                    return response.blob();
                 })
                 .then((blob) => {
-                  return URL.createObjectURL(blob);
+                    return URL.createObjectURL(blob);
                 })
             : ''
-    );  
+    );
 };
 
-export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
+export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): React.CSSProperties => {
 
     const style: React.CSSProperties = {};
 

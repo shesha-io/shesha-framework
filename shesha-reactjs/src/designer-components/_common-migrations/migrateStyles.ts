@@ -1,7 +1,7 @@
 import { addPx } from "../_settings/utils";
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & IConfigurableFormComponent;
+type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {
@@ -22,7 +22,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
             size: prevStyles?.size,
             border: {
                 ...prev?.border,
-                hideBorder: prevStyles?.hideBorder,
+                hideBorder: prevStyles?.hideBorder || false,
                 selectedCorner: 'all',
                 selectedSide: 'all',
                 border: {
@@ -44,14 +44,14 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 gradient: { direction: 'to right', colors: {} }
             },
             font: {
-                color: prevStyles?.fontColor || prev?.font?.color || '#000',
+                color: prevStyles?.fontColor || prev?.font?.color,
                 type: prev?.font?.type || 'Segoe UI',
                 align: prev?.font?.align || 'left',
                 size: prevStyles?.fontSize as number || fontSizeFromSize || prev?.font?.size || 14,
                 weight: prevStyles?.fontWeight as string || prev?.font?.weight || '400',
             },
             dimensions: {
-                width: addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
+                width: prev.block ? '100%' : addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
                 height: addPx(prevStyles?.height) || heightFromSize || addPx(prev?.dimensions?.height) || defaults?.dimensions?.height,
                 minHeight: addPx(prev?.dimensions?.minHeight) || defaults?.dimensions?.minHeight,
                 maxHeight: addPx(prev?.dimensions?.maxHeight) || defaults?.dimensions?.maxHeight,
@@ -64,7 +64,18 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 color: '#000',
                 blurRadius: 0,
                 spreadRadius: 0
-            }
+            },
+            ...(defaults?.position && {
+                position: {
+                    value: 'relative',
+                    offset: 'top',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0
+                }
+            }),
+            ...(defaults?.display && { display: defaults?.display || 'block' }),
         };
     };
 
