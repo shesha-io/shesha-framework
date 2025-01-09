@@ -1,5 +1,3 @@
-import { IBackgroundValue } from "../_settings/utils/background/interfaces";
-
 export const defaultStyles = (): any => {
     return {
         background: { type: 'color', color: '#fff' },
