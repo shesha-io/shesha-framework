@@ -108,6 +108,21 @@ export const getSettings = () => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
+                                            inputType: 'dropdown',
+                                            propertyName: 'position',
+                                            tooltip: "This will set the position for all buttons",
+                                            label: 'Position',
+                                            dropdownOptions: [
+                                                { value: 'top', label: 'Top' },
+                                                { value: 'bottom', label: 'Bottom' },
+                                                { value: 'left', label: 'Left' },
+                                                { value: 'right', label: 'Right' }
+                                            ],
+                                            labelAlign: 'right',
+                                            parentId: 'root'
+                                        })
                                         .addCollapsiblePanel({
                                             id: 'fontStyleCollapsiblePanel',
                                             propertyName: 'pnlFontStyle',
@@ -119,35 +134,6 @@ export const getSettings = () => {
                                             content: {
                                                 id: 'fontStylePnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInput({
-                                                        id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        tooltip: "This will set the size for all buttons",
-                                                        label: 'Size',
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'middle', label: 'Middle' },
-                                                            { value: 'large', label: 'Large' }
-                                                        ],
-                                                        labelAlign: 'right',
-                                                        parentId: 'root'
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'position',
-                                                        tooltip: "This will set the position for all buttons",
-                                                        label: 'Position',
-                                                        dropdownOptions: [
-                                                            { value: 'top', label: 'Top' },
-                                                            { value: 'bottom', label: 'Bottom' },
-                                                            { value: 'left', label: 'Left' },
-                                                            { value: 'right', label: 'Right' }
-                                                        ],
-                                                        labelAlign: 'right',
-                                                        parentId: 'root'
-                                                    })
                                                     .addSettingsInputRow({
                                                         id: 'try26voxhs-HxJ5k5ngYE',
                                                         parentId: 'fontStylePnl',
