@@ -26,7 +26,7 @@ export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, back
     );
 };
 
-export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
+export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): React.CSSProperties => {
 
     const style: React.CSSProperties = {};
 

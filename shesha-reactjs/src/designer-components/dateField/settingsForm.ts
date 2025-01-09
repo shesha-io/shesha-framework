@@ -3,9 +3,9 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
-import { IRefListStatusProps } from './models';
+import { IDateFieldProps } from './interfaces';
 
-export const getSettings = (data: IRefListStatusProps) => {
+export const getSettings = (data: IDateFieldProps) => {
 
     return {
 
@@ -43,22 +43,71 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
-                            .addRefListAutocomplete({
-                                id: '5c826b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                                propertyName: 'referenceListId',
-                                label: 'Reference list',
+                            .addSettingsInputRow({
+                                id: 'palceholder-tooltip-w2gmBg31azZD0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                size: 'small',
-                                validate: {
-                                    required: true,
-                                },
+                                inputs: [
+                                    {
+                                        id: '56b40a33-7e10-4ce4-9f08-a34d24a83338',
+                                        propertyName: 'picker',
+                                        label: 'Picker',
+                                        type: 'dropdown',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            {
+                                                value: "date",
+                                                label: "date"
+                                            },
+                                            {
+                                                value: "week",
+                                                label: "week"
+                                            },
+                                            {
+                                                value: "month",
+                                                label: "month"
+                                            },
+                                            {
+                                                value: "quarter",
+                                                label: "quarter"
+                                            },
+                                            {
+                                                value: "year",
+                                                label: "year"
+                                            }
+
+                                        ]
+                                    },
+                                    {
+                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
+                                        type: 'switch',
+                                        propertyName: 'range',
+                                        label: 'Range?',
+                                        jsSetting: true,
+                                    },
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
+                            .addSettingsInput({
+                                id: 'e92bcf3c-a70a-4aeb-b6ac-5643eb5b4fe2',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                inputType: 'switch',
+                                propertyName: 'resolveToUTC',
+                                label: 'Resolve to UTC',
                                 jsSetting: true,
                             })
                             .addSettingsInputRow({
                                 id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
-
+                                    {
+                                        id: '57a40a33-7e10-4ce4-9f08-a34d24a83338',
+                                        propertyName: 'placeholder',
+                                        label: 'Placeholder',
+                                        type: 'text',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
                                     {
                                         id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
                                         type: 'textArea',
@@ -97,46 +146,209 @@ export const getSettings = (data: IRefListStatusProps) => {
                     },
                     {
                         key: '2',
-                        title: 'Customize Status',
-                        id: '6Vw9iiDw9d0MD_Hh5cbIn',
+                        title: 'Formats',
+                        id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
-                                inputType: 'switch',
-                                propertyName: 'showReflistName',
-                                label: 'Show Reflist Item Name',
-                                tooltip: 'When checked the DisplayName/RefList Name will be shown.',
+                                id: '3be9da3f-f47e-48ae-b4c3-d5cc36e534d9',
+                                propertyName: 'dateFormat',
+                                label: 'Date Format',
                                 size: 'small',
-                                defaultValue: true,
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                jsSetting: true,
+                                inputType: "text",
+                                defaultValue: "DD/MM/YYYY",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
-                                inputType: 'switch',
-                                propertyName: 'showIcon',
-                                label: 'Show Icon',
+                                id: '5be9da3f-f47e-48ae-b4c3-d5cc36e534d9',
+                                propertyName: 'timeFormat',
+                                label: 'Time Format',
                                 size: 'small',
-                                tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                jsSetting: true,
+                                inputType: "text",
+                                defaultValue: "HH:mm:ss",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-5def-bd41-ee166a5dfcd8',
-                                inputType: 'switch',
-                                propertyName: 'solidBackground',
-                                label: 'Show Solid Background',
+                                id: '5be9da3f-f47e-48ae-b7c3-d5cc36e534d9',
+                                propertyName: 'yearFormat',
+                                label: 'Year Format',
                                 size: 'small',
-                                defaultValue: true,
-                                tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                jsSetting: true,
+                                inputType: "text",
+                                defaultValue: "YYYY",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                            })
+                            .addSettingsInput({
+                                id: '5be9da3f-f42e-48ae-b7c3-d5cc36e534d9',
+                                propertyName: 'quarterFormat',
+                                label: 'Quarter Format',
+                                size: 'small',
+                                jsSetting: true,
+                                inputType: "text",
+                                defaultValue: "YYYY-\\QQ",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                            })
+                            .addSettingsInput({
+                                id: '5ee9da3f-f47e-48ae-b7c3-d5cc36e534d9',
+                                propertyName: 'monthFormat',
+                                label: 'Month Format',
+                                size: 'small',
+                                jsSetting: true,
+                                inputType: "text",
+                                defaultValue: "YYYY-MM",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                            })
+                            .addSettingsInput({
+                                id: '5be9da3f-f57e-48ae-b7c3-d5cc36e534d9',
+                                propertyName: 'weekFormat',
+                                label: 'Week Format',
+                                size: 'small',
+                                jsSetting: true,
+                                inputType: "text",
+                                defaultValue: "YYYY-wo",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
                             .toJson()
                         ]
                     },
                     {
                         key: '3',
+                        title: 'Control Visibility',
+                        id: '6eBJvoll3xtHJxdvOAlnB',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e554d9',
+                                inputType: 'switch',
+                                propertyName: 'showTime',
+                                label: 'Show Time',
+                                size: 'small',
+                                layout: 'horizontal',
+                                jsSetting: true,
+                                parentId: '6eBJvoll3xtHJxdvOAlnB'
+                            })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '3be9da3f-f47e-48ae-c4c3-f5cc36e554d9',
+                                inputType: 'switch',
+                                propertyName: 'defaultToMidnight',
+                                label: 'Default time to midnight',
+                                size: 'small',
+                                layout: 'horizontal',
+                                defaultValue: true,
+                                jsSetting: true,
+                                parentId: '6eBJvoll3xtHJxdvOAlnB',
+                                hidden: { _code: 'return  !getSettingValue(data?.showTime);', _mode: 'code', _value: false } as any,
+                            })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '3be9da3f-f47e-49ae-b4c3-f5cc36e554d9',
+                                inputType: 'switch',
+                                propertyName: 'showNow',
+                                label: 'Show Today/Now',
+                                size: 'small',
+                                layout: 'horizontal',
+                                jsSetting: true,
+                                parentId: '6eBJvoll3xtHJxdvOAlnB'
+                            })
+                            .addSettingsInput({
+                                id: 'ac88293a-af3b-45a2-a57c-7703d882b473',
+                                inputType: 'dropdown',
+                                propertyName: 'disabledDateMode',
+                                label: 'Disabled date mode',
+                                dropdownOptions: [
+                                    { value: 'none', label: 'None' },
+                                    { value: 'functionTemplate', label: 'Function template' },
+                                    { value: 'customFunction', label: 'Custom function' },
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: 'ac88293a-af3b-45a2-a57c-8803d882b473',
+                                inputType: 'dropdown',
+                                propertyName: 'disabledDateTemplate',
+                                label: 'Disabled date templates',
+                                hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'functionTemplate'", _mode: 'code', _value: false } as any,
+                                dropdownOptions: [
+                                    { value: "return current && current < moment().startOf('day');", label: 'Disable past dates' },
+                                    { value: "return current && current > moment().endOf('day');", label: 'Disable future dates' }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: '41613cbd-1943-4df7-b2e3-e9842ba2c2b3',
+                                inputType: 'dropdown',
+                                propertyName: 'disabledTimeMode',
+                                label: 'Disabled time mode',
+                                defaultValue: 'none',
+                                dropdownOptions: [
+                                    { value: 'none', label: 'None' },
+                                    { value: 'timeFunctionTemplate', label: 'Function template' },
+                                    { value: 'customTimeFunction', label: 'Custom function' },
+                                ],
+                                hidden: {
+                                    _code: 'return  !getSettingValue(data?.showTime);',
+                                    _mode: 'code',
+                                    _value: false
+                                }
+                            })
+                            .addSettingsInput({
+                                id: '692081a5-7e96-401e-90e0-9da5b5bfd836',
+                                inputType: 'dropdown',
+                                propertyName: 'disabledTimeTemplate',
+                                label: 'Disabled time templates',
+                                hidden: {
+                                    _code: "return  getSettingValue(data.disabledTimeMode) !== 'timeFunctionTemplate';",
+                                    _mode: 'code',
+                                    _value: false
+                                } as any,
+                                dropdownOptions: [
+                                    { value: "disabledPastTime", label: 'Disable past times' },
+                                    { value: "disabledFutureTime", label: 'Disable future times' }
+                                ]
+                            })
+
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '4',
+                        title: 'Events',
+                        id: 'Cc47W08MWrKdhoGqFKMI2',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
+                                inputType: 'codeEditor',
+                                propertyName: 'onChangeCustom',
+                                label: 'On Change',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '5',
+                        title: 'Validation',
+                        id: '6eBJvoll3xtLJxdvOAlnB',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                                inputType: 'switch',
+                                propertyName: 'validate.required',
+                                label: 'Required',
+                                size: 'small',
+                                layout: 'horizontal',
+                                jsSetting: true,
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '6',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [...new DesignerToolbarSettings()
@@ -718,7 +930,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                             }).toJson()]
                     },
                     {
-                        key: '4',
+                        key: '7',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
