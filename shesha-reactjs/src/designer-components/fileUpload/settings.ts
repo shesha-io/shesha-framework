@@ -128,7 +128,7 @@ export const getSettings = (data: any) => {
                   label: 'Owner Type',
                 })
                 .addSettingsInput({
-                  inputType: 'editableTagGroupProps',
+                  inputType: 'editableTagGroup',
                   id: 'allowedFileTypes-s4gmBg31azZC0UjZjpfTm',
                   propertyName: 'allowedFileTypes',
                   label: 'Allowed File Types',
