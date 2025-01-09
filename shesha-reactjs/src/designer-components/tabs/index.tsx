@@ -1,5 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { getActualModelWithParent, getLayoutStyle, getStyle, useAvailableConstantsData } from '@/providers/form/utils';
@@ -19,9 +19,10 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { initializeStyles, migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
+import { useStyles } from './styles';
 
 type TabItem = TabsProps['items'][number];
 
@@ -44,19 +45,31 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
     const [finalStyle, setFinalStyle] = useState<React.CSSProperties>({});
+    const [cardFinalStyle, setCardFinalStyle] = useState<React.CSSProperties>({});
 
     const jsStyle = getStyle(model.style);
-    const dimensions = migratePrevStyles(model, defaultStyles).dimensions;
-    const border = migratePrevStyles(model, defaultStyles)?.border;
-    const font = migratePrevStyles(model, defaultStyles)?.font;
-    const shadow = migratePrevStyles(model, defaultStyles)?.shadow;
+    const dimensions = model.dimensions;
+    const border = model?.border;
+    const font = model?.font;
+    const shadow = model?.shadow;
 
     const dimensionsStyles = getSizeStyle(dimensions);
     const borderStyles = getBorderStyle(border, jsStyle);
     const fontStyles = getFontStyle(font);
     const shadowStyles = getShadowStyle(shadow);
 
-    const styles = {
+    const cardJsStyle = getStyle(model?.card?.style, data);
+    const cardDimensions = model?.card?.dimensions;
+    const cardBorder = model?.card?.border;
+    const cardFont = model?.card?.font;
+    const cardShadow = model?.card?.shadow;
+
+    const cardDimensionsStyles = getSizeStyle(cardDimensions);
+    const cardBorderStyles = getBorderStyle(cardBorder, cardJsStyle);
+    const cardFontStyles = getFontStyle(cardFont);
+    const cardShadowStyles = getShadowStyle(cardShadow);
+
+    const style = {
       ...dimensionsStyles,
       ...borderStyles,
       ...fontStyles,
@@ -64,17 +77,35 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       ...jsStyle,
     };
 
-    const fetchTabStyles = async () => {
-      const background = migratePrevStyles(model, defaultStyles)?.background;
-
-      // Fetch background style asynchronously
-      const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-
-      const backgroundStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
-      setFinalStyle({ ...styles, ...backgroundStyle });
+    const cardStyle = {
+      ...cardDimensionsStyles,
+      ...cardBorderStyles,
+      ...cardFontStyles,
+      ...cardShadowStyles,
+      ...cardJsStyle,
     };
 
-    fetchTabStyles();
+    // console.log("Model", model);
+    useEffect(() => {
+      const fetchTabStyles = async () => {
+        const background = model?.background;
+        const cardBackground = model?.card?.background;
+
+        // Fetch background style asynchronously
+        const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+        const cardStoredImageUrl = await getBackgroundImageUrl(cardBackground, backendUrl, httpHeaders);
+
+        const backgroundStyle = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+        const cardBackgroundStyle = await getBackgroundStyle(cardBackground, cardJsStyle, cardStoredImageUrl);
+
+        setCardFinalStyle({ ...cardStyle, ...cardBackgroundStyle });
+        setFinalStyle({ ...style, ...backgroundStyle });
+      };
+
+      fetchTabStyles();
+    }, [model.background, model?.card?.background, backendUrl, httpHeaders, jsStyle]);
+
+    const { styles } = useStyles({ styles: finalStyle, cardStyles: cardFinalStyle });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -138,12 +169,15 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         theme={{
           components: {
             Tabs: {
-              cardBg: 'yellow'
+              cardBg: 'none',
+              itemColor: finalStyle.color,
+              titleFontSize: Number(finalStyle.fontSize),
+
             }
           },
         }}
       >
-        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} tabBarStyle={finalStyle} />
+        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} className={styles.content} />
       </ConfigProvider>
     );
   },
@@ -169,7 +203,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
-    .add<ITabsComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles) }))
+    .add<ITabsComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles), card: { ...initializeStyles(prev.card, defaultStyles) } }))
   ,
   settingsFormMarkup: () => getSettings(),
   customContainerNames: ['tabs'],

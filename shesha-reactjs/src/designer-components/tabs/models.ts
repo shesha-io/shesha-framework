@@ -3,9 +3,9 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { EditMode, IConfigurableFormComponent, IInputStyles, IStyleType } from '@/interfaces';
 
 export interface ITabPaneProps
-  extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
+  extends Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
   id: string;
-  type: string;
+  type?: string;
   icon?: string;
   key: string;
   title: string;
@@ -35,6 +35,7 @@ export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleT
   ghost?: boolean;
   customVisibility?: string;
   tabPosition?: 'left' | 'right' | 'top' | 'bottom';
+  card?: IInputStyles;
   desktop?: IInputStyles;
   mobile?: IInputStyles;
   tablet?: IInputStyles;

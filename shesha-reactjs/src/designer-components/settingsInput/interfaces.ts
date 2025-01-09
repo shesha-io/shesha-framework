@@ -3,6 +3,7 @@ import { CodeLanguages } from '../codeEditor/types';
 import { ResultType } from '@/components/codeEditor/models';
 import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 
 export interface IRadioOption {
     value: string | number;
@@ -61,6 +62,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     modelType?: string;
     min?: number;
     max?: number;

@@ -26,7 +26,7 @@ import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ITabPaneProps } from '../tabs/models';
-import { getItemSettings, onAddNewItem } from './utils';
+import { getItemSettings } from './utils';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -37,7 +37,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const availableConstants = useAvailableConstantsData();
     const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
 
@@ -185,7 +185,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <ItemListConfiguratorModal<ITabPaneProps>
                 readOnly={readOnly}
                 value={value}
-                // onChange={onChange}
+                onChange={onChange}
                 initNewItem={onAddNewItem}
                 settingsMarkupFactory={() => getItemSettings()}
                 itemRenderer={({ item }) => ({
