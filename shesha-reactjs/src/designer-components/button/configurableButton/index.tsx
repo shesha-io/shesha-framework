@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import { Button, FormInstance } from 'antd';
 import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
@@ -15,7 +15,7 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
   dynamicItem?: any;  
 }
 
-export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
+export const ConfigurableButton = forwardRef((props: IConfigurableButtonProps, ref) => {
   const { actionConfiguration, dynamicItem } = props;
   const evaluationContext = useAvailableConstantsData();
   const { getUrlFromNavigationRequest } = useShaRouting();
@@ -26,8 +26,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
-  const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    event.preventDefault();
+  const onButtonClick = async (event?: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    if (event) event.preventDefault();
     try {
       if (actionConfiguration) {
         if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration?.actionName)) {
@@ -48,11 +48,16 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     }
   };
 
+  // Expose the click function through ref
+  useImperativeHandle(ref, () => ({
+    triggerClick: onButtonClick,
+    actionConfiguration
+  }));
+
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading && !isModal,
     buttonDisabled: props?.readOnly || (loading && isModal)
   };
-
 
   const navigationUrl = useAsyncMemo(async () => {
     if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
@@ -82,6 +87,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       {props.label}
     </Button>
   );
-};
+});
 
 export default ConfigurableButton;
