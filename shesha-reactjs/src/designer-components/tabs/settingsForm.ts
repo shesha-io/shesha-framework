@@ -880,34 +880,34 @@ export const getSettings = () => {
                                                                     ]
                                                                 })
                                                                 .addSettingsInputRow(
-                                                                    getBorderInputs('card')[0] as any
+                                                                    getBorderInputs(true, 'card')[0] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getBorderInputs('card')[1] as any
+                                                                    getBorderInputs(true, 'card')[1] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getBorderInputs('card')[2] as any
+                                                                    getBorderInputs(true, 'card')[2] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getBorderInputs('card')[3] as any
+                                                                    getBorderInputs(true, 'card')[3] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getBorderInputs('card')[4] as any
+                                                                    getBorderInputs(true, 'card')[4] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getCornerInputs('card')[0] as any
+                                                                    getCornerInputs(true, 'card')[0] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getCornerInputs('card')[1] as any
+                                                                    getCornerInputs(true, 'card')[1] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getCornerInputs('card')[2] as any
+                                                                    getCornerInputs(true, 'card')[2] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getCornerInputs('card')[3] as any
+                                                                    getCornerInputs(true, 'card')[3] as any
                                                                 )
                                                                 .addSettingsInputRow(
-                                                                    getCornerInputs('card')[4] as any
+                                                                    getCornerInputs(true, 'card')[4] as any
                                                                 )
                                                                 .toJson()
                                                             ]

@@ -116,15 +116,16 @@ export const borderCorners = [
     }
 ];
 
-export const getBorderInputs = (path = '') => borderSides.map(value => {
+export const getBorderInputs = (isResponsive: boolean = true, path = '') => borderSides.map(value => {
     const side = value.value;
-    const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);';
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);'
+        : 'return  getSettingValue(data?' + `${path ? '.' + path : ''}` + '.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);';
 
     return {
         id: `borderStyleRow-${side}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+        readOnly: false,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
@@ -170,9 +171,9 @@ export const getBorderInputs = (path = '') => borderSides.map(value => {
     };
 });
 
-export const getCornerInputs = (path = '') => radiusCorners.map(value => {
+export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
     const corner = value.value;
-    const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}";`;
+    const code = isResponsive ? 'return  getSettingValue(data?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}";`;
 
     return {
         id: `borderStyleRow-${corner}`,
