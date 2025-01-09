@@ -10,8 +10,6 @@ export interface ISizableColumnInputProps extends IStyleType {
   width?: string | number;
   backgroundColor?: string;
   hideBorder?: boolean;
-  gutterX?: number;
-  gutterY?: number;
   columns?: ISizableColumnProps[];
 }
 
