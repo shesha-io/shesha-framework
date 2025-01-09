@@ -118,7 +118,8 @@ export const borderCorners = [
 
 export const getBorderInputs = (isResponsive: boolean = true, path = '') => borderSides.map(value => {
     const side = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);'
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedSide)' + `!== "${side}"` +
+        ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);'
         : 'return  getSettingValue(data?' + `${path ? '.' + path : ''}` + '.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);';
 
     return {

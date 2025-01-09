@@ -2,10 +2,10 @@ import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }, { styles, cardStyles }) => {
 
-    const borderTop = `${styles.borderTopWidth ? styles.borderTopWidth : styles.borderWidth} ${styles.borderTopStyle ? styles.borderTopStyle : styles.borderStyle} ${styles.borderTopColor ? styles.borderTopColor : styles.borderColor}`;
-    const borderBottom = `${styles.borderBottomWidth ? styles.borderBottomWidth : styles.borderWidth} ${styles.borderBottomStyle ? styles.borderBottomStyle : styles.borderStyle} ${styles.borderBottomColor ? styles.borderBottomColor : styles.borderColor}`;
-    const borderLeft = `${styles.borderLeftWidth ? styles.borderLeftWidth : styles.borderWidth} ${styles.borderLeftStyle ? styles.borderLeftStyle : styles.borderStyle} ${styles.borderLeftColor ? styles.borderLeftColor : styles.borderColor}`;
-    const borderRight = `${styles.borderRightWidth ? styles.borderRightWidth : styles.borderWidth} ${styles.borderRightStyle ? styles.borderRightStyle : styles.borderStyle} ${styles.borderRightColor ? styles.borderRightColor : styles.borderColor}`;
+    const borderTop = `${styles.borderTopWidth ?? styles.borderWidth} ${styles.borderTopStyle ?? styles.borderStyle} ${styles.borderTopColor ?? styles.borderColor}`;
+    const borderBottom = `${styles.borderBottomWidth ?? styles.borderWidth} ${styles.borderBottomStyle ?? styles.borderStyle} ${styles.borderBottomColor ?? styles.borderColor}`;
+    const borderLeft = `${styles.borderLeftWidth ?? styles.borderWidth} ${styles.borderLeftStyle ?? styles.borderStyle} ${styles.borderLeftColor ?? styles.borderColor}`;
+    const borderRight = `${styles.borderRightWidth ?? styles.borderWidth} ${styles.borderRightStyle ?? styles.borderStyle} ${styles.borderRightColor ?? styles.borderColor}`;
     const border = `${styles.borderWidth} ${styles.borderStyle} ${styles.borderColor}`;
 
     const content = cx("tab-content-holder", css`
@@ -28,13 +28,14 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles }) => {
             --ant-tabs-card-bg: ${cardStyles.background || cardStyles.backgroundColor};
             background: ${cardStyles.background || cardStyles.backgroundColor} !important; // Fallback
              ${cardStyles};
-            border: ${borderBottom || border} !important;
-             border-bottom: none !important;
+            box-shadow: ${styles.shadow} !important;
+            border: ${border} !important;
+            border-bottom: none !important;
         }
 
         .ant-tabs-tab-active {
             --ant-tabs-card-bg: ${styles.background || styles.backgroundColor};
-            background: ${styles.background || styles.backgroundColor} !important; // Fallback
+            background: ${styles.background || styles.backgroundColor} !important;
              ${styles};
         }
 
@@ -43,7 +44,7 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles }) => {
         }
 
         .ant-tabs-nav::before {
-            border-bottom: ${borderTop || border} !important;
+            border-bottom: ${borderTop === '1px solid #d9d9d9' ? border : borderTop} !important;
         }
   `);
     return {

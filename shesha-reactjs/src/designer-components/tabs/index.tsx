@@ -39,8 +39,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition: position = 'top' } = model;
-    // const mobile = useMedia('(max-width: 480px)');
-    // const tablet = useMedia('(max-width: 768px)');
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
@@ -85,7 +83,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       ...cardJsStyle,
     };
 
-    // console.log("Model", model);
     useEffect(() => {
       const fetchTabStyles = async () => {
         const background = model?.background;

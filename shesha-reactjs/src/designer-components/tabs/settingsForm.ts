@@ -4,6 +4,7 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { repeatOptions } from '../_settings/utils/background/utils';
+import { onAddNewItem } from './utils';
 
 export const getSettings = () => {
     return {
@@ -63,6 +64,7 @@ export const getSettings = () => {
                                     label: 'Tabs',
                                     labelAlign: 'right',
                                     parentId: 'root',
+                                    onAddNewItem: onAddNewItem,
                                     hidden: false
                                 })
                                 .addSettingsInput({
@@ -678,7 +680,7 @@ export const getSettings = () => {
                                             }
                                         }).addCollapsiblePanel({
                                             id: 'tabCardStyleCollapsiblePanel',
-                                            propertyName: 'customStyle',
+                                            propertyName: 'cardStyle',
                                             label: 'Card Styles',
                                             labelAlign: 'right',
                                             parentId: 'cardStyleRouter',
@@ -1116,72 +1118,6 @@ export const getSettings = () => {
                                                                     })
                                                                     .toJson()
                                                             ],
-                                                        }
-                                                    })
-                                                    .addCollapsiblePanel({
-                                                        id: 'shadowStyleCollapsiblePanel',
-                                                        propertyName: 'card.pnlShadowStyle',
-                                                        label: 'Shadow',
-                                                        labelAlign: 'right',
-                                                        ghost: true,
-                                                        parentId: 'styleRouter',
-                                                        collapsible: 'header',
-                                                        content: {
-                                                            id: 'shadowStylePnl',
-                                                            components: [...new DesignerToolbarSettings()
-                                                                .addSettingsInputRow({
-                                                                    id: 'shadowStyleRow',
-                                                                    parentId: 'shadowStylePnl',
-                                                                    inline: true,
-                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                    inputs: [
-                                                                        {
-                                                                            type: 'number',
-                                                                            id: 'shadowStyleRow-offsetX',
-                                                                            label: 'Offset X',
-                                                                            hideLabel: true,
-                                                                            width: 60,
-                                                                            icon: "offsetHorizontalIcon",
-                                                                            propertyName: 'card.shadow.offsetX',
-                                                                        },
-                                                                        {
-                                                                            type: 'number',
-                                                                            id: 'shadowStyleRow-offsetY',
-                                                                            label: 'Offset Y',
-                                                                            hideLabel: true,
-                                                                            width: 60,
-                                                                            icon: 'offsetVerticalIcon',
-                                                                            propertyName: 'card.shadow.offsetY',
-                                                                        },
-                                                                        {
-                                                                            type: 'number',
-                                                                            id: 'shadowStyleRow-blurRadius',
-                                                                            label: 'Blur',
-                                                                            hideLabel: true,
-                                                                            width: 60,
-                                                                            icon: 'blurIcon',
-                                                                            propertyName: 'card.shadow.blurRadius',
-                                                                        },
-                                                                        {
-                                                                            type: 'number',
-                                                                            id: 'shadowStyleRow-spreadRadius',
-                                                                            label: 'Spread',
-                                                                            hideLabel: true,
-                                                                            width: 60,
-                                                                            icon: 'spreadIcon',
-                                                                            propertyName: 'card.shadow.spreadRadius',
-                                                                        },
-                                                                        {
-                                                                            type: 'color',
-                                                                            id: 'shadowStyleRow-color',
-                                                                            label: 'Color',
-                                                                            hideLabel: true,
-                                                                            propertyName: 'card.shadow.color',
-                                                                        },
-                                                                    ],
-                                                                })
-                                                                .toJson()
-                                                            ]
                                                         }
                                                     })
                                                     .addCollapsiblePanel({
