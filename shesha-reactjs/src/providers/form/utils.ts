@@ -207,7 +207,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     message: () => message,
     data: () => {
       if (!shaFormInstance?.formData || isEmpty(shaFormInstance.formData))
-        return EMPTY_DATA; 
+        return EMPTY_DATA;
 
       const data = shaFormInstance?.formData;
       return removeGhostKeys(data);

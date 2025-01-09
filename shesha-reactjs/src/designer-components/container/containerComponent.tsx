@@ -29,7 +29,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { globalState } = useGlobalState();
     const data = model;
 
-
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const dimensions = model?.dimensions;
@@ -161,6 +160,24 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         return { ...prev, shadowStyle: 'none' };
       })
       .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { ...defaultStyles() }), }))
+      .add<IContainerComponentProps>(8, (prev) => {
+        const flexAndGridStyles = {
+          display: prev?.display,
+          flexDirection: prev?.flexDirection,
+          direction: prev?.direction,
+          justifyContent: prev?.justifyContent,
+          alignItems: prev?.alignItems,
+          alignSelf: prev?.alignSelf,
+          justifyItems: prev?.justifyItems,
+          textJustify: prev?.textJustify,
+          justifySelf: prev?.justifySelf,
+          noDefaultStyling: prev?.noDefaultStyling,
+          gridColumnsCount: prev?.gridColumnsCount,
+          flexWrap: prev?.flexWrap,
+          gap: prev?.gap
+        };
+        return { ...prev, desktop: { ...flexAndGridStyles }, tablet: { ...flexAndGridStyles }, mobile: { ...flexAndGridStyles } };
+      })
   ,
 };
 

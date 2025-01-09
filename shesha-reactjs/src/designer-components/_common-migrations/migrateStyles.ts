@@ -1,7 +1,7 @@
 import { addPx } from "../_settings/utils";
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & IConfigurableFormComponent & { block?: boolean };
+type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {
@@ -22,7 +22,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
             size: prevStyles?.size,
             border: {
                 ...prev?.border,
-                hideBorder: prevStyles?.hideBorder,
+                hideBorder: prevStyles?.hideBorder || false,
                 selectedCorner: 'all',
                 selectedSide: 'all',
                 border: {
@@ -65,7 +65,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 blurRadius: 0,
                 spreadRadius: 0
             },
-            ...(defaults.position && {
+            ...(defaults?.position && {
                 position: {
                     value: 'relative',
                     offset: 'top',

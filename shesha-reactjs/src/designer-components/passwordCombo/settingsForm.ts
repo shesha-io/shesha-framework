@@ -3,9 +3,10 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
-import { IRefListStatusProps } from './models';
+import { IPasswordComponentProps } from './utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 
-export const getSettings = (data: IRefListStatusProps) => {
+export const getSettings = (data: IPasswordComponentProps) => {
 
     return {
 
@@ -37,35 +38,73 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 jsSetting: true,
                             })
                             .addLabelConfigurator({
-                                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                                id: 'label-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
                                 label: 'label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
-                            .addRefListAutocomplete({
-                                id: '5c826b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                                propertyName: 'referenceListId',
-                                label: 'Reference list',
+                            .addSettingsInputRow({
+                                id: 'confirm-4c18-468c-89e1-60c002ce96c5',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                size: 'small',
-                                validate: {
-                                    required: true,
-                                },
-                                jsSetting: true,
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.hideLabel);',
+                                    _mode: 'code',
+                                    _value: false
+                                } as any,
+                                readOnly: false,
+                                inputs: [{
+                                    type: 'text',
+                                    id: 'confirmLabel',
+                                    label: 'Label: Confirmation',
+                                    propertyName: 'confirmLabel',
+                                    size: 'small',
+                                    jsSetting: true,
+                                }]
                             })
                             .addSettingsInputRow({
                                 id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
-
                                     {
-                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
+                                        type: 'text',
+                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'placeholder',
+                                        label: 'Placeholder',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
                                         type: 'textArea',
+                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'description',
                                         label: 'Tooltip',
                                         jsSetting: true,
                                     },
+
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
+                            .addSettingsInputRow({
+                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                inputs: [
+                                    {
+                                        type: 'text',
+                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'confirmPlaceholder',
+                                        label: 'Placeholder: Confirmation',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'textArea',
+                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'confirmDescription',
+                                        label: 'Tooltip',
+                                        jsSetting: true,
+                                    },
+
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
@@ -75,16 +114,16 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        id: '5c813b1a-04c5-7758-ac0f-cbcbae6b3bd4',
                                         type: 'editModeSelector',
+                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'editMode',
                                         label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
-                                        id: '5c813b1a-04c5-4678-ac0f-cbcbae6b3bd4',
                                         type: 'switch',
+                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'hidden',
                                         label: 'Hide',
                                         jsSetting: true,
@@ -97,40 +136,66 @@ export const getSettings = (data: IRefListStatusProps) => {
                     },
                     {
                         key: '2',
-                        title: 'Customize Status',
-                        id: '6Vw9iiDw9d0MD_Hh5cbIn',
+                        title: 'Validation',
+                        id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                                propertyName: 'validate.required',
+                                label: 'Required',
                                 inputType: 'switch',
-                                propertyName: 'showReflistName',
-                                label: 'Show Reflist Item Name',
-                                tooltip: 'When checked the DisplayName/RefList Name will be shown.',
                                 size: 'small',
-                                defaultValue: true,
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                layout: 'horizontal',
+                                jsSetting: true,
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
+                                id: 'qOkkwAnHvKJ0vYXeXMLsd',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                inputs: [
+                                    {
+                                        type: 'number',
+                                        id: 'minLength-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.minLength',
+                                        label: 'Min Length',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'number',
+                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
+                                        defaultValue: 4,
+                                        propertyName: 'validate.maxLength',
+                                        label: 'Max Length',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
-                                inputType: 'switch',
-                                propertyName: 'showIcon',
-                                label: 'Show Icon',
-                                size: 'small',
-                                tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
+                                id: 'Scip2BCqWk6HniFIJTgtA',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                inputs: [
+                                    {
+                                        type: 'text',
+                                        id: 'message-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.message',
+                                        label: 'Message',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'codeEditor',
+                                        id: 'validator-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.validator',
+                                        label: 'Validator',
+                                        labelAlign: 'right',
+                                        tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
+                                    }
+                                ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-5def-bd41-ee166a5dfcd8',
-                                inputType: 'switch',
-                                propertyName: 'solidBackground',
-                                label: 'Show Solid Background',
-                                size: 'small',
-                                defaultValue: true,
-                                tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
                             })
                             .toJson()
                         ]
@@ -579,24 +644,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "repeat",
-                                                                            label: "repeat"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-x",
-                                                                            label: "repeatX"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-y",
-                                                                            label: "repeatY"
-                                                                        },
-                                                                        {
-                                                                            value: "no-repeat",
-                                                                            label: "noRepeat"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })
@@ -718,7 +766,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                             }).toJson()]
                     },
                     {
-                        key: '4',
+                        key: '5',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()

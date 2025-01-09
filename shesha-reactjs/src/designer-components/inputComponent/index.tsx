@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
@@ -24,6 +24,8 @@ import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
+import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
+import ColumnsList from '../columns/columnsList';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
@@ -144,6 +146,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
+        case 'buttonGroupConfigurator':
+            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
+        case 'dynamicItemsConfigurator':
+            <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}
@@ -159,6 +165,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'columnsList':
+            return <ColumnsList {...props} readOnly={readOnly} />;
+        case 'editableTagGroup':
+            return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete {...props} readOnly={readOnly} />;
         case 'propertyAutocomplete':
