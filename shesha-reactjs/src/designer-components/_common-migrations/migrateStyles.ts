@@ -1,7 +1,12 @@
 import { addPx } from "../_settings/utils";
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & IConfigurableFormComponent & { block?: boolean };
+type ExtendedType = IStyleType & IConfigurableFormComponent & {
+    block?: boolean;
+    desktop?: IInputStyles;
+    mobile?: IInputStyles;
+    tablet?: IInputStyles;
+};
 
 
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {

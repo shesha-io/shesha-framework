@@ -1,10 +1,11 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { EditMode, IConfigurableFormComponent } from '@/interfaces';
+import { EditMode, IConfigurableFormComponent, IInputStyles, IStyleType } from '@/interfaces';
 
 export interface ITabPaneProps
-  extends Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
+  extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
   id: string;
+  type: string;
   icon?: string;
   key: string;
   title: string;
@@ -19,14 +20,22 @@ export interface ITabPaneProps
   label?: string;
   name?: string;
   tooltip?: string;
+
+  desktop?: IInputStyles;
+  mobile?: IInputStyles;
+  tablet?: IInputStyles;
 }
 
-export interface ITabsComponentProps extends IConfigurableFormComponent {
+export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleType {
   tabs: ITabPaneProps[];
   size?: SizeType;
   defaultActiveKey?: string;
   tabType?: 'line' | 'card';
   hidden?: boolean;
+  ghost?: boolean;
   customVisibility?: string;
-  position?: 'left' | 'right' | 'top' | 'bottom';
+  tabPosition?: 'left' | 'right' | 'top' | 'bottom';
+  desktop?: IInputStyles;
+  mobile?: IInputStyles;
+  tablet?: IInputStyles;
 }

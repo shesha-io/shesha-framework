@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
+import { Alert, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
@@ -24,6 +24,9 @@ import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
+import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ITabPaneProps } from '../tabs/models';
+import { getItemSettings, onAddNewItem } from './utils';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -31,6 +34,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
+    const availableConstants = useAvailableConstantsData();
     const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
@@ -159,7 +163,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
         case 'editableTagGroupProps':
-            return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
+            return <EditableTagGroup value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
             return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':
@@ -171,12 +175,33 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 value={value}
                 onChange={onChange}
             />;
-        case 'labelValueEditor': 
-         return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+        case 'labelValueEditor':
+            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
+        case 'itemListConfiguratorModal':
+            return <ItemListConfiguratorModal<ITabPaneProps>
+                readOnly={readOnly}
+                value={value}
+                // onChange={onChange}
+                initNewItem={onAddNewItem}
+                settingsMarkupFactory={() => getItemSettings()}
+                itemRenderer={({ item }) => ({
+                    label: item.title || item.label || item.name,
+                    description: item.tooltip,
+                    type: 'button',
+                    ...item
+                })}
+                buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
+                modalSettings={{
+                    title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
+                    header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
+                }}
+                actualModelContext={availableConstants}
+            >
+            </ItemListConfiguratorModal>;
         default:
             return <Input
                 size={size}

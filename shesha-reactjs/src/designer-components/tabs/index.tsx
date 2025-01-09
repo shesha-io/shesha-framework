@@ -1,20 +1,27 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModelWithParent, getLayoutStyle, useAvailableConstantsData } from '@/providers/form/utils';
+import { getActualModelWithParent, getLayoutStyle, getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
-import { Tabs, TabsProps } from 'antd';
-import { TabSettingsForm } from './settings';
+import { ConfigProvider, Tabs, TabsProps } from 'antd';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
+import { getSettings } from './settingsForm';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
+import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 
 type TabItem = TabsProps['items'][number];
 
@@ -24,20 +31,56 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   name: 'Tabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
-    const { anyOfPermissionsGranted } = useSheshaApplication();
+    const { backendUrl, httpHeaders, anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model;
+
+    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition: position = 'top' } = model;
+    // const mobile = useMedia('(max-width: 480px)');
+    // const tablet = useMedia('(max-width: 768px)');
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
+
+    const [finalStyle, setFinalStyle] = useState<React.CSSProperties>({});
+
+    const jsStyle = getStyle(model.style);
+    const dimensions = migratePrevStyles(model, defaultStyles).dimensions;
+    const border = migratePrevStyles(model, defaultStyles)?.border;
+    const font = migratePrevStyles(model, defaultStyles)?.font;
+    const shadow = migratePrevStyles(model, defaultStyles)?.shadow;
+
+    const dimensionsStyles = getSizeStyle(dimensions);
+    const borderStyles = getBorderStyle(border, jsStyle);
+    const fontStyles = getFontStyle(font);
+    const shadowStyles = getShadowStyle(shadow);
+
+    const styles = {
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...fontStyles,
+      ...shadowStyles,
+      ...jsStyle,
+    };
+
+    const fetchTabStyles = async () => {
+      const background = migratePrevStyles(model, defaultStyles)?.background;
+
+      // Fetch background style asynchronously
+      const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+
+      const backgroundStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
+      setFinalStyle({ ...styles, ...backgroundStyle });
+    };
+
+    fetchTabStyles();
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModelWithParent(item, allData, { model: { readOnly: model.readOnly } });
+        const tabModel = getActualModelWithParent({ ...item, type: '' }, allData, { model: { readOnly: item.readOnly } });
         const {
           id,
           key,
@@ -91,7 +134,17 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
     return model.hidden ? null : (
-      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
+      <ConfigProvider
+        theme={{
+          components: {
+            Tabs: {
+              cardBg: 'yellow'
+            }
+          },
+        }}
+      >
+        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} tabBarStyle={finalStyle} />
+      </ConfigProvider>
     );
   },
   initModel: (model) => {
@@ -99,7 +152,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       ...model,
       propertyName: 'custom Name',
       stylingBox: "{\"marginBottom\":\"5\"}",
-      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [] }],
+      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], type: '' }],
     };
     return tabsModel;
   },
@@ -116,8 +169,9 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
+    .add<ITabsComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles) }))
   ,
-  settingsFormFactory: (props) => <TabSettingsForm {...props} />,
+  settingsFormMarkup: () => getSettings(),
   customContainerNames: ['tabs'],
   getContainers: (model) => {
     return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));

@@ -51,7 +51,7 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
     };
 
     const onOkClick = () => {
-        onChange?.(localValue);
+        onChange?.([...value, ...localValue]);
         setShowModal(false);
     };
 
