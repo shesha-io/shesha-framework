@@ -15,8 +15,8 @@ import { ValidationErrors } from '@/components';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from '../textField/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { defaultStyles, initialStyle } from './utils';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
@@ -26,7 +26,20 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { backendUrl, httpHeaders } = useSheshaApplication();
-    const { size, border, background, headerBackground, style, shadow, headerShadow, headerStyle, footerStyle, footerBackground, footerShadow, ...props } = model;
+    const {
+      size,
+      border,
+      background,
+      headerBackground,
+      style,
+      shadow,
+      headerShadow,
+      headerStyle,
+      footerStyle,
+      footerBackground,
+      footerShadow,
+      ...props
+    } = model;
 
     const jsStyle = getStyle(style, data);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -86,7 +99,10 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
         !isValidGuid(model?.background.storedFile.id)) ||
       (model?.headerBackground?.type === 'storedFile' &&
         model?.headerBackground.storedFile?.id &&
-        !isValidGuid(model?.headerBackground.storedFile.id))
+        !isValidGuid(model?.headerBackground.storedFile.id)) ||
+      (model?.footerBackground?.type === 'storedFile' &&
+        model?.footerBackground.storedFile?.id &&
+        !isValidGuid(model?.footerBackground.storedFile.id))
     ) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
@@ -114,7 +130,14 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       ...footerJsStyle,
     });
 
-    return <ShaDrawer style={additionalStyles} headerStyle={additionalHeaderStyles}  footerStyle={additionalFooterStyles} {...props} />;
+    return (
+      <ShaDrawer
+        style={additionalStyles}
+        headerStyle={additionalHeaderStyles}
+        footerStyle={additionalFooterStyles}
+        {...props}
+      />
+    );
   },
   settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) =>
@@ -126,7 +149,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
         onCancelAction: migrateNavigateAction(prev.onCancelAction),
       }))
       .add<IDrawerProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<IDrawerProps>(5, (prev) => {
+      .add<IDrawerProps>(3, (prev) => {
         const styles: IInputStyles = {
           size: prev.size,
           width: prev.width,
@@ -142,7 +165,12 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IDrawerProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IDrawerProps>(4, (prev) => ({
+        ...migratePrevStyles(prev, defaultStyles()),
+        desktop: { ...migratePrevStyles(prev, defaultStyles()).desktop, ...initialStyle },
+        tablet: { ...migratePrevStyles(prev, defaultStyles()).tablet, ...initialStyle },
+        mobile: { ...migratePrevStyles(prev, defaultStyles()).mobile, ...initialStyle },
+      })),
   initModel: (model) => {
     const customProps: IDrawerProps = {
       ...model,

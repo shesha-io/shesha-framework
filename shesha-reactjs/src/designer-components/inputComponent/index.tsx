@@ -26,6 +26,7 @@ import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 import ColumnsList from '../columns/columnsList';
+import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
@@ -171,6 +172,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <SizableColumnsList {...props} readOnly={readOnly} />;            
         case 'editableTagGroupProps':
             return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
+        case 'referenceListAutocomplete':
+            return <ReferenceListAutocomplete {...props} readOnly={readOnly} />;
         case 'propertyAutocomplete':
             return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':

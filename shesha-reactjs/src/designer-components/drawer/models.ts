@@ -4,6 +4,7 @@ import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 import { IFontValue } from '../_settings/utils/font/interfaces';
+import { IInputStyles } from '@/index';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean;
@@ -40,6 +41,9 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   font?: IFontValue;
   footerShadow?: IShadowValue;
   footerBackground?: IBackgroundValue;
+  desktop?: IInputStyles;
+  tablet?: IInputStyles;
+  mobile?: IInputStyles;
 
 
 

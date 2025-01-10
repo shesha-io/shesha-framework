@@ -1102,12 +1102,12 @@ export const getSettings = (data: any) => {
                                 parentId: 'styleRouter',
                                 collapsible: 'header',
                                 content: {
-                                  id: 'backgroundStylePnl',
+                                  id: 'backgroundStylePnll',
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
                                         id: 'backgroundStyleRow-selectType',
-                                        parentId: 'backgroundStylePnl',
+                                        parentId: 'backgroundStylePnll',
                                         label: 'Type',
                                         jsSetting: false,
                                         propertyName: 'footerBackground.type',
@@ -1148,7 +1148,7 @@ export const getSettings = (data: any) => {
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyleRow-color',
-                                        parentId: 'backgroundStylePnl',
+                                        parentId: 'backgroundStylePnll',
                                         inputs: [
                                           {
                                             type: 'color',
@@ -1173,7 +1173,7 @@ export const getSettings = (data: any) => {
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-gradientColors',
-                                        parentId: 'backgroundStylePnl',
+                                        parentId: 'backgroundStylePnll',
                                         inputs: [
                                           {
                                             type: 'multiColorPicker',
@@ -1198,7 +1198,7 @@ export const getSettings = (data: any) => {
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerBackgroundStyle-url',
-                                        parentId: 'backgroundStylePnl',
+                                        parentId: 'backgroundStylePnll',
                                         inputs: [
                                           {
                                             type: 'text',
@@ -1222,7 +1222,7 @@ export const getSettings = (data: any) => {
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyle-image',
-                                        parentId: 'backgroundStylePnl',
+                                        parentId: 'backgroundStylePnll',
                                         inputs: [
                                           {
                                             type: 'imageUploader',
@@ -1246,7 +1246,7 @@ export const getSettings = (data: any) => {
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyleRow-storedFile',
-                                        parentId: 'backgroundStylePnl',
+                                        parentId: 'backgroundStylePnll',
                                         hidden: {
                                           _code:
                                             'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerBackground?.type) !== "storedFile";',
