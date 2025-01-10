@@ -26,6 +26,9 @@ export interface ITabPaneProps
   tablet?: IInputStyles;
 }
 
+interface ICardProps {
+  card: IInputStyles;
+}
 export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleType {
   tabs: ITabPaneProps[];
   size?: SizeType;
@@ -36,7 +39,7 @@ export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleT
   customVisibility?: string;
   tabPosition?: 'left' | 'right' | 'top' | 'bottom';
   card?: IInputStyles;
-  desktop?: IInputStyles;
-  mobile?: IInputStyles;
-  tablet?: IInputStyles;
+  desktop?: IInputStyles & ICardProps;
+  mobile?: IInputStyles & ICardProps;
+  tablet?: IInputStyles & ICardProps;
 }

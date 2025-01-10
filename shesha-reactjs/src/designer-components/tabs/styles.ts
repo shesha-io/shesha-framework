@@ -32,20 +32,22 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles }) => {
             background: ${cardStyles.backgroundImage || cardStyles.backgroundColor} !important; // Fallback
              ${cardStyles};
             box-shadow: ${styles.shadow} !important;
-            border: ${border} !important;
-            border-bottom: none !important;
+            border: ${border || borderTop} !important;
+            z-index: 1;
+            // border-bottom: none !important;
         }
 
         .ant-tabs-tab-active {
             --ant-tabs-card-bg: ${styles.background || styles.backgroundColor};
             background: ${styles.backgroundImage || styles.backgroundColor} !important;
-             ${rest};
+            ${rest};
             width: ${cardWidth};
             height: ${cardHeight};
             min-width: ${cardMinWidth};
             min-height: ${cardMinHeight};
             max-width: ${cardMaxWidth};
             max-height: ${cardMaxHeight};
+            border-bottom: none !important;
         }
 
         .ant-tabs-nav {

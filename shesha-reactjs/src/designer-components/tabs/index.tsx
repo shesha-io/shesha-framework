@@ -20,7 +20,7 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { initializeStyles, migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
+import { defaultCardStyles, defaultStyles } from './utils';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useStyles } from './styles';
 
@@ -38,7 +38,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const { globalState } = useGlobalState();
 
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition: position = 'top' } = model;
+    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top' } = model;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
@@ -174,7 +174,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           },
         }}
       >
-        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} className={styles.content} />
+        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
       </ConfigProvider>
     );
   },
@@ -200,8 +200,16 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
-    .add<ITabsComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles), card: { ...initializeStyles(prev.card, defaultStyles) } }))
-  ,
+    .add<ITabsComponentProps>(4, (prev) => {
+      const newModel = migratePrevStyles(prev, defaultStyles);
+      return {
+        ...newModel,
+        card: { ...initializeStyles(prev.card, defaultCardStyles) },
+        desktop: { ...newModel.desktop, card: { ...initializeStyles(prev.card, defaultCardStyles) } },
+        tablet: { ...newModel.tablet, card: { ...initializeStyles(prev.card, defaultCardStyles) } },
+        mobile: { ...newModel.mobile, card: { ...initializeStyles(prev.card, defaultCardStyles) } }
+      };
+    }),
   settingsFormMarkup: () => getSettings(),
   customContainerNames: ['tabs'],
   getContainers: (model) => {

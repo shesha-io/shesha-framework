@@ -111,7 +111,7 @@ export const getSettings = () => {
                                         .addSettingsInput({
                                             id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
                                             inputType: 'dropdown',
-                                            propertyName: 'position',
+                                            propertyName: 'tabPosition',
                                             tooltip: "This will set the position for all buttons",
                                             label: 'Position',
                                             dropdownOptions: [

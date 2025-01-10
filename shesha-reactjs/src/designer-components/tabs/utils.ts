@@ -1,8 +1,34 @@
 import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
 import { initializeStyles } from "../_common-migrations/migrateStyles";
+import { IStyleType } from "@/index";
 
-export const defaultStyles = {
+export const defaultStyles: IStyleType = {
+    border: {
+        border: {
+            all: {
+                width: '1px',
+            },
+            left: {
+                width: '0px',
+                color: '#d9d9d9',
+                style: 'none',
+            },
+            right: {
+                width: '0px',
+                color: '#d9d9d9',
+                style: 'none',
+            },
+            bottom: {
+                width: '0px',
+                color: '#d9d9d9',
+                style: 'none',
+            },
+        }
+    }
+};
+
+export const defaultCardStyles = {
 
 };
 
