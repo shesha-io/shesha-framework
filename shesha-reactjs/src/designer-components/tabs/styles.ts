@@ -18,13 +18,13 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles }) => {
             ${styles}
             
             border: ${border} !important;
-            border-left: ${borderLeft || border};
-            border-right: ${borderRight || border};
-            border-bottom: ${borderBottom || border};
+            border-left: ${borderLeft};
+            border-right: ${borderRight};
+            border-bottom: ${borderBottom};
+            border-top: ${borderTop};
             padding-top: 15px !important;
             border-top-left-radius: 0px;
             border-top-right-radius: 0px;
-            border-top: none !important;
         }
 
         .ant-tabs-tab {

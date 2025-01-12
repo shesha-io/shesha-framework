@@ -1,7 +1,7 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeLanguages } from '../codeEditor/types';
 import { ResultType } from '@/components/codeEditor/models';
-import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 
@@ -69,5 +69,6 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
+    settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
 };

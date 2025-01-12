@@ -5,6 +5,7 @@ import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { repeatOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
+import { getItemSettings } from './itemSettings';
 
 export const getSettings = () => {
     return {
@@ -64,6 +65,7 @@ export const getSettings = () => {
                                     label: 'Tabs',
                                     labelAlign: 'right',
                                     parentId: 'root',
+                                    settingsMarkupFactory: getItemSettings(),
                                     onAddNewItem: onAddNewItem,
                                     hidden: false
                                 })
@@ -664,7 +666,8 @@ export const getSettings = () => {
                                                     .toJson()
                                                 ]
                                             }
-                                        }).addCollapsiblePanel({
+                                        })
+                                        .addCollapsiblePanel({
                                             id: 'tabCardStyleCollapsiblePanel',
                                             propertyName: 'cardStyle',
                                             label: 'Card Styles',

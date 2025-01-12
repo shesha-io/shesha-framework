@@ -148,7 +148,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           destroyInactiveTabPane: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
-          style: getLayoutStyle(model, { data, globalState }),
+          style: getLayoutStyle(tabModel, { data, globalState }),
           children: (
             <ParentProvider model={tabModel}>
               <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />

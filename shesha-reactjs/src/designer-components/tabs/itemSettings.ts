@@ -21,6 +21,30 @@ export const getItemSettings = () => {
                         type: '',
                         components: [
                             ...new DesignerToolbarSettings()
+                                .addCollapsiblePanel({
+                                    id: 'customStyleCollapsiblePanel',
+                                    propertyName: 'style',
+                                    label: 'Custom Styles',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    parentId: 'styleRouter',
+                                    collapsible: 'header',
+                                    content: {
+                                        id: 'stylePnl-M500-911MFR',
+                                        components: [...new DesignerToolbarSettings()
+                                            .addSettingsInput({
+                                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                inputType: 'codeEditor',
+                                                propertyName: 'style',
+                                                hideLabel: false,
+                                                label: 'Style',
+                                                description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
                                 .addSettingsInput({
                                     id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
                                     inputType: 'text',

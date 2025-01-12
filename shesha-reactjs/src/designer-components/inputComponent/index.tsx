@@ -28,7 +28,6 @@ import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/config
 import ColumnsList from '../columns/columnsList';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ITabPaneProps } from '../tabs/models';
-import { getItemSettings } from './utils';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -38,7 +37,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const { data: formData } = useFormData();
     const availableConstants = useAvailableConstantsData();
     const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
-        propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
+        propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, settingsMarkupFactory,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
@@ -192,14 +191,13 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'itemListConfiguratorModal':
             return <ItemListConfiguratorModal<ITabPaneProps>
                 readOnly={readOnly}
+                initNewItem={onAddNewItem}
                 value={value}
                 onChange={onChange}
-                initNewItem={onAddNewItem}
-                settingsMarkupFactory={() => getItemSettings()}
+                settingsMarkupFactory={() => settingsMarkupFactory}
                 itemRenderer={({ item }) => ({
                     label: item.title || item.label || item.name,
                     description: item.tooltip,
-                    type: 'button',
                     ...item
                 })}
                 buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
