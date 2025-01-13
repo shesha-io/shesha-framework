@@ -5,12 +5,12 @@ import { IStyleType } from "@/index";
 
 export const defaultStyles: IStyleType = {
 
-    background: { type: 'color', color: 'inherit' },
+    background: { type: 'color', color: '#FFFFFF' },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
         border: {
-            all: { width: '1px', color: '#f0f0f0', style: 'solid' }, top: { width: '0' }, right: { width: '0' },
-            bottom: { width: '0' }, left: { width: '0' }
+            all: { width: '1px', color: '#f0f0f0', style: 'solid' }, top: { width: '1' }, right: { width: '1' },
+            bottom: { width: '1' }, left: { width: '1' }
         },
         radius: { all: 8 },
         selectedCorner: 'all',

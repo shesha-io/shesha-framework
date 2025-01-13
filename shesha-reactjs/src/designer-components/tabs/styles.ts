@@ -9,10 +9,6 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
         borderBottomWidth,
         borderRightWidth,
         borderLeftWidth,
-        borderTopLeftRadius,
-        borderTopRightRadius,
-        borderBottomLeftRadius,
-        borderBottomRightRadius,
         backgroundColor,
         backgroundImage,
         shadow,
@@ -47,6 +43,12 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
         default: `${borderWidth} ${borderStyle} ${borderColor}`,
     };
 
+
+    const borderTopLeftRadius = styles.borderRadius?.split(' ')[0] || 0;
+    const borderTopRightRadius = styles.borderRadius?.split(' ')[1] || 0;
+    const borderBottomLeftRadius = styles.borderRadius?.split(' ')[2] || 0;
+    const borderBottomRightRadius = styles.borderRadius?.split(' ')[3] || 0;
+
     const content = cx(
         'content',
         css`
@@ -59,11 +61,10 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
                 border-top: ${isTop ? 'none' : borderMap.top} !important;
                 background: ${backgroundImage || backgroundColor} !important;
                 padding: ${padding} !important;
-                ${isTop || isLeft ? 'border-top-left-radius: 0px' : 'border-top-left-radius:' + borderTopLeftRadius}
-                ${isTop || isRight ? 'border-top-left-radius: 0px' : 'border-top-right-radius:' + borderTopRightRadius}
-                ${isBottom || isLeft ? 'border-bottom-left-radius: 0px' : 'border-bottom-left-radius:' + borderBottomLeftRadius}
-                ${isBottom || isRight ? 'border-bottom-right-radius: 0px' : 'border-bottom-right-radius:' + borderBottomRightRadius}
-               
+                ${isTop || isLeft ? 'border-top-left-radius: 0px;' : `border-top-left-radius: ${borderTopLeftRadius};`}
+                ${isTop || isRight ? 'border-top-right-radius: 0px;' : `border-top-right-radius: ${borderTopRightRadius};`}
+                ${isBottom || isLeft ? 'border-bottom-left-radius: 0px;' : `border-bottom-left-radius: ${borderBottomLeftRadius};`}
+                ${isBottom || isRight ? 'border-bottom-right-radius: 0px;' : `border-bottom-right-radius: ${borderBottomRightRadius};`}
             }
 
             .ant-tabs-tab {

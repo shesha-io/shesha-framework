@@ -184,6 +184,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       propertyName: 'custom Name',
       stylingBox: "{\"marginBottom\":\"5\"}",
       tabPosition: "top",
+      ...initializeStyles(model, defaultCardStyles),
       tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], type: '' }],
     };
     return tabsModel;

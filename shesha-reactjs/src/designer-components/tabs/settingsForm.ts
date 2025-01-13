@@ -1053,7 +1053,7 @@ export const getSettings = () => {
                                                                             {
                                                                                 type: 'customDropdown',
                                                                                 id: 'backgroundStyleRow-position',
-                                                                                label: "Position",
+                                                                                label: "Tab Position",
                                                                                 hideLabel: true,
                                                                                 propertyName: "card.background.position",
                                                                                 dropdownOptions: [
