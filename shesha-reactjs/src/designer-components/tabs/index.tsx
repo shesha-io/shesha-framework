@@ -102,7 +102,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       fetchTabStyles();
     }, [model.background, model?.card?.background, backendUrl, httpHeaders, jsStyle]);
 
-    const { styles } = useStyles({ styles: finalStyle, cardStyles: cardFinalStyle });
+    const { styles } = useStyles({ styles: finalStyle, cardStyles: cardFinalStyle, tabPosition });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -183,6 +183,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       ...model,
       propertyName: 'custom Name',
       stylingBox: "{\"marginBottom\":\"5\"}",
+      tabPosition: "top",
       tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], type: '' }],
     };
     return tabsModel;

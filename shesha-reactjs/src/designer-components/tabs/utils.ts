@@ -7,22 +7,24 @@ export const defaultStyles: IStyleType = {
     border: {
         border: {
             all: {
-                width: '0px',
+                width: '1px',
+                color: '#d9d9d9',
+                style: 'solid',
             },
             left: {
-                width: '0px',
+                width: '1px',
                 color: '#d9d9d9',
-                style: 'none',
+                style: 'solid',
             },
             right: {
-                width: '0px',
+                width: '1px',
                 color: '#d9d9d9',
-                style: 'none',
+                style: 'solid',
             },
             bottom: {
-                width: '0px',
+                width: '1px',
                 color: '#d9d9d9',
-                style: 'none',
+                style: 'solid',
             },
             top: {
                 width: '1px',

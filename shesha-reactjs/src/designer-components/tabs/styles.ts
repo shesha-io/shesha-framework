@@ -1,66 +1,108 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }, { styles, cardStyles }) => {
+export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, position }) => {
+    const {
+        borderWidth,
+        borderStyle,
+        borderColor,
+        borderTopWidth,
+        borderBottomWidth,
+        borderRightWidth,
+        borderLeftWidth,
+        borderTopLeftRadius,
+        borderTopRightRadius,
+        borderBottomLeftRadius,
+        borderBottomRightRadius,
+        backgroundColor,
+        backgroundImage,
+        shadow,
+        padding = '15px',
+    } = styles;
 
-    const borderTop = `${styles.borderTopWidth ?? styles.borderWidth} ${styles.borderTopStyle ?? styles.borderStyle} ${styles.borderTopColor ?? styles.borderColor}`;
-    const borderBottom = `${styles.borderBottomWidth ?? styles.borderWidth} ${styles.borderBottomStyle ?? styles.borderStyle} ${styles.borderBottomColor ?? styles.borderColor}`;
-    const borderLeft = `${styles.borderLeftWidth ?? styles.borderWidth} ${styles.borderLeftStyle ?? styles.borderStyle} ${styles.borderLeftColor ?? styles.borderColor}`;
-    const borderRight = `${styles.borderRightWidth ?? styles.borderWidth} ${styles.borderRightStyle ?? styles.borderStyle} ${styles.borderRightColor ?? styles.borderColor}`;
-    const border = `${styles.borderWidth} ${styles.borderStyle} ${styles.borderColor}`;
+    const {
+        backgroundImage: cardBgImage,
+        backgroundColor: cardBgColor,
+        width: cardWidth,
+        height: cardHeight,
+        minWidth: cardMinWidth,
+        minHeight: cardMinHeight,
+        maxWidth: cardMaxWidth,
+        maxHeight: cardMaxHeight,
+    } = cardStyles;
 
-    const { width, height, minHeight, maxWidth, maxHeight, minWidth, ...rest } = styles;
-    const { width: cardWidth, height: cardHeight, minHeight: cardMinHeight, maxWidth: cardMaxWidth, maxHeight: cardMaxHeight, minWidth: cardMinWidth } = cardStyles;
+    const getBorder = (side) => {
+        return `${styles[`${side}Width`] ?? borderWidth} ${styles[`${side}Style`] ?? borderStyle} ${styles[`${side}Color`] ?? borderColor}`;
+    };
 
-    const content = cx("tab-content-holder", css`
-        .ant-tabs-content-holder {
-            --ant-tabs-card-bg: ${styles.backgroundImage || styles.backgroundColor};
-            background: ${styles.backgroundImage || styles.backgroundColor} !important; // Fallback
-            ${styles}
-            
-            border: ${border} !important;
-            border-left: ${borderLeft};
-            border-right: ${borderRight};
-            border-bottom: ${borderBottom};
-            border-top: ${borderTop};
-            padding-top: 15px !important;
-            border-top-left-radius: 0px;
-            border-top-right-radius: 0px;
-        }
+    const borderMap = {
+        top: getBorder('borderTop'),
+        bottom: getBorder('borderBottom'),
+        left: getBorder('borderLeft'),
+        right: getBorder('borderRight'),
+        default: `${borderWidth} ${borderStyle} ${borderColor}`,
+    };
 
-        .ant-tabs-tab {
-            --ant-tabs-card-bg: ${cardStyles.backgroundImage || cardStyles.backgroundColor};
-            background: ${cardStyles.backgroundImage || cardStyles.backgroundColor} !important; // Fallback
-             ${cardStyles};
-            box-shadow: ${styles.shadow} !important;
-            border: ${border || borderTop} !important;
-            z-index: 1;
-            // border-bottom: none !important;
-        }
+    const borderRadiusMap = {
+        topLeft: position === 'top' || position === 'left' ? '0px' : borderTopLeftRadius,
+        topRight: position === 'top' || position === 'right' ? '0px' : borderTopRightRadius,
+        bottomLeft: position === 'bottom' || position === 'left' ? '0px' : borderBottomLeftRadius,
+        bottomRight: position === 'bottom' || position === 'right' ? '0px' : borderBottomRightRadius,
+    };
 
-        .ant-tabs-tab-active {
-            --ant-tabs-card-bg: ${styles.background || styles.backgroundColor};
-            background: ${styles.backgroundImage || styles.backgroundColor} !important;
-            ${rest};
-            width: ${cardWidth};
-            height: ${cardHeight};
-            min-width: ${cardMinWidth};
-            min-height: ${cardMinHeight};
-            max-width: ${cardMaxWidth};
-            max-height: ${cardMaxHeight};
-            border-bottom: none !important;
-        }
+    const content = cx(
+        'tab-content-holder',
+        css`
+            .ant-tabs-content-holder {
+                --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
+                ${styles.noBorderStyles || ''};
+                border-left: ${position === 'left' ? 'none' : borderMap.left} !important;
+                border-right: ${position === 'right' ? 'none' : borderMap.right} !important;
+                border-bottom: ${position === 'bottom' ? 'none' : borderMap.bottom} !important;
+                border-top: ${position === 'top' ? 'none' : borderMap.top} !important;
+                padding: ${padding} !important;
+                border-top-left-radius: ${borderRadiusMap.topLeft};
+                border-top-right-radius: ${borderRadiusMap.topRight};
+                border-bottom-left-radius: ${borderRadiusMap.bottomLeft};
+                border-bottom-right-radius: ${borderRadiusMap.bottomRight};
+            }
 
-        .ant-tabs-nav {
-            width: ${width};
-            max-width: ${maxWidth};
-            min-width: ${minWidth};
-            margin: 0;
-        }
+            .ant-tabs-tab:not(.ant-tabs-tab-active) {
+                --ant-tabs-card-bg: ${cardBgImage || cardBgColor};
+                background: ${cardBgImage || cardBgColor} !important;
+                ${cardStyles};
+                box-shadow: ${shadow} !important;
+                border: ${borderMap[position] || borderMap.default} !important;
+                z-index: 1;
+            }
 
-        .ant-tabs-nav::before {
-            border-bottom: ${borderTop === '1px solid #d9d9d9' ? border : borderTop} !important;
-        }
-  `);
+            .ant-tabs-tab-active {
+                --ant-tabs-card-bg: ${backgroundColor || backgroundImage};
+                background: ${backgroundImage || backgroundColor} !important;
+                ${styles.noBorderStyles || ''};
+                ${cardStyles};
+                width: ${cardWidth};
+                height: ${cardHeight};
+                min-width: ${cardMinWidth};
+                min-height: ${cardMinHeight};
+                max-width: ${cardMaxWidth};
+                max-height: ${cardMaxHeight};
+                border: ${borderMap[position] || borderMap.default};
+                ${position === 'top' ? 'border-bottom: none' : position === 'left' ? 'border-left: none' : position === 'right' ? 'borderRight: none' : 'border-top: none'}
+            }
+
+            .ant-tabs-nav {
+                width: ${styles.width};
+                max-width: ${styles.maxWidth};
+                min-width: ${styles.minWidth};
+                margin: 0;
+            }
+
+            .ant-tabs-nav::before {
+                border-bottom: ${borderMap[position] || borderMap.default} !important;
+            }
+        `
+    );
+
     return {
         content,
     };
