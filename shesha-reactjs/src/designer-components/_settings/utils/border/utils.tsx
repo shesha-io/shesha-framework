@@ -174,7 +174,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
 
 export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
     const corner = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}";`;
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}";`;
 
     return {
         id: `borderStyleRow-${corner}`,

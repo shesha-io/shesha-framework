@@ -4,35 +4,19 @@ import { initializeStyles } from "../_common-migrations/migrateStyles";
 import { IStyleType } from "@/index";
 
 export const defaultStyles: IStyleType = {
+
+    background: { type: 'color', color: 'inherit' },
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
         border: {
-            all: {
-                width: '1px',
-                color: '#d9d9d9',
-                style: 'solid',
-            },
-            left: {
-                width: '1px',
-                color: '#d9d9d9',
-                style: 'solid',
-            },
-            right: {
-                width: '1px',
-                color: '#d9d9d9',
-                style: 'solid',
-            },
-            bottom: {
-                width: '1px',
-                color: '#d9d9d9',
-                style: 'solid',
-            },
-            top: {
-                width: '1px',
-                color: '#d9d9d9',
-                style: 'solid',
-            },
-        }
-    }
+            all: { width: '1px', color: '#f0f0f0', style: 'solid' }, top: { width: '0' }, right: { width: '0' },
+            bottom: { width: '0' }, left: { width: '0' }
+        },
+        radius: { all: 8 },
+        selectedCorner: 'all',
+        selectedSide: 'all'
+    },
+    shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
 };
 
 export const defaultCardStyles = {

@@ -102,7 +102,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       fetchTabStyles();
     }, [model.background, model?.card?.background, backendUrl, httpHeaders, jsStyle]);
 
-    const { styles } = useStyles({ styles: finalStyle, cardStyles: cardFinalStyle, tabPosition });
+    const { styles } = useStyles({ styles: finalStyle, cardStyles: cardFinalStyle, position: tabPosition });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
