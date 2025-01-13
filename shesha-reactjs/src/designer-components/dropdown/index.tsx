@@ -4,7 +4,7 @@ import settingsFormJson from './settingsForm.json';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IDropdownComponentProps } from './model';
@@ -13,7 +13,6 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -66,14 +65,14 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
     .add<IDropdownComponentProps>(5, (prev, context) => ({
       ...prev,
-      valueFormat: prev.valueFormat  ??
+      valueFormat: prev.valueFormat ??
         context.isNew
+        ? 'simple'
+        : prev['useRawValue'] === true
           ? 'simple'
-          : prev['useRawValue'] === true 
-            ? 'simple' 
-            : 'listItem',
+          : 'listItem',
     }))
-    .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDropdownComponentProps>(7, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
@@ -81,7 +80,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         style: prev.style,
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {

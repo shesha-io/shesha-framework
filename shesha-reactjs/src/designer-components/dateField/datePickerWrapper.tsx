@@ -3,7 +3,6 @@ import moment, { isMoment } from 'moment';
 import React, { FC, useMemo } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
-import { getStyle } from '@/providers/form/utils';
 import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
@@ -38,6 +37,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     disabledTimeFunc,
     readOnly,
     style,
+    additionalStyles,
     defaultToMidnight,
     resolveToUTC,
     ...rest
@@ -89,8 +89,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const handleOnOk = (value: moment.Moment | null) => handleDatePickerChange(value, value?.format(pickerFormat));
 
-  const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
-
   const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
   const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
   const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
@@ -109,7 +107,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         picker={picker}
         showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
         disabled={readOnly}
-        style={evaluatedStyle}
+        style={additionalStyles}
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
       />
@@ -133,7 +131,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       showNow={showNow}
       picker={picker}
       format={pickerFormat}
-      style={evaluatedStyle}
+      style={additionalStyles}
       {...rest}
       value={momentValue}
       allowClear

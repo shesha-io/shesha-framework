@@ -6,7 +6,7 @@ import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
 export interface IStandardApisProps {
-    
+
 }
 
 const StandardApisItems: ButtonGroupItemProps[] = [
@@ -18,7 +18,7 @@ const StandardApisItems: ButtonGroupItemProps[] = [
 const useStandardApis: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
     const { item } = args;
-    
+
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         // if (!isEntityMetadata(metadata))
         //     return [];
@@ -34,7 +34,7 @@ const standardApisHoc: DynamicRenderingHoc = (WrappedComponent) => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return StandardApisItems;
         }, []);
-    
+
         return (<WrappedComponent {...props} items={testItems} />);
     };
 };

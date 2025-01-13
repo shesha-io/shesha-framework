@@ -7,4 +7,6 @@ export interface IAlertComponentProps extends IConfigurableFormComponent {
     alertType?: 'success' | 'info' | 'warning' | 'error';
     closable?: boolean;
     icon?: string;
+    banner?: boolean;
+    marquee?: boolean;
 }

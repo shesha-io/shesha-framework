@@ -16,7 +16,7 @@ export const DefaultListItem: FC<IListItemProps> = ({ item, actualModelContext }
     const actualItem = useMemo(() => {
         return getActualModel({ label, description, icon }, actualModelContext);
     }, [label, description, icon, actualModelContext]);
-    
+
     const { styles } = useStyles();
     return (
         <>

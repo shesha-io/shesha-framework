@@ -1,4 +1,5 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { CSSProperties } from 'react';
 
 export type RangeType = 'start' | 'end';
 
@@ -13,7 +14,7 @@ export type RangePickerChangeEvent = (values: any, formatString: [string, string
 
 export type DisabledDateTemplate = 'disabledPastTime' | 'disableFutureTime';
 
-export interface IDateFieldProps extends IConfigurableFormComponent {
+export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyles {
   dateFormat?: string;
   value?: any;
   hideBorder?: boolean;
@@ -37,4 +38,5 @@ export interface IDateFieldProps extends IConfigurableFormComponent {
   disabledTimeMode?: 'none' | 'timeFunctionTemplate' | 'customTimeFunction';
   disabledTimeTemplate?: DisabledDateTemplate;
   disabledTimeFunc?: string;
+  additionalStyles?: CSSProperties;
 }

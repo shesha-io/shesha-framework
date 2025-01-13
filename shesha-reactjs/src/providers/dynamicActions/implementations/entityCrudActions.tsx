@@ -25,7 +25,7 @@ const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
         const result: IButtonGroupItem[] = [
             {
                 id: 'create',
-                name: `create new`, 
+                name: `create new`,
                 label: `Create new`,
                 itemType: 'item',
                 itemSubType: 'button',

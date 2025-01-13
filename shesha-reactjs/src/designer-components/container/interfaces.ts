@@ -1,5 +1,5 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
 export type JustifyContent =
   | 'center'
@@ -25,14 +25,14 @@ export type JustifyContent =
 export type JustifyItems =
   | 'normal'
   | 'stretch'
-  | 'center  '
-  | 'start '
-  | 'end  '
+  | 'center'
+  | 'start'
+  | 'end'
   | 'flex-start'
   | 'flex-end'
   | 'self-start'
   | 'self-end'
-  | 'left  '
+  | 'left'
   | 'right'
   | 'baseline'
   | 'first baseline'
@@ -72,7 +72,7 @@ export type JustifySelf =
   | 'flex-end; '
   | 'self-start'
   | 'self-end'
-  | 'left;  '
+  | 'left'
   | 'right;'
   | 'baseline'
   | 'first baseline'
@@ -167,7 +167,7 @@ export interface ICommonContainerProps {
   shadowStyle?: string;
 }
 
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
+export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps, IStyleType {
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;

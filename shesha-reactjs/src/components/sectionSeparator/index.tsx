@@ -20,6 +20,7 @@ export interface ISectionSeparatorProps {
   lineWidth?: string;
   lineHeight?: string;
   titleMargin?: number;
+  marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
   fontWeight?: string;
@@ -42,7 +43,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   titleStyle,
   tooltip,
   title,
-  titleMargin
+  titleMargin,
+  marginBottom
 }) => {
   const { styles } = useStyles();
   const titleRef = useRef<HTMLDivElement>(null);
@@ -61,7 +63,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign,
-    marginBottom: '8px',
+    marginBottom: marginBottom || '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
