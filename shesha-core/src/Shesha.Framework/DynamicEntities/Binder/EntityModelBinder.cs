@@ -232,6 +232,9 @@ namespace Shesha.DynamicEntities.Binder
                                         //case ArrayFormats.EntityReference:
                                         case ArrayFormats.Object:
                                         case ArrayFormats.ObjectReference:
+                                        case ArrayFormats.String:
+                                        case ArrayFormats.Number:
+                                        case ArrayFormats.Boolean:
                                             if (property.PropertyType.IsGenericType && jproperty.Value is JArray jList)
                                             {
                                                 var paramType = property.PropertyType.GetGenericArguments()[0];
