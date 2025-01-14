@@ -5,10 +5,10 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { getActualModel, getStyle } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { addPx } from '@/designer-components/button/util';
 import classNames from 'classnames';
-import { useDeepCompareMemo } from '@/hooks';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 const { Text } = Typography;
 
@@ -26,16 +26,13 @@ const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
 
 export interface IButtonGroupItemProps {
   item: IButtonGroupItem;
-  actualModelContext?: any;
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
-export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelContext, actionConfiguration }) => {
+export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfiguration }) => {
 
   const { styles } = useStyles();
-  const actualItem = useDeepCompareMemo(() => getActualModel({ ...item, actionConfiguration }, actualModelContext)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [{ ...item }, { ...actionConfiguration }, { ...actualModelContext }]);
+  const actualItem = useActualContextData({ ...item, actionConfiguration });
 
   const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, style: itemStyle, block, danger } = actualItem;
 

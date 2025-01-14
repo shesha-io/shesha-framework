@@ -2,7 +2,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import React, { Fragment } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModelWithParent, getLayoutStyle, useAvailableConstantsData } from '@/providers/form/utils';
+import { getLayoutStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -37,7 +37,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModelWithParent(item, allData, { model: { readOnly: model.readOnly } });
         const {
           id,
           key,
@@ -54,7 +53,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           readOnly,
           selectMode,
           components,
-        } = tabModel;
+        } = item;
 
         const granted = anyOfPermissionsGranted(permissions || []);
         if ((!granted || hidden) && allData.form?.formMode !== 'designer') return;
@@ -79,7 +78,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
           style: getLayoutStyle(model, { data, globalState }),
           children: (
-            <ParentProvider model={tabModel}>
+            <ParentProvider model={item}>
               <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
             </ParentProvider>
           ),
@@ -88,7 +87,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       });
 
       return tabItems;
-    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+    }, [tabs]);
 
     return model.hidden ? null : (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
