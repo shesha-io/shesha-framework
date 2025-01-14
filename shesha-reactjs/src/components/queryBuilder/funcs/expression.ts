@@ -1,8 +1,8 @@
-import { Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue, TypedMap } from '@react-awesome-query-builder/antd';
+import { Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue } from '@react-awesome-query-builder/antd';
 import { getEvaluationNodeFromJsonLogicNode, IEvaluateJsonLogicNode } from '@/utils/jsonLogic';
 import { IHasHideForCompare } from '../interfaces';
 
-const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: TypedMap<JsonLogicValue>): JsonLogicTree => {
+const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicValue>): JsonLogicTree => {
     const node: IEvaluateJsonLogicNode = {
         evaluate: [
             { expression: funcArgs.expression, type: 'javascript' }
