@@ -672,6 +672,7 @@ export const getSettings = () => {
                                             propertyName: 'cardStyle',
                                             label: 'Card Styles',
                                             labelAlign: 'right',
+                                            collapsedByDefault: true,
                                             parentId: 'cardStyleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -776,7 +777,7 @@ export const getSettings = () => {
                                                                             label: "Min Width",
                                                                             width: 85,
                                                                             hideLabel: true,
-                                                                            propertyName: "dimensions.minWidth",
+                                                                            propertyName: "card.dimensions.minWidth",
                                                                             icon: "minWidthIcon",
                                                                         },
                                                                         {

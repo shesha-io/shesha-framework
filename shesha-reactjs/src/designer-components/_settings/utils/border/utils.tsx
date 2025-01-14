@@ -133,7 +133,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
                 label: "Border",
                 hideLabel: true,
                 type: "button",
-                propertyName: "border.hideBorder",
+                propertyName: path ? `${path}.border.hideBorder` : "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
                 tooltip: "Select a border side to which the style will be applied",
@@ -141,7 +141,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
             {
                 label: "Select Side",
                 hideLabel: true,
-                propertyName: "border.selectedSide",
+                propertyName: path ? `${path}.border.selectedSide` : "border.selectedSide",
                 type: "radio",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 buttonGroupOptions: borderSides
@@ -150,11 +150,11 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
                 type: 'text',
                 label: "Width",
                 hideLabel: true,
-                propertyName: `border.border.${side}.width`,
+                propertyName: path ? `${path}.border.border.${side}.width` : `border.border.${side}.width`,
             },
             {
                 label: "Style",
-                propertyName: `border.border.${side}.style`,
+                propertyName: path ? `${path}.border.border.${side}.style` : `border.border.${side}.style`,
                 type: "dropdown",
                 hideLabel: true,
                 width: 60,
@@ -163,7 +163,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
             },
             {
                 label: `Color ${side}`,
-                propertyName: `border.border.${side}.color`,
+                propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
                 type: "color",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
@@ -186,7 +186,7 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
             {
                 id: "corner-selector",
                 label: "Corner Radius",
-                propertyName: "border.selectedCorner",
+                propertyName: path ? `${path}.border.selectedCorner` : "border.selectedCorner",
                 type: "radio",
                 defaultValue: "all",
                 tooltip: "Select a corner to which the radius will be applied",
@@ -201,7 +201,7 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
                 defaultValue: 0,
                 inputType: 'number',
                 tooltip: "Select a corner to which the radius will be applied",
-                propertyName: `border.radius.${corner}`
+                propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };
 });

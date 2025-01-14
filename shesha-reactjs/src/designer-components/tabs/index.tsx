@@ -2,7 +2,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import React, { Fragment, useEffect, useState } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModelWithParent, getLayoutStyle, getStyle, useAvailableConstantsData } from '@/providers/form/utils';
+import { getActualModelWithParent, getLayoutStyle, getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -61,11 +61,15 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const cardBorder = model?.card?.border;
     const cardFont = model?.card?.font;
     const cardShadow = model?.card?.shadow;
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const cardStyling = JSON.parse(model?.card?.stylingBox || '{}');
 
     const cardDimensionsStyles = getSizeStyle(cardDimensions);
     const cardBorderStyles = getBorderStyle(cardBorder, cardJsStyle);
     const cardFontStyles = getFontStyle(cardFont);
     const cardShadowStyles = getShadowStyle(cardShadow);
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const cardStylingBoxAsCSS = pickStyleFromModel(cardStyling);
 
     const style = {
       ...dimensionsStyles,
@@ -73,6 +77,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       ...fontStyles,
       ...shadowStyles,
       ...jsStyle,
+      ...stylingBoxAsCSS
     };
 
     const cardStyle = {
@@ -81,6 +86,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       ...cardFontStyles,
       ...cardShadowStyles,
       ...cardJsStyle,
+      ...cardStylingBoxAsCSS
     };
 
     useEffect(() => {
@@ -102,7 +108,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       fetchTabStyles();
     }, [model.background, model?.card?.background, backendUrl, httpHeaders, jsStyle]);
 
-    const { styles } = useStyles({ styles: finalStyle, cardStyles: cardFinalStyle, position: tabPosition });
+    const { styles } = useStyles({ styles: finalStyle, cardStyles: tabType === 'line' ? { ...cardFontStyles, cardDimensionsStyles, } : cardFinalStyle, position: tabPosition });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -166,10 +172,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         theme={{
           components: {
             Tabs: {
-              cardBg: 'none',
-              itemColor: finalStyle.color,
-              titleFontSize: Number(finalStyle.fontSize),
-
+              titleFontSize: font.size
             }
           },
         }}

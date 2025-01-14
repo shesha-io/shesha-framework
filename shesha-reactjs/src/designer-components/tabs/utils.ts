@@ -20,7 +20,7 @@ export const defaultStyles: IStyleType = {
 };
 
 export const defaultCardStyles = {
-
+    background: { type: 'color', color: 'rgba(0,0,0,0.02)' },
 };
 
 export const onAddNewItem = (items) => {
