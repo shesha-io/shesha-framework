@@ -38,32 +38,32 @@ namespace Shesha.DynamicEntities.Binder
     {
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
-        private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
         private readonly ITypeFinder _typeFinder;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IObjectValidatorManager _objectValidatorManager;
+        private readonly IModelConfigurationManager _modelConfigurationManager;
 
         public EntityModelBinder(
             IDynamicRepository dynamicRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
-            IRepository<EntityConfig, Guid> entityConfigRepository,
             IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
             ITypeFinder typeFinder,
             IEntityConfigurationStore entityConfigurationStore,
-            IObjectValidatorManager propertyValidatorManager
+            IObjectValidatorManager propertyValidatorManager,
+            ModelConfigurationManager modelConfigurationManager
             )
         {
             _dynamicRepository = dynamicRepository;
             _entityPropertyRepository = entityPropertyRepository;
-            _entityConfigRepository = entityConfigRepository;
             _metadataProvider = metadataProvider;
             _iocManager = iocManager;
             _typeFinder = typeFinder;
             _entityConfigurationStore = entityConfigurationStore;
             _objectValidatorManager = propertyValidatorManager;
+            _modelConfigurationManager = modelConfigurationManager;
         }
 
         private List<JProperty> ExcludeFrameworkFields(List<JProperty> query)
@@ -100,7 +100,7 @@ namespace Shesha.DynamicEntities.Binder
             if (!entityIdValue.IsNullOrEmpty() && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = _entityConfigRepository.GetAll().FirstOrDefault(x => x.Namespace == entityType.Namespace && x.ClassName == entityType.Name && !x.IsDeleted);
+            var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
@@ -173,7 +173,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (property.IsReadOnly())
                             continue;
 
-                        var propConfig = _entityPropertyRepository.GetAll().FirstOrDefault(x => x.EntityConfig == config && x.Name == jName);
+                        var propConfig = config.Properties.FirstOrDefault(x => x.Name == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
@@ -232,6 +232,9 @@ namespace Shesha.DynamicEntities.Binder
                                         //case ArrayFormats.EntityReference:
                                         case ArrayFormats.Object:
                                         case ArrayFormats.ObjectReference:
+                                        case ArrayFormats.String:
+                                        case ArrayFormats.Number:
+                                        case ArrayFormats.Boolean:
                                             if (property.PropertyType.IsGenericType && jproperty.Value is JArray jList)
                                             {
                                                 var paramType = property.PropertyType.GetGenericArguments()[0];
@@ -594,13 +597,10 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var propConfigs = _entityPropertyRepository.GetAll().Where(x =>
-                x.EntityConfig.Namespace == entityType.Namespace
-                && (x.EntityConfig.ClassName == entityType.Name || x.EntityConfig.ClassName == shortAlias))
-                .ToList();
+            var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
             foreach (var prop in props)
             {
-                var propConfig = propConfigs.FirstOrDefault(x => x.Name == prop.Name);
+                var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);
                 if ((prop.GetCustomAttribute<CascadeUpdateRulesAttribute>()?.DeleteUnreferenced ?? false)
                     || (propConfig?.CascadeDeleteUnreferenced ?? false))
                 {
