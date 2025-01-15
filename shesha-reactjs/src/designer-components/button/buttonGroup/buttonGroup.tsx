@@ -31,6 +31,7 @@ import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -224,8 +225,9 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    const items = useActualContextData(props.items, props.readOnly);
     return (
-        <DynamicActionsEvaluator items={props.items}>
+        <DynamicActionsEvaluator items={items}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}
         </DynamicActionsEvaluator>
     );

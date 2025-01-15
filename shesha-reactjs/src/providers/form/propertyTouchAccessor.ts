@@ -22,7 +22,24 @@ export class PropertyTouchAccessor extends BaseAccessor<PropertyTouchAccessor, a
         this._parent = parent;
 
         this._touchedProps = new Array<IPropertyTouch>();
-    }
+
+        if (Array.isArray(data)) {
+          this[Symbol.iterator] = () => {
+            const data = this._data;
+            let index = 0;
+            return {
+                next() {
+                    const result = {
+                        value: data[index],
+                        done: index >= data.length
+                    };
+                    index++;
+                    return result;
+                }
+            };
+          };
+        }
+    };
 
     get touchedProps(): Array<IPropertyTouch> {
         return this._touchedProps;
