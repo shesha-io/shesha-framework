@@ -691,7 +691,6 @@ export const getSettings = (data) => {
                                                         id: 'primary-additionalStylesRow',
                                                         parentId: 'additionalStylesPnl',
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        // inline: true,
                                                         inputs: [
                                                             {
                                                                 id: 'primary-color-412c-8461-4c8d55e5c073',
@@ -715,7 +714,6 @@ export const getSettings = (data) => {
                                                         id: 'additionalStylesRow',
                                                         parentId: 'additionalStylesPnl',
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        // inline: true,
                                                         inputs: [
                                                             {
                                                                 id: 'secondary-color-412c-8461-4c8d55e5c073',
