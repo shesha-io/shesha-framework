@@ -18,7 +18,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-font-size-lg: ${styles.fontSize || 16};
       --ant-steps-nav-arrow-color: ${styles.color}45;
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
-      
+
       * {
         font-weight: ${styles.fontWeight || 400};
         font-family: ${styles.fontFamily};
@@ -38,11 +38,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
   .ant-btn-primary {
       --ant-color-primary: ${primaryBgColor};
       --ant-button-primary-active-bg: ${primaryBgColor} !important;
+      --ant-color-primary-hover: ${primaryBgColor}90 !important;
       --ant-button-primary-hover-color: ${primaryTextColor} !important;
+      --ant-color-text-light-solid: ${primaryTextColor} !important;
       --ant-button-primary-hover-border-color: ${secondaryBgColor} !important;
-      --ant-button-default-hover-color: ${primaryBgColor} !important;
       --ant-button-primary-color: ${primaryTextColor} !important;
-      --ant-button-primary-hover-bg: ${primaryBgColor}60 !important;
     }
     
     ${styles}
