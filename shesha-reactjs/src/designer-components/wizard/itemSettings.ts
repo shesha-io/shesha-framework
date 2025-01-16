@@ -9,7 +9,7 @@ const getStandardConstants: GetAvailableConstantsFunc = async ({ metadataBuilder
     .build();
 };
 
-export const getSettings = (_data?: IWizardStepProps) =>
+export const getItemSettings = (_data?: IWizardStepProps) =>
   new DesignerToolbarSettings()
     .addTextField({
       id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
@@ -372,7 +372,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       hidden: false,
       description:
-        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'Enter custom visibility code.  You must return true to show the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
@@ -405,7 +405,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customEnabled: null,
       description:
-        'Enter custom enabled code.  You must return true to enable the component. ' + 
+        'Enter custom enabled code.  You must return true to enable the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],

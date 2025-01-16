@@ -1,7 +1,7 @@
 import { addPx } from "../_settings/utils";
 import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
+type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type' | 'size'> & { block?: boolean };
 
 
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {
@@ -44,10 +44,10 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 gradient: { direction: 'to right', colors: {} }
             },
             font: {
-                color: prevStyles?.fontColor || prev?.font?.color,
+                color: prevStyles?.fontColor || defaults?.font?.color,
                 type: prev?.font?.type || 'Segoe UI',
                 align: prev?.font?.align || 'left',
-                size: prevStyles?.fontSize as number || fontSizeFromSize || prev?.font?.size || 14,
+                size: prevStyles?.fontSize as number || fontSizeFromSize || defaults?.font?.size || 14,
                 weight: prevStyles?.fontWeight as string || prev?.font?.weight || '400',
             },
             dimensions: {

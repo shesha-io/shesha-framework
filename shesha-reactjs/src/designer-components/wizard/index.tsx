@@ -1,5 +1,4 @@
 import React from 'react';
-import WizardSettingsForm from './settings';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
@@ -16,6 +15,10 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
+import { getSettings } from './settingsForm';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -29,7 +32,6 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
         type="control"
-
       >
         <Tabs {...model} form={form} />
       </DataContextProvider>
@@ -94,9 +96,10 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
-  ,
-  settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
-  // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+
   customContainerNames: ['steps'],
   getContainers: (model) => {
     return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
