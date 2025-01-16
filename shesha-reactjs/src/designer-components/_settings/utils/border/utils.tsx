@@ -116,23 +116,24 @@ export const borderCorners = [
     }
 ];
 
-export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map(value => {
+export const getBorderInputs = (isResponsive: boolean = true, path = '') => borderSides.map(value => {
     const side = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);'
-        : 'return  getSettingValue(data?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data?.border?.hideBorder);';
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedSide)' + `!== "${side}"` +
+        ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);'
+        : 'return  getSettingValue(data?' + `${path ? '.' + path : ''}` + '.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);';
 
     return {
         id: `borderStyleRow-${side}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: { _code: 'return  getSettingValue(data?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+        readOnly: false,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
                 label: "Border",
                 hideLabel: true,
                 type: "button",
-                propertyName: "border.hideBorder",
+                propertyName: path ? `${path}.border.hideBorder` : "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
                 tooltip: "Select a border side to which the style will be applied",
@@ -140,7 +141,7 @@ export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map
             {
                 label: "Select Side",
                 hideLabel: true,
-                propertyName: "border.selectedSide",
+                propertyName: path ? `${path}.border.selectedSide` : "border.selectedSide",
                 type: "radio",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 buttonGroupOptions: borderSides
@@ -149,11 +150,11 @@ export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map
                 type: 'text',
                 label: "Width",
                 hideLabel: true,
-                propertyName: `border.border.${side}.width`,
+                propertyName: path ? `${path}.border.border.${side}.width` : `border.border.${side}.width`,
             },
             {
                 label: "Style",
-                propertyName: `border.border.${side}.style`,
+                propertyName: path ? `${path}.border.border.${side}.style` : `border.border.${side}.style`,
                 type: "dropdown",
                 hideLabel: true,
                 width: 60,
@@ -162,7 +163,7 @@ export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map
             },
             {
                 label: `Color ${side}`,
-                propertyName: `border.border.${side}.color`,
+                propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
                 type: "color",
                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
@@ -171,21 +172,21 @@ export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map
     };
 });
 
-export const getCornerInputs = (isResponsive: boolean = true) => radiusCorners.map(value => {
+export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
     const corner = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data?.border?.selectedCorner)' + `!== "${corner}";`;
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}";`;
 
     return {
         id: `borderStyleRow-${corner}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+        readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);', _mode: 'code', _value: false } as any,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
                 id: "corner-selector",
                 label: "Corner Radius",
-                propertyName: "border.selectedCorner",
+                propertyName: path ? `${path}.border.selectedCorner` : "border.selectedCorner",
                 type: "radio",
                 defaultValue: "all",
                 tooltip: "Select a corner to which the radius will be applied",
@@ -200,7 +201,7 @@ export const getCornerInputs = (isResponsive: boolean = true) => radiusCorners.m
                 defaultValue: 0,
                 inputType: 'number',
                 tooltip: "Select a corner to which the radius will be applied",
-                propertyName: `border.radius.${corner}`
+                propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };
 });

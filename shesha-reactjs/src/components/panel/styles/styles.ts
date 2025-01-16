@@ -1,12 +1,12 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRadius }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, { bodyStyle, headerStyle }) => {
   const extraMargin = "28px";
 
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
-  const shaCollapsiblePanel = cx("sha-collapsible-panel", css`
+  const shaCollapsiblePanel = cx("", css`
       &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
@@ -30,11 +30,23 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
         }
       }
     
-      &:not(.${prefixCls}-collapse-ghost) {
-        > .${prefixCls}-collapse-item {
-          > .${prefixCls}-collapse-header {
-            border-top-left-radius: ${borderRadius ?? token.borderRadiusLG}px;
-            border-top-right-radius: ${borderRadius ?? token.borderRadiusLG}px;
+      &.ant-collapse-item {
+          width: ${bodyStyle?.width} !important;
+          min-width: ${bodyStyle?.minWidth};
+          max-width: ${bodyStyle?.maxWidth};
+          height: ${bodyStyle?.height};
+          min-height: ${bodyStyle?.minHeight};
+          max-height: ${bodyStyle?.maxHeight};
+          margin-bottom: ${bodyStyle?.marginBottom};
+          margin-top: ${bodyStyle?.marginTop};
+          margin-left: ${bodyStyle?.marginLeft};
+          margin-right: ${bodyStyle?.marginRight};
+          border-radius: ${bodyStyle.borderRadius};
+          border: ${bodyStyle.border};
+
+          > .ant-collapse-header {
+            border-top-left-radius: ${bodyStyle.borderTopLeftRadius ?? token.borderRadiusLG}px;
+            border-top-right-radius: ${bodyStyle.borderTopRightRadius ?? token.borderRadiusLG}px;
             background-color: #f0f0f0;
             margin:'auto 0px';
             min-height: 50px;
@@ -45,78 +57,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
             padding-top:5px;
           }
         }
-      }
-    
-      &.${prefixCls}-collapse-ghost {
-        > .${prefixCls}-collapse-item {
-          > .${prefixCls}-collapse-header {
-            padding: 4px 0px;
-            border-bottom: 2px solid ${token.colorPrimary};
-            border-bottom-left-radius: unset;
-            border-bottom-right-radius: unset;
-          }
-          > .${prefixCls}-collapse-content {
-            > .${prefixCls}-collapse-content-box {
-              padding: 5px 0;
-            }
-          }
-        }
-      }
-    
-      .${prefixCls}-collapse-item {
-        &.${prefixCls}-collapse-item-active {
-        }
-    
-        .${prefixCls}-collapse-header {
-          min-height: 25px;
-          font-size: 15px;
-          font-weight: 500;
-          position: relative;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          .${prefixCls}-collapse-extra {
-            float: unset;
-          }
-    
-          .${prefixCls}-collapse-header-text {
-            flex-grow: 1;
-            margin: auto 0;
-            margin-left: -5px;
-          }
-        }
-    
-        .${prefixCls}-collapse-content {
-          border-top: unset;
-          background: white;
-    
-          &.${noContentPadding} {
-            padding: unset;
-          }
-    
-          &.${prefixCls}-collapse-content-active {
-          }
-        }
-      }
-    
-      .${prefixCls}-collapse-header-text {
-        font-size: 14px;
-        min-height: 30px;
-        line-height: 2;
-      }
-    
-      .${prefixCls}-blend-btn {
-        border: none;
-        height: 24px;
-      }
-    
-      .${prefixCls}-collapse-arrow {
-        padding-top: 3px !important;
-        margin-top: -3px !important;
-      }  
-      .ant-collapse-expand-icon{
-        margin-right:10px;
-      } 
+
+
     `);
 
   return {

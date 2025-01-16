@@ -9,7 +9,7 @@ export interface IBorderValue {
         bottomRight?: number;
     };
     border?: {
-        all?: {
+        all: {
             width?: string;
             color?: string;
             style?: string;

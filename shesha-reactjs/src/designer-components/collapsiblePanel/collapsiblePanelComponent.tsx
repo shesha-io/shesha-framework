@@ -3,22 +3,26 @@ import { CollapsiblePanel, headerType } from '@/components/panel';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
-import { useFormData, useGlobalState } from '@/providers';
+import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
-import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from '@/utils/uuid';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { getSettings } from './settingsForm';
+import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 type PanelContextType = 'parent' | 'child' | undefined;
 
@@ -33,7 +37,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { formMode, formSettings } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
+    const { backendUrl, httpHeaders } = useSheshaApplication();
     const isFormSettings = formSettings?.isSettingsForm;
+    const [finalStyle, setFinalStyle] = useState<React.CSSProperties>({});
+    const [headerFinalStyle, setCardFinalStyle] = useState<React.CSSProperties>({});
 
     const {
       label,
@@ -43,23 +50,82 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ghost,
       bodyColor,
       headerColor,
-      isSimpleDesign,
       hideCollapseContent,
-      hideWhenEmpty,
+      hideWhenEmpty
     } = model;
 
     const panelContextState = useContext(PanelContext);
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
-    if (model.hidden) return null;
-
     const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingHeader = JSON.parse(model.stylingBox || '{}');
 
-    const getPanelStyle = {
+    const getBodyStyle = {
       ...pickStyleFromModel(styling),
       ...(executeFunction(model?.style, { data, globalState }) || {}),
     };
+
+    const getHeaderStyle = {
+      ...pickStyleFromModel(stylingHeader),
+      ...(executeFunction(model?.style, { data, globalState }) || {}),
+    };
+
+    const dimensions = model.dimensions;
+    const border = model?.border;
+    const font = model?.font;
+    const shadow = model?.shadow;
+
+    const dimensionsStyles = getSizeStyle(dimensions);
+    const borderStyles = getBorderStyle(border, getBodyStyle);
+    const fontStyles = getFontStyle(font);
+    const shadowStyles = getShadowStyle(shadow);
+
+    const headerDimensions = model?.headerStyles?.dimensions;
+    const headerBorder = model?.headerStyles?.border;
+    const headerFont = model?.headerStyles?.font;
+    const headerShadow = model?.headerStyles?.shadow;
+
+    const headerDimensionsStyles = getSizeStyle(headerDimensions);
+    const headerBorderStyles = getBorderStyle(headerBorder, getHeaderStyle);
+    const headerFontStyles = getFontStyle(headerFont);
+    const headerShadowStyles = getShadowStyle(headerShadow);
+
+    const style = {
+      ...dimensionsStyles,
+      ...borderStyles,
+      ...fontStyles,
+      ...shadowStyles,
+      ...getBodyStyle
+    };
+
+    const headerStyle = {
+      ...headerDimensionsStyles,
+      ...headerBorderStyles,
+      ...headerFontStyles,
+      ...headerShadowStyles,
+      ...getHeaderStyle
+    };
+
+    useEffect(() => {
+      const fetchTabStyles = async () => {
+        const background = model?.background;
+        const headerBackground = model?.headerStyles?.background;
+
+        // Fetch background style asynchronously
+        const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+        const headerStoredImageUrl = await getBackgroundImageUrl(headerBackground, backendUrl, httpHeaders);
+
+        const backgroundStyle = await getBackgroundStyle(background, getBodyStyle, storedImageUrl);
+        const headerBackgroundStyle = await getBackgroundStyle(headerBackground, getHeaderStyle, headerStoredImageUrl);
+
+        setCardFinalStyle({ ...headerStyle, ...headerBackgroundStyle });
+        setFinalStyle({ ...style, ...backgroundStyle });
+      };
+
+      fetchTabStyles();
+    }, [model.background, model?.headerStyles?.background, backendUrl, httpHeaders]);
+
 
     const headerComponents = model?.header?.components ?? [];
 
@@ -88,6 +154,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       };
     })();
 
+    if (model.hidden) return null;
+
     return (
       <ParentProvider model={model}>
         <PanelContext.Provider value={panelPosition}>
@@ -106,14 +174,17 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
             ghost={ghost}
             dynamicBorderRadius={model?.borderRadius}
-            style={{  ...getPanelStyle  }}
+            style={{ ...getBodyStyle }}
+            bodyStyle={finalStyle}
+            headerStyle={headerFinalStyle}
             className={model.className}
             bodyColor={bodyColor}
             headerColor={headerColor}
-            isSimpleDesign={isSimpleDesign}
+            isSimpleDesign={true}
             panelHeadType={headType}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
+
           >
             <ComponentsContainer
               containerId={model.content.id}
@@ -124,12 +195,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       </ParentProvider>
     );
   },
-  initModel: (model) => ({
-    ...model,
-    stylingBox: "{\"marginBottom\":\"5\"}"
-  }),
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: () => getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
   migrator: (m) =>
     m
       .add<ICollapsiblePanelComponentPropsV0>(0, (prev) => {
@@ -176,8 +243,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         ...prev,
         customHeader: { id: nanoid(), components: [] }
       }))
-
-  ,
+      .add<ICollapsiblePanelComponentProps>(8, (prev) => ({ ...prev, stylingBox: "{\"marginBottom\":\"5\"}" }))
+      .add<ICollapsiblePanelComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   customContainerNames: ['header', 'content', 'customHeader'],
 };
 
