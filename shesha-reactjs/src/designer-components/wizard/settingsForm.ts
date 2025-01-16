@@ -22,7 +22,7 @@ export const getSettings = (data) => {
                 tabs: [
                     {
                         key: '1',
-                        title: 'Display',
+                        title: 'Common',
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
@@ -97,20 +97,6 @@ export const getSettings = (data) => {
                                 jsSetting: true,
                                 hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                 dropdownOptions: data?.steps,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'buttonsLayout',
-                                label: 'Buttons Layout',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'How you want the steps buttons to be aligned',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'left', label: 'Left' },
-                                    { value: 'right', label: 'Right' },
-                                    { value: 'spaceBetween', label: 'Space Between' }
-                                ]
                             })
                             .addSettingsInput({
                                 id: nanoid(),
@@ -687,6 +673,20 @@ export const getSettings = (data) => {
                                             content: {
                                                 id: 'additionalStylesPnl',
                                                 components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'buttonsLayout',
+                                                        label: 'Buttons Layout',
+                                                        parentId: 'root',
+                                                        inputType: 'dropdown',
+                                                        tooltip: 'How you want the steps buttons to be aligned',
+                                                        jsSetting: true,
+                                                        dropdownOptions: [
+                                                            { value: 'left', label: 'Left' },
+                                                            { value: 'right', label: 'Right' },
+                                                            { value: 'spaceBetween', label: 'Space Between' }
+                                                        ]
+                                                    })
                                                     .addSettingsInputRow({
                                                         id: 'primary-additionalStylesRow',
                                                         parentId: 'additionalStylesPnl',
