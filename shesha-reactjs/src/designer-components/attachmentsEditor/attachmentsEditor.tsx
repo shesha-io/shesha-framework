@@ -20,8 +20,9 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
-export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
+export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
   filesCategory?: string;
@@ -35,6 +36,11 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   maxHeight?: string;
   onFileChanged?: string;
   downloadZip?: boolean;
+  layout: 'vertical' | 'horizontal' | 'grid';
+  listType: 'text' | 'picture' | 'picture-card';
+  pictureWidth?: string;
+  pictureHeight?: string;
+  pictureRadius?: string;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -56,7 +62,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
 
-      if (!model.onFileChanged) 
+      if (!model.onFileChanged)
         return;
 
       executeScript<void>(model.onFileChanged, {
@@ -74,7 +80,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}`}}> 
+      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
           return (
             <StoredFilesProvider
@@ -85,7 +91,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
-              
+
               // used for requered field validation
               onChange={onChange}
               value={value}
@@ -101,6 +107,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 isDragger={model?.isDragger}
                 onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
+                layout={model.layout}
+                listType={model.listType}
+                {...model}
+
               />
             </StoredFilesProvider>
           );
@@ -122,12 +132,16 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerId: '',
         ownerType: '',
         ownerName: '',
+        listType: 'text',
+        layout: 'vertical',
+        pictureWidth: '100px',
+        pictureHeight: '100px',
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAttachmentsEditorProps>(2, (prev) => migrateVisibility(prev))
     .add<IAttachmentsEditorProps>(3, (prev) => migrateReadOnly(prev))
-    .add<IAttachmentsEditorProps>(4, (prev) => ({...prev, downloadZip: true}))
+    .add<IAttachmentsEditorProps>(4, (prev) => ({ ...prev, downloadZip: true }))
     .add<IAttachmentsEditorProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),

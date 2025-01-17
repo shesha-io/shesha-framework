@@ -6,19 +6,20 @@ import {
   ButtonProps,
   App,
   Upload
-  } from 'antd';
+} from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
 import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
+import { IInputStyles } from '@/designer-components/textField/interfaces';
 
 interface IUploaderFileTypes {
   name: string;
   type: string;
 }
 
-export interface IStoredFilesRendererBaseProps {
+export interface IStoredFilesRendererBaseProps extends IInputStyles {
   fileList?: IStoredFile[];
   allowUpload?: boolean;
   allowDelete?: boolean;
@@ -44,6 +45,11 @@ export interface IStoredFilesRendererBaseProps {
   isStub?: boolean;
   allowedFileTypes?: string[];
   maxHeight?: string;
+  layout: 'vertical' | 'horizontal' | 'grid';
+  listType: 'text' | 'picture' | 'picture-card';
+  pictureWidth?: string;
+  pictureHeight?: string;
+  pictureRadius?: string;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -68,11 +74,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   maxHeight,
   downloadZip,
-  allowDelete
+  allowDelete,
+  layout,
+  listType,
+  borderSize, borderColor, borderType, fontColor, fontSize, width, height, pictureHeight, pictureRadius, pictureWidth
 }) => {
   const hasFiles = !!fileList.length;
-  const { styles } = useStyles();
+  const { styles } = useStyles({ borderSize, borderColor, borderType, fontColor, fontSize, width, height, maxHeight, pictureHeight, pictureRadius, pictureWidth, layout });
   const { message, notification } = App.useApp();
+
+  const listTypeAndLayout = listType === 'text' ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>
     notification.success({
@@ -143,22 +154,22 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = () => {
     return (
       <Button type="link" icon={<UploadOutlined />} style={{ display: disabled ? 'none' : '' }} {...uploadBtnProps}>
-        (press to upload)
+        {listType === 'text' && 'press to upload'}
       </Button>
     );
   };
 
   return (
-    <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isStub 
+    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' ? styles.shaStoredFilesRendererHorizontal : layout === 'vertical' ? styles.shaStoredFilesRendererVertical : styles.shaStoredFilesRendererGrid}`} style={{ maxHeight }}>
+      {isStub
         ? isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>
           : <div>{renderUploadContent()}</div>
         : props.disabled
-          ? <Upload {...props} />
+          ? <Upload {...props} listType={listTypeAndLayout} />
           : isDragger
             ? <Dragger {...props}><DraggerStub /></Dragger>
-            : <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
+            : <Upload {...props} listType={listTypeAndLayout}>{!props.disabled ? renderUploadContent() : null}</Upload>
       }
 
       {fetchFilesError && (
@@ -176,6 +187,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           </Button>
         </div>
       )}
+
     </div>
   );
 };

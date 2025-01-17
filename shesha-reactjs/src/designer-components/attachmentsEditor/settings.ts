@@ -63,6 +63,50 @@ export const getSettings = () =>
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
           })
+
+          .addDropdown({
+            id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+            propertyName: 'listType',
+            parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'List Type',
+            dataSourceType: 'values',
+            values: [
+              {
+                label: 'text',
+                value: 'text',
+                id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+              },
+              {
+                label: 'picture',
+                value: 'picture',
+                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+              },
+            ],
+          })
+          .addDropdown({
+            id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+            propertyName: 'layout',
+            parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Layout',
+            dataSourceType: 'values',
+            values: [
+              {
+                label: 'Vertical',
+                value: 'vertical',
+                id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+              },
+              {
+                label: 'Horizontal',
+                value: 'horizontal',
+                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+              },
+              {
+                label: 'grid',
+                value: 'grid',
+                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+              }
+            ],
+          })
           .addCheckbox({
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
             propertyName: 'hidden',
@@ -267,6 +311,95 @@ export const getSettings = () =>
             label: 'Required',
           }).toJson()
         ]
+      }
+    })
+    .addCollapsiblePanel({
+      id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6',
+      propertyName: 'styles',
+      parentId: 'root',
+
+      label: 'Styles',
+      labelAlign: "right",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+        components: [...new DesignerToolbarSettings()
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d996619cb1',
+            propertyName: 'width',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Width',
+          })
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d996619cb2',
+            propertyName: 'height',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Height',
+          })
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d996619cb3',
+            propertyName: 'fontSize',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Font Size',
+          })
+          .addColorPicker({
+            id: '1c03863c-880d-4308-8667-c3d996619cb0',
+            propertyName: 'fontColor',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Color',
+          })
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d996619cb5',
+            propertyName: 'borderWidth',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Border Width',
+          })
+          .addColorPicker({
+            id: '1c03863c-880d-4308-8667-c3d996619cb6',
+            propertyName: 'borderColor',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Border Color',
+          })
+          .addDropdown({
+            id: '1c03863c-type-4308-8667-c3d996619cb9',
+            propertyName: 'borderType',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Border Type',
+            dataSourceType: 'values',
+            values: [
+              {
+                label: 'dashed',
+                value: 'dashed',
+                id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+              },
+              {
+                label: 'solid',
+                value: 'solid',
+                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+              },
+            ],
+          })
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d996619cb',
+            propertyName: 'borderRadius',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Border Radius',
+          })
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d996619cb8',
+            propertyName: 'pictureWidth',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Item Width',
+          })
+          .addTextField({
+            id: '1c03863c-880d-4308-8667-c3d9966197',
+            propertyName: 'pictureHeight',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Item Height',
+          })
+          .toJson()]
       }
     })
     .addCollapsiblePanel({

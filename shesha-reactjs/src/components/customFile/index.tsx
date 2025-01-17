@@ -2,8 +2,9 @@ import React, { FC, useEffect } from 'react';
 import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { useSheshaApplication, useStoredFilesStore } from '@/providers';
+import { IInputStyles } from '@/designer-components/textField/interfaces';
 
-export interface ICustomFileProps {
+export interface ICustomFileProps extends IInputStyles {
   uploadFile?: (payload: IUploadFilePayload) => void;
   onFileListChanged?: (list: IStoredFile[]) => void;
   allowAdd?: boolean;
@@ -15,6 +16,11 @@ export interface ICustomFileProps {
   maxHeight?: string;
   isDragger?: boolean;
   downloadZip?: boolean;
+  layout?: 'vertical' | 'horizontal' | 'grid';
+  listType?: 'text' | 'picture' | 'picture-card';
+  picturewidth?: string;
+  pictureHeight?: string;
+  pictureRadius?: string;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -54,6 +60,9 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}
         maxHeight={props?.maxHeight}
+        layout={props?.layout}
+        listType={props?.listType}
+        {...props}
       />
     </div>
   );
