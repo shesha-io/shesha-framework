@@ -125,6 +125,7 @@ namespace Shesha.Notifications
         {
             var notification = await _notificationRepository.InsertAsync(new Notification()
             {
+                Name = type.Name,
                 NotificationType = type,
                 FromPerson = fromPerson,
                 ToPerson = toPerson,
