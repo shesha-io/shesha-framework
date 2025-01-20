@@ -46,7 +46,8 @@ namespace Shesha.Sms.Clickatell
             query["user"] = settings.Username;
             query["password"] = settings.Password;
             query["to"] = MobileHelper.CleanupMobileNo(mobileNumber);
-            query["text"] = HttpUtility.UrlEncode(body);
+            //query["text"] = HttpUtility.UrlEncode(body);
+            query["text"] = body;
 
             var url = $"https://api.clickatell.com/http/sendmsg?{query}";
 
