@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using Abp.EntityHistory;
 using Shesha.Domain;
 
@@ -23,6 +24,15 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="entity">Entity</param>
         /// <returns>EntityChange object</returns>
         void AddEntityChange(object entity);
+
+        /// <summary>
+        /// Add a collection changing event for an entity property
+        /// </summary>
+        /// <param name="entity">Entity</param>
+        /// <param name="propInfo">Changed collection property</param>
+        /// <param name="oldValue">Old collection</param>
+        /// <param name="newValue">New collection</param>
+        bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object oldValue, object newValue);
 
         /// <summary>
         /// Create EntityChange item for the Entity

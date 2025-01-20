@@ -22,9 +22,9 @@ namespace Shesha.FluentMigrator
         /// </summary>
         const string MigrationVersionFormat = "yyyyMMddHHmmff";
 
-        private readonly IAssemblyFinder _assemblyFinder;
-        private readonly IDbConnectionSettingsResolver _connectionSettingsResolver;
-        private readonly IModuleLocator _moduleLocator;
+        protected readonly IAssemblyFinder _assemblyFinder;
+        protected readonly IDbConnectionSettingsResolver _connectionSettingsResolver;
+        protected readonly IModuleLocator _moduleLocator;
         
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -63,7 +63,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Configure the dependency injection services
         /// </summary>
-        private IServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
+        protected virtual IServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
         {
             var services = new ServiceCollection();
             services.TryAddSingleton<IModuleLocator>(_moduleLocator);
@@ -121,7 +121,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Update the database
         /// </summary>
-        private void CreateOrMigrate(AbpTenantBase? tenant, Action? seedAction)
+        protected virtual void CreateOrMigrate(AbpTenantBase? tenant, Action? seedAction)
         {
             var args = new DbPerTenantConnectionStringResolveArgs(
                 tenant == null ? (int?)null : (int?)tenant.Id,
@@ -186,7 +186,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Gets connection string from given connection string or name.
         /// </summary>
-        private static string GetConnectionString(string nameOrConnectionString)
+        protected static string GetConnectionString(string nameOrConnectionString)
         {
             var connStrSection = ConfigurationManager.ConnectionStrings[nameOrConnectionString];
             if (connStrSection != null)
