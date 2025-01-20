@@ -173,7 +173,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (property.IsReadOnly())
                             continue;
 
-                        var propConfig = config.Properties.FirstOrDefault(x => x.Name == jName);
+                        var propConfig = config.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
@@ -562,7 +562,7 @@ namespace Shesha.DynamicEntities.Binder
             var newChildEntity = await _dynamicRepository.GetAsync(entityType, id);
             if (newChildEntity == null)
                 context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{id}' not found for `{propertyPath}`."));
-            
+
             return newChildEntity;
         }
 
@@ -636,7 +636,7 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace 
+                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace
                 && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAlias() == reference.EntityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
