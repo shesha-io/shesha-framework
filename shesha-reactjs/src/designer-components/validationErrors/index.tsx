@@ -6,7 +6,6 @@ import { getSettings } from './tabbedSettings';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IStyleType, useFormData, useSheshaApplication } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { removeUndefinedProps } from '@/utils/object';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
@@ -15,8 +14,9 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { defaultStyles } from './utils';
-import { ConfigurableComponent } from '@/components';
 import { getFontStyle } from '../_settings/utils/font/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { ConfigurableFormItem } from '@/components';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent,  IStyleType {
   className?: string; 
@@ -96,25 +96,34 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
 
     if (formMode === 'designer')
       return (
-        <ValidationErrors
-          className={model?.className}
-          style={{ ...getStyle(model?.style, formData), ...finalStyle }}
-          error="Validation Errors (visible in the runtime only)"
-        />
+        <ConfigurableFormItem
+          model={model}
+        >
+          <ValidationErrors
+            className={model?.className}
+            style={{ ...getStyle(model?.style, formData), ...finalStyle }}
+            error="Validation Errors (visible in the runtime only)"
+          />
+        </ConfigurableFormItem>
       );
 
     return (
-      <ValidationErrors
-        className={model?.className}
-        style={{ ...getStyle(model?.style, formData), ...finalStyle }}
-        error={validationErrors}
-      />
+
+      <ConfigurableFormItem
+        model={model}
+      >
+        <ValidationErrors
+          className={model?.className}
+          style={{ ...getStyle(model?.style, formData), ...finalStyle }}
+          error={validationErrors}
+        />
+      </ConfigurableFormItem>
     );
   },
   /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   settingsFormMarkup: (data) => getSettings(data),
-  migrator: (m) => m.add<IValidationErrorsComponentProps>(0, (prev) => ({ ...migrateFormApi.properties(prev), ...defaultStyles() })),
+  migrator: (m) => m.add<IValidationErrorsComponentProps>(0, (prev) => ({...migratePrevStyles(prev, defaultStyles())})),
 };
 
 export default ValidationErrorsComponent;

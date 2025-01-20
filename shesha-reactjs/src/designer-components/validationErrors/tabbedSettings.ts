@@ -676,21 +676,21 @@ export const getSettings = (data: any) => {
                             .addSettingsInput({
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
-                              inputType: 'text',
-                              jsSetting: true,
-                              propertyName: 'className',
-                              hideLabel: true,
-                              label: 'Class Name',
-                              description: 'A custom class name to apply to the element',
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              hideLabel: false,
+                              label: 'Style',
+                              tooltip: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .addSettingsInput({
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: true,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              inputType: 'text',
+                              jsSetting: true,
+                              propertyName: 'className',
+                              hideLabel: false,
+                              label: 'Class Name',
+                              tooltip: 'A custom class name to apply to the element',
                             })
                             .toJson()
                           ]
