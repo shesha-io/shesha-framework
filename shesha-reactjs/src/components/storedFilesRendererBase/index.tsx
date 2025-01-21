@@ -235,7 +235,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' ? styles.shaStoredFilesRendererHorizontal : layout === 'vertical' ? styles.shaStoredFilesRendererVertical : styles.shaStoredFilesRendererGrid}`} style={{ maxHeight }}>
+    <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
+      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : styles.shaStoredFilesRendererGrid}`} style={{ maxHeight }}>
       {isStub
         ? isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>
