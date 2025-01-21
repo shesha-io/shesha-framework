@@ -83,7 +83,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     return (
       <div style={{ ...getLayoutStyle(model, { data, globalState }), ...finalStyle }}>
-        <Row gutter={[gutterX, gutterY]}>
+        <Row gutter={[gutterX || 0, gutterY || 0]}>
           <ParentProvider model={model}>
             {columns &&
               columns.map((col, index) => (
