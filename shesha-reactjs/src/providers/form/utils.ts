@@ -55,6 +55,7 @@ import {
   useDataContextManager,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
+import FileSaver from 'file-saver';
 import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
@@ -100,6 +101,8 @@ export interface IApplicationContext<Value = any> {
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** File Saver API */
+  fileSaver: typeof FileSaver;
 
   /** Last updated date */
   lastUpdated?: Date;
@@ -259,6 +262,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    fileSaver: () => FileSaver,
     data: () => {
       if (!shaFormInstance?.formData || isEmpty(shaFormInstance.formData))
         return EMPTY_DATA; 
