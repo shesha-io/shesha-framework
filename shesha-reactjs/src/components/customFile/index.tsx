@@ -17,10 +17,13 @@ export interface ICustomFileProps extends IInputStyles {
   isDragger?: boolean;
   downloadZip?: boolean;
   layout?: 'vertical' | 'horizontal' | 'grid';
-  listType?: 'text' | 'picture' | 'picture-card';
-  picturewidth?: string;
-  pictureHeight?: string;
-  pictureRadius?: string;
+  listType?: 'text' | 'thumbnail';
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  itemStylingBox?: string;
+  itemStyle?: string;
+  hideFileName?: boolean;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {

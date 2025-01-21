@@ -37,10 +37,13 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   onFileChanged?: string;
   downloadZip?: boolean;
   layout: 'vertical' | 'horizontal' | 'grid';
-  listType: 'text' | 'picture' | 'picture-card';
-  pictureWidth?: string;
-  pictureHeight?: string;
-  pictureRadius?: string;
+  listType: 'text' | 'thumbnail';
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  itemStylingBox?: string;
+  itemStyle?: string;
+  hideFileName?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -133,9 +136,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerType: '',
         ownerName: '',
         listType: 'text',
-        layout: 'vertical',
-        pictureWidth: '100px',
-        pictureHeight: '100px',
+        layout: 'vertical'
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSize, borderColor, borderType, fontColor, fontSize, width, height, maxHeight, pictureHeight, pictureRadius, pictureWidth, layout }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth, layout, hideFileName }) => {
   const uploadListMaxHeight = "max-content"; // @sha-upload-list-max-height
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
@@ -9,25 +9,47 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
 
-    width: ${width};
-    height: ${height};
+    max-width: ${width};
+    max-height: ${height};
 
-     --ant-line-width: ${borderSize};
-     --ant-line-type: ${borderType};
-     --ant-color-border: ${borderColor};
+    .anticon anticon-file-pdf {
+    --ant-color-text-description: red !important;
+    }
+
     .ant-upload:not(.ant-upload-disabled) {
           .icon {
-            color: ${fontColor ?? token.colorPrimary} !important
+            color: ${fontColor ?? token.colorPrimary} !important;
         };
     }
     
+    .ant-upload-list-item {
+      height: max-content !important;
+      padding: 0 !important;
+      ${layout && `border-radius: ${borderRadius ?? '8px'} !important`};
+      --ant-line-width: 0px !important;
+
+      :before {
+        width: ${thumbnailWidth ?? '101px'} !important; 
+        height: ${thumbnailHeight ?? '101px'} !important;
+      }
+    }
     .ant-upload-list-item-container {
-      width: ${pictureWidth ?? '101px'} !important;
-      height: ${pictureHeight ?? '101px'} !important;
+      ${layout && `width: ${thumbnailWidth ?? '101px'} !important`};
+      ${layout && `height: ${thumbnailHeight ?? '101px'} !important`};
     }
 
     .ant-upload-list-item-name {
+      display: ${hideFileName ? 'none !important' : 'block'};
       color: ${fontColor ?? token.colorPrimary};
+      font-size: ${fontSize};
+       width: ${(layout && thumbnailWidth) ?? '101px'} !important;
+    }
+
+    .ant-image {
+      * {
+          border-radius: ${borderRadius ?? '8px'} !important;
+          border: ${borderSize} ${borderType} ${borderColor} !important;
+      }
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled)  {
@@ -35,6 +57,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     }
 
         .${prefixCls}-upload {
+            width: ${(layout && thumbnailWidth) ?? '101px'} !important;
+            height: ${(layout && thumbnailHeight) ?? '101px'} !important;
+            ${layout && 'background: #ffffff !important'};
+            border-radius: ${borderRadius ?? '8px'} !important;
           &.${prefixCls}-upload-btn {
             padding: 8px 0;
       
@@ -56,8 +82,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       
         .${prefixCls}-upload-list {
           overflow-y: auto;
-          height: ${height};
           max-height: ${height ?? uploadListMaxHeight};
+          ::-webkit-scrollbar {
+              display: none;
+          }
         }
     `);
 
@@ -71,12 +99,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
             z-index: 10 !important;
             position: sticky !important;
             right: 0 !important;
-            width: ${pictureWidth ?? '101px'} !important;
-            height: ${pictureHeight ?? '101px'} !important;
+            ${layout && `width: ${thumbnailWidth ?? '101px'} !important`};
+            ${layout && `height: ${thumbnailHeight ?? '101px'} !important`};
           }
 
           .${prefixCls}-upload-list-item {
             padding: 0;
+            ${layout && `width: ${thumbnailWidth ?? '101px'} !important`};
+            ${layout && `height: ${thumbnailHeight ?? '101px'} !important`};
           }
         }
     `);
@@ -90,13 +120,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           .${prefixCls}-upload {
             position: sticky !important;
             bottom: 0 !important;
-            width: ${pictureWidth ?? '101px'} !important;
-            height: ${pictureHeight ?? '101px'} !important;
           }
 
           .${prefixCls}-upload-list-item {
-            width: ${pictureWidth ?? '101px'} !important;
-            height: ${pictureHeight ?? '101px'} !important;
+            ${layout && `width: ${thumbnailWidth ?? '101px'} !important`};
+            ${layout && `height: ${thumbnailHeight ?? '101px'} !important`};
           }
         }
     `);
@@ -109,8 +137,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           }
 
           .${prefixCls}-upload-list-item {
-            width: ${pictureWidth ?? '101px'} !important;
-            height: ${pictureHeight ?? '101px'} !important;
+            width: ${thumbnailWidth ?? '101px'} !important;
+            height: ${thumbnailHeight ?? '101px'} !important;
           }
         }
     `);

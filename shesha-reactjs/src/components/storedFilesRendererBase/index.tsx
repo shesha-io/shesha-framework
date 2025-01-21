@@ -1,19 +1,21 @@
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Alert,
   Button,
   ButtonProps,
   App,
-  Upload
+  Upload,
+  Image,
+  UploadFile,
 } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
-import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
+import { FileExcelOutlined, FileImageOutlined, FilePdfOutlined, FilePptOutlined, FileTextOutlined, FileWordOutlined, FileZipOutlined, PaperClipOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
 import { IInputStyles } from '@/designer-components/textField/interfaces';
-
+import { toBase64 } from '@/index';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -46,10 +48,13 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allowedFileTypes?: string[];
   maxHeight?: string;
   layout: 'vertical' | 'horizontal' | 'grid';
-  listType: 'text' | 'picture' | 'picture-card';
-  pictureWidth?: string;
-  pictureHeight?: string;
-  pictureRadius?: string;
+  listType: 'text' | 'thumbnail';
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  itemStylingBox?: string;
+  itemStyle?: string;
+  hideFileName?: boolean;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -77,11 +82,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowDelete,
   layout,
   listType,
-  borderSize, borderColor, borderType, fontColor, fontSize, width, height, pictureHeight, pictureRadius, pictureWidth
+  hideFileName,
+  borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
 }) => {
   const hasFiles = !!fileList.length;
-  const { styles } = useStyles({ borderSize, borderColor, borderType, fontColor, fontSize, width, height, maxHeight, pictureHeight, pictureRadius, pictureWidth, layout });
+  const addPx = (value) => /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+
+  const { styles } = useStyles({
+    borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: addPx(width), height: addPx(height), maxHeight: addPx(maxHeight),
+    thumbnailHeight: addPx(thumbnailHeight), borderRadius: addPx(borderRadius), thumbnailWidth: addPx(thumbnailWidth), layout: listType === 'thumbnail' ? layout : false,
+    hideFileName: hideFileName && listType === 'thumbnail'
+  });
   const { message, notification } = App.useApp();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
 
   const listTypeAndLayout = listType === 'text' ? 'text' : 'picture-card';
 
@@ -98,11 +112,45 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
   }, [isDownloadZipSucceeded]);
 
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await toBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+  const isImageType = (type) => ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'].includes(type);
+
+  const files: UploadFile[] = [
+    {
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      type: '.png',
+      url: 'https://th.bing.com/th/id/OIP.0txkzNjgO8so2YFoMM-w3gHaEK?w=301&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7',
+    },
+    {
+      uid: '-2',
+      name: 'image.png',
+      status: 'done',
+      type: '.png',
+      url: 'https://th.bing.com/th/id/OIP.VUPN7227HlsIlahIHOifVgHaFb?w=254&h=186&c=7&r=0&o=5&dpr=1.3&pid=1.7'
+    },
+    {
+      uid: '-3',
+      name: 'image.png',
+      status: 'done',
+      type: '.png',
+      url: 'https://th.bing.com/th/id/OIP.PuPWrQGLcGccVqXE4PHsWAHaEo?w=297&h=186&c=7&r=0&o=5&dpr=1.3&pid=1.7'
+    }
+  ];
+
   const props: DraggerProps = {
-    name: 'file',
+    name: '',
     accept: allowedFileTypes?.join(','),
     multiple,
-    fileList,
+    fileList: [...fileList, ...files],
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
@@ -143,13 +191,40 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     onDownload: ({ uid, name }) => {
       downloadFile({ fileId: uid, fileName: name });
     },
-    onPreview: ({ uid, name }) => {
-      downloadFile({ fileId: uid, fileName: name });
+    onPreview: (file) => {
+      const { uid, name } = file;
+      if (isImageType(file.type)) handlePreview(file);
+      else downloadFile({ fileId: uid, fileName: name });
     },
     showUploadList: {
       showRemoveIcon: allowDelete,
-    }
+    },
+    iconRender: (file) => {
+      const { type } = file;
+
+      if ((isImageType(type)) && listType === 'thumbnail') {
+        return <Image src={file.url} alt={file.name} preview={false} />;
+      };
+
+      if (isImageType(type)) {
+        return <FileImageOutlined style={{ color: '#03A9F4' }} />;
+      } else if (type === '.pdf') {
+        return <FilePdfOutlined style={{ color: '#ED2224' }} />;
+      } else if (type === '.doc' || type === '.docx') {
+        return <FileWordOutlined style={{ color: '#2B579A' }} />;
+      } else if (type === '.xls' || type === '.xlsx') {
+        return <FileExcelOutlined style={{ color: '#217346' }} />;
+      } else if (type === '.ppt' || type === '.pptx') {
+        return <FilePptOutlined style={{ color: '#D24726' }} />;
+      } else if (type === '.zip' || type === '.rar') {
+        return <FileZipOutlined style={{ color: '#FFC107' }} />;
+      } else if (type === '.txt' || type === '.csv') {
+        return <FileTextOutlined style={{ color: '#9E9E9E' }} />;
+      }
+      return <PaperClipOutlined />;
+    },
   };
+
 
   const renderUploadContent = () => {
     return (
@@ -171,6 +246,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ? <Dragger {...props}><DraggerStub /></Dragger>
             : <Upload {...props} listType={listTypeAndLayout}>{!props.disabled ? renderUploadContent() : null}</Upload>
       }
+
+      {previewImage && (
+        <Image
+          wrapperStyle={{ display: 'none' }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+          }}
+          src={previewImage}
+        />
+      )}
 
       {fetchFilesError && (
         <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
