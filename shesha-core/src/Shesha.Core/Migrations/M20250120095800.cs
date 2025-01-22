@@ -12,7 +12,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Alter.Table("Core_NotificationChannelConfigs").AddColumn("Core_SupportsAttachment").AsBoolean().Nullable();
+            Alter.Table("Core_NotificationChannelConfigs").AddColumn("Core_SupportsAttachment").AsBoolean().NotNullable().SetExistingRowsTo(false);
         }
 
         public override void Down()
