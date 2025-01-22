@@ -273,41 +273,6 @@ export const getSettings = () =>
         id: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
         components: [...new DesignerToolbarSettings()
           .addCollapsiblePanel({
-            id: 'container-styles-1c03863c-880d-4308-8667-c3d996619cb',
-            propertyName: 'containerStyles',
-            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
-            label: 'Container Styles',
-            ghost: true,
-            content: {
-              id: 'container-styles-content-880d-4308-c3d996619cb',
-              components: [...new DesignerToolbarSettings()
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb1',
-                  propertyName: 'width',
-                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  label: 'Width',
-                })
-                .addTextField({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb2',
-                  propertyName: 'height',
-                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  label: 'Height',
-                })
-                .addStyleBox({
-                  id: '1c03863c-880d-4308-8567-c3d996619cb3',
-                  propertyName: 'stylingBox',
-                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
-                  jsSetting: false,
-                })
-                .addCodeEditor({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb4',
-                  propertyName: 'style',
-                  label: 'Custom CSS',
-                })
-                .toJson()]
-            }
-          })
-          .addCollapsiblePanel({
             id: 'item-styles-1c03863c-880d-4308-8667-c3d996619cb',
             propertyName: 'itemStyles',
             parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
@@ -384,11 +349,39 @@ export const getSettings = () =>
                   label: 'Border Radius',
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
+                .toJson()]
+            }
+          })
+          .addCollapsiblePanel({
+            id: 'container-styles-1c03863c-880d-4308-8667-c3d996619cb',
+            propertyName: 'containerStyles',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Container Styles',
+            content: {
+              id: 'container-styles-content-880d-4308-c3d996619cb',
+              components: [...new DesignerToolbarSettings()
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb1',
+                  propertyName: 'width',
+                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                  label: 'Width',
+                })
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb2',
+                  propertyName: 'height',
+                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                  label: 'Height',
+                })
+                .addStyleBox({
+                  id: '1c03863c-880d-4308-8567-c3d996619cb3',
+                  propertyName: 'stylingBox',
+                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                  jsSetting: false,
+                })
                 .addCodeEditor({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb7',
-                  propertyName: 'itemStyle',
-                  label: 'Item Custom CSS',
-                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  id: '1c03863c-880d-4308-8667-c3d996619cb4',
+                  propertyName: 'style',
+                  label: 'Style',
                 })
                 .toJson()]
             }

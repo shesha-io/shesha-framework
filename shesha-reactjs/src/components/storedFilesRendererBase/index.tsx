@@ -53,7 +53,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string;
   borderRadius?: number;
   itemStylingBox?: string;
-  itemStyle?: string;
   hideFileName?: boolean;
 }
 
@@ -84,19 +83,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   hideFileName,
   stylingBox,
-  itemStyle,
   style,
   borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
 }) => {
   const hasFiles = !!fileList.length;
   const addPx = (value) => /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 
-  const itemsStyle = getStyle(itemStyle, {});
-
   const { styles } = useStyles({
     borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: addPx(width), height: addPx(height), maxHeight: addPx(maxHeight),
     thumbnailHeight: addPx(thumbnailHeight), borderRadius: addPx(borderRadius), thumbnailWidth: addPx(thumbnailWidth), layout: listType === 'thumbnail' ? layout : false,
-    hideFileName: hideFileName && listType === 'thumbnail', isDragger, itemsStyle
+    hideFileName: hideFileName && listType === 'thumbnail', isDragger
   });
 
   const { message, notification } = App.useApp();
