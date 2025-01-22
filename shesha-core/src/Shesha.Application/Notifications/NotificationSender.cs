@@ -56,7 +56,7 @@ namespace Shesha.Notifications
         private readonly IStoredFileService _storedFileService;
         private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly INotificationManager _notificationManager;
-        private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreference;
+        private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreferenceRepository;
 
         public ILogger Logger { get; set; }
 
@@ -78,7 +78,7 @@ namespace Shesha.Notifications
                                    INotificationSettings notificationSettings,
                                    IBackgroundJobManager backgroundJobManager,
                                    INotificationManager notificationManager,
-                                   IRepository<UserNotificationPreference, Guid> userNotificationPreference)
+                                   IRepository<UserNotificationPreference, Guid> userNotificationPreferenceRepository)
         {
             _channelSender = channelSender;
             _iocManager = iocManager;
@@ -99,7 +99,7 @@ namespace Shesha.Notifications
             _typeRepo = typeRepo;
             _personRepo = personRepo;
             Logger = NullLogger.Instance;
-            _userNotificationPreference = userNotificationPreference;
+            _userNotificationPreferenceRepository = userNotificationPreferenceRepository;
         }
 
         private async Task<List<EmailAttachment>> GetAttachmentsAsync(NotificationMessage message)
@@ -131,15 +131,9 @@ namespace Shesha.Notifications
 
             if (type.CanOptOut)
             {
-                // Check User Notification Preferences
-                var userPreferences = await _userNotificationPreference.GetAllListAsync(
-                    x => x.User.Id == toPerson.Id && x.NotificationType.Id == type.Id
-                );
-                // If the user has opted out, exit early
-                if (userPreferences.Any(x => x.OptOut))
-                {
+                var optedOut = await _userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == toPerson.Id && x.NotificationType.Id == type.Id && x.OptOut);
+                if (optedOut)
                     return;
-                }
             }
 
             var notification = await _notificationRepository.InsertAsync(new Notification()
