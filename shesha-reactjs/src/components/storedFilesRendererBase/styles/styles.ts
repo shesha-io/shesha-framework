@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth, layout, gap, hideFileName, isDragger }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth, layout, gap, hideFileName, isDragger, styles }) => {
   const uploadListMaxHeight = "80px"; // @sha-upload-list-max-height
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
@@ -97,6 +97,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           gap: ${gap ?? '10px'};
           max-height: ${height ?? `calc(${uploadListMaxHeight}  + 32px)`};
           width: 100%;
+          ${styles}
         }
 
         .ant-upload-list-text {
@@ -113,6 +114,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           flex-shrink: 0 !important;
           overflow-x: auto;
           align-items: center !important;
+          ${styles}
       }
 
       .ant-upload-list-item-container {
@@ -127,7 +129,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           flex-direction: column !important;
           flex-wrap: nowrap !important;
           padding: 0 ${borderSize ?? '2px'} !important;
-          height: calc(var(--thumbnail-height, 101px) * 1.3) !important;
+          ${styles}
         }
           
     .ant-upload-list-item-container {
@@ -141,7 +143,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-horizontal", css` 
     .${prefixCls}-upload-list {
       align-items: center;
-      padding-bottom: 5px;
+      ${styles}
           .${prefixCls}-upload-list-item {
             width: ${thumbnailWidth ?? '101px'} !important;
             height: ${thumbnailHeight ?? '101px'} !important;

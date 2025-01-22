@@ -52,7 +52,6 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
-  itemStylingBox?: string;
   hideFileName?: boolean;
 }
 
@@ -88,11 +87,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 }) => {
   const hasFiles = !!fileList.length;
   const addPx = (value) => /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+  const styling = JSON.parse(stylingBox || '{}');
+  const customStyle = getStyle(style || '{}');
+  const stylingBoxAndCSS = pickStyleFromModel(styling);
+
+  const jsSstyles = { ...customStyle, ...stylingBoxAndCSS };
 
   const { styles } = useStyles({
     borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: addPx(width), height: addPx(height), maxHeight: addPx(maxHeight),
     thumbnailHeight: addPx(thumbnailHeight), borderRadius: addPx(borderRadius), thumbnailWidth: addPx(thumbnailWidth), layout: listType === 'thumbnail' ? layout : false,
-    hideFileName: hideFileName && listType === 'thumbnail', isDragger
+    hideFileName: hideFileName && listType === 'thumbnail', isDragger, styles: jsSstyles
   });
 
   const { message, notification } = App.useApp();
@@ -113,10 +117,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       openFilesZipNotification();
     }
   }, [isDownloadZipSucceeded]);
-
-  const styling = JSON.parse(stylingBox || '{}');
-  const customStyle = getStyle(style || '{}');
-  const stylingBoxAndCSS = pickStyleFromModel(styling, customStyle);
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -218,7 +218,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`} style={{ maxHeight, ...stylingBoxAndCSS }}>
+      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
       {isStub
         ? isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>
