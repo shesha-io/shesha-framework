@@ -72,7 +72,7 @@ export const getSettings = () =>
             dataSourceType: 'values',
             values: [
               {
-                label: 'Text',
+                label: 'File Name',
                 value: 'text',
                 id: 'f01e54aa-a1a4-4bd6-ba3-c395e48af8ce',
               },
@@ -326,6 +326,7 @@ export const getSettings = () =>
                   propertyName: 'fontColor',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Color',
+                  allowClear: true
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb8',
@@ -353,6 +354,7 @@ export const getSettings = () =>
                   propertyName: 'borderColor',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Color',
+                  allowClear: true,
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addDropdown({

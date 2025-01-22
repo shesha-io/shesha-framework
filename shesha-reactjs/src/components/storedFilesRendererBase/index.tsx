@@ -15,7 +15,7 @@ import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/provide
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
 import { IInputStyles } from '@/designer-components/textField/interfaces';
-import { pickStyleFromModel, toBase64 } from '@/index';
+import { getStyle, pickStyleFromModel, toBase64 } from '@/index';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -84,16 +84,21 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   hideFileName,
   stylingBox,
+  itemStyle,
+  style,
   borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
 }) => {
   const hasFiles = !!fileList.length;
   const addPx = (value) => /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 
+  const itemsStyle = getStyle(itemStyle, {});
+
   const { styles } = useStyles({
     borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: addPx(width), height: addPx(height), maxHeight: addPx(maxHeight),
     thumbnailHeight: addPx(thumbnailHeight), borderRadius: addPx(borderRadius), thumbnailWidth: addPx(thumbnailWidth), layout: listType === 'thumbnail' ? layout : false,
-    hideFileName: hideFileName && listType === 'thumbnail'
+    hideFileName: hideFileName && listType === 'thumbnail', isDragger, itemsStyle
   });
+
   const { message, notification } = App.useApp();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -114,7 +119,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }, [isDownloadZipSucceeded]);
 
   const styling = JSON.parse(stylingBox || '{}');
-  const stylingBoxAsCSS = pickStyleFromModel(styling);
+  const customStyle = getStyle(style || '{}');
+  const stylingBoxAndCSS = pickStyleFromModel(styling, customStyle);
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -196,7 +202,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         return <FileExcelOutlined style={{ color: '#217346' }} />;
       } else if (type === '.ppt' || type === '.pptx') {
         return <FilePptOutlined style={{ color: '#D24726' }} />;
-      } else if (type === '.zip' || type === '.rar') {
+      } else if (type === '.zip' || type === '.rar' || type === '.tar') {
         return <FileZipOutlined style={{ color: '#FFC107' }} />;
       } else if (type === '.txt' || type === '.csv') {
         return <FileTextOutlined style={{ color: '#9E9E9E' }} />;
@@ -216,7 +222,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`} style={{ maxHeight, ...stylingBoxAsCSS }}>
+      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`} style={{ maxHeight, ...stylingBoxAndCSS }}>
       {isStub
         ? isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>
