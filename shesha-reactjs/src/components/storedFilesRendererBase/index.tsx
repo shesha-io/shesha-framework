@@ -189,21 +189,21 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       };
 
       if (isImageType(type)) {
-        return <FileImageOutlined style={{ color: '#03A9F4' }} />;
+        return <FileImageOutlined style={{ color: '#0083BE', verticalAlign: 'baseline' }} />;
       } else if (type === '.pdf') {
-        return <FilePdfOutlined style={{ color: '#ED2224' }} />;
+        return <FilePdfOutlined style={{ color: '#ED2224', verticalAlign: 'baseline' }} />;
       } else if (type === '.doc' || type === '.docx') {
-        return <FileWordOutlined style={{ color: '#2B579A' }} />;
+        return <FileWordOutlined style={{ color: '#2B579A', verticalAlign: 'baseline' }} />;
       } else if (type === '.xls' || type === '.xlsx') {
-        return <FileExcelOutlined style={{ color: '#217346' }} />;
+        return <FileExcelOutlined style={{ color: '#217346', verticalAlign: 'baseline' }} />;
       } else if (type === '.ppt' || type === '.pptx') {
-        return <FilePptOutlined style={{ color: '#D24726' }} />;
+        return <FilePptOutlined style={{ color: '#D24726', verticalAlign: 'baseline' }} />;
       } else if (type === '.zip' || type === '.rar' || type === '.tar') {
-        return <FileZipOutlined style={{ color: '#FFC107' }} />;
+        return <FileZipOutlined style={{ color: '#F9AA00', verticalAlign: 'baseline' }} />;
       } else if (type === '.txt' || type === '.csv') {
-        return <FileTextOutlined style={{ color: '#9E9E9E' }} />;
+        return <FileTextOutlined style={{ color: '#848588', verticalAlign: 'baseline' }} />;
       }
-      return <PaperClipOutlined />;
+      return <PaperClipOutlined style={{ color: '#848588', verticalAlign: 'baseline' }} />;
     },
   };
 

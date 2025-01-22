@@ -42,7 +42,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     .ant-upload-list-item-thumbnail {
       width: var(--thumbnail-width, 101px) !important;
       height: var(--thumbnail-height, 101px) !important;
-      border: ${borderSize ?? '1px'} ${borderType ?? 'solid'} ${borderColor ?? token.colorPrimary};
+      border: ${borderSize ?? '1px'} ${borderType ?? 'solid'} ${borderColor ?? '#d9d9d9'} !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       padding: 0 !important;
       
@@ -119,8 +119,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
 
       .ant-upload-list-item-container {
         display: inline-block !important;
-        height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
-    }
+        height: var(--thumbnail-height) !important;
+      }
     `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-horizontal", css` 
@@ -136,7 +136,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       display: flex !important;
       flex-direction: column !important;
       justify-content: center !important;
-      height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
+        height: var(--thumbnail-height) !important;
     }
     `);
 
@@ -154,9 +154,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
-        width: ${thumbnailWidth ?? '101px'} !important;
-        height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
-    }
+        width: var(--thumbnail-width) !important;
+        height: var(--thumbnail-height) !important;
+        }
     `);
 
   return {
