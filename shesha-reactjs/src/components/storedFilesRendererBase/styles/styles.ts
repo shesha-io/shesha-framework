@@ -11,7 +11,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     --thumbnail-width: ${thumbnailWidth ?? '101px'};
     --thumbnail-height: ${thumbnailHeight ?? '101px'};
     --font-size: ${fontSize ?? '14px'};
-    --ant-margin-xs: ${gap ?? '8px'}
+    --ant-margin-xs: ${gap ?? '8px'} !important;
+    --width: ${width};
+    --height: ${height};
 
     max-width: ${width};
     max-height: ${height};
@@ -24,23 +26,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
-      gap: ${gap ?? '10px'};
+      --ant-padding-xs: 0px !important;
 
       :before {
         position: relative;
         top: 0;
-        width: 100% !important;
+        width: var(--thumbnail-width, 101px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
-        height: var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
+        height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px)) !important;
       }
-    }
-
-    .ant-upload-list-item-container {
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: center !important;
-      width: var(--thumbnail-width, 101px) !important;
-      height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
     }
 
     .ant-upload-list-item-thumbnail {
@@ -48,7 +42,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       height: var(--thumbnail-height, 101px) !important;
       border: ${borderSize ?? '1px'} ${borderType ?? 'solid'} ${borderColor ?? token.colorPrimary};
       border-radius: ${borderRadius ?? '8px'} !important;
-      margin-bottom: 10px;
+      padding: 0 !important;
+      
       img {
         width: var(--thumbnail-width, 101px) !important;
         height: var(--thumbnail-height, 101px) !important;
@@ -73,8 +68,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       }
 
         .${prefixCls}-upload {
-            ${layout && `width: ${thumbnailWidth ?? '101px'} !important`};
+            ${layout && 'width: var(--thumbnail-width, 101px)!important;'};
             ${layout && `height: ${thumbnailHeight ?? '101px'} !important`};
+            align-items: center;
 
           &.${prefixCls}-upload-btn {
             padding: 8px 0;
@@ -104,6 +100,11 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
               display: none;
           }
         }
+
+        .ant-upload-list-text {
+          height: 100% !important;
+          max-height: calc(var(--height, 101px) - 64px) !important;
+        }
     `);
 
   const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css` 
@@ -113,25 +114,49 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           flex-direction: row-reverse !important;
           flex-shrink: 0 !important;
           overflow-x: auto;
+          align-items: center !important;
       }
+
+      .ant-upload-list-item-container {
+        display: inline-block !important;
+        height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
+    }
     `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-horizontal", css` 
     .${prefixCls}-upload-list {
+          display: flex !important;
           flex-direction: column !important;
           flex-wrap: nowrap !important;
+          width: max-content !important;
+          padding: 0 ${borderSize ?? '2px'} !important;
+          height: calc(var(--thumbnail-height, 101px) * 1.3) !important;
         }
+          
+    .ant-upload-list-item-container {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
+    }
     `);
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-horizontal", css` 
     .${prefixCls}-upload-list {
-
+      align-items: center;
           .${prefixCls}-upload-list-item {
             width: ${thumbnailWidth ?? '101px'} !important;
             height: ${thumbnailHeight ?? '101px'} !important;
-            justify-content
           }
         }
+
+      .ant-upload-list-item-container {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        width: ${thumbnailWidth ?? '101px'} !important;
+        height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px) !important;
+    }
     `);
 
   return {

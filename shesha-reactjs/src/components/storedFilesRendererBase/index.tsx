@@ -15,7 +15,7 @@ import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/provide
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
 import { IInputStyles } from '@/designer-components/textField/interfaces';
-import { toBase64 } from '@/index';
+import { pickStyleFromModel, toBase64 } from '@/index';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -83,6 +83,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   layout,
   listType,
   hideFileName,
+  stylingBox,
   borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
 }) => {
   const hasFiles = !!fileList.length;
@@ -112,6 +113,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
   }, [isDownloadZipSucceeded]);
 
+  const styling = JSON.parse(stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(styling);
+
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
       file.preview = await toBase64(file.originFileObj);
@@ -122,35 +126,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
   const isImageType = (type) => ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'].includes(type);
 
-  const files: UploadFile[] = [
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      type: '.png',
-      url: 'https://th.bing.com/th/id/OIP.0txkzNjgO8so2YFoMM-w3gHaEK?w=301&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-    },
-    {
-      uid: '-2',
-      name: 'image.png',
-      status: 'done',
-      type: '.png',
-      url: 'https://th.bing.com/th/id/OIP.VUPN7227HlsIlahIHOifVgHaFb?w=254&h=186&c=7&r=0&o=5&dpr=1.3&pid=1.7'
-    },
-    {
-      uid: '-3',
-      name: 'image.png',
-      status: 'done',
-      type: '.png',
-      url: 'https://th.bing.com/th/id/OIP.PuPWrQGLcGccVqXE4PHsWAHaEo?w=297&h=186&c=7&r=0&o=5&dpr=1.3&pid=1.7'
-    }
-  ];
-
   const props: DraggerProps = {
     name: '',
     accept: allowedFileTypes?.join(','),
     multiple,
-    fileList: [...fileList, ...files],
+    fileList,
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
@@ -236,7 +216,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
-      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : styles.shaStoredFilesRendererGrid}`} style={{ maxHeight }}>
+      layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`} style={{ maxHeight, ...stylingBoxAsCSS }}>
       {isStub
         ? isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>

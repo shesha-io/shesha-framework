@@ -277,6 +277,7 @@ export const getSettings = () =>
             propertyName: 'containerStyles',
             parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
             label: 'Container Styles',
+            ghost: true,
             content: {
               id: 'container-styles-content-880d-4308-c3d996619cb',
               components: [...new DesignerToolbarSettings()
@@ -331,30 +332,35 @@ export const getSettings = () =>
                   propertyName: 'thumbnailWidth',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Thumbnail Width',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d9966197',
                   propertyName: 'thumbnailHeight',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Thumbnail Height',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb5',
                   propertyName: 'borderWidth',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Width',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addColorPicker({
                   id: '1c03863c-880d-4308-8667-c3d996619cb6',
                   propertyName: 'borderColor',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Color',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addDropdown({
                   id: '1c03863c-type-4308-8667-c3d996619cb9',
                   propertyName: 'borderType',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Type',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                   dataSourceType: 'values',
                   values: [
                     {
@@ -374,17 +380,13 @@ export const getSettings = () =>
                   propertyName: 'borderRadius',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Radius',
-                })
-                .addStyleBox({
-                  id: '1c03863c-880d-4308-8567-c3d996619cb4',
-                  propertyName: 'itemStylingBox',
-                  parentId: 'item-styles-content-880d-4308-c3d996619cb',
-                  jsSetting: false,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addCodeEditor({
                   id: '1c03863c-880d-4308-8667-c3d996619cb7',
                   propertyName: 'itemStyle',
                   label: 'Item Custom CSS',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .toJson()]
             }
