@@ -56,8 +56,14 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
+        const bgStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
+
+        setBackgroundStyles((prevStyles) => {
+          if (JSON.stringify(prevStyles) !== JSON.stringify(bgStyle)) {
+            return bgStyle;
+          }
+          return prevStyles;
+        });
       };
 
       fetchStyles();
@@ -152,15 +158,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           minWidth: prev.minWidth,
           minHeight: prev.minHeight,
           maxHeight: prev.maxHeight,
-          maxWidth: prev.maxWidth
+          maxWidth: prev.maxWidth,
+          shadowStyle: 'none'
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<IContainerComponentProps>(6, (prev) => {
-        return { ...prev, shadowStyle: 'none' };
-      })
-      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { ...defaultStyles() }), }))
-      .add<IContainerComponentProps>(8, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
@@ -168,17 +171,23 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           justifyContent: prev?.justifyContent,
           alignItems: prev?.alignItems,
           alignSelf: prev?.alignSelf,
+          justifySelf: prev?.justifySelf,
           justifyItems: prev?.justifyItems,
           textJustify: prev?.textJustify,
-          justifySelf: prev?.justifySelf,
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
           gap: prev?.gap
         };
-        return { ...prev, desktop: { ...flexAndGridStyles }, tablet: { ...flexAndGridStyles }, mobile: { ...flexAndGridStyles } };
+
+        return {
+          ...migratePrevStyles({
+            ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
+            tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
+          },
+            { ...defaultStyles(prev) })
+        };
       })
-  ,
 };
 
 export default ContainerComponent;

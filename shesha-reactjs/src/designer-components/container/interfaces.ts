@@ -179,4 +179,7 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, IC
   backgroundUrl?: string;
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
+  desktop?: any;
+  tablet?: any;
+  mobile?: any;
 }
