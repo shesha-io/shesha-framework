@@ -12,6 +12,7 @@ namespace Shesha.Domain
     [DiscriminatorValue(ItemTypeName)]
     [JoinedProperty("Core_NotificationChannelConfigs")]
     [Entity(TypeShortAlias = "Shesha.Domain.NotificationChannelConfig")]
+    [Prefix(UsePrefixes = false)]
     public class NotificationChannelConfig : ConfigurationItemBase
     {
         public NotificationChannelConfig()
