@@ -27,7 +27,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const data = model;
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
@@ -36,7 +35,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const shadow = model?.shadow;
     const background = model?.background;
     const position = model?.position;
-    const jsStyle = getStyle(model.style, data);
+    const jsStyle = getStyle(model.style, model);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -152,13 +151,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           style: prev.style,
           wrapperStyle: prev.wrapperStyle,
           className: prev.className,
-          stylingBox: prev.stylingBox,
-          width: prev.width,
-          height: prev.height,
-          minWidth: prev.minWidth,
-          minHeight: prev.minHeight,
-          maxHeight: prev.maxHeight,
-          maxWidth: prev.maxWidth,
           shadowStyle: 'none'
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
@@ -185,7 +177,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
             tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
           },
-            { ...defaultStyles(prev) })
+            defaultStyles(prev))
         };
       })
 };

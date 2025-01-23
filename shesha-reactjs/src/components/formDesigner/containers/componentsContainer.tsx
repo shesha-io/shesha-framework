@@ -10,7 +10,6 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
   itemsLimit?: number;
   dynamicComponents?: IConfigurableFormComponent[];
   wrapperStyle?: CSSProperties;
-  style?: CSSProperties;
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {

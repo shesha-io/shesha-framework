@@ -1,7 +1,7 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { DesignerToolbarSettings, IAsyncValidationError, ICommonContainerProps, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -73,7 +73,7 @@ export interface IStyleType {
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  style?: IConfigurableFormComponent["style"];
+  style?: React.CSSProperties;
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   display?: ICommonContainerProps['display'];
   size?: SizeType;
@@ -92,7 +92,6 @@ export interface IInputStyles extends IStyleType {
   width?: string | number;
   backgroundColor?: string;
   hideBorder?: boolean;
-  style?: string;
 };
 
 export type ConfigurableFormComponentTypes =

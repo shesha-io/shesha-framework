@@ -138,7 +138,7 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
-export interface ICommonContainerProps {
+export interface ICommonContainerProps extends IStyleType {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
   flexWrap?: FlexWrap;
@@ -167,7 +167,7 @@ export interface ICommonContainerProps {
   shadowStyle?: string;
 }
 
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps, IStyleType {
+export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'>, Omit<IStyleType, 'style'> {
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
