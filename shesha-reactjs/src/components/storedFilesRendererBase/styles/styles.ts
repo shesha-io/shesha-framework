@@ -52,8 +52,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
        }
-      .ant-image {
+      .ant-image .anticon {
         border-radius: ${borderRadius ?? '8px'} !important;
+        display: block !important;
       }
     }
 
@@ -118,7 +119,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       }
 
       .ant-upload-list-item-container {
-        display: inline-block !important;
+        display: inline-block !important;    
+        width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
       }
     `);
@@ -136,7 +138,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       display: flex !important;
       flex-direction: column !important;
       justify-content: center !important;
-        height: var(--thumbnail-height) !important;
+      width: var(--thumbnail-width) !important;
+      height: var(--thumbnail-height) !important;
     }
     `);
 

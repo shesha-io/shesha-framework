@@ -10,12 +10,13 @@ import {
   UploadFile,
 } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
-import { FileExcelOutlined, FileImageOutlined, FilePdfOutlined, FilePptOutlined, FileTextOutlined, FileWordOutlined, FileZipOutlined, PaperClipOutlined, UploadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
 import { IInputStyles } from '@/designer-components/textField/interfaces';
-import { getStyle, pickStyleFromModel, toBase64 } from '@/index';
+import { getStyle, IconType, pickStyleFromModel, ShaIcon, useSheshaApplication } from '@/index';
+import { fileIcons, isImageType } from '@/designer-components/attachmentsEditor/utils';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -85,6 +86,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   style,
   borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
 }) => {
+  const { httpHeaders } = useSheshaApplication();
+
   const hasFiles = !!fileList.length;
   const addPx = (value) => /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
   const styling = JSON.parse(stylingBox || '{}');
@@ -101,9 +104,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const { message, notification } = App.useApp();
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
 
-  const listTypeAndLayout = listType === 'text' ? 'text' : 'picture-card';
+  const listTypeAndLayout = listType === 'text' || !listType ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>
     notification.success({
@@ -119,14 +123,39 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   }, [isDownloadZipSucceeded]);
 
   const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await toBase64(file.originFileObj);
-    }
-
-    setPreviewImage(file.url || (file.preview as string));
+    setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
-  const isImageType = (type) => ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'].includes(type);
+
+  const fetchStoredFile = (url: string) => {
+    const response = fetch(`${url}`,
+      { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+      .then((response) => {
+        return response.blob();
+      })
+      .then((blob) => {
+        return URL.createObjectURL(blob);
+      });
+
+    return response;
+  };
+
+  const iconRender = (file) => {
+    const { type, uid } = file;
+
+    if (isImageType(type) && listType === 'thumbnail') {
+      if (!imageUrls[uid]) {
+        fetchStoredFile(file.url).then((imageUrl) => {
+          setImageUrls((prev) => ({ ...prev, [uid]: imageUrl }));
+        });
+      }
+
+      return <Image src={imageUrls[uid]} alt={file.name} preview={false} />;
+    }
+
+    const icon = fileIcons[type] ? fileIcons[type] : fileIcons['default'];
+    return <ShaIcon iconName={icon.name as IconType} style={{ color: icon.color, verticalAlign: 'middle' }} />;
+  };
 
   const props: DraggerProps = {
     name: '',
@@ -175,36 +204,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     onPreview: (file) => {
       const { uid, name } = file;
-      if (isImageType(file.type)) handlePreview(file);
-      else downloadFile({ fileId: uid, fileName: name });
+      if (isImageType(file.type)) {
+        handlePreview(file);
+      } else downloadFile({ fileId: uid, fileName: name });
     },
     showUploadList: {
       showRemoveIcon: allowDelete,
+      showDownloadIcon: true,
     },
-    iconRender: (file) => {
-      const { type } = file;
-
-      if ((isImageType(type)) && listType === 'thumbnail') {
-        return <Image src={file.url} alt={file.name} preview={false} />;
-      };
-
-      if (isImageType(type)) {
-        return <FileImageOutlined style={{ color: '#0083BE', verticalAlign: 'baseline' }} />;
-      } else if (type === '.pdf') {
-        return <FilePdfOutlined style={{ color: '#ED2224', verticalAlign: 'baseline' }} />;
-      } else if (type === '.doc' || type === '.docx') {
-        return <FileWordOutlined style={{ color: '#2B579A', verticalAlign: 'baseline' }} />;
-      } else if (type === '.xls' || type === '.xlsx') {
-        return <FileExcelOutlined style={{ color: '#217346', verticalAlign: 'baseline' }} />;
-      } else if (type === '.ppt' || type === '.pptx') {
-        return <FilePptOutlined style={{ color: '#D24726', verticalAlign: 'baseline' }} />;
-      } else if (type === '.zip' || type === '.rar' || type === '.tar') {
-        return <FileZipOutlined style={{ color: '#F9AA00', verticalAlign: 'baseline' }} />;
-      } else if (type === '.txt' || type === '.csv') {
-        return <FileTextOutlined style={{ color: '#848588', verticalAlign: 'baseline' }} />;
-      }
-      return <PaperClipOutlined style={{ color: '#848588', verticalAlign: 'baseline' }} />;
-    },
+    iconRender,
   };
 
 
@@ -236,9 +244,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+            afterOpenChange: (visible) => !visible && setPreviewImage(null),
+            toolbarRender: (original) => {
+              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} style={{ background: '#0000001A', fontSize: 24, padding: '8px', borderRadius: '100px' }} />{original}</div>;
+            },
           }}
-          src={previewImage}
+          src={previewImage.url}
         />
       )}
 

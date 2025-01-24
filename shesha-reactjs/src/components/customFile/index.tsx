@@ -42,6 +42,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   useEffect(() => {
     if (props?.onFileListChanged) props?.onFileListChanged(fileList);
   }, [fileList]);
+
   return (
     <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
@@ -51,7 +52,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}
         allowDelete={props.allowDelete}
-        //downloadFile={downloadFile}
         deleteFile={deleteFile}
         uploadFile={props.uploadFile ?? uploadFile}
         downloadZipFile={downloadZipFile}
