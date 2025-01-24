@@ -7,7 +7,8 @@ type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type'> & { bl
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
-        const prevStyles: IInputStyles = screen ? prev[`${screen}`] : prev;
+        const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
+
         const border = (side) => ({
             ...prev?.border?.border?.[side],
             width: prevStyles?.borderSize as string || prev?.border?.border?.[side]?.width || defaults?.border?.border?.[side]?.width || '1px',

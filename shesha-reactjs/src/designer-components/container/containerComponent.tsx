@@ -9,7 +9,6 @@ import { ComponentsContainer, ValidationErrors } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
@@ -18,6 +17,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getPositionStyle } from '../_settings/utils/position/utils';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -27,7 +27,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const dimensions = model?.dimensions;
@@ -103,7 +102,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       flexWrap: model?.flexWrap,
       gap: model?.gap,
     };
-
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
@@ -132,7 +130,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ...prev,
         direction: prev['direction'] ?? 'vertical',
         justifyContent: prev['justifyContent'] ?? 'left',
-        display: prev['display'] ?? 'block',
+        display: prev['display'] /* ?? 'block'*/,
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
       }))
@@ -173,6 +171,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         };
 
         return {
+          ...prev,
           ...migratePrevStyles({
             ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
             tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }

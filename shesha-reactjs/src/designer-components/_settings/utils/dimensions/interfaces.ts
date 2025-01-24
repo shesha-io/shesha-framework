@@ -12,7 +12,7 @@ export interface IDimensionsValue {
     minHeight?: string | number;
     maxWidth?: string | number;
     maxHeight?: string | number;
-    overflow?: string | number;
+    overflow?: string;
 }
 
 export interface IDimensionsType {

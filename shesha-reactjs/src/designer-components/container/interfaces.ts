@@ -138,7 +138,7 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
-export interface ICommonContainerProps extends IStyleType {
+export interface ICommonContainerProps extends Omit<IStyleType, 'style'> {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
   flexWrap?: FlexWrap;
@@ -165,6 +165,7 @@ export interface ICommonContainerProps extends IStyleType {
   borderRadius?: string | number;
   overflow?: string;
   shadowStyle?: string;
+  style?: React.CSSProperties;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'>, Omit<IStyleType, 'style'> {

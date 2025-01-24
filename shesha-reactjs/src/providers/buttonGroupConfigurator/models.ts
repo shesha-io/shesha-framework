@@ -40,7 +40,6 @@ export interface IButtonGroupItemBase extends IStyleType {
   buttonType?: ButtonType;
   ghost?: boolean;
   permissions?: string[];
-  style?: string;
   size?: SizeType;
   editMode?: EditMode;
   readOnly?: boolean;

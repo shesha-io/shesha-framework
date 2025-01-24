@@ -73,7 +73,7 @@ export interface IStyleType {
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  style?: React.CSSProperties;
+  style?: string;
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   display?: ICommonContainerProps['display'];
   size?: SizeType;
@@ -81,7 +81,7 @@ export interface IStyleType {
 
 export interface IInputStyles extends IStyleType {
   borderSize?: string | number;
-  borderRadius?: number;
+  borderRadius?: string | number;
   borderType?: string;
   borderColor?: string;
   fontColor?: string;
@@ -227,6 +227,12 @@ export interface IConfigurableFormComponent
   layout?: FormLayout;
 
   inputStyles?: IStyleType;
+
+  desktop?: any;
+
+  tablet?: any;
+
+  mobile?: any;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
