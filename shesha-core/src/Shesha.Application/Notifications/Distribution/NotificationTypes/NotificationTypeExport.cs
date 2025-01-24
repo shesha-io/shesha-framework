@@ -57,7 +57,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 // specific properties
                 AllowAttachments = itemConfig.AllowAttachments,
                 Disable = itemConfig.Disable,
-                CanOtpOut = itemConfig.CanOtpOut,
+                CanOtpOut = itemConfig.CanOptOut,
                 Category = itemConfig.Category,
                 OrderIndex = itemConfig.OrderIndex,
                 OverrideChannels = itemConfig.OverrideChannels,
