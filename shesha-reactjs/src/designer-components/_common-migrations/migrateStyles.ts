@@ -72,16 +72,6 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 blurRadius: defaults?.shadow?.blurRadius || 0,
                 spreadRadius: defaults?.shadow?.spreadRadius || 0
             },
-            ...(defaults?.position && {
-                position: {
-                    value: 'relative',
-                    offset: 'top',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0
-                }
-            }),
             ...(defaults?.display && { display: defaults?.display || 'block' }),
         };
     };
