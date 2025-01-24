@@ -112,8 +112,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
             ...finalStyle,
             ...positionstyle,
-          }}
-          style={{
             ...getStyle(model?.style, formData),
           }}
           dynamicComponents={model?.isDynamic ? model?.components : []}
@@ -149,11 +147,20 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           style: prev.style,
           wrapperStyle: prev.wrapperStyle,
           className: prev.className,
-          shadowStyle: 'none'
+          stylingBox: prev.stylingBox,
+          width: prev.width,
+          height: prev.height,
+          minWidth: prev.minWidth,
+          minHeight: prev.minHeight,
+          maxHeight: prev.maxHeight,
+          maxWidth: prev.maxWidth
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<IContainerComponentProps>(6, (prev) => {
+        return { ...prev, shadowStyle: 'none' };
+      })
+      .add<IContainerComponentProps>(7, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
@@ -171,14 +178,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         };
 
         return {
-          ...prev,
-          ...migratePrevStyles({
-            ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
-            tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
-          },
-            defaultStyles(prev))
+          ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
+          tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })
+      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
 };
 
 export default ContainerComponent;

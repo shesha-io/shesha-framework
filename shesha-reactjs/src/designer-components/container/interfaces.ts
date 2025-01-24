@@ -168,7 +168,7 @@ export interface ICommonContainerProps extends Omit<IStyleType, 'style'> {
   style?: React.CSSProperties;
 }
 
-export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'>, Omit<IStyleType, 'style'> {
+export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;

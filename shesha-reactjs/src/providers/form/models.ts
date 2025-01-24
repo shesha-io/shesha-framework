@@ -2,7 +2,7 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import React, { ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError, ICommonContainerProps, IDictionary } from '@/interfaces';
+import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
@@ -11,7 +11,6 @@ import { IBackgroundValue } from '@/designer-components/_settings/utils/backgrou
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
-
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -73,10 +72,9 @@ export interface IStyleType {
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  style?: string;
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
-  display?: ICommonContainerProps['display'];
   size?: SizeType;
+  style?: string;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -92,6 +90,16 @@ export interface IInputStyles extends IStyleType {
   width?: string | number;
   backgroundColor?: string;
   hideBorder?: boolean;
+  backgroundCover?: 'contain' | 'cover';
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
+  className?: string;
+  wrapperStyle?: string;
+  backgroundType?: 'image' | 'color';
+  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
+  backgroundUrl?: string;
+  backgroundBase64?: string;
+  backgroundStoredFileId?: string;
+  style?: string;
 };
 
 export type ConfigurableFormComponentTypes =

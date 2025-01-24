@@ -1,4 +1,4 @@
-import { IContainerComponentProps, IStyleType } from '@/index';
+import { ICommonContainerProps, IContainerComponentProps, IStyleType } from '@/index';
 import { nanoid } from '@/utils/uuid';
 
 export const JUSTIFY_ITEMS = [
@@ -149,7 +149,7 @@ export const ALIGN_SELF = [
 ];
 
 
-export const defaultStyles = (prev?: IContainerComponentProps): IStyleType => {
+export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
   const {
     width = '100%',
     height = 'auto',
@@ -158,7 +158,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType => {
     minHeight = '0px',
     minWidth = '0px',
     backgroundBase64 = '',
-    backgroundColor = '#fff',
+    backgroundColor = 'transparent',
     backgroundCover = 'cover',
     backgroundDataSource,
     backgroundRepeat = 'no-repeat',
@@ -216,10 +216,23 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType => {
       blurRadius: isBelow || isAbove ? 4 : 0,
       color: 'rgba(0, 0, 0, 0.15)',
       offsetX: 0,
-      offsetY: isAbove ? 2 : isBelow ? -2 : 0,
+      offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
     },
     position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
-    display: "block"
+    display: prev?.display ?? "block",
+    direction: prev?.direction ?? "horizontal",
+    flexWrap: prev?.flexWrap ?? "wrap",
+    flexDirection: prev?.flexDirection ?? "row",
+    justifyContent: prev?.justifyContent ?? "normal",
+    alignItems: prev?.alignItems ?? "normal",
+    alignSelf: prev?.alignSelf ?? "normal",
+    justifyItems: prev?.justifyItems ?? "normal",
+    textJustify: prev?.textJustify ?? "auto",
+    justifySelf: prev?.justifySelf ?? "normal",
+    noDefaultStyling: prev?.noDefaultStyling ?? false,
+    gridColumnsCount: prev?.gridColumnsCount ?? null,
+    gap: prev?.gap ?? '8px',
+    overflow: prev?.overflow ?? 'visible'
   };
 };
