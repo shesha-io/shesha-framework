@@ -3,10 +3,7 @@ using Shesha.Attributes;
 using Shesha.Notifications.Dto;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -61,28 +58,17 @@ namespace Shesha.Sms.Clickatell
                 if (response.IsSuccessStatusCode && responseContent.StartsWith("ID"))
                 {
                     Logger.InfoFormat("SMS successfully sent, response: {0}", response);
-                    return new SendStatus()
-                    {
-                        IsSuccess = true,
-                        Message = "SMS Successfully Sent!"
-                    };
+                    return SendStatus.Success();
                 }
 
-                Logger.ErrorFormat($"Failed to send SMS. Response: {responseContent}");
-                return new SendStatus()
-                {
-                    IsSuccess = false,
-                    Message = $"Failed to send SMS. Response: {responseContent}"
-                };
+                var errorMessage = $"Could not send SMS to '{mobileNumber}'. Response: '{responseContent}'";
+                Logger.ErrorFormat(errorMessage);
+                return SendStatus.Failed(errorMessage);
             }
             catch (Exception ex)
             {
                 Logger.ErrorFormat($"An error occurred: {ex.Message}");
-                return new SendStatus()
-                {
-                    IsSuccess = false,
-                    Message = $"An error occurred: {ex.Message}"
-                };
+                return SendStatus.Failed($"An error occurred: {ex.Message}");
             }
         }
 
