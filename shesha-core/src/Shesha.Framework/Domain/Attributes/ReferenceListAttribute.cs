@@ -9,6 +9,7 @@ namespace Shesha.Domain.Attributes
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Enum, AllowMultiple = false, Inherited = true)]
     public class ReferenceListAttribute : ReferenceListAttributeBase
     {
+        [Obsolete("Use constructor that accepts single parameter instead")]
         public ReferenceListAttribute(string @namespace, string name) : base(@namespace, name)
         {
         }
