@@ -28,7 +28,10 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   customHeader?: ICollapsiblePanelContent;
   panelHeadType?: headerType;
   headerStyles?: IStyleType;
-}
+  desktop?: IStyleType;
+  mobile?: IStyleType;
+  tablet?: IStyleType;
+};
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
   collapsedByDefault?: boolean;

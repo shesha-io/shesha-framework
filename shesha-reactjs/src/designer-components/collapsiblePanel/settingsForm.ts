@@ -1,8 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
     return {
@@ -163,7 +164,7 @@ export const getSettings = () => {
                                             label: 'Dimensions',
                                             parentId: 'styleRouter',
                                             labelAlign: 'right',
-                                            ghost: true,
+                                            ghost: false,
                                             collapsible: 'header',
                                             content: {
                                                 id: 'paneldimensionsStylePnl',
@@ -260,7 +261,7 @@ export const getSettings = () => {
                                             propertyName: 'pnlBorderStyle',
                                             label: 'Border',
                                             labelAlign: 'right',
-                                            ghost: true,
+                                            ghost: false,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -322,7 +323,7 @@ export const getSettings = () => {
                                             propertyName: 'pnlBackgroundStyle',
                                             label: 'Background',
                                             labelAlign: 'right',
-                                            ghost: true,
+                                            ghost: false,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -527,7 +528,7 @@ export const getSettings = () => {
                                             propertyName: 'pnlShadowStyle',
                                             label: 'Shadow',
                                             labelAlign: 'right',
-                                            ghost: true,
+                                            ghost: false,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -593,7 +594,7 @@ export const getSettings = () => {
                                             propertyName: 'stylingBox',
                                             label: 'Margin & Padding',
                                             labelAlign: 'right',
-                                            ghost: true,
+                                            ghost: false,
                                             collapsible: 'header',
                                             content: {
                                                 id: 'panelstylePnl-M5-911',
@@ -613,7 +614,7 @@ export const getSettings = () => {
                                             propertyName: 'customStyle',
                                             label: 'Custom Styles',
                                             labelAlign: 'right',
-                                            ghost: true,
+                                            ghost: false,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -632,443 +633,301 @@ export const getSettings = () => {
                                                 ]
                                             }
                                         })
-                                        // .addCollapsiblePanel({
-                                        //     id: 'panel-header-collapsible',
-                                        //     propertyName: 'header',
-                                        //     label: 'Header Style',
-                                        //     labelAlign: 'right',
-                                        //     ghost: true,
-                                        //     parentId: 'styleRouter',
-                                        //     content: {
-                                        //         id: 'panel-header-styles-pnl',
-                                        //         components: [...new DesignerToolbarSettings()
-                                        //             .addSettingsInputRow({
-                                        //                 id: 'try26voxhs-HxJ5k5ngYE',
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 inline: true,
-                                        //                 propertyName: 'font',
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'dropdown',
-                                        //                         id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: 'Family',
-                                        //                         propertyName: 'headerStyles.font.type',
-                                        //                         hideLabel: true,
-                                        //                         dropdownOptions: fontTypes,
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'number',
-                                        //                         id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: 'Size',
-                                        //                         propertyName: 'headerStyles.font.size',
-                                        //                         hideLabel: true,
-                                        //                         width: 50,
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'dropdown',
-                                        //                         id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: 'Weight',
-                                        //                         propertyName: 'headerStyles.font.weight',
-                                        //                         hideLabel: true,
-                                        //                         tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                        //                         dropdownOptions: fontWeights,
-                                        //                         width: 100,
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'color',
-                                        //                         id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: 'Color',
-                                        //                         hideLabel: true,
-                                        //                         propertyName: 'headerStyles.font.color',
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'dropdown',
-                                        //                         id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: 'Align',
-                                        //                         propertyName: 'headerStyles.font.align',
-                                        //                         hideLabel: true,
-                                        //                         width: 60,
-                                        //                         dropdownOptions: textAlign,
-                                        //                     },
-                                        //                 ],
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: 'header-dimensionsStyleRowWidth',
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 inline: true,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'header-width-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: "Width",
-                                        //                         width: 85,
-                                        //                         propertyName: "headerStyles.dimensions.width",
-                                        //                         icon: "widthIcon",
-                                        //                         tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'header-minWidth-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: "Min Width",
-                                        //                         width: 85,
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.dimensions.minWidth",
-                                        //                         icon: "minWidthIcon",
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'header-maxWidth-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: "Max Width",
-                                        //                         width: 85,
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.dimensions.maxWidth",
-                                        //                         icon: "maxWidthIcon",
-                                        //                     }
-                                        //                 ]
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: 'header-dimensionsStyleRowHeight',
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 inline: true,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'header-height-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: "Height",
-                                        //                         width: 85,
-                                        //                         propertyName: "headerStyles.dimensions.height",
-                                        //                         icon: "heightIcon",
-                                        //                         tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'header-minHeight-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: "Min Height",
-                                        //                         width: 85,
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.dimensions.minHeight",
-                                        //                         icon: "minHeightIcon",
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'header-maxHeight-s4gmBg31azZC0UjZjpfTm',
-                                        //                         label: "Max Height",
-                                        //                         width: 85,
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.dimensions.maxHeight",
-                                        //                         icon: "maxHeightIcon",
-                                        //                     }
-                                        //                 ]
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: `header-borderStyleRow`,
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                        //                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'button',
-                                        //                         id: 'borderStyleRow-hideBorder',
-                                        //                         label: "Border",
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.border.hideBorder",
-                                        //                         icon: "EyeOutlined",
-                                        //                         iconAlt: "EyeInvisibleOutlined"
-                                        //                     },
-                                        //                 ]
-                                        //             })
-                                        //             .addSettingsInputRow(
-                                        //                 getBorderInputs(true, 'headerStyles')[0] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getBorderInputs(true, 'headerStyles')[1] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getBorderInputs(true, 'headerStyles')[2] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getBorderInputs(true, 'headerStyles')[3] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getBorderInputs(true, 'headerStyles')[4] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getCornerInputs(true, 'headerStyles')[0] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getCornerInputs(true, 'headerStyles')[1] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getCornerInputs(true, 'headerStyles')[2] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getCornerInputs(true, 'headerStyles')[3] as any
-                                        //             )
-                                        //             .addSettingsInputRow(
-                                        //                 getCornerInputs(true, 'headerStyles')[4] as any
-                                        //             )
-                                        //             .addSettingsInput({
-                                        //                 id: "header-backgroundStyleRow-selectType",
-                                        //                 parentId: "panel-header-styles-pnl",
-                                        //                 label: "Type",
-                                        //                 jsSetting: false,
-                                        //                 propertyName: "headerStyles.background.type",
-                                        //                 inputType: "radio",
-                                        //                 tooltip: "Select a type of background",
-                                        //                 buttonGroupOptions: [
-                                        //                     {
-                                        //                         value: "color",
-                                        //                         icon: "FormatPainterOutlined",
-                                        //                         title: "Color"
-                                        //                     },
-                                        //                     {
-                                        //                         value: "gradient",
-                                        //                         icon: "BgColorsOutlined",
-                                        //                         title: "Gradient"
-                                        //                     },
-                                        //                     {
-                                        //                         value: "image",
-                                        //                         icon: "PictureOutlined",
-                                        //                         title: "Image"
-                                        //                     },
-                                        //                     {
-                                        //                         value: "url",
-                                        //                         icon: "LinkOutlined",
-                                        //                         title: "URL"
-                                        //                     },
-                                        //                     {
-                                        //                         value: "storedFile",
-                                        //                         icon: "DatabaseOutlined",
-                                        //                         title: "Stored File"
-                                        //                     }
-                                        //                 ],
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: "header-backgroundStyleRow-color",
-                                        //                 parentId: "panel-header-styles-pnl",
-                                        //                 inputs: [{
-                                        //                     type: 'color',
-                                        //                     id: 'backgroundStyleRow-color',
-                                        //                     label: "Color",
-                                        //                     propertyName: "headerStyles.background.color",
-                                        //                     hideLabel: true,
-                                        //                     jsSetting: false,
-                                        //                 }],
-                                        //                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: "header-backgroundStyle-gradientColors",
-                                        //                 parentId: "panel-header-styles-pnl",
-                                        //                 inputs: [{
-                                        //                     type: 'multiColorPicker',
-                                        //                     id: 'backgroundStyle-gradientColors',
-                                        //                     propertyName: "headerStyles.background.gradient.colors",
-                                        //                     label: "Colors",
-                                        //                     jsSetting: false,
-                                        //                 }
-                                        //                 ],
-                                        //                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                        //                 hideLabel: true,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: "header-backgroundStyle-url",
-                                        //                 parentId: "panel-header-styles-pnl",
-                                        //                 inputs: [{
-                                        //                     type: 'text',
-                                        //                     id: 'backgroundStyle-url',
-                                        //                     propertyName: "headerStyles.background.url",
-                                        //                     jsSetting: false,
-                                        //                     label: "URL",
-                                        //                 }],
-                                        //                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: "header-backgroundStyle-image",
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 inputs: [{
-                                        //                     type: 'imageUploader',
-                                        //                     id: 'backgroundStyle-image',
-                                        //                     propertyName: 'background.uploadFile',
-                                        //                     label: "Image",
-                                        //                     jsSetting: false,
-                                        //                 }],
-                                        //                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: "header-backgroundStyleRow-storedFile",
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'text',
-                                        //                         id: 'backgroundStyle-storedFile',
-                                        //                         jsSetting: false,
-                                        //                         propertyName: "headerStyles.background.storedFile.id",
-                                        //                         label: "File ID"
-                                        //                     }
-                                        //                 ]
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: "header-backgroundStyleRow-controls",
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 inline: true,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'customDropdown',
-                                        //                         id: 'header-backgroundStyleRow-size',
-                                        //                         label: "Size",
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.background.size",
-                                        //                         dropdownOptions: [
-                                        //                             {
-                                        //                                 value: "cover",
-                                        //                                 label: "Cover"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "contain",
-                                        //                                 label: "Contain"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "auto",
-                                        //                                 label: "Auto"
-                                        //                             }
-                                        //                         ],
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'customDropdown',
-                                        //                         id: 'backgroundStyleRow-position',
-                                        //                         label: "Position",
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.background.position",
-                                        //                         dropdownOptions: [
-                                        //                             {
-                                        //                                 value: "center",
-                                        //                                 label: "Center"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "top",
-                                        //                                 label: "Top"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "left",
-                                        //                                 label: "Left"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "right",
-                                        //                                 label: "Right"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "bottom",
-                                        //                                 label: "Bottom"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "top left",
-                                        //                                 label: "Top Left"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "top right",
-                                        //                                 label: "Top Right"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "bottom left",
-                                        //                                 label: "Bottom Left"
-                                        //                             },
-                                        //                             {
-                                        //                                 value: "bottom right",
-                                        //                                 label: "Bottom Right"
-                                        //                             }
-                                        //                         ],
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'dropdown',
-                                        //                         id: 'header-backgroundStyleRow-repeat',
-                                        //                         label: "Repeat",
-                                        //                         hideLabel: true,
-                                        //                         propertyName: "headerStyles.background.repeat",
-                                        //                         dropdownOptions: repeatOptions,
-                                        //                     }
-                                        //                 ]
-                                        //             })
-                                        //             .addSettingsInputRow({
-                                        //                 id: 'header-shadowStyleRow',
-                                        //                 parentId: 'panel-header-styles-pnl',
-                                        //                 inline: true,
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 inputs: [
-                                        //                     {
-                                        //                         type: 'number',
-                                        //                         id: 'header-shadowStyleRow-offsetX',
-                                        //                         label: 'Offset X',
-                                        //                         hideLabel: true,
-                                        //                         width: 60,
-                                        //                         icon: "offsetHorizontalIcon",
-                                        //                         propertyName: 'headerStyles.shadow.offsetX',
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'number',
-                                        //                         id: 'header-shadowStyleRow-offsetY',
-                                        //                         label: 'Offset Y',
-                                        //                         hideLabel: true,
-                                        //                         width: 60,
-                                        //                         icon: 'offsetVerticalIcon',
-                                        //                         propertyName: 'headerStyles.shadow.offsetY',
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'number',
-                                        //                         id: 'header-shadowStyleRow-blurRadius',
-                                        //                         label: 'Blur',
-                                        //                         hideLabel: true,
-                                        //                         width: 60,
-                                        //                         icon: 'blurIcon',
-                                        //                         propertyName: 'headerStyles.shadow.blurRadius',
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'number',
-                                        //                         id: 'header-shadowStyleRow-spreadRadius',
-                                        //                         label: 'Spread',
-                                        //                         hideLabel: true,
-                                        //                         width: 60,
-                                        //                         icon: 'spreadIcon',
-                                        //                         propertyName: 'headerStyles.shadow.spreadRadius',
-                                        //                     },
-                                        //                     {
-                                        //                         type: 'color',
-                                        //                         id: 'header-shadowStyleRow-color',
-                                        //                         label: 'Color',
-                                        //                         hideLabel: true,
-                                        //                         propertyName: 'headerStyles.shadow.color',
-                                        //                     },
-                                        //                 ],
-                                        //             })
-                                        //             .addStyleBox({
-                                        //                 id: 'header-styleBoxPnl',
-                                        //                 label: 'Margin Padding',
-                                        //                 hideLabel: true,
-                                        //                 propertyName: 'headerStyles.stylingBox',
-                                        //             })
-                                        //             .addSettingsInput({
-                                        //                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                        //                 id: 'custom-css-412c-8461-4c8d55e5c073',
-                                        //                 inputType: 'codeEditor',
-                                        //                 propertyName: 'headerStyles.style',
-                                        //                 hideLabel: false,
-                                        //                 label: 'Style',
-                                        //                 description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                        //             })
-                                        //             .toJson()]
-                                        //     }
-                                        // })
+                                        .addCollapsiblePanel({
+                                            id: 'panel-header-collapsible',
+                                            propertyName: 'header',
+                                            label: 'Header Style',
+                                            labelAlign: 'right',
+                                            ghost: false,
+                                            collapsible: 'header',
+                                            collapsedByDefault: true,
+                                            parentId: 'styleRouter',
+                                            content: {
+                                                id: 'panel-header-styles-pnl',
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: 'try26voxhs-HxJ5k5ngYE',
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        inline: true,
+                                                        propertyName: 'font',
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Font',
+                                                                propertyName: 'headerStyles.font.type',
+                                                                dropdownOptions: fontTypes,
+                                                            },
+                                                            {
+                                                                type: 'number',
+                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Size',
+                                                                propertyName: 'headerStyles.font.size',
+                                                                hideLabel: true,
+                                                                width: 50,
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Weight',
+                                                                propertyName: 'headerStyles.font.weight',
+                                                                hideLabel: true,
+                                                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                                                dropdownOptions: fontWeights,
+                                                                width: 100,
+                                                            },
+                                                            {
+                                                                type: 'color',
+                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Color',
+                                                                hideLabel: true,
+                                                                propertyName: 'headerStyles.font.color',
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Align',
+                                                                propertyName: 'headerStyles.font.align',
+                                                                hideLabel: true,
+                                                                width: 60,
+                                                                dropdownOptions: textAlign,
+                                                            },
+                                                        ],
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: 'header-dimensionsStyleRowHeight',
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'text',
+                                                                id: 'header-height-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Height",
+                                                                width: 85,
+                                                                propertyName: "headerStyles.dimensions.height",
+                                                                icon: "heightIcon",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                            },
+                                                            {
+                                                                type: 'text',
+                                                                id: 'header-minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "headerStyles.dimensions.minHeight",
+                                                                icon: "minHeightIcon",
+                                                            },
+                                                            {
+                                                                type: 'text',
+                                                                id: 'header-maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "headerStyles.dimensions.maxHeight",
+                                                                icon: "maxHeightIcon",
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheaderborderStyleCollapsiblePanel',
+                                                        propertyName: 'pnlHeaderBorderStyle',
+                                                        label: 'Border',
+                                                        labelAlign: 'right',
+                                                        ghost: false,
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheaderborderStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInputRow({
+                                                                    id: nanoid(),
+                                                                    parentId: 'panelheaderborderStylePnl',
+                                                                    hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'button',
+                                                                            id: 'panel-header-borderStyleRow-hideBorder',
+                                                                            label: "Border",
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.border.hideBorder",
+                                                                            icon: "EyeOutlined",
+                                                                            iconAlt: "EyeInvisibleOutlined"
+                                                                        },
+                                                                    ]
+                                                                })
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .toJson()
+                                                            ]
+                                                        }
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: "header-backgroundStyleRow-selectType",
+                                                        parentId: "styleRouter",
+                                                        label: "Type",
+                                                        jsSetting: false,
+                                                        propertyName: "headerStyles.background.type",
+                                                        inputType: "radio",
+                                                        tooltip: "Select a type of background",
+                                                        buttonGroupOptions: [
+                                                            {
+                                                                value: "color",
+                                                                icon: "FormatPainterOutlined",
+                                                                title: "Color"
+                                                            },
+                                                            {
+                                                                value: "gradient",
+                                                                icon: "BgColorsOutlined",
+                                                                title: "Gradient"
+                                                            },
+                                                            {
+                                                                value: "image",
+                                                                icon: "PictureOutlined",
+                                                                title: "Image"
+                                                            },
+                                                            {
+                                                                value: "url",
+                                                                icon: "LinkOutlined",
+                                                                title: "URL"
+                                                            },
+                                                            {
+                                                                value: "storedFile",
+                                                                icon: "DatabaseOutlined",
+                                                                title: "Stored File"
+                                                            }
+                                                        ],
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: "header-backgroundStyleRow-color",
+                                                        parentId: "panel-header-styles-pnl",
+                                                        inputs: [{
+                                                            type: 'color',
+                                                            id: 'backgroundStyleRow-color',
+                                                            label: "Color",
+                                                            propertyName: "headerStyles.background.color",
+                                                            hideLabel: true,
+                                                            jsSetting: false,
+                                                        }],
+                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: "panel-header-styles-pnl",
+                                                        inputs: [{
+                                                            type: 'multiColorPicker',
+                                                            id: 'backgroundStyle-gradientColors',
+                                                            propertyName: "headerStyles.background.gradient.colors",
+                                                            label: "Colors",
+                                                            jsSetting: false,
+                                                        }
+                                                        ],
+                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                        hideLabel: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: "panel-header-styles-pnl",
+                                                        inputs: [{
+                                                            type: 'text',
+                                                            id: 'backgroundStyle-url',
+                                                            propertyName: "headerStyles.background.url",
+                                                            jsSetting: false,
+                                                            label: "URL",
+                                                        }],
+                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        inputs: [{
+                                                            type: 'imageUploader',
+                                                            id: 'backgroundStyle-image',
+                                                            propertyName: 'background.uploadFile',
+                                                            label: "Image",
+                                                            jsSetting: false,
+                                                        }],
+                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'text',
+                                                                id: 'backgroundStyle-storedFile',
+                                                                jsSetting: false,
+                                                                propertyName: "headerStyles.background.storedFile.id",
+                                                                label: "File ID"
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: "header-backgroundStyleRow-controls",
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'customDropdown',
+                                                                id: nanoid(),
+                                                                label: "Size",
+                                                                hideLabel: true,
+                                                                propertyName: "headerStyles.background.size",
+                                                                dropdownOptions: sizeOptions
+                                                            },
+                                                            {
+                                                                type: 'customDropdown',
+                                                                id: nanoid(),
+                                                                label: "Position",
+                                                                hideLabel: true,
+                                                                propertyName: "headerStyles.background.position",
+                                                                dropdownOptions: positionOptions,
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: nanoid(),
+                                                                label: "Repeat",
+                                                                hideLabel: true,
+                                                                propertyName: "headerStyles.background.repeat",
+                                                                dropdownOptions: repeatOptions,
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInput({
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        id: nanoid(),
+                                                        inputType: 'codeEditor',
+                                                        propertyName: 'headerStyles.style',
+                                                        hideLabel: false,
+                                                        label: 'Style',
+                                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                    })
+                                                    .toJson()]
+                                            }
+                                        })
                                         .toJson()]
                             }).toJson()]
                     },

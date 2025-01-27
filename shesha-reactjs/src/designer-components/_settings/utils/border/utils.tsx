@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import { IDropdownOption } from "../background/interfaces";
 import { addPx } from "../../utils";
+import { nanoid } from "@/utils/uuid";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
     if (!input || jsStyle?.border) return {};
@@ -123,7 +124,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
         : 'return  getSettingValue(data?' + `${path ? '.' + path : ''}` + '.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);';
 
     return {
-        id: `borderStyleRow-${side}`,
+        id: nanoid(),
         parentId: 'borderStylePnl',
         inline: true,
         readOnly: false,
@@ -174,10 +175,11 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
 
 export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
     const corner = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}";`;
+    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.selectedCorner)' + `!== "${corner}"`
+        : 'return  getSettingValue(data?' + `${path ? '.' + path : ''}` + '.border?.seclectedCorner)' + `!== "${corner}"`;
 
     return {
-        id: `borderStyleRow-${corner}`,
+        id: nanoid(),
         parentId: 'borderStylePnl',
         inline: true,
         readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' + `${path ? '?.' + path : ''}` + '?.border?.hideBorder);', _mode: 'code', _value: false } as any,

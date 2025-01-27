@@ -24,6 +24,7 @@ export const getPositionStyle = (input?: IStyleType['position']): React.CSSPrope
 
     return style;
 };
+
 export const getPositionInputs = () => positions.map(value => {
     const label = value.value;
     const code = 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.position.offset)' + `!== "${label}"` + ' || getSettingValue(data[`${ contexts.canvasContext?.designerDevice || "desktop"}`]?.position.value) === "static";';
