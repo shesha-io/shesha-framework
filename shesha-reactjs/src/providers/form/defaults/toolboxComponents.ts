@@ -196,7 +196,7 @@ export const getToolboxComponents = (
     },
     {
       name: 'Data Access',
-      visible: true,
+      visible: false,
       components: [DataSource, DataContextComponent],
     },
     {
