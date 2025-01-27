@@ -2,15 +2,16 @@
 
 ## 💪 Enhancements
 
-- **Notifications Framework Refactoring and Enhancement**: Refactored and enhanced the Notifications Framework.
+- **Notifications Framework Refactoring and Enhancement**: The framework ensures flexibility in notification channels, supports user preferences, and simplifies integration with consuming applications. For more details, [see documentation](https://docs.shesha.io/docs/fundamentals/New%20Notifications/).
+- **Dynamic Menu Item Behavior**: Added configurability for dynamic menu item behavior. Configurators can now specify an entity or API call and define the action triggered upon clicking a dynamic menu item through configuration. For more details, [see issue](https://github.com/shesha-io/shesha-framework/issues/2284)
+- **User Registration and Authentication Configurability**: MIntroduced front-end configuration options to customize user registration and authentication behaviors. Administrators can now specify supported registration methods—such as Email, Mobile, or OAuth—and define the fields displayed during user registration. This enhancement provides greater flexibility in tailoring the user experience to specific requirements. For more details, [see issue](https://github.com/shesha-io/shesha-framework/issues/2073).
 - **Close Dialog Action Improvement**: Improved "Close dialog" action by adding "Show dialog result" functionality.
 - **Reference List Rendering**: Enabled `referenceList`components to render '0' values.
-- **Dynamic Menu Item Behavior**: Made dynamic menu item behavior configurable.
 - **Data Refresh Control in DataTable**: Introduced 'Disable refresh data' expression setting in `dataTableContext` for enhanced control.
 - **Form Builder Panel Removal**: Removed form builder panels by default in preview mode.
 - **Endpoint Access Override**: Allowed overriding of endpoint access defined in code when updated from the frontend.
 - **User ID API Addition**: Added `user.personId` front-end API to retrieve the current user's `personId`.
-- **User Registration and Authentication Configurability**: Made User Registration and Authentication behavior configurable for greater flexibility.
+
 - **Event Handlers Enhancement**: Enhanced components' event handlers to use the full list of available variables.
 - **Image Uploads from Configurations**: Enabled image uploads from configuration settings when base64 option is used.
 
