@@ -593,7 +593,7 @@ namespace Shesha.DynamicEntities.Binder
         public async Task<bool> DeleteCascadeAsync(object entity)
         {
             var entityType = entity.GetType().StripCastleProxyType();
-            var shortAlias = entityType.GetTypeShortAlias();
+            var shortAlias = entityType.GetTypeShortAliasOrNull();
             var props = entityType.GetProperties();
             var result = false;
 
@@ -637,7 +637,7 @@ namespace Shesha.DynamicEntities.Binder
             foreach (var reference in references)
             {
                 var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace
-                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAlias() == reference.EntityConfig.ClassName))
+                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
                 if (refType == null || !refType.IsEntityType()) continue;

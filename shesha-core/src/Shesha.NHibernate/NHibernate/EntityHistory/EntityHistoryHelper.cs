@@ -122,7 +122,7 @@ namespace Shesha.NHibernate.EntityHistory
             var isAudited = IsTypeOfAuditedEntity(typeOfEntity);
             if (isAudited != null && !isAudited.Value) return null;
 
-            if (isAudited == null && isTracked == null)
+            if (entityConfig != null && isAudited == null && isTracked == null)
             {
                 if (!typeOfEntity.GetProperties()
                     .Any(p =>
