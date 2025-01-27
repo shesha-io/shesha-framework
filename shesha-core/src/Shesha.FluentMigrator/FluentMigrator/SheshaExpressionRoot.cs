@@ -172,5 +172,18 @@ namespace Shesha.FluentMigrator
         }
 
         #endregion
+
+        #region modules
+
+        public IModuleEnsureExistsExpressionSyntax ModuleEnsureExists(string name)
+        {
+            var expression = new ModuleEnsureExistsExpression(DbmsType, _context.QuerySchema, name);
+
+            _context.Expressions.Add(expression);
+
+            return new ModuleEnsureExistsExpressionBuilder(expression, _context);
+        }
+
+        #endregion
     }
 }
