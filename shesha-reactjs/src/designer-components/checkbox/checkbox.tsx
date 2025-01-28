@@ -1,6 +1,6 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
@@ -13,7 +13,6 @@ import { ICheckboxComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

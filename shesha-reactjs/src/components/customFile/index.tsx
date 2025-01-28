@@ -1,9 +1,10 @@
 import React, { FC, useEffect } from 'react';
 import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
-import { useSheshaApplication, useStoredFilesStore } from '@/providers';
+import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/providers';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
-export interface ICustomFileProps {
+export interface ICustomFileProps extends IInputStyles {
   uploadFile?: (payload: IUploadFilePayload) => void;
   onFileListChanged?: (list: IStoredFile[]) => void;
   allowAdd?: boolean;
@@ -15,6 +16,12 @@ export interface ICustomFileProps {
   maxHeight?: string;
   isDragger?: boolean;
   downloadZip?: boolean;
+  layout?: layoutType;
+  listType?: listType;
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  hideFileName?: boolean;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -35,6 +42,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   useEffect(() => {
     if (props?.onFileListChanged) props?.onFileListChanged(fileList);
   }, [fileList]);
+
   return (
     <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
@@ -44,7 +52,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}
         allowDelete={props.allowDelete}
-        //downloadFile={downloadFile}
         deleteFile={deleteFile}
         uploadFile={props.uploadFile ?? uploadFile}
         downloadZipFile={downloadZipFile}
@@ -54,6 +61,9 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}
         maxHeight={props?.maxHeight}
+        layout={props?.layout}
+        listType={props?.listType}
+        {...props}
       />
     </div>
   );

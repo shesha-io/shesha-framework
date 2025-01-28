@@ -4,7 +4,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -12,7 +12,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 

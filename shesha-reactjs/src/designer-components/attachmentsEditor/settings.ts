@@ -40,12 +40,12 @@ export const getSettings = () =>
               {
                 label: 'left',
                 value: 'left',
-                id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+                id: 'f01e54aa-a1a4-4bd6-ba73-c395e48ap8ce',
               },
               {
                 label: 'right',
                 value: 'right',
-                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+                id: 'b920ef96-ae27-4a01-bfad-b5b7d07218dr',
               },
             ],
             dataSourceType: 'values',
@@ -62,6 +62,59 @@ export const getSettings = () =>
             parentId: 'root',
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
+          })
+
+          .addDropdown({
+            id: 'b920ef96-ae27-4a01-bfad-bob7d07218da',
+            propertyName: 'listType',
+            parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'List Type',
+            dataSourceType: 'values',
+            values: [
+              {
+                label: 'File Name',
+                value: 'text',
+                id: 'f01e54aa-a1a4-4bd6-ba3-c395e48af8ce',
+              },
+              {
+                label: 'Thumbnail',
+                value: 'thumbnail',
+                id: 'b920ef9w-ae27-4a01-bfad-b5b7d07218da',
+              },
+            ],
+          })
+          .addDropdown({
+            id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
+            propertyName: 'layout',
+            parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Layout',
+            dataSourceType: 'values',
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+            values: [
+              {
+                label: 'Vertical',
+                value: 'vertical',
+                id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8se',
+              },
+              {
+                label: 'Horizontal',
+                value: 'horizontal',
+                id: 'b920ef96-aeq7-4a01-bfad-b5b7d07218da',
+              },
+              {
+                label: 'grid',
+                value: 'grid',
+                id: 'b920ef96-ae27-4a01-bfad-b5b7x07218da',
+              }
+            ],
+          })
+          .addNumberField({
+            id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+            propertyName: 'gap',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Gap',
+            description: 'The gap between the thumbnails.',
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
           })
           .addCheckbox({
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
@@ -81,13 +134,13 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: "Edit mode",
           })
-          /*.addTextField({
-            id: '1ad47439-4c18-468c-89e1-60c002ce96c5',
-            name: 'maxHeight',
+          .addCheckbox({
+            id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
+            label: 'Hide File Name',
+            propertyName: 'hideFileName',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Max height',
-            description: 'Max height of file list (analog)',
-          })*/
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+          })
           .addCheckbox({
             id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
             propertyName: 'allowAdd',
@@ -121,69 +174,6 @@ export const getSettings = () =>
             description: 'Callback that is triggered when the file is changed.',
             validate: {},
             settingsValidationErrors: [],
-            exposedVariables: [
-              {
-                id: 'c5d111c0-4025-4713-a4f9-345160b6effa',
-                name: 'fileList',
-                description: 'The list of selected files',
-                type: 'Array<objects>',
-              },
-              {
-                id: 'c2dee12a-a94d-48a9-b7c9-9a33e998d936',
-                name: 'data',
-                description: 'Selected form values',
-                type: 'object',
-              },
-              {
-                id: 'd7ca9de9-d1b7-4185-b0d8-c82941fcbb37',
-                name: 'form',
-                description: 'Form instance',
-                type: 'FormInstance',
-              },
-              {
-                id: '2f0ea080-82d4-4aa0-8732-181c7dab9db6',
-                name: 'formMode',
-                description: 'The form mode',
-                type: "'readonly' | 'edit' | 'designer'",
-              },
-              {
-                id: 'c68ca119-fc0a-4f0f-8d95-0a0bf61171e0',
-                name: 'globalState',
-                description: 'The global state of the application',
-                type: 'object',
-              },
-              {
-                id: '62e97a94-e5bd-480c-ade5-1dd60ae768d5',
-                name: 'http',
-                description: 'axios instance used to make http requests',
-                type: 'object',
-              },
-              {
-                id: '9a91a1d1-b36c-4b08-9e07-4d102e2cebf5',
-                name: 'message',
-                description:
-                  'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
-                type: 'object',
-              },
-              {
-                id: 'aea147a3-26e8-4bbb-8327-11bbc899c079',
-                name: 'moment',
-                description: 'The moment.js object',
-                type: 'object',
-              },
-              {
-                id: '43d7af7c-8df7-44b6-8e7f-451429c1ab26',
-                name: 'setFormData',
-                description: 'A function used to update the form data',
-                type: '({ values: object, mergeValues: boolean}) => void',
-              },
-              {
-                id: '12685017-814a-4788-87f2-526bea6d78fd',
-                name: 'setGlobalState',
-                description: 'Setting the global state of the application',
-                type: '(payload: { key: string, data: any } ) => void',
-              },
-            ],
             wrapInTemplate: true,
             templateSettings: {
               functionName: 'onFileListChanged',
@@ -267,6 +257,137 @@ export const getSettings = () =>
             label: 'Required',
           }).toJson()
         ]
+      }
+    })
+    .addCollapsiblePanel({
+      id: 'd675bfe4-ee69-431e-931b-b0e0b9ceee6',
+      propertyName: 'styles',
+      parentId: 'root',
+
+      label: 'Styles',
+      labelAlign: "right",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+        components: [...new DesignerToolbarSettings()
+          .addCollapsiblePanel({
+            id: 'item-styles-1c03863c-880d-4308-8667-c3d996619cb',
+            propertyName: 'itemStyles',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Item Styles',
+            content: {
+              id: 'item-styles-content-880d-4308-c3d996619cb',
+              components: [...new DesignerToolbarSettings()
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb3',
+                  propertyName: 'fontSize',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Font Size',
+                })
+                .addColorPicker({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb0',
+                  propertyName: 'fontColor',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Color',
+                  allowClear: true
+                })
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb8',
+                  propertyName: 'thumbnailWidth',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Thumbnail Width',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                })
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d9966197',
+                  propertyName: 'thumbnailHeight',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Thumbnail Height',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                })
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb5',
+                  propertyName: 'borderWidth',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Border Width',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                })
+                .addColorPicker({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb6',
+                  propertyName: 'borderColor',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Border Color',
+                  allowClear: true,
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                })
+                .addDropdown({
+                  id: '1c03863c-type-4308-8667-c3d996619cb9',
+                  propertyName: 'borderType',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Border Type',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  dataSourceType: 'values',
+                  values: [
+                    {
+                      label: 'dashed',
+                      value: 'dashed',
+                      id: 'f01e54aa-a1a4-4bd6-ba73-c395e48af8ce',
+                    },
+                    {
+                      label: 'solid',
+                      value: 'solid',
+                      id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+                    },
+                  ],
+                })
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb',
+                  propertyName: 'borderRadius',
+                  parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+                  label: 'Border Radius',
+                  hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                })
+                .toJson()]
+            }
+          })
+          .addCollapsiblePanel({
+            id: 'container-styles-1c03863c-880d-4308-8667-c3d996619cb',
+            propertyName: 'containerStyles',
+            parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
+            label: 'Container Styles',
+            content: {
+              id: 'container-styles-content-880d-4308-c3d996619cb',
+              components: [...new DesignerToolbarSettings()
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb1',
+                  propertyName: 'width',
+                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                  label: 'Width',
+                })
+                .addTextField({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb2',
+                  propertyName: 'height',
+                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                  label: 'Height',
+                })
+                .addStyleBox({
+                  id: '1c03863c-880d-4308-8567-c3d996619cb3',
+                  propertyName: 'stylingBox',
+                  parentId: 'container-styles-content-880d-4308-c3d996619cb',
+                  jsSetting: false,
+                })
+                .addCodeEditor({
+                  id: '1c03863c-880d-4308-8667-c3d996619cb4',
+                  propertyName: 'style',
+                  label: 'Style',
+                })
+                .toJson()]
+            }
+          })
+
+          .toJson()]
       }
     })
     .addCollapsiblePanel({
