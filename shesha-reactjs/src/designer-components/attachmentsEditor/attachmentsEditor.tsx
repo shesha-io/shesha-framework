@@ -6,7 +6,7 @@ import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
   executeScript,
@@ -20,8 +20,9 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
+export type layoutType = 'vertical' | 'horizontal' | 'grid';
+export type listType = 'text' | 'thumbnail';
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
@@ -36,8 +37,8 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   maxHeight?: string;
   onFileChanged?: string;
   downloadZip?: boolean;
-  layout: 'vertical' | 'horizontal' | 'grid';
-  listType: 'text' | 'thumbnail';
+  layout: layoutType;
+  listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;

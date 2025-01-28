@@ -14,9 +14,8 @@ import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/i
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
-import { IInputStyles } from '@/designer-components/textField/interfaces';
-import { getStyle, IconType, pickStyleFromModel, ShaIcon, useSheshaApplication } from '@/index';
-import { fileIcons, isImageType } from '@/designer-components/attachmentsEditor/utils';
+import { getFileIcon, getStyle, IconType, IInputStyles, isImageType, pickStyleFromModel, ShaIcon, useSheshaApplication } from '@/index';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -48,8 +47,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   isStub?: boolean;
   allowedFileTypes?: string[];
   maxHeight?: string;
-  layout: 'vertical' | 'horizontal' | 'grid';
-  listType: 'text' | 'thumbnail';
+  layout: layoutType;
+  listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -153,7 +152,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       return <Image src={imageUrls[uid]} alt={file.name} preview={false} />;
     }
 
-    const icon = fileIcons[type] ? fileIcons[type] : fileIcons['default'];
+    const icon = getFileIcon(type);
     return <ShaIcon iconName={icon.name as IconType} style={{ color: icon.color, verticalAlign: 'middle' }} />;
   };
 

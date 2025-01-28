@@ -1,8 +1,8 @@
 import React, { FC, useEffect } from 'react';
 import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
-import { useSheshaApplication, useStoredFilesStore } from '@/providers';
-import { IInputStyles } from '@/designer-components/textField/interfaces';
+import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/providers';
+import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
 export interface ICustomFileProps extends IInputStyles {
   uploadFile?: (payload: IUploadFilePayload) => void;
@@ -16,8 +16,8 @@ export interface ICustomFileProps extends IInputStyles {
   maxHeight?: string;
   isDragger?: boolean;
   downloadZip?: boolean;
-  layout?: 'vertical' | 'horizontal' | 'grid';
-  listType?: 'text' | 'thumbnail';
+  layout?: layoutType;
+  listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
