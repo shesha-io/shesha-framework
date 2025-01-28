@@ -1,4 +1,4 @@
-import { IStyleType } from '@/index';
+import { ICommonContainerProps, IContainerComponentProps, IStyleType } from '@/index';
 import { nanoid } from '@/utils/uuid';
 
 export const JUSTIFY_ITEMS = [
@@ -149,21 +149,75 @@ export const ALIGN_SELF = [
 ];
 
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
+  const {
+    width = '100%',
+    height = 'auto',
+    maxHeight = 'auto',
+    maxWidth = 'auto',
+    minHeight = 'auto',
+    minWidth = '0px',
+    backgroundBase64 = '',
+    backgroundColor = 'transparent',
+    backgroundCover = 'cover',
+    backgroundDataSource,
+    backgroundRepeat = 'no-repeat',
+    backgroundStoredFileId = '',
+    backgroundType,
+    backgroundUrl = '',
+    borderColor = '#000',
+    borderRadius = '8',
+    borderStyle = 'solid',
+    borderWidth = '0',
+    shadowStyle
+  } = prev || {};
+
+
+  const isBelow = shadowStyle === 'below';
+  const isAbove = shadowStyle === 'above';
+  const imageType = backgroundType === 'image' ?
+    (backgroundDataSource === 'base64' ? 'image' :
+      backgroundDataSource === 'storedFileId' ? 'storedFile' :
+        backgroundDataSource === 'url' ? 'url' : 'color') : 'color';
 
   return {
-    background: { type: 'color', color: '#fff' },
-    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
-    border: {
-      selectedCorner: 'all', selectedSide: 'all',
-      border: {
-        all: { width: '0', color: '#000', style: 'solid' }, top: { width: '0' }, right: { width: '0' },
-        bottom: { width: '0' }, left: { width: '0' }
-      },
-      radius: { all: 4 }
+    background: {
+      type: imageType,
+      color: backgroundColor,
+      repeat: backgroundRepeat,
+      size: backgroundCover,
+      url: backgroundUrl,
+      gradient: { direction: 'to right', colors: {} },
+      storedFile: { id: backgroundStoredFileId },
+      uploadFile: { uid: '', name: '', status: 'done', url: backgroundBase64 }
     },
-    shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
-    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
-    display: "block"
+    dimensions: {
+      width,
+      height,
+      minHeight,
+      maxHeight,
+      minWidth,
+      maxWidth
+    },
+    border: {
+      selectedCorner: 'all',
+      selectedSide: 'all',
+      border: {
+        all: { width: borderWidth, color: borderColor, style: borderStyle },
+        top: { width: borderWidth ?? '0', color: borderColor },
+        right: { width: borderWidth ?? '0', color: borderColor },
+        bottom: { width: borderWidth ?? '0', color: borderColor },
+        left: { width: borderWidth ?? '0', color: borderColor },
+      },
+      radius: { all: borderRadius }
+    },
+    shadow: {
+      blurRadius: isBelow || isAbove ? 4 : 0,
+      color: 'rgba(0, 0, 0, 0.15)',
+      offsetX: 0,
+      offsetY: isAbove ? -2 : isBelow ? 2 : 0,
+      spreadRadius: 0
+    },
+    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' }
   };
 };

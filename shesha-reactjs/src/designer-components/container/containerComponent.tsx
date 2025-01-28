@@ -9,7 +9,6 @@ import { ComponentsContainer, ValidationErrors } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './data';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
@@ -18,6 +17,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getPositionStyle } from '../_settings/utils/position/utils';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -27,8 +27,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const data = model;
-
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const dimensions = model?.dimensions;
@@ -36,7 +34,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const shadow = model?.shadow;
     const background = model?.background;
     const position = model?.position;
-    const jsStyle = getStyle(model.style, data);
+    const jsStyle = getStyle(model.style, model);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -56,8 +54,14 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
+        const bgStyle = getBackgroundStyle(background, jsStyle, storedImageUrl);
+
+        setBackgroundStyles((prevStyles) => {
+          if (JSON.stringify(prevStyles) !== JSON.stringify(bgStyle)) {
+            return bgStyle;
+          }
+          return prevStyles;
+        });
       };
 
       fetchStyles();
@@ -98,21 +102,17 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       flexWrap: model?.flexWrap,
       gap: model?.gap,
     };
-
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
           containerId={model.id}
-          className={model.className}
-          wrapperStyle={{
-            ...positionstyle,
-            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
-            ...finalStyle,
-            ...positionstyle,
-          }}
+          wrapperStyle={{ ...positionstyle, ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }) }}
           style={{
+            ...positionstyle,
+            ...finalStyle,
             ...getStyle(model?.style, formData),
           }}
+          className={model.className}
           dynamicComponents={model?.isDynamic ? model?.components : []}
           {...flexAndGridStyles}
         />
@@ -127,7 +127,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ...prev,
         direction: prev['direction'] ?? 'vertical',
         justifyContent: prev['justifyContent'] ?? 'left',
-        display: prev['display'] ?? 'block',
+        display: prev['display'] /* ?? 'block'*/,
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
       }))
@@ -159,8 +159,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       .add<IContainerComponentProps>(6, (prev) => {
         return { ...prev, shadowStyle: 'none' };
       })
-      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { ...defaultStyles() }), }))
-      .add<IContainerComponentProps>(8, (prev) => {
+      .add<IContainerComponentProps>(7, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
@@ -168,17 +167,21 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           justifyContent: prev?.justifyContent,
           alignItems: prev?.alignItems,
           alignSelf: prev?.alignSelf,
+          justifySelf: prev?.justifySelf,
           justifyItems: prev?.justifyItems,
           textJustify: prev?.textJustify,
-          justifySelf: prev?.justifySelf,
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
           gap: prev?.gap
         };
-        return { ...prev, desktop: { ...flexAndGridStyles }, tablet: { ...flexAndGridStyles }, mobile: { ...flexAndGridStyles } };
+
+        return {
+          ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
+          tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
+        };
       })
-  ,
+      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
 };
 
 export default ContainerComponent;

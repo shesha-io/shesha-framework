@@ -63,11 +63,13 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
   };
 
   const jsStyle = getStyle(model.style);
-  const dimensions = migratePrevStyles(model, initialValues())?.dimensions;
-  const border = migratePrevStyles(model, initialValues())?.border;
-  const font = migratePrevStyles(model, initialValues())?.font;
-  const shadow = migratePrevStyles(model, initialValues())?.shadow;
-  const background = migratePrevStyles(model, initialValues())?.background;
+
+  const prevStyles = migratePrevStyles(model, initialValues());
+  const dimensions = prevStyles?.dimensions;
+  const border = prevStyles?.border;
+  const font = prevStyles?.font;
+  const shadow = prevStyles?.shadow;
+  const background = prevStyles?.background;
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
@@ -93,7 +95,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     };
 
     fetchStyles();
-  }, [background, background?.gradient?.colors, backendUrl, httpHeaders, jsStyle]);
+  }, [background]);
 
   const newStyles = {
     ...dimensionsStyles,
