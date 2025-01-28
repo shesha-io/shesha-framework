@@ -128,9 +128,19 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       />
     ) : null;
 
-    const panelPosition = panelContextState ? 'child' : 'parent';
+    const panelPosition = !!panelContextState ? 'child' : 'parent';
 
-    const headType: headerType = isFormSettings ? 'default' : panelPosition;
+    const headType: headerType = (() => {
+      if (isFormSettings) {
+        return 'default';
+      } else {
+        if (panelPosition === 'parent') {
+          return 'parent';
+        } else {
+          return 'child';
+        };
+      };
+    })();
 
     if (hidden) return null;
 

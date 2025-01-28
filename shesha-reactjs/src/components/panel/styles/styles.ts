@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerStyles }) => {
+export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerStyles, panelHeadType }) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -47,18 +47,18 @@ export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerSt
     borderWidth: headerBorderWidth,
     borderStyle: headerBorderStyle,
     borderColor: headerBorderColor,
-    borderTopWidth: headerBorderTopWidth,
+    borderTopWidth: headerBorderTopWidth = panelHeadType === 'parent' ? '3px' : '',
     borderTopStyle: headerBorderTopStyle,
-    borderTopColor: headerBorderTopColor,
+    borderTopColor: headerBorderTopColor = panelHeadType === 'parent' ? token.colorPrimary : '',
     borderBottomWidth: headerBorderBottomWidth,
     borderBottomStyle: headerBorderBottomStyle,
     borderBottomColor: headerBorderBottomColor,
     borderRightWidth: headerBorderRightWidth,
     borderRightStyle: headerBorderRightStyle,
     borderRightColor: headerBorderRightColor,
-    borderLeftWidth: headerBorderLeftWidth,
+    borderLeftWidth: headerBorderLeftWidth = panelHeadType === 'child' ? '3px' : '',
     borderLeftStyle: headerBorderLeftStyle,
-    borderLeftColor: headerBorderLeftColor,
+    borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     rest: headerRest
   } = headerStyles;
 
@@ -68,7 +68,7 @@ export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerSt
   const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
 
 
-  const shaCollapsiblePanel = cx("ant-collapse-componet", css`
+  const shaCollapsiblePanel = cx("ant-collapse-component", css`
 
     .ant-collapse {
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
@@ -86,6 +86,7 @@ export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerSt
     }
 
     .ant-collapse-header {
+      --primary-color: ${token.colorPrimary};
       background: ${headerBgImage || headerBgColor};
       border-radius: ${borderRadius} !important;
       height: ${headerHeight};

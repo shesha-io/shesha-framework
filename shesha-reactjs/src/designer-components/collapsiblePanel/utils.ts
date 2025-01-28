@@ -8,7 +8,7 @@ export const defaultStyles = (): IStyleType => {
         border: {
             selectedCorner: 'all', selectedSide: 'all',
             border: {
-                all: { width: '1', color: '#d9d9d9', style: 'solid' }
+                all: { width: '1', color: '#d9d9d9', style: 'solid' }, bottom: { width: 0 }
             },
             radius: { all: 8 }
         },
