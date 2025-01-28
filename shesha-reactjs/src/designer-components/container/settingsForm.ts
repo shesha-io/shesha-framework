@@ -806,7 +806,7 @@ export const getSettings = (data) => {
                           .addSettingsInput({
                             id: 'custom-class-412c-8461-4c8d55e5c073',
                             inputType: 'text',
-                            propertyName: 'customCssClass',
+                            propertyName: 'className',
                             label: 'Custom CSS Class',
                           })
                           .addSettingsInput({

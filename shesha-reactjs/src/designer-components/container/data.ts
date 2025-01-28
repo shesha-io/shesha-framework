@@ -155,7 +155,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     height = 'auto',
     maxHeight = 'auto',
     maxWidth = 'auto',
-    minHeight = '0px',
+    minHeight = 'auto',
     minWidth = '0px',
     backgroundBase64 = '',
     backgroundColor = 'transparent',
@@ -175,7 +175,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
 
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
-
   const imageType = backgroundType === 'image' ?
     (backgroundDataSource === 'base64' ? 'image' :
       backgroundDataSource === 'storedFileId' ? 'storedFile' :
@@ -219,20 +218,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
     },
-    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
-    display: prev?.display ?? "block",
-    direction: prev?.direction ?? "horizontal",
-    flexWrap: prev?.flexWrap ?? "wrap",
-    flexDirection: prev?.flexDirection ?? "row",
-    justifyContent: prev?.justifyContent ?? "normal",
-    alignItems: prev?.alignItems ?? "normal",
-    alignSelf: prev?.alignSelf ?? "normal",
-    justifyItems: prev?.justifyItems ?? "normal",
-    textJustify: prev?.textJustify ?? "auto",
-    justifySelf: prev?.justifySelf ?? "normal",
-    noDefaultStyling: prev?.noDefaultStyling ?? false,
-    gridColumnsCount: prev?.gridColumnsCount ?? null,
-    gap: prev?.gap ?? '8px',
-    overflow: prev?.overflow ?? 'visible'
+    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' }
   };
 };
