@@ -80,7 +80,7 @@ namespace Shesha.EntityHistory
                 return null; // skip audit saving
 
             var propName = ReflectionHelper.GetDisplayName(change.Property).TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength);
-            var displayProperty = typeof(T).GetDisplayNamePropertyInfo();
+            var displayProperty = typeof(T).GetDisplayNamePropertyInfoOrNull();
 
             var description = $"'{propName}' updated. ";
             if (added.Any())
@@ -135,9 +135,9 @@ namespace Shesha.EntityHistory
         public virtual EntityHistoryEventInfo CreateManyToManyAddRelationEvent(EntityChangeRelationInfo<E, T> change)
         {
             var propName = ReflectionHelper.GetDisplayName(change.Property).TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength);
-            var childDisplayProperty = typeof(T).GetDisplayNamePropertyInfo();
+            var childDisplayProperty = typeof(T).GetDisplayNamePropertyInfoOrNull();
             var childName = childDisplayProperty?.GetValue(change.ChildEntity, null) ?? change.ChildEntity.ToString();
-            var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfo();
+            var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfoOrNull();
             var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity.ToString();
 
             return CreateEvent($"{childName} added to...", $"'{childName}' added to '{propName}' of '{parentName}'");
@@ -146,9 +146,9 @@ namespace Shesha.EntityHistory
         public virtual EntityHistoryEventInfo CreateManyToManyRemoveRelationEvent(EntityChangeRelationInfo<E, T> change)
         {
             var propName = ReflectionHelper.GetDisplayName(change.Property).TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength);
-            var childDisplayProperty = typeof(T).GetDisplayNamePropertyInfo();
+            var childDisplayProperty = typeof(T).GetDisplayNamePropertyInfoOrNull();
             var childName = childDisplayProperty?.GetValue(change.ChildEntity, null) ?? change.ChildEntity.ToString();
-            var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfo();
+            var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfoOrNull();
             var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity.ToString();
 
             return CreateEvent($"{childName} removed from...", $"'{childName}' removed from '{propName}' of '{parentName}'");

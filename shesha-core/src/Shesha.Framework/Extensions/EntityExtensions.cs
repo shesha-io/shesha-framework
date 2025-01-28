@@ -89,7 +89,7 @@ namespace Shesha.Extensions
             var displayNamePropInfo = entity.GetType().GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
             return displayNamePropInfo == null
-                ? entity.GetType().GetDisplayNamePropertyInfo()?.GetValue(entity)?.ToString() ?? string.Empty
+                ? entity.GetType().GetDisplayNamePropertyInfoOrNull()?.GetValue(entity)?.ToString() ?? string.Empty
                 : entity.GetPropertyDisplayText(displayNamePropInfo.Name);
         }
 
@@ -100,16 +100,16 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="obj">The Object/Entity</param>
         /// <returns></returns>
-        public static PropertyInfo GetDisplayNamePropertyInfo(this object obj)
+        public static PropertyInfo? GetDisplayNamePropertyInfoOrNull(this object obj)
         {
-            return GetDisplayNamePropertyInfo(obj.GetType());
+            return GetDisplayNamePropertyInfoOrNull(obj.GetType());
         }
         /// <summary>
         /// Get the most appropriate Display Name property (started from DisplayName attribute)
         /// </summary>
         /// <param name="type">The type of Object/Entity</param>
         /// <returns></returns>
-        public static PropertyInfo GetDisplayNamePropertyInfo(this Type type)
+        public static PropertyInfo? GetDisplayNamePropertyInfoOrNull(this Type type)
         {
             var prop = ReflectionHelper.FindPropertyWithUniqueAttribute(type, typeof(EntityDisplayNameAttribute));
             if (prop == null)

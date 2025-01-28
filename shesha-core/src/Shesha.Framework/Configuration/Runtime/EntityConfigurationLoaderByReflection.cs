@@ -71,7 +71,7 @@ namespace Shesha.Configuration.Runtime
             config.TypeShortAlias = config.EntityType.GetTypeShortAliasOrNull();
 
             LoadChangeLoggingConfiguration(config);
-            config.DisplayNamePropertyInfo = config.EntityType.GetDisplayNamePropertyInfo();
+            config.DisplayNamePropertyInfo = config.EntityType.GetDisplayNamePropertyInfoOrNull();
         }
 
         private static void LoadPropertyConfiguration(PropertyInfo prop, PropertyConfiguration propConfig)
