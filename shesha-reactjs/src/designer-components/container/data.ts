@@ -151,7 +151,7 @@ export const ALIGN_SELF = [
 
 export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
   const {
-    width = '100%',
+    width,
     height = 'auto',
     maxHeight = 'auto',
     maxWidth = 'auto',
@@ -175,7 +175,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
 
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
-
   const imageType = backgroundType === 'image' ?
     (backgroundDataSource === 'base64' ? 'image' :
       backgroundDataSource === 'storedFileId' ? 'storedFile' :
