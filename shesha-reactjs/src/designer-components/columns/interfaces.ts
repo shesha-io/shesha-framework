@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
 export interface IColumnProps {
   id: string;
@@ -9,10 +9,22 @@ export interface IColumnProps {
   components: IConfigurableFormComponent[];
 }
 
-export interface IColumnsComponentProps extends IConfigurableFormComponent {
-  columns: IColumnProps[];
+export interface IColumnsInputProps extends IStyleType {
+  borderSize?: string | number;
+  borderRadius?: number;
+  borderType?: string;
+  borderColor?: string;
+  stylingBox?: string;
+  height?: string | number;
+  width?: string | number;
+  backgroundColor?: string;
+  hideBorder?: boolean;
+  columns?: IColumnProps[];
   gutterX?: number;
   gutterY?: number;
+}
+
+export interface IColumnsComponentProps extends IConfigurableFormComponent, IColumnsInputProps {
   style?: string;
   customVisibility?: string;
 }
