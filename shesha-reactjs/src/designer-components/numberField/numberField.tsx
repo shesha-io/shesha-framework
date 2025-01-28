@@ -5,7 +5,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
@@ -16,7 +16,6 @@ import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

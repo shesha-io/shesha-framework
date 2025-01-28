@@ -6,7 +6,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import {
   evaluateString,
   getStyle,
@@ -14,7 +14,7 @@ import {
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import { ITextFieldComponentProps, IInputStyles } from './interfaces';
+import { ITextFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import {
   migrateCustomFunctions,
@@ -98,10 +98,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           (model.passEmptyStringByDefault && '') ||
           (model.initialValue
             ? evaluateString(model.initialValue, {
-                formData: allData.data,
-                formMode: allData.form.formMode,
-                globalState: allData.globalState,
-              })
+              formData: allData.data,
+              formMode: allData.form.formMode,
+              globalState: allData.globalState,
+            })
             : undefined)
         }
       >
