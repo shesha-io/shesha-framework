@@ -15,7 +15,6 @@ using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -193,6 +192,8 @@ namespace Shesha.DynamicEntities
                 ? $"{assembly.FullName}: found {toUpdate.Count()} entities to update"
                 : "{assembly.FullName}: existing entity configs are up to date");
 
+            var names = toUpdate.Select(x => x.db.Name).ToList();
+            
             foreach (var config in toUpdate)
             {
                 config.db.FriendlyName = config.code.Config.FriendlyName;
@@ -200,6 +201,12 @@ namespace Shesha.DynamicEntities
                 config.db.TableName = config.code.Config.TableName;
                 config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
+                
+                // restore entity if deleted
+                config.db.IsDeleted = false;
+                config.db.DeletionTime = null;
+                config.db.DeleterUserId = null;
+
 
                 if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
                     config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
@@ -389,6 +396,12 @@ namespace Shesha.DynamicEntities
                 itemsTypeProp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
                 itemsTypeProp.SortOrder = 0;
                 itemsTypeProp.ParentProperty = dbp;
+
+                // restore property
+                itemsTypeProp.IsDeleted = false;
+                itemsTypeProp.DeletionTime = null;
+                itemsTypeProp.DeleterUserId = null;
+
                 await _entityPropertyRepository.InsertOrUpdateAsync(itemsTypeProp);
 
                 await _entityPropertyRepository.UpdateAsync(dbp);

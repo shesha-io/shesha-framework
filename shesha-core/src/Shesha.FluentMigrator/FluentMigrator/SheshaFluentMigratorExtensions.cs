@@ -3,6 +3,7 @@ using FluentMigrator.Builders;
 using FluentMigrator.Builders.Alter.Table;
 using FluentMigrator.Builders.Create.Table;
 using FluentMigrator.Infrastructure;
+using FluentMigrator.Runner.Extensions;
 using System.Reflection;
 
 namespace Shesha.FluentMigrator
@@ -14,6 +15,19 @@ namespace Shesha.FluentMigrator
     public static class SheshaFluentMigratorExtensions
     {
         private const int MsSqlVarcharMax = 1073741823;
+
+        /// <summary>
+        /// Adds foreign key column (int/int64/Guid acording to columnType) to the table
+        /// </summary>
+        public static ICreateTableColumnOptionOrWithColumnSyntax WithForeignKeyColumn(this ICreateTableWithColumnSyntax table, Type columnType, string columnName, string tableName)
+        {
+            return columnType.Is<int>()
+                ? table.WithForeignKeyColumnInt(columnName, tableName)
+                : columnType.Is<long>()
+                    ? table.WithForeignKeyColumnInt64(columnName, tableName)
+                    : table.WithForeignKeyColumn(columnName, tableName);
+        }
+
         /// <summary>
         /// Adds foreign key column (Guid) to the table
         /// </summary>

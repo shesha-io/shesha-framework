@@ -1,10 +1,13 @@
-﻿using Abp.Dependency;
+﻿using Abp.Auditing;
+using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
+using FluentMigrator.Infrastructure.Extensions;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityHistory;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -16,7 +19,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security.Cryptography;
 
 namespace Shesha.Extensions
 {
@@ -26,6 +28,17 @@ namespace Shesha.Extensions
     /// </summary>
     public static class EntityExtensions
     {
+        public static bool IsAuditedProperty(this PropertyInfo property) 
+        {
+            return property.HasAttribute<AuditedAttribute>()
+                || property.HasAttribute<AuditedAsEventAttribute>()
+                || property.HasAttribute<AuditedAsManyToManyAttribute>()
+                || property.GetCustomAttributes().Any(x =>
+                    x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,>)) != null
+                    || x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,,>)) != null
+                );
+        }
+
         /// <summary>
         /// Check if the property name is a one of special/system property
         /// </summary>
@@ -76,24 +89,39 @@ namespace Shesha.Extensions
             var displayNamePropInfo = entity.GetType().GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
             return displayNamePropInfo == null
-                ? entity.GetType().GetDisplayNamePropertyInfo()?.GetValue(entity)?.ToString() ?? string.Empty
+                ? entity.GetType().GetDisplayNamePropertyInfoOrNull()?.GetValue(entity)?.ToString() ?? string.Empty
                 : entity.GetPropertyDisplayText(displayNamePropInfo.Name);
         }
 
-        public static PropertyInfo GetDisplayNamePropertyInfo(this Type type)
+        private static readonly string[] displayNames = { "displayname", "name", "fullname", "address", "fulladdress" };
+
+        /// <summary>
+        /// Get the most appropriate Display Name property (started from DisplayName attribute)
+        /// </summary>
+        /// <param name="obj">The Object/Entity</param>
+        /// <returns></returns>
+        public static PropertyInfo? GetDisplayNamePropertyInfoOrNull(this object obj)
         {
-            var displayNamePropInfo = ReflectionHelper.FindPropertyWithUniqueAttribute(type, typeof(EntityDisplayNameAttribute));
-
-            if (displayNamePropInfo == null)
+            return GetDisplayNamePropertyInfoOrNull(obj.GetType());
+        }
+        /// <summary>
+        /// Get the most appropriate Display Name property (started from DisplayName attribute)
+        /// </summary>
+        /// <param name="type">The type of Object/Entity</param>
+        /// <returns></returns>
+        public static PropertyInfo? GetDisplayNamePropertyInfoOrNull(this Type type)
+        {
+            var prop = ReflectionHelper.FindPropertyWithUniqueAttribute(type, typeof(EntityDisplayNameAttribute));
+            if (prop == null)
             {
-                // Will automatically look for any properties called 'Name' or 'DisplayName'.
-                displayNamePropInfo = ReflectionHelper.GetProperty(type, "Name");
-
-                if (displayNamePropInfo == null)
-                    displayNamePropInfo = ReflectionHelper.GetProperty(type, "DisplayName");
-            }
-
-            return displayNamePropInfo;
+                foreach (var name in displayNames)
+                {
+                    prop = type.GetProperties().FirstOrDefault(z => z.Name.ToLower() == name);
+                    if (prop != null)
+                        return prop;
+                }
+            };
+            return prop;
         }
 
         public static string? GetTypeShortAliasOrNull(this Type entityType)
