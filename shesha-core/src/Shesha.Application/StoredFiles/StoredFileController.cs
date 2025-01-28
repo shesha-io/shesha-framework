@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.ObjectMapping;
+using Abp.Reflection;
 using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,7 @@ namespace Shesha.StoredFiles
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
+        private readonly TypeFinder _typeFinder;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -49,7 +51,9 @@ namespace Shesha.StoredFiles
             IRepository<StoredFileVersion, Guid> fileVersionRepository, IStoredFileService fileService,
             IDynamicRepository dynamicRepository, 
             IUnitOfWorkManager unitOfWorkManager,
-            IRepository<Person, Guid> personRepository)
+            IRepository<Person, Guid> personRepository,
+            TypeFinder typeFinder
+            )
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
@@ -57,6 +61,7 @@ namespace Shesha.StoredFiles
             _dynamicRepository = dynamicRepository;
             _unitOfWorkManager = unitOfWorkManager;
             _personRepository = personRepository;
+            _typeFinder = typeFinder;
         }
 
         [HttpGet, Route("Download")]
@@ -395,8 +400,12 @@ namespace Shesha.StoredFiles
                 ModelState.AddModelError(nameof(input.FileId), $"Id must not be null");
             }
 
+            var ownerType = _typeFinder.FindAll().FirstOrDefault(x => x.IsEntityType() && (x.FullName == input.OwnerType || x.GetTypeShortAlias() == input.OwnerType));
+            if (ownerSpecified && ownerType == null)
+                ModelState.AddModelError(input.OwnerId, $"Owner type not found (type = '{input.OwnerType}')");
+
             var owner = ownerSpecified
-                ? await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId)
+                ? await _dynamicRepository.GetAsync(ownerType?.FullName, input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
             if (ownerSpecified && owner == null)
@@ -558,8 +567,12 @@ namespace Shesha.StoredFiles
 
             var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
 
-            var owner = ownerSpecified && hasProperty
-                ? await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId)
+            var ownerType = _typeFinder.FindAll().FirstOrDefault(x => x.IsEntityType() && (x.FullName == input.OwnerType || x.GetTypeShortAlias() == input.OwnerType));
+            if (ownerSpecified && ownerType == null)
+                ModelState.AddModelError(input.OwnerId, $"Owner type not found (type = '{input.OwnerType}')");
+
+            var owner = ownerSpecified
+                ? await _dynamicRepository.GetAsync(ownerType?.FullName, input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
             {
