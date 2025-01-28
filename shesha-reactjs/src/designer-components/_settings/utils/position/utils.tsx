@@ -16,7 +16,7 @@ export const getPositionStyle = (input?: IStyleType['position']): React.CSSPrope
     const style: React.CSSProperties = {};
     const { value, top, left, right, bottom } = input;
 
-    style.position = value;
+    style.position = value || 'relative';
     style.top = addPx(top);
     style.left = addPx(left);
     style.right = addPx(right);

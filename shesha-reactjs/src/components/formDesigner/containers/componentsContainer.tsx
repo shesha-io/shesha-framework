@@ -1,8 +1,7 @@
 import React, { CSSProperties, FC, ReactNode } from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IComponentsContainerBaseProps } from '@/interfaces';
+import { ICommonContainerProps, IComponentsContainerBaseProps } from '@/interfaces';
 import { useComponentContainer } from '@/providers/form/nesting/containerContext';
-import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 
 export interface IComponentsContainerProps extends IComponentsContainerBaseProps, ICommonContainerProps {
   className?: string;
@@ -10,7 +9,6 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
   itemsLimit?: number;
   dynamicComponents?: IConfigurableFormComponent[];
   wrapperStyle?: CSSProperties;
-  style?: CSSProperties;
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {

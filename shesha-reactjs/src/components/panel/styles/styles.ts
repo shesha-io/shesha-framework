@@ -29,14 +29,6 @@ export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerSt
     minHeight,
     maxWidth,
     maxHeight,
-    marginTop = '0px',
-    marginBottom = '0px',
-    marginRight = '-1px',
-    marginLeft = '-1px',
-    paddingTop = '0px',
-    paddingRight = '0px',
-    paddingLeft = '0px',
-    paddingBottom = '0px',
     borderRadius,
     rest
   } = bodyStyle;
@@ -88,6 +80,9 @@ export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerSt
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};
+      height: ${height};
+      min-height: ${minHeight};
+      max-height: ${maxHeight};
     }
 
     .ant-collapse-header {
@@ -125,9 +120,6 @@ export const useStyles = createStyles(({ css, cx, token }, { bodyStyle, headerSt
 
     .ant-collapse-content-box {
       background: ${backgroundImage || backgroundColor};
-      height: ${height};
-      min-height: ${minHeight};
-      max-height: ${headerMaxHeight};
       border-radius : 0 0 ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
       border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
       border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};

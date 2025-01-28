@@ -12,11 +12,11 @@ export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
         const sizeValue = input[prop];
 
         if (sizeValue) {
-            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue) ? `${sizeValue}px` : `${sizeValue}`;
+            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue + '') ? `${sizeValue}px` : `${sizeValue}`;
         }
 
         if (sizeValue) {
-            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue) ? `${sizeValue}px` : `${sizeValue}`;
+            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue + '') ? `${sizeValue}px` : `${sizeValue}`;
         }
     });
 
