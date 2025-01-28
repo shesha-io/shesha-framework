@@ -69,6 +69,10 @@ export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition
   description?: string | null;
 }
 
+export interface IHasItemsType {
+  itemsType: IMemberType;
+}
+
 export interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
 }
@@ -97,8 +101,15 @@ export interface IObjectReferencePropertyMetadata extends IMemberMetadata, IHasE
 export interface IEntityReferencePropertyMetadata extends IMemberMetadata, IHasEntityType, Partial<IHasChildPropertiesMetadata> {
 }
 
+export interface IEntityReferenceArrayPropertyMetadata extends IMemberMetadata, IHasEntityType, IHasItemsType {
+}
+
 export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferencePropertyMetadata => {
   return propMeta && propMeta.dataType === DataTypes.entityReference;
+};
+
+export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
+  return propMeta && propMeta.dataType === DataTypes.array && propMeta.dataFormat === DataTypes.entityReference;
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
