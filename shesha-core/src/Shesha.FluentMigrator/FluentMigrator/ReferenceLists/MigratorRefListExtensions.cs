@@ -17,7 +17,7 @@ where
 		from 
 			""Frwk_ReferenceLists"" rl
 			inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id""
-			left join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
+			inner join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
 		where
 			rl.""Namespace"" is null
 			and upper(ci.""Name"") = upper('{@namespace}.{name}')
@@ -28,11 +28,11 @@ where
 				from 
 					""Frwk_ReferenceLists"" rl2
 					inner join ""Frwk_ConfigurationItems"" ci2 on ci2.""Id"" = rl2.""Id""
-					left join ""Frwk_Modules"" m2 on m2.""Id"" = ci2.""ModuleId""
+					inner join ""Frwk_Modules"" m2 on m2.""Id"" = ci2.""ModuleId""
 				where
-					upper(rl.""Namespace"") = upper('{@namespace}')
-					and upper(ci.""Name"") = upper('{@namespace}.{name}')
-					and upper(m.""Name"") = upper('{moduleName}')
+					upper(rl2.""Namespace"") = upper('{@namespace}')
+					and upper(ci2.""Name"") = upper('{@namespace}.{name}')
+					and upper(m2.""Name"") = upper('{moduleName}')
 			)
 	)");
             // NOTE: works on both MSSql and PostgreSql
@@ -47,11 +47,22 @@ where
 		from 
 			""Frwk_ReferenceLists"" rl
 			inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id""
-			left join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
+			inner join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
 		where
 			upper(rl.""Namespace"") = upper('{@namespace}')
 			and upper(ci.""Name"") = upper('{@namespace}.{name}')
 			and upper(m.""Name"") = upper('{moduleName}')	
+			and not exists (
+				select 
+					1 
+				from 
+					""Frwk_ReferenceLists"" rl2
+					inner join ""Frwk_ConfigurationItems"" ci2 on ci2.""Id"" = rl2.""Id""
+					inner join ""Frwk_Modules"" m2 on m2.""Id"" = ci2.""ModuleId""
+				where
+					upper(ci2.""Name"") = upper('{name}')
+					and upper(m2.""Name"") = upper('{moduleName}')
+			)
 	)");
 
             // NOTE: works on both MSSql and PostgreSql
@@ -66,7 +77,7 @@ where
 		from 
 			""Frwk_ReferenceLists"" rl
 			inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = rl.""Id""
-			left join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
+			inner join ""Frwk_Modules"" m on m.""Id"" = ci.""ModuleId""
 		where
 			upper(rl.""Namespace"") = upper('{@namespace}')
 			and upper(ci.""Name"") = upper('{name}')
