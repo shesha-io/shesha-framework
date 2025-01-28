@@ -26,7 +26,7 @@ type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
 /**
  * Form instance API
  */
-export interface FormApi<Values = any> {
+export interface IFormApi<Values = any> {
   /**
    * Add deferred update data to `data` object 
    * @param data model data object for updating
@@ -72,13 +72,15 @@ export interface FormApi<Values = any> {
   defaultApiEndpoints: IEntityEndpoints;
   /** Form arguments passed by caller */
   formArguments?: any;
+  readonly initialValues?: Values;
+  readonly parentFormValues?: any;
 };
 
 export type ConfigurableFormPublicApi = Pick<ConfigurableFormInstance, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
   shaForm?: IShaFormInstance;
 };
 
-class PublicFormApiWrapper implements FormApi {
+class PublicFormApiWrapper implements IFormApi {
   readonly #form: ConfigurableFormPublicApi;
 
   constructor(form: ConfigurableFormPublicApi) {
@@ -125,11 +127,17 @@ class PublicFormApiWrapper implements FormApi {
       ? this.#form.modelMetadata.apiEndpoints
       : {};
   }
+  get initialValues(): any {
+    return this.#form?.shaForm?.initialValues;
+  }
+  get parentFormValues(): any {
+    return this.#form?.shaForm?.parentFormValues;
+  }
   get formArguments(): any {
     return this.#form?.shaForm?.formArguments;
   }
 }
 
-export const getFormApi = (form: ConfigurableFormPublicApi): FormApi => {
+export const getFormApi = (form: ConfigurableFormPublicApi): IFormApi => {
   return new PublicFormApiWrapper(form);
 };
