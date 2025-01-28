@@ -44,8 +44,12 @@ import {
   fetchDataSuccessAction,
   setMarkupWithSettingsAction,
 } from './actions';
-import ParentProvider from '../parentProvider/index';
+import ParentProvider, { useParent } from '../parentProvider/index';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { IFormApi } from '../form/formApi';
+import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
+import { ISetFormDataPayload } from '../form/contexts';
+import { deepMergeValues } from '@/utils/object';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -86,10 +90,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     context,
   } = props;
 
+  const parent = useParent(false);
+
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { message, notification } = App.useApp();
 
-  const { formData = {}, formMode } = useForm();
+  const form = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
@@ -115,7 +121,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (!urlExpression) return '';
     return (() => {
       // tslint:disable-next-line:function-constructor
-      return new Function('data, query, globalState, application', urlExpression)(formData, getQueryParams(), globalState, appContextData); // Pass data, query, globalState
+      return new Function('data, query, globalState, application', urlExpression)(value, getQueryParams(), globalState, appContextData); // Pass data, query, globalState
     })();
   };
 
@@ -123,7 +129,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (!urlExpression) return Promise.resolve('');
 
     return executeScript<string>(urlExpression, {
-      data: formData,
+      data: value,
       query: getQueryParams(),
       globalState: globalState,
       application: appContextData,
@@ -245,7 +251,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
    * Get final query params taking into account all settings
    */
   const getFinalQueryParams = () => {
-    if (formMode === 'designer' || dataSource !== 'api') return {};
+    if (form.formMode === 'designer' || dataSource !== 'api') return {};
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
@@ -254,7 +260,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       : null;
 
     const queryParamsFromJs = queryParamsEvaluator({
-      data: formData ?? {},
+      data: value ?? {},
       globalState: globalState,
       query: getQueryParams(),
     });
@@ -271,7 +277,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const finalQueryParams = useDeepCompareMemo(() => {
     const result = getFinalQueryParams();
     return result;
-  }, [queryParams, formMode, globalState, formData]);
+  }, [queryParams, form.formMode, globalState, value]);
 
   // abort controller, is used to cancel out of date data requests
   const dataRequestAbortController = useRef<AbortController>(null);
@@ -360,7 +366,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           const evaluateOnCreated = () => {
             // tslint:disable-next-line:function-constructor
             return new Function('data, globalState, submittedValue, message, application', onCreated)(
-              formData,
+              value,
               globalState,
               submittedValue?.result,
               message,
@@ -388,7 +394,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           const evaluateOnUpdated = () => {
             // tslint:disable-next-line:function-constructor
             return new Function('data, globalState, response, message', onUpdated)(
-              formData,
+              value,
               globalState,
               submittedValue?.result,
               message,
@@ -516,6 +522,37 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     return typeof span === 'number' ? { span } : span;
   };
 
+  var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
+
+  const subFormApi: IFormApi<any> = {
+    addDelayedUpdateData: function (data: any): IDelayedUpdateGroup[] {
+      return parentFormApi.addDelayedUpdateData(data);
+    },
+    setFieldValue: function (name: string, value: any): void {
+      onChangeInternal(deepMergeValues(value, { [name]: value }));
+    },
+    setFieldsValue: function (values: any): void {
+      onChangeInternal(deepMergeValues(value, values));
+    },
+    clearFieldsValue: function (): void {
+      onChangeInternal({});
+    },
+    submit: function (): void {
+      throw new Error('Function not implemented.');
+    },
+    setFormData: function (payload: ISetFormDataPayload): void {
+      if (payload.mergeValues) {
+        onChangeInternal(deepMergeValues(value, payload.values));
+      } else {
+        onChangeInternal(payload.values);
+      }
+    },
+    formSettings: parentFormApi.formSettings,
+    formMode: parentFormApi.formMode,
+    data: value,
+    defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
+  };
+
   return (
     <SubFormContext.Provider
       value={{
@@ -557,6 +594,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
         >
           <ParentProvider model={props} context={context} isScope
+            formApi={subFormApi}
             formFlatMarkup={{allComponents: state.allComponents, componentRelations: state.componentRelations}}
           >
             {children}
