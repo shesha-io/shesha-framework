@@ -6,7 +6,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
     {
         public static void RemoveNamespaceFromRefList(Migration migration, string @namespace, string name, string moduleName)
         {
-			migration.Execute.Sql($@"update
+            ExecuteSql(migration, $@"update
 	""Frwk_ReferenceLists""
 set
 	""Namespace"" = '{@namespace}'
@@ -34,9 +34,8 @@ where
 					and upper(ci2.""Name"") = upper('{@namespace}.{name}')
 					and upper(m2.""Name"") = upper('{moduleName}')
 			)
-	)");
-            // NOTE: works on both MSSql and PostgreSql
-            migration.Execute.Sql($@"update
+	);
+update
 	""Frwk_ConfigurationItems""
 set
 	""Name"" = '{name}'
@@ -63,10 +62,8 @@ where
 					upper(ci2.""Name"") = upper('{name}')
 					and upper(m2.""Name"") = upper('{moduleName}')
 			)
-	)");
-
-            // NOTE: works on both MSSql and PostgreSql
-            migration.Execute.Sql($@"update
+	);
+update
 	""Frwk_ReferenceLists""
 set
 	""Namespace"" = null
@@ -82,9 +79,8 @@ where
 			upper(rl.""Namespace"") = upper('{@namespace}')
 			and upper(ci.""Name"") = upper('{name}')
 			and upper(m.""Name"") = upper('{moduleName}')	
-	)");
-
-            migration.Execute.Sql($@"update
+	);
+update
 	""Frwk_FormConfigurations"" 
 set
 	""Markup"" = replace(""Markup"", '""referenceListId"":{{""name"":""{@namespace}.{name}""', '""referenceListId"":{{""name"":""{name}""')
@@ -101,7 +97,7 @@ where
         
 		public static void FixRefListNotLinkedToModule(Migration migration, string @namespace, string name, string moduleName)
         {
-            migration.Execute.Sql($@"update 
+            ExecuteSql(migration, $@"update 
 	""Frwk_ConfigurationItems""
 set
 	""Name"" = replace(""Name"", '{@namespace}.', ''),
@@ -129,6 +125,25 @@ where
 					and m2.""Name"" = '{moduleName}'
 			)
 	)");
+        }
+
+		private static void ExecuteSql(Migration migration, string sql) 
+		{
+            migration.Execute.WithConnection((connection, transaction) =>
+            {
+				using var ownTransaction = transaction == null
+					? connection.BeginTransaction()
+					: null;
+
+                using var command = connection.CreateCommand();
+                command.Transaction = ownTransaction ?? transaction;
+                command.CommandText = sql;
+				command.CommandTimeout = 60 * 5;
+
+                command.ExecuteNonQuery();
+                
+				ownTransaction?.Commit();
+            });
         }
     }
 }
