@@ -155,17 +155,17 @@ namespace Shesha.FluentMigrator
                 if (runner is MigrationRunner standardRunner)
                 {
                     var migrationsToApply = standardRunner.MigrationLoader.LoadMigrations().Where(mi => !standardRunner.VersionLoader.VersionInfo.HasAppliedMigration(mi.Key)).OrderBy(m => m.Key).ToList();
-                    Logger.Info($"Found {migrationsToApply.Count()} migrations to apply");
+                    Logger.Warn($"Found {migrationsToApply.Count()} migrations to apply");
 
                     foreach (var migration in migrationsToApply)
                     {
                         var migrationName = migration.Value.Migration.GetType().FullName;
 
-                        Logger.Info($"Applying migration {migrationName} (version={migration.Value.Version})...");
+                        Logger.Warn($"Applying migration {migrationName} (version={migration.Value.Version})...");
                         try
                         {
                             standardRunner.MigrateUp(migration.Value.Version);
-                            Logger.Info($"Migration {migrationName} (version={migration.Value.Version}) applied successfully");
+                            Logger.Warn($"Migration {migrationName} (version={migration.Value.Version}) applied successfully");
                         }
                         catch (Exception e)
                         {
