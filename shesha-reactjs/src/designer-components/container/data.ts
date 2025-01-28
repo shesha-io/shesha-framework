@@ -151,11 +151,11 @@ export const ALIGN_SELF = [
 
 export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
   const {
-    width,
+    width = '100%',
     height = 'auto',
     maxHeight = 'auto',
     maxWidth = 'auto',
-    minHeight = '32px',
+    minHeight = 'auto',
     minWidth = '0px',
     backgroundBase64 = '',
     backgroundColor = 'transparent',
