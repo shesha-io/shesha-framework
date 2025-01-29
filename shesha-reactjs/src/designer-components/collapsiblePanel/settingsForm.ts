@@ -630,7 +630,7 @@ export const getSettings = () => {
                                             propertyName: 'header',
                                             label: 'Header Style',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             collapsible: 'header',
                                             collapsedByDefault: true,
                                             parentId: 'styleRouter',
@@ -722,69 +722,54 @@ export const getSettings = () => {
                                                             }
                                                         ]
                                                     })
-                                                    .addCollapsiblePanel({
-                                                        id: 'panelheaderborderStyleCollapsiblePanel',
-                                                        propertyName: 'pnlHeaderBorderStyle',
-                                                        label: 'Border',
-                                                        labelAlign: 'right',
-                                                        ghost: false,
-                                                        parentId: 'panel-header-styles-pnl',
-                                                        collapsible: 'header',
-                                                        content: {
-                                                            id: 'panelheaderborderStylePnl',
-                                                            components: [...new DesignerToolbarSettings()
-                                                                .addSettingsInputRow({
-                                                                    id: nanoid(),
-                                                                    parentId: 'panelheaderborderStylePnl',
-                                                                    hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                    inputs: [
-                                                                        {
-                                                                            type: 'button',
-                                                                            id: 'panel-header-borderStyleRow-hideBorder',
-                                                                            label: "Border",
-                                                                            hideLabel: true,
-                                                                            propertyName: "headerStyles.border.hideBorder",
-                                                                            icon: "EyeOutlined",
-                                                                            iconAlt: "EyeInvisibleOutlined"
-                                                                        },
-                                                                    ]
-                                                                })
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .toJson()
-                                                            ]
-                                                        }
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: 'panelheaderborderStylePnl',
+                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'button',
+                                                                id: 'panel-header-borderStyleRow-hideBorder',
+                                                                label: "Border",
+                                                                hideLabel: true,
+                                                                propertyName: "headerStyles.border.hideBorder",
+                                                                icon: "EyeOutlined",
+                                                                iconAlt: "EyeInvisibleOutlined"
+                                                            },
+                                                        ]
                                                     })
+                                                    .addSettingsInputRow(
+                                                        { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+
+                                                    .addSettingsInputRow(
+                                                        { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
+                                                    .addSettingsInputRow(
+                                                        { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
+                                                    )
                                                     .addSettingsInput({
                                                         id: "header-backgroundStyleRow-selectType",
                                                         parentId: "styleRouter",

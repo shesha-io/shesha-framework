@@ -30,7 +30,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     maxWidth,
     maxHeight,
     borderRadius,
-    rest
+    marginBottom,
+    marginTop,
+    marginLeft,
+    marginRight,
+    paddingTop,
+    paddingBottom,
+    paddingLeft,
+    paddingRight,
+    ...rest
   } = bodyStyle;
 
   const {
@@ -60,7 +68,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
-    rest: headerRest
+    ...headerRest
   } = headerStyles;
 
   const borderTopLeftRadius = borderRadius?.split(' ')[0] || 0;
@@ -78,20 +86,39 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         display: none;
       }
       --primary-color: ${token.colorPrimary};
-    .ant-collapse {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+      --ant-collapse-content-padding: ${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft};
+      width: ${width};
+      min-width: ${minWidth};
+      max-width: ${maxWidth};
+      height: max-content;
+      min-height: ${minHeight};
+      max-height: ${maxHeight};
+      border-radius: ${borderTopLeftRadiusHeader} ${borderTopRightRadiusHeader} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+      margin-bottom: ${marginBottom};
+      margin-top: ${marginTop};
+      margin-left: ${marginLeft};
+      margin-right: ${marginRight};
+
+    .ant-collapse-item {
+      display: flex;
+      flex-direction: column;
       box-shadow: ${boxShadow};
+      ${rest}
+    }
+      
+    .ant-collapse-content-box {
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};
       height: ${height};
       min-height: ${minHeight};
       max-height: ${maxHeight};
-    }
-
-    .ant-collapse-content-box {
-      ${rest}
       background: ${backgroundImage || backgroundColor};
+      position: relative;
+      padding-top: ${paddingTop} !important;
+      padding-bottom: ${paddingBottom} !important;
+      padding-left: ${paddingLeft} !important;
+      padding-right: ${paddingRight} !important;
       border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
       border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
       border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
@@ -100,7 +127,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     }
 
     .ant-collapse-header {
-        ${headerRest}
+        position: relative;
         visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
         border-radius : ${borderTopLeftRadiusHeader} ${borderTopRightRadiusHeader} ${borderBottomLeftRadiusHeader} ${borderBottomRightRadiusHeader} !important;
         background: ${headerBgImage || headerBgColor};
@@ -111,6 +138,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
         border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
         border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
+        ${headerRest}
 
       .ant-collapse-header-text {
         color: ${headerColor};
