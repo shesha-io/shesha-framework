@@ -128,6 +128,12 @@ export const getSettings = () => {
                                 description: 'Hides the collapsible panel',
                             })
                             .addSettingsInput({
+                                id: nanoid(),
+                                label: 'Simple Design',
+                                propertyName: 'isSimpleDesign',
+                                inputType: 'switch',
+                            })
+                            .addSettingsInput({
                                 id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
                                 propertyName: 'hideWhenEmpty',
                                 label: 'Hide when empty',

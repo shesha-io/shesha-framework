@@ -93,6 +93,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ...getBodyStyle
     }), [dimensions, border, font, shadow, getBodyStyle]);
 
+    console.log("Border Style::", border, getBorderStyle(border, getBodyStyle));
     const headerStyle = useMemo(() => ({
       ...getSizeStyle(headerStyles?.dimensions),
       ...getBorderStyle(headerStyles?.border, getHeaderStyle),
@@ -229,9 +230,11 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       }))
       .add<ICollapsiblePanelComponentProps>(8, (prev) => ({ ...prev, stylingBox: "{\"marginBottom\":\"5\"}" }))
       .add<ICollapsiblePanelComponentProps>(9, (prev) => {
-        const newModel = migratePrevStyles(prev, defaultStyles());
+        const newModel = migratePrevStyles(prev, defaultStyles(prev));
         const defaultHeaderStyle = defaultHeaderStyles(prev);
-        return { ...newModel, desktop: { ...newModel.desktop, headerStyles: defaultHeaderStyle}, tablet: { ...newModel.tablet, headerStyles: defaultHeaderStyle }, mobile: { ...newModel.mobile, headerStyles: defaultHeaderStyle } };
+
+        console.log("Default Header Style", defaultHeaderStyle, defaultStyles(prev));
+        return { ...newModel, desktop: { ...newModel.desktop, headerStyles: defaultHeaderStyle }, tablet: { ...newModel.tablet, headerStyles: defaultHeaderStyle }, mobile: { ...newModel.mobile, headerStyles: defaultHeaderStyle } };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],
 };
