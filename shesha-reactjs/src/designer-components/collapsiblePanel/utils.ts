@@ -26,7 +26,7 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
     const { isSimpleDesign, ghost, borderRadius } = prev;
 
     return {
-        font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '700', align: 'left', type: 'Arial' },
+        font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '500', align: 'left', type: 'Arial' },
         background: { type: 'color', color: headerBgColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0', maxHeight: 'auto', minWidth: '0', maxWidth: 'auto' },
         border: {

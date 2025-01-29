@@ -637,286 +637,357 @@ export const getSettings = () => {
                                             content: {
                                                 id: 'panel-header-styles-pnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: 'try26voxhs-HxJ5k5ngYE',
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheaderfontStyleCollapsiblePanel',
+                                                        propertyName: 'pnlFontStyle',
+                                                        label: 'Font',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
                                                         parentId: 'panel-header-styles-pnl',
-                                                        inline: true,
-                                                        propertyName: 'font',
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Font',
-                                                                propertyName: 'headerStyles.font.type',
-                                                                dropdownOptions: fontTypes,
-                                                            },
-                                                            {
-                                                                type: 'number',
-                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Size',
-                                                                propertyName: 'headerStyles.font.size',
-                                                                hideLabel: true,
-                                                                width: 50,
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Weight',
-                                                                propertyName: 'headerStyles.font.weight',
-                                                                hideLabel: true,
-                                                                tooltip: "Controls text thickness (light, normal, bold, etc.)",
-                                                                dropdownOptions: fontWeights,
-                                                                width: 100,
-                                                            },
-                                                            {
-                                                                type: 'color',
-                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Color',
-                                                                hideLabel: true,
-                                                                propertyName: 'headerStyles.font.color',
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Align',
-                                                                propertyName: 'headerStyles.font.align',
-                                                                hideLabel: true,
-                                                                width: 60,
-                                                                dropdownOptions: textAlign,
-                                                            },
-                                                        ],
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: 'header-dimensionsStyleRowHeight',
-                                                        parentId: 'panel-header-styles-pnl',
-                                                        inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'text',
-                                                                id: 'header-height-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Height",
-                                                                width: 85,
-                                                                propertyName: "headerStyles.dimensions.height",
-                                                                icon: "heightIcon",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                                            },
-                                                            {
-                                                                type: 'text',
-                                                                id: 'header-minHeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Min Height",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "headerStyles.dimensions.minHeight",
-                                                                icon: "minHeightIcon",
-                                                            },
-                                                            {
-                                                                type: 'text',
-                                                                id: 'header-maxHeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Max Height",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "headerStyles.dimensions.maxHeight",
-                                                                icon: "maxHeightIcon",
-                                                            }
-                                                        ]
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
-                                                        parentId: 'panelheaderborderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'panel-header-borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "headerStyles.border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
-                                                    .addSettingsInputRow(
-                                                        { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-
-                                                    .addSettingsInputRow(
-                                                        { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                    )
-                                                    .addSettingsInput({
-                                                        id: "header-backgroundStyleRow-selectType",
-                                                        parentId: "styleRouter",
-                                                        label: "Type",
-                                                        jsSetting: false,
-                                                        propertyName: "headerStyles.background.type",
-                                                        inputType: "radio",
-                                                        tooltip: "Select a type of background",
-                                                        buttonGroupOptions: [
-                                                            {
-                                                                value: "color",
-                                                                icon: "FormatPainterOutlined",
-                                                                title: "Color"
-                                                            },
-                                                            {
-                                                                value: "gradient",
-                                                                icon: "BgColorsOutlined",
-                                                                title: "Gradient"
-                                                            },
-                                                            {
-                                                                value: "image",
-                                                                icon: "PictureOutlined",
-                                                                title: "Image"
-                                                            },
-                                                            {
-                                                                value: "url",
-                                                                icon: "LinkOutlined",
-                                                                title: "URL"
-                                                            },
-                                                            {
-                                                                value: "storedFile",
-                                                                icon: "DatabaseOutlined",
-                                                                title: "Stored File"
-                                                            }
-                                                        ],
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: "header-backgroundStyleRow-color",
-                                                        parentId: "panel-header-styles-pnl",
-                                                        inputs: [{
-                                                            type: 'color',
-                                                            id: 'backgroundStyleRow-color',
-                                                            label: "Color",
-                                                            propertyName: "headerStyles.background.color",
-                                                            hideLabel: true,
-                                                            jsSetting: false,
-                                                        }],
-                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
-                                                        parentId: "panel-header-styles-pnl",
-                                                        inputs: [{
-                                                            type: 'multiColorPicker',
-                                                            id: 'backgroundStyle-gradientColors',
-                                                            propertyName: "headerStyles.background.gradient.colors",
-                                                            label: "Colors",
-                                                            jsSetting: false,
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheaderfontStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInputRow({
+                                                                    id: 'try26voxhs-HxJ5k5ngYE',
+                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    inline: true,
+                                                                    propertyName: 'font',
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Font',
+                                                                            hideLabel: true,
+                                                                            propertyName: 'headerStyles.font.type',
+                                                                            dropdownOptions: fontTypes,
+                                                                        },
+                                                                        {
+                                                                            type: 'number',
+                                                                            id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Size',
+                                                                            propertyName: 'headerStyles.font.size',
+                                                                            hideLabel: true,
+                                                                            width: 50,
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Weight',
+                                                                            propertyName: 'headerStyles.font.weight',
+                                                                            hideLabel: true,
+                                                                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                                                            dropdownOptions: fontWeights,
+                                                                            width: 100,
+                                                                        },
+                                                                        {
+                                                                            type: 'color',
+                                                                            id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Color',
+                                                                            hideLabel: true,
+                                                                            propertyName: 'headerStyles.font.color',
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Align',
+                                                                            propertyName: 'headerStyles.font.align',
+                                                                            hideLabel: true,
+                                                                            width: 60,
+                                                                            dropdownOptions: textAlign,
+                                                                        },
+                                                                    ],
+                                                                })
+                                                                .toJson()]
                                                         }
-                                                        ],
-                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
-                                                        hideLabel: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     })
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
-                                                        parentId: "panel-header-styles-pnl",
-                                                        inputs: [{
-                                                            type: 'text',
-                                                            id: 'backgroundStyle-url',
-                                                            propertyName: "headerStyles.background.url",
-                                                            jsSetting: false,
-                                                            label: "URL",
-                                                        }],
-                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheaderdimensionsStyleCollapsiblePanel',
+                                                        propertyName: 'pnlDimensionsStyle',
+                                                        label: 'Dimensions',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
                                                         parentId: 'panel-header-styles-pnl',
-                                                        inputs: [{
-                                                            type: 'imageUploader',
-                                                            id: 'backgroundStyle-image',
-                                                            propertyName: 'headerStyles.background.uploadFile',
-                                                            label: "Image",
-                                                            jsSetting: false,
-                                                        }],
-                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheaderdimensionsStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInputRow({
+                                                                    id: 'header-dimensionsStyleRowHeight',
+                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    inline: true,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'text',
+                                                                            id: 'header-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Height",
+                                                                            width: 85,
+                                                                            propertyName: "headerStyles.dimensions.height",
+                                                                            icon: "heightIcon",
+                                                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                                        },
+                                                                        {
+                                                                            type: 'text',
+                                                                            id: 'header-minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Min Height",
+                                                                            width: 85,
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.dimensions.minHeight",
+                                                                            icon: "minHeightIcon",
+                                                                        },
+                                                                        {
+                                                                            type: 'text',
+                                                                            id: 'header-maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Max Height",
+                                                                            width: 85,
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.dimensions.maxHeight",
+                                                                            icon: "maxHeightIcon",
+                                                                        }
+                                                                    ]
+                                                                })
+                                                                .toJson()]
+                                                        }
                                                     })
-                                                    .addSettingsInputRow({
-                                                        id: nanoid(),
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheaderborderStyleCollapsiblePanel',
+                                                        propertyName: 'pnlBorderStyle',
+                                                        label: 'Border',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
                                                         parentId: 'panel-header-styles-pnl',
-                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'text',
-                                                                id: 'backgroundStyle-storedFile',
-                                                                jsSetting: false,
-                                                                propertyName: "headerStyles.background.storedFile.id",
-                                                                label: "File ID"
-                                                            }
-                                                        ]
+                                                        content: {
+                                                            id: 'panelheaderborderStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInputRow({
+                                                                    id: nanoid(),
+                                                                    parentId: 'panelheaderborderStylePnl',
+                                                                    hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'button',
+                                                                            id: 'panel-header-borderStyleRow-hideBorder',
+                                                                            label: "Border",
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.border.hideBorder",
+                                                                            icon: "EyeOutlined",
+                                                                            iconAlt: "EyeInvisibleOutlined"
+                                                                        },
+                                                                    ]
+                                                                })
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .toJson()]
+                                                        }
                                                     })
-                                                    .addSettingsInputRow({
-                                                        id: "header-backgroundStyleRow-controls",
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheaderbackgroundStyleCollapsiblePanel',
+                                                        propertyName: 'pnlBackgroundStyle',
+                                                        label: 'Background',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
                                                         parentId: 'panel-header-styles-pnl',
-                                                        inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'customDropdown',
-                                                                id: nanoid(),
-                                                                label: "Size",
-                                                                hideLabel: true,
-                                                                propertyName: "headerStyles.background.size",
-                                                                dropdownOptions: sizeOptions
-                                                            },
-                                                            {
-                                                                type: 'customDropdown',
-                                                                id: nanoid(),
-                                                                label: "Position",
-                                                                hideLabel: true,
-                                                                propertyName: "headerStyles.background.position",
-                                                                dropdownOptions: positionOptions,
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: nanoid(),
-                                                                label: "Repeat",
-                                                                hideLabel: true,
-                                                                propertyName: "headerStyles.background.repeat",
-                                                                dropdownOptions: repeatOptions,
-                                                            }
-                                                        ]
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheaderbackgroundStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInput({
+                                                                    id: "header-backgroundStyleRow-selectType",
+                                                                    parentId: "styleRouter",
+                                                                    label: "Type",
+                                                                    jsSetting: false,
+                                                                    propertyName: "headerStyles.background.type",
+                                                                    inputType: "radio",
+                                                                    tooltip: "Select a type of background",
+                                                                    buttonGroupOptions: [
+                                                                        {
+                                                                            value: "color",
+                                                                            icon: "FormatPainterOutlined",
+                                                                            title: "Color"
+                                                                        },
+                                                                        {
+                                                                            value: "gradient",
+                                                                            icon: "BgColorsOutlined",
+                                                                            title: "Gradient"
+                                                                        },
+                                                                        {
+                                                                            value: "image",
+                                                                            icon: "PictureOutlined",
+                                                                            title: "Image"
+                                                                        },
+                                                                        {
+                                                                            value: "url",
+                                                                            icon: "LinkOutlined",
+                                                                            title: "URL"
+                                                                        },
+                                                                        {
+                                                                            value: "storedFile",
+                                                                            icon: "DatabaseOutlined",
+                                                                            title: "Stored File"
+                                                                        }
+                                                                    ],
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: "header-backgroundStyleRow-color",
+                                                                    parentId: "panel-header-styles-pnl",
+                                                                    inputs: [{
+                                                                        type: 'color',
+                                                                        id: 'backgroundStyleRow-color',
+                                                                        label: "Color",
+                                                                        propertyName: "headerStyles.background.color",
+                                                                        hideLabel: true,
+                                                                        jsSetting: false,
+                                                                    }],
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: nanoid(),
+                                                                    parentId: "panel-header-styles-pnl",
+                                                                    inputs: [{
+                                                                        type: 'multiColorPicker',
+                                                                        id: 'backgroundStyle-gradientColors',
+                                                                        propertyName: "headerStyles.background.gradient.colors",
+                                                                        label: "Colors",
+                                                                        jsSetting: false,
+                                                                    }
+                                                                    ],
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                                    hideLabel: true,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: nanoid(),
+                                                                    parentId: "panel-header-styles-pnl",
+                                                                    inputs: [{
+                                                                        type: 'text',
+                                                                        id: 'backgroundStyle-url',
+                                                                        propertyName: "headerStyles.background.url",
+                                                                        jsSetting: false,
+                                                                        label: "URL",
+                                                                    }],
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: nanoid(),
+                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    inputs: [{
+                                                                        type: 'imageUploader',
+                                                                        id: 'backgroundStyle-image',
+                                                                        propertyName: 'headerStyles.background.uploadFile',
+                                                                        label: "Image",
+                                                                        jsSetting: false,
+                                                                    }],
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: nanoid(),
+                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'text',
+                                                                            id: 'backgroundStyle-storedFile',
+                                                                            jsSetting: false,
+                                                                            propertyName: "headerStyles.background.storedFile.id",
+                                                                            label: "File ID"
+                                                                        }
+                                                                    ]
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: "header-backgroundStyleRow-controls",
+                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    inline: true,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'customDropdown',
+                                                                            id: nanoid(),
+                                                                            label: "Size",
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.background.size",
+                                                                            dropdownOptions: sizeOptions
+                                                                        },
+                                                                        {
+                                                                            type: 'customDropdown',
+                                                                            id: nanoid(),
+                                                                            label: "Position",
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.background.position",
+                                                                            dropdownOptions: positionOptions,
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: nanoid(),
+                                                                            label: "Repeat",
+                                                                            hideLabel: true,
+                                                                            propertyName: "headerStyles.background.repeat",
+                                                                            dropdownOptions: repeatOptions,
+                                                                        }
+                                                                    ]
+                                                                })
+                                                                .toJson()
+                                                            ]
+                                                        }
                                                     })
-                                                    .addSettingsInput({
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        id: nanoid(),
-                                                        inputType: 'codeEditor',
-                                                        propertyName: 'headerStyles.style',
-                                                        hideLabel: false,
-                                                        label: 'Style',
-                                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheaderjsstyle',
+                                                        propertyName: 'customStyle',
+                                                        label: 'Custom Styles',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheaderjsstylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInput({
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    id: nanoid(),
+                                                                    inputType: 'codeEditor',
+                                                                    propertyName: 'headerStyles.style',
+                                                                    hideLabel: false,
+                                                                    label: 'Style',
+                                                                    description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                                })
+                                                                .toJson()]
+                                                        }
                                                     })
                                                     .toJson()]
                                             }
