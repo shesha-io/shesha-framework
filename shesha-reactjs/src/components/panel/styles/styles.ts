@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyles, panelHeadType, bodyStyle, ghost, hideCollapseContent }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyles, panelHeadType, bodyStyle, hideCollapseContent }) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -59,6 +59,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftWidth: headerBorderLeftWidth = panelHeadType === 'child' ? '3px' : '',
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
+    borderRadius: headerBorderRadius,
     rest: headerRest
   } = headerStyles;
 
@@ -67,15 +68,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 0;
   const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
 
-  console.log('BodyStyle', bodyStyle);
-  console.log('HeaderStyles', headerStyles);
+  const borderTopLeftRadiusHeader = headerBorderRadius?.split(' ')[0] || 0;
+  const borderTopRightRadiusHeader = headerBorderRadius?.split(' ')[1] || 0;
+  const borderBottomLeftRadiusHeader = headerBorderRadius?.split(' ')[2] || 0;
+  const borderBottomRightRadiusHeader = headerBorderRadius?.split(' ')[3] || 0;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
-
+         &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+        display: none;
+      }
       --primary-color: ${token.colorPrimary};
     .ant-collapse {
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
-      background: ${backgroundImage || backgroundColor};
       box-shadow: ${boxShadow};
       width: ${width};
       min-width: ${minWidth};
@@ -86,17 +90,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     }
 
     .ant-collapse-content-box {
-      border-radius : 0 0 ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+      ${rest}
+      background: ${backgroundImage || backgroundColor};
+      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
       border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
       border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
       border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
       border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
-      ${rest}
     }
 
     .ant-collapse-header {
-      visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
-        border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
+        ${headerRest}
+        visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
+        border-radius : ${borderTopLeftRadiusHeader} ${borderTopRightRadiusHeader} ${borderBottomLeftRadiusHeader} ${borderBottomRightRadiusHeader} !important;
         background: ${headerBgImage || headerBgColor};
         height: ${headerHeight};
         min-height: ${headerMinHeight};
@@ -105,7 +111,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
         border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
         border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
-        ${headerRest}
+
       .ant-collapse-header-text {
         color: ${headerColor};
         font-family: ${fontFamily};

@@ -111,14 +111,6 @@ export const getSettings = () => {
                                 jsSetting: true
                             })
                             .addSettingsInput({
-                                id: 'panel41924074-296C-4E4D-820A-DC29EC2C7B92',
-                                propertyName: 'ghost',
-                                label: 'Ghost',
-                                inputType: 'switch',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                description: 'Make the collapse borderless and its background transparent',
-                            })
-                            .addSettingsInput({
                                 id: 'panel7e5fc1c1-a804-4f0a-8327-1a92e963e5e1',
                                 propertyName: 'hideCollapseContent',
                                 label: 'Hide Top Bar',
@@ -126,12 +118,6 @@ export const getSettings = () => {
                                 inputType: 'switch',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
                                 description: 'Hides the collapsible panel',
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                label: 'Simple Design',
-                                propertyName: 'isSimpleDesign',
-                                inputType: 'switch',
                             })
                             .addSettingsInput({
                                 id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
@@ -778,6 +764,22 @@ export const getSettings = () => {
                                                                 )
                                                                 .addSettingsInputRow(
                                                                     { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
+                                                                )
+                                                                .addSettingsInputRow(
+                                                                    { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
                                                                 )
                                                                 .toJson()
                                                             ]

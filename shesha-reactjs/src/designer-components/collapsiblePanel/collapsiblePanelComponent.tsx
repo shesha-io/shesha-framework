@@ -5,13 +5,12 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { IToolboxComponent } from '@/interfaces';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
-import { evaluateString, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { nanoid } from '@/utils/uuid';
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
-import { executeFunction } from '@/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
@@ -47,7 +46,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       expandIconPosition,
       collapsedByDefault,
       collapsible,
-      ghost,
       isSimpleDesign,
       bodyColor,
       hideCollapseContent,
@@ -77,13 +75,13 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const getBodyStyle = useMemo(() => ({
       ...pickStyleFromModel(styling),
-      ...(executeFunction(model?.style, { data, globalState }) || {}),
+      ...(getStyle(model?.style, { data, globalState }) || {}),
     }), [styling, model?.style, data, globalState]);
 
     const getHeaderStyle = useMemo(() => ({
       ...pickStyleFromModel(stylingHeader),
-      ...(executeFunction(model?.style, { data, globalState }) || {}),
-    }), [stylingHeader, model?.style, data, globalState]);
+      ...(getStyle(model?.headerStyles?.style, { data, globalState }) || {}),
+    }), [stylingHeader, model?.headerStyles?.style, data, globalState]);
 
     const style = useMemo(() => ({
       ...getSizeStyle(dimensions),
@@ -93,7 +91,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ...getBodyStyle
     }), [dimensions, border, font, shadow, getBodyStyle]);
 
-    console.log("Border Style::", border, getBorderStyle(border, getBodyStyle));
     const headerStyle = useMemo(() => ({
       ...getSizeStyle(headerStyles?.dimensions),
       ...getBorderStyle(headerStyles?.border, getHeaderStyle),
@@ -161,7 +158,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             extra={extra}
             collapsible={collapsible === 'header' ? 'header' : 'icon'}
             showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-            ghost={ghost}
+            ghost={true}
             bodyStyle={finalStyle}
             headerStyle={headerFinalStyle}
             className={className}
@@ -233,7 +230,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
         const defaultHeaderStyle = defaultHeaderStyles(prev);
 
-        console.log("Default Header Style", defaultHeaderStyle, defaultStyles(prev));
         return { ...newModel, desktop: { ...newModel.desktop, headerStyles: defaultHeaderStyle }, tablet: { ...newModel.tablet, headerStyles: defaultHeaderStyle }, mobile: { ...newModel.mobile, headerStyles: defaultHeaderStyle } };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

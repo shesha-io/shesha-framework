@@ -65,13 +65,13 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
 
   const { styles } = useStyles({ bodyStyle, headerStyles: headerStyle, panelHeadType, ghost, noContentPadding, hideWhenEmpty, hideCollapseContent });
-  
+
   return (
     <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
       expandIconPosition={expandIconPosition}
-      className={classNames(styles.shaCollapsiblePanel, className)}
+      className={classNames(styles.shaCollapsiblePanel, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
       items={[
         {
