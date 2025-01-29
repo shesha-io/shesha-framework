@@ -47,7 +47,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       expandIconPosition,
       collapsedByDefault,
       collapsible,
-      // ghost,
+      ghost,
+      isSimpleDesign,
       bodyColor,
       hideCollapseContent,
       hideWhenEmpty,
@@ -159,12 +160,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             extra={extra}
             collapsible={collapsible === 'header' ? 'header' : 'icon'}
             showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-            ghost={true}
+            ghost={ghost}
             bodyStyle={finalStyle}
             headerStyle={headerFinalStyle}
             className={className}
             bodyColor={bodyColor}
-            isSimpleDesign={true}
+            isSimpleDesign={isSimpleDesign}
             panelHeadType={headType}
             hideCollapseContent={hideCollapseContent}
             hideWhenEmpty={hideWhenEmpty}
@@ -229,7 +230,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(8, (prev) => ({ ...prev, stylingBox: "{\"marginBottom\":\"5\"}" }))
       .add<ICollapsiblePanelComponentProps>(9, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles());
-        return { ...newModel, desktop: { ...newModel.desktop, headerStyles: defaultHeaderStyles() }, tablet: { ...newModel.tablet, headerStyles: defaultHeaderStyles() }, mobile: { ...newModel.mobile, headerStyles: defaultHeaderStyles() } };
+        const defaultHeaderStyle = defaultHeaderStyles(prev);
+        return { ...newModel, desktop: { ...newModel.desktop, headerStyles: defaultHeaderStyle}, tablet: { ...newModel.tablet, headerStyles: defaultHeaderStyle }, mobile: { ...newModel.mobile, headerStyles: defaultHeaderStyle } };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],
 };
