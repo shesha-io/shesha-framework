@@ -4,7 +4,7 @@ import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchablePr
 import { useParent } from "@/providers/parentProvider";
 import { isEqual } from "lodash";
 
-export function useActualContextData<T>(data: T, parentReadonly?: boolean, additionalData?: any, propertyFilter?: (name: string) => boolean) {
+export function useActualContextData<T = any>(data: T, parentReadonly?: boolean, additionalData?: any, propertyFilter?: (name: string) => boolean) {
   const parent = useParent(false);
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
