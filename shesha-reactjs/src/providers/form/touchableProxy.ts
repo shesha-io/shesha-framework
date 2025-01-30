@@ -44,39 +44,43 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
     };
 
     #checkChanged() {
-      let changed = false;
+        let changed = false;
 
-      this._touchedProps.forEach((value, key) => {
-          if (changed) 
-              return;
-          const props = key.split('.');
-          let prop = props.shift();
-          let data = this.getPropertyValue(prop);
-          if (data === null || data === undefined) {
-              changed = true;
-              return;
-          }
-          while (props.length > 0) {
-              prop = props.shift();
-              if (data[prop] === undefined && props.length > 0) {
-                  changed = true;
-                  return;
-              }
-              data = data[prop];
-          }
-
-          if (typeof data === 'object') {
-              if (typeof value !== 'object')
+        this._touchedProps.forEach((value, key) => {
+            if (changed) 
+                return;
+            const props = key.split('.');
+            let prop = props.shift();
+            let data = this.getPropertyValue(prop);
+            if (data === null || data === undefined) {
                 changed = true;
-              return;
-          }
+                return;
+            }
+            while (props.length > 0) {
+                if (data === null || data === undefined) {
+                    changed = true;
+                    return;
+                }
+                prop = props.shift();
+                if (data[prop] === undefined && props.length > 0) {
+                    changed = true;
+                    return;
+                }
+                data = data[prop];
+            }
 
-          if (data !== value)
-              changed = true;
-      });
+            if (typeof data === 'object') {
+                if (typeof value !== 'object')
+                    changed = true;
+                return;
+            }
 
-      this._changed = changed;
-      return changed;
+            if (data !== value)
+                changed = true;
+        });
+
+        this._changed = changed;
+        return changed;
     };
 
     refreshAccessors = (accessors: ProxyPropertiesAccessors<T>) => {
