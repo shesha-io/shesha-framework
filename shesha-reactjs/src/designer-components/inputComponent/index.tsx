@@ -9,7 +9,6 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
-import { ImagePicker } from '@/designer-components/imageUploader';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 import { useStyles } from './styles';
 import { customIcons } from './icons';
@@ -25,6 +24,7 @@ import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
+import { ImagePicker } from '../imagePicker';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -164,7 +164,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
         case 'editableTagGroupProps':
-            return <EditableTagGroup  value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
+            return <EditableTagGroup value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
             return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
         case 'contextPropertyAutocomplete':
@@ -176,8 +176,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 value={value}
                 onChange={onChange}
             />;
-        case 'labelValueEditor': 
-         return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+        case 'labelValueEditor':
+            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
