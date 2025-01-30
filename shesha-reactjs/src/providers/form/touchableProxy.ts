@@ -17,8 +17,10 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
         const getter = this._propAccessors.get(propName);
         const propValue = getter();
 
-        if (!propValue)
+        if (propValue === undefined)
             return undefined;
+        if (propValue === null)
+            return null;
     
         if (typeof propValue === 'function')
             return propValue.bind(this);
