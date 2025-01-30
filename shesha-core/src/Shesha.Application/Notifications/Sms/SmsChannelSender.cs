@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Castle.Core.Logging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using NetTopologySuite.Densify;
 using Newtonsoft.Json;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -41,12 +42,16 @@ namespace Shesha.Notifications.SMS
         /// 
         /// </summary>
         /// <param name="person"></param>
+        /// <param name="identifier"></param>
         /// <returns></returns>
-        public string GetRecipientId(Person person)
+        public string GetRecipientId(Person person, string identifier)
         {
+            if (!string.IsNullOrWhiteSpace(identifier))
+            {
+                return identifier;
+            }
             return person.MobileNumber1;
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -56,7 +61,7 @@ namespace Shesha.Notifications.SMS
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, string identifier, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
@@ -69,7 +74,7 @@ namespace Shesha.Notifications.SMS
                 });
             }
 
-            return await _smsGateway.SendSmsAsync(GetRecipientId(toPerson), message.Message);
+            return await _smsGateway.SendSmsAsync(GetRecipientId(toPerson, identifier), message.Message);
         }
 
         public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)

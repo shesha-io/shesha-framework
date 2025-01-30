@@ -123,18 +123,23 @@ namespace Shesha.Notifications
         /// <param name="attachments"></param>
         /// <param name="triggeringEntity"></param>
         /// <param name="channel"></param>
+        /// <param name="recipientText"></param>
         /// <returns></returns>
-        public async Task SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public async Task SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, string recipientText,TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
         {
             // Check if the notification type is disabled
             if(type.Disable) return;
 
-            if (type.CanOptOut)
+            if(toPerson != null)
             {
-                var optedOut = await _userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == toPerson.Id && x.NotificationType.Id == type.Id && x.OptOut);
-                if (optedOut)
-                    return;
+                 if (type.CanOptOut)
+                {
+                    var optedOut = await _userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == toPerson.Id && x.NotificationType.Id == type.Id && x.OptOut);
+                    if (optedOut)
+                        return;
+                }      
             }
+            
 
             var notification = await _notificationRepository.InsertAsync(new Notification()
             {
@@ -152,7 +157,7 @@ namespace Shesha.Notifications
             if (channel != null)
             {
                 // Send notification to a specific channel
-                await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channel, attachments);
+                await SendNotificationToChannel(notification, data, fromPerson, toPerson, recipientText,type, priority, channel, attachments);
             }
             else
             {
@@ -161,7 +166,7 @@ namespace Shesha.Notifications
 
                 foreach (var channelConfig in channels)
                 {
-                    await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channelConfig, attachments);
+                    await SendNotificationToChannel(notification, data, fromPerson, toPerson, recipientText,type, priority, channelConfig, attachments);
                 }
             }
         }
@@ -174,13 +179,14 @@ namespace Shesha.Notifications
         /// <param name="data"></param>
         /// <param name="fromPerson"></param>
         /// <param name="toPerson"></param>
+        /// <param name="recipientText"></param>
         /// <param name="type"></param>
         /// <param name="priority"></param>
         /// <param name="channelConfig"></param>
         /// <param name="attachments"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        private async Task SendNotificationToChannel<TData>(Notification notification, TData data, Person fromPerson, Person toPerson, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+        private async Task SendNotificationToChannel<TData>(Notification notification, TData data, Person fromPerson, Person toPerson, string recipientText, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
 
@@ -219,19 +225,21 @@ namespace Shesha.Notifications
                 }
             }
 
+            Guid recipientId = toPerson != null ? toPerson.Id : Guid.Empty;
+
 
             if (type.IsTimeSensitive)
             {
-                await SendAsync(fromPerson.Id, toPerson.Id, message.Id, channelConfig.Name, channelConfig.SenderTypeName);
+                await SendAsync(fromPerson.Id, recipientId, message.Id, channelConfig.Name, channelConfig.SenderTypeName, recipientText);
             }
             else
             {
-                _unitOfWorkManager.Current.DoAfterTransaction(() => BackgroundJob.Enqueue(() => SendAsync(fromPerson.Id, toPerson.Id, message.Id,channelConfig.Name, channelConfig.SenderTypeName)));
+                _unitOfWorkManager.Current.DoAfterTransaction(() => BackgroundJob.Enqueue(() => SendAsync(fromPerson.Id, recipientId, message.Id,channelConfig.Name, channelConfig.SenderTypeName, recipientText)));
             }
         }
 
         [AutomaticRetry(Attempts = 3, DelaysInSeconds = new int[] { 10, 20, 20})]
-        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
+        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName, string recipientText)
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
@@ -239,9 +247,15 @@ namespace Shesha.Notifications
                 if (fromPerson == null) 
                     throw new Exception($"Person with Id {fromPersonId} not found");
 
-                var toPerson = await _personRepo.GetAsync(toPersonId);
-                if (toPerson == null)
-                    throw new Exception($"Person with Id {toPersonId} not found");
+                //if person id is null, check the email
+                Person toPerson = null;
+                if(toPersonId != Guid.Empty)
+                {
+                    toPerson = await _personRepo.GetAsync(toPersonId);
+                }
+                
+               /* if (toPerson == null)
+                    throw new Exception($"Person with Id {toPersonId} not found");*/
             
                 var message = await _notificationMessageRepository.GetAsync(messageId);
                 if (message == null)
@@ -254,10 +268,10 @@ namespace Shesha.Notifications
 
                 var attachments = await GetAttachmentsAsync(message);
 
-                message.RecipientText = senderChannelInterface.GetRecipientId(toPerson);
+                message.RecipientText = senderChannelInterface.GetRecipientId(toPerson, recipientText);
 
                 // Use TrySendAsync to handle the send attempt
-                var sendResult = await TrySendAsync(fromPerson, toPerson, message, senderChannelInterface, attachments);
+                var sendResult = await TrySendAsync(fromPerson, toPerson, recipientText,message, senderChannelInterface, attachments);
 
                 if (sendResult.IsSuccess)
                 {
@@ -292,13 +306,14 @@ namespace Shesha.Notifications
         private async Task<SendStatus> TrySendAsync(
             Person fromPerson,
             Person toPerson,
+            string recipientText,
             NotificationMessage message,
             INotificationChannelSender notificationChannelSender,
             List<EmailAttachment> attachments)
         {
             try
             {
-                var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, message, "", attachments);
+                var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, recipientText, message, "", attachments);
 
                 return new SendStatus
                 {

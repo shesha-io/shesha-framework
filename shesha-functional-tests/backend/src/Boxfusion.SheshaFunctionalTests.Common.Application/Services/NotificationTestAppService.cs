@@ -1,5 +1,7 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Collections.Extensions;
+using Abp.Domain.Repositories;
 using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
+using NSubstitute;
 using Shesha;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -38,25 +40,28 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (type == null)
                 throw new ArgumentException($"Notification type with ID {notification.Type.Id} does not exist.");
             // Get recipient details
-            var recipient = await _personRepository.FirstOrDefaultAsync(notification.Recipient.Id);
-            if (recipient == null)
-                throw new ArgumentException($"Recipient with ID {notification.Recipient.Id} does not exist.");
+            var recipient = notification.Recipient?.Id != null ? await _personRepository.FirstOrDefaultAsync(notification.Recipient.Id): null;
             // Get channel details
             var channel = notification.Channel != null ? await _notificationChannelRepository.FirstOrDefaultAsync(notification.Channel.Id) : null;
             // Prepare notification data
             var data = new TestNotificationData()
             {
-                Name = recipient.FullName,
+                Name = recipient?.FullName ?? "Unknown Recipient",
                 Subject = type.Name,
                 Body = type.Description
             };
 
-            var getAttachments = await _storedFileService.GetAttachmentsAsync(recipient.Id, "Shesha.Domain.Person");
-            var attachments = getAttachments.Select(x => new NotificationAttachmentDto()
+            // Get attachments only if recipient is provided
+            List<NotificationAttachmentDto> attachments = new();
+            if (recipient != null)
             {
-                FileName = x.FileName,
-                StoredFileId = x.Id,
-            }).ToList();
+                var getAttachments = await _storedFileService.GetAttachmentsAsync(recipient.Id, "Shesha.Domain.Person");
+                attachments = getAttachments.Select(x => new NotificationAttachmentDto()
+                {
+                    FileName = x.FileName,
+                    StoredFileId = x.Id,
+                }).ToList();
+            }
 
             var sender = await GetCurrentPersonAsync();
             if (sender == null)
@@ -66,6 +71,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 type,
                 sender,
                 recipient,
+                notification.RecipientText,
                 data,
                 (RefListNotificationPriority)notification.Priority,
                 attachments,
@@ -75,9 +81,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         }
         public async Task BulkPublishAsync(BulkNotificationDto notification)
         {
-            if (notification.Recipients == null || notification.Recipients.Count == 0)
-                throw new ArgumentException("Recipients must not be null or empty.");
-            // Fetch notification type details
             var type = await _notificationTypeRepository.FirstOrDefaultAsync(notification.Type.Id);
             if (type == null)
                 throw new ArgumentException($"Notification type with ID {notification.Type.Id} does not exist.");
@@ -92,25 +95,47 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             var sender = await GetCurrentPersonAsync();
             if (sender == null)
                 throw new InvalidOperationException("Current person could not be determined. Ensure the user is logged in.");
-            // Send notification to each recipient
-            foreach (var reciever in notification.Recipients)
+
+            if (!notification.RecipientTexts.IsNullOrEmpty())
             {
-                var recipient = await _personRepository.FirstOrDefaultAsync(reciever.Id);
-                if (recipient == null)
-                    throw new Exception($"{nameof(recipient)} must not be null");
-
-                await _notificationService.SendNotification(
-                    type,
-                    sender,
-                    recipient,
-                    data,
-                    (RefListNotificationPriority)notification.Priority,
-                    null,
-                    null,
-                    channel
-                 );
+                foreach (var recipient in notification.RecipientTexts)
+                {
+                    await _notificationService.SendNotification(
+                        type,
+                        sender,
+                        null,
+                        recipient,
+                        data,
+                        (RefListNotificationPriority)notification.Priority,
+                        null,
+                        null,
+                        channel
+                     );
+                }
             }
-        }
+           
+            if (!notification.Recipients.IsNullOrEmpty())
+            {
 
+                foreach (var recipient in notification.Recipients)
+                {
+                    var reciever = await _personRepository.FirstOrDefaultAsync(recipient.Id);
+                    if (recipient == null)
+                        throw new Exception($"{nameof(recipient)} must not be null");
+
+                    await _notificationService.SendNotification(
+                        type,
+                        sender,
+                        reciever,
+                        null,
+                        data,
+                        (RefListNotificationPriority)notification.Priority,
+                        null,
+                        null,
+                        channel
+                     );
+                }            
+            }           
+        }        
     }
 }

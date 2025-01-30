@@ -41,10 +41,14 @@ namespace Shesha.Notifications
         /// <returns></returns>
         public async Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, Person recipient, RefListNotificationPriority priority)
         {
-            // Step 1: Check User Notification Preferences
-            var userPreferences = await _userNotificationPreference.GetAllListAsync(
-                x => x.User.Id == recipient.Id && x.NotificationType.Id == type.Id
-            );
+            // Step 1: Check User Notification Preference
+            var userPreferences = new List<UserNotificationPreference>();
+            if (recipient != null)
+            {
+                userPreferences = await _userNotificationPreference.GetAllListAsync(
+                    x => x.User.Id == recipient.Id && x.NotificationType.Id == type.Id
+                );
+            }
 
             if (userPreferences != null && userPreferences.Any())
             {

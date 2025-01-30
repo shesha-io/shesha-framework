@@ -33,9 +33,14 @@ namespace Shesha.Notifications
             _userTopicSubscriptionRepository = userTopicSubscriptionRepository;
         }
 
-        public string GetRecipientId(Person person)
+        public string GetRecipientId(Person person, string identifier)
         {
-            return person.EmailAddress1;
+            if (!string.IsNullOrEmpty(identifier))
+            {
+                return identifier;
+            }
+
+            return person?.EmailAddress1;
         }
 
         private async Task<EmailSettings> GetSettings()
@@ -56,7 +61,7 @@ namespace Shesha.Notifications
             return enabled;
         }
 
-        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, string identifier, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
@@ -77,7 +82,7 @@ namespace Shesha.Notifications
                 };
             }
 
-            using (var mail = BuildMessageWith(GetRecipientId(fromPerson), GetRecipientId(toPerson), message.Subject, message.Message, cc))
+            using (var mail = BuildMessageWith(GetRecipientId(fromPerson, identifier), GetRecipientId(toPerson, identifier), message.Subject, message.Message, cc))
             {
                 if (attachments != null)
                 {
@@ -170,12 +175,7 @@ namespace Shesha.Notifications
                 IsBodyHtml = true,
             };
 
-            if (string.IsNullOrWhiteSpace(fromAddress) || !StringHelper.IsValidEmail(fromAddress))
-            {
-                throw new ArgumentException("Invalid 'from' email address.");
-            }
-
-            message.From = string.IsNullOrWhiteSpace(fromAddress) ? new MailAddress(smtpSettings.DefaultFromAddress) : new MailAddress(fromAddress);
+            message.From = string.IsNullOrWhiteSpace(fromAddress) || !StringHelper.IsValidEmail(fromAddress) ? new MailAddress(smtpSettings.DefaultFromAddress) : new MailAddress(fromAddress);
 
             string[] tos = toAddress.Split(';');
 

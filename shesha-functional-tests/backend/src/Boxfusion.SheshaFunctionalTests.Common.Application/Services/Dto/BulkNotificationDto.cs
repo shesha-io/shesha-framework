@@ -27,6 +27,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
         /// <summary>
         /// 
         /// </summary>
+        public List<string> RecipientTexts { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public GenericEntityReference TriggeringEntity { get; set; } = null;
     }
 }
