@@ -103,6 +103,21 @@ export const getSettings = () => {
                                 validate: {},
                             })
                             .addSettingsInput({
+                                id: 'panel-wYzLo-lK468vwxVVBDMh',
+                                label: 'Ghost',
+                                propertyName: 'ghost',
+                                inputType: 'switch',
+                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                            })
+                            .addSettingsInput({
+                                id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
+                                propertyName: 'isSimpleDesign',
+                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                label: 'Simple Design',
+                                inputType: 'switch',
+                                jsSetting: true
+                            })
+                            .addSettingsInput({
                                 id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
                                 propertyName: 'hidden',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
@@ -156,7 +171,7 @@ export const getSettings = () => {
                                             label: 'Dimensions',
                                             parentId: 'styleRouter',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             collapsible: 'header',
                                             content: {
                                                 id: 'paneldimensionsStylePnl',
@@ -253,7 +268,7 @@ export const getSettings = () => {
                                             propertyName: 'pnlBorderStyle',
                                             label: 'Border',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -315,7 +330,7 @@ export const getSettings = () => {
                                             propertyName: 'pnlBackgroundStyle',
                                             label: 'Background',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -520,7 +535,7 @@ export const getSettings = () => {
                                             propertyName: 'pnlShadowStyle',
                                             label: 'Shadow',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {
@@ -586,7 +601,7 @@ export const getSettings = () => {
                                             propertyName: 'stylingBox',
                                             label: 'Margin & Padding',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             collapsible: 'header',
                                             content: {
                                                 id: 'panelstylePnl-M5-911',
@@ -606,7 +621,7 @@ export const getSettings = () => {
                                             propertyName: 'customStyle',
                                             label: 'Custom Styles',
                                             labelAlign: 'right',
-                                            ghost: false,
+                                            ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {

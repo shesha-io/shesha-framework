@@ -47,6 +47,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       collapsedByDefault,
       collapsible,
       isSimpleDesign,
+      ghost,
       bodyColor,
       hideCollapseContent,
       hideWhenEmpty,
@@ -83,19 +84,19 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const style = useMemo(() => ({
       ...getSizeStyle(dimensions),
-      ...getBorderStyle(border, getBodyStyle),
+      ...(!ghost && getBorderStyle(border, getBodyStyle)),
       ...getFontStyle(font),
-      ...getShadowStyle(shadow),
+      ...(!ghost && getShadowStyle(shadow)),
       ...getBodyStyle
-    }), [dimensions, border, font, shadow, getBodyStyle]);
+    }), [dimensions, border, font, shadow, getBodyStyle, ghost]);
 
     const headerStyle = useMemo(() => ({
       ...getSizeStyle(headerStyles?.dimensions),
-      ...getBorderStyle(headerStyles?.border, getHeaderStyle),
+      ...(!ghost && getBorderStyle(headerStyles?.border, getHeaderStyle)),
       ...getFontStyle(headerStyles?.font),
       ...getShadowStyle(headerStyles?.shadow),
       ...getHeaderStyle
-    }), [headerStyles, getHeaderStyle]);
+    }), [headerStyles, getHeaderStyle, ghost]);
 
     useEffect(() => {
       const fetchTabStyles = async () => {
@@ -156,7 +157,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
             extra={extra}
             collapsible={collapsible === 'header' ? 'header' : 'icon'}
             showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-            ghost={true}
+            ghost={ghost}
             bodyStyle={finalStyle}
             headerStyle={headerFinalStyle}
             className={className}

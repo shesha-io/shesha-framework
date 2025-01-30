@@ -76,15 +76,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 0;
   const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
 
-  const borderTopLeftRadiusHeader = headerBorderRadius?.split(' ')[0] || 0;
-  const borderTopRightRadiusHeader = headerBorderRadius?.split(' ')[1] || 0;
-  const borderBottomLeftRadiusHeader = headerBorderRadius?.split(' ')[2] || 0;
-  const borderBottomRightRadiusHeader = headerBorderRadius?.split(' ')[3] || 0;
-
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
+      ${borderWidth && '--ant-line-width: 0px !important;'}
       --primary-color: ${token.colorPrimary};
       --ant-collapse-content-padding: ${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft};
       width: ${width};
@@ -93,17 +89,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       height: max-content;
       min-height: ${minHeight};
       max-height: ${maxHeight};
-      border-radius: ${borderTopLeftRadiusHeader} ${borderTopRightRadiusHeader} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
       margin-bottom: ${marginBottom};
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
+
 
     .ant-collapse-item {
       display: flex;
       flex-direction: column;
       box-shadow: ${boxShadow};
       ${rest}
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
     }
       
     .ant-collapse-content-box {
@@ -119,17 +117,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;
       padding-right: ${paddingRight} !important;
-      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+      border-radius : 0 0 ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
       border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
       border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
       border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
       border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
-    }
+  }
 
     .ant-collapse-header {
         position: relative;
         visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
-        border-radius : ${borderTopLeftRadiusHeader} ${borderTopRightRadiusHeader} ${borderBottomLeftRadiusHeader} ${borderBottomRightRadiusHeader} !important;
+        border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
         background: ${headerBgImage || headerBgColor};
         height: ${headerHeight};
         min-height: ${headerMinHeight};
@@ -159,11 +157,61 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
 
     }
 
+    &.${prefixCls}-collapse-ghost {
+        > .${prefixCls}-collapse-item {
+          > .${prefixCls}-collapse-header {
+            padding: 4px 0px;
+            border-bottom: 2px solid ${token.colorPrimary};
+            border-bottom-left-radius: unset;
+            border-bottom-right-radius: unset;
+            border-top: ${panelHeadType === 'parent' ? `${headerBorderTopWidth} solid var(--primary-color)` : 'none'};
+            border-left: ${panelHeadType === 'child' ? `${headerBorderTopWidth} solid  var(--primary-color)` : 'none'};
+            font-weight: ${fontWeight || 'bold'};
+          }
+          > .${prefixCls}-collapse-content {
+            > .${prefixCls}-collapse-content-box {
+              padding: 5px 0;
+            }
+          }
+        }
+      }
+
     `);
+
+  const shaSimpleDesign = cx(css`
+    &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+        display: none;
+    }
+        --ant-line-width: 0px !important;
+      --primary-color: ${token.colorPrimary};
+    &.${prefixCls}-collapse-ghost {
+        > .${prefixCls}-collapse-item {
+          > .${prefixCls}-collapse-header {
+            padding: 12px 16px !important;
+            border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
+            border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
+            font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
+            font-weight: 'bold';
+          }
+          > .${prefixCls}-collapse-content {
+            > .${prefixCls}-collapse-content-box {
+              padding: 5px 0;
+            }
+          }
+        }
+      }
+
+      .ant-collapse-header {
+        border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
+        border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
+        font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
+        font-weight: 'bold';
+        `);
 
   return {
     shaCollapsiblePanel,
     noContentPadding,
     hideWhenEmpty,
+    shaSimpleDesign
   };
 });

@@ -58,6 +58,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   headerStyle = {
     borderRadius: '8px 8px 8px 8px'
   },
+  isSimpleDesign,
   panelHeadType,
   noContentPadding,
   hideWhenEmpty,
@@ -65,17 +66,16 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
-  headerStyle.borderBottom = !headerStyle.borderBottom && ghost ? '2px solid var(--primary-color)' : bodyStyle.borderBottom;
-  headerStyle.fontWeight = headerStyle.fontWeight || 500;
 
   const { styles } = useStyles({ bodyStyle, headerStyles: headerStyle, panelHeadType, ghost, noContentPadding, hideWhenEmpty, hideCollapseContent });
+  const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
   return (
     <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
       expandIconPosition={expandIconPosition}
-      className={classNames(styles.shaCollapsiblePanel, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
+      className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
       items={[
         {
