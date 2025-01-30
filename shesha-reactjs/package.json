@@ -167,7 +167,7 @@
     "filesize": "^8.0.7",
     "html-react-parser": "^5.1.10",
     "invert-color": "^2.0.0",
-    "jodit": "^4.1.12",
+    "jodit": "4.3.2",
     "jodit-react": "^4.1.2",
     "js-encoding-utils": "^0.6.2",
     "just-curry-it": "^5.3.0",
