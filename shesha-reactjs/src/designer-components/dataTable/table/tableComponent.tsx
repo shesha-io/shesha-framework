@@ -100,6 +100,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       }))
   ,
   settingsFormFactory: (props) => <TableSettings {...props} />,
+  actualModelPropertyFilter: (name) => name !== 'items',
 };
 
 export default TableComponent;

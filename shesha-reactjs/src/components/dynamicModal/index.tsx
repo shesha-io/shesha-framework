@@ -7,7 +7,6 @@ import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/provi
 import { useDynamicModals } from '@/providers';
 import { useMedia } from 'react-use';
 import ConditionalWrap from '../conditionalWrapper';
-import { useActualContextData } from '@/hooks/useActualContextData';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
@@ -74,8 +73,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const [form] = Form.useForm();
   const { removeModal } = useDynamicModals();
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-
-  const actualButtons = useActualContextData(buttons);
 
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
@@ -145,9 +142,9 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
             condition={Boolean(wrapper)}
             wrap={(content) => (wrapper({ children: content }))}
           >
-            <Show when={footerButtons === 'custom' && Boolean(actualButtons?.length)}>
+            <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonGroup items={actualButtons || []} id={''} size="middle" isInline noStyles form={form} />
+                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
               </div>
             </Show>
           </ConditionalWrap>
