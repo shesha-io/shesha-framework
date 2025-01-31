@@ -1,6 +1,8 @@
 ﻿using FluentMigrator;
+using FluentMigrator.Expressions;
 using FluentMigrator.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Shesha.FluentMigrator.Modules;
 using Shesha.FluentMigrator.Notifications;
 using Shesha.FluentMigrator.ReferenceLists;
 using Shesha.FluentMigrator.Settings;
@@ -175,13 +177,24 @@ namespace Shesha.FluentMigrator
 
         #region modules
 
-        public IModuleEnsureExistsExpressionSyntax ModuleEnsureExists(string name)
+        public Guid ModuleEnsureExists(string name)
         {
-            var expression = new ModuleEnsureExistsExpression(DbmsType, _context.QuerySchema, name);
+            Guid? moduleId = null;
 
-            _context.Expressions.Add(expression);
+            var processor = _context.ServiceProvider.GetRequiredService<IMigrationProcessor>();
+            var exp = new PerformDBOperationExpression()
+            {
+                Operation = (connection, transaction) =>
+                {
+                    var helper = new ModuleDbHelper(DbmsType, connection, transaction, _context.QuerySchema);
+                    moduleId = helper.EnsureModuleExists(name);
+                }
+            };
+            processor.Process(exp);
 
-            return new ModuleEnsureExistsExpressionBuilder(expression, _context);
+            return moduleId != null
+                ? moduleId.Value
+                : throw new Exception($"Failed to get/create module '{name}'");
         }
 
         #endregion
