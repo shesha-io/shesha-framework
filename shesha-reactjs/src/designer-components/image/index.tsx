@@ -99,6 +99,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     });
 
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {

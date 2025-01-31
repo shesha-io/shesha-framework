@@ -5,7 +5,13 @@ export const defaultStyles = (prev): IStyleType => {
     return {
         border: {
             selectedCorner: 'all', selectedSide: 'all',
-            border: { all: { width: borderWidth, style: borderType, color: borderColor } },
+            border: {
+                all: { width: borderWidth || '0px', style: borderType, color: borderColor },
+                top: { width: '0px', },
+                left: { width: '0px', },
+                right: { width: '0px', },
+                bottom: { width: '0px', }
+            },
             radius: { all: borderRadius }
         },
     };
