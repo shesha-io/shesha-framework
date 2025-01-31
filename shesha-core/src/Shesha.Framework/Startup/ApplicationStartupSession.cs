@@ -48,6 +48,8 @@ namespace Shesha.Startup
             _assemblyRepository = assemblyRepository;
             _assemblyFinder = assemblyFinder;
             _uowManager = uowManager;
+
+            _unchangedAssemblies = new List<ApplicationStartupAssemblyDto>();
         }
 
         private async Task<ApplicationStartup> LogStartupAsync(LogApplicationStartArgs arguments)
