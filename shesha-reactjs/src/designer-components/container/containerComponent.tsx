@@ -9,7 +9,7 @@ import { ComponentsContainer, ValidationErrors } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { convertWidth, isValidGuid } from '@/components/formDesigner/components/utils';
 import { CSSProperties } from 'styled-components';
 import { toSizeCssProp } from '@/utils/form';
 import { useTheme } from 'antd-style';
@@ -60,11 +60,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       flexWrap: model?.flexWrap,
       gap: model?.gap,
     };
-
+    
     const widthStyles: CSSProperties = {
-      width: toSizeCssProp(model.width),
-      minWidth: toSizeCssProp(model.minWidth),
-      maxWidth: toSizeCssProp(model.maxWidth),
+      width: toSizeCssProp(convertWidth(model.width)),
+      minWidth: toSizeCssProp(convertWidth(model.minWidth)),
+      maxWidth: toSizeCssProp(convertWidth(model.maxWidth)),
       overflow: model?.overflow,
     };
 

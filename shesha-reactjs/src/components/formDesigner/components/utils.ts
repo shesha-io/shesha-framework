@@ -201,3 +201,14 @@ export const isValidGuid = (input: string): boolean => {
   const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return guidRegex.test(input);
 };
+
+export const convertWidth = (width: string | number): string => {
+  const tempWidth = width ? width.toString() : '';
+  // Check if the width is in viewport units
+  if (tempWidth.endsWith('vw')) { 
+    const numericValue = parseFloat(tempWidth.slice(0, -2));
+    return `${numericValue}%`;
+  }
+
+  return tempWidth;
+}

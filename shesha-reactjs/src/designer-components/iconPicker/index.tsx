@@ -19,13 +19,13 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  Factory: ({ model }) => {
+  Factory: ({ model, form }) => {
 
     const allData = useAvailableConstantsData();
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<IconPickerWrapper {...model} applicationContext={allData} value={value} onChange={onChange} />)}
+        {(value, onChange) => (<IconPickerWrapper form={{form}} model={model} {...model} applicationContext={allData} value={value} onChange={onChange} />)}
       </ConfigurableFormItem>
     );
   },

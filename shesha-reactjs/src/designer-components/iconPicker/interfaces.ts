@@ -3,15 +3,19 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IIconPickerComponentProps extends IConfigurableFormComponent {
     readOnly?: boolean;
-    fontSize?: number;
+    fontSize?: string;
     color?: string;
     customIcon?: string;
     customColor?: string;
-    borderWidth?: number;
+    borderWidth?: string;
     borderColor?: string;
-    borderRadius?: number;
+    borderRadius?: string;
     backgroundColor?: string;
     stylingBox?: string;
     defaultIcon?: ShaIconTypes;
     textAlign?: string;
+    width?: string;
+    height?: string;
+    fontWeight?: string;
+    borderStyle?: 'dotted' | 'solid' | 'dashed';
 }

@@ -24,6 +24,14 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       required: true,
     },
   })
+  .addConfigurableActionConfigurator({
+    id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+    propertyName: 'actionConfiguration',
+    label: 'Action configuration',
+    hidden: false,
+    validate: {},
+    settingsValidationErrors: [],
+  })
   .addTextField({
     id: '46d07439-4c18-468c-89e1-60c002ce96c5',
     propertyName: 'label',
