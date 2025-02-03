@@ -567,7 +567,7 @@ namespace Shesha.StoredFiles
 
             var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
 
-            var ownerType = _typeFinder.FindAll().FirstOrDefault(x => x.IsEntityType() && (x.FullName == input.OwnerType || x.GetTypeShortAlias() == input.OwnerType));
+            var ownerType = _typeFinder.FindAll().FirstOrDefault(x => x.IsEntityType() && (x.FullName == input.OwnerType || x.GetTypeShortAliasOrNull() == input.OwnerType));
             if (ownerSpecified && ownerType == null)
                 ModelState.AddModelError(input.OwnerId, $"Owner type not found (type = '{input.OwnerType}')");
 
