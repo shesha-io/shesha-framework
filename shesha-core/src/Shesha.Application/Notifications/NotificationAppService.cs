@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications
 {
-    public class NotificationAppService: SheshaAppServiceBase
+    public class NotificationAppService : SheshaAppServiceBase
     {
         private readonly INotificationSender _notificationService;
 

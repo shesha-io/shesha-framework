@@ -56,6 +56,7 @@ namespace Shesha.Notifications
         private readonly IStoredFileService _storedFileService;
         private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly INotificationManager _notificationManager;
+        private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreferenceRepository;
 
         public ILogger Logger { get; set; }
 
@@ -76,7 +77,8 @@ namespace Shesha.Notifications
                                    IStoredFileService storedFileService,
                                    INotificationSettings notificationSettings,
                                    IBackgroundJobManager backgroundJobManager,
-                                   INotificationManager notificationManager)
+                                   INotificationManager notificationManager,
+                                   IRepository<UserNotificationPreference, Guid> userNotificationPreferenceRepository)
         {
             _channelSender = channelSender;
             _iocManager = iocManager;
@@ -97,6 +99,7 @@ namespace Shesha.Notifications
             _typeRepo = typeRepo;
             _personRepo = personRepo;
             Logger = NullLogger.Instance;
+            _userNotificationPreferenceRepository = userNotificationPreferenceRepository;
         }
 
         private async Task<List<EmailAttachment>> GetAttachmentsAsync(NotificationMessage message)
@@ -123,8 +126,19 @@ namespace Shesha.Notifications
         /// <returns></returns>
         public async Task SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
         {
+            // Check if the notification type is disabled
+            if(type.Disable) return;
+
+            if (type.CanOptOut)
+            {
+                var optedOut = await _userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == toPerson.Id && x.NotificationType.Id == type.Id && x.OptOut);
+                if (optedOut)
+                    return;
+            }
+
             var notification = await _notificationRepository.InsertAsync(new Notification()
             {
+                Name = type.Name,
                 NotificationType = type,
                 FromPerson = fromPerson,
                 ToPerson = toPerson,
@@ -188,9 +202,10 @@ namespace Shesha.Notifications
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
-            // save attachments if specified
-            if (attachments != null)
+            // Save attachments if specified and allowed
+            if (attachments != null && attachments.Any())
             {
+                if(!(type.AllowAttachments && channelConfig.SupportsAttachment)) throw new UserFriendlyException("Attachments are not allowed for this notification type or channel.");
                 foreach (var attachmentDto in attachments)
                 {
                     var file = await _storedFileRepository.GetAsync(attachmentDto.StoredFileId);
@@ -204,6 +219,7 @@ namespace Shesha.Notifications
                 }
             }
 
+
             if (type.IsTimeSensitive)
             {
                 await SendAsync(fromPerson.Id, toPerson.Id, message.Id, channelConfig.Name, channelConfig.SenderTypeName);
@@ -215,7 +231,7 @@ namespace Shesha.Notifications
         }
 
         [AutomaticRetry(Attempts = 3, DelaysInSeconds = new int[] { 10, 20, 20})]
-        private async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
+        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
         {
             using (var uow = _unitOfWorkManager.Begin())
             {

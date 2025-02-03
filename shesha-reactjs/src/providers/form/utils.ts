@@ -55,6 +55,7 @@ import {
   useDataContextManager,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
+import FileSaver from 'file-saver';
 import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
@@ -67,10 +68,10 @@ import {
 } from '@/providers';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
-import { IParentProviderProps } from '../parentProvider/index';
+import { IParentProviderProps, useParent } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { toCamelCase } from '@/utils/string';
-import { FormApi } from './formApi';
+import { IFormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
@@ -87,7 +88,7 @@ export interface IApplicationContext<Value = any> {
   /** Form data */
   data?: any;
 
-  form?: FormApi<Value>;
+  form?: IFormApi<Value>;
   /** Contexts datas */
   contexts: IDataContextsData;
   /** Global state */
@@ -100,6 +101,8 @@ export interface IApplicationContext<Value = any> {
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** File Saver API */
+  fileSaver: typeof FileSaver;
 
   /** Last updated date */
   lastUpdated?: Date;
@@ -127,7 +130,7 @@ export type GetAvailableConstantsDataArgs = {
 };
 
 export type AvailableConstantsContext = {
-  closestShaForm: IShaFormInstance;
+  closestShaFormApi: IFormApi;
   selectedRow?: ISelectionProps;
   dcm: IDataContextManagerFullInstance;
   closestContextId: string;
@@ -200,11 +203,14 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableState(false)?.selectedRow;
 
-  const closestShaForm = useShaFormInstance(false);
+  const parent = useParent(false);
+  const form = useShaFormInstance(false);
+
+  const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
-    closestShaForm,
+    closestShaFormApi,
     selectedRow,
     dcm,
     closestContextId,
@@ -224,7 +230,7 @@ const EMPTY_DATA = {};
 
 export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
   const { topContextId, shaForm, fullContext, queryStringGetter } = args;
-  const { closestShaForm,
+  const { closestShaFormApi: closestShaForm,
     selectedRow,
     dcm,
     closestContextId,
@@ -233,7 +239,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     httpClient,
     message
   } = fullContext;
-  const shaFormInstance = shaForm ?? closestShaForm;
+  const shaFormInstance = shaForm?.getPublicFormApi() ?? closestShaForm;
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext> = {
     application: () => {
@@ -259,15 +265,16 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    fileSaver: () => FileSaver,
     data: () => {
-      if (!shaFormInstance?.formData || isEmpty(shaFormInstance.formData))
+      if (!shaFormInstance?.data || isEmpty(shaFormInstance.data))
         return EMPTY_DATA;
 
-      const data = shaFormInstance?.formData;
+      const data = shaFormInstance.data;
       return removeGhostKeys(data);
     },
     form: () => {
-      return shaFormInstance?.getPublicFormApi();
+      return shaFormInstance;
     },
     query: () => {
       return queryStringGetter?.() ?? {};

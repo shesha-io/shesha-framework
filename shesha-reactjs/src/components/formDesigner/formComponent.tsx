@@ -16,6 +16,10 @@ export interface IFormComponentProps {
 // nested components will be handled by their own FormComponent
 // action configuration details will be handled by their own FormComponent
 const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
+export const standartActualModelPropertyFilter = (name: string) => {
+  return propertiesToSkip.indexOf(name) === -1;
+};
+
 export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string) => {
   return (component.actualModelPropertyFilter ? component.actualModelPropertyFilter(name) : true)
     && propertiesToSkip.indexOf(name) === -1;

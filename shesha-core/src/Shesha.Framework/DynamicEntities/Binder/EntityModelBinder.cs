@@ -11,6 +11,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.DelayedUpdate;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
@@ -173,7 +174,7 @@ namespace Shesha.DynamicEntities.Binder
                         if (property.IsReadOnly())
                             continue;
 
-                        var propConfig = config.Properties.FirstOrDefault(x => x.Name == jName);
+                        var propConfig = config.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == jName);
 
                         if (jName != "id" && _metadataProvider.IsFrameworkRelatedProperty(property))
                             continue;
@@ -229,7 +230,7 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.Array:
                                     switch (propType.DataFormat)
                                     {
-                                        //case ArrayFormats.EntityReference:
+                                        case ArrayFormats.EntityReference:
                                         case ArrayFormats.Object:
                                         case ArrayFormats.ObjectReference:
                                         case ArrayFormats.String:
@@ -249,29 +250,64 @@ namespace Shesha.DynamicEntities.Binder
                                                     else if (listType.IsAssignableTo(typeof(ICollection<>).MakeGenericType(paramType)))
                                                         listType = typeof(Collection<>).MakeGenericType(paramType);
 
+                                                    var idProp = paramType.GetProperty("Id");
+                                                    var idPropType = idProp.PropertyType;
+                                                    var addMethod = listType.GetMethod("Add");
+                                                    var addDbMethod = dbValue?.GetType().GetMethod("Add");
+                                                    var removeDbMethod = dbValue?.GetType().GetMethod("Remove");
                                                     var newArray = Activator.CreateInstance(listType);
+
                                                     // objects and entities
                                                     int arrayItemIndex = 0;
+                                                    var r = true;
                                                     foreach (var item in jList)
                                                     {
                                                         context.ArrayItemIndex = arrayItemIndex++;
                                                         object newItem = null;
-                                                        var r = true;
                                                         if (!item.IsNullOrEmpty())
                                                         {
-                                                            newItem = await GetObjectOrObjectReferenceAsync(paramType, item as JObject, context, childFormFields);
-                                                            r = newItem != null;
+                                                            if (paramType.IsEntityType())
+                                                            {
+                                                                await PerformEntityReferenceAsync(entity, property, propConfig, item, "", null /*dbValue*/, childFormFields, context, value => newItem = value);
+                                                                r = r & true;
+                                                            }
+                                                            else
+                                                            {
+                                                                newItem = await GetObjectOrObjectReferenceAsync(paramType, item as JObject, context, childFormFields);
+                                                                r = await _objectValidatorManager.ValidateObjectAsync(newItem, context.LocalValidationResult) && newItem != null && r;
+                                                            }
+                                                            addMethod?.Invoke(newArray, new[] { newItem });
                                                         }
-                                                        if ((await _objectValidatorManager.ValidateObjectAsync(newItem, context.LocalValidationResult)) && r)
-                                                        {
-                                                            // ToDo: bind different types of Array/List
-                                                            var method = listType.GetMethod("Add");
-                                                            method?.Invoke(newArray, new[] { newItem });
-                                                        }
-                                                        else break;
                                                     }
-                                                    context.ArrayItemIndex = null;
-                                                    property.SetValue(entity, newArray);
+                                                    if (r)
+                                                    {
+                                                        if (paramType.IsEntityType() && dbValue != null && idProp != null && addDbMethod != null && removeDbMethod != null)
+                                                        {
+                                                            // Update existing array for the array of entities
+                                                            if (newArray is IEnumerable<object> eArray && dbValue is IEnumerable<object> eDbArray)
+                                                            {
+                                                                var exsistIds = eDbArray.Select(x => new { id = idProp?.GetValue(x, null)?.ToString(), obj = x }).Distinct().ToList();
+                                                                var newIds = eArray.Select(x => new { id = idProp?.GetValue(x, null)?.ToString(), obj = x }).Distinct().ToList();
+                                                                var addItems = newIds.Where(x => !exsistIds.Any(z => z.id == x.id));
+                                                                foreach (var item in addItems)
+                                                                {
+                                                                    addDbMethod?.Invoke(eDbArray, new[] { item.obj });
+                                                                }
+                                                                var removeItems = exsistIds.Where(x => !newIds.Any(z => z.id == x.id));
+                                                                foreach (var item in removeItems)
+                                                                {
+                                                                    removeDbMethod?.Invoke(eDbArray, new[] { item.obj });
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            // Save new array for the array of objects
+                                                            context.ArrayItemIndex = null;
+                                                            property.SetValue(entity, newArray);
+                                                        }
+
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -362,166 +398,7 @@ namespace Shesha.DynamicEntities.Binder
                                     }
                                     break;
                                 case DataTypes.EntityReference:
-                                    // Get the rules of cascade update
-                                    var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
-                                        ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>()
-                                        ?? (propConfig == null ? null
-                                            : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate, propConfig.CascadeUpdate, propConfig.CascadeDeleteUnreferenced));
-
-                                    if (jproperty.Value is JObject jEntity)
-                                    {
-                                        var jchildId = jEntity.Property("id")?.Value.ToString();
-                                        var jchildClassName = jEntity.Property(nameof(EntityReferenceDto<int>._className).ToCamelCase())?.Value.ToString();
-                                        var jchildDisplyName = jEntity.Property(nameof(EntityReferenceDto<int>._displayName).ToCamelCase())?.Value.ToString();
-
-                                        var allowedTypes = property.PropertyType == typeof(GenericEntityReference)
-                                            ? property.GetCustomAttribute<EntityReferenceAttribute>()?.AllowableTypes
-                                            : null;
-                                        if (!jchildClassName.IsNullOrEmpty() && allowedTypes != null && allowedTypes.Any() && !allowedTypes.Contains(jchildClassName))
-                                        {
-                                            context.LocalValidationResult.Add(new ValidationResult($"`{jchildClassName}` is not allowed for `{property.Name}`."));
-                                            break;
-                                        }
-
-                                        var childEntityType = jchildClassName.IsNullOrEmpty()
-                                            ? JsonEntityProxy.GetUnproxiedType(property.PropertyType)
-                                            : _entityConfigurationStore.Get(jchildClassName)?.EntityType;
-                                            //: _typeFinder.Find(x => x.FullName == jchildClassName).FirstOrDefault();
-                                        if (childEntityType == null)
-                                        {
-                                            context.LocalValidationResult.Add(new ValidationResult($"Type `{jchildClassName}` not found."));
-                                            break;
-                                        }
-
-                                        if (!string.IsNullOrEmpty(jchildId))
-                                        {
-                                            var newChildEntity = dbValue;
-                                            var childId = dbValue?.GetId().ToString();
-
-                                            // if child entity is specified
-                                            if (childId?.ToLower() != jchildId?.ToLower()
-                                                || property.PropertyType.FullName != jchildClassName)
-                                            {
-                                                // id or class changed
-                                                newChildEntity = await GetEntityByIdAsync(childEntityType, jchildId, jchildDisplyName, jproperty.Path, context);
-                                                if (newChildEntity == null)
-                                                {
-                                                    context.LocalValidationResult.Add(new ValidationResult($"Entity with type `{childEntityType.FullName}` and Id: {jchildId} not found."));
-                                                    break;
-                                                }
-                                            }
-                                            bool r = true;
-                                            if (jEntity.Properties().ToList().Where(x => x.Name != "id"
-                                                && x.Name != nameof(EntityReferenceDto<int>._displayName).ToCamelCase()
-                                                && x.Name != nameof(EntityReferenceDto<int>._className).ToCamelCase()
-                                                ).Any())
-                                            {
-                                                if (!context.SkipValidation && !(cascadeAttr?.CanUpdate ?? false))
-                                                {
-                                                    context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be updated."));
-                                                    break;
-                                                }
-                                                r = await BindPropertiesAsync(jEntity, newChildEntity, context, null, childFormFields);
-                                                r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
-                                            }
-
-                                            if (dbValue != newChildEntity)
-                                            {
-                                                if (r)
-                                                {
-                                                    if (property.PropertyType == typeof(GenericEntityReference))
-                                                        property.SetValue(entity, new GenericEntityReference(newChildEntity));
-                                                    else
-                                                        property.SetValue(entity, newChildEntity);
-
-                                                }
-                                                if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
-                                                {
-                                                    await DeleteUnreferencedEntityAsync(dbValue, entity);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // if Id is not specified
-                                            if (jEntity.Properties().ToList().Where(x => x.Name != "id").Any())
-                                            {
-                                                if (!(cascadeAttr?.CanCreate ?? false))
-                                                {
-                                                    context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be created."));
-                                                    break;
-                                                }
-
-                                                var childEntity = Activator.CreateInstance(childEntityType);
-                                                // create a new object
-                                                if (!await BindPropertiesAsync(jEntity, childEntity, context, null, childFormFields))
-                                                    break;
-
-                                                if (cascadeAttr?.CascadeEntityCreator != null)
-                                                {
-                                                    // try to select entity by key fields
-                                                    if (Activator.CreateInstance(cascadeAttr.CascadeEntityCreator) is ICascadeEntityCreator creator)
-                                                    {
-                                                        creator.IocManager = _iocManager;
-                                                        var data = new CascadeRuleEntityFinderInfo(childEntity);
-                                                        if (!creator.VerifyEntity(data, context.LocalValidationResult))
-                                                            break;
-
-                                                        data._NewObject = childEntity = creator.PrepareEntity(data);
-
-                                                        var foundEntity = creator.FindEntity(data);
-                                                        if (foundEntity != null)
-                                                        {
-                                                            if (await BindPropertiesAsync(jEntity, foundEntity, context, null, childFormFields))
-                                                                property.SetValue(entity, foundEntity);
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-
-                                                property.SetValue(entity, childEntity);
-                                            }
-                                            else
-                                            {
-                                                // remove referenced object
-                                                if (dbValue != null)
-                                                {
-                                                    property.SetValue(entity, null);
-                                                    if (cascadeAttr?.DeleteUnreferenced ?? false)
-                                                        await DeleteUnreferencedEntityAsync(dbValue, entity);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var jchildId = jproperty.Value.ToString();
-                                        if (!string.IsNullOrEmpty(jchildId))
-                                        {
-                                            var newChildEntity = dbValue;
-                                            var childId = dbValue?.GetType().GetProperty("Id")?.GetValue(dbValue)?.ToString();
-
-                                            // if child entity is specified
-                                            if (childId?.ToLower() != jchildId?.ToLower())
-                                            {
-                                                // id changed
-                                                newChildEntity = await GetEntityByIdAsync(property.PropertyType, jchildId, "", jproperty.Path, context);
-
-                                                if (newChildEntity == null)
-                                                {
-                                                    context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{jchildId}' not found for `{jproperty.Path}`."));
-                                                    break;
-                                                }
-                                            }
-
-                                            if (dbValue != newChildEntity)
-                                            {
-                                                property.SetValue(entity, newChildEntity);
-                                                if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
-                                                    await DeleteUnreferencedEntityAsync(dbValue, entity);
-                                            }
-                                        }
-                                    }
+                                    await PerformEntityReferenceAsync(entity, property, propConfig, jproperty.Value, jproperty.Path, dbValue, childFormFields, context, value => property.SetValue(entity, value));
                                     break;
                                 default:
                                     break;
@@ -554,6 +431,183 @@ namespace Shesha.DynamicEntities.Binder
             return !context.LocalValidationResult.Any();
         }
 
+        private async Task PerformEntityReferenceAsync(
+            object entity,
+            PropertyInfo property,
+            ModelPropertyDto propConfig,
+            JToken jValue,
+            string jPropertyName,
+            object dbValue,
+            List<string> childFormFields,
+            EntityModelBindingContext context,
+            Action<object> action
+            )
+        {
+            // Get the rules of cascade update
+            var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
+                ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>()
+                ?? (propConfig == null ? null
+                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate, propConfig.CascadeUpdate, propConfig.CascadeDeleteUnreferenced));
+
+            var propertyType = property.PropertyType.IsGenericType
+                ? property.PropertyType.GetGenericArguments()[0]
+                : property.PropertyType;
+
+            if (jValue is JObject jEntity)
+            {
+                var jchildId = jEntity.Property("id")?.Value.ToString();
+                var jchildClassName = jEntity.Property(nameof(EntityReferenceDto<int>._className).ToCamelCase())?.Value.ToString();
+                var jchildDisplyName = jEntity.Property(nameof(EntityReferenceDto<int>._displayName).ToCamelCase())?.Value.ToString();
+
+                var allowedTypes = propertyType == typeof(GenericEntityReference)
+                    ? property.GetCustomAttribute<EntityReferenceAttribute>()?.AllowableTypes
+                    : null;
+                if (!jchildClassName.IsNullOrEmpty() && allowedTypes != null && allowedTypes.Any() && !allowedTypes.Contains(jchildClassName))
+                {
+                    context.LocalValidationResult.Add(new ValidationResult($"`{jchildClassName}` is not allowed for `{property.Name}`."));
+                    return;
+                }
+
+                var childEntityType = jchildClassName.IsNullOrEmpty()
+                    ? JsonEntityProxy.GetUnproxiedType(propertyType)
+                    : _entityConfigurationStore.Get(jchildClassName)?.EntityType; //: _typeFinder.Find(x => x.FullName == jchildClassName).FirstOrDefault();
+                if (childEntityType == null)
+                {
+                    context.LocalValidationResult.Add(new ValidationResult($"Type `{jchildClassName}` not found."));
+                    return;
+                }
+
+                if (!string.IsNullOrEmpty(jchildId))
+                {
+                    var newChildEntity = dbValue;
+                    var childId = dbValue?.GetId().ToString();
+
+                    // if child entity is specified
+                    if (childId?.ToLower() != jchildId?.ToLower()
+                        || propertyType.FullName != jchildClassName)
+                    {
+                        // id or class changed
+                        newChildEntity = await GetEntityByIdAsync(childEntityType, jchildId, jchildDisplyName, jPropertyName, context);
+                        if (newChildEntity == null)
+                        {
+                            context.LocalValidationResult.Add(new ValidationResult($"Entity with type `{childEntityType.FullName}` and Id: {jchildId} not found."));
+                            return;
+                        }
+                    }
+                    bool r = true;
+                    if (jEntity.Properties().ToList().Where(x => x.Name != "id"
+                        && x.Name != nameof(EntityReferenceDto<int>._displayName).ToCamelCase()
+                        && x.Name != nameof(EntityReferenceDto<int>._className).ToCamelCase()
+                        ).Any())
+                    {
+                        if (!context.SkipValidation && !(cascadeAttr?.CanUpdate ?? false))
+                        {
+                            context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be updated."));
+                            return;
+                        }
+                        r = await BindPropertiesAsync(jEntity, newChildEntity, context, null, childFormFields);
+                        r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
+                    }
+
+                    if (dbValue != newChildEntity)
+                    {
+                        if (r)
+                        {
+                            if (propertyType == typeof(GenericEntityReference))
+                                action(new GenericEntityReference(newChildEntity));
+                            else
+                                action(newChildEntity);
+
+                        }
+                        if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
+                        {
+                            await DeleteUnreferencedEntityAsync(dbValue, entity);
+                        }
+                    }
+                }
+                else
+                {
+                    // if Id is not specified
+                    if (jEntity.Properties().ToList().Where(x => x.Name != "id").Any())
+                    {
+                        if (!(cascadeAttr?.CanCreate ?? false))
+                        {
+                            context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be created."));
+                            return;
+                        }
+
+                        var childEntity = Activator.CreateInstance(childEntityType);
+                        // create a new object
+                        if (!await BindPropertiesAsync(jEntity, childEntity, context, null, childFormFields))
+                            return;
+
+                        if (cascadeAttr?.CascadeEntityCreator != null)
+                        {
+                            // try to select entity by key fields
+                            if (Activator.CreateInstance(cascadeAttr.CascadeEntityCreator) is ICascadeEntityCreator creator)
+                            {
+                                creator.IocManager = _iocManager;
+                                var data = new CascadeRuleEntityFinderInfo(childEntity);
+                                if (!creator.VerifyEntity(data, context.LocalValidationResult))
+                                    return;
+
+                                data._NewObject = childEntity = creator.PrepareEntity(data);
+
+                                var foundEntity = creator.FindEntity(data);
+                                if (foundEntity != null)
+                                {
+                                    if (await BindPropertiesAsync(jEntity, foundEntity, context, null, childFormFields))
+                                        action(foundEntity);
+                                    return;
+                                }
+                            }
+                        }
+
+                        action(childEntity);
+                    }
+                    else
+                    {
+                        // remove referenced object
+                        if (dbValue != null)
+                        {
+                            action(null);
+                            if (cascadeAttr?.DeleteUnreferenced ?? false)
+                                await DeleteUnreferencedEntityAsync(dbValue, entity);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var jchildId = jValue.ToString();
+                if (!string.IsNullOrEmpty(jchildId))
+                {
+                    var newChildEntity = dbValue;
+                    var childId = dbValue?.GetType().GetProperty("Id")?.GetValue(dbValue)?.ToString();
+
+                    // if child entity is specified
+                    if (childId?.ToLower() != jchildId?.ToLower())
+                    {
+                        // id changed
+                        newChildEntity = await GetEntityByIdAsync(propertyType, jchildId, "", jPropertyName, context);
+
+                        if (newChildEntity == null)
+                        {
+                            context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{jchildId}' not found for `{jPropertyName}`."));
+                            return;
+                        }
+                    }
+
+                    if (dbValue != newChildEntity)
+                    {
+                        action(newChildEntity);
+                        if (dbValue != null && (cascadeAttr?.DeleteUnreferenced ?? false))
+                            await DeleteUnreferencedEntityAsync(dbValue, entity);
+                    }
+                }
+            }
+        }
+
         private async Task<object> GetEntityByIdAsync(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
         {
             if (context.GetEntityById != null)
@@ -562,7 +616,7 @@ namespace Shesha.DynamicEntities.Binder
             var newChildEntity = await _dynamicRepository.GetAsync(entityType, id);
             if (newChildEntity == null)
                 context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{id}' not found for `{propertyPath}`."));
-            
+
             return newChildEntity;
         }
 
@@ -593,7 +647,6 @@ namespace Shesha.DynamicEntities.Binder
         public async Task<bool> DeleteCascadeAsync(object entity)
         {
             var entityType = entity.GetType().StripCastleProxyType();
-            var shortAlias = entityType.GetTypeShortAlias();
             var props = entityType.GetProperties();
             var result = false;
 
@@ -636,8 +689,8 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace 
-                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAlias() == reference.EntityConfig.ClassName))
+                var refType = _typeFinder.Find(x => x.Namespace == reference.EntityConfig.Namespace
+                && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
                 if (refType == null || !refType.IsEntityType()) continue;

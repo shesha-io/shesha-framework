@@ -360,15 +360,29 @@ namespace Shesha
             {
                 
                 case DataTypes.Array:
-                    if (property.DataFormat == ArrayFormats.ReferenceListItem
-                        || property.DataFormat == ArrayFormats.ObjectReference
-                        || property.DataFormat == ArrayFormats.Object)
+                    switch (property.DataFormat)
                     {
-                        sb.AppendLine(propertyName);
-                        break;
+                        case ArrayFormats.ReferenceListItem:
+                        case ArrayFormats.ObjectReference:
+                        case ArrayFormats.Object:
+                            sb.AppendLine(propertyName);
+                            break;
+                        case ArrayFormats.EntityReference:
+                            if (fullReference || property.EntityType.IsNullOrWhiteSpace())
+                            {
+                                // GenericEntityReference
+                                //sb.AppendLine($"{propertyName}: {propertyName}");
+                                sb.Append(propertyName);
+                                sb.AppendLine(" {id _className _displayName} ");
+                            }
+                            else
+                                // EntityReference
+                                sb.AppendLine($"{propertyName}");
+                            break;
+    
+                        // todo: implement other types
                     }
-                    else
-                        return; // todo: implement other types
+                    break;
                 case DataTypes.EntityReference:
                     if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {

@@ -12,6 +12,7 @@ namespace Shesha.Domain
     [DiscriminatorValue(ItemTypeName)]
     [JoinedProperty("Core_NotificationChannelConfigs")]
     [Entity(TypeShortAlias = "Shesha.Domain.NotificationChannelConfig")]
+    [Prefix(UsePrefixes = false)]
     public class NotificationChannelConfig : ConfigurationItemBase
     {
         public NotificationChannelConfig()
@@ -58,5 +59,9 @@ namespace Shesha.Domain
         /// Enabled, Disabled, Suppressed - if suppressed will 'pretend' like the notification will be send, but will simply not send the message
         /// </summary>
         public RefListNotificationChannelStatus? Status { get; set; }
+        /// <summary>
+        /// If true indicates that this channel supports attachments
+        /// </summary>
+        public virtual bool SupportsAttachment { get; set; }
     }
 }

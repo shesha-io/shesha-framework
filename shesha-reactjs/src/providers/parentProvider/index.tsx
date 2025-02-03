@@ -3,6 +3,7 @@ import { ConfigurableActionDispatcherProvider, DataContextManager, FormMode, ICo
 import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
 import ValidateProvider from "../validateProvider";
+import { IFormApi } from "../form/formApi";
 
 export interface IParentProviderStateContext {
   id: string;
@@ -11,6 +12,7 @@ export interface IParentProviderStateContext {
   context?: string;
   model: any;
   formFlatMarkup?: IFlatComponentsStructure;
+  formApi?: IFormApi<any>;
   getChildComponents: (componentId: string) => IConfigurableFormComponent[];
   registerChild: (input: IParentProviderStateContext) => void;
   unRegisterChild: (input: IParentProviderStateContext) => void;
@@ -21,6 +23,7 @@ export interface IParentProviderProps {
   context?: string;
   model: any;
   formFlatMarkup?: IFlatComponentsStructure;
+  formApi?: IFormApi<any>;
   isScope?: boolean;
 }
 
@@ -50,6 +53,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     formMode,
     context,
     formFlatMarkup,
+    formApi,
     isScope = false,
   } = props;
 
@@ -60,6 +64,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
 
   const formModeLocal = formMode ?? parent?.formMode;
   const formFlatMarkupLocal = formFlatMarkup ?? parent?.formFlatMarkup;
+  const formApiLocal = formApi ?? parent?.formApi;
   const contextLocal = context ?? parent?.context;
 
   const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {
@@ -96,13 +101,14 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
       formMode: formModeLocal,
       context: contextLocal,
       formFlatMarkup: formFlatMarkupLocal,
+      formApi: formApiLocal,
       model: {...parent?.model, ...model},
       getChildComponents,
       registerChild,
       unRegisterChild,
     };
   }, [
-    formModeLocal, contextLocal, formFlatMarkupLocal, model,
+    formModeLocal, contextLocal, formFlatMarkupLocal, formApiLocal, model,
     parent?.model, childParentProvider.current,
   ]);
 
