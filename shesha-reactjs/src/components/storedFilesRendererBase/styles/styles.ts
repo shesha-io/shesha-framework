@@ -10,8 +10,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
     --thumbnail-width: ${thumbnailWidth ?? '101px'};
     --thumbnail-height: ${thumbnailHeight ?? '101px'};
-    --font-size: ${fontSize ?? '14px'};
-    --ant-font-size: ${fontSize ?? '14px'} important;
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --width: ${width};
     --height: ${height};
@@ -28,6 +26,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
+    --font-size: ${fontSize ?? '14px'} !important;
+    --ant-font-size: ${fontSize ?? '14px'} !important;
 
       :before {
         position: relative;
@@ -51,6 +51,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         height: var(--thumbnail-height, 101px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
+        display: flex !important;
+        justify-content: center !important;
        }
       .ant-image .anticon {
         border-radius: ${borderRadius ?? '8px'} !important;
@@ -61,8 +63,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     .ant-upload-list-item-name {
       display: ${hideFileName ? 'none !important' : 'block'};
       color: ${fontColor ?? token.colorPrimary};
-      padding: 0 8px !important; 
+      padding: 0 8px !important;
       width: ${(layout && thumbnailWidth) ?? '101px'} !important;
+      font-size: var(--font-size, 14px) !important;
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled)  {
@@ -94,8 +97,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         }
       
         .${prefixCls}-upload-list {
+          --ant-margin-xs: ${gap ?? '8px'} !important;
           overflow-y: auto;
-          gap: ${gap ?? '10px'};
           max-height: ${height ?? `calc(${uploadListMaxHeight}  + 32px)`};
           width: 100%;
           ${styles}
