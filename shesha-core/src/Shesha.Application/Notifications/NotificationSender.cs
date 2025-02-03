@@ -2,6 +2,7 @@
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
 using Abp.Notifications;
 using Abp.UI;
 using Castle.Core.Logging;
@@ -23,6 +24,7 @@ using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
 using Shesha.Notifications.Helpers;
+using Shesha.Notifications.MessageParticipants;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -268,10 +270,15 @@ namespace Shesha.Notifications
 
                 var attachments = await GetAttachmentsAsync(message);
 
-                message.RecipientText = senderChannelInterface.GetRecipientId(toPerson, recipientText);
+
+                IMessageSender sender = new PersonMessageParticipant(fromPerson, senderChannelInterface);
+
+                IMessageReciever reciever = !recipientText.IsNullOrWhiteSpace() ? new RawAddressMessageParticipant(recipientText) : new PersonMessageParticipant(toPerson, senderChannelInterface);
+
+                message.RecipientText = reciever.GetAddress();
 
                 // Use TrySendAsync to handle the send attempt
-                var sendResult = await TrySendAsync(fromPerson, toPerson, recipientText,message, senderChannelInterface, attachments);
+                var sendResult = await TrySendAsync(sender, reciever,message, senderChannelInterface, attachments);
 
                 if (sendResult.IsSuccess)
                 {
@@ -304,16 +311,15 @@ namespace Shesha.Notifications
         /// Attempts to send a notification and handles exceptions internally.
         /// </summary>
         private async Task<SendStatus> TrySendAsync(
-            Person fromPerson,
-            Person toPerson,
-            string recipientText,
+            IMessageSender fromPerson,
+            IMessageReciever toPerson,
             NotificationMessage message,
             INotificationChannelSender notificationChannelSender,
             List<EmailAttachment> attachments)
         {
             try
             {
-                var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, recipientText, message, "", attachments);
+                var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, message, "", attachments);
 
                 return new SendStatus
                 {

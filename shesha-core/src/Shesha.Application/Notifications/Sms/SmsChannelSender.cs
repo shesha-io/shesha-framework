@@ -9,6 +9,7 @@ using Shesha.Email.Dtos;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Helpers;
+using Shesha.Notifications.MessageParticipants;
 using Shesha.Services;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
@@ -42,14 +43,9 @@ namespace Shesha.Notifications.SMS
         /// 
         /// </summary>
         /// <param name="person"></param>
-        /// <param name="identifier"></param>
         /// <returns></returns>
-        public string GetRecipientId(Person person, string identifier)
+        public string GetRecipientId(Person person)
         {
-            if (!string.IsNullOrWhiteSpace(identifier))
-            {
-                return identifier;
-            }
             return person.MobileNumber1;
         }
         /// <summary>
@@ -61,7 +57,7 @@ namespace Shesha.Notifications.SMS
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, string identifier, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReciever toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
@@ -74,7 +70,7 @@ namespace Shesha.Notifications.SMS
                 });
             }
 
-            return await _smsGateway.SendSmsAsync(GetRecipientId(toPerson, identifier), message.Message);
+            return await _smsGateway.SendSmsAsync(toPerson.GetAddress(), message.Message);
         }
 
         public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
