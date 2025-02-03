@@ -107,13 +107,25 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         }
     `);
 
+  const antPreviewDownloadIcon = cx("ant-preview-download-icon", css`
+      background: #0000001A;
+      font-size: 24px;
+      padding: 8px;
+      border-radius: 100px;
+      :hover {
+        color: #fff;
+      }
+    `);
   const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css` 
+    height: max-content;
+    padding-bottom: 32px;
     .${prefixCls}-upload-list {
           display: flex !important;
           flex-wrap: nowrap !important;
           flex-direction: row !important;
           flex-shrink: 0 !important;
           overflow-x: auto;
+          overflow-y: clip !important;
           align-items: center !important;
           ${styles}
       }
@@ -121,17 +133,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       .ant-upload-list-item-container {
         display: inline-block !important;    
         width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-height) !important;
+        // height: var(--thumbnail-height) !important;
       }
     `);
 
-  const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-horizontal", css` 
+  const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-horizontal", css`
+      width:  max-content;
     .${prefixCls}-upload-list {
           display: flex !important;
           flex-direction: column !important;
           flex-wrap: nowrap !important;
           padding: 0 ${borderSize ?? '2px'} !important;
           ${styles}
+          height: calc(var(--height) - 32px) !important;
         }
           
     .ant-upload-list-item-container {
@@ -141,6 +155,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       width: var(--thumbnail-width) !important;
       height: var(--thumbnail-height) !important;
     }
+
+    .stored-files-renderer-btn-container {
+      justify-content: flex-start;
+      .ant-btn {
+        padding: 0;
+      }
+     }
+
     `);
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-horizontal", css` 
@@ -169,6 +191,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     shaStoredFilesRendererGrid,
     storedFilesRendererBtnContainer,
     storedFilesRendererNoFiles,
-    antUploadDragIcon
+    antUploadDragIcon,
+    antPreviewDownloadIcon
   };
 });

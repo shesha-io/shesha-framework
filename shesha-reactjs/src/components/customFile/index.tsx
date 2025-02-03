@@ -5,6 +5,8 @@ import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/provi
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
 export interface ICustomFileProps extends IInputStyles {
+  id?: string;
+  ownerId?: string;
   uploadFile?: (payload: IUploadFilePayload) => void;
   onFileListChanged?: (list: IStoredFile[]) => void;
   allowAdd?: boolean;
