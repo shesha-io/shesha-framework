@@ -2,4 +2,4 @@
 
 ## 💪 Enhancements
 
-- **Notifications Framework Refactoring and Enhancement**: Added `SenderText` and `CC` properties to NotificationMessage
+- Updated migrator extensions: simplified `ModuleEnsureExists`, return module Id as result
