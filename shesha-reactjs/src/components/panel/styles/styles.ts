@@ -145,14 +145,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         font-size: ${fontSize};
         font-weight: ${fontWeight};
         align-self: center;
+        margin-left: 10px;
       }
 
       .ant-collapse-extra {
         align-self: center;
+        margin-right: 10px;
       }
 
       .ant-collapse-expand-icon {
-      align-self: center;
+        align-self: center;
       }
 
     }
@@ -160,7 +162,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
-            padding: 4px 0px;
             border-bottom: 2px solid ${token.colorPrimary};
             border-bottom-left-radius: unset;
             border-bottom-right-radius: unset;
