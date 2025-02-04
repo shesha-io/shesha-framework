@@ -14,6 +14,6 @@ namespace Shesha.Notifications
 {
     public interface INotificationSender
     {
-        Task SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData;
+        Task SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, string identifier ,TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData;
     }
 }
