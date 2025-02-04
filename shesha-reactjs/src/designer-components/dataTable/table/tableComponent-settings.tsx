@@ -208,9 +208,14 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         <ColumnsConfig readOnly={readOnly} />
       </SettingsFormItem>
 
+      <SettingsFormItem name="showOverflow" label="Show Overflow Tooltip" tooltip="Display tooltip to show overflowing cell content. Go to 'Preview Mode' to view Tooltip." valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
       <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
+
       <SettingsFormItem name="freezeHeaders" label="Freeze Headers" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>

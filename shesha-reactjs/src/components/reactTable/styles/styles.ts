@@ -24,6 +24,8 @@ const tableClassNames = {
   shaSortable: 'sha-sortable',
   shaDragging: 'sha-dragging',
   shaTooltipIcon: 'sha-tooltip-icon',
+  rowCell: 'sha-row-cell',
+  
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -58,6 +60,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSortable,
     shaDragging,
     shaTooltipIcon,
+    rowCell
   } = tableClassNames;
 
   // var(--ant-primary-3)
@@ -161,6 +164,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${nestedPaddings(0, 9)}
           }
         }
+
         .${tr} {
           &.${trHead} {
             box-shadow: 0 2px 15px 0 rgb(0 0 0 / 15%);
@@ -338,6 +342,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           &.${boxShadowRight} {
             box-shadow: -5px 0 3px -2px #ccc;
           }
+        }
+
+        .${rowCell} {
+            background-color: ${token.colorBgContainer};
+            border: 0.5px ${token.colorBorder} solid;
+            box-shadow: 2px 0px 4px 0px rgba(0,0,0,.15);
+            border-radius: 5px;
+            padding: 5px;
+            width: 200px;
+            position: absolute;
+            z-index: 999;
         }
       }
     `

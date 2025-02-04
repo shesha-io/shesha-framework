@@ -15,6 +15,7 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showOverflow?: boolean;
 }
 
 /** Table component props */

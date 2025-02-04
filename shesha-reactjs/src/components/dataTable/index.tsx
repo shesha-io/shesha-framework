@@ -70,6 +70,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showOverflow?: boolean;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -102,6 +103,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataSecondaryText,
   noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
+  showOverflow,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -699,6 +701,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     noDataText,
     noDataSecondaryText,
     noDataIcon,
+    showOverflow,
     allowReordering: allowReordering && reorderingAvailable,
     onRowsReordered: handleRowsReordered,
 

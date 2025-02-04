@@ -79,7 +79,8 @@ export const ReactTable: FC<IReactTableProps> = ({
   noDataSecondaryText = "No data is available for this table",
   noDataIcon,
   onRowsRendering,
-  onRowsReordered
+  onRowsReordered,
+  showOverflow,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -374,6 +375,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        showOverflow={showOverflow}
       />
     );
   };
