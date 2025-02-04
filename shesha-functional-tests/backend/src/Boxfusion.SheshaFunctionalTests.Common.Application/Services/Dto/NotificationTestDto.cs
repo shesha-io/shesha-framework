@@ -1,36 +1,31 @@
-﻿using Abp.Notifications;
-using Shesha.Domain;
+﻿using Abp.Application.Services.Dto;
+using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto
 {
     public class NotificationDto
     {
-        public NotificationTypeConfig Type { get; set; }
+        public EntityDto<Guid>? Type { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public NotificationChannelConfig Channel { get; set; } = null;
+        public EntityDto<Guid>? Channel { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public long Priority { get; set; }
+        public RefListNotificationPriority Priority { get; set; } = RefListNotificationPriority.Low;
         /// <summary>
         /// 
         /// </summary>
-        public Person Recipient { get; set; }
+        public EntityDto<Guid>? Recipient { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string RecipientText { get; set; }
+        public string? RecipientText { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public GenericEntityReference TriggeringEntity { get; set; } = null;
+        public GenericEntityReference? TriggeringEntity { get; set; }
     }
 }
