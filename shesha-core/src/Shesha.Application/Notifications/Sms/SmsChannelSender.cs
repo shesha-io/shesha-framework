@@ -1,26 +1,14 @@
 ﻿using Abp.Domain.Repositories;
 using Castle.Core.Logging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using NetTopologySuite.Densify;
-using Newtonsoft.Json;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
-using Shesha.Notifications.Helpers;
 using Shesha.Notifications.MessageParticipants;
-using Shesha.Services;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Shesha.Notifications.SMS
 {
@@ -57,7 +45,7 @@ namespace Shesha.Notifications.SMS
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReciever toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver reciever, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
@@ -70,7 +58,7 @@ namespace Shesha.Notifications.SMS
                 });
             }
 
-            return await _smsGateway.SendSmsAsync(toPerson.GetAddress(), message.Message);
+            return await _smsGateway.SendSmsAsync(reciever.GetAddress(this), message.Message);
         }
 
         public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)

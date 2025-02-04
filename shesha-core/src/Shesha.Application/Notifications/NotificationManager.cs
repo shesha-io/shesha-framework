@@ -1,17 +1,16 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Domain.Services;
 using Abp.UI;
-using NHibernate.Linq;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
+using Shesha.Notifications.MessageParticipants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -36,24 +35,22 @@ namespace Shesha.Notifications
         /// 
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="recipient"></param>
+        /// <param name="receiver"></param>
         /// <param name="priority"></param>
         /// <returns></returns>
-        public async Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, Person recipient, RefListNotificationPriority priority)
+        public async Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, IMessageReceiver receiver, RefListNotificationPriority priority)
         {
             // Step 1: Check User Notification Preference
-            var userPreferences = new List<UserNotificationPreference>();
-            if (recipient != null)
+            var recipientPerson = receiver?.GetPerson();
+            if (recipientPerson != null)
             {
-                userPreferences = await _userNotificationPreference.GetAllListAsync(
-                    x => x.User.Id == recipient.Id && x.NotificationType.Id == type.Id
-                );
-            }
-
-            if (userPreferences != null && userPreferences.Any())
-            {
+                var defaultChannels = await _userNotificationPreference.GetAll().Where(x => x.User.Id == recipientPerson.Id && x.NotificationType.Id == type.Id && x.DefaultChannel != null)
+                    .Select(e => e.DefaultChannel)
+                    .ToListAsync();
+                
                 // Return DefaultChannel from user preferences if available
-                return userPreferences.Select(x => x.DefaultChannel).ToList();
+                if (defaultChannels.Any())
+                    return defaultChannels;
             }
 
             // Step 2: Check for Parsed Override Channels

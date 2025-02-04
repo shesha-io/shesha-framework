@@ -1,24 +1,17 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.UI;
 using Castle.Core.Logging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using NHibernate.Linq;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
@@ -58,7 +51,7 @@ namespace Shesha.Notifications
             return enabled;
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReciever toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReceiver toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
@@ -79,7 +72,7 @@ namespace Shesha.Notifications
                 };
             }
 
-            using (var mail = BuildMessageWith(fromPerson.GetAddress(), toPerson.GetAddress(), message.Subject, message.Message, cc))
+            using (var mail = BuildMessageWith(fromPerson.GetAddress(this), toPerson.GetAddress(this), message.Subject, message.Message, cc))
             {
                 if (attachments != null)
                 {

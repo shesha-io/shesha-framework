@@ -37,28 +37,28 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        public RefListNotificationMessageFormat? SupportedFormat { get; set; }
+        public virtual RefListNotificationMessageFormat? SupportedFormat { get; set; }
         /// <summary>
         /// The maximum supported size for the message in characters
         /// </summary>
-        public int MaxMessageSize { get; set; }
+        public virtual int MaxMessageSize { get; set; }
         /// <summary>
         /// If true indicates that users may opt out of this notification
         /// </summary>
         [MultiValueReferenceList("ChannelSupportedMechanism")]
-        public RefListChannelSupportedMechanism? SupportedMechanism { get; set; }
+        public virtual RefListChannelSupportedMechanism? SupportedMechanism { get; set; }
         /// <summary>
         /// The fully qualified name of the class implementing the behavior for this channel through INotificationChannel
         /// </summary>
-        public string SenderTypeName { get; set; }
+        public virtual string SenderTypeName { get; set; }
         /// <summary>
         /// The default priority of the message unless overridden during the send operation
         /// </summary>
-        public RefListNotificationPriority? DefaultPriority { get; set; }
+        public virtual RefListNotificationPriority? DefaultPriority { get; set; }
         /// <summary>
         /// Enabled, Disabled, Suppressed - if suppressed will 'pretend' like the notification will be send, but will simply not send the message
         /// </summary>
-        public RefListNotificationChannelStatus? Status { get; set; }
+        public virtual RefListNotificationChannelStatus? Status { get; set; }
         /// <summary>
         /// If true indicates that this channel supports attachments
         /// </summary>
