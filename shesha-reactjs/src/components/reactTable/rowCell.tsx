@@ -35,8 +35,8 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   const { styles } = useStyles();
   const { key, style, ...restProps } = cell.getCellProps(cellProps);
   const cellRef = useRef(null);
-  const bingRef = useRef(null);
-  const [bingRefWidth, setBingRefWidth] = useState<number>();
+  const cellParentRef = useRef(null);
+  const [cellParentRefWidth, setcellParentRefWidth] = useState<number>();
   const [isContentOverflowing, setIsOverflowing] = useState<boolean>(false);
 
   let cellStyle = isStyledColumn(cell.column)
@@ -64,14 +64,14 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   }, []);
 
   useEffect(()=>{
-    const bingRefRect = bingRef.current.getBoundingClientRect();
-    setBingRefWidth(bingRefRect.width);
-  },[bingRef]);
+    const cellParentRefRect = cellParentRef.current.getBoundingClientRect();
+    setcellParentRefWidth(cellParentRefRect.width);
+  },[cellParentRef]);
 
   return (
     <div
       key={key}
-      ref={bingRef}
+      ref={cellParentRef}
       {...restProps}
       style={style || cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, height: cellHeight, cursor: isContentOverflowing ? 'pointer' : 'auto', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '90%' } : undefined}
       className={classNames(styles.td, {
@@ -96,7 +96,7 @@ event.preventDefault();
 event.preventDefault();
 }}
         onSelect={(event) => event.stopPropagation()}
-        style={{ maxWidth: bingRefWidth + "px", overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}
+        style={{ maxWidth: cellParentRefWidth + "px", overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}
       >
         {cell.render('Cell')}
 
