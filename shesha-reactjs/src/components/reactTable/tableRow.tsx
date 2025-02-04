@@ -1,6 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC, Fragment, useEffect, useRef, useState } from 'react';
+import React, { FC, Fragment, useRef, useState } from 'react';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from '@/providers/crudContext';
@@ -72,10 +72,10 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const { dragState, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
   const [popupShowing, setPopupShowing] = useState<Boolean>(false);
-  const [popupPosition, setPopupPosition] = useState<{x: string | number, y: string | number}>({x: 0, y: 0});
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [innerCellRef, setInnerCellRef] = useState(null);
-  const popUpRef = useRef(null); 
-  const { formMode } = useForm(); 
+  const popUpRef = useRef(null);
+  const { formMode } = useForm();
 
   const handleRowClick = () => {
     onClick(row);
@@ -92,8 +92,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const handleCellRef = (ref) => {
     setInnerCellRef(ref);
     const clientRect = ref.getBoundingClientRect();
-    setPopupPosition({x: clientRect.x, y: clientRect.y});
-  }
+    setPopupPosition({ x: clientRect.x, y: clientRect.y });
+  };
 
   return (
     <CrudProvider
@@ -110,7 +110,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       displayComponents={inlineDisplayComponents}
     >
 
-    {/*Handle alternate backgroundColor here*/}
+      {/*Handle alternate backgroundColor here*/}
       <div
         onMouseEnter={() => {
           if (dragState === 'finished')
@@ -129,16 +129,26 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return(
-          <Fragment>
-            <RowCell onMouseOver={(props)=> {setPopupShowing(props)}} getCellRef={(ref) => {handleCellRef(ref.current)}}  onMouseLeave={()=>{setPopupShowing(false)}} cell={cell} key={cellIndex} row={row.cells} rowIndex={index}/>
+          return (
+            <Fragment>
+              <RowCell onMouseOver={(props) => {
+                setPopupShowing(props);
+              }} getCellRef={(ref) => {
+                handleCellRef(ref.current);
+              }} onMouseLeave={() => {
+                setPopupShowing(false);
+              }} cell={cell} key={cellIndex} row={row.cells} rowIndex={index} />
               {popupShowing && Boolean(cell.value) && formMode !== 'designer' && showOverflow === true && (innerCellRef.innerText === cell.value?._displayName || innerCellRef.innerText === cell?.value) &&
-              <div ref={popUpRef} style={{ transition: 'all .3s', left: parseInt(popupPosition.x as string) - 60 + "px"}}
-              className={styles.rowCell}
-              onMouseEnter={()=>{setPopupShowing(true)}} onMouseLeave={()=>{setPopupShowing(false)}}>{cell?.value?._displayName ?? cell?.value}
-              </div>}
-          </Fragment>
-          )
+                <div ref={popUpRef} style={{ left: popupPosition.x - 60 + "px" }}
+                  className={styles.rowCell}
+                  onMouseEnter={() => {
+                    setPopupShowing(true);
+                  }} onMouseLeave={() => {
+                    setPopupShowing(false);
+                  }}>{cell?.value?._displayName ?? cell?.value}
+                </div>}
+            </Fragment>
+          );
         })}
       </div>
     </CrudProvider>

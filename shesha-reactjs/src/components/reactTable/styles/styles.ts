@@ -353,6 +353,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             width: 200px;
             position: absolute;
             z-index: 999;
+            transition: all .3s;
         }
       }
     `

@@ -66,7 +66,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
   useEffect(()=>{
     const bingRefRect = bingRef.current.getBoundingClientRect();
     setBingRefWidth(bingRefRect.width);
-  },[bingRef])
+  },[bingRef]);
 
   return (
     <div
@@ -83,10 +83,18 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
 
       <div
         ref={cellRef}
-        onMouseOver={() => {onMouseOver(checkOverflow()); getCellRef(cellRef)}}
-        onMouseLeave={() => {onMouseLeave();}}
-        onClick={(event) => {event.preventDefault()}}
-        onMouseUp={(event) => {event.preventDefault()}}
+        onMouseOver={() => {
+onMouseOver(checkOverflow()); getCellRef(cellRef);
+}}
+        onMouseLeave={() => {
+onMouseLeave();
+}}
+        onClick={(event) => {
+event.preventDefault();
+}}
+        onMouseUp={(event) => {
+event.preventDefault();
+}}
         onSelect={(event) => event.stopPropagation()}
         style={{ maxWidth: bingRefWidth + "px", overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}
       >
