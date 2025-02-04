@@ -45,7 +45,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
         this._propAccessors.set(propName, accessor);
     };
 
-    #checkChanged() {
+    checkChanged() {
         let changed = false;
 
         this._touchedProps.forEach((value, key) => {
@@ -72,7 +72,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
             }
 
             if (typeof data === 'object') {
-                if (typeof value !== 'object')
+                if (value === null || typeof value !== 'object')
                     changed = true;
                 return;
             }
@@ -92,8 +92,6 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
                 this._propAccessors.set(key, value as ValueAccessor);
             }
         });
-
-        return this.#checkChanged();
     };
 
     setAdditionalData = (data: any) => {
