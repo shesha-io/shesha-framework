@@ -12,7 +12,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
             selectedCorner: 'all', selectedSide: 'all',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
-                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' } },
+                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, bottom: { style: 'none' } },
             },
             radius: { all: borderRadius || 8, topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
         },
