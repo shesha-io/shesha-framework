@@ -1,7 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
-import TextArea from 'antd/es/input/TextArea';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
@@ -123,7 +122,11 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <CustomDropdown
                 variant={variant} value={value} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textArea':
-            return <TextArea readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ top: '4px' }} />;
+            return <Input.TextArea
+                rows={2}
+                value={value}
+                placeholder='Enter input description here'
+                readOnly={readOnly} size={size} onChange={onChange} style={{ top: '4px' }} />;
         case 'codeEditor':
             return editor;
         case 'iconPicker':
