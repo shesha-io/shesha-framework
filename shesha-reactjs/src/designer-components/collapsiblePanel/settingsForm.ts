@@ -657,7 +657,7 @@ export const getSettings = () => {
                                                         propertyName: 'pnlFontStyle',
                                                         label: 'Font',
                                                         labelAlign: 'right',
-                                                        ghost: true,
+                                                        collapsedByDefault: true,
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
                                                         content: {
@@ -722,7 +722,7 @@ export const getSettings = () => {
                                                         propertyName: 'pnlDimensionsStyle',
                                                         label: 'Dimensions',
                                                         labelAlign: 'right',
-                                                        ghost: true,
+                                                        collapsedByDefault: true,
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
                                                         content: {
@@ -771,7 +771,7 @@ export const getSettings = () => {
                                                         propertyName: 'pnlBorderStyle',
                                                         label: 'Border',
                                                         labelAlign: 'right',
-                                                        ghost: true,
+                                                        collapsedByDefault: true,
                                                         parentId: 'panel-header-styles-pnl',
                                                         content: {
                                                             id: 'panelheaderborderStylePnl',
@@ -832,7 +832,7 @@ export const getSettings = () => {
                                                         propertyName: 'pnlBackgroundStyle',
                                                         label: 'Background',
                                                         labelAlign: 'right',
-                                                        ghost: true,
+                                                        collapsedByDefault: true,
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
                                                         content: {
@@ -986,7 +986,7 @@ export const getSettings = () => {
                                                         propertyName: 'customStyle',
                                                         label: 'Custom Styles',
                                                         labelAlign: 'right',
-                                                        ghost: true,
+                                                        collapsedByDefault: true,
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
                                                         content: {
