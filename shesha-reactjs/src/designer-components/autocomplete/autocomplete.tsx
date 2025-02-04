@@ -254,7 +254,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         width: prev.width,
         height: prev.height,
         hideBorder: prev.hideBorder,
-        borderSize: prev.borderSize,
+        borderWidth: prev.borderSize,
         borderRadius: prev.borderRadius,
         borderColor: prev.borderColor,
         fontSize: prev.fontSize,

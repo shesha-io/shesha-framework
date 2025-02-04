@@ -92,10 +92,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           (model?.passEmptyStringByDefault && '') ||
           (model.initialValue
             ? evaluateString(model?.initialValue, {
-                formData: allData.data,
-                formMode: allData.form.formMode,
-                globalState: allData.globalState,
-              })
+              formData: allData.data,
+              formMode: allData.form.formMode,
+              globalState: allData.globalState,
+            })
             : undefined)
         }
       >
@@ -149,7 +149,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           width: prev.width,
           height: prev.height,
           hideBorder: prev.hideBorder,
-          borderSize: prev.borderSize,
+          borderWidth: prev.borderSize,
           borderRadius: prev.borderRadius,
           borderColor: prev.borderColor,
           fontSize: prev.fontSize,

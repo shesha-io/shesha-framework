@@ -8,35 +8,35 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${thumbnailWidth ?? '101px'};
-    --thumbnail-height: ${thumbnailHeight ?? '101px'};
+    --thumbnail-width: ${thumbnailWidth ?? thumbnailHeight ?? '101px'};
+    --thumbnail-height: ${thumbnailHeight ?? thumbnailWidth ?? '101px'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
-    --width: ${width};
-    --height: ${height};
-
-    max-width: ${width};
-    max-height: ${height ?? 'max-content'};
+    --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
+    --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
+    --ant-border-radius-lg:  ${borderRadius ?? '8px'} !important;
+    --container-width: ${width};
+    --container-height: ${height};
 
     .ant-upload:not(.ant-upload-disabled) {
           .icon {
             color: ${token.colorPrimary} !important;
         };
     }
-    
+  
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
-    --font-size: ${fontSize ?? '14px'} !important;
-    --ant-font-size: ${fontSize ?? '14px'} !important;
+      --font-size: ${fontSize ?? '14px'} !important;
+      --ant-font-size: ${fontSize ?? '14px'} !important;
+      height: var(--thumbnail-height);
 
       :before {
         position: relative;
         top: 0;
-        width: var(--thumbnail-width, 101px) !important;
+        width: var(--thumbnail-width) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
-        height: calc(var(--thumbnail-height, 101px) + var(--font-size, 16px) + 5px)) !important;
+        height: var(--thumbnail-height) !important;
       }
-
     }
 
     .ant-upload-list-item-thumbnail {
@@ -87,6 +87,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
             .${storedFilesRendererNoFiles} {
               margin-bottom: 6px;
             }
+
+            .ant-upload-select {
+              align-content: center;
+            }
           }
         }
       
@@ -97,11 +101,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         }
       
         .${prefixCls}-upload-list {
+          ${styles}
+          padding: 2px !important;
           --ant-margin-xs: ${gap ?? '8px'} !important;
           overflow-y: auto;
           max-height: ${height ?? `calc(${uploadListMaxHeight}  + 32px)`};
           width: 100%;
-          ${styles}
         }
 
         .ant-upload-list-text {
@@ -119,9 +124,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
         color: #fff;
       }
     `);
-  const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css` 
+  const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css`
+
     height: max-content;
-    padding-bottom: 32px;
+    width: var(--container-width) !important;
     .${prefixCls}-upload-list {
           display: flex !important;
           flex-wrap: nowrap !important;
@@ -136,12 +142,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       .ant-upload-list-item-container {
         display: inline-block !important;    
         width: var(--thumbnail-width) !important;
-        // height: var(--thumbnail-height) !important;
+        height: var(--thumbnail-height) !important;
       }
     `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-horizontal", css`
-      width:  max-content;
+      width: max-content;
+      padding: 2px;
     .${prefixCls}-upload-list {
           display: flex !important;
           flex-direction: column !important;
@@ -169,8 +176,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     `);
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-horizontal", css` 
+    max-width: var(--container-width) !important;
+    max-height: var(--container-height) !important;
+
     .${prefixCls}-upload-list {
       align-items: center;
+      padding: 2px;
       ${styles}
           .${prefixCls}-upload-list-item {
             width: ${thumbnailWidth ?? '101px'} !important;
