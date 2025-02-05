@@ -169,20 +169,20 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     borderRadius = '8',
     borderStyle = 'solid',
     borderWidth = '0',
-    shadowStyle
+    shadowStyle,
   } = prev || {};
 
 
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
-  const imageType = backgroundType === 'image' ?
+  const type = backgroundType === 'color' ? 'color' :
     (backgroundDataSource === 'base64' ? 'image' :
-      backgroundDataSource === 'storedFileId' ? 'storedFile' :
-        backgroundDataSource === 'url' ? 'url' : 'color') : 'color';
+      backgroundDataSource === 'url' ? 'url' :
+        'storedFile');
 
   return {
     background: {
-      type: imageType,
+      type,
       color: backgroundColor,
       repeat: backgroundRepeat,
       size: backgroundCover,
