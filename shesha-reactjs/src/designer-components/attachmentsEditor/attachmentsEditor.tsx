@@ -38,7 +38,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   onFileChanged?: string;
   downloadZip?: boolean;
   layout: layoutType;
-  listType: listType;
+  listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -134,7 +134,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerId: '',
         ownerType: '',
         ownerName: '',
-        listType: 'text',
         layout: 'vertical'
       };
     })
