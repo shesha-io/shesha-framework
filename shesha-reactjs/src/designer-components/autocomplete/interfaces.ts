@@ -1,6 +1,6 @@
 import { Key } from 'react';
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
-import { FormIdentifier } from '@/providers';
+import { FormIdentifier, IInputStyles } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 interface IQueryParamProp {
@@ -9,7 +9,7 @@ interface IQueryParamProp {
   value?: Key;
 }
 
-export interface IAutocompleteComponentProps extends IConfigurableFormComponent {
+export interface IAutocompleteComponentProps extends IConfigurableFormComponent, IInputStyles {
   entityTypeShortAlias?: string;
   entityDisplayProperty?: string;
   hideBorder?: boolean;
