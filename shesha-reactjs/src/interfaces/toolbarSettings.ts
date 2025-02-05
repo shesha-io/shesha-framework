@@ -35,6 +35,7 @@ import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 import { ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import { IImageFieldProps } from '@/designer-components/image/image';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -52,7 +53,7 @@ type ContextPropertyAutocompleteType = ToolbarSettingsProp &
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type ImagePickerType = ToolbarSettingsProp;
+type ImagePickerType = ToolbarSettingsProp & Omit<IImageFieldProps, 'hidden' | 'type'>;
 
 type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden' | 'type'>;
 
