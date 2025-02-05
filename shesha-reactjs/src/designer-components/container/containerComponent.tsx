@@ -181,7 +181,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })
-      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
+      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
-
+ 
 export default ContainerComponent;

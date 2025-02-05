@@ -2,7 +2,7 @@ import { nanoid } from "@/utils/uuid";
 import { addPx } from "../_settings/utils";
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style'>) => {
@@ -19,6 +19,18 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
 
         const heightFromSize = prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
         const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
+        const isColor = prevStyles.backgroundType === 'color' || prev.backgroundType === 'color';
+        const isBase64 = prevStyles.backgroundDataSource === 'base64' || prev.backgroundDataSource === 'base64';
+        const isUrl = prevStyles.backgroundDataSource === 'url' || prev.backgroundDataSource === 'url';
+        const isStoredFile = prevStyles.backgroundDataSource === 'storedFileId' || prev.backgroundDataSource === 'storedFileId';
+
+        const backgroundType = isColor ? 'color' : isBase64 ? 'image' : isUrl ? 'url' : isStoredFile ? 'storedFile' : 'color';
+        const backgroundUrl = prevStyles.backgroundUrl || prev.backgroundUrl;
+        const backgroundBase64 = prevStyles.backgroundBase64 || prev.backgroundBase64;
+        const backgroundStoredFileId = prevStyles.backgroundStoredFileId || prev.backgroundStoredFileId;
+        const backgroundColor = prevStyles.backgroundColor || prev.backgroundColor;
+        const backgroundRepeat = prevStyles.backgroundRepeat || prev.backgroundRepeat;
+        const backgroundCover = prevStyles.backgroundCover || prev.backgroundCover;
 
         return {
             ...defaults,
@@ -40,15 +52,15 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 radius: { all: prevStyles?.borderRadius || defaults?.border?.radius?.all || 8 },
             },
             background: {
-                type: defaults?.background?.type || 'color',
-                color: prevStyles?.backgroundColor || defaults?.background?.color,
-                repeat: prevStyles?.backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
-                size: prevStyles?.backgroundCover || defaults?.background?.size || 'cover',
+                type: backgroundType,
+                color: backgroundColor || defaults?.background?.color,
+                repeat: backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
+                size: backgroundCover || defaults?.background?.size || 'cover',
                 position: 'center',
                 gradient: { direction: 'to right', colors: {} },
-                url: prevStyles?.backgroundUrl || defaults?.background?.url || '',
-                storedFile: { id: prevStyles?.backgroundStoredFileId || defaults?.background?.storedFile?.id || null },
-                uploadFile: { uid: nanoid() || defaults?.background?.uploadFile?.uid || null, name: defaults?.background?.uploadFile?.name || '', url: prevStyles?.backgroundBase64 || defaults?.background?.uploadFile?.url || '' },
+                url: backgroundUrl || defaults?.background?.url || '',
+                storedFile: { id: backgroundStoredFileId || null },
+                uploadFile: { uid: nanoid(), name: '', url: backgroundBase64 },
             },
             font: {
                 color: prevStyles?.fontColor || defaults?.font?.color,
