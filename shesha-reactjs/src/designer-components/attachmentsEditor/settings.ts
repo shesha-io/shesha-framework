@@ -63,6 +63,7 @@ export const getSettings = () =>
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
           })
+
           .addDropdown({
             id: 'b920ef96-ae27-4a01-bfad-bob7d07218da',
             propertyName: 'listType',

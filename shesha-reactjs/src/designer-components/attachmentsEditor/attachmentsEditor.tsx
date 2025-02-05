@@ -38,7 +38,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   onFileChanged?: string;
   downloadZip?: boolean;
   layout: layoutType;
-  listType?: listType;
+  listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
   borderRadius?: number;
@@ -134,8 +134,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerId: '',
         ownerType: '',
         ownerName: '',
-        layout: 'vertical',
         listType: 'text',
+        layout: 'vertical'
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -146,8 +146,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: prev.listType ?? 'text', layout: prev.layout ?? 'vertical' }))
-  ,
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType })),
 };
 
 export default AttachmentsEditor;
