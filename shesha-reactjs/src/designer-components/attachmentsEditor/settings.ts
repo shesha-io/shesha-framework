@@ -311,7 +311,7 @@ export const getSettings = () =>
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb5',
-                  propertyName: 'borderWidth',
+                  propertyName: 'borderSize',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Width',
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,

@@ -52,7 +52,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
-      borderWidth: model.hideBorder ? 0 : model.borderWidth,
+      borderWidth: model.hideBorder ? 0 : model.borderSize,
       borderRadius: model.borderRadius,
       borderStyle: model.borderType,
       borderColor: model.borderColor,
@@ -148,7 +148,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           width: prev.width,
           height: prev.height,
           hideBorder: prev.hideBorder,
-          borderWidth: prev.borderWidth,
+          borderSize: prev.borderSize,
           borderRadius: prev.borderRadius,
           borderColor: prev.borderColor,
           fontSize: prev.fontSize,

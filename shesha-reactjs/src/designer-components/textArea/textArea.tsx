@@ -149,7 +149,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           width: prev.width,
           height: prev.height,
           hideBorder: prev.hideBorder,
-          borderWidth: prev.borderSize,
+          borderSize: prev.borderSize,
           borderRadius: prev.borderRadius,
           borderColor: prev.borderColor,
           fontSize: prev.fontSize,

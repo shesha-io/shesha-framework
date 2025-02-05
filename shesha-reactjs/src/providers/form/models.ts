@@ -195,7 +195,7 @@ export interface IConfigurableFormComponent
 
 export interface IInputStyles {
   size?: SizeType;
-  borderWidth?: string | number;
+  borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;
   borderColor?: string;
