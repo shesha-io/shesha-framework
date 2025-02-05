@@ -138,6 +138,8 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
+export type ShadowStyleType = 'none' | 'above' | 'below';
+
 export interface ICommonContainerProps {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
@@ -164,7 +166,7 @@ export interface ICommonContainerProps {
   borderStyle?: string;
   borderRadius?: string | number;
   overflow?: string;
-  shadowStyle?: string;
+  shadowStyle?: ShadowStyleType;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
