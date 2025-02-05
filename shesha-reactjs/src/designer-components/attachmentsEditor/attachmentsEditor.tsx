@@ -146,7 +146,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-  ,
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: prev.listType })),
 };
 
 export default AttachmentsEditor;
