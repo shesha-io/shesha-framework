@@ -92,10 +92,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           (model?.passEmptyStringByDefault && '') ||
           (model.initialValue
             ? evaluateString(model?.initialValue, {
-                formData: allData.data,
-                formMode: allData.form.formMode,
-                globalState: allData.globalState,
-              })
+              formData: allData.data,
+              formMode: allData.form.formMode,
+              globalState: allData.globalState,
+            })
             : undefined)
         }
       >

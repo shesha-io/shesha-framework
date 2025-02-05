@@ -58,7 +58,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
 
-    const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
+    const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const enabled = !model.readOnly;
 
@@ -93,7 +93,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
-
               // used for requered field validation
               onChange={onChange}
               value={value}
@@ -101,6 +100,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               <CustomFile
                 isStub={form?.formMode === 'designer'}
                 allowAdd={enabled && model.allowAdd}
+                disabled={model.readOnly}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
@@ -112,7 +112,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 layout={model.layout}
                 listType={model.listType}
                 {...model}
-
+                ownerId={ownerId}
               />
             </StoredFilesProvider>
           );

@@ -14,8 +14,9 @@ import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/i
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
-import { getFileIcon, getStyle, IconType, IInputStyles, isImageType, pickStyleFromModel, ShaIcon, useSheshaApplication } from '@/index';
+import { getStyle, IInputStyles, pickStyleFromModel, useSheshaApplication } from '@/index';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { getFileIcon, isImageType } from '@/icons/fileIcons';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -53,6 +54,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
+  gap?: number;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -83,6 +85,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   hideFileName,
   stylingBox,
   style,
+  gap,
   borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth
 }) => {
   const { httpHeaders } = useSheshaApplication();
@@ -96,9 +99,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const jsSstyles = { ...customStyle, ...stylingBoxAndCSS };
 
   const { styles } = useStyles({
-    borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: addPx(width), height: addPx(height), maxHeight: addPx(maxHeight),
+    borderSize: addPx(borderSize), borderColor, borderType, fontColor, fontSize: addPx(fontSize), width: layout === 'vertical' ? '' : addPx(width), height: layout === 'horizontal' ? '' : addPx(height), maxHeight: addPx(maxHeight),
     thumbnailHeight: addPx(thumbnailHeight), borderRadius: addPx(borderRadius), thumbnailWidth: addPx(thumbnailWidth), layout: listType === 'thumbnail' ? layout : false,
-    hideFileName: hideFileName && listType === 'thumbnail', isDragger, styles: jsSstyles
+    hideFileName: hideFileName && listType === 'thumbnail', isDragger, gap: addPx(gap), styles: jsSstyles
   });
 
   const { message, notification } = App.useApp();
@@ -142,18 +145,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const iconRender = (file) => {
     const { type, uid } = file;
 
-    if (isImageType(type) && listType === 'thumbnail') {
+    if (isImageType(type)) {
       if (!imageUrls[uid]) {
         fetchStoredFile(file.url).then((imageUrl) => {
           setImageUrls((prev) => ({ ...prev, [uid]: imageUrl }));
         });
       }
 
-      return <Image src={imageUrls[uid]} alt={file.name} preview={false} />;
+      if (listType === 'thumbnail') {
+        return <Image src={imageUrls[uid]} alt={file.name} preview={false} />;
+      };
+
     }
 
-    const icon = getFileIcon(type);
-    return <ShaIcon iconName={icon.name as IconType} style={{ color: icon.color, verticalAlign: 'middle' }} />;
+    return getFileIcon(type);
   };
 
   const props: DraggerProps = {
@@ -164,7 +169,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
-
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`);
       } else if (status === 'error') {
@@ -217,7 +221,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const renderUploadContent = () => {
     return (
-      <Button type="link" icon={<UploadOutlined />} style={{ display: disabled ? 'none' : '' }} {...uploadBtnProps}>
+      <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
         {listType === 'text' && 'press to upload'}
       </Button>
     );
@@ -227,14 +231,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal :
       layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}>
       {isStub
-        ? isDragger
+        ? (isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>
-          : <div>{renderUploadContent()}</div>
-        : props.disabled
+          : <div>{renderUploadContent()}</div>)
+        : (props.disabled
           ? <Upload {...props} listType={listTypeAndLayout} />
           : isDragger
             ? <Dragger {...props}><DraggerStub /></Dragger>
-            : <Upload {...props} listType={listTypeAndLayout}>{!props.disabled ? renderUploadContent() : null}</Upload>
+            : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
       }
 
       {previewImage && (
@@ -245,7 +249,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             onVisibleChange: (visible) => setPreviewOpen(visible),
             afterOpenChange: (visible) => !visible && setPreviewImage(null),
             toolbarRender: (original) => {
-              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} style={{ background: '#0000001A', fontSize: 24, padding: '8px', borderRadius: '100px' }} />{original}</div>;
+              return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
             },
           }}
           src={previewImage.url}
