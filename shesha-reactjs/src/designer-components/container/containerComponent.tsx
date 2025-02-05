@@ -183,5 +183,5 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       })
       .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
-
+ 
 export default ContainerComponent;
