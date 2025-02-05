@@ -134,6 +134,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerId: '',
         ownerType: '',
         ownerName: '',
+        listType: 'text',
         layout: 'vertical'
       };
     })
@@ -145,7 +146,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: prev.listType })),
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: prev.listType ?? 'text' })),
 };
 
 export default AttachmentsEditor;
