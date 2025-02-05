@@ -19,6 +19,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
 
         const heightFromSize = prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
         const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
+        const backgroundType = prevStyles?.backgroundDataSource === 'base64' ? 'image' : prevStyles?.backgroundDataSource === 'storedFileId' ? 'storedFile' : prevStyles?.backgroundDataSource === 'url' ? 'url' : null;
 
         return {
             ...defaults,
@@ -40,7 +41,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 radius: { all: prevStyles?.borderRadius || defaults?.border?.radius?.all || 8 },
             },
             background: {
-                type: defaults?.background?.type || 'color',
+                type: backgroundType ?? (defaults?.background?.type || 'color'),
                 color: prevStyles?.backgroundColor || defaults?.background?.color,
                 repeat: prevStyles?.backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
                 size: prevStyles?.backgroundCover || defaults?.background?.size || 'cover',
