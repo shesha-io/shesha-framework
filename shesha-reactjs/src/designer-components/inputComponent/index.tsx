@@ -10,7 +10,6 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
-import { ImagePicker } from '@/designer-components/imageUploader';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 import { useStyles } from './styles';
 import { customIcons } from './icons';
@@ -26,6 +25,7 @@ import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
+import { ImagePicker } from '../imagePicker';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
