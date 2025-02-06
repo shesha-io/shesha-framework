@@ -115,10 +115,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${title} {
           font-size: 12px;
-          font-weight: bold;
           position: absolute;
           left: 8px;
           top: 5px;
+          max-height: 28px;
+          color: darkslategrey;
+          font-weight: 500;
         }
       
         input::-webkit-outer-spin-button,
