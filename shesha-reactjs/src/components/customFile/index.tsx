@@ -5,6 +5,8 @@ import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/provi
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
 export interface ICustomFileProps extends IInputStyles {
+  id?: string;
+  ownerId?: string;
   uploadFile?: (payload: IUploadFilePayload) => void;
   onFileListChanged?: (list: IStoredFile[]) => void;
   allowAdd?: boolean;
@@ -12,6 +14,7 @@ export interface ICustomFileProps extends IInputStyles {
   allowDelete?: boolean;
   allowRename?: boolean;
   isStub?: boolean;
+  disabled?: boolean;
   allowedFileTypes?: string[];
   maxHeight?: string;
   isDragger?: boolean;
@@ -46,8 +49,9 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
   return (
     <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
+        {...props}
         isStub={props.isStub}
-        disabled={!props.allowAdd}
+        disabled={props.disabled || !props.allowAdd}
         isDragger={props?.isDragger}
         fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}
@@ -63,7 +67,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         maxHeight={props?.maxHeight}
         layout={props?.layout}
         listType={props?.listType}
-        {...props}
       />
     </div>
   );

@@ -15,6 +15,8 @@ export function useActualContextExecution<T = any>(code: string, additionalData?
   }
   contextProxyRef.current.setAdditionalData(additionalData);    
 
+  contextProxyRef.current.checkChanged();
+
   const prevCode = useRef<string>();
   const actualDataRef = useRef<T>(undefined);
 
@@ -40,6 +42,8 @@ export function useActualContextExecutionExecutor<T = any>(executor: (context: a
     contextProxyRef.current.refreshAccessors(accessors);
   }
   contextProxyRef.current.setAdditionalData(additionalData);    
+
+  contextProxyRef.current.checkChanged();
 
   const prevCode = useRef(executor);
   const actualDataRef = useRef<T>(undefined);

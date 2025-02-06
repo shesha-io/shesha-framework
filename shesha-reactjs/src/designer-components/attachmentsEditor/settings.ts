@@ -285,12 +285,14 @@ export const getSettings = () =>
                   propertyName: 'fontSize',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Font Size',
+                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } as any,
                 })
                 .addColorPicker({
                   id: '1c03863c-880d-4308-8667-c3d996619cb0',
                   propertyName: 'fontColor',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Color',
+                  hidden: { _code: 'return getSettingValue(data?.hideFileName);', _mode: 'code', _value: false } as any,
                   allowClear: true
                 })
                 .addTextField({
@@ -309,7 +311,7 @@ export const getSettings = () =>
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb5',
-                  propertyName: 'borderWidth',
+                  propertyName: 'borderSize',
                   parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
                   label: 'Border Width',
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
@@ -365,12 +367,14 @@ export const getSettings = () =>
                   propertyName: 'width',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                   label: 'Width',
+                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
                 })
                 .addTextField({
                   id: '1c03863c-880d-4308-8667-c3d996619cb2',
                   propertyName: 'height',
                   parentId: 'container-styles-content-880d-4308-c3d996619cb',
                   label: 'Height',
+                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
                 })
                 .addStyleBox({
                   id: '1c03863c-880d-4308-8567-c3d996619cb3',

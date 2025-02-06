@@ -23,6 +23,7 @@ export function useActualContextData<T = any>(
   }
   contextProxyRef.current.setAdditionalData(additionalData);    
 
+  contextProxyRef.current.checkChanged();
 
   const pReadonly = parentReadonly ?? getParentReadOnly(parent, contextProxyRef.current);
 

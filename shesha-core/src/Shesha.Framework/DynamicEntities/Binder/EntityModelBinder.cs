@@ -251,7 +251,6 @@ namespace Shesha.DynamicEntities.Binder
                                                         listType = typeof(Collection<>).MakeGenericType(paramType);
 
                                                     var idProp = paramType.GetProperty("Id");
-                                                    var idPropType = idProp.PropertyType;
                                                     var addMethod = listType.GetMethod("Add");
                                                     var addDbMethod = dbValue?.GetType().GetMethod("Add");
                                                     var removeDbMethod = dbValue?.GetType().GetMethod("Remove");

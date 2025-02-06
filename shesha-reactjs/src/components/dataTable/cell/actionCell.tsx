@@ -44,6 +44,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     http: httpClient,
     message: message,
     globalState: globalState,
+    ...dynamicContext
   };
 
 
@@ -55,7 +56,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
       changeActionedRow(data.row.original);
       executeAction({
         actionConfiguration: actionConfiguration,
-        argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext },
+        argumentsEvaluationContext: evaluationContext,
       });
 
     } else console.error('Action is not configured');
