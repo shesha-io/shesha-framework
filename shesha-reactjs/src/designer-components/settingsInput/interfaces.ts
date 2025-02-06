@@ -61,10 +61,12 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    useRawValues?: boolean;
     modelType?: string;
     min?: number;
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
     _formFields?: string[];
+    autoFillProps?: boolean;
 };

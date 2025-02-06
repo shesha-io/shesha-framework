@@ -26,7 +26,6 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { CSSProperties } from 'styled-components';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
@@ -249,7 +248,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 
@@ -258,6 +257,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ...model,
       entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       valueFormat: 'simple',
+      editMode: 'inherited'
     };
   },
   getFieldsToFetch: (propertyName, rawModel) => {

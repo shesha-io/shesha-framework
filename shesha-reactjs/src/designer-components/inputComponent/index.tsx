@@ -1,6 +1,8 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { EditableTagGroup } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
@@ -109,8 +111,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null, tooltip)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon ?? value.toString().charAt(0).toUpperCase() + value.toString().substring(1), null, tooltip)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
@@ -169,7 +170,17 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'editableTagGroupProps':
             return <EditableTagGroup value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
-            return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
+            return <PropertyAutocomplete
+                id={props.id}
+                // style={getStyle(model?.style, formData)}
+                // dropdownStyle={getStyle(model?.dropdownStyle, formData)}
+                size={props.size}
+                // mode={props.mode}
+                readOnly={props.readOnly}
+                autoFillProps={props.autoFillProps ?? true}
+                value={value}
+                onChange={onChange}
+            />;
         case 'contextPropertyAutocomplete':
             return <ContextPropertyAutocomplete {...props} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'formAutocomplete':
