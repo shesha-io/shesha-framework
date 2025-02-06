@@ -10,6 +10,7 @@ interface CustomDropdownProps {
     readOnly?: boolean;
     label?: string | React.ReactNode;
     size?: SizeType;
+    defaultValue?: string;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
     variant?: 'borderless' | 'outlined' | 'filled';
@@ -20,6 +21,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     options,
     readOnly,
     label,
+    defaultValue,
     onChange,
     size
 }) => {
@@ -77,6 +79,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             disabled={readOnly}
             size={size}
             onChange={onChange}
+            defaultValue={defaultValue}
             dropdownRender={(menu) => (
                 <>
                     {menu}
