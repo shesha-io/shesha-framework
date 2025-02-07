@@ -138,6 +138,8 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
+export type ShadowStyleType = 'none' | 'above' | 'below';
+
 export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;

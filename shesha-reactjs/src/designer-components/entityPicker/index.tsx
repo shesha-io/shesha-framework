@@ -258,6 +258,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       valueFormat: 'simple',
       editMode: 'inherited'
+      entityType: isEntityReferencePropertyMetadata(propMetadata)
+        ? propMetadata.entityType 
+        : isEntityReferenceArrayPropertyMetadata(propMetadata)
+          ? propMetadata.entityType
+          : undefined,
+      mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
+      valueFormat: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'entityReference' : 'simple',
     };
   },
   getFieldsToFetch: (propertyName, rawModel) => {

@@ -11,16 +11,15 @@ import {
   Select
 } from 'antd';
 import { CodeEditor } from '@/components';
-import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { getSettings } from './itemSettings';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { nanoid } from '@/utils/uuid';
-import { useDeepCompareMemo } from '@/hooks';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 const { Option } = Select;
 
@@ -29,7 +28,6 @@ const wizardStepSettingsMarkup = getSettings();
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const allData = useAvailableConstantsData({ topContextId: 'all' });
   const { model } = useSettingsForm<IWizardComponentProps>();
 
   /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
@@ -66,10 +64,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
   const steps = props?.model?.steps?.map((item) => ({ ...item, label: item?.title }));
 
-  const stepList = useDeepCompareMemo(
-    () => model?.steps?.map((item) => getActualModel(item, allData)),
-    [model.steps, allData.globalState, allData.contexts.lastUpdate]
-  );
+  const stepList = useActualContextData(model?.steps);
   const selectRef = useRef<RefSelectProps>();
 
   const getStyleConstants = useAvailableConstantsMetadata({
@@ -184,7 +179,6 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
               title: readOnly ? "View Wizard Steps" : "Configure Wizard Steps",
               header: <Alert message={readOnly ? 'Here you can view wizard steps configuration.' : 'Here you can configure the wizard steps by adjusting their settings and ordering.'} />,
             }}
-            actualModelContext={allData} 
           >
           </ItemListConfiguratorModal>
         </SettingsFormItem>

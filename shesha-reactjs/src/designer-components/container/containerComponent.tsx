@@ -88,19 +88,19 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     if (model.hidden) return null;
 
     const flexAndGridStyles: ICommonContainerProps = {
-      display: model?.display,
-      flexDirection: model?.flexDirection,
-      direction: model?.direction,
-      justifyContent: model?.justifyContent,
-      alignItems: model?.alignItems,
-      alignSelf: model?.alignSelf,
-      justifyItems: model?.justifyItems,
-      textJustify: model?.textJustify,
-      justifySelf: model?.justifySelf,
-      noDefaultStyling: model?.noDefaultStyling,
-      gridColumnsCount: model?.gridColumnsCount,
-      flexWrap: model?.flexWrap,
-      gap: model?.gap,
+      display: model.display,
+      flexDirection: model.flexDirection,
+      direction: model.direction,
+      justifyContent: model.justifyContent,
+      alignItems: model.alignItems,
+      alignSelf: model.alignSelf,
+      justifyItems: model.justifyItems,
+      textJustify: model.textJustify,
+      justifySelf: model.justifySelf,
+      noDefaultStyling: model.noDefaultStyling,
+      gridColumnsCount: model.gridColumnsCount,
+      flexWrap: model.flexWrap,
+      gap: model.gap,
     };
     return (
       <ParentProvider model={model}>

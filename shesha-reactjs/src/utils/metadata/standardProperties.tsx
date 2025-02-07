@@ -1,5 +1,6 @@
 import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
+import { fileSaverApiDefinition } from "@/providers/sourceFileManager/api-utils/fileSaver";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
@@ -9,6 +10,7 @@ import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CO
 export const SheshaConstants = {
   http: "shesha:http",
   message: "shesha:message",
+  fileSaver: "shesha:fileSaver",
   moment: "shesha:moment",
   globalState: "shesha:globalState",
   setGlobalState: "shesha:setGlobalState",
@@ -42,6 +44,17 @@ export const registerMessageAction: MetadataBuilderAction = (builder, name = "me
     return Promise.resolve(definition);
   });
 };
+
+export const registerFileSaverAction: MetadataBuilderAction = (builder, name = "fileSaver") => {
+  builder.addCustom(name, "API for saving files", () => {
+    const definition: TypeDefinition = {
+      typeName: 'FileSaverApi',
+      files: [{ content: fileSaverApiDefinition, fileName: 'apis/fileSaver.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
 
 export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
   builder.addCustom(name, "The moment.js object", () => {

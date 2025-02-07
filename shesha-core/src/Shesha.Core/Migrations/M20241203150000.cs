@@ -264,12 +264,12 @@ namespace Shesha.Migrations
 
             Alter.Table("Core_NotificationMessages")
                   .AddTenantIdColumnAsNullable();
-
+            
             // Data migration
             IfDatabase("SqlServer").Execute.Sql(@"
                 INSERT INTO Core_Notifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName) 
                 SELECT 
-	                NEWID(),
+	                nm.Id,
 	                nm.CreationTime,
                     n.Name,
                     nm.RecipientId,
@@ -278,7 +278,7 @@ namespace Shesha.Migrations
                     nm.SourceEntityClassName,
                     nm.SourceEntityDisplayName
                 FROM Core_OldNotifications n
-                LEFT JOIN Core_OldNotificationMessages nm ON n.Id = nm.NotificationId
+                inner JOIN Core_OldNotificationMessages nm ON n.Id = nm.NotificationId
                 WHERE nm.IsDeleted = 0 AND n.IsDeleted = 0;
             ");
 
@@ -287,7 +287,7 @@ namespace Shesha.Migrations
                 SELECT 
 	                Id,
 	                CreationTime,
-	                NotificationId,
+	                Id,
                     CASE 
                         WHEN SendTypeLkp = 1 THEN 
                             (SELECT Id FROM Core_NotificationChannelConfigs ncc WHERE ncc.Core_SenderTypeName = 'EmailChannelSender')
@@ -344,7 +344,7 @@ namespace Shesha.Migrations
                     ""TriggeringEntityDisplayName""
                 ) 
                 SELECT 
-                    gen_random_uuid(),
+                    nm.""Id"",
                     nm.""CreationTime"",
                     n.""Name"",
                     nm.""RecipientId"",
@@ -353,7 +353,7 @@ namespace Shesha.Migrations
                     nm.""SourceEntityClassName"",
                     nm.""SourceEntityDisplayName""
                 FROM ""Core_OldNotifications"" n
-                LEFT JOIN ""Core_OldNotificationMessages"" nm ON n.""Id"" = nm.""NotificationId""
+                inner JOIN ""Core_OldNotificationMessages"" nm ON n.""Id"" = nm.""NotificationId""
                 WHERE nm.""IsDeleted"" = false AND n.""IsDeleted"" = false;
             ");
 
@@ -378,7 +378,7 @@ namespace Shesha.Migrations
                 SELECT 
                     ""Id"",
                     ""CreationTime"",
-                    ""NotificationId"",
+                    ""Id"",
                     CASE 
                         WHEN ""SendTypeLkp"" = 1 THEN 
                             (SELECT ""Id"" FROM ""Core_NotificationChannelConfigs"" ncc WHERE ncc.""Core_SenderTypeName"" = 'EmailChannelSender')

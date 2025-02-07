@@ -1,6 +1,6 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';

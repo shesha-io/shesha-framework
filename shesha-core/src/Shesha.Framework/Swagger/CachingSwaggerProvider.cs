@@ -29,7 +29,6 @@ namespace Shesha.Swagger
 
         public CachingSwaggerProvider(
             IOptions<SwaggerGeneratorOptions> optionsAccessor,
-            ISchemaGenerator schemaGenerator,
             ICacheManager cacheManager,
             IIocResolver iocResolver)
         {
@@ -37,6 +36,7 @@ namespace Shesha.Swagger
 
             var apiDescriptionsProvider = iocResolver.Resolve<IApiDescriptionGroupCollectionProvider>();
 
+            var schemaGenerator = iocResolver.Resolve<ISchemaGenerator>();
             _swaggerGenerator = new SwaggerGenerator(optionsAccessor.Value, apiDescriptionsProvider, schemaGenerator);
         }
 

@@ -1,6 +1,6 @@
 import React, { CSSProperties, ReactNode } from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { FormMarkup, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IInputStyles, useForm, useFormData } from '@/providers';

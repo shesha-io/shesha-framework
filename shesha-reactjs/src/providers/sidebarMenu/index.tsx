@@ -18,8 +18,8 @@ import {
 } from './contexts';
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
-import { getActualModel, useAvailableConstantsData } from '../form/utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];
@@ -34,7 +34,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   children,
 }) => {
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
-  const allData = useAvailableConstantsData();
 
   const [state, dispatch] = useReducer(SidebarMenuReducer, {
     ...SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
@@ -42,6 +41,8 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     accountDropdownListItems,
     items: [],
   });
+
+  const actualItems = useActualContextData(items);
 
   const requestItemVisible = (item: ISidebarMenuItem, itemsToCheck: ISidebarMenuItem[]): ISidebarMenuItem => {
     if (item.hidden)
@@ -108,16 +109,16 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
 
   useDeepCompareEffect(() => {
     const itemsToCheck = [];
-    const localItems = items.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
+    const localItems = actualItems.map((item) => requestItemVisible(item, itemsToCheck));
     
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
     } else
       if (localItems.length > 0) {
         // no forms to check set items as is
-        dispatch(setItemsAction([...items]));
+        dispatch(setItemsAction([...localItems]));
       }
-  }, [items, allData]);
+  }, [actualItems]);
 
   const collapse = () => {
     dispatch(toggleSidebarAction(false));

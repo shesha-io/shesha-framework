@@ -4,7 +4,7 @@ import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IRadioProps } from './utils';
