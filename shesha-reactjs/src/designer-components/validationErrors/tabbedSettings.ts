@@ -2,20 +2,22 @@ import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
+import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const dataTabId = nanoid();
   const appearanceId = nanoid();
   const securityId = nanoid();
   const styleRouterId = nanoid();
+  const pnlFontStyleId = nanoid(); 
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
   const borderStyleRowId = nanoid();
   const backgroundStylePnlId = nanoid();
 
   const propertyNameId = nanoid();
+  const hiddenId = nanoid();
   const shadowStylePnlId = nanoid();
 
   return {
@@ -33,18 +35,53 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [
-              ...new DesignerToolbarSettings()
+            components: [ ...new DesignerToolbarSettings()
                 .addContextPropertyAutocomplete({
                   id: propertyNameId,
-                  propertyName: "componentName",
+                  propertyName: "propertyName",
                   parentId: commonTabId,
-                  label: "Component Name",
+                  label: "Property Name",
                   size: "small",
                   validate: {
                     "required": true
                   },
                   jsSetting: true,
+                })
+                .addLabelConfigurator({
+                  id: nanoid(),
+                  propertyName: 'hideLabel',
+                  label: 'Label',
+                  parentId: commonTabId,
+                  hideLabel: true,
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      type: 'textArea',
+                      id: `tooltip-${commonTabId}`,
+                      propertyName: 'description',
+                      label: 'Tooltip',
+                      jsSetting: true,
+                    },
+                  ],
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'editModeSelector',
+                      id: nanoid(),
+                      propertyName: 'editMode',
+                      label: 'Edit Mode',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
                 })
                 .toJson()
             ]
@@ -55,38 +92,6 @@ export const getSettings = (data: any) => {
             id: appearanceId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'gutterX',
-                  label: 'Gutter X',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'number',
-                  size: 'small',
-                  jsSetting: true,
-                  min: 0,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'gutterY',
-                  label: 'Gutter Y',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'number',
-                  size: 'small',
-                  jsSetting: true,
-                  min: 0,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'hidden',
-                  label: 'Hidden',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'switch',
-                  size: 'small',
-                  jsSetting: true,
-                })
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -102,6 +107,87 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: commonTabId,
+                        inputs: [
+                          {
+                            type: 'switch',
+                            id: hiddenId,
+                            propertyName: 'hidden',
+                            label: 'Hide',
+                            jsSetting: true,
+                            layout: 'horizontal',
+                          },
+                        ],
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'pnlFontStyle',
+                        label: 'Font',
+                        labelAlign: 'right',
+                        parentId: styleRouterId,
+                        ghost: true,
+                        collapsible: 'header',
+                        content: {
+                          id: pnlFontStyleId,
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: pnlFontStyleId,
+                              inline: true,
+                              propertyName: 'font',
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: `fontFamily-${styleRouterId}`,
+                                  label: 'Family',
+                                  propertyName: 'font.type',
+                                  hideLabel: true,
+                                  dropdownOptions: fontTypes,
+                                },
+                                {
+                                  type: 'number',
+                                  id: `fontSize-${styleRouterId}`,
+                                  label: 'Size',
+                                  propertyName: 'font.size',
+                                  hideLabel: true,
+                                  width: 50,
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontWeight-${styleRouterId}`,
+                                  label: 'Weight',
+                                  propertyName: 'font.weight',
+                                  hideLabel: true,
+                                  tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                  dropdownOptions: fontWeights,
+                                  width: 100,
+                                },
+                                {
+                                  type: 'color',
+                                  id: `fontColor-${styleRouterId}`,
+                                  label: 'Color',
+                                  hideLabel: true,
+                                  propertyName: 'font.color',
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontAlign-${styleRouterId}`,
+                                  label: 'Align',
+                                  propertyName: 'font.align',
+                                  hideLabel: true,
+                                  width: 60,
+                                  dropdownOptions: textAlign,
+                                },
+                              ],
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -232,7 +318,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow(
                               getBorderInputs()[0] as any
-                            )
+                            )                           
                             .addSettingsInputRow(
                               getBorderInputs()[1] as any
                             )
@@ -592,9 +678,19 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
+                              hideLabel: false,
                               label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              tooltip: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'text',
+                              jsSetting: true,
+                              propertyName: 'className',
+                              hideLabel: false,
+                              label: 'Class Name',
+                              tooltip: 'A custom class name to apply to the element',
                             })
                             .toJson()
                           ]
@@ -602,25 +698,6 @@ export const getSettings = (data: any) => {
                       })
                       .toJson(),
                   ]
-                })
-                .toJson()
-            ]
-          },
-          {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  inputType: 'columnsList',
-                  propertyName: 'columns',
-                  label: 'Columns',
-                  labelAlign: 'right',
-                  tooltip: 'Configure columns',
-                  parentId: dataTabId
                 })
                 .toJson()
             ]
@@ -637,9 +714,7 @@ export const getSettings = (data: any) => {
                 propertyName: 'permissions',
                 label: 'Permissions',
                 size: 'small',
-                parentId: securityId,
-                permissions: data.permissions,
-                tooltip: "Enter a list of permissions that should be associated with this component"
+                parentId: securityId
               })
               .toJson()
             ]

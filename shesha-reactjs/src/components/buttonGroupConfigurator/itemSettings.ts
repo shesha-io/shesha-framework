@@ -212,7 +212,7 @@ export const getItemSettings = (data) => {
                                     propertyName: 'pnlFontStyle',
                                     label: 'Font',
                                     labelAlign: 'right',
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     ghost: true,
                                     collapsible: 'header',
                                     content: {
@@ -277,7 +277,7 @@ export const getItemSettings = (data) => {
                                     id: 'dimensionsStyleCollapsiblePanel',
                                     propertyName: 'pnlDimensions',
                                     label: 'Dimensions',
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     labelAlign: 'right',
                                     ghost: true,
                                     collapsible: 'header',
@@ -380,7 +380,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     collapsible: 'header',
                                     content: {
                                         id: 'borderStylePnl',
@@ -444,7 +444,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     collapsible: 'header',
                                     content: {
                                         id: 'backgroundStylePnl',
@@ -574,7 +574,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     collapsible: 'header',
                                     content: {
                                         id: 'shadowStylePnl',
@@ -633,26 +633,6 @@ export const getItemSettings = (data) => {
                                                         propertyName: 'shadow.color',
                                                     },
                                                 ],
-                                            })
-                                            .toJson()
-                                        ]
-                                    }
-                                })
-                                .addCollapsiblePanel({
-                                    id: 'styleCollapsiblePanel',
-                                    propertyName: 'stylingBox',
-                                    label: 'Margin & Padding',
-                                    labelAlign: 'right',
-                                    ghost: true,
-                                    collapsible: 'header',
-                                    content: {
-                                        id: 'stylePnl-M5-911',
-                                        components: [...new DesignerToolbarSettings()
-                                            .addStyleBox({
-                                                id: 'styleBoxPnl',
-                                                label: 'Margin Padding',
-                                                hideLabel: true,
-                                                propertyName: 'stylingBox',
                                             })
                                             .toJson()
                                         ]

@@ -138,7 +138,7 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
-export interface ICommonContainerProps {
+export interface ICommonContainerProps extends Omit<IStyleType, 'style'> {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
   flexWrap?: FlexWrap;
@@ -165,9 +165,10 @@ export interface ICommonContainerProps {
   borderRadius?: string | number;
   overflow?: string;
   shadowStyle?: string;
+  style?: React.CSSProperties;
 }
 
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps, IStyleType {
+export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
@@ -179,7 +180,7 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, IC
   backgroundUrl?: string;
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
-  desktop?: IStyleType;
-  tablet?: IStyleType;
-  mobile?: IStyleType;
+  desktop?: any;
+  tablet?: any;
+  mobile?: any;
 }

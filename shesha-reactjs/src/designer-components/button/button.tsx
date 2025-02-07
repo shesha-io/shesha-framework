@@ -101,7 +101,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
           {...restProps}
           readOnly={model.readOnly}
           block={restProps?.block}
-          style={{ ...getStyle(style, data), ...removeNullUndefined(newStyles) }}
+          style={{ ...removeNullUndefined(newStyles), ...getStyle(style, data) }}
           form={form}
         />
       </ConfigurableFormItem>
