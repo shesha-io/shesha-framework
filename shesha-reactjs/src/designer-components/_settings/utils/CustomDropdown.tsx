@@ -57,14 +57,13 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
                                 />
                             </Space>
                         </div>
-
                     </div>
                 </Space.Compact>
                 <Button
                     type="text"
                     icon={<PlusOutlined />}
                     onClick={addCustomOption}
-                    disabled={readOnly}
+                    disabled={readOnly || !customOption}
                     style={{ width: 70, padding: '0 8px' }}
                 >
                     Apply {label}
