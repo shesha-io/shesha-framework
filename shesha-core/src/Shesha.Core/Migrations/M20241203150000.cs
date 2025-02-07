@@ -267,7 +267,7 @@ namespace Shesha.Migrations
             
             // Data migration
             IfDatabase("SqlServer").Execute.Sql(@"
-                INSERT INTO Core_Notifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName) 
+                INSERT INTO Core_Notifications (Id, CreationTime, Name, ToPersonId, FromPersonId, TriggeringEntityId, TriggeringEntityClassName, TriggeringEntityDisplayName, IsDeleted) 
                 SELECT 
 	                nm.Id,
 	                nm.CreationTime,
@@ -276,14 +276,14 @@ namespace Shesha.Migrations
                     nm.SenderId,
                     nm.SourceEntityId,
                     nm.SourceEntityClassName,
-                    nm.SourceEntityDisplayName
-                FROM Core_OldNotifications n
-                inner JOIN Core_OldNotificationMessages nm ON n.Id = nm.NotificationId
-                WHERE nm.IsDeleted = 0 AND n.IsDeleted = 0;
+                    nm.SourceEntityDisplayName,
+                    nm.IsDeleted
+                FROM Core_OldNotificationMessages nm
+                left JOIN Core_OldNotifications n ON n.Id = nm.NotificationId
             ");
 
             IfDatabase("SqlServer").Execute.Sql(@"
-                INSERT INTO Core_NotificationMessages (Id, CreationTime, PartOfId, ChannelId, RecipientText, Subject, Message, RetryCount, DirectionLkp, ReadStatusLkp, FirstDateRead, DateSent, ErrorMessage, StatusLkp)
+                INSERT INTO Core_NotificationMessages (Id, CreationTime, PartOfId, ChannelId, RecipientText, Subject, Message, RetryCount, DirectionLkp, ReadStatusLkp, FirstDateRead, DateSent, ErrorMessage, StatusLkp, IsDeleted)
                 SELECT 
 	                Id,
 	                CreationTime,
@@ -304,20 +304,20 @@ namespace Shesha.Migrations
                     LastOpened,
                     SendDate,
                     ErrorMessage,
-                    StatusLkp
+                    StatusLkp,
+                    IsDeleted
                 FROM Core_OldNotificationMessages
-                WHERE IsDeleted = 0;
             ");
 
             IfDatabase("SqlServer").Execute.Sql(@"
-                INSERT INTO Core_NotificationTemplates (Id, TitleTemplate, BodyTemplate, MessageFormatLkp)
+                INSERT INTO Core_NotificationTemplates (Id, TitleTemplate, BodyTemplate, MessageFormatLkp, IsDeleted)
                 SELECT 
 	                Id,
 	                Subject,
 	                Body,
-	                BodyFormatLkp
+	                BodyFormatLkp,
+                    IsDeleted
                 FROM Core_OldNotificationTemplates
-                WHERE IsDeleted = 0;
             ");
 
             // Finally, update the NotificationMessageAttachments foreign key to point to new table
@@ -341,7 +341,8 @@ namespace Shesha.Migrations
                     ""FromPersonId"", 
                     ""TriggeringEntityId"", 
                     ""TriggeringEntityClassName"", 
-                    ""TriggeringEntityDisplayName""
+                    ""TriggeringEntityDisplayName"",
+                    ""IsDeleted""
                 ) 
                 SELECT 
                     nm.""Id"",
@@ -351,10 +352,10 @@ namespace Shesha.Migrations
                     nm.""SenderId"",
                     nm.""SourceEntityId"",
                     nm.""SourceEntityClassName"",
-                    nm.""SourceEntityDisplayName""
-                FROM ""Core_OldNotifications"" n
-                inner JOIN ""Core_OldNotificationMessages"" nm ON n.""Id"" = nm.""NotificationId""
-                WHERE nm.""IsDeleted"" = false AND n.""IsDeleted"" = false;
+                    nm.""SourceEntityDisplayName"",
+                    nm.""IsDeleted""
+                FROM ""Core_OldNotificationMessages"" nm
+                left JOIN ""Core_OldNotifications"" n ON n.""Id"" = nm.""NotificationId""
             ");
 
             IfDatabase("PostgreSQL").Execute.Sql(@"
@@ -373,7 +374,8 @@ namespace Shesha.Migrations
                     ""FirstDateRead"",
                     ""DateSent"",
                     ""ErrorMessage"",
-                    ""StatusLkp""
+                    ""StatusLkp"",
+                    ""IsDeleted""
                 )
                 SELECT 
                     ""Id"",
@@ -395,9 +397,9 @@ namespace Shesha.Migrations
                     ""LastOpened"",
                     ""SendDate"",
                     ""ErrorMessage"",
-                    ""StatusLkp""
+                    ""StatusLkp"",
+                    ""IsDeleted""
                 FROM ""Core_OldNotificationMessages""
-                WHERE ""IsDeleted"" = false;
             ");
 
             IfDatabase("PostgreSQL").Execute.Sql(@"
@@ -406,15 +408,16 @@ namespace Shesha.Migrations
                     ""Id"",
                     ""TitleTemplate"",
                     ""BodyTemplate"",
-                    ""MessageFormatLkp""
+                    ""MessageFormatLkp"",
+                    ""IsDeleted""
                 )
                 SELECT 
                     ""Id"",
                     ""Subject"",
                     ""Body"",
-                    ""BodyFormatLkp""
+                    ""BodyFormatLkp"",
+                    ""IsDeleted""
                 FROM ""Core_OldNotificationTemplates""
-                WHERE ""IsDeleted"" = false;
             ");
 
             IfDatabase("PostgreSQL").Execute.Sql(@"
