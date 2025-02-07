@@ -157,40 +157,18 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     maxWidth = 'auto',
     minHeight = 'auto',
     minWidth = '0px',
-    backgroundBase64 = '',
-    backgroundColor = 'transparent',
-    backgroundCover = 'cover',
-    backgroundDataSource,
-    backgroundRepeat = 'no-repeat',
-    backgroundStoredFileId = '',
-    backgroundType,
-    backgroundUrl = '',
     borderColor = '#000',
     borderRadius = '8',
     borderStyle = 'solid',
     borderWidth = '0',
-    shadowStyle
+    shadowStyle,
   } = prev || {};
 
 
   const isBelow = shadowStyle === 'below';
   const isAbove = shadowStyle === 'above';
-  const imageType = backgroundType === 'image' ?
-    (backgroundDataSource === 'base64' ? 'image' :
-      backgroundDataSource === 'storedFileId' ? 'storedFile' :
-        backgroundDataSource === 'url' ? 'url' : 'color') : 'color';
 
   return {
-    background: {
-      type: imageType,
-      color: backgroundColor,
-      repeat: backgroundRepeat,
-      size: backgroundCover,
-      url: backgroundUrl,
-      gradient: { direction: 'to right', colors: {} },
-      storedFile: { id: backgroundStoredFileId },
-      uploadFile: { uid: '', name: '', status: 'done', url: backgroundBase64 }
-    },
     dimensions: {
       width,
       height,
@@ -203,11 +181,11 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       selectedCorner: 'all',
       selectedSide: 'all',
       border: {
-        all: { width: borderWidth, color: borderColor, style: borderStyle },
-        top: { width: borderWidth ?? '0', color: borderColor },
-        right: { width: borderWidth ?? '0', color: borderColor },
-        bottom: { width: borderWidth ?? '0', color: borderColor },
-        left: { width: borderWidth ?? '0', color: borderColor },
+        all: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        top: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        right: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        bottom: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        left: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },
       radius: { all: borderRadius }
     },
