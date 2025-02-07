@@ -9,6 +9,7 @@ export interface ICustomFileProps extends IInputStyles {
   ownerId?: string;
   uploadFile?: (payload: IUploadFilePayload) => void;
   onFileListChanged?: (list: IStoredFile[]) => void;
+  maxCount?: number;
   allowAdd?: boolean;
   allowReplace?: boolean;
   allowDelete?: boolean;
@@ -19,7 +20,7 @@ export interface ICustomFileProps extends IInputStyles {
   maxHeight?: string;
   isDragger?: boolean;
   downloadZip?: boolean;
-  layout?: layoutType;
+  filesLayout?: layoutType;
   listType?: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
@@ -65,7 +66,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}
         maxHeight={props?.maxHeight}
-        layout={props?.layout}
+        layout={props?.filesLayout}
         listType={props?.listType}
       />
     </div>

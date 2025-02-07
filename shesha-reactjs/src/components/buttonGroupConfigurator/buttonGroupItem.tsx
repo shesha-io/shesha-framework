@@ -5,7 +5,9 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useSheshaApplication } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import {  getStyle } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
+import classNames from 'classnames';
+import { addPx } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { initialValues } from './utils';
 import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
@@ -13,9 +15,7 @@ import { getBorderStyle } from '@/designer-components/_settings/utils/border/uti
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
-import classNames from 'classnames';
 import { useActualContextData } from '@/hooks/useActualContextData';
-import { addPx } from '@/designer-components/_settings/utils';
 
 const { Text } = Typography;
 
@@ -33,6 +33,7 @@ const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
 
 export interface IButtonGroupItemProps {
   item: IButtonGroupItem;
+  actualModelContext?: any;
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
@@ -41,6 +42,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
 
   const { styles } = useStyles();
   const actualItem = useActualContextData({ ...item, actionConfiguration });
+
 
   const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, block, danger } = actualItem;
 

@@ -12,7 +12,7 @@ import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
@@ -255,9 +255,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
-      entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
-      valueFormat: 'simple',
-      editMode: 'inherited'
+      editMode: 'inherited',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
         ? propMetadata.entityType 
         : isEntityReferenceArrayPropertyMetadata(propMetadata)

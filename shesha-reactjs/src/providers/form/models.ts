@@ -243,23 +243,6 @@ export interface IConfigurableFormComponent
   mobile?: any;
 }
 
-export interface IInputStyles {
-  size?: SizeType;
-  borderSize?: string | number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  fontColor?: string;
-  fontWeight?: string | number;
-  fontSize?: string | number;
-  stylingBox?: string;
-  height?: string | number;
-  width?: string | number;
-  backgroundColor?: string;
-  hideBorder?: boolean;
-  style?: string;
-}
-
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
   /** Whether the component is read-only */
   readOnly?: boolean;

@@ -37,7 +37,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IIn
   maxHeight?: string;
   onFileChanged?: string;
   downloadZip?: boolean;
-  layout: layoutType;
+  filesLayout?: layoutType;
   listType: listType;
   thumbnailWidth?: string;
   thumbnailHeight?: string;
@@ -109,7 +109,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 isDragger={model?.isDragger}
                 onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
-                layout={model.layout}
+                filesLayout={model.filesLayout}
                 listType={model.listType}
                 {...model}
                 ownerId={ownerId}
