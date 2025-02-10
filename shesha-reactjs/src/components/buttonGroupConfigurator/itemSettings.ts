@@ -88,7 +88,7 @@ export const getItemSettings = (data) => {
                                                     type: "text",
                                                     propertyName: "label",
                                                     parentId: "root",
-                                                    label: "Label"
+                                                    label: "Caption"
                                                 },
                                                 {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",

@@ -35,12 +35,11 @@ export const getSettings = (data) => {
                 },
                 jsSetting: true,
               })
-              .addLabelConfigurator({
+              .addSettingsInput({
                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                propertyName: 'hideLabel',
+                propertyName: 'label',
                 label: 'Caption',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                hideLabel: true,
               })
               .addSettingsInput({
                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
