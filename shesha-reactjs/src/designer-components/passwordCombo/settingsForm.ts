@@ -62,52 +62,39 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                     jsSetting: true,
                                 }]
                             })
-                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'placeholder',
-                                        label: 'Placeholder',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'description',
-                                        label: 'Tooltip',
-                                        jsSetting: true,
-                                    },
-
-                                ],
+                            .addSettingsInput({
+                                inputType: 'text',
+                                id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'placeholder',
+                                label: 'Placeholder',
+                                size: 'small',
+                                jsSetting: true,
+                            })
+                            .addSettingsInput({
+                                inputType: 'textArea',
+                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'description',
+                                label: 'Tooltip',
+                                jsSetting: true,
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
-                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'confirmPlaceholder',
-                                        label: 'Placeholder: Confirmation',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'confirmDescription',
-                                        label: 'Tooltip',
-                                        jsSetting: true,
-                                    },
-
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
+                            .addSettingsInput(
+                                {
+                                    inputType: 'text',
+                                    id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                    propertyName: 'confirmPlaceholder',
+                                    label: 'Placeholder: Confirmation',
+                                    size: 'small',
+                                    jsSetting: true,
+                                })
+                            .addSettingsInput(
+                                {
+                                    inputType: 'textArea',
+                                    id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                    propertyName: 'confirmDescription',
+                                    label: 'Tooltip: Confirmation',
+                                    jsSetting: true,
+                                })
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
