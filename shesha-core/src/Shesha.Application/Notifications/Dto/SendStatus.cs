@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Hangfire.Storage.Monitoring;
 
 namespace Shesha.Notifications.Dto
 {
@@ -10,5 +6,22 @@ namespace Shesha.Notifications.Dto
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
+
+        public static SendStatus Failed(string message) 
+        { 
+            return new SendStatus { 
+                IsSuccess = false,
+                Message = message 
+            };
+        }
+
+        public static SendStatus Success(string message = null)
+        {
+            return new SendStatus
+            {
+                IsSuccess = true,
+                Message = message
+            };
+        }
     }
 }

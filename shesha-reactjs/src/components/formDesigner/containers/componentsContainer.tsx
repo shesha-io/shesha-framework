@@ -3,7 +3,7 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ICommonContainerProps, IComponentsContainerBaseProps } from '@/interfaces';
 import { useComponentContainer } from '@/providers/form/nesting/containerContext';
 
-export interface IComponentsContainerProps extends IComponentsContainerBaseProps, ICommonContainerProps {
+export interface IComponentsContainerProps extends IComponentsContainerBaseProps, Omit<ICommonContainerProps, 'wrapperStyle'> {
   className?: string;
   render?: (components: JSX.Element[]) => ReactNode;
   itemsLimit?: number;

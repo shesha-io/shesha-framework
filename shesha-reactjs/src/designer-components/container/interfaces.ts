@@ -1,5 +1,5 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export type JustifyContent =
   | 'center'
@@ -138,7 +138,9 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
-export interface ICommonContainerProps extends Omit<IStyleType, 'style'> {
+export type ShadowStyleType = 'none' | 'above' | 'below';
+
+export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
   flexWrap?: FlexWrap;

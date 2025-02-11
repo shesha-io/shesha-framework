@@ -2,10 +2,7 @@
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
@@ -21,9 +18,18 @@ namespace Shesha.Domain
         /// </summary>
         public virtual NotificationChannelConfig Channel { get; set; }
         /// <summary>
-        /// 
+        /// Send type (email/sms/push etc)
         /// </summary>
         public virtual string RecipientText { get; set; }
+        /// <summary>
+        /// Sender text (email address/mobile number etc)
+        /// </summary>
+        [StringLength(300)]
+        public virtual string SenderText { get; set; }
+        /// <summary>
+        /// CC emails
+        /// </summary>
+        public virtual string Cc { get; set; }
         /// <summary>
         /// 
         /// </summary>

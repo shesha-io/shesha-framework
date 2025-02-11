@@ -3,7 +3,7 @@ import { IGetMetadataPayload, IGetNestedPropertiesPayload, IGetPropertiesMetadat
 import { IModelsDictionary } from "./models";
 import { IEntityMetadataFetcher } from "./entities/models";
 import camelcase from 'camelcase';
-import { asPropertiesArray, isDataPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
+import { asPropertiesArray, isDataPropertyMetadata, isEntityReferenceArrayPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
 import { MetadataDtoAjaxResponse, PropertyMetadataDto } from "@/apis/metadata";
 import { HttpClientApi } from "@/publicJsApis/httpClient";
 import qs from "qs";
@@ -49,6 +49,9 @@ export class MetadataDispatcher implements IMetadataDispatcher {
         if (!propMeta) return Promise.reject(`property '${propName}' not found`);
 
         if (isEntityReferencePropertyMetadata(propMeta))
+            return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
+        
+        if (isEntityReferenceArrayPropertyMetadata(propMeta))
             return this.getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
 
         if (isObjectReferencePropertyMetadata(propMeta)) {

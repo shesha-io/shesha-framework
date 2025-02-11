@@ -1,45 +1,46 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Shesha;
 using Shesha.Domain;
-using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Specifications;
-using Shesha.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
     public class OrganisationTestAppService : DynamicCrudAppService<Organisation, DynamicDto<Organisation, Guid>, Guid>, ITransientDependency
     {
-        private IActionDescriptorChangeProvider _changeProvider;
+        //private IActionDescriptorChangeProvider _changeProvider;
         private ApplicationPartManager _applicationPartManager;
         private ISwaggerProvider _swaggerProvider;
+        //private IRepository<OrganisationTestDirectPersons, Guid> _organisationTestDirectPersons;
 
         public OrganisationTestAppService(IRepository<Organisation, Guid> repository,
-            IActionDescriptorChangeProvider changeProvider,
+            //IActionDescriptorChangeProvider changeProvider,
             ApplicationPartManager applicationPartManager,
-            ISwaggerProvider swaggerProvider
+            ISwaggerProvider swaggerProvider/*,
+            IRepository<OrganisationTestDirectPersons, Guid> organisationTestDirectPersons*/
             ) : base(repository)
         {
-            _changeProvider = changeProvider;
+            //_changeProvider = changeProvider;
             _applicationPartManager = applicationPartManager;
             _swaggerProvider = swaggerProvider;
+            //_organisationTestDirectPersons = organisationTestDirectPersons;
         }
 
         public void Test()
         {
-            /*var provider = (DynamicEntityControllerFeatureProvider)_applicationPartManager
-                .FeatureProviders.Where(p => p is DynamicEntityControllerFeatureProvider).FirstOrDefault();
+            /*var l = _organisationTestDirectPersons.GetAllList();
 
-            provider.PopulateFeature(_applicationPartManager.ApplicationParts, )*/
+            var o = new OrganisationTestDirectPersons()
+            {
+                OrganisationTestId = Guid.Parse("23BA4023-ACAB-479F-AE5D-C4EAA11BB36A"),
+                PersonId = Guid.Parse("F0DC2667-2DD5-4DB7-B23D-00C40431DE6B")//,
+                //Test = "Manual"
+            };
 
-            // Notify change
-            SheshaActionDescriptorChangeProvider.Instance.HasChanged = true;
-            SheshaActionDescriptorChangeProvider.Instance.TokenSource.Cancel();
-            (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
+            _organisationTestDirectPersons.Insert(o);*/
         }
 
         [DisableSpecifications]
@@ -58,11 +59,5 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         {
             var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
         }
-    }
-
-    public class OrganisationTest : Organisation
-    {
-        [CascadeUpdateRules(true, true)]
-        public override Address PrimaryAddress { get => base.PrimaryAddress; set => base.PrimaryAddress = value; }
     }
 }
