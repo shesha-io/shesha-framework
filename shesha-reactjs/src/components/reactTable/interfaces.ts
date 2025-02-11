@@ -1,4 +1,3 @@
-import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
 import { IConfigurableActionConfiguration } from '@/providers';
 import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';

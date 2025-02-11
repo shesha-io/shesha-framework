@@ -28,7 +28,7 @@ const borderTypeOptions: ITypedOption<string>[] = [
   { label: 'Solid', value: 'solid' },
   { label: 'Dashed', value: 'dashed' },
   { label: 'Dotted', value: 'dotted' },
-]
+];
 
 const overflowOptions: ITypedOption<string>[] = [
   { label: 'Auto', value: 'auto' },
@@ -36,7 +36,7 @@ const overflowOptions: ITypedOption<string>[] = [
   { label: 'Scroll', value: 'scroll' },
   { label: 'Clip', value: 'clip' },
   { label: 'Visible', value: 'visible' }
-]
+];
 
 const fontFamilyOptions: ITypedOption<string>[] = [
   { label: 'Arial', value: 'Arial, sans-serif' },
@@ -59,7 +59,7 @@ const fontFamilyOptions: ITypedOption<string>[] = [
   { label: 'Consolas (Windows)', value: 'Consolas, Monaco, monospace' },
   { label: 'Tahoma (Windows)', value: 'Tahoma, Geneva, sans-serif' },
   { label: 'Candara (Windows)', value: 'Candara, Verdana, sans-serif' }
-]
+];
 
 const yesNoInheritOptions: ITypedOption<YesNoInheritJs>[] = [
   { label: 'Yes', value: 'yes' },
@@ -383,6 +383,16 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Events' collapsedByDefault>
+      <SettingsFormItem name="onRowSaveSuccess" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On Row Save Success"
+            description="Custom business logic to be executed after the user successfully saves a table row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
+        </SettingsFormItem>
+
         <SettingsFormItem name="onRowClick" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
             editorConfig={null}

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
 import { useStyles } from './styles/styles';
 import { isStyledColumn } from '../dataTable/interfaces';

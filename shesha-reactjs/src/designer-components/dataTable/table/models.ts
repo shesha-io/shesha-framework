@@ -1,7 +1,5 @@
 import { IShaDataTableInlineEditableProps } from '@/components/dataTable/interfaces';
-import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
 import { IConfigurableActionConfiguration } from '@/providers';
-import { IExecuteActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { CSSProperties } from 'react';

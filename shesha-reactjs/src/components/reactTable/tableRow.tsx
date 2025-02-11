@@ -13,8 +13,8 @@ export type RowEditMode = 'read' | 'edit';
 
 export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
-  onClick: (row: Row<any>) => void;
-  onDoubleClick: (row: Row<any>, index: number) => void;
+  onClick: (row: Row<any>, event?: React.MouseEvent) => void;
+  onDoubleClick: (row: Row<any>, index: number, event?: React.MouseEvent) => void;
   row: Row<any>;
   index: number;
   selectedRowIndex?: number;

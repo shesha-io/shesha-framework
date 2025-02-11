@@ -125,9 +125,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         return `${width}px ${style} ${color}`;
       };
 
-
-      console.log("HBGC",props.headerBackgroundColor)
-
     return (
         <SidebarContainer
             rightSidebarProps={{

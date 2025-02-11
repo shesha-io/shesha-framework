@@ -112,7 +112,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     allColumns: columns,
   });
   const { styles } = useStyles();
-  const { styles: mainStyles } = useMainStyles({hoverColor: hoverHighlight, oddRowColor: zebraStripeColor, selectedColor: rowSelectedColor});
+  const { styles: mainStyles } = useMainStyles({ hoverColor: hoverHighlight, oddRowColor: zebraStripeColor, selectedColor: rowSelectedColor });
 
   const { setDragState } = useDataTableStore();
 
@@ -291,25 +291,6 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [sortBy]);
 
-  useEffect(() => {
-    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
-      const selectedRows = allRows
-        ?.map((index) => {
-          if (selectedRowIds[index]) {
-            return allRows[index];
-          }
-          return null;
-        })
-        ?.filter(Boolean);
-  
-      onSelectedIdsChanged(selectedRows.map(row => row.id)); // Keep the original ID callback
-      
-      // Add the new row selection execution
-      if (onRowSelect) {
-        performOnRowSelect(selectedRows);
-      }
-    }
-  }, [selectedRowIds]);
 
   const performOnRowSelect = (row) => {
     const evaluationContext = {
@@ -326,6 +307,26 @@ export const ReactTable: FC<IReactTableProps> = ({
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+      const selectedRows = allRows
+        ?.map((index) => {
+          if (selectedRowIds[index]) {
+            return allRows[index];
+          }
+          return null;
+        })
+        ?.filter(Boolean);
+
+      onSelectedIdsChanged(selectedRows.map(row => row.id)); // Keep the original ID callback
+
+      // Add the new row selection execution
+      if (onRowSelect) {
+        performOnRowSelect(selectedRows);
+      }
+    }
+  }, [selectedRowIds]);
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
     if (!onRowsReordered) {
@@ -407,6 +408,10 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [containerStyle, minHeight, maxHeight, freezeHeaders]);
 
   const renderRow = (row: Row<any>, rowIndex: number, striped?: boolean) => {
+    if (!onRowClick) {
+      /* do nothing */
+    }
+
     const id = row.original?.id;
 
     const performOnRowClick = (row) => {
@@ -426,6 +431,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     };
 
     const performOnRowDblClick = (row) => {
+      if (!onRowDblClick) {
+        /* do nothing */
+      }
+
       const evaluationContext = {
         data,
         selectedRow: row,
@@ -441,15 +450,24 @@ export const ReactTable: FC<IReactTableProps> = ({
       }
     };
 
-
     return (
       <Row
         key={id ?? rowIndex}
         rowHeight={rowHeight}
         rowPadding={rowPadding}
         prepareRow={prepareRow}
-        onClick={performOnRowClick ?? handleSelectRow}
-        onDoubleClick={(row) => performOnRowDblClick(row) ?? handleDoubleClickRow(row, rowIndex ?? id)}
+        onClick={(row) => {
+          if (onRowClick) {
+            performOnRowClick(row);
+          }
+          handleSelectRow(row);
+        }}
+        onDoubleClick={(row, index) => {
+          if (onRowDblClick) {
+            performOnRowDblClick(row);
+          }
+          handleDoubleClickRow(row, index);
+        }}
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
@@ -486,7 +504,11 @@ export const ReactTable: FC<IReactTableProps> = ({
         </span>
       }
     >
-      <div className={mainStyles.shaReactTable} style={{...containerStyleFinal, boxShadow: renderedShadow, margin: shadowObject.blur+'px', border: renderedBorder, fontFamily: fontFamily, fontSize: tableFontSize+'px', backgroundColor: backgroundColor, height: tableHeight+'px', width: width + 'px', color: tableFontColor, overflowX: overflowX, overflowY: overflowY, borderRadius: borderRadius+'px'}}>
+      <div className={mainStyles.shaReactTable}
+        style={{
+          ...containerStyleFinal, boxShadow: renderedShadow, margin: shadowObject.blur + 'px', border: renderedBorder, fontFamily: fontFamily, fontSize: tableFontSize + 'px', backgroundColor: backgroundColor, height: tableHeight + 'px', width: width + 'px',
+          color: tableFontColor, overflowX: overflowX, overflowY: overflowY, borderRadius: borderRadius + 'px'
+        }}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
           {columns?.length > 0 &&
             headerGroups.map((headerGroup) => {
@@ -496,7 +518,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   key={key}
                   {...headerGroupProps}
                   className={classNames(styles.tr, styles.trHead)}
-                  style={{ ...fixedHeadersStyle, display: 'flex', fontSize: headerFontSize+'px', fontFamily: fontFamily, color: headerTextColor, height: headerHeight+'px', backgroundColor: headerBackgroundColor }} // Make the header row sticky
+                  style={{ ...fixedHeadersStyle, display: 'flex', fontSize: headerFontSize + 'px', fontFamily: fontFamily, color: headerTextColor, height: headerHeight + 'px', backgroundColor: headerBackgroundColor }} // Make the header row sticky
                 >
                   {headerGroup?.headers?.map((column, index) => {
                     const anchored = getColumnAnchored((column as any)?.anchored);
