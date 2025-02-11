@@ -7,6 +7,7 @@ using Abp.ObjectMapping;
 using Abp.Reflection;
 using Abp.Runtime.Validation;
 using Abp.UI;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.OutputCaching;
@@ -26,6 +27,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
+using System.Drawing;
+using Microsoft.VisualBasic.FileIO;
+using Shesha.StoredFiles.Enums;
 
 namespace Shesha.StoredFiles
 {
@@ -49,7 +53,7 @@ namespace Shesha.StoredFiles
 
         public StoredFileController(IRepository<StoredFile, Guid> fileRepository,
             IRepository<StoredFileVersion, Guid> fileVersionRepository, IStoredFileService fileService,
-            IDynamicRepository dynamicRepository, 
+            IDynamicRepository dynamicRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Person, Guid> personRepository,
             TypeFinder typeFinder
@@ -210,7 +214,7 @@ namespace Shesha.StoredFiles
                         else
                         {
                             if (!input.OwnerType.IsNullOrEmpty())
-                            { 
+                            {
                                 // otherwise - mark as temporary
                                 file.Temporary = true;
                             }
@@ -408,10 +412,10 @@ namespace Shesha.StoredFiles
                 ? await _dynamicRepository.GetAsync(ownerType?.FullName, input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
-            if (ownerSpecified && owner == null)
-            {
-                ModelState.AddModelError(input.OwnerId, $"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
-            }
+                if (ownerSpecified && owner == null)
+                {
+                    ModelState.AddModelError(input.OwnerId, $"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
+                }
 
             var processAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
             var property = processAsProperty
@@ -717,7 +721,7 @@ namespace Shesha.StoredFiles
                 if (hasCategory)
                 {
                     var version = await _fileVersionRepository.GetAll().FirstOrDefaultAsync(x => x.IsLast && x.File.Owner == null && x.File.Category == input.FileCategory);
-                    return  GetFileDto(version);
+                    return GetFileDto(version);
                 }
             }
             return null;
@@ -751,9 +755,9 @@ namespace Shesha.StoredFiles
             return documentUploads.Select(v => ObjectMapper.Map<StoredFileVersionInfoDto>(v)).ToList();
         }
 
-        private string GetUploadedBy(Int64? userId) 
+        private string GetUploadedBy(Int64? userId)
         {
-            if (userId == null) 
+            if (userId == null)
                 return string.Empty;
 
             var person = _personRepository.GetAll().FirstOrDefault(p => p.User != null && p.User.Id == userId);
@@ -761,5 +765,94 @@ namespace Shesha.StoredFiles
         }
 
         #endregion
+
+        /// <summary>
+        /// Download Thumbnail of the uploaded image.
+        /// </summary>
+        /// <param name="id">id of uploaded file that you need to download</param>
+        /// <param name="width">Thumbnail width</param>
+        /// <param name="height">Thumbnail height</param>
+        /// <param name="fitOption">Fit options (FitToHeight = 1 or FitToWidth = 2 or AutoFit = 3)</param>
+        /// <param name="versionNo"></param>
+        /// <returns></returns>
+        [HttpGet, Route("DownloadThumbnail")]
+        public async Task<ActionResult> DownloadThumbnail(Guid id, int width, int height, RefListFitOptions fitOption, int? versionNo)
+        {
+            var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+
+            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+                return StatusCode(304);
+
+            var fileContents = await _fileService.GetStreamAsync(fileVersion);
+            await _fileService.MarkDownloadedAsync(fileVersion);
+
+
+            // Get the file name without extension and the file extension
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
+            string fileExtension = Path.GetExtension(fileVersion.FileName);
+
+            // Append width and height to the file name to identify its a thumbnail
+            string fileName = fileNameWithoutExtension + "_w" + width.ToString() + "h" + height.ToString() + fileExtension;
+
+            //Code to resize image as per provided height and width
+            var stream = new MemoryStream();
+            await fileContents.CopyToAsync(stream);
+            var originalImage = System.Drawing.Image.FromStream(stream);
+
+            // Create a new bitmap with the new dimensions
+            //var resizedImage = new Bitmap(originalImage, width, height);
+            var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
+
+            // Save the resized image to a new memory stream
+            var resultStream = new MemoryStream();
+
+            resizedImage.Save(resultStream, originalImage.RawFormat);
+            resultStream.Seek(0, SeekOrigin.Begin);  // Reset the stream position
+
+            HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
+            HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
+
+            return File(resultStream, fileVersion.FileType.GetContentType(), fileName);
+        }
+        private static Image GenerateThumbnail(Image originalImage, int height, int width, RefListFitOptions fitOption)
+        {
+            int newWidth = width;
+            int newHeight = height;
+
+            // Get original dimensions
+            int originalWidth = originalImage.Width;
+            int originalHeight = originalImage.Height;
+
+            // Maintain aspect ratio based on the FitOption
+            switch (fitOption)
+            {
+                case RefListFitOptions.FitToHeight:
+                    // Scale the width to maintain the aspect ratio based on height
+                    newWidth = (int)((double)originalWidth / originalHeight * height);
+                    break;
+
+                case RefListFitOptions.FitToWidth:
+                    // Scale the height to maintain the aspect ratio based on width
+                    newHeight = (int)((double)originalHeight / originalWidth * width);
+                    break;
+
+                case RefListFitOptions.AutoFit:
+                    // AutoFit: Shrink the image to the smaller dimension
+                    double aspectRatio = (double)originalWidth / originalHeight;
+                    if (originalWidth < originalHeight)
+                    {
+                        newWidth = (int)(height * aspectRatio);
+                    }
+                    else
+                    {
+                        newHeight = (int)(width / aspectRatio);
+                    }
+                    break;
+            }
+
+            // Resize the image while maintaining the aspect ratio
+            var resizedImage = new Bitmap(originalImage, newWidth, newHeight);
+            return resizedImage;
+        }
     }
 }
