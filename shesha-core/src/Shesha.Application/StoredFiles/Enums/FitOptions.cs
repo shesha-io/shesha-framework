@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.StoredFiles.Enums
 {
-    public enum RefListFitOptions
+    public enum FitOptions
     {
         [Description("FitToHeight")]
         FitToHeight = 1,

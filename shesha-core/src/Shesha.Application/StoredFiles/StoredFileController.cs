@@ -776,7 +776,7 @@ namespace Shesha.StoredFiles
         /// <param name="versionNo"></param>
         /// <returns></returns>
         [HttpGet, Route("DownloadThumbnail")]
-        public async Task<ActionResult> DownloadThumbnail(Guid id, int width, int height, RefListFitOptions fitOption, int? versionNo)
+        public async Task<ActionResult> DownloadThumbnail(Guid id, int width, int height, FitOptions fitOption, int? versionNo)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
@@ -784,8 +784,6 @@ namespace Shesha.StoredFiles
                 return StatusCode(304);
 
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
-            await _fileService.MarkDownloadedAsync(fileVersion);
-
 
             // Get the file name without extension and the file extension
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
@@ -814,7 +812,7 @@ namespace Shesha.StoredFiles
 
             return File(resultStream, fileVersion.FileType.GetContentType(), fileName);
         }
-        private static Image GenerateThumbnail(Image originalImage, int height, int width, RefListFitOptions fitOption)
+        private static Image GenerateThumbnail(Image originalImage, int height, int width, FitOptions fitOption)
         {
             int newWidth = width;
             int newHeight = height;
@@ -826,17 +824,17 @@ namespace Shesha.StoredFiles
             // Maintain aspect ratio based on the FitOption
             switch (fitOption)
             {
-                case RefListFitOptions.FitToHeight:
+                case FitOptions.FitToHeight:
                     // Scale the width to maintain the aspect ratio based on height
                     newWidth = (int)((double)originalWidth / originalHeight * height);
                     break;
 
-                case RefListFitOptions.FitToWidth:
+                case FitOptions.FitToWidth:
                     // Scale the height to maintain the aspect ratio based on width
                     newHeight = (int)((double)originalHeight / originalWidth * width);
                     break;
 
-                case RefListFitOptions.AutoFit:
+                case FitOptions.AutoFit:
                     // AutoFit: Shrink the image to the smaller dimension
                     double aspectRatio = (double)originalWidth / originalHeight;
                     if (originalWidth < originalHeight)
