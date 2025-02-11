@@ -33,7 +33,7 @@ export const useStyles = () => {
   return tableStyles;
 };
 
-export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {hoverColor, oddRowColor, selectedColor}) => {
+export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {hoverColor, oddRowColor, selectedColor, sortIndicatorColor}) => {
   const {
     shaTable,
     thead,
@@ -261,11 +261,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${th} {
           &.${sortedAsc} {
-            border-top: 3px solid ${token.colorPrimary};
+            border-top: 3px solid ${sortIndicatorColor || token.colorPrimary};
             padding-top: 5px;
           }
           &.${sortedDesc} {
-            border-bottom: 3px solid ${token.colorPrimary};
+            border-bottom: 3px solid ${sortIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
             display: inline-block;

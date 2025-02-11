@@ -99,6 +99,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   overflowX?:  CSSProperties['overflowX'];
   overflowY?: CSSProperties['overflowY'];
   borderRadius?: number;
+  sortIndicator?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -158,6 +159,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   overflowX,
   overflowY,
   borderRadius,
+  sortIndicator,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -793,6 +795,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     overflowX,
     overflowY,
     borderRadius,
+    sortIndicator,
   };
 
   return (

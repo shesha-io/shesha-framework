@@ -194,6 +194,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 overflowX={props.overflowX}
                 overflowY={props.overflowY}
                 borderRadius={props.borderRadius}
+                sortIndicator={props.sortIndicator}
             />
         </SidebarContainer>
     );

@@ -462,6 +462,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
           name="borderRadius" label="Border Radius" tooltip="Defines the roundness of table corners.">
           <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="sortIndicator" label="Sort Indicator Color" tooltip="Sets the color of the table sort indicator.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header="Table Shadow" collapsedByDefault>

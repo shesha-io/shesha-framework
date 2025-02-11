@@ -106,13 +106,14 @@ export const ReactTable: FC<IReactTableProps> = ({
   overflowX,
   overflowY,
   borderRadius,
+  sortIndicator,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
     allColumns: columns,
   });
   const { styles } = useStyles();
-  const { styles: mainStyles } = useMainStyles({ hoverColor: hoverHighlight, oddRowColor: zebraStripeColor, selectedColor: rowSelectedColor });
+  const { styles: mainStyles } = useMainStyles({ hoverColor: hoverHighlight, oddRowColor: zebraStripeColor, selectedColor: rowSelectedColor, sortIndicatorColor: sortIndicator });
 
   const { setDragState } = useDataTableStore();
 
@@ -308,6 +309,9 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   };
 
+  //we need this to prevent performOnRowSelect calling when datatable content renders
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
     if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
       const selectedRows = allRows
@@ -321,8 +325,8 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       onSelectedIdsChanged(selectedRows.map(row => row.id)); // Keep the original ID callback
 
-      // Add the new row selection execution
-      if (onRowSelect) {
+      if (onRowSelect && !isFirstRender) {
+        isFirstRender.current = true;
         performOnRowSelect(selectedRows);
       }
     }

@@ -20,6 +20,7 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   noDataSecondaryText?: string;
   noDataIcon?: string;
   toggleZebraStripes?: boolean;
+  sortIndicator?: string;
 
   onRowClick?: IConfigurableActionConfiguration;
   onRowDblClick?: IConfigurableActionConfiguration;

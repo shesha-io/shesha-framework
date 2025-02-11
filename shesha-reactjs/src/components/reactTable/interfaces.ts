@@ -224,6 +224,8 @@ export interface IReactTableProps extends ITableRowDragProps {
   overflowY?: CSSProperties['overflowY'];
   borderRadius?: number;
 
+  sortIndicator?: string;
+
   borderObject?: any;
   renderedBorder?: string;
 
