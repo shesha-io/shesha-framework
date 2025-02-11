@@ -6,8 +6,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
-  console.log('styles', styles);
-
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
     --thumbnail-width: ${thumbnailWidth ?? thumbnailHeight ?? '101px'};
