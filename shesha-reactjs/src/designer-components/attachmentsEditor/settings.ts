@@ -62,6 +62,7 @@ export const getSettings = () =>
             parentId: 'root',
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
+            hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
           })
 
           .addDropdown({

@@ -21,6 +21,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     .sha-stored-files-renderer {
       max-height: var(--container-height) !important;
       max-width: var(--container-width) !important;
+      display: inline-block;
     }
    
 
@@ -31,14 +32,18 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     }
   
     .ant-upload-list-item {
+      ${layout && 'width: var(--thumbnail-width) !important'};
+      ${layout && 'height: var(--thumbnail-height) !important'};
+      animation: none !important;
+      transition: none !important;
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
       --font-size: ${fontSize ?? '14px'} !important;
       --ant-font-size: ${fontSize ?? '14px'} !important;
-      height: var(--thumbnail-height);
+      border-radius: ${borderRadius ?? '8px'} !important;
+      display: flex;
 
       :before {
-        position: relative;
         top: 0;
         width: var(--thumbnail-width) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
@@ -138,13 +143,14 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
           overflow-x: auto;
           overflow-y: clip !important;
           align-items: center !important;
-          // ${styles}
       }
 
       .ant-upload-list-item-container {
         display: inline-block !important;    
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
+        border: ${borderSize ?? '1px'} ${borderType ?? 'solid'} ${borderColor ?? '#d9d9d9'} !important;
+        border-radius: ${borderRadius ?? '8px'} !important;
       }
     `);
 
@@ -178,11 +184,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-horizontal", css` 
     max-width: var(--container-width) !important;
-    // max-height: var(--container-height) !important;
+    max-height: var(--container-height) !important;
 
     .${prefixCls}-upload-list {
       align-items: center;
       padding: 2px;
+      max-height: calc(var(--container-height) - 32px) !important;
       ${styles}
           .${prefixCls}-upload-list-item {
             width: ${thumbnailWidth ?? '101px'} !important;
