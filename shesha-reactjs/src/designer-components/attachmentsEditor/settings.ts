@@ -69,6 +69,7 @@ export const getSettings = () =>
             propertyName: 'listType',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'List Type',
+            hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
             dataSourceType: 'values',
             values: [
               {
@@ -89,7 +90,7 @@ export const getSettings = () =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Layout',
             dataSourceType: 'values',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
             values: [
               {
                 label: 'Vertical',
@@ -277,6 +278,7 @@ export const getSettings = () =>
             propertyName: 'itemStyles',
             parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
             label: 'Item Styles',
+            hideWhenEmpty: true,
             content: {
               id: 'item-styles-content-880d-4308-c3d996619cb',
               components: [...new DesignerToolbarSettings()

@@ -39,6 +39,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadZipFile?: () => void;
   downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
+  onFileListChanged?: (list: IStoredFile[]) => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
   isDragger?: boolean;
@@ -66,6 +67,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   uploadFile,
   downloadZipFile,
   downloadFile,
+  onFileListChanged,
   ownerId,
   ownerType,
   fetchFilesError,
@@ -107,9 +109,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const { message, notification } = App.useApp();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
-  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>(fileList.reduce((acc, { uid, url }) => ({ ...acc, [uid]: url }), {}));
 
-  const listTypeAndLayout = listType === 'text' || !listType ? 'text' : 'picture-card';
+  const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>
     notification.success({
@@ -117,17 +119,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       description: 'Your files have been downloaded successfully. Please check your download folder.',
       placement: 'topRight',
     });
-
-  useEffect(() => {
-    if (isDownloadZipSucceeded) {
-      openFilesZipNotification();
-    }
-  }, [isDownloadZipSucceeded]);
-
-  const handlePreview = async (file: UploadFile) => {
-    setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
-    setPreviewOpen(true);
-  };
 
   const fetchStoredFile = (url: string) => {
     const response = fetch(`${url}`,
@@ -142,20 +133,40 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return response;
   };
 
+  useEffect(() => {
+    if (isDownloadZipSucceeded) {
+      openFilesZipNotification();
+    }
+  }, [isDownloadZipSucceeded]);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const newImageUrls = { ...imageUrls };
+      for (const file of fileList) {
+        if (isImageType(file.type) && !newImageUrls[file.uid]) {
+          const imageUrl = await fetchStoredFile(file.url);
+          newImageUrls[file.uid] = imageUrl;
+        }
+      }
+      setImageUrls(newImageUrls);
+    };
+
+    fetchImages();
+  }, [fileList]);
+
+  const handlePreview = async (file: UploadFile) => {
+    setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
+    setPreviewOpen(true);
+  };
+
+
   const iconRender = (file) => {
     const { type, uid } = file;
 
     if (isImageType(type)) {
-      if (!imageUrls[uid]) {
-        fetchStoredFile(file.url).then((imageUrl) => {
-          setImageUrls((prev) => ({ ...prev, [uid]: imageUrl }));
-        });
-      }
-
-      if (listType === 'thumbnail') {
+      if (listType === 'thumbnail' && !isDragger) {
         return <Image src={imageUrls[uid]} alt={file.name} preview={false} />;
-      };
-
+      }
     }
 
     return getFileIcon(type);
@@ -174,6 +185,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
+      onFileListChanged(info.fileList);
     },
     onRemove(file) {
       deleteFile(file.uid);
@@ -222,7 +234,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const renderUploadContent = () => {
     return (
       <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
-        {listType === 'text' && 'press to upload'}
+        {listType === 'text' && '(press to upload)'}
       </Button>
     );
   };
