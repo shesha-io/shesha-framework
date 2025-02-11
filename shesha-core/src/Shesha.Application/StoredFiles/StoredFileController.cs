@@ -839,18 +839,35 @@ namespace Shesha.StoredFiles
                     double aspectRatio = (double)originalWidth / originalHeight;
                     if (originalWidth < originalHeight)
                     {
+                        // Fit to height
                         newWidth = (int)(height * aspectRatio);
+                        newHeight = height;
                     }
                     else
                     {
+                        // Fit to width
                         newHeight = (int)(width / aspectRatio);
+                        newWidth = width;
                     }
                     break;
             }
 
-            // Resize the image while maintaining the aspect ratio
-            var resizedImage = new Bitmap(originalImage, newWidth, newHeight);
-            return resizedImage;
+            // Create a blank canvas with the desired dimensions (Transparent background)
+            var thumbnail = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics g = Graphics.FromImage(thumbnail))
+            {
+                // Make the background transparent by filling with transparent color
+                g.Clear(Color.Transparent);
+
+                // Calculate the position to center the image
+                int xOffset = (width - newWidth) / 2;
+                int yOffset = (height - newHeight) / 2;
+
+                // Draw the resized image on the centered position
+                g.DrawImage(originalImage, xOffset, yOffset, newWidth, newHeight);
+            }
+
+            return thumbnail;
         }
     }
 }
