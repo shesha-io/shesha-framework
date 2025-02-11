@@ -31,7 +31,8 @@
     "dev": "next dev",
     "build-next": "next build",
     "start-next": "NODE_ENV=production node --max-old-space-size=8192 server.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --build tsconfig.strictNulls.json"
   },
   "overrides": {
     "eslint": "^9.14.0",
