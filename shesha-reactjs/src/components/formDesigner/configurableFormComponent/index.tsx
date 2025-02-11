@@ -138,6 +138,8 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
-  ); 
+    <div className={componentModel.type !== 'subform' ? 'sha-c' : ''} data-sha-c-id={`${componentModel.id}`} data-sha-c-name={`${componentModel.componentName}`} data-sha-c-type={`${componentModel.type}`}>
+      <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
+    </div>
+  );
 };
