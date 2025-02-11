@@ -11,7 +11,7 @@ import { IRadioProps } from './utils';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IInputStyles, useFormData } from '@/providers';
+import { useFormData } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -57,18 +57,18 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
     .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
-    .add<IEnhancedRadioProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IEnhancedRadioProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IEnhancedRadioProps>(6, (prev) => {
       const styles: IInputStyles = {
         style: prev.style
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
   linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
-    
+
     return {
       ...model,
       dataSourceType: isRefList ? 'referenceList' : 'values',
