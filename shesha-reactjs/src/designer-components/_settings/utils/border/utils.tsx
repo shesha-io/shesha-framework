@@ -72,14 +72,15 @@ export const borderCorners = [
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
-const generateCode = (isResponsive: boolean, path: string, side: string) => {
+const generateCode = (type, isResponsive: boolean, path: string, side: string) => {
+    const part = type === 'border' ? 'selectedSide' : 'selectedCorner';
     const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
-    return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.selectedSide) !== "${side}" || getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.hideBorder);`;
+    return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${part}) !== "${side}" || getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.hideBorder);`;
 };
 
 export const getBorderInputs = (isResponsive: boolean = true, path = '') => borderSides.map(value => {
     const side = value.value;
-    const code = generateCode(isResponsive, path, side);
+    const code = generateCode('border', isResponsive, path, side);
 
     return {
         id: `borderStyleRow-${side}`,
@@ -133,7 +134,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
 
 export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
     const corner = value.value;
-    const code = `return getSettingValue(data[${isResponsive ? '`${contexts.canvasContext?.designerDevice || "desktop"}`' : ''}]?.border?.selectedCorner) !== "${corner}";`;
+    const code = generateCode('radius', isResponsive, path, corner);
 
     return {
         id: `borderStyleRow-${corner}`,
