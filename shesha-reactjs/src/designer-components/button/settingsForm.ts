@@ -36,13 +36,13 @@ export const getSettings = (data) => {
                 jsSetting: true,
               })
               .addSettingsInput({
-                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                id: 'label-4c18-468c-89e1-60c002ce96c5',
                 propertyName: 'label',
                 label: 'Caption',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
               })
               .addSettingsInput({
-                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
                 inputType: 'textArea',
                 propertyName: 'tooltip',
                 label: 'Tooltip',
@@ -99,10 +99,9 @@ export const getSettings = (data) => {
                 ],
               })
               .addConfigurableActionConfigurator({
-                id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+                id: 'actionConfiguration-4c18-468c-89e1-60c002ce96c5',
                 propertyName: 'actionConfiguration',
                 label: 'Action configuration',
-                hidden: false,
                 validate: {},
                 settingsValidationErrors: [],
               })
