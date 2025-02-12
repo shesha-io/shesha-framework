@@ -56,7 +56,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 gradient: { direction: 'to right', colors: {} },
                 url: backgroundUrl || defaults?.background?.url || '',
                 storedFile: { id: backgroundStoredFileId || null },
-                uploadFile: { uid: nanoid(), name: '', url: backgroundBase64 },
+                uploadFile: backgroundBase64 ? { uid: nanoid(), name: '', url: backgroundBase64 } : null,
             },
             font: {
                 color: prevStyles?.fontColor || defaults?.font?.color,

@@ -374,9 +374,9 @@ export const getSettings = (data) => {
                       label: 'Background',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -455,7 +455,8 @@ export const getSettings = (data) => {
                               inputs: [
                                 {
                                   type: 'text',
-                                  id: 'backgroundStyleRow-storedFile',
+                                  id: 'backgroundStyle-storedFile',
+                                  jsSetting: false,
                                   propertyName: "background.storedFile.id",
                                   label: "File ID"
                                 }
@@ -476,20 +477,19 @@ export const getSettings = (data) => {
                                   dropdownOptions: sizeOptions,
                                 },
                                 {
-                                  label: "Position",
-                                  hideLabel: true,
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-position',
+                                  label: "Position",
+                                  hideLabel: true,
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
                                 {
+                                  type: 'dropdown',
+                                  id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  type: 'customDropdown',
-                                  id: 'backgroundStyleRow-repeat',
-                                  width: 70,
                                   dropdownOptions: repeatOptions,
                                 }
                               ]
