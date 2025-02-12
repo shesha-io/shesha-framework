@@ -278,7 +278,6 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                 validate: {
                   required: true,
                 },
-                convertToFullId: false,
               })
               .addDropdown({
                 id: nanoid(),

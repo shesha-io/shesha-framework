@@ -87,7 +87,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
   </SettingsFormItem>*/}
 
         <SettingsFormItem name="formId" label="Form Path" jsSetting>
-          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+          <FormAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="labelFormat" label="Label Format" required>

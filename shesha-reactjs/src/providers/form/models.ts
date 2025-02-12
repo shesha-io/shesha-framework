@@ -6,6 +6,7 @@ import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/i
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -312,13 +313,9 @@ export type FormMarkup =
   | FormMarkupWithSettings
   | ((data: any) => FormRawMarkup | FormMarkupWithSettings);
 
-export interface FormFullName {
-  readonly name: string;
-  readonly module?: string | null;
-  readonly version?: number;
-}
-export type FormUid = string;
-export type FormIdentifier = FormFullName | FormUid;
+export type FormFullName  = ConfigurableItemFullName;
+export type FormUid = ConfigurableItemUid;
+export type FormIdentifier = ConfigurableItemIdentifier;
 
 export interface IPersistedFormProps {
   id?: string;
