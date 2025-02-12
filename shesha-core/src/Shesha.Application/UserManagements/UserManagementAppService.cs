@@ -1,17 +1,11 @@
-﻿using Abp.Auditing;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
 using Abp.Runtime.Validation;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Shesha.Authorization;
 using Shesha.Authorization.Users;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
-using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
-using Shesha.Models.TokenAuth;
 using Shesha.Persons;
 using Shesha.UserManagements.Configurations;
 using System;
@@ -75,6 +69,10 @@ namespace Shesha.UserManagements
                 validationResults.Add(new ValidationResult("First Name is mandatory"));
             if (string.IsNullOrWhiteSpace(input.LastName))
                 validationResults.Add(new ValidationResult("Last Name is mandatory"));
+
+            // trim email and mobile
+            input.EmailAddress = input.EmailAddress?.Trim();
+            input.MobileNumber = input.MobileNumber?.Trim();
 
             // email and mobile number must be unique
             if (await MobileNoAlreadyInUse(input.MobileNumber, null))
@@ -178,8 +176,10 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return false;
 
-            return await _repository.GetAll().AnyAsync(e =>
-                e.MobileNumber1.Trim().ToLower() == mobileNo.Trim().ToLower() && (id == null || e.Id != id));
+            return await _repository.GetAll()
+                .Where(e => e.MobileNumber1 == mobileNo)
+                .WhereIf(id.HasValue, e => e.Id != id)
+                .AnyAsync();
         }
 
         /// <summary>
@@ -191,8 +191,10 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(email))
                 return false;
 
-            return await _repository.GetAll().AnyAsync(e =>
-                e.EmailAddress1.Trim().ToLower() == email.Trim().ToLower() && (id == null || e.Id != id));
+            return await _repository.GetAll()
+                .Where(e => e.EmailAddress1 == email)
+                .WhereIf(id.HasValue, e => e.Id != id)
+                .AnyAsync();
         }
 
     }

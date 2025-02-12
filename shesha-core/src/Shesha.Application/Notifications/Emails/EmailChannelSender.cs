@@ -77,7 +77,14 @@ namespace Shesha.Notifications
                 };
             }
 
-            using (var mail = BuildMessageWith(GetRecipientId(fromPerson), GetRecipientId(toPerson), message.Subject, message.Message, cc))
+            var emailTo = GetRecipientId(toPerson);
+            if (string.IsNullOrWhiteSpace(emailTo))
+                return SendStatus.Failed($"Email address is empty for person {toPerson.FullName}");
+
+            if (!string.IsNullOrWhiteSpace(settings.RedirectAllMessagesTo))
+                emailTo = settings.RedirectAllMessagesTo;
+
+            using (var mail = BuildMessageWith(GetRecipientId(fromPerson), emailTo, message.Subject, message.Message, cc))
             {
                 if (attachments != null)
                 {

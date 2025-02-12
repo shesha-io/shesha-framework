@@ -69,7 +69,14 @@ namespace Shesha.Notifications.SMS
                 });
             }
 
-            return await _smsGateway.SendSmsAsync(GetRecipientId(toPerson), message.Message);
+            var mobileNo = GetRecipientId(toPerson);
+            if (string.IsNullOrWhiteSpace(mobileNo))
+                return SendStatus.Failed($"Mobile no is empty for person {toPerson.FullName}");
+
+            if (!string.IsNullOrWhiteSpace(settings.RedirectAllMessagesTo))
+                mobileNo = settings.RedirectAllMessagesTo;
+                
+            return await _smsGateway.SendSmsAsync(mobileNo, message.Message);
         }
 
         public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
