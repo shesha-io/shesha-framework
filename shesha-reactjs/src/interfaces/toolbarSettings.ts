@@ -29,7 +29,6 @@ import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index'
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
-import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
@@ -262,10 +261,6 @@ export class DesignerToolbarSettings<T> {
 
   public addSlider(props: SliderType | ((data: T) => SliderType)) {
     return this.addProperty(props, 'slider');
-  }
-
-  public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
-    return this.addProperty(props, 'divider');
   }
 
   public addSettingsInput(props: SettingInputType | ((data: T) => SettingInputType)) {

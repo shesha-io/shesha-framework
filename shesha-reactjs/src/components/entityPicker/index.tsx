@@ -195,6 +195,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
                   borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
                   background: 'transparent',
                   borderLeft: '1px solid #d9d9d9',
+                  height: '100%',
                   zIndex: 1,
                 }}
                 type='text'

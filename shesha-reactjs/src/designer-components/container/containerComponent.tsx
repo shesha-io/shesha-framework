@@ -156,9 +156,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IContainerComponentProps>(6, (prev) => {
-        return { ...prev, shadowStyle: 'none' };
-      })
       .add<IContainerComponentProps>(7, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
