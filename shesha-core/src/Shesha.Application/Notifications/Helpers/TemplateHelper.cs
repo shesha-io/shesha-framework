@@ -7,6 +7,7 @@ namespace Shesha.Notifications.Helpers
 {
     public static class TemplateHelper
     {
+        // TODO: review and this implementation
         public static string ReplacePlaceholders<TData>(string template, TData data)
         {
             if (data == null)
@@ -22,11 +23,9 @@ namespace Shesha.Notifications.Helpers
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .FirstOrDefault(prop => string.Equals(prop.Name, propertyName, StringComparison.OrdinalIgnoreCase));
 
-                if (propertyInfo == null)
-                    throw new ArgumentException($"Property '{propertyName}' not found on {data.GetType().Name}");
-
-                var value = propertyInfo.GetValue(data)?.ToString() ?? string.Empty;
-                return value;
+                return propertyInfo != null
+                    ? propertyInfo.GetValue(data)?.ToString() ?? string.Empty
+                    : string.Empty;
             });
         }
     }

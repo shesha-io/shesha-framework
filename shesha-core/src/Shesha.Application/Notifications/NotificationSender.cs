@@ -204,9 +204,8 @@ namespace Shesha.Notifications
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
             // Save attachments if specified and allowed
-            if (attachments != null && attachments.Any())
+            if (attachments != null && attachments.Any() && channelConfig.SupportsAttachment && type.AllowAttachments)
             {
-                if(!(type.AllowAttachments && channelConfig.SupportsAttachment)) throw new UserFriendlyException("Attachments are not allowed for this notification type or channel.");
                 foreach (var attachmentDto in attachments)
                 {
                     var file = await _storedFileRepository.GetAsync(attachmentDto.StoredFileId);
