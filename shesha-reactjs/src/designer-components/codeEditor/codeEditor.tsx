@@ -63,6 +63,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         cancelText: 'No',
         onOk() {
           setInternalValue(null);
+          setShowDialog(false);
           if (props.onChange) props.onChange(null);
         }
       });
