@@ -5,6 +5,7 @@ import { isStyledColumn } from '../dataTable/interfaces';
 import classNames from 'classnames';
 import { getColumnAnchored } from '@/utils';
 import { getAnchoredCellStyleAccessor } from '../dataTable/utils';
+import { useActualContextExecutionExecutor } from '@/hooks/useActualContextExecution';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -30,9 +31,14 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex }) 
   const { styles } = useStyles();
   const { key, style, ...restProps } = cell.getCellProps(cellProps);
 
-  let cellStyle = isStyledColumn(cell.column)
-    ? cell.column.cellStyleAccessor({ row: cell.row.original, value: cell.value })
-    : undefined;
+  let cellStyle: React.CSSProperties = useActualContextExecutionExecutor(
+    (context) => {
+      return isStyledColumn(cell.column)
+        ? cell.column.cellStyleAccessor(context)
+        : undefined;
+    },
+    { row: cell.row.original, value: cell.value }
+  );
 
   const anchored = getColumnAnchored((cell?.column as any)?.anchored);
 

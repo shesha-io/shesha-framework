@@ -1,6 +1,5 @@
-import { IStyleType } from "@/index";
 
-export const initialValues = (): IStyleType => {
+export const initialValues = (): any => {
     return {
         background: { type: 'color' },
         font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },

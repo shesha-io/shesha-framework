@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Entities;
+﻿using Abp.Collections.Extensions;
+using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using AutoMapper.Internal;
 using Castle.Core.Internal;
@@ -7,17 +8,16 @@ using NHibernate;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
-using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 using NHibernate.Type;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Generators;
 using Shesha.NHibernate.Attributes;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Generators;
 using Shesha.NHibernate.UserTypes;
-using Shesha.NHibernate.Utilites;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -28,8 +28,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
+using ByCode = NHibernate.Mapping.ByCode;
 using NHcfg = NHibernate.Cfg;
 using NHGens = NHibernate.Mapping.ByCode.Generators;
 using NMIMPL = NHibernate.Mapping.ByCode.Impl;
@@ -47,9 +47,11 @@ namespace Shesha.NHibernate.Maps
     public class Conventions
     {
         private LazyRelation _defaultLazyRelation;
+        private readonly INameGenerator _nameGenerator;
 
-        public Conventions(Func<Type, Action<IIdMapper>> idMapper = null)
+        public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>> idMapper = null)
         {
+            _nameGenerator = nameGenerator;
             _entitiesToMap = new List<Type>();
 
             var lazyRelation = Enum.TryParse(ConfigurationManager.AppSettings["NhConventions:DefaultLazyRelation"],
@@ -72,11 +74,12 @@ namespace Shesha.NHibernate.Maps
                     return (id =>
                     {
                         id.Generator(NHGens.HighLow, g => g.Params(
-                            new { 
+                            new
+                            {
                                 table = "Frwk_HiLoSequences".DoubleQuote(), // Important: NH doesn't apply Naming Strategy specified in the configuration, we have to quote names manually here
                                 column = "NextValue".DoubleQuote(),
-                                sequence = "FrameworkSequence", 
-                                max_lo = "100" 
+                                sequence = "FrameworkSequence",
+                                max_lo = "100"
                             }));
                     });
                 }
@@ -138,12 +141,23 @@ namespace Shesha.NHibernate.Maps
             mapper.IsOneToMany((mi, declared) =>
             {
                 if (Attribute.IsDefined(mi, (typeof(ManyToManyAttribute))) ||
-                    Attribute.IsDefined(mi, (typeof(OneToOneAttribute))))
+                    Attribute.IsDefined(mi, (typeof(OneToOneAttribute)))
+                    )
                 {
                     return false;
                 }
 
                 return declared || _defaultMapper.ModelInspector.IsOneToMany(mi);
+            });
+
+            mapper.IsManyToMany((mi, declared) =>
+            {
+                if (Attribute.IsDefined(mi, (typeof(ManyToManyAttribute))))
+                {
+                    return true;
+                }
+
+                return declared || _defaultMapper.ModelInspector.IsManyToAny(mi);
             });
 
             mapper.IsComponent((mi, declared) =>
@@ -173,16 +187,6 @@ namespace Shesha.NHibernate.Maps
                 }
 
                 return declared || _defaultMapper.ModelInspector.IsProperty(mi);
-            });
-
-            mapper.IsManyToMany((mi, declared) =>
-            {
-                if (Attribute.IsDefined(mi, (typeof(ManyToManyAttribute))))
-                {
-                    return true;
-                }
-
-                return declared || _defaultMapper.ModelInspector.IsManyToAny(mi);
             });
 
             mapper.IsPersistentProperty((mi, declared) =>
@@ -249,12 +253,12 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapComponent += (modelInspector, member, propertyCustomizer) =>
             {
-                
+
             };
 
             mapper.BeforeMapProperty += (modelInspector, member, propertyCustomizer) =>
             {
-                var propertyType = member.LocalMember.GetPropertyOrFieldType();
+                var propertyType = ByCode.TypeExtensions.GetPropertyOrFieldType(member.LocalMember);
 
                 var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
                 if (lazyAttribute != null)
@@ -293,7 +297,7 @@ namespace Shesha.NHibernate.Maps
                     return;
                 }
 
-                if (propertyType.IsAssignableTo(typeof(ConfigurationItemIdentifier))) 
+                if (propertyType.IsAssignableTo(typeof(ConfigurationItemIdentifier)))
                 {
                     var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType);
                     var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Module));
@@ -358,7 +362,7 @@ namespace Shesha.NHibernate.Maps
             }
 
             //mapper.BeforeMapIdBag
-            
+
             mapper.IsPersistentId((mi, d) =>
             {
                 var isId = mi.Name.Equals("Id", StringComparison.InvariantCultureIgnoreCase);
@@ -480,7 +484,7 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapOneToOne += (modelInspector, member, map) =>
             {
-                map.Cascade(Cascade.All);
+                map.Cascade(ByCode.Cascade.All);
                 map.Constrained(true);
                 map.Fetch(FetchKind.Join);
                 map.ForeignKey("none");
@@ -509,8 +513,8 @@ namespace Shesha.NHibernate.Maps
                }
 
                var cascadeAttribute = propertyPath.LocalMember.GetAttribute<CascadeAttribute>(true);
-               map.Cascade(cascadeAttribute?.Cascade ?? Cascade.Persist);
-               map.Class(propertyPath.LocalMember.GetPropertyOrFieldType());
+               map.Cascade(cascadeAttribute?.Cascade ?? ByCode.Cascade.Persist);
+               map.Class(ByCode.TypeExtensions.GetPropertyOrFieldType(propertyPath.LocalMember));
            };
 
             mapper.BeforeMapBag += (modelInspector, propertyPath, map) =>
@@ -521,7 +525,7 @@ namespace Shesha.NHibernate.Maps
                 else
                     map.Key(keyMapper => keyMapper.Column(propertyPath.GetContainerEntity(modelInspector).Name + "Id"));
 
-                map.Cascade(Cascade.All);
+                map.Cascade(ByCode.Cascade.All);
                 map.Lazy(CollectionLazy.Lazy);
 
                 var bagMapper = map as NMIMPL.BagMapper;
@@ -530,29 +534,56 @@ namespace Shesha.NHibernate.Maps
 
                 if (manyToManyAttribute != null)
                 {
-                    map.Cascade(Cascade.None);
-
-                    if (!string.IsNullOrEmpty(manyToManyAttribute.Table))
-                        map.Table(manyToManyAttribute.Table);
-
-                    if (!string.IsNullOrEmpty(manyToManyAttribute.KeyColumn))
-                        map.Key(keyMapper => keyMapper.Column(manyToManyAttribute.KeyColumn));
-                    if (!string.IsNullOrEmpty(manyToManyAttribute.Where))
-                        map.Where(manyToManyAttribute.Where);
-                    if (!string.IsNullOrEmpty(manyToManyAttribute.OrderBy))
-                        map.OrderBy(manyToManyAttribute.OrderBy);
-                }
-                else
-                {
-                    if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType)) 
+                    if (!manyToManyAttribute.AutoGeneration)
                     {
-                        //TODO: Check IsDeletedColumn for Many-To-Many
-                        map.Filter("SoftDelete", m =>
-                        {
-                        });
-                        // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
+                        map.Cascade(ByCode.Cascade.None);
+
+                        if (!string.IsNullOrEmpty(manyToManyAttribute.Table))
+                            map.Table(manyToManyAttribute.Table);
+
+                        if (!string.IsNullOrEmpty(manyToManyAttribute.KeyColumn))
+                            map.Key(keyMapper => keyMapper.Column(manyToManyAttribute.KeyColumn));
+                        if (!string.IsNullOrEmpty(manyToManyAttribute.Where))
+                            map.Where(manyToManyAttribute.Where);
+                        if (!string.IsNullOrEmpty(manyToManyAttribute.OrderBy))
+                            map.OrderBy(manyToManyAttribute.OrderBy);
+                    }
+                    else
+                    {
+                        map.Cascade(ByCode.Cascade.None);
+
+                        var (tableName, parentTableName, childTableName, parentColumnName, childColumnName) =
+                            _nameGenerator.GetAutoManyToManyTableNames(propertyPath.LocalMember);
+                        map.Schema(_nameGenerator.AutoGeneratorDbSchema);
+                        tableName = manyToManyAttribute.Table.IsNullOrEmpty() ? tableName : manyToManyAttribute.Table;
+                        map.Table(tableName);
+                        parentColumnName = manyToManyAttribute.KeyColumn.IsNullOrEmpty() ? parentColumnName : manyToManyAttribute.KeyColumn;
+                        map.Key(keyMapper => keyMapper.Column(parentColumnName));
+
+                        if (!string.IsNullOrEmpty(manyToManyAttribute.Where))
+                            map.Where(manyToManyAttribute.Where);
+                        if (!string.IsNullOrEmpty(manyToManyAttribute.OrderBy))
+                            map.OrderBy(manyToManyAttribute.OrderBy);
+
+                        /* AS: Experiments for using one table for linking two entities with several list properties with the same entity types
+                        map.Where($"PropertyName = '{propertyPath.LocalMember.Name}'");
+                        map.SqlInsert($"INSERT INTO {tableName} (Id, {parentColumnName}, {childColumnName}, PropertyName) VALUES (NEWID(), ?, ?, '{propertyPath.LocalMember.Name}')", SqlCheck.None);
+                        map.SqlUpdate("-- skip update MultiEntityReference table", SqlCheck.None);
+                        map.SqlDelete("-- skip update MultiEntityReference table", SqlCheck.None);
+                        map.SqlDeleteAll("-- skip update MultiEntityReference table", SqlCheck.None);
+                        map.Persister(typeof(Persister));
+                        */
                     }
                 }
+                else if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
+                {
+                    //TODO: Check IsDeletedColumn for Many-To-Many
+                    map.Filter("SoftDelete", m =>
+                    {
+                    });
+                    // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
+                }
+
             };
 
             mapper.BeforeMapManyToMany += (modelInspector, propertyPath, map) =>
@@ -564,6 +595,12 @@ namespace Shesha.NHibernate.Maps
                 {
                     if (!string.IsNullOrEmpty(manyToManyAttribute.ChildColumn))
                         map.Column(manyToManyAttribute.ChildColumn);
+                    else if (manyToManyAttribute.AutoGeneration)
+                    {
+                        var (tableName, parentTableName, childTableName, parentColumnName, childColumnName) =
+                            _nameGenerator.GetAutoManyToManyTableNames(propertyPath.LocalMember);
+                        map.Column(childColumnName);
+                    }
                 }
             };
 
@@ -669,4 +706,19 @@ namespace Shesha.NHibernate.Maps
                 IsClassMapping(baseType);
         }
     }
+
+    /* AS: Experiments for using one tbale for linking two entities with several list properties with the same entity types
+    public class Persister : BasicCollectionPersister
+    {
+        public Persister(Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) : base(collection, cache, factory)
+        {
+        }
+
+        protected override SqlCommandInfo GenerateInsertRowString()
+        {
+            var res = base.GenerateInsertRowString();
+            return res;
+        }
+    }
+    */
 }

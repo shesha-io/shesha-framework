@@ -12,7 +12,7 @@ import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
-import { FormApi } from '@/providers/form/formApi';
+import { IFormApi } from '@/providers/form/formApi';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -21,7 +21,7 @@ export const NotConfiguredWarning: FC = () => {
 export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
-  form: FormApi,
+  form: IFormApi,
   contexts: object,
   globalState: object,
   setGlobalState: Function

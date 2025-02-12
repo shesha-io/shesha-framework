@@ -15,7 +15,6 @@ using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -193,6 +192,8 @@ namespace Shesha.DynamicEntities
                 ? $"{assembly.FullName}: found {toUpdate.Count()} entities to update"
                 : "{assembly.FullName}: existing entity configs are up to date");
 
+            var names = toUpdate.Select(x => x.db.Name).ToList();
+            
             foreach (var config in toUpdate)
             {
                 config.db.FriendlyName = config.code.Config.FriendlyName;
@@ -200,6 +201,12 @@ namespace Shesha.DynamicEntities
                 config.db.TableName = config.code.Config.TableName;
                 config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
+                
+                // restore entity if deleted
+                config.db.IsDeleted = false;
+                config.db.DeletionTime = null;
+                config.db.DeleterUserId = null;
+
 
                 if (config.attr != null && config.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration)
                     config.db.GenerateAppService = config.attr.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
@@ -389,6 +396,12 @@ namespace Shesha.DynamicEntities
                 itemsTypeProp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
                 itemsTypeProp.SortOrder = 0;
                 itemsTypeProp.ParentProperty = dbp;
+
+                // restore property
+                itemsTypeProp.IsDeleted = false;
+                itemsTypeProp.DeletionTime = null;
+                itemsTypeProp.DeleterUserId = null;
+
                 await _entityPropertyRepository.InsertOrUpdateAsync(itemsTypeProp);
 
                 await _entityPropertyRepository.UpdateAsync(dbp);
@@ -397,6 +410,35 @@ namespace Shesha.DynamicEntities
 
         private void MapProperty(PropertyMetadataDto src, EntityProperty dst)
         {
+            if (dst.DataType != src.DataType)
+            {
+                // update some properties if dataType is changed
+                dst.Suppress = !src.IsVisible;
+                dst.DataFormat = src.DataFormat;
+                dst.Min = src.Min;
+                dst.Max = src.Max;
+                dst.MinLength = src.MinLength;
+                dst.MaxLength = src.MaxLength;
+                dst.RegExp = src.RegExp;
+                dst.ValidationMessage = src.ValidationMessage;
+            }
+            else
+            {
+                dst.Suppress = !src.IsVisible || dst.Suppress;
+
+                // leave Data Format from DB property if exists because number format is always hardcoded
+                dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
+                dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
+                dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
+                dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);
+                dst.MaxLength = src.MaxLength.GetDefaultIfEmpty(dst.MaxLength);
+                dst.RegExp = src.RegExp.GetDefaultIfEmpty(dst.RegExp);
+
+                // leave validation message from DB property if exists
+                // To allow change validation message even it is hardcoded
+                dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
+            }
+
             dst.Name = src.Path;
             dst.DataType = src.DataType;
             dst.EntityType = src.EntityType;
@@ -404,22 +446,9 @@ namespace Shesha.DynamicEntities
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;
 
-            dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
-            dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
-            dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);
-            dst.MaxLength = src.MaxLength.GetDefaultIfEmpty(dst.MaxLength);
-            dst.Suppress = !src.IsVisible || dst.Suppress;
             dst.Audited = src.Audited || dst.Audited;
             dst.Required = src.Required || dst.Required;
             dst.ReadOnly = src.Readonly || dst.ReadOnly;
-            dst.RegExp = src.RegExp.GetDefaultIfEmpty(dst.RegExp);
-
-            // leave Data Format from DB property if exists because number format is always hardcoded
-            dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
-
-            // leave validation message from DB property if exists
-            // To allow change validation message even it is hardcoded
-            dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
 
             dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
             dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;

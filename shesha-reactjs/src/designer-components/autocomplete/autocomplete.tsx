@@ -7,8 +7,8 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles, useNestedPropertyMetadatAccessor } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
+import { useNestedPropertyMetadatAccessor } from '@/providers';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import {
   evaluateString,
   executeScriptSync,

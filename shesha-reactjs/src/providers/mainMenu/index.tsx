@@ -112,7 +112,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
     if (itemsToCheck.length > 0) {
       getFormPermissions(model.items, itemsToCheck);
     } else {
-      formPermissionedItems.current = [...model.items];
+      formPermissionedItems.current = Array.isArray(model.items) ? [...model.items] : [model.items];
       dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
     }
   };

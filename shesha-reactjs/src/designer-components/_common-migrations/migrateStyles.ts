@@ -1,13 +1,15 @@
+import { nanoid } from "@/utils/uuid";
 import { addPx } from "../_settings/utils";
-import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
+import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IStyleType & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
-export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IStyleType) => {
+export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style'>) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
-        const prevStyles: IInputStyles = screen ? prev[`${screen}`] : prev;
+        const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
+
         const border = (side) => ({
             ...prev?.border?.border?.[side],
             width: prevStyles?.borderSize as string || prev?.border?.border?.[side]?.width || defaults?.border?.border?.[side]?.width || '1px',
@@ -17,8 +19,22 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
 
         const heightFromSize = prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
         const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
+        const isColor = prevStyles.backgroundType === 'color' || prev.backgroundType === 'color';
+        const isBase64 = prevStyles.backgroundDataSource === 'base64' || prev.backgroundDataSource === 'base64';
+        const isUrl = prevStyles.backgroundDataSource === 'url' || prev.backgroundDataSource === 'url';
+        const isStoredFile = prevStyles.backgroundDataSource === 'storedFileId' || prev.backgroundDataSource === 'storedFileId';
+
+        const backgroundType = isColor ? 'color' : isBase64 ? 'image' : isUrl ? 'url' : isStoredFile ? 'storedFile' : 'color';
+        const backgroundUrl = prevStyles.backgroundUrl || prev.backgroundUrl;
+        const backgroundBase64 = prevStyles.backgroundBase64 || prev.backgroundBase64;
+        const backgroundStoredFileId = prevStyles.backgroundStoredFileId || prev.backgroundStoredFileId;
+        const backgroundColor = prevStyles.backgroundColor || prev.backgroundColor;
+        const backgroundRepeat = prevStyles.backgroundRepeat || prev.backgroundRepeat;
+        const backgroundCover = prevStyles.backgroundCover || prev.backgroundCover;
 
         return {
+            ...defaults,
+            ...prevStyles,
             size: prevStyles?.size,
             border: {
                 ...prev?.border,
@@ -33,22 +49,25 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                     left: border('left'),
                     right: border('right'),
                 },
-                radius: { all: prevStyles?.borderRadius || 8 },
+                radius: { all: prevStyles?.borderRadius || defaults?.border?.radius?.all || 8 },
             },
             background: {
-                type: defaults?.background?.type || 'color',
-                color: prevStyles?.backgroundColor || defaults?.background?.color,
-                repeat: 'no-repeat',
-                size: 'cover',
+                type: backgroundType,
+                color: backgroundColor || defaults?.background?.color,
+                repeat: backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
+                size: backgroundCover || defaults?.background?.size || 'cover',
                 position: 'center',
-                gradient: { direction: 'to right', colors: {} }
+                gradient: { direction: 'to right', colors: {} },
+                url: backgroundUrl || defaults?.background?.url || '',
+                storedFile: { id: backgroundStoredFileId || null },
+                uploadFile: { uid: nanoid(), name: '', url: backgroundBase64 },
             },
             font: {
-                color: prevStyles?.fontColor || prev?.font?.color,
-                type: prev?.font?.type || 'Segoe UI',
-                align: prev?.font?.align || 'left',
-                size: prevStyles?.fontSize as number || fontSizeFromSize || prev?.font?.size || 14,
-                weight: prevStyles?.fontWeight as string || prev?.font?.weight || '400',
+                color: prevStyles?.fontColor || defaults?.font?.color,
+                type: prevStyles?.font?.type || defaults?.font?.type || 'Segoe UI',
+                align: prevStyles?.font?.align || defaults?.font?.align || 'left',
+                size: prevStyles?.fontSize as number || fontSizeFromSize || defaults?.font?.size || 14,
+                weight: prevStyles?.fontWeight as string || defaults?.font?.weight || '400',
             },
             dimensions: {
                 width: prev.block ? '100%' : addPx(prevStyles?.width) || addPx(prev?.dimensions?.width) || defaults?.dimensions?.width,
@@ -59,22 +78,12 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: IS
                 maxWidth: addPx(prev?.dimensions?.maxWidth) || defaults?.dimensions?.maxWidth,
             },
             shadow: {
-                offsetX: 0,
-                offsetY: 0,
-                color: '#000',
-                blurRadius: 0,
-                spreadRadius: 0
+                offsetX: defaults?.shadow?.offsetX || 0,
+                offsetY: defaults?.shadow?.offsetY || 0,
+                color: defaults?.shadow?.color || '#000',
+                blurRadius: defaults?.shadow?.blurRadius || 0,
+                spreadRadius: defaults?.shadow?.spreadRadius || 0
             },
-            ...(defaults?.position && {
-                position: {
-                    value: 'relative',
-                    offset: 'top',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0
-                }
-            }),
             ...(defaults?.display && { display: defaults?.display || 'block' }),
         };
     };
