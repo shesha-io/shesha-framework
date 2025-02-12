@@ -1,7 +1,6 @@
 import { IStyleType } from "@/index";
 
 export const defaultStyles = (prev): IStyleType => {
-  //22 30 38
   const { size } = prev;
 
   return {

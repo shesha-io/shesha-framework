@@ -1,9 +1,8 @@
 import React, { CSSProperties, ReactNode } from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, useForm, useFormData } from '@/providers';
+import { IInputStyles, FormMarkup, IConfigurableFormComponent, useForm, useFormData } from '@/providers';
 import settingsFormJson from './settingsForm.json';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/container/interfaces';
@@ -105,7 +104,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
             return containerHolder();
           }
           return (
-            <a href={href} target={target}className="sha-link"  style={getStyle(style, data)}>
+            <a href={href} target={target} className="sha-link" style={getStyle(style, data)}>
               {containerHolder()}
             </a>
           );
@@ -126,7 +125,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
     return customProps;
   },
   migrator: (m) => m
-    .add<ILinkProps>(0, (prev) => ({...prev} as ILinkProps))
+    .add<ILinkProps>(0, (prev) => ({ ...prev } as ILinkProps))
     .add<ILinkProps>(1, (prev) => {
       return {
         ...prev,
@@ -136,13 +135,13 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       };
     })
     .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ILinkProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ILinkProps>(4, (prev) => {
       const styles: IInputStyles = {
         style: prev.style
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
 

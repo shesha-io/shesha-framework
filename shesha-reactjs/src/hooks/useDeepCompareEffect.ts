@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 /**
  * Custom version of isEqual to handle function comparison
  */
-const isEqual = (x: any, y: any) =>
+export const isEqual = (x: any, y: any) =>
   isEqualWith(x, y, (a, b) => {
     // Deal with the function comparison case
     if (typeof a === 'function' && typeof b === 'function') {

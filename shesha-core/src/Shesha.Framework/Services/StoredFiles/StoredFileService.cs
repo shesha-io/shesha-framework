@@ -152,6 +152,14 @@ namespace Shesha.Services.StoredFiles
                 File.Delete(path);
         }
 
-      
+        public override async Task<bool> FileExistsAsync(Guid id)
+        {
+            var lastVersion = await GetLastVersionAsync(id);
+            if (lastVersion == null)
+                return false;
+
+            var path = PhysicalFilePath(lastVersion);
+            return File.Exists(path);                
+        }
     }
 }
