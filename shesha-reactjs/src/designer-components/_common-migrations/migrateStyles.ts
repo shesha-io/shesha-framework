@@ -33,16 +33,12 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
         const backgroundCover = prevStyles.backgroundCover || prev.backgroundCover;
 
         return {
-            ...defaults,
-            ...prevStyles,
             size: prevStyles?.size,
             border: {
-                ...prev?.border,
                 hideBorder: prevStyles?.hideBorder || false,
                 selectedCorner: 'all',
                 selectedSide: 'all',
                 border: {
-                    ...prev?.border?.border,
                     all: border('all'),
                     top: border('top'),
                     bottom: border('bottom'),

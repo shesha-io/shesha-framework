@@ -94,7 +94,7 @@ export const getItemSettings = (data) => {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",
                                                     type: "textArea",
                                                     propertyName: "tooltip",
-                                                    label: "Group Tooltip",
+                                                    label: "Tooltip",
                                                     labelAlign: "right",
                                                     parentId: "root",
                                                     hidden: false,
