@@ -266,6 +266,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         >
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
+
         <SettingsFormItem name="canEditInlineExpression" label="Can edit inline expression" hidden={model.canEditInline !== 'js'}>
           <CodeEditor
             propertyName="canEditInlineExpression"
@@ -309,6 +310,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={crudConstants}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="newRowCapturePosition" label="New row capture position" hidden={model.canAddInline === 'no'}>
           <Select disabled={readOnly} options={rowCapturePositions} />
         </SettingsFormItem>
@@ -359,6 +361,17 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={onRowSaveConstants}
           />
         </SettingsFormItem>
+
+        <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On row save success"
+            description="Custom business logic to be executed after successfull saving of new/updated row."
+            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
+          />
+        </SettingsFormItem>
+
         <SettingsFormItem name="canDeleteInline" label="Can delete inline">
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
@@ -383,16 +396,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Events' collapsedByDefault>
-      <SettingsFormItem name="onRowSaveSuccess" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
-          <ConfigurableActionConfigurator
-            editorConfig={null}
-            level={1}
-            label="On Row Save Success"
-            description="Custom business logic to be executed after the user successfully saves a table row."
-            exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
-          />
-        </SettingsFormItem>
-
         <SettingsFormItem name="onRowClick" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
             editorConfig={null}

@@ -325,8 +325,8 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       onSelectedIdsChanged(selectedRows.map(row => row.id)); // Keep the original ID callback
 
-      if (onRowSelect && !isFirstRender) {
-        isFirstRender.current = true;
+      if (onRowSelect && Boolean(isFirstRender) === true) {
+        isFirstRender.current = false;
         performOnRowSelect(selectedRows);
       }
     }
