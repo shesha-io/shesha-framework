@@ -194,6 +194,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 readOnly={readOnly}
                 convertToFullId={false}
                 value={value}
+                size='small'
                 onChange={onChange}
             />;
         case 'labelValueEditor':
