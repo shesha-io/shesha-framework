@@ -15,6 +15,7 @@ import {
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { getPositionInputs } from '../_settings/utils/position/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
 
@@ -615,20 +616,7 @@ export const getSettings = (data) => {
                                   label: "Size",
                                   hideLabel: true,
                                   propertyName: "background.size",
-                                  dropdownOptions: [
-                                    {
-                                      value: "cover",
-                                      label: "Cover"
-                                    },
-                                    {
-                                      value: "contain",
-                                      label: "Contain"
-                                    },
-                                    {
-                                      value: "auto",
-                                      label: "Auto"
-                                    }
-                                  ],
+                                  dropdownOptions: sizeOptions,
                                 },
                                 {
                                   type: 'customDropdown',
@@ -636,69 +624,15 @@ export const getSettings = (data) => {
                                   label: "Position",
                                   hideLabel: true,
                                   propertyName: "background.position",
-                                  dropdownOptions: [
-                                    {
-                                      value: "center",
-                                      label: "Center"
-                                    },
-                                    {
-                                      value: "top",
-                                      label: "Top"
-                                    },
-                                    {
-                                      value: "left",
-                                      label: "Left"
-                                    },
-                                    {
-                                      value: "right",
-                                      label: "Right"
-                                    },
-                                    {
-                                      value: "bottom",
-                                      label: "Bottom"
-                                    },
-                                    {
-                                      value: "top left",
-                                      label: "Top Left"
-                                    },
-                                    {
-                                      value: "top right",
-                                      label: "Top Right"
-                                    },
-                                    {
-                                      value: "bottom left",
-                                      label: "Bottom Left"
-                                    },
-                                    {
-                                      value: "bottom right",
-                                      label: "Bottom Right"
-                                    }
-                                  ],
+                                  dropdownOptions: positionOptions,
                                 },
                                 {
-                                  type: 'dropdown',
+                                  type: 'radio',
                                   id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  dropdownOptions: [
-                                    {
-                                      value: "repeat",
-                                      label: "repeatIcon"
-                                    },
-                                    {
-                                      value: "repeat-x",
-                                      label: "repeatXIcon"
-                                    },
-                                    {
-                                      value: "repeat-y",
-                                      label: "repeatYIcon"
-                                    },
-                                    {
-                                      value: "no-repeat",
-                                      label: "noRepeatIcon"
-                                    }
-                                  ],
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })

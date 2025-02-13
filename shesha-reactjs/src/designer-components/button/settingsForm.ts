@@ -486,13 +486,12 @@ export const getSettings = (data) => {
                                   dropdownOptions: positionOptions,
                                 },
                                 {
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  type: 'customDropdown',
-                                  id: 'backgroundStyleRow-repeat',
-                                  width: 70,
-                                  dropdownOptions: repeatOptions,
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })

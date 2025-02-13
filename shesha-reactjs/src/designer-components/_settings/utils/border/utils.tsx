@@ -96,7 +96,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
                 propertyName: path ? `${path}.border.hideBorder` : "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
-                tooltip: "Select a border side to which the style will be applied",
+                tooltip: "Hide border",
             },
             {
                 label: "Select Side",

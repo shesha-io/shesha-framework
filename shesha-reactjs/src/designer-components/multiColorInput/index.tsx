@@ -9,7 +9,7 @@ import { SettingInput } from '../settingsInput/settingsInput';
 import { InputRow } from '../inputComponent';
 import { gradientDirectionOptions } from '../_settings/utils/background/utils';
 
-export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }) => {
+export const MultiColorInput = ({ value, onChange, readOnly, propertyName }) => {
     const { theme } = useTheme();
     const [colors, setColors] = useState(value);
 
@@ -19,7 +19,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
             onChange(defaultColors);
             setColors(defaultColors);
         }
-    }, [value, onChange, theme.application.primaryColor]);
+    }, []);
 
     return (
         <>
@@ -32,10 +32,9 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                             bordered={false}
                             closable={id !== '1' && id !== '2'}
                             onClose={() => {
-                                const newColors = { ...value };
-                                delete newColors[id];
-                                onChange(newColors);
-                                setColors(newColors);
+                                const { [id]: removed, ...rest } = value;
+                                onChange(rest);
+                                setColors(rest);
                             }}
                         >
                             <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='color' id={nanoid()} />
@@ -52,7 +51,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                         size='small'
                         onClick={() => {
                             const id = nanoid();
-                            onChange({ ...value, [id]: '#000000' });
+                            onChange({ ...colors, [id]: '#000000' });
                             setColors({ ...colors, [id]: '#000000' });
                         }}
                         disabled={readOnly}

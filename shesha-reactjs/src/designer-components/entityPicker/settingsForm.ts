@@ -4,7 +4,7 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
 
@@ -686,18 +686,7 @@ export const getSettings = (data) => {
                               propertyName: "background.type",
                               inputType: "radio",
                               tooltip: "Select a type of background",
-                              buttonGroupOptions: [
-                                {
-                                  value: "color",
-                                  icon: "FormatPainterOutlined",
-                                  title: "Color"
-                                },
-                                {
-                                  value: "gradient",
-                                  icon: "BgColorsOutlined",
-                                  title: "Gradient"
-                                },
-                              ],
+                              buttonGroupOptions: [...backgroundTypeOptions.slice(0, 2)],
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
@@ -742,20 +731,7 @@ export const getSettings = (data) => {
                                   label: "Size",
                                   hideLabel: true,
                                   propertyName: "background.size",
-                                  dropdownOptions: [
-                                    {
-                                      value: "cover",
-                                      label: "Cover"
-                                    },
-                                    {
-                                      value: "contain",
-                                      label: "Contain"
-                                    },
-                                    {
-                                      value: "auto",
-                                      label: "Auto"
-                                    }
-                                  ],
+                                  dropdownOptions: sizeOptions,
                                 },
                                 {
                                   type: 'customDropdown',
@@ -763,52 +739,15 @@ export const getSettings = (data) => {
                                   label: "Position",
                                   hideLabel: true,
                                   propertyName: "background.position",
-                                  dropdownOptions: [
-                                    {
-                                      value: "center",
-                                      label: "Center"
-                                    },
-                                    {
-                                      value: "top",
-                                      label: "Top"
-                                    },
-                                    {
-                                      value: "left",
-                                      label: "Left"
-                                    },
-                                    {
-                                      value: "right",
-                                      label: "Right"
-                                    },
-                                    {
-                                      value: "bottom",
-                                      label: "Bottom"
-                                    },
-                                    {
-                                      value: "top left",
-                                      label: "Top Left"
-                                    },
-                                    {
-                                      value: "top right",
-                                      label: "Top Right"
-                                    },
-                                    {
-                                      value: "bottom left",
-                                      label: "Bottom Left"
-                                    },
-                                    {
-                                      value: "bottom right",
-                                      label: "Bottom Right"
-                                    }
-                                  ],
+                                  dropdownOptions: positionOptions,
                                 },
                                 {
-                                  type: 'dropdown',
+                                  type: 'radio',
                                   id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  dropdownOptions: repeatOptions,
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })

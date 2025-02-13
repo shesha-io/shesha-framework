@@ -1,6 +1,7 @@
 import React from "react";
 import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
+import { customIcons } from "@/designer-components/inputComponent/icons";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -79,11 +80,11 @@ export const backgroundTypeOptions: IRadioOption[] = [
     { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
 ];
 
-export const repeatOptions: IDropdownOption[] = [
-    { value: 'no-repeat', label: 'noRepeatIcon' },
-    { value: 'repeat', label: 'repeatIcon' },
-    { value: 'repeat-x', label: 'repeatXIcon' },
-    { value: 'repeat-y', label: 'repeatYIcon' },
+export const repeatOptions: IRadioOption[] = [
+    { value: 'no-repeat', title: 'No Repeat', icon: customIcons['noRepeatIcon'] },
+    { value: 'repeat', title: 'Repeat', icon: customIcons['repeatIcon'] },
+    { value: 'repeat-x', title: 'Repeat X', icon: customIcons['repeatXIcon'] },
+    { value: 'repeat-y', title: 'Repeat Y', icon: customIcons['repeatYIcon'] },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];

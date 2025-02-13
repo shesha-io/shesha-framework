@@ -42,7 +42,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
         if (typeof icon === 'string') {
             return icons[icon] ?
-                <ShaIcon iconName={icon as IconType} style={style} /> :
+                <Tooltip title={hint}><ShaIcon iconName={icon as IconType} style={style} /></Tooltip> :
                 customIcons[icon] ?
                     <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
                     : icon === 'sectionSeparator' ?
@@ -113,7 +113,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon ?? value.toString().charAt(0).toUpperCase() + value.toString().substring(1), null, tooltip)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null, tooltip)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
@@ -146,8 +146,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button disabled={readOnly}
-                defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
+            return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -171,7 +170,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 {...{ ...props, style: {} }}
             />;
         case 'referenceListAutocomplete':
-            return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size}/>;
+            return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
                 <QueryBuilder {...props} hideLabel={true}
@@ -184,10 +183,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'propertyAutocomplete':
             return <PropertyAutocomplete
                 id={props.id}
-                // style={getStyle(model?.style, formData)}
-                // dropdownStyle={getStyle(model?.dropdownStyle, formData)}
                 size={props.size}
-                // mode={props.mode}
                 readOnly={props.readOnly}
                 autoFillProps={props.autoFillProps ?? true}
                 value={value}
@@ -233,7 +229,6 @@ export interface IInputRowProps {
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
-    const icons = require('@ant-design/icons');
 
     return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
@@ -242,22 +237,13 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             const width = type === 'number' ? 100 :
                 type === 'button' ? 24 :
                     type === 'dropdown' ? 120 :
-                        type === 'radio' ? props.buttonGroupOptions.length * 30 :
+                        type === 'radio' ? props.buttonGroupOptions.length * 32 :
                             type === 'color' ? 24 :
                                 type === 'customDropdown' ? 120 : 50;
 
             return (
                 <SettingInput key={i + props.label}
                     {...props}
-                    {...(type === 'radio' && {
-                        buttonGroupOptions: props.buttonGroupOptions.map(({ value, title, icon }) => {
-                            if (!icons[`${icon}`]) {
-                                return ({ value, title, icon: null });
-                            }
-                            const IconComponent = icons[`${icon}`];
-                            return ({ value, title, icon: <IconComponent /> });
-                        })
-                    })}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />
