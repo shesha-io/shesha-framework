@@ -27,7 +27,7 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
-  onMouseOver?: (cellRef?: any, isContentOverflowing?: boolean) => void; 
+  onMouseOver?: (cellRef?: any, isContentOverflowing?: boolean) => void;
   showExpandedView?: boolean;
 }
 
@@ -67,6 +67,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineEditorComponents,
     inlineDisplayComponents,
     onMouseOver,
+    showExpandedView,
   } = props;
 
   const { styles } = useStyles();
@@ -117,9 +118,9 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell showExpandedView cell={cell} getCellRef={(cellRef, isContentOverflowing) => {
-onMouseOver(cellRef, isContentOverflowing);
-}} key={cellIndex} row={row.cells} rowIndex={index} />;
+          return <RowCell showExpandedView={showExpandedView} cell={cell} getCellRef={(cellRef, isContentOverflowing) => {
+            onMouseOver(cellRef, isContentOverflowing);
+          }} key={cellIndex} row={row.cells} rowIndex={index} />;
         })}
       </div>
     </CrudProvider>
