@@ -373,11 +373,7 @@ export const getSettings = (data) => {
                         {
                           label: 'Large',
                           value: '80%',
-                        },
-                        {
-                          label: 'Custom',
-                          value: 'custom',
-                        },
+                        }
                       ]
                     })
                     .toJson()]
@@ -701,21 +697,6 @@ export const getSettings = (data) => {
                                   icon: "BgColorsOutlined",
                                   title: "Gradient"
                                 },
-                                {
-                                  value: "image",
-                                  icon: "PictureOutlined",
-                                  title: "Image"
-                                },
-                                {
-                                  value: "url",
-                                  icon: "LinkOutlined",
-                                  title: "URL"
-                                },
-                                {
-                                  value: "storedFile",
-                                  icon: "DatabaseOutlined",
-                                  title: "Stored File"
-                                }
                               ],
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
@@ -749,50 +730,10 @@ export const getSettings = (data) => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
-                              id: "backgroundStyle-url",
-                              parentId: "backgroundStylePnl",
-                              inputs: [{
-                                type: 'text',
-                                id: 'backgroundStyle-url',
-                                propertyName: "background.url",
-                                jsSetting: false,
-                                label: "URL",
-                              }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                              id: "backgroundStyle-image",
-                              parentId: 'backgroundStylePnl',
-                              inputs: [{
-                                type: 'imageUploader',
-                                id: 'backgroundStyle-image',
-                                propertyName: 'background.uploadFile',
-                                label: "Image",
-                                jsSetting: false,
-                              }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                              id: "backgroundStyleRow-storedFile",
-                              parentId: 'backgroundStylePnl',
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'text',
-                                  id: 'backgroundStyle-storedFile',
-                                  jsSetting: false,
-                                  propertyName: "background.storedFile.id",
-                                  label: "File ID"
-                                }
-                              ]
-                            })
-                            .addSettingsInputRow({
                               id: "backgroundStyleRow-controls",
                               parentId: 'backgroundStyleRow',
                               inline: true,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {

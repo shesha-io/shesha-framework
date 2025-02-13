@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Select, Space } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Select, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDropdownOption } from '@/designer-components/_settings/utils/background/interfaces';
 
@@ -33,7 +33,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     };
 
     const addCustomOption = () => {
-        setCustomOptions(prev => [...prev, customOption]);
+        setCustomOptions(() => [...options, customOption]);
         clearInputs();
     };
 
@@ -52,7 +52,9 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
                                     value={customOption}
                                     onChange={(e) => setCustomOption(e.target.value)}
                                     size='small'
-                                    prefix={'value: '}
+                                    prefix={<Tooltip title={'Add custom option'} placement="top">
+                                        <QuestionCircleOutlined style={{ marginLeft: '2px' }} />
+                                    </Tooltip>}
                                     onClick={(e) => e.stopPropagation()}
                                 />
                             </Space>
