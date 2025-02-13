@@ -56,8 +56,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    console.log("Background::", model.background);
-
     const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
     const dimensions = model?.dimensions;
     const border = model?.border;
