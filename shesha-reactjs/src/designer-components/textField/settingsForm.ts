@@ -164,6 +164,12 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
+                            .addSettingsInput({
+                                propertyName: 'spellCheck',
+                                id: 'spellCheck-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Spell Check',
+                                inputType: 'switch',
+                            })
                             .toJson()
                         ]
                     },

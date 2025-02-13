@@ -1,15 +1,14 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { EditableTagGroup } from '@/components';
+import { EditableTagGroup, IconPicker } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
+import { executeScript, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
-import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 import { useStyles } from './styles';
 import { customIcons } from './icons';
@@ -53,8 +52,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
         return icon;
     };
-
-    const allData = useAvailableConstantsData();
 
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
         if (!availableConstantsExpression?.trim())
@@ -137,8 +134,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'codeEditor':
             return editor;
         case 'iconPicker':
-            return <IconPickerWrapper iconSize={20}
-                defaultValue={defaultValue} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPicker iconSize={20}
+                defaultValue={defaultValue} selectBtnSize={size} value={value} readOnly={readOnly} onIconChange={onChange} />;
         case 'imageUploader':
             return <ImagePicker
                 value={value}

@@ -1,5 +1,4 @@
 import React from "react";
-import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
 import { customIcons } from "@/designer-components/inputComponent/icons";
 
@@ -73,11 +72,31 @@ export const gradientDirectionOptions: IDropdownOption[] = [
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [
-    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
-    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
-    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
-    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
-    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
+    {
+        value: "color",
+        icon: "FormatPainterOutlined",
+        title: "Color"
+    },
+    {
+        value: "gradient",
+        icon: "BgColorsOutlined",
+        title: "Gradient"
+    },
+    {
+        value: "image",
+        icon: "PictureOutlined",
+        title: "Image"
+    },
+    {
+        value: "url",
+        icon: "LinkOutlined",
+        title: "URL"
+    },
+    {
+        value: "storedFile",
+        icon: "DatabaseOutlined",
+        title: "Stored File"
+    },
 ];
 
 export const repeatOptions: IRadioOption[] = [
