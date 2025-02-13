@@ -7,12 +7,14 @@ import { GENERIC_ENTITIES_ENDPOINT, LEGACY_REFERENCE_LISTS_MODULE_NAME } from '@
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import HelpTextPopover from '@/components/helpTextPopover';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IReferenceListAutocompleteRuntimeProps {
     value?: IReferenceListIdentifier;
     onChange?: (value?: IReferenceListIdentifier) => void;
     readOnly?: boolean;
     maxResultCount?: number;
+    size: SizeType;
 }
 
 interface IOption {
@@ -256,6 +258,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
             onClear={onClear}
             placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
             disabled={valueFetcher.loading || props.readOnly}
+            size={props?.size}
 
             value={autocompleteText}
             onChange={setAutocompleteText}

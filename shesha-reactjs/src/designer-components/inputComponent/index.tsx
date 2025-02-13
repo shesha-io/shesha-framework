@@ -26,6 +26,7 @@ import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 import { ImagePicker } from '../imagePicker';
+import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -169,6 +170,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 size={size}
                 {...{ ...props, style: {} }}
             />;
+        case 'referenceListAutocomplete':
+            return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size}/>;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
                 <QueryBuilder {...props} hideLabel={true}

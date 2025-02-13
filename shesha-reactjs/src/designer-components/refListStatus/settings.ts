@@ -43,12 +43,12 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
-                            .addRefListAutocomplete({
+                            .addSettingsInput({
                                 id: '5c826b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                                inputType: 'referenceListAutocomplete',
                                 propertyName: 'referenceListId',
                                 label: 'Reference list',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                size: 'small',
                                 validate: {
                                     required: true,
                                 },
@@ -58,7 +58,6 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
-
                                     {
                                         id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
                                         type: 'textArea',
@@ -74,14 +73,6 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
-                                    {
-                                        id: '5c813b1a-04c5-7758-ac0f-cbcbae6b3bd4',
-                                        type: 'editModeSelector',
-                                        propertyName: 'editMode',
-                                        label: 'Edit Mode',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
                                     {
                                         id: '5c813b1a-04c5-4678-ac0f-cbcbae6b3bd4',
                                         type: 'switch',
