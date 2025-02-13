@@ -425,7 +425,9 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
-        onMouseOver={(activeCell, isContentOverflowing) => {setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText) }}
+        onMouseOver={(activeCell, isContentOverflowing) => {
+setActiveCell(activeCell); setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText); 
+}}
       />
     );
   };
@@ -560,8 +562,12 @@ export const ReactTable: FC<IReactTableProps> = ({
               overflowX: 'unset',
             }}
             {...getTableBodyProps()}
-            onMouseEnter={() => { setAllowExpandedView(true) }}
-            onMouseLeave={() => { setAllowExpandedView(false) }}
+            onMouseEnter={() => {
+ setAllowExpandedView(true); 
+}}
+            onMouseLeave={() => {
+ setAllowExpandedView(false); 
+}}
           >
             {rows?.length === 0 && !loading && (
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />

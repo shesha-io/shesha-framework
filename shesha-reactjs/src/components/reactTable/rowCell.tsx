@@ -57,10 +57,10 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
     return false;
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     const cellParentRefRect = cellParentRef.current.getBoundingClientRect();
     setcellParentRefWidth(cellParentRefRect.width);
-  },[cellParentRef]);
+  }, [cellParentRef]);
 
   return (
     <div
@@ -77,9 +77,10 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, ce
       <div
         ref={cellRef}
         className={showExpandedView && styles.shaCellParent}
-        onMouseOver={() => {showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null)}}
-        style={{ maxWidth: cellParentRefWidth + "px"}}
-      >
+        onMouseOver={() => {
+          void (showExpandedView ? getCellRef(cellRef, checkOverflow()) : getCellRef(null, null));
+        }}
+        style={{ maxWidth: cellParentRefWidth + "px" }}>
         {cell.render('Cell')}
 
       </div>

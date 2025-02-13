@@ -67,7 +67,6 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineEditorComponents,
     inlineDisplayComponents,
     onMouseOver,
-    showExpandedView,
   } = props;
 
   const { styles } = useStyles();
@@ -118,7 +117,9 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell showExpandedView cell={cell} getCellRef={(cellRef, isContentOverflowing) => {onMouseOver(cellRef, isContentOverflowing)}} key={cellIndex} row={row.cells} rowIndex={index} />;
+          return <RowCell showExpandedView cell={cell} getCellRef={(cellRef, isContentOverflowing) => {
+onMouseOver(cellRef, isContentOverflowing);
+}} key={cellIndex} row={row.cells} rowIndex={index} />;
         })}
       </div>
     </CrudProvider>
