@@ -778,7 +778,7 @@ namespace Shesha.StoredFiles
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
                 return StatusCode(304);
 
-            var fileContents = await _fileService.GetStreamAsync(fileVersion);
+            using var fileContents = await _fileService.GetStreamAsync(fileVersion);
 
             // Get the file name
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileVersion.FileName);
@@ -786,27 +786,23 @@ namespace Shesha.StoredFiles
             string fileName = $"{fileNameWithoutExtension}_w{width}h{height}{fileExtension}";
 
             // Read stream and reset position
-            var stream = new MemoryStream();
+            using var stream = new MemoryStream();
             await fileContents.CopyToAsync(stream);
-            fileContents.Dispose();
             stream.Seek(0, SeekOrigin.Begin);
 
             // Decode the image
-            var originalImage = SKBitmap.Decode(stream);
+            using var originalImage = SKBitmap.Decode(stream);
 
             // Generate the thumbnail
             var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
-            originalImage.Dispose();
 
             // Convert the resized image to a byte array
-            var skImage = SKImage.FromBitmap(resizedImage);
-            var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
-            skImage.Dispose();
+            using var skImage = SKImage.FromBitmap(resizedImage);
+            using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
 
             // Save to result stream
-            var resultStream = new MemoryStream();
+            using var resultStream = new MemoryStream();
             data.SaveTo(resultStream);
-            data.Dispose();
             resultStream.Seek(0, SeekOrigin.Begin);  // Reset stream position
 
             // Set response headers
