@@ -6,10 +6,10 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IConfigurableItemAutocompleteComponentProps } from './interfaces';
-import { ConfigurableItemAutocomplete } from '@/components/configurableItemAutocomplete';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from '@/utils';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
+import { ConfigItemAutocomplete } from '@/components/configurableItemAutocomplete';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -66,7 +66,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
-          <ConfigurableItemAutocomplete
+          <ConfigItemAutocomplete
             entityType={model.entityType}
             readOnly={model.readOnly}
             value={value}
