@@ -18,7 +18,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const { data } = useFormData();
 
     const allData = useAvailableConstantsData();
-    const disableRefresh = Boolean(props.disableRefresh) ? executeScriptSync(props.disableRefresh, allData) : false;
+    const disableRefresh: boolean = Boolean(props.disableRefresh) ? executeScriptSync(props.disableRefresh, allData) : false;
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });

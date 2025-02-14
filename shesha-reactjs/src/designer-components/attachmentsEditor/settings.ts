@@ -222,7 +222,9 @@ export const getSettings = () =>
             validate: {},
             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
             settingsValidationErrors: [],
-            useRawValues: true,
+            displayPropName: 'displayText',
+            keyPropName: 'value',
+            mode: 'single',
           })
           .addTextField({
             id: 'db913b1b-3b25-46c9-afef-21854d917ba7',

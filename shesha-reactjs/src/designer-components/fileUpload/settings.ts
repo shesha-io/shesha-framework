@@ -161,7 +161,9 @@ export const getSettings = () =>
             labelAlign: 'right',
             dataSourceType: 'url',
             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-            useRawValues: true,
+            displayPropName: 'displayText',
+            keyPropName: 'value',
+            mode: 'single',
           })          
           .addEditableTagGroupProps({
             id: nanoid(),
