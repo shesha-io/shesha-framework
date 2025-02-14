@@ -794,7 +794,7 @@ namespace Shesha.StoredFiles
             using var originalImage = SKBitmap.Decode(stream);
 
             // Generate the thumbnail
-            var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
+            using var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
 
             // Convert the resized image to a byte array
             using var skImage = SKImage.FromBitmap(resizedImage);
@@ -847,7 +847,7 @@ namespace Shesha.StoredFiles
 
             // Resize using SkiaSharp
             var thumbnail = new SKBitmap(newWidth, newHeight);
-            var canvas = new SKCanvas(thumbnail);
+            using var canvas = new SKCanvas(thumbnail);
             canvas.DrawBitmap(originalImage, new SKRect(0, 0, newWidth, newHeight));
 
             return thumbnail;
