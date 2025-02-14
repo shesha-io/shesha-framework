@@ -1,5 +1,4 @@
-﻿using Abp.AspNetCore.Mvc.Authorization;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
@@ -7,19 +6,18 @@ using Abp.ObjectMapping;
 using Abp.Reflection;
 using Abp.Runtime.Validation;
 using Abp.UI;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.OutputCaching;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.EntityReferences;
-using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.StoredFiles.Dto;
+using Shesha.StoredFiles.Enums;
 using Shesha.Utilities;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,9 +25,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
-using SkiaSharp;
-using Microsoft.VisualBasic.FileIO;
-using Shesha.StoredFiles.Enums;
 
 namespace Shesha.StoredFiles
 {
@@ -793,6 +788,7 @@ namespace Shesha.StoredFiles
             // Read stream and reset position
             var stream = new MemoryStream();
             await fileContents.CopyToAsync(stream);
+            fileContents.Dispose();
             stream.Seek(0, SeekOrigin.Begin);
 
             // Decode the image
@@ -800,14 +796,17 @@ namespace Shesha.StoredFiles
 
             // Generate the thumbnail
             var resizedImage = GenerateThumbnail(originalImage, width, height, fitOption);
+            originalImage.Dispose();
 
             // Convert the resized image to a byte array
             var skImage = SKImage.FromBitmap(resizedImage);
             var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
+            skImage.Dispose();
 
             // Save to result stream
             var resultStream = new MemoryStream();
             data.SaveTo(resultStream);
+            data.Dispose();
             resultStream.Seek(0, SeekOrigin.Begin);  // Reset stream position
 
             // Set response headers
