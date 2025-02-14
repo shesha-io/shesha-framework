@@ -801,7 +801,7 @@ namespace Shesha.StoredFiles
             using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
 
             // Save to result stream
-            using var resultStream = new MemoryStream();
+            var resultStream = new MemoryStream();
             data.SaveTo(resultStream);
             resultStream.Seek(0, SeekOrigin.Begin);  // Reset stream position
 
