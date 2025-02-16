@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoWarn>$(NoWarn);CS1591;612;618;809</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' ">
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    </PropertyGroup>
+    <PropertyGroup>
+        <!-- Include symbol files (*.pdb) in the built .nupkg -->
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    </PropertyGroup>
+</Project>
