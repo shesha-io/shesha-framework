@@ -148,14 +148,14 @@ namespace Shesha.ConfigurationItems
                 await _packageManager.ImportAsync(package, importContext);
             }
 
-            UnitOfWorkManager.Current.SaveChanges();
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             // todo: return statistic
             return new PackageImportResult();
         }
 
         /// inheritedDoc
-        public async Task ClearClientSideCache() 
+        public async Task ClearClientSideCacheAsync() 
         {
             await _clientSideCache.ClearAsync();
         }
@@ -166,7 +166,7 @@ namespace Shesha.ConfigurationItems
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task UpdateStatus(UpdateItemStatusInput input)
+        public async Task UpdateStatusAsync(UpdateItemStatusInput input)
         {
             // todo: check rights
 
@@ -218,7 +218,7 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPost]
-        public async Task<IConfigurationItemDto> CancelVersion(CancelItemVersionInput input)
+        public async Task<IConfigurationItemDto> CancelVersionAsync(CancelItemVersionInput input)
         {
             CheckCreatePermission();
 
@@ -266,7 +266,7 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPost]
-        public async Task<IConfigurationItemDto> CreateNewVersion(CreateItemNewVersionInput input)
+        public async Task<IConfigurationItemDto> CreateNewVersionAsync(CreateItemNewVersionInput input)
         {
             //CheckCreatePermission();
 

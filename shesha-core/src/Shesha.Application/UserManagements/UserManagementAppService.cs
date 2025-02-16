@@ -75,9 +75,9 @@ namespace Shesha.UserManagements
             input.MobileNumber = input.MobileNumber?.Trim();
 
             // email and mobile number must be unique
-            if (await MobileNoAlreadyInUse(input.MobileNumber, null))
+            if (await MobileNoAlreadyInUseAsync(input.MobileNumber, null))
                 validationResults.Add(new ValidationResult("Specified mobile number already used by another person"));
-            if (await EmailAlreadyInUse(input.EmailAddress, null))
+            if (await EmailAlreadyInUseAsync(input.EmailAddress, null))
                 validationResults.Add(new ValidationResult("Specified email already used by another person"));
 
             if (validationResults.Any())
@@ -140,7 +140,7 @@ namespace Shesha.UserManagements
           
             await _userRegistration.InsertAsync(userRegistration);
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return personAccount;
         }
@@ -151,7 +151,7 @@ namespace Shesha.UserManagements
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> CompleteRegistration (long userId)
+        public async Task<string> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)
@@ -171,7 +171,7 @@ namespace Shesha.UserManagements
         /// Checks is specified mobile number already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> MobileNoAlreadyInUse(string mobileNo, Guid? id)
+        private async Task<bool> MobileNoAlreadyInUseAsync(string mobileNo, Guid? id)
         {
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return false;
@@ -186,7 +186,7 @@ namespace Shesha.UserManagements
         /// Checks is specified email already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> EmailAlreadyInUse(string email, Guid? id)
+        private async Task<bool> EmailAlreadyInUseAsync(string email, Guid? id)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return false;

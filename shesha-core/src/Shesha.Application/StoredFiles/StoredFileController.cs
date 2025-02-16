@@ -64,7 +64,7 @@ namespace Shesha.StoredFiles
         }
 
         [HttpGet, Route("Download")]
-        public async Task<ActionResult> Download(Guid id, int? versionNo)
+        public async Task<ActionResult> DownloadAsync(Guid id, int? versionNo)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 
@@ -383,7 +383,7 @@ namespace Shesha.StoredFiles
         /// Delete file
         /// </summary>
         [HttpDelete, Route("Delete")]
-        public async Task<bool> Delete([FromQuery] DeleteStoredFileInput input)
+        public async Task<bool> DeleteAsync([FromQuery] DeleteStoredFileInput input)
         {
             var ownerSpecified =
                 !string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId);
@@ -464,9 +464,10 @@ namespace Shesha.StoredFiles
                 {
                     foreach (var fileId in input.FilesId)
                     {
-                        files.Add(_fileService.GetOrNull(fileId));
+                        var file = await _fileService.GetOrNullAsync(fileId);
+                        if (file != null)
+                            files.Add(file);
                     }
-                    files = files.Where(x => x != null).ToList();
                 }
             }
             else
@@ -509,7 +510,7 @@ namespace Shesha.StoredFiles
         /// Get list of files attached to a specified entity
         /// </summary>
         [HttpGet, Route("FilesList")]
-        public async Task<List<StoredFileDto>> FilesList([FromQuery] FilesListInput input)
+        public async Task<List<StoredFileDto>> FilesListAsync([FromQuery] FilesListInput input)
         {
             if (string.IsNullOrEmpty(input.OwnerType))
                 throw new Exception($"`{nameof(input.OwnerType)}` must not be null");
@@ -771,7 +772,7 @@ namespace Shesha.StoredFiles
         /// <param name="versionNo"></param>
         /// <returns></returns>
         [HttpGet, Route("DownloadThumbnail")]
-        public async Task<ActionResult> DownloadThumbnail(Guid id, int width, int height, FitOptions fitOption, int? versionNo)
+        public async Task<ActionResult> DownloadThumbnailAsync(Guid id, int width, int height, FitOptions fitOption, int? versionNo)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
 

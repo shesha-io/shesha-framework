@@ -1,5 +1,4 @@
-﻿using Abp.Domain.Repositories;
-using Abp.Extensions;
+﻿using Abp.Extensions;
 using Abp.UI;
 using Castle.Core.Logging;
 using Shesha.Configuration;
@@ -20,13 +19,11 @@ namespace Shesha.Notifications
     public class EmailChannelSender : INotificationChannelSender
     {
         private readonly IEmailSettings _emailSettings;
-        private readonly IRepository<UserTopicSubscription, Guid> _userTopicSubscriptionRepository;
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public EmailChannelSender(IEmailSettings emailSettings, IRepository<UserTopicSubscription, Guid> userTopicSubscriptionRepository)
+        public EmailChannelSender(IEmailSettings emailSettings)
         {
             _emailSettings = emailSettings;
-            _userTopicSubscriptionRepository = userTopicSubscriptionRepository;
         }
 
         public string GetRecipientId(Person person)
@@ -34,27 +31,14 @@ namespace Shesha.Notifications
             return person?.EmailAddress1;
         }
 
-        private async Task<EmailSettings> GetSettings()
+        private async Task<EmailSettings> GetSettingsAsync()
         {
             return await _emailSettings.EmailSettings.GetValueAsync();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private bool EmailsEnabled()
-        {
-            var enabled = _emailSettings.EmailSettings.GetValue().EmailsEnabled;
-            if (!enabled)
-                Logger.Warn("Emails are disabled");
-
-            return enabled;
-        }
-
         public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReceiver toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
-            var settings = await GetSettings();
+            var settings = await GetSettingsAsync();
 
             if (settings == null)
                 return new SendStatus()
@@ -84,7 +68,7 @@ namespace Shesha.Notifications
                 }
                 try
                 {
-                    SendEmail(mail);
+                    await SendEmailAsync(mail);
                     return new SendStatus()
                     {
                         IsSuccess = true,
@@ -109,11 +93,11 @@ namespace Shesha.Notifications
         /// 
         /// </summary>
         /// <param name="mail"></param>
-        private void SendEmail(MailMessage mail)
+        private async Task SendEmailAsync(MailMessage mail)
         {
             try
             {
-                using (var smtpClient = GetSmtpClient().Result)
+                using (var smtpClient = await GetSmtpClientAsync())
                 {
                     smtpClient.Send(mail);
                 }
@@ -129,13 +113,17 @@ namespace Shesha.Notifications
             }
         }
 
+        private async Task<SmtpClient> GetSmtpClientAsync() 
+        {
+            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
+            return GetSmtpClient(smtpSettings);
+        }
+
         /// <summary>
         /// Returns SmtpClient configured according to the current application settings
         /// </summary>
-        private async Task<SmtpClient> GetSmtpClient()
+        private SmtpClient GetSmtpClient(SmtpSettings smtpSettings)
         {
-            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
-
             var client = new SmtpClient(smtpSettings.Host, smtpSettings.Port)
             {
                 EnableSsl = smtpSettings.EnableSsl,

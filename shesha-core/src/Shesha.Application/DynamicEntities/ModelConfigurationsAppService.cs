@@ -124,7 +124,9 @@ namespace Shesha.DynamicEntities
             if (SheshaActionDescriptorChangeProvider.Instance != null)
             {
                 SheshaActionDescriptorChangeProvider.Instance.HasChanged = true;
-                SheshaActionDescriptorChangeProvider.Instance.TokenSource?.Cancel();
+                var tokenSource = SheshaActionDescriptorChangeProvider.Instance.TokenSource;
+                if (tokenSource != null)
+                    await tokenSource.CancelAsync();
                 (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
             }
 

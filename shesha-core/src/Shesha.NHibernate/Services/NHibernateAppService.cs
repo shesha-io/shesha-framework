@@ -38,7 +38,7 @@ namespace Shesha.Services
         /// </summary>
         /// <returns></returns>
         [DontWrapResult]
-        public Task<string> GetConventions()
+        public Task<string> GetConventionsAsync()
         {
             return Task.FromResult(Conventions.LastCompiledXml);
         }
