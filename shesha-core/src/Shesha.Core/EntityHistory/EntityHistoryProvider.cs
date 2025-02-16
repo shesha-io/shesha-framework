@@ -141,7 +141,7 @@ namespace Shesha.EntityHistory
 
             if (childAuditedProperties?.Any() ?? false)
             {
-                var item = _dynamicRepository.Get(itemType, entityId);
+                var item = await _dynamicRepository.GetAsync(itemType, entityId);
                 foreach (var childAuditedProperty in childAuditedProperties)
                 {
                     var childItem = childAuditedProperty.GetValue(item);
@@ -188,22 +188,22 @@ namespace Shesha.EntityHistory
             List<EntityChange> changes;
             if (entityType != null)
             {
-                changes = _entityChangeRepository.GetAllList(x =>
+                changes = await _entityChangeRepository.GetAllListAsync(x =>
                     x.EntityId == entityId && x.EntityTypeFullName == entityType.FullName);
             }
             else
             {
-                changes = _entityChangeRepository.GetAllList(x => x.EntityId == entityId);
+                changes = await _entityChangeRepository.GetAllListAsync(x => x.EntityId == entityId);
             }
 
             foreach (var entityChange in changes)
             {
-                var changeSet = _entityChangeSetRepository.Get(entityChange.EntityChangeSetId);
+                var changeSet = await _entityChangeSetRepository.GetAsync(entityChange.EntityChangeSetId);
                 var username = GetPersonByUserId(changeSet?.UserId);
 
                 entityType ??= await GetContainerTypeAsync(entityChange.EntityTypeFullName);
 
-                var changeEvents = _eventRepository.GetAllList(x => x.EntityPropertyChange == null && x.EntityChange == entityChange);
+                var changeEvents = await _eventRepository.GetAllListAsync(x => x.EntityPropertyChange == null && x.EntityChange == entityChange);
                 foreach (var entityHistoryEvent in changeEvents)
                 {
 
@@ -222,14 +222,14 @@ namespace Shesha.EntityHistory
                     });
                 }
 
-                var properties = _entityPropertyChangeRepository.GetAllList(x => x.EntityChangeId == entityChange.Id);
+                var properties = await _entityPropertyChangeRepository.GetAllListAsync(x => x.EntityChangeId == entityChange.Id);
 
                 var propsDescr = new List<string>();
                 foreach (var propertyChange in properties)
                 {
                     if (fields != null && !fields.Contains(propertyChange.PropertyName)) continue;
 
-                    var propertyEvents = _eventRepository.GetAllList(x => x.EntityPropertyChange == propertyChange);
+                    var propertyEvents = await _eventRepository.GetAllListAsync(x => x.EntityPropertyChange == propertyChange);
                     var propDescription = "";
 
                     var propAsEvent = propertyEvents.FirstOrDefault(x =>
@@ -334,7 +334,7 @@ namespace Shesha.EntityHistory
                     try
                     {
                         if (entityType != null && Parser.CanParseId(entityId, entityType) &&
-                            _dynamicRepository.Get(entityType, entityId) is ICreationAudited obj)
+                            await _dynamicRepository.GetAsync(entityType, entityId) is ICreationAudited obj)
                         {
                             var createdBy = GetPersonByUserId(obj.CreatorUserId);
                             list.Add(new EntityHistoryItemDto()
@@ -532,8 +532,8 @@ namespace Shesha.EntityHistory
                     : attr.NameField;
 
 
-                var changesAdded = _entityHistoryItemRepository
-                    .GetAllList(x =>
+                var changesAdded = await _entityHistoryItemRepository
+                    .GetAllListAsync(x =>
                         x.NewValue == entityIdJsonString
                         && x.PropertyName == relatedEntityField
                         && x.EntityTypeFullName == manyToOneTypeFullName
@@ -541,7 +541,7 @@ namespace Shesha.EntityHistory
 
                 foreach (var entityHistoryItem in changesAdded)
                 {
-                    var relatedObject = _dynamicRepository.Get(manyToOneType, entityHistoryItem.EntityId);
+                    var relatedObject = await _dynamicRepository.GetAsync(manyToOneType, entityHistoryItem.EntityId);
 
                     var name = GetEntityName(relatedObject, relatedNameField);
 
@@ -559,8 +559,8 @@ namespace Shesha.EntityHistory
                     });
                 }
 
-                var changesRemoved = _entityHistoryItemRepository
-                    .GetAllList(x =>
+                var changesRemoved = await _entityHistoryItemRepository
+                    .GetAllListAsync(x =>
                         x.OriginalValue == entityIdJsonString
                         && x.PropertyName == relatedEntityField
                         && x.EntityTypeFullName == manyToOneTypeFullName
@@ -568,7 +568,7 @@ namespace Shesha.EntityHistory
 
                 foreach (var entityHistoryItem in changesRemoved)
                 {
-                    var relatedObject = _dynamicRepository.Get(manyToOneType, entityHistoryItem.EntityId);
+                    var relatedObject = await _dynamicRepository.GetAsync(manyToOneType, entityHistoryItem.EntityId);
 
                     var name = GetEntityName(relatedObject, relatedNameField);
                     ;

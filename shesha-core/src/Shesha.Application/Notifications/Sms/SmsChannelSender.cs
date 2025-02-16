@@ -16,7 +16,6 @@ namespace Shesha.Notifications.SMS
     public class SmsChannelSender : INotificationChannelSender
     {
         private readonly ISmsSettings _smsSettings;
-        private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly ISmsGateway _smsGateway;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -24,7 +23,6 @@ namespace Shesha.Notifications.SMS
         public SmsChannelSender(ISmsSettings smsSettings,IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, ISmsGateway smsGateway)
         {
             _smsSettings = smsSettings;
-            _notificationChannelRepository = notificationChannelRepository;
             _smsGateway = smsGateway;
         }
 
@@ -41,14 +39,14 @@ namespace Shesha.Notifications.SMS
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task<SmsSettings> GetSettings()
+        private async Task<SmsSettings> GetSettingsAsync()
         {
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
         public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver reciever, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
-            var settings = await GetSettings();
+            var settings = await GetSettingsAsync();
 
             if (!settings.IsSmsEnabled)
             {

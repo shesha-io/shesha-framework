@@ -50,7 +50,7 @@ namespace Shesha.Notifications
 
         public ILogger Logger { get; set; }
 
-        public NotificationSender(INotificationChannelSender channelSender, 
+        public NotificationSender(INotificationChannelSender channelSender,
             IIocManager iocManager,
             IRepository<NotificationMessage, Guid> notificationMessageRepository,
             IRepository<NotificationMessageAttachment, Guid> attachmentRepository,
@@ -58,17 +58,17 @@ namespace Shesha.Notifications
             ISessionProvider sessionProvider,
             IStoredFileService fileService,
             IEnumerable<INotificationChannelSender> channelSenders,
-                                   IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
-                                   IRepository<NotificationTemplate, Guid> messageTemplateRepository,
-                                   IRepository<Notification, Guid> notificationRepository,
-                                   IRepository<StoredFile, Guid> storedFileRepository,
-                                   IRepository<NotificationTypeConfig, Guid> typeRepo,
-                                   IRepository<Person, Guid> personRepo,
-                                   IStoredFileService storedFileService,
-                                   INotificationSettings notificationSettings,
-                                   IBackgroundJobManager backgroundJobManager,
-                                   INotificationManager notificationManager,
-                                   IRepository<UserNotificationPreference, Guid> userNotificationPreferenceRepository)
+            IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
+            IRepository<NotificationTemplate, Guid> messageTemplateRepository,
+            IRepository<Notification, Guid> notificationRepository,
+            IRepository<StoredFile, Guid> storedFileRepository,
+            IRepository<NotificationTypeConfig, Guid> typeRepo,
+            IRepository<Person, Guid> personRepo,
+            IStoredFileService storedFileService,
+            INotificationSettings notificationSettings,
+            IBackgroundJobManager backgroundJobManager,
+            INotificationManager notificationManager,
+            IRepository<UserNotificationPreference, Guid> userNotificationPreferenceRepository)
         {
             _channelSender = channelSender;
             _iocManager = iocManager;
@@ -123,7 +123,7 @@ namespace Shesha.Notifications
         /// <param name="triggeringEntity"></param>
         /// <param name="channel"></param>
         /// <returns></returns>
-        public async Task SendNotification<TData>(NotificationTypeConfig type, IMessageSender sender, IMessageReceiver receiver, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public async Task SendNotificationAsync<TData>(NotificationTypeConfig type, IMessageSender sender, IMessageReceiver receiver, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
         {
             // Check if the notification type is disabled
             if (type.Disable) 
@@ -152,7 +152,7 @@ namespace Shesha.Notifications
             if (channel != null)
             {
                 // Send notification to a specific channel
-                await SendNotificationToChannel(notification, data, sender, receiver, type, priority, channel, attachments);
+                await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channel, attachments);
             }
             else
             {
@@ -161,7 +161,7 @@ namespace Shesha.Notifications
 
                 foreach (var channelConfig in channels)
                 {
-                    await SendNotificationToChannel(notification, data, sender, receiver, type, priority, channelConfig, attachments);
+                    await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channelConfig, attachments);
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace Shesha.Notifications
         /// <param name="attachments"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        private async Task SendNotificationToChannel<TData>(Notification notification, TData data, IMessageSender sender, IMessageReceiver receiver, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+        private async Task SendNotificationToChannelAsync<TData>(Notification notification, TData data, IMessageSender sender, IMessageReceiver receiver, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
 
@@ -285,7 +285,7 @@ namespace Shesha.Notifications
                     message.ErrorMessage = null; // Clear any previous error
                     message.DateSent = DateTime.Now;
                     await _notificationMessageRepository.UpdateAsync(message);
-                    _unitOfWorkManager.Current.SaveChanges();
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
 
                     await uow.CompleteAsync();
                 }
@@ -296,7 +296,7 @@ namespace Shesha.Notifications
                     message.ErrorMessage = sendResult.Message;
 
                     await _notificationMessageRepository.UpdateAsync(message);
-                    _unitOfWorkManager.Current.SaveChanges();
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
 
                     await uow.CompleteAsync();
 
@@ -344,11 +344,11 @@ namespace Shesha.Notifications
             }
         }
 
-        public async Task SendNotification<TData>(NotificationTypeConfig type, Person senderPerson, Person receiverPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public async Task SendNotificationAsync<TData>(NotificationTypeConfig type, Person senderPerson, Person receiverPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
         {
             var sender = new PersonMessageParticipant(senderPerson);
             var receiver = new PersonMessageParticipant(receiverPerson);            
-            await SendNotification(type, sender, receiver, data, priority, attachments, triggeringEntity, channel);            
+            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, triggeringEntity, channel);            
         }
     }
 }
