@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.Generators;
@@ -116,7 +115,7 @@ namespace Shesha.Tests.DomainAttributes
 
             conventions.Compile(nhConfig);
 
-            var sessionFactory = nhConfig.BuildSessionFactory();
+            using var sessionFactory = nhConfig.BuildSessionFactory();
 
             using (var session = sessionFactory.OpenSession())
             {

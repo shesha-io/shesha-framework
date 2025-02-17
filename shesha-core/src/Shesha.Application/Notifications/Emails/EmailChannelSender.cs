@@ -107,10 +107,6 @@ namespace Shesha.Notifications
                 Logger.Error($"Error sending email: {ex.Message}", ex);
                 throw new InvalidOperationException($"An error occurred while sending the email. Message: {ex.Message} ", ex);
             }
-            finally
-            {
-                mail.Dispose();
-            }
         }
 
         private async Task<SmtpClient> GetSmtpClientAsync() 

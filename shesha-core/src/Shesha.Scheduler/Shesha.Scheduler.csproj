@@ -23,7 +23,7 @@
     <Compile Remove="Example\**" />
     <EmbeddedResource Remove="Example\**" />
     <None Remove="Example\**" />
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +33,10 @@
     <PackageReference Include="FluentMigrator" Version="5.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
 	  <PackageReference Include="Hangfire.AspNetCore" Version="1.8.6" />
+	  <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">

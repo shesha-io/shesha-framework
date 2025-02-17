@@ -1,5 +1,4 @@
-﻿using Abp.BackgroundJobs;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
@@ -12,7 +11,6 @@ using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.EntityReferences;
 using Shesha.NHibernate;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
 using Shesha.Notifications.Helpers;
@@ -29,67 +27,40 @@ namespace Shesha.Notifications
     public class NotificationSender: INotificationSender, ITransientDependency
     {
         private readonly INotificationChannelSender _channelSender;
-        private readonly IIocManager _iocManager;
         private readonly IRepository<NotificationMessage, Guid> _notificationMessageRepository;
         private readonly IRepository<NotificationMessageAttachment, Guid> _attachmentRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly ISessionProvider _sessionProvider;
         private readonly IStoredFileService _fileService;
         private readonly IEnumerable<INotificationChannelSender> _channelSenders;
-        private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<Notification, Guid> _notificationRepository;
         private readonly IRepository<NotificationTemplate, Guid> _messageTemplateRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
-        private readonly IRepository<NotificationTypeConfig, Guid> _typeRepo;
-        private readonly IRepository<Person, Guid> _personRepo;
-        private readonly INotificationSettings _notificationSettings;
-        private readonly IStoredFileService _storedFileService;
-        private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly INotificationManager _notificationManager;
-        private readonly IRepository<UserNotificationPreference, Guid> _userNotificationPreferenceRepository;
 
         public ILogger Logger { get; set; }
 
         public NotificationSender(INotificationChannelSender channelSender,
-            IIocManager iocManager,
             IRepository<NotificationMessage, Guid> notificationMessageRepository,
             IRepository<NotificationMessageAttachment, Guid> attachmentRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            ISessionProvider sessionProvider,
             IStoredFileService fileService,
             IEnumerable<INotificationChannelSender> channelSenders,
-            IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
             IRepository<NotificationTemplate, Guid> messageTemplateRepository,
             IRepository<Notification, Guid> notificationRepository,
             IRepository<StoredFile, Guid> storedFileRepository,
-            IRepository<NotificationTypeConfig, Guid> typeRepo,
-            IRepository<Person, Guid> personRepo,
-            IStoredFileService storedFileService,
-            INotificationSettings notificationSettings,
-            IBackgroundJobManager backgroundJobManager,
-            INotificationManager notificationManager,
-            IRepository<UserNotificationPreference, Guid> userNotificationPreferenceRepository)
+            INotificationManager notificationManager)
         {
             _channelSender = channelSender;
-            _iocManager = iocManager;
             _unitOfWorkManager = unitOfWorkManager;
-            _sessionProvider = sessionProvider;
             _fileService = fileService;
             _channelSenders = channelSenders;
-            _notificationChannelRepository = notificationChannelRepository;
             _messageTemplateRepository = messageTemplateRepository;
-            _notificationSettings = notificationSettings;
-            _storedFileService = storedFileService;
-            _backgroundJobManager = backgroundJobManager;
             _notificationRepository = notificationRepository;
             _storedFileRepository = storedFileRepository;
             _notificationManager = notificationManager;
             _attachmentRepository = attachmentRepository;
             _notificationMessageRepository = notificationMessageRepository;
-            _typeRepo = typeRepo;
-            _personRepo = personRepo;
             Logger = NullLogger.Instance;
-            _userNotificationPreferenceRepository = userNotificationPreferenceRepository;
         }
 
         private async Task<List<EmailAttachment>> GetAttachmentsAsync(NotificationMessage message)
