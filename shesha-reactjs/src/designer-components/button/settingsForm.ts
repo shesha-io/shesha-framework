@@ -609,6 +609,7 @@ export const getSettings = (data) => {
                             hideLabel: true,
                             inputType: 'codeEditor',
                             label: 'Style',
+                            parentId: 'stylePnl-M500-911MFR',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
                           .toJson()
