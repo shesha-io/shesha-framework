@@ -14,7 +14,7 @@ export interface IReferenceListAutocompleteRuntimeProps {
     onChange?: (value?: IReferenceListIdentifier) => void;
     readOnly?: boolean;
     maxResultCount?: number;
-    size: SizeType;
+    size?: SizeType;
 }
 
 interface IOption {

@@ -4,7 +4,7 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IPasswordComponentProps } from './utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: IPasswordComponentProps) => {
 
@@ -71,18 +71,18 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                             })
                             .addSettingsInput({
-                                inputType: 'textArea',
-                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                propertyName: 'description',
-                                label: 'Tooltip',
-                                jsSetting: true,
-                            })
-                            .addSettingsInput({
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'confirmPlaceholder',
                                 label: 'Placeholder: Confirmation',
                                 size: 'small',
+                                jsSetting: true,
+                            })
+                            .addSettingsInput({
+                                inputType: 'textArea',
+                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'description',
+                                label: 'Tooltip',
                                 jsSetting: true,
                             })
                             .addSettingsInput({
@@ -563,20 +563,8 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: sizeOptions,
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -584,44 +572,8 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: positionOptions,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                 },
                                                                 {
                                                                     type: 'radio',

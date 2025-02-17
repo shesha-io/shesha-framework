@@ -11,6 +11,7 @@ interface CustomDropdownProps {
     label?: string | React.ReactNode;
     size?: SizeType;
     defaultValue?: string;
+    customTooltip?: string;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
     variant?: 'borderless' | 'outlined' | 'filled';
@@ -22,6 +23,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     readOnly,
     label,
     defaultValue,
+    customTooltip,
     onChange,
     size
 }) => {
@@ -52,8 +54,8 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
                                     value={customOption}
                                     onChange={(e) => setCustomOption(e.target.value)}
                                     size='small'
-                                    prefix={<Tooltip title={'Add custom option'} placement="top">
-                                        <QuestionCircleOutlined style={{ marginLeft: '2px' }} />
+                                    prefix={<Tooltip title={customTooltip} placement="top">
+                                        <QuestionCircleOutlined style={{ marginLeft: '2px', color: '#00000073' }} />
                                     </Tooltip>}
                                     onClick={(e) => e.stopPropagation()}
                                 />

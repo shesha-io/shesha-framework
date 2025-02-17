@@ -34,6 +34,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    customTooltip?: string;
     suffix?: string;
     size?: SizeType;
     width?: string | number;

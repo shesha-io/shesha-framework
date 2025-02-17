@@ -299,6 +299,7 @@ export const getSettings = (data) => {
                                                                     type: 'customDropdown',
                                                                     id: 'size-position-Row-position',
                                                                     label: "Object Position",
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "objectPosition",
                                                                     dropdownOptions: positionOptions,
                                                                 }

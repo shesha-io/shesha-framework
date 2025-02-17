@@ -3,6 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
+import { positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -10,7 +11,7 @@ export const getSettings = (data: any) => {
   const appearanceId = nanoid();
   const securityId = nanoid();
   const styleRouterId = nanoid();
-  const pnlFontStyleId = nanoid(); 
+  const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
   const borderStyleRowId = nanoid();
@@ -35,55 +36,55 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [ ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
-                  id: propertyNameId,
-                  propertyName: "propertyName",
-                  parentId: commonTabId,
-                  label: "Property Name",
-                  size: "small",
-                  validate: {
-                    "required": true
+            components: [...new DesignerToolbarSettings()
+              .addContextPropertyAutocomplete({
+                id: propertyNameId,
+                propertyName: "propertyName",
+                parentId: commonTabId,
+                label: "Property Name",
+                size: "small",
+                validate: {
+                  "required": true
+                },
+                jsSetting: true,
+              })
+              .addLabelConfigurator({
+                id: nanoid(),
+                propertyName: 'hideLabel',
+                label: 'Label',
+                parentId: commonTabId,
+                hideLabel: true,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    type: 'textArea',
+                    id: `tooltip-${commonTabId}`,
+                    propertyName: 'description',
+                    label: 'Tooltip',
+                    jsSetting: true,
                   },
-                  jsSetting: true,
-                })
-                .addLabelConfigurator({
-                  id: nanoid(),
-                  propertyName: 'hideLabel',
-                  label: 'Label',
-                  parentId: commonTabId,
-                  hideLabel: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'textArea',
-                      id: `tooltip-${commonTabId}`,
-                      propertyName: 'description',
-                      label: 'Tooltip',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: nanoid(),
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson()
+                ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'editModeSelector',
+                    id: nanoid(),
+                    propertyName: 'editMode',
+                    label: 'Edit Mode',
+                    size: 'small',
+                    jsSetting: true,
+                  },
+                ],
+              })
+              .toJson()
             ]
           },
           {
@@ -318,7 +319,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow(
                               getBorderInputs()[0] as any
-                            )                           
+                            )
                             .addSettingsInputRow(
                               getBorderInputs()[1] as any
                             )
@@ -481,20 +482,7 @@ export const getSettings = (data: any) => {
                                     label: "Size",
                                     hideLabel: true,
                                     propertyName: "background.size",
-                                    dropdownOptions: [
-                                      {
-                                        value: "cover",
-                                        label: "Cover"
-                                      },
-                                      {
-                                        value: "contain",
-                                        label: "Contain"
-                                      },
-                                      {
-                                        value: "auto",
-                                        label: "Auto"
-                                      }
-                                    ],
+                                    dropdownOptions: sizeOptions,
                                   },
                                   {
                                     type: 'customDropdown',
@@ -502,69 +490,15 @@ export const getSettings = (data: any) => {
                                     label: "Position",
                                     hideLabel: true,
                                     propertyName: "background.position",
-                                    dropdownOptions: [
-                                      {
-                                        value: "center",
-                                        label: "Center"
-                                      },
-                                      {
-                                        value: "top",
-                                        label: "Top"
-                                      },
-                                      {
-                                        value: "left",
-                                        label: "Left"
-                                      },
-                                      {
-                                        value: "right",
-                                        label: "Right"
-                                      },
-                                      {
-                                        value: "bottom",
-                                        label: "Bottom"
-                                      },
-                                      {
-                                        value: "top left",
-                                        label: "Top Left"
-                                      },
-                                      {
-                                        value: "top right",
-                                        label: "Top Right"
-                                      },
-                                      {
-                                        value: "bottom left",
-                                        label: "Bottom Left"
-                                      },
-                                      {
-                                        value: "bottom right",
-                                        label: "Bottom Right"
-                                      }
-                                    ],
+                                    dropdownOptions: positionOptions,
                                   },
                                   {
-                                    type: 'dropdown',
+                                    type: 'radio',
                                     id: nanoid(),
                                     label: "Repeat",
                                     hideLabel: true,
                                     propertyName: "background.repeat",
-                                    dropdownOptions: [
-                                      {
-                                        value: "repeat",
-                                        label: "repeat"
-                                      },
-                                      {
-                                        value: "repeat-x",
-                                        label: "repeatX"
-                                      },
-                                      {
-                                        value: "repeat-y",
-                                        label: "repeatY"
-                                      },
-                                      {
-                                        value: "no-repeat",
-                                        label: "noRepeat"
-                                      }
-                                    ],
+                                    buttonGroupOptions: repeatOptions,
                                   }
                                 ]
                               })

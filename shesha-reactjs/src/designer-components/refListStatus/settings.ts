@@ -465,6 +465,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
                                                                     dropdownOptions: sizeOptions,
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -473,6 +474,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
                                                                     dropdownOptions: positionOptions,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                 },
                                                                 {
                                                                     type: 'radio',

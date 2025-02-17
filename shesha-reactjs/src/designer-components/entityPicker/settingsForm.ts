@@ -361,6 +361,7 @@ export const getSettings = (data) => {
                       label: 'Dialog Width (%)',
                       allowClear: true,
                       customDropdownMode: 'single',
+                      customTooltip: 'Set the width of the dialog, the value should have units (%, px, em, etc).',
                       dropdownOptions: [
                         {
                           label: 'Small',
@@ -729,6 +730,7 @@ export const getSettings = (data) => {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
                                   label: "Size",
+                                  customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   hideLabel: true,
                                   propertyName: "background.size",
                                   dropdownOptions: sizeOptions,
@@ -738,6 +740,7 @@ export const getSettings = (data) => {
                                   id: 'backgroundStyleRow-position',
                                   label: "Position",
                                   hideLabel: true,
+                                  customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
