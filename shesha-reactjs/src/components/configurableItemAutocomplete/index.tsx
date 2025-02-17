@@ -9,6 +9,7 @@ import HelpTextPopover from '@/components/helpTextPopover';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, isConfigurableItemFullName, isConfigurableItemRawId, isEntityMetadata } from '@/interfaces';
 import { MetadataProvider, useMetadata } from '@/providers';
 import { StandardEntityActions } from '@/interfaces/metadata';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 interface EditorProps<TValue> {
     value?: TValue;
@@ -22,6 +23,7 @@ export type ConfigurableItemAutocompleteRuntimeProps = (SingleEditorProps | Mult
     readOnly?: boolean;
     maxResultCount?: number;
     filter?: object;
+    size?: SizeType;
 };
 
 interface IOption<TData = ConfigurableItemFullName> {
@@ -171,6 +173,7 @@ export const ConfigurableItemAutocompleteInternal: FC<ConfigurableItemAutocomple
         value,
         onChange,
         filter,
+        size,
     } = props;
 
     const { metadata } = useMetadata(true);
@@ -330,6 +333,7 @@ export const ConfigurableItemAutocompleteInternal: FC<ConfigurableItemAutocomple
             onSearch={onSearch}
             onChange={onSelect}
             onClear={onClear}
+            size={size}
             placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
             disabled={valueFetcher.loading || props.readOnly}
             value={selectValue}
