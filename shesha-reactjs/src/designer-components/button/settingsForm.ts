@@ -113,6 +113,16 @@ export const getSettings = (data) => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                propertyName: 'buttonType',
+                label: 'Type',
+                validate: {
+                  required: true,
+                },
+                inputType: 'dropdown',
+                dropdownOptions: buttonTypes,
+              })
               .addPropertyRouter({
                 id: 'styleRouter',
                 propertyName: 'propertyRouter1',
@@ -128,16 +138,6 @@ export const getSettings = (data) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      propertyName: 'buttonType',
-                      label: 'Type',
-                      validate: {
-                        required: true,
-                      },
-                      inputType: 'dropdown',
-                      dropdownOptions: buttonTypes,
-                    })
                     .addCollapsiblePanel({
                       id: 'fontStyleCollapsiblePanel',
                       propertyName: 'pnlFontStyle',
@@ -472,6 +472,7 @@ export const getSettings = (data) => {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
                                   label: "Size",
+                                  customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   hideLabel: true,
                                   propertyName: "background.size",
                                   dropdownOptions: sizeOptions,
@@ -481,16 +482,17 @@ export const getSettings = (data) => {
                                   id: 'backgroundStyleRow-position',
                                   label: "Position",
                                   hideLabel: true,
+                                  customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
                                 {
-                                  type: 'dropdown',
+                                  type: 'radio',
                                   id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  dropdownOptions: repeatOptions,
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })

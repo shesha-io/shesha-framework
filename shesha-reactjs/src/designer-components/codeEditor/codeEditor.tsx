@@ -57,7 +57,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       modal.confirm({
         title: 'Clear code editor?',
         icon: <ExclamationCircleFilled />,
-        content: 'If you clear the code editor, the changes will be lost.',
+        content: 'If you clear the code editor, the changes will be lost and the editor will be closed',
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
