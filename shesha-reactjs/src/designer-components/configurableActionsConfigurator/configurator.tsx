@@ -12,6 +12,7 @@ import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sources
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
+import FormItem from '../_settings/components/formItem';
 
 const { Panel } = Collapse;
 
@@ -35,7 +36,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
-  const { value, onChange, readOnly = false, label = <StyledLabel label='Action Name' />, description } = props;
+  const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
 
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
@@ -84,8 +85,6 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     return acc;
   }, {});
 
-  const styledLabel = StyledLabel({ label: label as string });
-
   return (
     <div
       style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
@@ -99,9 +98,9 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <Form.Item name="actionFullName" label={styledLabel} tooltip={description}>
+        <FormItem name="actionFullName" label={label} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </Form.Item>
+        </FormItem>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name="actionArguments" label={null}>
@@ -148,7 +147,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 };
 
 interface IConfigurableActionConfiguratorProps {
-  label?: React.ReactNode;
+  label?: string;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;

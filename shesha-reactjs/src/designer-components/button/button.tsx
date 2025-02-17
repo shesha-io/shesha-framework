@@ -51,7 +51,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const shadow = model?.shadow;
     const background = model?.background;
 
-    const jsStyle = getStyle(model.style, data);
+    const jsStyle = useMemo(() => getStyle(model.style, data), [model.styles]);
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);

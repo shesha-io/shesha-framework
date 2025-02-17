@@ -594,7 +594,7 @@ export const getSettings = (data) => {
                     .addCollapsiblePanel({
                       id: 'customStyleCollapsiblePanel',
                       propertyName: 'customStyle',
-                      label: 'Custom Style',
+                      label: 'Custom Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: 'styleRouter',
@@ -605,11 +605,10 @@ export const getSettings = (data) => {
                           .addSettingsInput({
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             id: 'custom-css-412c-8461-4c8d55e5c073',
-                            propertyName: 'style',
-                            hideLabel: true,
                             inputType: 'codeEditor',
+                            propertyName: 'style',
+                            hideLabel: false,
                             label: 'Style',
-                            parentId: 'stylePnl-M500-911MFR',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
                           .toJson()
