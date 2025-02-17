@@ -9,7 +9,6 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITabPaneProps, ITabsComponentProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
-import { useAvailableConstantsData } from '@/providers/form/utils';
 import { ItemListConfiguratorModal } from '@/designer-components/itemListConfigurator/itemListConfiguratorModal';
 import StyleBox from '@/designer-components/styleBox/components/box';
 
@@ -19,7 +18,6 @@ const tabSettingsMarkup = itemSettings as FormMarkup;
 
 const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
   const { readOnly } = props;
-  const availableConstants = useAvailableConstantsData();
 
   const onAddNewItem = (items) => {
     const count = (items ?? []).length;
@@ -92,7 +90,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
               title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
               header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
             }}
-            actualModelContext={availableConstants}
           >
           </ItemListConfiguratorModal>
         </SettingsFormItem>

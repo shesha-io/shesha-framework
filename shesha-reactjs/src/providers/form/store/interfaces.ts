@@ -4,7 +4,7 @@ import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { FormInfo } from "../api";
 import { FormInstance } from "antd";
 import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
-import { FormApi } from "../formApi";
+import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
@@ -103,7 +103,7 @@ export interface IShaFormInstance<Values = any> {
     onFinish?: (values: Values) => void;
 
     setLogEnabled: (enabled: boolean) => void;
-    getPublicFormApi: () => FormApi<Values>;
+    getPublicFormApi: () => IFormApi<Values>;
 
     //#region antd methods
     submit: () => void;

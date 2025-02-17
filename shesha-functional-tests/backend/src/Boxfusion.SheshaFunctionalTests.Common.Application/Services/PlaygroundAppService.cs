@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Localization;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Shesha;
@@ -11,6 +12,23 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
     public class PlaygroundAppService: SheshaAppServiceBase
     {
+        public async Task<string> TestAuditAsync()
+        {
+            var repoP = IocManager.Resolve<IRepository<Person, Guid>>();
+            var repoL = IocManager.Resolve<IRepository<Abp.Localization.ApplicationLanguage, int>>();
+
+            var person = repoP.GetAll().FirstOrDefault(x => x.Id == Guid.Parse("D519B92F-86E9-4F0F-8DF4-00AAE8A43158"));
+
+            var ll = repoL.GetAll().ToList();
+            var l = ll.FirstOrDefault(x => !person.PreferredLanguages.Select(z => z.Id).Contains(x.Id));
+
+            person.PreferredLanguages.Add(l);
+
+            await repoP.InsertOrUpdateAsync(person);
+
+            return "Ok";
+        }
+
         public async Task<string> TestFileVersionUrl(Guid id) 
         {
             var repo = IocManager.Resolve<IRepository<StoredFileVersion, Guid>>();

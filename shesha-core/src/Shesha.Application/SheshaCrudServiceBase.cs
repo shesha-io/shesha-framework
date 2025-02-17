@@ -253,7 +253,7 @@ namespace Shesha
                     { "quickSearchProperties", ExtractProperties(properties) },
                     { "sorting", input.Sorting },
                     { "skipCount", input.SkipCount },
-                    { "maxResultCount", input.MaxResultCount },                    
+                    { "maxResultCount", input.MaxResultCount },
                 });
 
                 if (httpContext != null)
@@ -267,7 +267,8 @@ namespace Shesha
                 }
             });
 
-            if (result.Errors != null) {
+            if (result.Errors != null)
+            {
                 var validationResults = result.Errors.Select(e => new ValidationResult(e.FullMessage())).ToList();
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
@@ -275,13 +276,13 @@ namespace Shesha
             return new GraphQLDataResult<PagedResultDto<TEntity>>(result);
         }
 
-        private List<string> ExtractProperties(string properties) 
+        private List<string> ExtractProperties(string properties)
         {
             var regex = new Regex(@"\s");
             return regex.Split(properties).ToList();
         }
 
-        private async Task<string> CleanupPropertiesAsync(string properties) 
+        private async Task<string> CleanupPropertiesAsync(string properties)
         {
             if (string.IsNullOrWhiteSpace(properties))
                 return properties;
@@ -358,17 +359,22 @@ namespace Shesha
 
             switch (property.DataType)
             {
-                
                 case DataTypes.Array:
-                    if (property.DataFormat == ArrayFormats.ReferenceListItem
-                        || property.DataFormat == ArrayFormats.ObjectReference
-                        || property.DataFormat == ArrayFormats.Object)
+                    switch (property.DataFormat)
                     {
-                        sb.AppendLine(propertyName);
-                        break;
+                        case ArrayFormats.ReferenceListItem:
+                        case ArrayFormats.ObjectReference:
+                        case ArrayFormats.Object:
+                            sb.AppendLine(propertyName);
+                            break;
+                        case ArrayFormats.EntityReference:
+                            sb.Append(propertyName);
+                            sb.AppendLine(" {id _className _displayName} ");
+                            break;
+
+                            // todo: implement other types
                     }
-                    else
-                        return; // todo: implement other types
+                    break;
                 case DataTypes.EntityReference:
                     if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {
@@ -410,7 +416,7 @@ namespace Shesha
             }
 
             sb.AppendLine("id");
-            
+
             sb.AppendLine(EntityConstants.ClassNameField);
             sb.AppendLine(EntityConstants.DisplayNameField);
 

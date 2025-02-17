@@ -98,7 +98,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             // entity specific properties
             dbItem.AllowAttachments = item.AllowAttachments;
             dbItem.Disable = item.Disable;
-            dbItem.CanOtpOut = item.CanOtpOut;
+            dbItem.CanOptOut = item.CanOtpOut;
             dbItem.Category = item.Category;
             dbItem.OrderIndex = item.OrderIndex;
             dbItem.OverrideChannels = item.OverrideChannels;

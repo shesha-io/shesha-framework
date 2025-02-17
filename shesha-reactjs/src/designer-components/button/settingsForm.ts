@@ -35,15 +35,14 @@ export const getSettings = (data) => {
                 },
                 jsSetting: true,
               })
-              .addLabelConfigurator({
-                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                propertyName: 'hideLabel',
+              .addSettingsInput({
+                id: 'label-4c18-468c-89e1-60c002ce96c5',
+                propertyName: 'label',
                 label: 'Caption',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                hideLabel: true,
               })
               .addSettingsInput({
-                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
                 inputType: 'textArea',
                 propertyName: 'tooltip',
                 label: 'Tooltip',
@@ -100,10 +99,9 @@ export const getSettings = (data) => {
                 ],
               })
               .addConfigurableActionConfigurator({
-                id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+                id: 'actionConfiguration-4c18-468c-89e1-60c002ce96c5',
                 propertyName: 'actionConfiguration',
                 label: 'Action configuration',
-                hidden: false,
                 validate: {},
                 settingsValidationErrors: [],
               })
@@ -115,6 +113,16 @@ export const getSettings = (data) => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                propertyName: 'buttonType',
+                label: 'Type',
+                validate: {
+                  required: true,
+                },
+                inputType: 'dropdown',
+                dropdownOptions: buttonTypes,
+              })
               .addPropertyRouter({
                 id: 'styleRouter',
                 propertyName: 'propertyRouter1',
@@ -130,16 +138,6 @@ export const getSettings = (data) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      propertyName: 'buttonType',
-                      label: 'Type',
-                      validate: {
-                        required: true,
-                      },
-                      inputType: 'dropdown',
-                      dropdownOptions: buttonTypes,
-                    })
                     .addCollapsiblePanel({
                       id: 'fontStyleCollapsiblePanel',
                       propertyName: 'pnlFontStyle',
@@ -376,9 +374,9 @@ export const getSettings = (data) => {
                       label: 'Background',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -457,7 +455,8 @@ export const getSettings = (data) => {
                               inputs: [
                                 {
                                   type: 'text',
-                                  id: 'backgroundStyleRow-storedFile',
+                                  id: 'backgroundStyle-storedFile',
+                                  jsSetting: false,
                                   propertyName: "background.storedFile.id",
                                   label: "File ID"
                                 }
@@ -473,26 +472,27 @@ export const getSettings = (data) => {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
                                   label: "Size",
+                                  customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   hideLabel: true,
                                   propertyName: "background.size",
                                   dropdownOptions: sizeOptions,
                                 },
                                 {
-                                  label: "Position",
-                                  hideLabel: true,
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-position',
+                                  label: "Position",
+                                  hideLabel: true,
+                                  customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
                                 {
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  type: 'customDropdown',
-                                  id: 'backgroundStyleRow-repeat',
-                                  width: 70,
-                                  dropdownOptions: repeatOptions,
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })

@@ -17,9 +17,8 @@ export interface IDropdownOption {
 
 export interface InputType {
     type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor' | 'columnsList';
-}
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' |
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor' | 'columnsList';}
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
     label: string;
@@ -34,6 +33,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    customTooltip?: string;
     suffix?: string;
     size?: SizeType;
     width?: string | number;
@@ -53,6 +53,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     mode?: any;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
+    customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
@@ -61,10 +62,12 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    useRawValues?: boolean;
     modelType?: string;
     min?: number;
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
     _formFields?: string[];
+    autoFillProps?: boolean;
 };

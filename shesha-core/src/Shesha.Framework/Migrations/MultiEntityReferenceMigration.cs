@@ -1,0 +1,63 @@
+﻿using Abp.Dependency;
+using Abp.Modules;
+using Abp.Reflection;
+using Castle.Core.Internal;
+using FluentMigrator.Builders.Create.Table;
+using FluentMigrator.Runner.Extensions;
+using Shesha.Bootstrappers;
+using Shesha.Domain;
+using Shesha.Domain.Attributes;
+using Shesha.Extensions;
+using Shesha.FluentMigrator;
+using Shesha.Generators;
+using Shesha.Reflection;
+using Shesha.Startup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shesha.Migrations
+{
+
+    public class MultiEntityReferenceMigration : SheshaAutoDbMigration, ISheshaAutoDbMigration
+    {
+        private readonly ITypeFinder _typeFinder;
+        private readonly IApplicationStartupSession _startupSession;
+        private readonly INameGenerator _nameGenerator;
+
+        public MultiEntityReferenceMigration(ITypeFinder typeFinder, IApplicationStartupSession startupSession, INameGenerator nameGenerator)
+        {
+            _typeFinder = typeFinder;
+            _startupSession = startupSession;
+            _nameGenerator = nameGenerator;
+        }
+
+        public override void Process()
+        {
+            var entityTypes = _typeFinder.Find(x => x.IsEntityType() && !_startupSession.AssemblyStaysUnchanged(x.Assembly));
+            var mtmProperties = entityTypes
+                .SelectMany(x => x.GetProperties().Where(p => p.HasAttribute<ManyToManyAttribute>()))
+                .Where(x => x.GetAttribute<ManyToManyAttribute>().AutoGeneration)
+                .DistinctBy(x => $"{x.DeclaringType.Name}_{x.Name}")
+                .ToList();
+
+            if (!Schema.Schema(MappingHelper.AutoGeneratorSchema).Exists())
+                Create.Schema(MappingHelper.AutoGeneratorSchema);
+
+            foreach (var property in mtmProperties)
+            {
+                var (parentType, parentIdType, childType, childIdType) = MappingHelper.GetManyToManyTableData(property);
+                var(tableName, parentTableName, childTableName, parentColumnName, childColumnName) = _nameGenerator.GetAutoManyToManyTableNames(property);
+                if (!Schema.Schema(MappingHelper.AutoGeneratorSchema).Table(tableName).Exists())
+                {
+                    var table = Create.Table(tableName).InSchema(MappingHelper.AutoGeneratorSchema)
+                        .WithForeignKeyColumn(parentIdType, parentColumnName, parentTableName).NotNullable()
+                        .WithForeignKeyColumn(childIdType, childColumnName, childTableName).NotNullable();
+                }
+            }
+        }
+    }
+}

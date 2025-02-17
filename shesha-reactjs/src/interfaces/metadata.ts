@@ -44,7 +44,7 @@ export interface TypeAndLocation extends GenericTypeDeclaration {
 }
 
 export interface ITypeDefinitionBuilder {
-  getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;  
+  getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;
   makeFormType: (formId: FormFullName, content: string) => TypeDefinition;
   makeFile: (fileName: string, content: string) => void;
 };
@@ -69,6 +69,10 @@ export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition
   description?: string | null;
 }
 
+export interface IHasItemsType {
+  itemsType: IMemberType;
+}
+
 export interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
 }
@@ -81,7 +85,7 @@ export interface ModelTypeIdentifier {
 export interface IHasEntityType {
   entityType: string | null; // TODO: split this property into two different (for objects and for entities) or rename existing
   entityModule?: string | null;
-  
+
   typeAccessor?: string;
   moduleAccessor?: string;
 }
@@ -97,8 +101,15 @@ export interface IObjectReferencePropertyMetadata extends IMemberMetadata, IHasE
 export interface IEntityReferencePropertyMetadata extends IMemberMetadata, IHasEntityType, Partial<IHasChildPropertiesMetadata> {
 }
 
+export interface IEntityReferenceArrayPropertyMetadata extends IMemberMetadata, IHasEntityType, IHasItemsType {
+}
+
 export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferencePropertyMetadata => {
   return propMeta && propMeta.dataType === DataTypes.entityReference;
+};
+
+export const isEntityReferenceArrayPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferenceArrayPropertyMetadata => {
+  return propMeta && propMeta.dataType === DataTypes.array && propMeta.dataFormat === DataTypes.entityReference;
 };
 
 export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
@@ -231,7 +242,7 @@ export interface IHasMethods {
 }
 
 export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
-  
+
 }
 
 export interface IEntityMetadata extends IObjectMetadata, IHasEntityType {
@@ -259,7 +270,7 @@ export const isContextMetadata = (value: IModelMetadata): value is IContextMetad
 };
 
 export const metadataHasNestedProperties = (value: IModelMetadata): value is IContainerWithNestedProperties & IModelMetadata => {
-  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value)) 
+  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value))
     && Array.isArray((value as IContainerWithNestedProperties).properties);
 };
 

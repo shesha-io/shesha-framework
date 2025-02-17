@@ -1,5 +1,5 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export type JustifyContent =
   | 'center'
@@ -138,7 +138,9 @@ export type AlignSelf =
   | 'revert-layer'
   | 'unset';
 
-export interface ICommonContainerProps {
+export type ShadowStyleType = 'none' | 'above' | 'below';
+
+export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
   flexWrap?: FlexWrap;
@@ -165,9 +167,10 @@ export interface ICommonContainerProps {
   borderRadius?: string | number;
   overflow?: string;
   shadowStyle?: string;
+  style?: React.CSSProperties;
 }
 
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps, IStyleType {
+export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
@@ -179,4 +182,7 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, IC
   backgroundUrl?: string;
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
+  desktop?: any;
+  tablet?: any;
+  mobile?: any;
 }

@@ -60,7 +60,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<INumberFieldComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<INumberFieldComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<INumberFieldComponentProps>(4, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
@@ -69,7 +69,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         style: prev.style
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
