@@ -104,7 +104,7 @@ export const getSettings = () =>
                 id: 'b920ef96-aeq7-4a01-bfad-b5b7d07218da',
               },
               {
-                label: 'grid',
+                label: 'Grid',
                 value: 'grid',
                 id: 'b920ef96-ae27-4a01-bfad-b5b7x07218da',
               }
