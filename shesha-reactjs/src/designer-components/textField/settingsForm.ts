@@ -4,7 +4,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: ITextFieldComponentProps) => {
 
@@ -40,7 +40,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                             .addLabelConfigurator({
                                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
-                                label: 'label',
+                                label: 'Label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
@@ -653,74 +653,26 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     id: 'backgroundStyleRow-size',
                                                                     label: "Size",
                                                                     hideLabel: true,
-                                                                    propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    propertyName: "background.size", 
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                                                    dropdownOptions: sizeOptions,
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-position',
                                                                     label: "Position",
-                                                                    hideLabel: true,
+                                                                    hideLabel: true, 
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: positionOptions,
                                                                 },
                                                                 {
-                                                                    type: 'dropdown',
+                                                                    type: 'radio',
                                                                     id: 'backgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: repeatOptions,
+                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })

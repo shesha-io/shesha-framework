@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Select, Space } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Select, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDropdownOption } from '@/designer-components/_settings/utils/background/interfaces';
 
@@ -11,6 +11,7 @@ interface CustomDropdownProps {
     label?: string | React.ReactNode;
     size?: SizeType;
     defaultValue?: string;
+    customTooltip?: string;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
     variant?: 'borderless' | 'outlined' | 'filled';
@@ -22,6 +23,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     readOnly,
     label,
     defaultValue,
+    customTooltip,
     onChange,
     size
 }) => {
@@ -33,7 +35,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     };
 
     const addCustomOption = () => {
-        setCustomOptions(prev => [...prev, customOption]);
+        setCustomOptions(() => [...options, customOption]);
         clearInputs();
     };
 
@@ -52,7 +54,9 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
                                     value={customOption}
                                     onChange={(e) => setCustomOption(e.target.value)}
                                     size='small'
-                                    prefix={'value: '}
+                                    prefix={<Tooltip title={customTooltip} placement="top">
+                                        <QuestionCircleOutlined style={{ marginLeft: '2px', color: '#00000073' }} />
+                                    </Tooltip>}
                                     onClick={(e) => e.stopPropagation()}
                                 />
                             </Space>
