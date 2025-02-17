@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.MultiTenancy;
 using Abp.Reflection;
-using FluentMigrator;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,7 +36,8 @@ namespace Shesha.FluentMigrator
             // Put the database update into a scope to ensure
             // that all resources will be disposed.
             var connectionSettings = new DbConnectionSettings(dbmsType, connectionString);
-            using var scope = CreateServices(connectionSettings).CreateScope();
+            using var services = CreateServices(connectionSettings);
+            using var scope = services.CreateScope();
             using var connectionSettingsScope = DbConnectionSettings.BeginConnectionScope(connectionSettings);
 
             // Instantiate the runner

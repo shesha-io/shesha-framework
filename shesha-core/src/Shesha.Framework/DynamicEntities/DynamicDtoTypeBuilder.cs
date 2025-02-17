@@ -27,15 +27,11 @@ namespace Shesha.DynamicEntities
     {
         private readonly IEntityConfigCache _entityConfigCache;
         private IEntityConfigurationStore _entityConfigurationStore;
-        private readonly ICacheManager _cacheManager;
-        //private readonly ITypeFinder _typeFinder;
-
         /// <summary>
         /// Cache of proxy classes
         /// </summary>
-        protected ITypedCache<string, DynamicDtoProxyCacheItem> FullProxyCache => _cacheManager.GetCache<string, DynamicDtoProxyCacheItem>("DynamicDtoTypeBuilder_FullProxyCache");
-
-        protected ITypedCache<string, Type> DynamicTypeCache => _cacheManager.GetCache<string, Type>($"{nameof(DynamicDtoTypeBuilder)}.{nameof(DynamicTypeCache)}");
+        private readonly ITypedCache<string, DynamicDtoProxyCacheItem> _fullProxyCache;
+        private readonly ITypedCache<string, Type> _dynamicTypeCache;
 
         /// <summary>
         /// Reference to the logger to write logs.
@@ -45,14 +41,14 @@ namespace Shesha.DynamicEntities
         public DynamicDtoTypeBuilder(
             IEntityConfigCache entityConfigCache,
             IEntityConfigurationStore entityConfigurationStore,
-            ICacheManager cacheManager
-            //ITypeFinder typeFinder
-            )
+            IFullProxyCacheHolder fullProxyCacheHolder,
+            IDynamicTypeCacheHolder _dynamicTypeCacheHolder
+        )
         {
             _entityConfigCache = entityConfigCache;
             _entityConfigurationStore = entityConfigurationStore;
-            _cacheManager = cacheManager;
-            //_typeFinder = typeFinder;
+            _fullProxyCache = fullProxyCacheHolder.Cache;
+            _dynamicTypeCache = _dynamicTypeCacheHolder.Cache;
         }
 
         /// inheritedDoc
@@ -198,7 +194,7 @@ namespace Shesha.DynamicEntities
 
         private async Task<Type> GetNestedTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
         {
-            var t = await DynamicTypeCache.GetOrDefaultAsync(propertyDto.Id.ToString());
+            var t = await _dynamicTypeCache.GetOrDefaultAsync(propertyDto.Id.ToString());
             if (t == null)
             {
                 t = propertyDto.Properties?.Any() ?? false
@@ -206,7 +202,7 @@ namespace Shesha.DynamicEntities
                         ? typeof(object)
                         : await BuildNestedTypeAsync(propertyDto, context)
                     : typeof(object);
-                await DynamicTypeCache.SetAsync(propertyDto.Id.ToString(), t);
+                await _dynamicTypeCache.SetAsync(propertyDto.Id.ToString(), t);
             }
             return t;
 
@@ -375,7 +371,7 @@ namespace Shesha.DynamicEntities
         public async Task<Type> BuildDtoFullProxyTypeAsync(Type baseType, DynamicDtoTypeBuildingContext context)
         {
             var cacheKey = GetTypeCacheKey(baseType, context);
-            var cachedDtoItem = await FullProxyCache.GetOrDefaultAsync(cacheKey);
+            var cachedDtoItem = await _fullProxyCache.GetOrDefaultAsync(cacheKey);
             if (cachedDtoItem != null)
             {
                 context.Classes = cachedDtoItem.NestedClasses.ToDictionary(i => i.Key, i => i.Value);
@@ -397,7 +393,7 @@ namespace Shesha.DynamicEntities
 
             var type = await CompileResultTypeAsync(baseType, proxyClassName, interfaces, properties, context);
 
-            await FullProxyCache.SetAsync(cacheKey, new DynamicDtoProxyCacheItem
+            await _fullProxyCache.SetAsync(cacheKey, new DynamicDtoProxyCacheItem
             {
                 DtoType = type,
                 NestedClasses = context.Classes.ToDictionary(i => i.Key, i => i.Value)
@@ -447,13 +443,13 @@ namespace Shesha.DynamicEntities
             {
                 var cacheKey = $"{entityConfig.Namespace}.{entityConfig.ClassName}";
 
-                FullProxyCache.Remove(cacheKey);
+                _fullProxyCache.Remove(cacheKey);
             }
 
             var prop = eventData.Entity;
             while (prop != null)
             {
-                DynamicTypeCache.Remove(prop.Id.ToString());
+                _dynamicTypeCache.Remove(prop.Id.ToString());
                 prop = prop.ParentProperty;
             }
         }

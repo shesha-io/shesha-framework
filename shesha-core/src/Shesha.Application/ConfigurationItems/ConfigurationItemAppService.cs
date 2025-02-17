@@ -16,6 +16,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Mvc;
+using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -57,7 +58,10 @@ namespace Shesha.ConfigurationItems
 
             var pack = await _packageManager.PreparePackageAsync(exportСontext);
 
+#pragma warning disable IDISP001 // Dispose created
             var zipStream = new MemoryStream();
+#pragma warning restore IDISP001 // Dispose created
+
             await _packageManager.PackAsync(pack, zipStream);
 
             var fileName = $"package{DateTime.Now:yyyyMMdd_HHmm}.shaconfig";
@@ -76,7 +80,7 @@ namespace Shesha.ConfigurationItems
                 var context = new ReadPackageContext { 
                     SkipUnsupportedItems = true
                 };
-                var package = await _packageManager.ReadPackageAsync(zipStream, context);
+                using var package = await _packageManager.ReadPackageAsync(zipStream, context);
 
                 var result = new AnalyzePackageResult();
 
@@ -137,7 +141,7 @@ namespace Shesha.ConfigurationItems
             using (var zipStream = input.File.OpenReadStream()) 
             {
                 var context = new ReadPackageContext();
-                var package = await _packageManager.ReadPackageAsync(zipStream, context);
+                using var package = await _packageManager.ReadPackageAsync(zipStream, context);
 
                 var importContext = new PackageImportContext {
                     CreateModules = true,

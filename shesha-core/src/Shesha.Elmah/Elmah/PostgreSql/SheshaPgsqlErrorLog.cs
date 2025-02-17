@@ -79,7 +79,7 @@ namespace Shesha.Elmah.PostgreSql
                 var exceptionDetails = provider.CurrentState?.AllExceptions?.FirstOrDefault(e => e.Exception == error.Exception);
                 var location = exceptionDetails?.Location;
 
-                ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
+                ExecuteCommand(connection, () => Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
 
                 // gather refs and log them
                 if (error.Exception != null && provider.CurrentState != null)
@@ -89,18 +89,18 @@ namespace Shesha.Elmah.PostgreSql
                     {
                         foreach (var item in allRefs)
                         {
-                            ExecuteCommand(connection, Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                            ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
                         }
                     }
                 }
             }
         }
 
-        private void ExecuteCommand(NpgsqlConnection connection, NpgsqlCommand command)
+        private void ExecuteCommand(NpgsqlConnection connection, Func<NpgsqlCommand> commandFactory)
         {
+            using var command = commandFactory();
             command.Connection = connection;
             command.ExecuteNonQuery();
-            command.Dispose();
         }
 
         public override ErrorLogEntry GetError(string id)
@@ -168,23 +168,6 @@ namespace Shesha.Elmah.PostgreSql
                 }
             }
         }
-
-        private void PrepareDatabase()
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                connection.Open();
-
-                Commands.CreateSchemaIfMissing(connection, DBConstants.Schema);
-
-                if (!Commands.TableExists(connection, DBConstants.Schema, DBConstants.ErrorsTable))
-                    Commands.CreateErrorsTable(connection, DBConstants.Schema, DBConstants.ErrorsTable);
-
-                if (!Commands.TableExists(connection, DBConstants.Schema, DBConstants.ErrorRefsTable))
-                    Commands.CreateErrorRefsTable(connection, DBConstants.Schema, DBConstants.ErrorRefsTable);
-            }
-        }
-
 
         private static class Commands
         {
