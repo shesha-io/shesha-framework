@@ -98,7 +98,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <FormItem name="actionFullName" label={label} tooltip={description}>
+        <FormItem name="actionFullName" label={label as string} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </FormItem>
         {selectedAction && selectedAction.hasArguments && (
@@ -147,7 +147,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 };
 
 interface IConfigurableActionConfiguratorProps {
-  label?: string;
+  label?: React.ReactNode;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;
