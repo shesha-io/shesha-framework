@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Castle.Core.Logging;
 using Shesha.Domain;
 using Shesha.Email.Dtos;
@@ -58,7 +59,7 @@ namespace Shesha.Notifications.SMS
                 });
             }
 
-            return await _smsGateway.SendSmsAsync(reciever.GetAddress(this), message.Message);
+            return await _smsGateway.SendSmsAsync(!settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : reciever.GetAddress(this), message.Message);
         }
 
         public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)

@@ -197,7 +197,8 @@ namespace Shesha.Notifications
                 RetryCount = 0,
                 ReadStatus = RefListNotificationReadStatus.Unread,
                 Direction = RefListNotificationDirection.Outgoing,
-                Status = RefListNotificationStatus.Preparing
+                Status = RefListNotificationStatus.Preparing,
+                RecipientText = receiver.GetAddress(_channelSender)
             });
 
             await _unitOfWorkManager.Current.SaveChangesAsync();

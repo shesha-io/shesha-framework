@@ -134,7 +134,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
 
         {(!formData?.formSelectionMode || formData?.formSelectionMode === 'name') && (
           <SettingsFormItem name="formId" label="Form" jsSetting>
-            <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+            <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>
