@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: any) => {
   return {
@@ -20,20 +20,20 @@ export const getSettings = (data: any) => {
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [
               ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                  propertyName: 'propertyName',
-                  label: 'Property Name',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  styledLabel: true,
-                  size: 'small',
-                  validate: {
-                    required: true,
-                  },
-                  jsSetting: true,
-                })
-                .addCodeEditor({
+              .addSettingsInput({
+                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                propertyName: 'componentName',
+                label: 'Component Name',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                size: 'small',
+                validate: {
+                  required: true,
+                },
+                jsSetting: true,
+              })
+                .addSettingsInput({
                     id: nanoid(),
+                    inputType: 'codeEditor',
                     propertyName: 'renderer',
                     parentId: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
                     label: 'Render HTML',
@@ -44,43 +44,14 @@ export const getSettings = (data: any) => {
                         name: 'data',
                         description: 'Form data',
                         type: 'object',
-                      },
+                      }.toString(),
                       {
                         id: nanoid(),
                         name: 'globalState',
                         description: 'The global state',
                         type: 'object',
-                      },
+                      }.toString(),
                     ],
-                    wrapInTemplate: true,
-                    templateSettings: {
-                      "functionName": "renderer"
-                    },
-                    availableConstantsExpression: async ({ metadataBuilder, data }) => {
-                      const { modelType } = data ?? {};
-                      const result = metadataBuilder.object("constants");
-                      if (modelType) {
-                        await result.addEntityAsync("data", "Form data", modelType);
-                        await result.addEntityAsync("initialValues", "Initial values", modelType);
-                      } else {
-                        result.addObject("data", "Form data");
-                        result.addObject("initialValues", "Initial values");
-                      };
-      
-                      result.addObject("parentFormValues", "Parent form values. The values of the form rendering the dialog.");
-      
-                      result.addStandard([
-                        "shesha:form",
-                        "shesha:globalState",
-                        "shesha:setGlobalState",
-                        "shesha:http",
-                        "shesha:message",
-                        "shesha:pageContext",
-                        "shesha:contexts",
-                        "shesha:moment",
-                      ]);
-                      return result.build();
-                    },
                   })
                   .addCheckbox({
                     id: nanoid(),
@@ -91,23 +62,57 @@ export const getSettings = (data: any) => {
                 .toJson(),
             ],
           },
+
           {
-            key: '3',
+            key: 'appearance',
             title: 'Appearance',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
+            id: nanoid(),
             components: [
               ...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: 'custom-css-412c-8461-4c8d55e5c073',
-                inputType: 'codeEditor',
-                propertyName: 'style',
-                hideLabel: false,
-                label: 'Style',
-                description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-            })
-                .toJson(),
-            ],
+                .addPropertyRouter({
+                  id: 'styleRouter',
+                  propertyName: 'propertyRouter1',
+                  componentName: 'propertyRouter',
+                  label: 'Property router1',
+                  labelAlign: 'right',
+                  parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                  hidden: false,
+                  propertyRouteName: {
+                    _mode: "code",
+                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                    _value: ""
+                  },
+                  components: [
+                    ...new DesignerToolbarSettings()
+                      .addCollapsiblePanel({
+                        id: 'customStyleCollapsiblePanel',
+                        propertyName: 'customStyle',
+                        label: 'Custom Style',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: 'styleRouter',
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              hideLabel: true,
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .toJson()
+                  ]
+                })
+                .toJson()
+            ]
           },
           {
             key: '4',
