@@ -445,7 +445,8 @@ namespace Shesha.Utilities
         public static string ToMd5Fingerprint(this string s)
         {
             var bytes = Encoding.Unicode.GetBytes(s.ToCharArray());
-            var hash = MD5.Create().ComputeHash(bytes);
+            using var md5 = MD5.Create();
+            var hash = md5.ComputeHash(bytes);
 
             // concat the hash bytes into one long string
             return hash.Aggregate(new StringBuilder(32),

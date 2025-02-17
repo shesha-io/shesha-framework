@@ -23,10 +23,13 @@ namespace Shesha.NHibernate.PostGis
                     {
                         global::NHibernate.Spatial.Metadata.Metadata.AddMapping(cfg, metadataClass);
                     }
-                            
+
                     // rebuild session factory if mapping were changed
-                    if (supportedMetadataClasses.Any())
+                    if (supportedMetadataClasses.Any()) 
+                    {
+                        sessionFactory.Dispose();
                         sessionFactory = cfg.BuildSessionFactory();
+                    }                        
                 }
 
                 return sessionFactory;

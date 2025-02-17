@@ -68,16 +68,11 @@ namespace Shesha.Locks
         /// <summary>
         /// Dispose lock factory
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            _redLockFactory.Dispose();
 
-        protected virtual void Dispose(bool disposing)
-        {
-            // Cleanup
-            _redLockFactory?.Dispose();
-        }
+            GC.SuppressFinalize(this);
+        }        
     }
 }

@@ -71,7 +71,9 @@ namespace Shesha.StoredFiles
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
                 return StatusCode(304);
 
+#pragma warning disable IDISP001 // Dispose created
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
+#pragma warning restore IDISP001 // Dispose created
             await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
@@ -497,7 +499,9 @@ namespace Shesha.StoredFiles
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
+#pragma warning disable IDISP001 // Dispose created
                 var compressedStream = await CompressionService.CompressFilesAsync(list);
+#pragma warning restore IDISP001 // Dispose created
 
                 // note: compressedStream will be disposed automatically in the FileStreamResult
                 return File(compressedStream, "multipart/x-zip", "files.zip");
@@ -802,7 +806,9 @@ namespace Shesha.StoredFiles
             using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
 
             // Save to result stream
+#pragma warning disable IDISP001 // Dispose created
             var resultStream = new MemoryStream();
+#pragma warning restore IDISP001 // Dispose created
             data.SaveTo(resultStream);
             resultStream.Seek(0, SeekOrigin.Begin);  // Reset stream position
 

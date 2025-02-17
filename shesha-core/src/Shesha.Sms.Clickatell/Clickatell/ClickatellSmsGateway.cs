@@ -51,7 +51,7 @@ namespace Shesha.Sms.Clickatell
             try
             {
                 // Send the GET request
-                var response = await httpClient.GetAsync(url);
+                using var response = await httpClient.GetAsync(url);
 
                 var responseContent = await response.Content.ReadAsStringAsync();
 

@@ -91,45 +91,42 @@ namespace Shesha.EntityHistory
 
         public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
-
             // disable SoftDeleteFilter to allow get deleted entities
-            _unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete);
-
-            var itemType = await GetContainerTypeAsync(entityTypeFullName);
-
-            var history = new List<EntityHistoryItemDto>();
-
-            var (audit, maxDate) = await GetEntityAuditAsync(itemType, entityId);
-
-            // Add entity history
-            history.AddRange(audit);
-
-            if (itemType != null)
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
             {
-                // Add many-to-many related entities
-                history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
+                var itemType = await GetContainerTypeAsync(entityTypeFullName);
 
-                // Add many-to-one related entities
-                history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
+                var history = new List<EntityHistoryItemDto>();
 
-                // Add child audited properties
-                if (includeEventsOnChildEntities)
-                    history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
+                var (audit, maxDate) = await GetEntityAuditAsync(itemType, entityId);
 
-                // Add generic child entities
-                history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
+                // Add entity history
+                history.AddRange(audit);
 
-                if (maxDate != DateTime.MaxValue)
+                if (itemType != null)
                 {
-                    history = history.Where(x => x.CreationTime <= maxDate).ToList();
+                    // Add many-to-many related entities
+                    history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
+
+                    // Add many-to-one related entities
+                    history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
+
+                    // Add child audited properties
+                    if (includeEventsOnChildEntities)
+                        history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
+
+                    // Add generic child entities
+                    history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
+
+                    if (maxDate != DateTime.MaxValue)
+                    {
+                        history = history.Where(x => x.CreationTime <= maxDate).ToList();
+                    }
                 }
-            }
+                history = history.OrderBy(x => x.CreationTime).ToList();
 
-            _unitOfWorkManager.Current.EnableFilter(AbpDataFilters.SoftDelete);
-
-            history = history.OrderBy(x => x.CreationTime).ToList();
-
-            return history;
+                return history;
+            }            
         }
 
         private async Task<List<EntityHistoryItemDto>> GetChildEntitiesAuditAsync(Type itemType, string entityId)
