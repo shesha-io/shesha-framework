@@ -1,5 +1,5 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { CSSProperties, Key } from 'react';
+import React, { CSSProperties, Key, useEffect, useMemo, useState } from 'react';
 import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
@@ -7,8 +7,7 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useNestedPropertyMetadatAccessor } from '@/providers';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { IInputStyles, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
 import {
   evaluateString,
   executeScriptSync,
@@ -20,20 +19,25 @@ import {
 } from '@/providers/form/utils';
 import { evaluateDynamicFilters } from '@/utils';
 import { IAutocompleteComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from '../textField/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getBackgroundStyle } from '../_settings/utils/background/utils';
+import { toSizeCssProp } from '@/utils/form';
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
   [name: string]: Key;
 }
 
-const settingsForm = settingsFormJson as FormMarkup;
 
 const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   type: 'autocomplete',
@@ -45,8 +49,41 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const { queryParams, filter } = model;
-
     const allData = useAvailableConstantsData();
+
+    const localStyle = getStyle(model.style, allData.data);
+
+    const dimensions = model?.dimensions;
+    const border = model?.border;
+    const font = model?.font;
+    const shadow = model?.shadow;
+    const background = model?.background;
+
+    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border]);
+    const fontStyles = useMemo(() => getFontStyle(font), [font]);
+    const [backgroundStyles, setBackgroundStyles] = useState({});
+    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+            .then((response) => {
+              return response.blob();
+            })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            }) : '';
+
+        const style = await getBackgroundStyle(background, localStyle, storedImageUrl);
+        setBackgroundStyles(style);
+      };
+
+      fetchStyles();
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
       model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
@@ -148,15 +185,15 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       }
     };
 
+    
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-
     const additionalStyles: CSSProperties = removeUndefinedProps({
-      height: toSizeCssProp(model.height),
-      width: toSizeCssProp(model.width),
+      height: toSizeCssProp(model?.dimensions?.height),
+      width: toSizeCssProp(model?.dimensions?.width),
       fontWeight: model.fontWeight,
       borderWidth: model.borderSize,
-      borderRadius: model.borderRadius,
+      borderRadius: model.borderRadius || '8px',
       borderStyle: model.borderType,
       borderColor: model.borderColor,
       backgroundColor: model.backgroundColor,
@@ -165,7 +202,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...stylingBoxAsCSS,
     });
     const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles, ...backgroundStyles, ...borderStyles, ...shadowStyles, ...fontStyles, ...dimensionsStyles });
 
     const defaultValue = getDefaultValue();
 
@@ -174,7 +211,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,
       allowInherited: true /*hardcoded for now*/,
-      bordered: !model.hideBorder,
+      bordered: model.border.hideBorder,
       dataSourceUrl,
       dataSourceType: model.dataSourceType,
       mode: model.mode,
@@ -200,7 +237,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     // TODO: implement other types of datasources!
 
-
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
@@ -210,8 +246,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-
-
           return (
             model.useRawValues ? (
               <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
@@ -222,8 +256,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
@@ -265,6 +299,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
+    .add<IAutocompleteComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+
+
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {

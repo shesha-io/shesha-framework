@@ -6,7 +6,7 @@ import {
   ISelectOption
 } from './models';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
-import { Select } from 'antd';
+import { ConfigProvider, Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEntityAutocomplete } from '@/utils/autocomplete';
 
@@ -170,40 +170,52 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   const onClear = () => {
     setAutocompleteText(null);
   };
-
+  
   return (
-    <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-      className="sha-dropdown"
-      dropdownStyle={{...style, height: 'auto'}}
-      showSearch={!disableSearch}
-      labelInValue={true}
-      notFoundContent={notFoundContent}
-      defaultActiveFirstOption={false}
-      filterOption={false}
-      onSearch={handleSearch}
-      defaultValue={wrapValue(defaultValue, options)}
-      value={autocompleteValue}
-      onChange={handleChange}
-      allowClear={true}
-      onClear={onClear}
-      onFocus={onFocus}
-      loading={loading}
-      placeholder={selectPlaceholder}
-      disabled={disabled}
-      variant={!bordered ? 'borderless' : undefined}
-      onSelect={handleSelect}
-      style={style}
-      size={size}
-      ref={selectRef}
-      mode={value && mode === 'multiple' ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
-    >
-      {options?.map(({ value: localValue, label, data }) => (
-      
-       <Select.Option value={localValue} key={localValue} data={data}>
-          {label}
-        </Select.Option>
-        
-      ))}
-    </Select>
+    <ConfigProvider
+      theme={{
+        components: {
+          Select: {
+            fontSize: Number(style?.fontSize),
+            colorText: style?.color,
+            fontFamily: style?.fontFamily,
+            fontWeightStrong: Number(style.fontWeight)
+          },
+        },
+      }}
+      >
+      <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+        dropdownStyle={{ backgroundColor: style.backgroundColor, backgroundImage: style.backgroundImage, padding: style.padding, fontSize: style.fontSize}}
+        showSearch={!disableSearch}
+        labelInValue={true}
+        notFoundContent={notFoundContent}
+        defaultActiveFirstOption={false}
+        filterOption={false}
+        onSearch={handleSearch}
+        defaultValue={wrapValue(defaultValue, options)}
+        value={autocompleteValue}
+        onChange={handleChange}
+        allowClear={true}
+        onClear={onClear}
+        onFocus={onFocus}
+        loading={loading}
+        placeholder={selectPlaceholder}
+        disabled={disabled}
+        variant={!bordered ? 'borderless' : undefined}
+        onSelect={handleSelect}
+        style={style}
+        size={size}
+        ref={selectRef}
+        mode={value && mode === 'multiple' ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
+      >
+        {options?.map(({ value: localValue, label, data }) => (
+
+          <Select.Option value={localValue} key={localValue} data={data}>
+            {label}
+          </Select.Option>
+
+        ))}
+      </Select>
+    </ConfigProvider>
   );
 };
