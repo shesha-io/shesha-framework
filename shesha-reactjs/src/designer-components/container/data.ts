@@ -196,9 +196,8 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0
     },
-
     position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
-    display: prev?.display ?? "block",
+    display: prev?.display,
     direction: prev?.direction ?? "horizontal",
     flexWrap: prev?.flexWrap ?? "wrap",
     flexDirection: prev?.flexDirection ?? "row",
