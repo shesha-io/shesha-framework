@@ -307,9 +307,6 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     _mode: 'code',
                                     _value: false
                                 },
-                                convertToFullId: true,
-
-
                             })
                             .addSettingsInput({
                                 id: 'c6ec53eb-3bec-40d6-b1a1-687c5d1c3d1d',
