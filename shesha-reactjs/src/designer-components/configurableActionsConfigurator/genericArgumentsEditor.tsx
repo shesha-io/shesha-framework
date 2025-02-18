@@ -44,7 +44,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
             label: item?.label,
             icon: item?.icon
           })),
-          buttonGroupOptions: item.items
+          buttonGroupOptions: item.buttonGroupOptions ?? item.items
         }))
       }
     } : {
@@ -56,7 +56,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
         label: item?.label,
         icon: item?.icon
       })),
-      buttonGroupOptions: item.items
+      buttonGroupOptions: item.buttonGroupOptions ?? item.items
     };
   };
 
