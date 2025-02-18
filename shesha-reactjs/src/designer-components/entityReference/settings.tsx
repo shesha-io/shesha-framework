@@ -149,7 +149,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         )}
         {values?.formSelectionMode === 'name' && (
           <SettingsFormItem name="formIdentifier" label="Form" jsSetting>
-            <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+            <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>

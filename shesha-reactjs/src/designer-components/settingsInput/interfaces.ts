@@ -16,8 +16,8 @@ export interface IDropdownOption {
 }
 
 export interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'referenceListAutocomplete'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
+    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
@@ -34,6 +34,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    customTooltip?: string;
     suffix?: string;
     size?: SizeType;
     width?: string | number;

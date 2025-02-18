@@ -1,10 +1,10 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { EditableTagGroup, IconPicker } from '@/components';
+import { EditableTagGroup } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { executeScript, useFormData } from '@/index';
+import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -25,6 +25,8 @@ import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
 import { ImagePicker } from '../imagePicker';
+import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
+import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -40,7 +42,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
         if (typeof icon === 'string') {
             return icons[icon] ?
-                <ShaIcon iconName={icon as IconType} style={style} /> :
+                <Tooltip title={hint}><ShaIcon iconName={icon as IconType} style={style} /></Tooltip> :
                 customIcons[icon] ?
                     <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
                     : icon === 'sectionSeparator' ?
@@ -51,6 +53,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
         return icon;
     };
+
+    const allData = useAvailableConstantsData();
 
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
         if (!availableConstantsExpression?.trim())
@@ -109,7 +113,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon ?? value.toString().charAt(0).toUpperCase() + value.toString().substring(1), null, tooltip)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null, tooltip)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
@@ -122,19 +126,17 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'customDropdown':
             return <CustomDropdown
                 variant={variant} value={value}
-                defaultValue={defaultValue} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} />;
+                defaultValue={defaultValue} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
         case 'textArea':
             return <Input.TextArea
                 rows={2}
                 value={value}
-                placeholder='Enter input description here'
                 defaultValue={defaultValue}
                 readOnly={readOnly} size={size} onChange={onChange} style={{ top: '4px' }} />;
         case 'codeEditor':
             return editor;
         case 'iconPicker':
-            return <IconPicker iconSize={20}
-                defaultValue={defaultValue} selectBtnSize={size} value={value} readOnly={readOnly} onIconChange={onChange} />;
+            return <IconPickerWrapper iconSize={20} selectBtnSize={size} defaultValue={value} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImagePicker
                 value={value}
@@ -142,8 +144,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button disabled={readOnly}
-                defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
+            return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -166,6 +167,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 size={size}
                 {...{ ...props, style: {} }}
             />;
+        case 'referenceListAutocomplete':
+            return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
                 <QueryBuilder {...props} hideLabel={true}
@@ -178,10 +181,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'propertyAutocomplete':
             return <PropertyAutocomplete
                 id={props.id}
-                // style={getStyle(model?.style, formData)}
-                // dropdownStyle={getStyle(model?.dropdownStyle, formData)}
                 size={props.size}
-                // mode={props.mode}
                 readOnly={props.readOnly}
                 autoFillProps={props.autoFillProps ?? true}
                 value={value}
@@ -192,9 +192,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
-                convertToFullId={false}
                 value={value}
-                size='small'
                 onChange={onChange}
             />;
         case 'labelValueEditor':
@@ -227,7 +225,6 @@ export interface IInputRowProps {
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
-    const icons = require('@ant-design/icons');
 
     return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
@@ -236,22 +233,13 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             const width = type === 'number' ? 100 :
                 type === 'button' ? 24 :
                     type === 'dropdown' ? 120 :
-                        type === 'radio' ? props.buttonGroupOptions.length * 30 :
+                        type === 'radio' ? props.buttonGroupOptions.length * 32 :
                             type === 'color' ? 24 :
                                 type === 'customDropdown' ? 120 : 50;
 
             return (
                 <SettingInput key={i + props.label}
                     {...props}
-                    {...(type === 'radio' && {
-                        buttonGroupOptions: props.buttonGroupOptions.map(({ value, title, icon }) => {
-                            if (!icons[`${icon}`]) {
-                                return ({ value, title, icon: null });
-                            }
-                            const IconComponent = icons[`${icon}`];
-                            return ({ value, title, icon: <IconComponent /> });
-                        })
-                    })}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />
