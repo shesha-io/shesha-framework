@@ -3,7 +3,7 @@ import RadioGroup from './radioGroup';
 import React from 'react';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FormMarkup, IInputStyles } from '@/providers/form/models';
+import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IRadioProps } from './utils';

@@ -65,8 +65,6 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
-type PositioningType = { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
-
 export interface IStyleType {
   border?: IBorderValue;
   background?: IBackgroundValue;

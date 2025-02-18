@@ -5,7 +5,7 @@ import { Checkbox } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles, useFormData, FormMarkup } from '@/providers';
+import { IInputStyles, useFormData } from '@/providers';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
