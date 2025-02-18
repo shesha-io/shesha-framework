@@ -566,7 +566,7 @@ export const getSettings = (data: any) => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    dropdownOptions: repeatOptions,
+                                    buttonGroupOptions: repeatOptions,
                                   },
                                 ],
                               })
