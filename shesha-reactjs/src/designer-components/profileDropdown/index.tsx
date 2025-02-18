@@ -1,4 +1,6 @@
 import {
+  ConfigurableForm,
+  FormIdentifier,
   IButtonGroup,
   IConfigurableFormComponent,
   IToolboxComponent,
@@ -10,7 +12,7 @@ import {
 } from '@/index';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Dropdown } from 'antd';
+import { Avatar, Dropdown, Popover } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
@@ -29,6 +31,10 @@ interface IProfileDropdown extends IConfigurableFormComponent {
   subTextColor?: string;
   subTextFontSize?: string;
   subTextStyle?: string;
+  showUserInfo?: boolean;
+  popOverTitle?: string;
+  popOverFormId?: FormIdentifier;
+  popOverContentStyle?: string;
 }
 
 const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
@@ -40,7 +46,16 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
   Factory: ({ model }) => {
     const [numResolved, setNumResolved] = useState(0);
 
-    const { subText, subTextColor, subTextFontSize, subTextStyle } = model;
+    const {
+      subText,
+      subTextColor,
+      subTextFontSize,
+      subTextStyle,
+      showUserInfo,
+      popOverTitle,
+      popOverFormId,
+      popOverContentStyle,
+    } = model;
 
     const { styles } = useStyles({
       subText,
@@ -84,6 +99,33 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     if (model.hidden) return null;
 
+    const popoverContent = popOverFormId ? (
+      <div style={getStyle(popOverContentStyle, formData, globalState)} ><ConfigurableForm formId={popOverFormId} mode="readonly" /></div>
+    ) : (
+      <div>Select Popover Form</div>
+    );
+
+    const renderDropdown = () =>
+      showUserInfo ? (
+        <Popover
+          title={popOverTitle}
+          content={popoverContent}
+          placement="bottomRight"
+        >
+          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+              {loginInfo?.fullName} <DownOutlined />
+            </a>
+          </Dropdown>
+        </Popover>
+      ) : (
+        <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+          <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+            {loginInfo?.fullName} <DownOutlined />
+          </a>
+        </Dropdown>
+      );
+
     return (
       <div className={styles.shaProfileDropdownWrapper}>
         {subText && <div style={subTextStyling}>{subText}</div>}
@@ -93,11 +135,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         ))}
 
         <div className={styles.shaProfileDropdown}>
-          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-              {loginInfo?.fullName} <DownOutlined />
-            </a>
-          </Dropdown>
+          {renderDropdown()}
           <Avatar icon={<UserOutlined />} />
         </div>
       </div>
