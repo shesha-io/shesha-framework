@@ -43,6 +43,26 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
+                  propertyName: 'default Value',
+                  label: 'Default Value',
+                  inputType: 'number',
+                  description: 'Sets the default value for the progress bar.',
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'progressType',
+                  label: 'Type',
+                  inputType: 'dropdown',
+                  dropdownOptions: [
+                    { label: 'Line', value: 'line' },
+                    { label: 'Circle', value: 'circle' },
+                    { label: 'Dashboard', value: 'dashboard' },
+                  ],
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
                   propertyName: 'percent',
                   label: 'Percent',
                   inputType: 'number',
@@ -81,27 +101,14 @@ export const getSettings = (data: any) => {
                       ...new DesignerToolbarSettings()
                         .addSettingsInput({
                           id: nanoid(),
-                          propertyName: 'progressType',
-                          label: 'Type',
-                          inputType: 'dropdown',
-                          dropdownOptions: [
-                            { label: 'Line', value: 'line' },
-                            { label: 'Circle', value: 'circle' },
-                            { label: 'Dashboard', value: 'dashboard' },
-                          ],
-                          validate: { required: true },
-                          jsSetting: true,
-                        })
-                        .addSettingsInput({
-                          id: nanoid(),
                           propertyName: 'status',
                           label: 'Status',
                           inputType: 'dropdown',
                           dropdownOptions: [
-                            { label: 'success', value: 'success' },
-                            { label: 'exception', value: 'exception' },
-                            { label: 'normal', value: 'normal' },
-                            { label: 'active', value: 'active' },
+                            { label: 'Success', value: 'success' },
+                            { label: 'Exception', value: 'exception' },
+                            { label: 'Normal', value: 'normal' },
+                            { label: 'Active', value: 'active' },
                           ],
                           description: 'To set the status of the Progress.',
                           jsSetting: true,
@@ -116,16 +123,23 @@ export const getSettings = (data: any) => {
                         })
                         .addSettingsInput({
                           id: nanoid(),
+                          propertyName: 'trailColor',
+                          label: 'Trail Color',
+                          inputType: 'color',
+                          description: "The color of progress bar background.",
+                          jsSetting: true,
+                        })
+                        .addSettingsInput({
+                          id: nanoid(),
                           propertyName: 'strokeLinecap',
                           label: 'Stroke Linecap',
                           inputType: 'dropdown',
                           dropdownOptions: [
-                            { label: 'round', value: 'round' },
-                            { label: 'butt', value: 'butt' },
-                            { label: 'square', value: 'square' },
+                            { label: 'Round', value: 'round' },
+                            { label: 'Butt', value: 'butt' },
+                            { label: 'Square', value: 'square' },
                           ],
                           defaultValue: 'round',
-                          validate: { required: true },
                           jsSetting: true,
                         })
                         .addSettingsInput({
@@ -146,6 +160,13 @@ export const getSettings = (data: any) => {
                           hidden: { _code: 'return !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false },
                           jsSetting: true,
                         })
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'hidden',
+                          label: 'Hide',
+                          inputType: 'switch',
+                          jsSetting: true,
+                        })
                         .toJson()
                     ]
                   }
@@ -153,15 +174,15 @@ export const getSettings = (data: any) => {
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'typeSpecificSettings',
-                  label: 'Type Specific Settings',
+                  label: 'Bar Settings',
                   labelAlign: 'right',
                   ghost: true,
+                  hideWhenEmpty: true,
                   collapsible: 'header',
                   content: {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                        // Line specific settings
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'steps',
@@ -181,7 +202,6 @@ export const getSettings = (data: any) => {
                           mode: 'dialog',
                           jsSetting: true,
                         })
-                        // Circle specific settings
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'circleStrokeColor',
@@ -192,7 +212,6 @@ export const getSettings = (data: any) => {
                           mode: 'dialog',
                           jsSetting: true,
                         })
-                        // Dashboard specific settings
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'gapDegree',
@@ -209,10 +228,10 @@ export const getSettings = (data: any) => {
                           label: 'Gap Position',
                           inputType: 'dropdown',
                           dropdownOptions: [
-                            { label: 'top', value: 'top' },
-                            { label: 'bottom', value: 'bottom' },
-                            { label: 'left', value: 'left' },
-                            { label: 'right', value: 'right' },
+                            { label: 'Top', value: 'top' },
+                            { label: 'Bottom', value: 'bottom' },
+                            { label: 'Left', value: 'left' },
+                            { label: 'Right', value: 'right' },
                           ],
                           hidden: { _code: 'return getSettingValue(data?.progressType) !== "dashboard";', _mode: 'code', _value: false },
                           validate: { required: true },
@@ -240,22 +259,18 @@ export const getSettings = (data: any) => {
                           inputType: 'codeEditor',
                           description: 'The template function of the content. This function should return string or number',
                           mode: 'dialog',
-                          // exposedVariables: [
-                          //   {
-                          //     name: 'percent',
-                          //     description: 'Progress percentage',
-                          //     type: 'number',
-                          //   },
-                          //   {
-                          //     name: 'successPercent',
-                          //     description: 'success percentage',
-                          //     type: 'number',
-                          //   },
-                          // ],
-                          // wrapInTemplate: true,
-                          // templateSettings: {
-                          //   functionName: 'getFormat',
-                          // },
+                          exposedVariables: [`
+                            {
+                              name: 'percent',
+                              description: 'Progress percentage',
+                              type: 'number',
+                            }`,
+                            `{
+                              name: 'successPercent',
+                              description: 'success percentage',
+                              type: 'number',
+                            }`,
+                          ],
                           jsSetting: true,
                         })
                         .addSettingsInput({
@@ -265,10 +280,6 @@ export const getSettings = (data: any) => {
                           inputType: 'codeEditor',
                           description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
                           mode: 'dialog',
-                          //wrapInTemplate: true,
-                          // templateSettings: {
-                          //   functionName: 'getSuccess',
-                          // },
                           jsSetting: true,
                         })
                         .toJson()
