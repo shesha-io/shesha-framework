@@ -1,6 +1,6 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { progressSettingsForm } from './settings';
+import { getSettings } from './settings';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
@@ -107,8 +107,8 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: progressSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(progressSettingsForm, model),
+  settingsFormMarkup: data => getSettings(data),
+  validateSettings: model => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
