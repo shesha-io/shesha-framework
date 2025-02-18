@@ -127,6 +127,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       direction: 'vertical',
       target: '_self',
       justifyContent: 'left',
+      hideLabel: true,
     };
 
     return customProps;
