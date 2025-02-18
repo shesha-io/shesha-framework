@@ -23,12 +23,12 @@ namespace Shesha.Services
     public class DynamicRepository : IDynamicRepository, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-        private readonly IShaCurrentSessionContext _currentSessionContext;
+        private readonly INhCurrentSessionContext _currentSessionContext;
 
         // note: current session doesn't work in unit tests because of static context usage
         private ISession CurrentSession => _currentSessionContext.Session;
 
-        public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, IShaCurrentSessionContext currentSessionContext)
+        public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, INhCurrentSessionContext currentSessionContext)
         {
             _entityConfigurationStore = entityConfigurationStore;
             _currentSessionContext = currentSessionContext;

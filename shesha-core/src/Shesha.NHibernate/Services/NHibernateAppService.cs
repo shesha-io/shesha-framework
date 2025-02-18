@@ -28,9 +28,9 @@ namespace Shesha.Services
     public class NHibernateAppService: IApplicationService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly IShaCurrentSessionContext _currentSessionContext;
+        private readonly INhCurrentSessionContext _currentSessionContext;
 
-        public NHibernateAppService(IUnitOfWorkManager unitOfWorkManager, IShaCurrentSessionContext currentSessionContext)
+        public NHibernateAppService(IUnitOfWorkManager unitOfWorkManager, INhCurrentSessionContext currentSessionContext)
         {
             _unitOfWorkManager = unitOfWorkManager;
             _currentSessionContext = currentSessionContext;

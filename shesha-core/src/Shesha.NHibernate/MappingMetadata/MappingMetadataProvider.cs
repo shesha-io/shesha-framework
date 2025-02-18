@@ -16,9 +16,9 @@ namespace Shesha.MappingMetadata
     public class MappingMetadataProvider: IMappingMetadataProvider, ITransientDependency
     {
         private readonly ISessionFactory _sessionFactory;
-        private readonly IShaCurrentSessionContext _currentSessionContext;
+        private readonly INhCurrentSessionContext _currentSessionContext;
 
-        public MappingMetadataProvider(ISessionFactory sessionFactory, IShaCurrentSessionContext currentSessionContext)
+        public MappingMetadataProvider(ISessionFactory sessionFactory, INhCurrentSessionContext currentSessionContext)
         {
             _sessionFactory = sessionFactory;
             _currentSessionContext = currentSessionContext;
