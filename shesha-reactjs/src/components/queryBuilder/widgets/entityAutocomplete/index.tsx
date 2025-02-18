@@ -18,7 +18,7 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
     return (
       <Autocomplete.Raw
         dataSourceType="entitiesList"
-        typeShortAlias={customSettings.typeShortAlias}
+        entityType={customSettings.typeShortAlias}
         allowInherited={customSettings.allowInherited}
         value={value}
         onChange={onChange}

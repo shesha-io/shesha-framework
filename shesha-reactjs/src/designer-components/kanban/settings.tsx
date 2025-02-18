@@ -48,8 +48,8 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
-            typeShortAlias="Shesha.Framework.ReferenceList"
-            filter='{"and":[{"==":[{"var":"isLast"},true]}]}'
+            entityType="Shesha.Framework.ReferenceList"
+            filter={{"and":[{"==":[{"var":"isLast"},true]}]}}
             readOnly={values.readOnly}
           />
         </SettingsFormItem>

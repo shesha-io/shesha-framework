@@ -121,28 +121,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, [value, propertyName]);
 
-  const [internalEntityType, setInternalEntityType] = useState(entityType);
-
-  useEffect(() => {
-    if (!Boolean(internalEntityType)) {
-      if (Boolean(entityType)) {
-        setInternalEntityType(entityType);
-      } else if (value && typeof value === 'object' && value['_className']) {
-        setInternalEntityType(value['_className']);
-      }
-    } else {
-      if (Boolean(entityType) && internalEntityType !== entityType) {
-        setInternalEntityType(entityType);
-      } else if (
-        value &&
-        typeof value === 'object' &&
-        value['_className'] &&
-        internalEntityType !== value['_className']
-      ) {
-        setInternalEntityType(value['_className']);
-      }
-    }
-  }, [entityType, value]);
+  const internalEntityType = entityType || value['_className'];
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -216,7 +195,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const finalQueryParams = useDeepCompareMemo(() => {
     const result = getFinalQueryParams();
     return result;
-  }, [actualQueryParams, properties,internalEntityType]);
+  }, [actualQueryParams, properties, internalEntityType]);
 
   // abort controller, is used to cancel out of date data requests
   const dataRequestAbortController = useRef<AbortController>(null);

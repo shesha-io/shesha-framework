@@ -19,7 +19,7 @@ export const EntityProperty: FC<IProps> = props => {
     <div>
       {props.suppress && <span><EyeInvisibleOutlined /> </span>}
       {icon && <ShaIcon iconName={icon} />}
-      <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>{props.entityType ?? 'udefined'}</i></span>
+      <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>{props.entityType ?? 'undefined'}</i></span>
       {props.description && (
         <Tooltip title={props.description}>
           <QuestionCircleOutlined className={styles.shaHelpIcon} />
