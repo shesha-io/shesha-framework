@@ -12,7 +12,7 @@ export const getSettings = (data: any) => {
   const appearanceId = nanoid();
   const securityId = nanoid();
   const styleRouterId = nanoid();
-  const pnlFontStyleId = nanoid(); 
+  const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
   const borderStyleRowId = nanoid();
@@ -37,132 +37,132 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [ ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
-                  id: propertyNameId,
-                  propertyName: "propertyName",
-                  parentId: commonTabId,
-                  label: "Property Name",
-                  size: "small",
-                  validate: {
-                    "required": true
+            components: [...new DesignerToolbarSettings()
+              .addContextPropertyAutocomplete({
+                id: propertyNameId,
+                propertyName: "propertyName",
+                parentId: commonTabId,
+                label: "Property Name",
+                size: "small",
+                validate: {
+                  "required": true
+                },
+                jsSetting: true,
+              })
+              .addLabelConfigurator({
+                id: nanoid(),
+                propertyName: 'hideLabel',
+                label: 'Label',
+                parentId: commonTabId,
+                hideLabel: true,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    type: 'text',
+                    id: `placeholder-${commonTabId}`,
+                    propertyName: 'placeholder',
+                    label: 'Placeholder',
+                    size: 'small',
+                    jsSetting: true,
                   },
-                  jsSetting: true,
-                })
-                .addLabelConfigurator({
-                  id: nanoid(),
-                  propertyName: 'hideLabel',
-                  label: 'Label',
-                  parentId: commonTabId,
-                  hideLabel: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'text',
-                      id: `placeholder-${commonTabId}`,
-                      propertyName: 'placeholder',
-                      label: 'Placeholder',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'textArea',
-                      id: `tooltip-${commonTabId}`,
-                      propertyName: 'description',
-                      label: 'Tooltip',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'text', 
-                      id: nanoid(),
-                      propertyName: "initialValue",
-                      parentId: commonTabId,
-                      label: "Default Value",
-                      jsSetting: true,
-                      size: "small",
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'passEmptyStringByDefault',
-                      label: 'Empty as default',
-                      jsSetting: true,
-                      parentId: commonTabId,
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'autoSize',
-                      parentId: commonTabId,
-                      label: 'Auto Size',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'allowClear',
-                      parentId: commonTabId,
-                      label: 'Allow Clear',
-                      jsSetting: true,
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: nanoid(),
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: hiddenId,
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'showCount',
-                      parentId: commonTabId,
-                      label: 'Show Chars Count',
-                    }                   
-                  ],
-                })
-                .toJson()
+                  {
+                    type: 'textArea',
+                    id: `tooltip-${commonTabId}`,
+                    propertyName: 'description',
+                    label: 'Tooltip',
+                    jsSetting: true,
+                  },
+                ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: false,
+                inputs: [
+                  {
+                    type: 'text',
+                    id: nanoid(),
+                    propertyName: "initialValue",
+                    parentId: commonTabId,
+                    label: "Default Value",
+                    jsSetting: true,
+                    size: "small",
+                  },
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'passEmptyStringByDefault',
+                    label: 'Empty as default',
+                    jsSetting: true,
+                    parentId: commonTabId,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: false,
+                inputs: [
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'autoSize',
+                    parentId: commonTabId,
+                    label: 'Auto Size',
+                    jsSetting: true,
+                  },
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'allowClear',
+                    parentId: commonTabId,
+                    label: 'Allow Clear',
+                    jsSetting: true,
+                  }
+                ]
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'editModeSelector',
+                    id: nanoid(),
+                    propertyName: 'editMode',
+                    label: 'Edit Mode',
+                    size: 'small',
+                    jsSetting: true,
+                  },
+                  {
+                    type: 'switch',
+                    id: hiddenId,
+                    propertyName: 'hidden',
+                    label: 'Hide',
+                    jsSetting: true,
+                    layout: 'horizontal',
+                  },
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: false,
+                inputs: [
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'showCount',
+                    parentId: commonTabId,
+                    label: 'Show Chars Count',
+                  }
+                ],
+              })
+              .toJson()
             ]
           },
           {
@@ -244,7 +244,7 @@ export const getSettings = (data: any) => {
             key: 'events',
             title: 'Events',
             id: eventsTabId,
-            components:[
+            components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -496,7 +496,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow(
                               getBorderInputs()[0] as any
-                            )                           
+                            )
                             .addSettingsInputRow(
                               getBorderInputs()[1] as any
                             )

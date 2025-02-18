@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Abp;
+﻿using Abp;
 using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Domain.Entities;
@@ -16,8 +12,12 @@ using Abp.Timing;
 using Castle.Core.Logging;
 using NHibernate;
 using NHibernate.Collection;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using Shesha.NHibernate.UoW;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Shesha.NHibernate.Interceptors
 {
@@ -32,6 +32,7 @@ namespace Shesha.NHibernate.Interceptors
         public ILogger Logger { get; set; } = new NullLogger();
 
         public EntityHistory.IEntityHistoryHelper EntityHistoryHelper => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.EntityHistoryHelper as EntityHistory.IEntityHistoryHelper;
+        public ISession Session => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.GetSession(true);
 
         public SheshaNHibernateInterceptor(IIocManager iocManager)
         {
@@ -224,19 +225,69 @@ namespace Shesha.NHibernate.Interceptors
 
         public override void OnCollectionRemove(object collection, object key)
         {
+            try
+            {
+                if (collection is IPersistentCollection map)
+                {
+                    var propertyName = map.Role.Split('.').Last();
+                    var property = map.Owner.GetType().GetProperty(propertyName);
+                    var newValue = property.GetValue(map.Owner, null);
+                    EntityHistoryHelper?.AddAuditedAsManyToMany(map.Owner, property, collection, newValue);
+                }
+            }
+            catch (HibernateException e)
+            {
+                Logger.Error(e.Message, e);
+            }
             base.OnCollectionRemove(collection, key);
+        }
+
+        public override SqlString OnPrepareStatement(SqlString sql)
+        {
+            return base.OnPrepareStatement(sql);
         }
 
         public override void OnCollectionUpdate(object collection, object key)
         {
             try
             {
-                IPersistentCollection c = collection as IPersistentCollection;
-                if (c != null)
+                if (collection is IPersistentCollection map)
                 {
-                    IEnumerable storedCollection = c.StoredSnapshot as IEnumerable;
-                }
+                    var propertyName = map.Role.Split('.').Last();
+                    var property = map.Owner.GetType().GetProperty(propertyName);
+                    var newValue = property.GetValue(map.Owner, null);
+                    EntityHistoryHelper?.AddAuditedAsManyToMany(map.Owner, property, map.StoredSnapshot, newValue);
 
+                    /* AS: Experiments for using one table for linking two entities with several list properties with the same entity types */
+                    /*var (added, removed) = IEnumerableExtensions.GetListNewAndRemoved<object>(map.StoredSnapshot, newValue);
+                    if (added.Any())
+                    {
+                        foreach (var item in added)
+                        {
+                            var parentId = map.Owner.GetType().GetProperty("Id").GetValue(map.Owner);
+                            var childId = item.GetType().GetProperty("Id").GetValue(item);
+
+                            var instance = Activator.CreateInstance("Boxfusion.SheshaFunctionalTests.Common.Application", "Boxfusion.SheshaFunctionalTests.Common.Application.Services.OrganisationTestDirectPersons")?
+                                .Unwrap();
+                            var objType = instance.GetType();
+                            objType.GetProperty("OrganisationTestId").SetValue(instance, parentId);
+                            objType.GetProperty("PersonId").SetValue(instance, childId);
+                            objType.GetProperty("Test").SetValue(instance, propertyName);
+
+                            Session.Save(instance);
+                        }
+                    }*/
+                    /*foreach (var item in removed)
+                    {
+                        var childId = item.GetType().GetProperty("Id").GetValue(item);
+
+                        var instance = Activator.CreateInstance("Boxfusion.SheshaFunctionalTests.Common.Application", "oxfusion.SheshaFunctionalTests.Common.Application.Services.OrganisationTestDirectPersons");
+                        var objType = instance.GetType();
+                        objType.GetProperty("OrganisationTestId").SetValue(instance, parentId);
+                        objType.GetProperty("PersonId").SetValue(instance, childId);
+                        objType.GetProperty("Test").SetValue(instance, propertyName);
+                    }*/
+                }
             }
             catch (HibernateException e)
             {

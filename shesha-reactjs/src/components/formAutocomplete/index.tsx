@@ -8,6 +8,7 @@ import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/inter
 import { FormFullName, FormIdentifier } from '@/providers/form/models';
 import { isFormFullName, isFormRawId } from '@/providers/form/utils';
 import HelpTextPopover from '@/components/helpTextPopover';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IFormAutocompleteRuntimeProps {
     value?: FormIdentifier;
@@ -15,6 +16,7 @@ export interface IFormAutocompleteRuntimeProps {
     readOnly?: boolean;
     maxResultCount?: number;
     convertToFullId?: boolean;
+    size?: SizeType;
 }
 
 interface IOption {
@@ -188,7 +190,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
                 valueFetcher.refetch({ queryParams: valueFetchParams });
         }
 
-        if (!props.value){
+        if (!props.value) {
             if (autocompleteText)
                 setAutocompleteText(null);
             selectedValue.current = props.value;
@@ -275,7 +277,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
             onClear={onClear}
             placeholder={valueFetcher.loading ? 'Loading...' : 'Type to search'}
             disabled={valueFetcher.loading || props.readOnly}
-
+            size={props.size}
             value={autocompleteText}
             onChange={setAutocompleteText}
         >

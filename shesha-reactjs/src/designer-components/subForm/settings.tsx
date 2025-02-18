@@ -54,10 +54,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
   });
   const commonUrlsConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
-    standardConstants: [
-      SheshaConstants.globalState,
-      SheshaConstants.formData,
-    ],
     onBuild: (builder) => {
       builder.addObject("queryParams", "Query parameters", undefined);
     }

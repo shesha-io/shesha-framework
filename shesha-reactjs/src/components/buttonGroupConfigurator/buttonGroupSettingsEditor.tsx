@@ -8,7 +8,6 @@ import { Alert, Button, Divider } from 'antd';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
-import { useAvailableConstantsData } from '@/providers/form/utils';
 import { initialValues } from './utils';
 
 export interface ButtonGroupSettingsEditorProps {
@@ -69,7 +68,6 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 };
 
 export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ value, onChange, readOnly }) => {
-  const availableConstants = useAvailableConstantsData();
   const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps => {
     const itemsCount = (items ?? []).length;
     const itemNo = itemsCount + 1;
@@ -106,7 +104,6 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
           onChange={itemOnChange}
           nestedRenderer={nestedRenderer}
           initNewItem={makeNewItem}
-          actualModelContext={availableConstants}
         />
       )}
     </ListEditorWithPropertiesPanel>

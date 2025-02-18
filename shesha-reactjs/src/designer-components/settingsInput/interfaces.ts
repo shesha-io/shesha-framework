@@ -53,6 +53,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     mode?: any;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
+    customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
@@ -61,10 +62,12 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    useRawValues?: boolean;
     modelType?: string;
     min?: number;
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
     _formFields?: string[];
+    autoFillProps?: boolean;
 };

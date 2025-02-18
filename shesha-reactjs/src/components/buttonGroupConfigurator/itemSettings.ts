@@ -88,13 +88,13 @@ export const getItemSettings = (data) => {
                                                     type: "text",
                                                     propertyName: "label",
                                                     parentId: "root",
-                                                    label: "Label"
+                                                    label: "Caption"
                                                 },
                                                 {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",
                                                     type: "textArea",
                                                     propertyName: "tooltip",
-                                                    label: "Group Tooltip",
+                                                    label: "Tooltip",
                                                     labelAlign: "right",
                                                     parentId: "root",
                                                     hidden: false,

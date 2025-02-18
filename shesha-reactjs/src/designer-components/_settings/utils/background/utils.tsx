@@ -1,5 +1,4 @@
 import React from "react";
-import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
 
 
@@ -72,11 +71,31 @@ export const gradientDirectionOptions: IDropdownOption[] = [
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [
-    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
-    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
-    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
-    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
-    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
+    {
+        value: "color",
+        icon: "FormatPainterOutlined",
+        title: "Color"
+    },
+    {
+        value: "gradient",
+        icon: "BgColorsOutlined",
+        title: "Gradient"
+    },
+    {
+        value: "image",
+        icon: "PictureOutlined",
+        title: "Image"
+    },
+    {
+        value: "url",
+        icon: "LinkOutlined",
+        title: "URL"
+    },
+    {
+        value: "storedFile",
+        icon: "DatabaseOutlined",
+        title: "Stored File"
+    },
 ];
 
 export const repeatOptions: IDropdownOption[] = [
@@ -88,6 +107,14 @@ export const repeatOptions: IDropdownOption[] = [
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
 
-export const positionOptions: IDropdownOption[] = [{ value: 'center', label: 'Center' }, { value: 'top', label: 'Top' }, { value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'bottom', label: 'Bottom' },
-{ value: 'top left', label: 'Top Left' }, { value: 'top right', label: 'Top Right' }, { value: 'bottom left', label: 'Bottom Left' }, { value: 'bottom right', label: 'Bottom Right' }];
+export const positionOptions: IDropdownOption[] = [
+    { value: 'center', label: 'Center' },
+    { value: 'top', label: 'Top' },
+    { value: 'left', label: 'Left' },
+    { value: 'right', label: 'Right' },
+    { value: 'bottom', label: 'Bottom' },
+    { value: 'top left', label: 'Top Left' },
+    { value: 'top right', label: 'Top Right' },
+    { value: 'bottom left', label: 'Bottom Left' },
+    { value: 'bottom right', label: 'Bottom Right' }];
 

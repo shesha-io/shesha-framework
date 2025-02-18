@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Abp.Dependency;
+using Newtonsoft.Json;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using Shesha.Generators;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
@@ -92,7 +94,7 @@ namespace Shesha.Tests.DomainAttributes
             };
             var personAssembly = person.GetType().Assembly;
 
-            var conventions = new Conventions();
+            var conventions = new Conventions(Resolve<INameGenerator>());
             conventions.AddAssembly(personAssembly, "Test_");
 
             var nhConfig = new global::NHibernate.Cfg.Configuration();

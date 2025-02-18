@@ -29,8 +29,25 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
 
   const objectMarkup = JSON.parse(JSON.stringify(markup));
 
-  const newMarkUp = Array.isArray(objectMarkup)
-    ? objectMarkup.map((item: any) => ({
+  const styledMarkup = (item) => {
+
+    return item.type === 'collapsiblePanel' ? {
+      ...item,
+      content: {
+        ...item.content,
+        components: item.content.components.map((item: any) => ({
+          ...item,
+          type: "settingsInput",
+          inputType: item.type === 'settingsInput' ? item.inputType : item.type,
+          dropdownOptions: item?.values?.map((item: any) => ({
+            ...item,
+            label: item?.label,
+            icon: item?.icon
+          })),
+          buttonGroupOptions: item.items
+        }))
+      }
+    } : {
       ...item,
       type: "settingsInput",
       inputType: item.type === 'settingsInput' ? item.inputType : item.type,
@@ -39,25 +56,15 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
         label: item?.label,
         icon: item?.icon
       })),
-      buttonGroupOptions: item.buttonGroupOptions
+      buttonGroupOptions: item.items
+    };
+  };
 
-    }))
+  const newMarkUp = Array.isArray(objectMarkup)
+    ? objectMarkup.map((item: any) => styledMarkup(item))
     : {
       ...objectMarkup,
-      components: objectMarkup.components.map((item: any): ISettingsInputProps => ({
-        ...item,
-        type: "settingsInput",
-        inputType: item.type,
-        dropdownOptions: item?.values?.map((item: any) => ({
-          ...item,
-          label: item?.label,
-          icon: item?.icon
-        })),
-        buttonGroupOptions: item?.items?.map((item: any) => ({
-          ...item,
-          icon: item?.icon
-        }))
-      }))
+      components: objectMarkup.components.map((item: any): ISettingsInputProps => styledMarkup(item))
     };
 
   return (
