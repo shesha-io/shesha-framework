@@ -20,17 +20,18 @@ export const getSettings = (data: any) => {
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [
               ...new DesignerToolbarSettings()
-              .addSettingsInput({
+              .addContextPropertyAutocomplete({
                 id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                propertyName: 'componentName',
-                label: 'Component Name',
+                propertyName: 'propertyName',
+                label: 'Property Name',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                styledLabel: true,
                 size: 'small',
                 validate: {
-                  required: true,
+                    required: true,
                 },
                 jsSetting: true,
-              })
+            })
                 .addSettingsInput({
                     id: nanoid(),
                     inputType: 'codeEditor',
@@ -53,12 +54,14 @@ export const getSettings = (data: any) => {
                       }.toString(),
                     ],
                   })
-                  .addCheckbox({
-                    id: nanoid(),
+                  .addSettingsInput({
+                    inputType: 'switch',
+                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
                     propertyName: 'hidden',
-                    parentId: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
-                    label: 'Hidden',
-                  })
+                    label: 'Hide',
+                    jsSetting: true,
+                    layout: 'horizontal',
+                },)
                 .toJson(),
             ],
           },
