@@ -32,7 +32,7 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
-
+import { toSizeCssProp } from '@/utils/form';
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
   [name: string]: Key;
@@ -49,9 +49,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const { queryParams, filter } = model;
-
-
-
     const allData = useAvailableConstantsData();
 
     const localStyle = getStyle(model.style, allData.data);
@@ -69,9 +66,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-
     useEffect(() => {
-
       const fetchStyles = async () => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
@@ -190,20 +185,24 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       }
     };
 
+    
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-
     const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
+      height: toSizeCssProp(model?.dimensions?.height),
+      width: toSizeCssProp(model?.dimensions?.width),
+      fontWeight: model.fontWeight,
+      borderWidth: model.borderSize,
+      borderRadius: model.borderRadius || '8px',
+      borderStyle: model.borderType,
+      borderColor: model.borderColor,
+      backgroundColor: model.backgroundColor,
+      fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
-
+      ...stylingBoxAsCSS,
     });
-    const finalStyle = removeUndefinedProps({ ...localStyle, ...additionalStyles });
+    const jsStyle = getStyle(model.style, allData.data);
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles, ...backgroundStyles, ...borderStyles, ...shadowStyles, ...fontStyles, ...dimensionsStyles });
 
     const defaultValue = getDefaultValue();
 
@@ -212,7 +211,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,
       allowInherited: true /*hardcoded for now*/,
-      bordered: !model.hideBorder,
+      bordered: model.border.hideBorder,
       dataSourceUrl,
       dataSourceType: model.dataSourceType,
       mode: model.mode,
@@ -247,8 +246,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-
-
           return (
             model.useRawValues ? (
               <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
