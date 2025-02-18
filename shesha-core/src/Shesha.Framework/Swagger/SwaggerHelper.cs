@@ -53,8 +53,8 @@ namespace Shesha.Swagger
             return assemblyFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
                 .Where(a => !a.IsDynamic &&
-                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
-                ).SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity)))
+                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
+                ).SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 .ToList();
         }
 
