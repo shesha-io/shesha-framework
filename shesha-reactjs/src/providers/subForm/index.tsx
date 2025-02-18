@@ -121,7 +121,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, [value, propertyName]);
 
-  const internalEntityType = entityType || value['_className'];
+  const internalEntityType = entityType || value?.['_className'];
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -153,7 +153,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // show form based on the entity type
   useEffect(() => {
     if (value && formSelectionMode === 'dynamic') {
-      if (value && typeof value === 'object' && value['_className'] && !formConfig?.formId)
+      if (value && typeof value === 'object' && value?.['_className'] && !formConfig?.formId)
         getEntityFormId(value['_className'], formType).then((formid) => {
           setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
         });
@@ -186,7 +186,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
     }
     
-    if (!params.id && !!value && !!value['id'])
+    if (!params.id && Boolean(value) && value['id'] != null && value['id'] != undefined)
       params.id = value['id'];
 
     return params;
