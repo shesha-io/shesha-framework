@@ -120,7 +120,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings(),
+  settingsFormMarkup: () => getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
