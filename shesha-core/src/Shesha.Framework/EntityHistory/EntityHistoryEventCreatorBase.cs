@@ -140,7 +140,7 @@ namespace Shesha.EntityHistory
             var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfoOrNull();
             var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity.ToString();
 
-            return CreateEvent($"{childName} added to...", $"'{childName}' added to '{propName}' of '{parentName}'");
+            return CreateEvent($"Added to a list...", $"'{childName}' added to '{propName}' of '{parentName}'");
         }
 
         public virtual EntityHistoryEventInfo CreateManyToManyRemoveRelationEvent(EntityChangeRelationInfo<E, T> change)
@@ -151,7 +151,7 @@ namespace Shesha.EntityHistory
             var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfoOrNull();
             var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity.ToString();
 
-            return CreateEvent($"{childName} removed from...", $"'{childName}' removed from '{propName}' of '{parentName}'");
+            return CreateEvent($"Removed from a list...", $"'{childName}' removed from '{propName}' of '{parentName}'");
         }
     }
 }

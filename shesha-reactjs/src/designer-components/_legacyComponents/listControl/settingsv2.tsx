@@ -146,7 +146,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
 
       <Show when={state?.renderStrategy === 'externalForm'}>
         <FormItem name="formId" label="Form Path">
-          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+          <FormAutocomplete readOnly={readOnly} />
         </FormItem>
       </Show>
 

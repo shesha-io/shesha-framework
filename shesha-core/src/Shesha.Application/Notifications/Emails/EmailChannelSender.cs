@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Abp.UI;
 using Castle.Core.Logging;
 using Shesha.Configuration;
@@ -72,7 +73,7 @@ namespace Shesha.Notifications
                 };
             }
 
-            using (var mail = BuildMessageWith(fromPerson.GetAddress(this), toPerson.GetAddress(this), message.Subject, message.Message, cc))
+            using (var mail = BuildMessageWith(fromPerson.GetAddress(this), !settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : toPerson.GetAddress(this), message.Subject, message.Message, cc))
             {
                 if (attachments != null)
                 {

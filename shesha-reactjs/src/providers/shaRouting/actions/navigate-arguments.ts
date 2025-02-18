@@ -31,7 +31,6 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     validate: {
       required: true,
     },
-    convertToFullId: true,
     hidden: {
       _mode: 'code',
       _code: 'return data?.navigationType !== "form"'

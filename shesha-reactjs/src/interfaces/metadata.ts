@@ -218,6 +218,7 @@ export enum StandardEntityActions {
   read = 'read',
   update = 'update',
   delete = 'delete',
+  list = 'list',
 }
 
 export interface IContainerWithNestedProperties {

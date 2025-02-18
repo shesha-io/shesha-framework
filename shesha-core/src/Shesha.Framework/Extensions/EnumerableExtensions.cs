@@ -110,6 +110,11 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object oldValue, object newValue)
         {
+            if (newValue == null)
+                return (new List<Tt>(), ((IEnumerable<object>)oldValue).Cast<Tt>());
+            if (oldValue == null)
+                return (((IEnumerable<object>)newValue).Cast<Tt>(), new List<Tt>());
+
             var newV = (IEnumerable<object>)newValue;
             var oldV = (IEnumerable<object>)oldValue;
 

@@ -11,7 +11,6 @@ using Shesha.Notifications.MessageParticipants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
@@ -75,20 +74,14 @@ namespace Shesha.Notifications
                 RefListNotificationPriority.High => notificationSettings.High,
                 _ => throw new UserFriendlyException("Channel not specified!")
             };
-
-            // Deserialize notification identifiers
-            var notificationIdentifiers = selectedNotifications
-                .Select(json => JsonSerializer.Deserialize<NotificationChannelIdentifier>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }))
-                .ToList();
+            if (selectedNotifications == null)
+                return new();
 
             var liveChannels = _notificationChannelRepository
                 .GetAll()
                 .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
 
-            var result = notificationIdentifiers
+            var result = selectedNotifications
                 .SelectMany(identifier => liveChannels
                     .Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(identifier.Name, identifier.Module).ToExpression()))
                 .ToList();

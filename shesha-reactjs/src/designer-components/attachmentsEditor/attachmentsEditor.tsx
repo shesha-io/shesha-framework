@@ -135,7 +135,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerType: '',
         ownerName: '',
         listType: 'text',
-        layout: 'vertical'
+        layout: 'vertical',
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

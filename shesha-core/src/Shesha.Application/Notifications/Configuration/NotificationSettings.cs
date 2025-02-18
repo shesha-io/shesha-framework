@@ -1,12 +1,5 @@
-﻿using Shesha.Configuration;
-using Shesha.Domain;
-using Shesha.Settings;
-using System;
+﻿using Shesha.Domain;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Configuration
 {
@@ -18,16 +11,18 @@ namespace Shesha.Notifications.Configuration
         /// <summary>
         /// Low priority notifications channels
         /// </summary>
-        public List<string> Low { get; set; }
+        public List<NotificationChannelIdentifier> Low { get; set; }
 
         /// <summary>
         /// Normal notifications channels
         /// </summary>
-        public List<string> Medium { get; set; }
+        public List<NotificationChannelIdentifier> Medium { get; set; }
 
         /// <summary>
         /// Urgent notifications channels
         /// </summary>
-        public List<string> High { get; set; }
+        public List<NotificationChannelIdentifier> High { get; set; }
+
+        public NotificationChannelIdentifier Test { get; set; }
     }
 }

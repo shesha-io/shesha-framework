@@ -60,3 +60,4 @@ export { type IShaFormInstance } from '@/providers/form/store/interfaces';
 export { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 export * from './errorInfo';
 export * from './publicApis';
+export * from './configurableItems';

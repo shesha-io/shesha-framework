@@ -34,7 +34,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
       <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
-        <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+        <FormAutocomplete readOnly={readOnly} />
       </SettingsFormItem>
       <MetadataProvider dataType="entity" modelType={values?.entityType?.id}>
         <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
@@ -73,7 +73,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <Show when={values.allowNewRecord}>
           <MetadataProvider modelType={values.entityType?.name} id={nanoid()}>
             <SettingsFormItem name="createFormId" label="Create Form" jsSetting>
-              <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+              <FormAutocomplete readOnly={readOnly} />
             </SettingsFormItem>
           </MetadataProvider>
         </Show>
@@ -84,7 +84,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <Show when={values.allowEdit}>
           <MetadataProvider modelType={values.entityType?.name} id={nanoid()}>
             <SettingsFormItem name="editFormId" label="Edit Form" jsSetting>
-              <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+              <FormAutocomplete readOnly={readOnly} />
             </SettingsFormItem>
           </MetadataProvider>
         </Show>

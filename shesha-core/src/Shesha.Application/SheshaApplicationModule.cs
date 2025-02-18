@@ -6,7 +6,6 @@ using Abp.Dependency;
 using Abp.Modules;
 using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
-using Abp.Notifications;
 using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
@@ -18,11 +17,9 @@ using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
-using Shesha.Notifications;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Distribution.NotificationChannels;
 using Shesha.Notifications.Distribution.NotificationTypes;
-using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
@@ -30,8 +27,6 @@ using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using Shesha.UserManagements.Configurations;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -76,9 +71,9 @@ namespace Shesha
             {
                 s.NotificationSettings.WithDefaultValue(new NotificationSettings
                 {
-                    Low = new List<string> { },
-                    Medium = new List<string> { },
-                    High = new List<string> { },
+                    Low = new (),
+                    Medium = new(),
+                    High = new(),
                 });
 
             });

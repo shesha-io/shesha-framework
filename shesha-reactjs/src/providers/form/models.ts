@@ -6,6 +6,7 @@ import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/i
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
@@ -345,13 +346,9 @@ export type FormMarkup =
   | FormMarkupWithSettings | ((data: any) => FormRawMarkup
     | FormMarkupWithSettings);
 
-export interface FormFullName {
-  readonly name: string;
-  readonly module?: string | null;
-  readonly version?: number;
-}
-export type FormUid = string;
-export type FormIdentifier = FormFullName | FormUid;
+export type FormFullName  = ConfigurableItemFullName;
+export type FormUid = ConfigurableItemUid;
+export type FormIdentifier = ConfigurableItemIdentifier;
 
 export interface IPersistedFormProps {
   id?: string;
