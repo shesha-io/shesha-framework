@@ -156,7 +156,7 @@ namespace Shesha.NHibernate.EntityHistory
                 var entityHistoryHelper = (uow as NhUnitOfWork)?.EntityHistoryHelper;
                 var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
 
-                using var sessionContext = StaticContext.IocManager.Resolve<IShaCurrentSessionContext>();
+                using var sessionContext = StaticContext.IocManager.Resolve<INhCurrentSessionContext>();
                 var session = sessionContext.Session;
 
                 var abpSession = StaticContext.IocManager.Resolve<IAbpSession>();

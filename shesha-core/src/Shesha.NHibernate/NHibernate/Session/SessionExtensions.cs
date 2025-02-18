@@ -1,11 +1,9 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Extensions;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Proxy;
 using Shesha.NHibernate.Interceptors;
-using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,48 +100,4 @@ namespace Shesha.NHibernate.Session
             interceptor.AddAfterTransactionAction(action);
         }
     }
-
-#nullable enable
-    public interface IShaCurrentSessionContext: IDisposable
-    {
-        ISession? Session { get; }
-    }
-    public sealed class ShaCurrentSessionContext : IShaCurrentSessionContext, ITransientDependency
-    {
-        private bool _disposed;
-
-        private readonly IIocResolver _iocResolver;
-        public ShaCurrentSessionContext(IIocResolver iocResolver)
-        {
-            _iocResolver = iocResolver;
-        }
-
-        public ISession? Session
-        {
-            get 
-            {
-                var factory = _iocResolver.Resolve<ISessionFactory>();
-                return factory?.GetCurrentSession();
-            }
-        }
-
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-        }
-    }
-#nullable restore
 }
