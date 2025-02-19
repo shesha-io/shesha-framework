@@ -15,7 +15,7 @@ import {
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { getPositionInputs } from '../_settings/utils/position/utils';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
 
@@ -39,7 +39,7 @@ export const getSettings = (data) => {
               .addSettingsInput({
                 id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                 propertyName: 'propertyName',
-                label: 'Property Name',
+                label: 'Component Name',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 size: 'small',
                 validate: {
@@ -116,7 +116,7 @@ export const getSettings = (data) => {
                             },
                             dropdownOptions: [
                               { value: 'relative', label: 'Relative' },
-                              { value: 'fixed', label: 'Fixed' }
+                              { value: 'Fixed', label: 'Fixed' },
                             ]
                           })
                           .addSettingsInputRow(
@@ -505,33 +505,7 @@ export const getSettings = (data) => {
                               propertyName: "background.type",
                               inputType: "radio",
                               tooltip: "Select a type of background",
-                              buttonGroupOptions: [
-                                {
-                                  value: "color",
-                                  icon: "FormatPainterOutlined",
-                                  title: "Color"
-                                },
-                                {
-                                  value: "gradient",
-                                  icon: "BgColorsOutlined",
-                                  title: "Gradient"
-                                },
-                                {
-                                  value: "image",
-                                  icon: "PictureOutlined",
-                                  title: "Image"
-                                },
-                                {
-                                  value: "url",
-                                  icon: "LinkOutlined",
-                                  title: "URL"
-                                },
-                                {
-                                  value: "storedFile",
-                                  icon: "DatabaseOutlined",
-                                  title: "Stored File"
-                                }
-                              ],
+                              buttonGroupOptions: backgroundTypeOptions,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({

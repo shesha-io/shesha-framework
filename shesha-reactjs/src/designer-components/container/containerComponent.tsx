@@ -129,6 +129,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         display: prev['display'] /* ?? 'block'*/,
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
+        editMode: 'inherited',
       }))
       .add<IContainerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev))
@@ -169,7 +170,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap
+          gap: prev?.gap,
+          position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' }
         };
 
         return {

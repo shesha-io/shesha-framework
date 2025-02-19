@@ -160,7 +160,6 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
                 width: 65,
                 defaultValue: 0,
                 inputType: 'number',
-                tooltip: "Select a corner to which the radius will be applied",
                 propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };

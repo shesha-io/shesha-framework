@@ -12,7 +12,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
 
         const border = (side) => ({
             ...prev?.border?.border?.[side],
-            width: prevStyles?.borderSize as string || prev?.border?.border?.[side]?.width || defaults?.border?.border?.[side]?.width || '1px',
+            width: prevStyles?.borderSize as string || prev?.border?.border?.[side]?.width || defaults?.border?.border?.[side]?.width,
             style: prevStyles?.borderType || prev?.border?.border?.[side]?.style || defaults?.border?.border?.[side]?.style || 'solid',
             color: prevStyles?.borderColor || prev?.border?.border?.[side]?.color || defaults?.border?.border?.[side]?.color || '#d9d9d9'
         });
@@ -81,6 +81,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 spreadRadius: defaults?.shadow?.spreadRadius || 0
             },
             ...(defaults?.display && { display: defaults?.display || 'block' }),
+            ...(defaults?.position && { position: defaults?.position }),
         };
     };
 
