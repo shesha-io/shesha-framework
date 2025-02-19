@@ -71,7 +71,11 @@ namespace Shesha.Metadata
 
             var dto = new MetadataDto
             {
-                DataType = isEntity ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
+                DataType = isEntity 
+                    ? DataTypes.EntityReference 
+                    : isJsonEntity
+                        ? DataTypes.ObjectReference
+                        : DataTypes.Object,// todo: check other types
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
