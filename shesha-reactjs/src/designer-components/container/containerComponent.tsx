@@ -169,7 +169,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap
+          gap: prev?.gap,
+          position: defaultStyles().position,
         };
 
         return {
