@@ -40,18 +40,24 @@ namespace Shesha.NHibernate.EntityHistory
                     obj.EntityChanges = null;
                     var csId = await _changeSetRepository.InsertAndGetIdAsync(obj);
 
-                    foreach (var entityChange in entityChanges) 
+                    if (entityChanges != null)
                     {
-                        var propChanges = entityChange.PropertyChanges;
-                        entityChange.PropertyChanges = null;
-                        entityChange.EntityChangeSetId = csId;
-                        var cId = await _changesRepository.InsertAndGetIdAsync(entityChange);
-                        foreach (var propChange in propChanges) 
+                        foreach (var entityChange in entityChanges)
                         {
-                            propChange.EntityChangeId = cId;
-                            var pId = await _propChangesRepository.InsertAndGetIdAsync(propChange);
-                        }                        
-                    }                    
+                            var propChanges = entityChange.PropertyChanges;
+                            entityChange.PropertyChanges = null;
+                            entityChange.EntityChangeSetId = csId;
+                            var cId = await _changesRepository.InsertAndGetIdAsync(entityChange);
+                            if (propChanges != null)
+                            {
+                                foreach (var propChange in propChanges)
+                                {
+                                    propChange.EntityChangeId = cId;
+                                    var pId = await _propChangesRepository.InsertAndGetIdAsync(propChange);
+                                }
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -70,21 +76,28 @@ namespace Shesha.NHibernate.EntityHistory
                 obj.EntityChanges = null;
                 var csId = _changeSetRepository.InsertAndGetId(obj);
 
-                foreach (var entityChange in entityChanges) 
+                if (entityChanges != null)
                 {
-                    var propChanges = entityChange.PropertyChanges;
-                    entityChange.PropertyChanges = null;
-                    entityChange.EntityChangeSetId = csId;
-                    if (string.IsNullOrEmpty(entityChange.EntityId))
+                    foreach (var entityChange in entityChanges)
                     {
-                        // update id for inserted entity
-                        entityChange.EntityId = entityChange.EntityEntry.GetType().GetProperty(nameof(IEntity.Id))?.GetValue(entityChange.EntityEntry)?.ToString();
-                    }
-                    var cId = _changesRepository.InsertAndGetId(entityChange);
-                    foreach (var propChange in propChanges) 
-                    {
-                        propChange.EntityChangeId = cId;
-                        var pId = _propChangesRepository.InsertAndGetId(propChange);
+                        var propChanges = entityChange.PropertyChanges;
+                        entityChange.PropertyChanges = null;
+                        entityChange.EntityChangeSetId = csId;
+                        if (string.IsNullOrEmpty(entityChange.EntityId))
+                        {
+                            // update id for inserted entity
+                            entityChange.EntityId = entityChange.EntityEntry.GetType().GetProperty(nameof(IEntity.Id))?.GetValue(entityChange.EntityEntry)?.ToString();
+                        }
+                        var cId = _changesRepository.InsertAndGetId(entityChange);
+
+                        if (propChanges != null)
+                        {
+                            foreach (var propChange in propChanges)
+                            {
+                                propChange.EntityChangeId = cId;
+                                var pId = _propChangesRepository.InsertAndGetId(propChange);
+                            }
+                        }
                     }
                 }
             }
