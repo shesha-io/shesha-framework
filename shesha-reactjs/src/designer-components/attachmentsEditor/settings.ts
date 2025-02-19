@@ -84,7 +84,7 @@ export const getSettings = () => {
                   inputs: [
                     {
                       id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
-                      propertyName: 'layout',
+                      propertyName: 'filesLayout',
                       label: 'Layout',
                       type: 'dropdown',
                       dropdownOptions: [
@@ -750,6 +750,7 @@ export const getSettings = () => {
                                   id: 'dimensionsStyleRowWidth',
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
+                                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
@@ -786,6 +787,7 @@ export const getSettings = () => {
                                   id: 'dimensionsStyleRowHeight',
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
+                                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {

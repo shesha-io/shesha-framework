@@ -15,7 +15,7 @@ import { DownloadOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/i
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
-import { getStyle, IInputStyles, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
+import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplication, ValidationErrors } from '@/index';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
@@ -26,6 +26,7 @@ import { getBackgroundStyle } from '@/designer-components/_settings/utils/backgr
 import { isValidGuid } from '../formDesigner/components/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { CSSProperties } from 'styled-components';
+import { addPx } from '@/designer-components/_settings/utils';
 interface IUploaderFileTypes {
   name: string;
   type: string;
@@ -65,6 +66,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   borderRadius?: number;
   hideFileName?: boolean;
   gap?: number;
+  container?: IStyleType;
 }
 
 export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
@@ -110,8 +112,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const shadow = model?.shadow;
   const background = model?.background;
   const jsStyle = getStyle(model.style, model);
+  const containerJsStyle = getStyle(model.container?.style, model.container);
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+  const containerDimensions = useMemo(() => getSizeStyle(model.container?.dimensions), [model.container?.dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -152,7 +156,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const finalStyle = removeUndefinedProps(additionalStyles);
 
-  const { styles } = useStyles({ style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger } });
+  const { styles } = useStyles({
+    containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle },
+    style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger }
+  });
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>
@@ -303,7 +310,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ? <Dragger disabled><DraggerStub /></Dragger>
             : <div>{renderUploadContent()}</div>)
           : (props.disabled
-            ? <Upload {...props} listType={listTypeAndLayout} />
+            ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
             : isDragger
               ? <Dragger {...props}><DraggerStub /></Dragger>
               : <Upload {...props} listType={listTypeAndLayout}>{!disabled ? renderUploadContent() : null}</Upload>)
