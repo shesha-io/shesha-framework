@@ -31,6 +31,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   id: nanoid(),
                   propertyName: 'propertyName',
                   label: 'Property name',
+                  styledLabel: true,
                   parentId: commonTabId,
                   validate: { required: true },
                   jsSetting: true
