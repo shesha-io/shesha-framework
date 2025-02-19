@@ -24,6 +24,7 @@ import {
   IResolvedDynamicItem,
 } from '@/providers/dynamicActions/evaluator/utils';
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroup[];
@@ -100,31 +101,12 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     if (model.hidden) return null;
 
     const popoverContent = popOverFormId ? (
-      <div style={getStyle(popOverContentStyle, formData, globalState)} ><ConfigurableForm formId={popOverFormId} mode="readonly" /></div>
+      <div style={getStyle(popOverContentStyle, formData, globalState)}>
+        <ConfigurableForm formId={popOverFormId} mode="readonly" />
+      </div>
     ) : (
       <div>Select Popover Form</div>
     );
-
-    const renderDropdown = () =>
-      showUserInfo ? (
-        <Popover
-          title={popOverTitle}
-          content={popoverContent}
-          placement="bottomRight"
-        >
-          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-              {loginInfo?.fullName} <DownOutlined />
-            </a>
-          </Dropdown>
-        </Popover>
-      ) : (
-        <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-          <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-            {loginInfo?.fullName} <DownOutlined />
-          </a>
-        </Dropdown>
-      );
 
     return (
       <div className={styles.shaProfileDropdownWrapper}>
@@ -135,7 +117,22 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         ))}
 
         <div className={styles.shaProfileDropdown}>
-          {renderDropdown()}
+          <ConditionalWrap
+            condition={showUserInfo}
+            wrap={(children) => {
+              return (
+                <Popover title={popOverTitle} content={popoverContent} placement="bottomRight">
+                  {children}
+                </Popover>
+              );
+            }}
+          >
+            <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+                {loginInfo?.fullName} <DownOutlined />
+              </a>
+            </Dropdown>
+          </ConditionalWrap>
           <Avatar icon={<UserOutlined />} />
         </div>
       </div>
