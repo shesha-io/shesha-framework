@@ -47,6 +47,7 @@ export const getSettings = (data: any) => {
                 validate: {
                   "required": true
                 },
+                styledLabel: true,
                 jsSetting: true,
               })
               .addLabelConfigurator({
@@ -113,6 +114,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'autoSize',
                     parentId: commonTabId,
                     label: 'Auto Size',
+                    defaultValue: true,
                     jsSetting: true,
                   },
                   {
@@ -135,6 +137,7 @@ export const getSettings = (data: any) => {
                     id: nanoid(),
                     propertyName: 'editMode',
                     label: 'Edit Mode',
+                    defaultValue: 'inherited',
                     size: 'small',
                     jsSetting: true,
                   },
@@ -159,6 +162,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'showCount',
                     parentId: commonTabId,
                     label: 'Show Chars Count',
+                    jsSetting: true,
                   }
                 ],
               })
@@ -205,19 +209,20 @@ export const getSettings = (data: any) => {
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: "validate.message",
-                  parentId: validationId,
-                  label: "Message",
-                  validate: {},
-                  version: 3,
-                  inputType: "text"
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: validationId,
                   inputs: [
+                    {
+                      id: nanoid(),
+                      propertyName: "validate.message",
+                      parentId: validationId,
+                      label: "Message",
+                      validate: {},
+                      version: 3,
+                      type: "text",
+                      jsSetting: true,
+                    },
                     {
                       type: 'codeEditor',
                       id: nanoid(),
@@ -236,6 +241,7 @@ export const getSettings = (data: any) => {
                   label: "Spell Check",
                   version: 3,
                   inputType: "switch",
+                  jsSetting: true,
                 })
                 .toJson()
             ]
