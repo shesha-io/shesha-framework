@@ -31,6 +31,7 @@ export const getSettings = (data: IRateProps) => {
                   propertyName: 'propertyName',
                   label: 'Property name',
                   parentId: commonTabId,
+                  styledLabel: true,
                   validate: { required: true },
                   jsSetting: true
                 })
