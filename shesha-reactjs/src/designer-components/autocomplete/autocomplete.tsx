@@ -76,7 +76,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         return executeExpression(model.outcomeValueFunc, {...args, item: value}, null, null );
       }
       return typeof(value) === 'object' 
-        ? getValueByPropertyName(value, model.keyPropName || 'id')
+        ? getValueByPropertyName(value, model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value'))
         : value;
     }, [model.valueFormat, model.outcomeValueFunc, model.keyPropName, model.entityType]);
 
@@ -84,10 +84,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       if (model.displayValueFunc) {
         return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
       }
-      return (model.displayPropName
-        ? getValueByPropertyName(value, model.displayPropName)
-        : value?._displayName)  
-        || 'unknown'; 
+      return getValueByPropertyName(value, model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText'))
+        || 'unknown';
     }, [model.valueFormat, model.displayValueFunc, model.displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any[]) => {

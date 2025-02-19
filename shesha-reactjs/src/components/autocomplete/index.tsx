@@ -20,8 +20,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selectRef = useRef(null);
 
   // init props
-  const keyPropName = props.keyPropName || 'id';
-  const displayPropName = props.displayPropName || '_displayName';
+  // --- For backward compatibility
+  const keyPropName = props.keyPropName || (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
+  const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+  // ---
   const keyValueFunc: KayValueFunc = props.keyValueFunc ?? ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
   const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ?? ((value: any) => 
     ({in: [{var: `${keyPropName}`}, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]]}));
