@@ -88,6 +88,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
   
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const designerComponents = useFormDesignerComponents();
 
   const actualQueryParams = useActualContextExecution(props.queryParams);
   const actualGetUrl = useActualContextExecution(props.getUrl);
@@ -97,7 +98,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const onChangeInternal = (newValue: any) => {
     if (onChange) 
       onChange(newValue);
-      //onChange(deepMergeValues((typeof value === 'object' ? value : {} ), newValue));
   };
 
   const onClearInternal = () => {
@@ -152,6 +152,20 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   useEffect(() => {
     if (formConfig?.formId !== formId) setFormConfig({ formId, lazy: true });
   }, [formId]);
+
+  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
+    const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
+    upgradeComponents(designerComponents, payload.formSettings, flatStructure);
+    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
+
+    dispatch(
+      setMarkupWithSettingsAction({
+        ...payload,
+        components: tree,
+        ...flatStructure,
+      })
+    );
+  };
 
   // show form based on the entity type
   const prevRenderedEntityTypeForm = useRef(value?.['_className']);
@@ -217,7 +231,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties = !!properties
+    params.properties = properties
       ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
       : null;
 
@@ -364,22 +378,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, 300);
   //#endregion
-
-  const designerComponents = useFormDesignerComponents();
-
-  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
-    const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
-    upgradeComponents(designerComponents, payload.formSettings, flatStructure);
-    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
-
-    dispatch(
-      setMarkupWithSettingsAction({
-        ...payload,
-        components: tree,
-        ...flatStructure,
-      })
-    );
-  };
 
   //#region Fetch Form
   useDeepCompareEffect(() => {
