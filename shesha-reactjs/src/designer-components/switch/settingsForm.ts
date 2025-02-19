@@ -66,8 +66,9 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       type: 'editModeSelector',
                       id: nanoid(),
                       propertyName: 'editMode',
-                      label: 'Edit mode',
+                      label: 'Edit Mode',
                       size: 'small',
+                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
