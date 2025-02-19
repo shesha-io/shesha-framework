@@ -87,6 +87,7 @@ export const getSettings = (data: IRateProps) => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
+                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
