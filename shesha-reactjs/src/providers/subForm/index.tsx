@@ -186,7 +186,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
     }
     
-    if (!params.id && Boolean(value) && value['id'] != null && value['id'] != undefined)
+    if (!params.id && Boolean(value) && value['id'] != null && value['id'] !== undefined)
       params.id = value['id'];
 
     return params;
