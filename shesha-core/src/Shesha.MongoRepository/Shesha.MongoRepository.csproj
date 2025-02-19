@@ -2,8 +2,6 @@
   <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>Shesha.MongoRepository</PackageId>
     <Title>Shesha.MongoRepository</Title>

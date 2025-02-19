@@ -264,7 +264,7 @@ namespace Shesha.Notifications
                     message.ErrorMessage = null; // Clear any previous error
                     message.DateSent = DateTime.Now;
                     await _notificationMessageRepository.UpdateAsync(message);
-                    _unitOfWorkManager.Current.SaveChanges();
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
 
                     await uow.CompleteAsync();
                 }
@@ -275,7 +275,7 @@ namespace Shesha.Notifications
                     message.ErrorMessage = sendResult.Message;
 
                     await _notificationMessageRepository.UpdateAsync(message);
-                    _unitOfWorkManager.Current.SaveChanges();
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
 
                     await uow.CompleteAsync();
 

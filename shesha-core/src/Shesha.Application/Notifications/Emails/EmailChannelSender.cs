@@ -1,22 +1,15 @@
 ﻿using Abp.Domain.Repositories;
 using Castle.Core.Logging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using NHibernate.Linq;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
@@ -95,7 +88,7 @@ namespace Shesha.Notifications
                 }
                 try
                 {
-                    SendEmail(mail);
+                    await SendEmailAsync(mail);
                     return new SendStatus()
                     {
                         IsSuccess = true,
@@ -120,11 +113,11 @@ namespace Shesha.Notifications
         /// 
         /// </summary>
         /// <param name="mail"></param>
-        private void SendEmail(MailMessage mail)
+        private async Task SendEmailAsync(MailMessage mail)
         {
             try
             {
-                using (var smtpClient = GetSmtpClient().Result)
+                using (var smtpClient = await GetSmtpClientAsync())
                 {
                     smtpClient.Send(mail);
                 }
@@ -134,19 +127,19 @@ namespace Shesha.Notifications
                 Logger.Error($"Error sending email: {ex.Message}", ex);
                 throw new InvalidOperationException($"An error occurred while sending the email. Message: {ex.Message} ", ex);
             }
-            finally
-            {
-                mail.Dispose();
-            }
+        }
+
+        private async Task<SmtpClient> GetSmtpClientAsync()
+        {
+            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
+            return GetSmtpClient(smtpSettings);
         }
 
         /// <summary>
         /// Returns SmtpClient configured according to the current application settings
         /// </summary>
-        private async Task<SmtpClient> GetSmtpClient()
+        private SmtpClient GetSmtpClient(SmtpSettings smtpSettings)
         {
-            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
-
             var client = new SmtpClient(smtpSettings.Host, smtpSettings.Port)
             {
                 EnableSsl = smtpSettings.EnableSsl,

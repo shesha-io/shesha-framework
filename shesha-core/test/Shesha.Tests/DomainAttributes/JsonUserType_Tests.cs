@@ -114,7 +114,7 @@ namespace Shesha.Tests.DomainAttributes
 
             conventions.Compile(nhConfig);
 
-            var sessionFactory = nhConfig.BuildSessionFactory();
+            using var sessionFactory = nhConfig.BuildSessionFactory();
 
             using (var session = sessionFactory.OpenSession())
             {

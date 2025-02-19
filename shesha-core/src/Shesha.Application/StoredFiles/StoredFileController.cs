@@ -1,5 +1,4 @@
-﻿using Abp.AspNetCore.Mvc.Authorization;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
@@ -8,11 +7,9 @@ using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.OutputCaching;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.EntityReferences;
-using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -67,7 +64,9 @@ namespace Shesha.StoredFiles
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
                 return StatusCode(304);
 
+#pragma warning disable IDISP001 // Dispose created
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
+#pragma warning restore IDISP001 // Dispose created
             await _fileService.MarkDownloadedAsync(fileVersion);
 
             HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
@@ -456,9 +455,10 @@ namespace Shesha.StoredFiles
                 {
                     foreach (var fileId in input.FilesId)
                     {
-                        files.Add(_fileService.GetOrNull(fileId));
+                        var file = await _fileService.GetOrNullAsync(fileId);
+                        if (file != null)
+                            files.Add(file);
                     }
-                    files = files.Where(x => x != null).ToList();
                 }
             }
             else
@@ -488,7 +488,9 @@ namespace Shesha.StoredFiles
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
+#pragma warning disable IDISP001 // Dispose created
                 var compressedStream = await CompressionService.CompressFilesAsync(list);
+#pragma warning restore IDISP001 // Dispose created
 
                 // note: compressedStream will be disposed automatically in the FileStreamResult
                 return File(compressedStream, "multipart/x-zip", "files.zip");

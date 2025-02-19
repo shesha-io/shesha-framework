@@ -23,7 +23,7 @@ namespace Shesha.DeviceForceUpdate
                await Repository.DeleteAsync(item);
 
             var itemToSave = ObjectMapper.Map<Shesha.Domain.DeviceForceUpdate>(input);
-            Repository.Insert(itemToSave);
+            await Repository.InsertAsync(itemToSave);
             return input;
         }
 

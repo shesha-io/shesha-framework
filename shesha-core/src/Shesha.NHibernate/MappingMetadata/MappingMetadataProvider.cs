@@ -1,29 +1,27 @@
 ﻿using Abp.Dependency;
 using NHibernate;
 using NHibernate.Persister.Entity;
-using NHibernate.Type;
-using Shesha.Services;
+using Shesha.Configuration.MappingMetadata;
+using Shesha.NHibernate.Session;
+using Shesha.NHibernate.Utilites;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Shesha.Configuration.MappingMetadata;
-using System.Reflection;
-using NHibernate.Mapping;
-using NUglify;
-using Shesha.NHibernate.Utilites;
 
 namespace Shesha.MappingMetadata
 {
     public class MappingMetadataProvider: IMappingMetadataProvider, ITransientDependency
     {
-
         private readonly ISessionFactory _sessionFactory;
+        private readonly IShaCurrentSessionContext _currentSessionContext;
 
-        public MappingMetadataProvider(ISessionFactory sessionFactory)
+        public MappingMetadataProvider(ISessionFactory sessionFactory, IShaCurrentSessionContext currentSessionContext)
         {
             _sessionFactory = sessionFactory;
+            _currentSessionContext = currentSessionContext;
         }
 
         public EntityMappingMetadata GetEntityMappingMetadata(Type entityType)
@@ -57,7 +55,7 @@ namespace Shesha.MappingMetadata
 
         public async Task UpdateClassNamesAsync(Type entityType, List<PropertyInfo> properties, string oldValue, string newValue, bool replace)
         {
-            var session = _sessionFactory.GetCurrentSession();
+            var session = _currentSessionContext.Session;
 
             var propsMetadata = properties.Select(x => GetPropertyMappingMetadata(entityType, x.Name)).ToList();
 

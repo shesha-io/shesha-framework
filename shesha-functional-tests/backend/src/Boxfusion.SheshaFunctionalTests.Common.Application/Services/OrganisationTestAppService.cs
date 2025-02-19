@@ -39,7 +39,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             // Notify change
             SheshaActionDescriptorChangeProvider.Instance.HasChanged = true;
             SheshaActionDescriptorChangeProvider.Instance.TokenSource.Cancel();
-            (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
+            if (_swaggerProvider is CachingSwaggerProvider csp)
+                csp.ClearCache();
         }
 
         [DisableSpecifications]

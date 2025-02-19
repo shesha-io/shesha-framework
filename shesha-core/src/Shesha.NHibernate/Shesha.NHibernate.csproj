@@ -2,8 +2,6 @@
   <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RootNamespace>Shesha</RootNamespace>
     <PackageId>Shesha.NHibernate</PackageId>
     <Title>Shesha.NHibernate</Title>

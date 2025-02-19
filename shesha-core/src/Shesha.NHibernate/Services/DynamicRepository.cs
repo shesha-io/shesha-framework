@@ -6,6 +6,7 @@ using NHibernate.Context;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
 using Shesha.NHibernate.Repositories;
+using Shesha.NHibernate.Session;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,12 @@ namespace Shesha.Services
     public class DynamicRepository : IDynamicRepository, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-        private readonly ICurrentSessionContext _currentSessionContext;
-
+        private readonly IShaCurrentSessionContext _currentSessionContext;
 
         // note: current session doesn't work in unit tests because of static context usage
-        private ISession CurrentSession => _currentSessionContext.CurrentSession();
+        private ISession CurrentSession => _currentSessionContext.Session;
 
-        public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, ICurrentSessionContext currentSessionContext)
+        public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, IShaCurrentSessionContext currentSessionContext)
         {
             _entityConfigurationStore = entityConfigurationStore;
             _currentSessionContext = currentSessionContext;
@@ -148,6 +148,5 @@ namespace Shesha.Services
             var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.FullName);
             return (IQueryable)whereForMyType.Invoke(query, new object[] { query, lambda });
         }
-
     }
 }

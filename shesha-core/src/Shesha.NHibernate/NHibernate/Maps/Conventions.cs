@@ -632,9 +632,8 @@ namespace Shesha.NHibernate.Maps
 
         public void SaveXml(string filename)
         {
-            TextWriter wr = new StreamWriter(filename);
+            using var wr = new StreamWriter(filename);
             wr.Write(LastCompiledXml);
-            wr.Close();
         }
 
         /// <summary>

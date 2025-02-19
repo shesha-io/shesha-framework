@@ -96,7 +96,8 @@ namespace Shesha
         [EntityAction(StandardEntityActions.Delete)]
         public override async Task DeleteAsync(EntityDto<TPrimaryKey> input)
         {
-            await DeleteCascadeAsync(Repository.Get(input.Id));
+            var entity = await Repository.GetAsync(input.Id);
+            await DeleteCascadeAsync(entity);
             await base.DeleteAsync(input);
         }
 

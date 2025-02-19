@@ -102,7 +102,7 @@ namespace Shesha.Users
                 CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return MapToEntityDto(user);
         }
@@ -579,7 +579,7 @@ namespace Shesha.Users
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
             user.PasswordResetCode = null;
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return true;
         }
@@ -647,7 +647,7 @@ namespace Shesha.Users
             _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password changed", "Password changed");
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }
 

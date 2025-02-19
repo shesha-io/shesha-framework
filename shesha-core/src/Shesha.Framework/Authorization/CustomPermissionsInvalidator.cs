@@ -2,25 +2,26 @@
 using Abp.Dependency;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
-using Abp.Runtime.Caching;
+using Shesha.Authorization.Cache;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
     public class CustomPermissionsInvalidator :
-        IEventHandler<EntityDeletedEventData<AbpUserBase>>,
+        IAsyncEventHandler<EntityDeletedEventData<AbpUserBase>>,
         ITransientDependency
     {
-        private readonly ICacheManager _cacheManager;
+        private readonly ICustomUserPermissionCacheHolder _cacheHolder;
 
-        public CustomPermissionsInvalidator(ICacheManager cacheManager)
+        public CustomPermissionsInvalidator(ICustomUserPermissionCacheHolder cacheHolder)
         {
-            _cacheManager = cacheManager;
+            _cacheHolder = cacheHolder;
         }
 
-        public void HandleEvent(EntityDeletedEventData<AbpUserBase> eventData)
+        public async Task HandleEventAsync(EntityDeletedEventData<AbpUserBase> eventData)
         {
             var cacheKey = eventData.Entity.Id + "@" + (eventData.Entity.TenantId ?? 0);
-            _cacheManager.GetCustomUserPermissionCache().Remove(cacheKey);
+            await _cacheHolder.Cache.RemoveAsync(cacheKey);
         }
     }
 }

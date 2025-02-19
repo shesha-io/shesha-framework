@@ -47,16 +47,21 @@ namespace Shesha.NHibernate.Repositories
             _sessionProvider = sessionProvider;
         }
 
-        public override IQueryable<TEntity> GetAll()
+        public IQueryable<TEntity> QueryAll()
         {
             var query = Session.Query<TEntity>();
 
             return SpecificationManager.ApplySpecifications<TEntity>(query);
         }
 
+        public override IQueryable<TEntity> GetAll()
+        {
+            return QueryAll();
+        }
+
         public override async Task<IQueryable<TEntity>> GetAllAsync()
         {
-            return await Task.FromResult(GetAll());
+            return await Task.FromResult(QueryAll());
         }
 
         public override IQueryable<TEntity> GetAllIncluding(params Expression<Func<TEntity, object>>[] propertySelectors)
@@ -79,17 +84,17 @@ namespace Shesha.NHibernate.Repositories
 
         public override Task<List<TEntity>> GetAllListAsync()
         {
-            return GetAll().ToListAsync();
+            return QueryAll().ToListAsync();
         }
 
         public override Task<List<TEntity>> GetAllListAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return GetAll().Where(predicate).ToListAsync();
+            return QueryAll().Where(predicate).ToListAsync();
         }
 
         public override Task<TEntity> SingleAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return GetAll().SingleAsync(predicate);
+            return QueryAll().SingleAsync(predicate);
         }
 
         public override TEntity FirstOrDefault(TPrimaryKey id)
@@ -104,7 +109,7 @@ namespace Shesha.NHibernate.Repositories
 
         public override async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await GetAll().FirstOrDefaultAsync(predicate);
+            return await QueryAll().FirstOrDefaultAsync(predicate);
         }
 
         public override TEntity Load(TPrimaryKey id)
@@ -237,22 +242,22 @@ namespace Shesha.NHibernate.Repositories
 
         public override Task<int> CountAsync()
         {
-            return GetAll().CountAsync();
+            return QueryAll().CountAsync();
         }
 
         public override Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return GetAll().CountAsync(predicate);
+            return QueryAll().CountAsync(predicate);
         }
 
         public override Task<long> LongCountAsync()
         {
-            return GetAll().LongCountAsync();
+            return QueryAll().LongCountAsync();
         }
 
         public override Task<long> LongCountAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return GetAll().LongCountAsync(predicate);
+            return QueryAll().LongCountAsync(predicate);
         }
     }
 

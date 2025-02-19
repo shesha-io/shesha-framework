@@ -9,8 +9,6 @@
     <PackageId>Boxfusion.SheshaFunctionalTests.Web.Host</PackageId>
     <RootNamespace>Boxfusion.SheshaFunctionalTests.Web.Host</RootNamespace>
     <UserSecretsId>254b1f62-4be1-4a3a-8e4d-8b1bd2f93976</UserSecretsId>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <Nullable>enable</Nullable>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>

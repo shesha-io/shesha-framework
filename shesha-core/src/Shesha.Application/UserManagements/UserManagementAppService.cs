@@ -140,7 +140,7 @@ namespace Shesha.UserManagements
           
             await _userRegistration.InsertAsync(userRegistration);
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return personAccount;
         }
