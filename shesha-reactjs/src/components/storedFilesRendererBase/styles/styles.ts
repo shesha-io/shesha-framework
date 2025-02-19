@@ -152,10 +152,10 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           align-items: center !important;
       }
 
-      .ant-upload-list-item-container {
+    .ant-upload-list-item-container {
         display: inline-block !important;    
-        width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-height) !important;
+      width: var(--thumbnail-width, 54px) !important;
+      height: var(--thumbnail-height, 54px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,

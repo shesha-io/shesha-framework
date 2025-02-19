@@ -152,7 +152,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const finalStyle = removeUndefinedProps(additionalStyles);
 
-  const { styles } = useStyles({ style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName, isDragger } });
+  const { styles } = useStyles({ style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger } });
   const listTypeAndLayout = listType === 'text' || !listType || isDragger ? 'text' : 'picture-card';
 
   const openFilesZipNotification = () =>
