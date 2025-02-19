@@ -27,6 +27,12 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
   ];
   const customVariables = props.exposedVariables ?? [
     { id: '724f460e-a121-44f0-ac6e-db4bb42d39c4', name: 'data', description: 'Selected form values', type: 'object' },
+    {
+      id: '81ce18bb-1ad5-423f-b308-359d0d7911dc',
+      name: 'fileSaver',
+      description: 'API for saving files on the client',
+      type: 'object',
+    },
     { id: '67dbff99-f11c-4b77-b6ba-61042e7fafe5', name: 'form', description: 'Form instance', type: 'FormInstance' },
     {
       id: '21682825-2764-4640-8ca0-98cf6d0c051f',

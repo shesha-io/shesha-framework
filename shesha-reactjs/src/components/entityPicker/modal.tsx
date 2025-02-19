@@ -241,6 +241,7 @@ export const EntityPickerModal = (props: IEntityPickerModalProps) => {
       sourceType='Entity'
       entityType={props.entityType}
       dataFetchingMode='paging'
+      sortMode='standard'
     >
       <EntityPickerModalInternal {...props} />
     </DataTableProvider>

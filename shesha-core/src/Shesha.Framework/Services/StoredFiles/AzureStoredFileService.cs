@@ -146,6 +146,15 @@ namespace Shesha.Services.StoredFiles
             var blob = GetBlobClient(GetAzureFileName(version));
             blob.Delete();
         }
-    }
 
+        public override async Task<bool> FileExistsAsync(Guid id)
+        {
+            var lastVersion = await GetLastVersionAsync(id);
+            if (lastVersion == null)
+                return false;
+
+            var sourceBlob = GetBlobClient(GetAzureFileName(lastVersion));
+            return await sourceBlob.ExistsAsync();
+        }
+    }
 }

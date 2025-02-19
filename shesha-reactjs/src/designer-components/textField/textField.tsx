@@ -119,6 +119,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
+      spellCheck: model.spellCheck,
       style: { ...finalStyle, ...jsStyle },
       defaultValue: model.initialValue && evaluateString(model.initialValue, { formData: data, formMode: form.formMode, globalState }),
       maxLength: model.validate?.maxLength,
@@ -173,7 +174,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
-    .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev, 'editable'))
+    .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<ITextFieldComponentProps>(5, (prev) => {
       const styles: IInputStyles = {

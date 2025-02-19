@@ -47,7 +47,7 @@ namespace Shesha.Domain
         /// <summary>
         /// If true indicates that users may opt out of this notification
         /// </summary>
-        public bool CanOtpOut { get; set; }
+        public bool CanOptOut { get; set; }
         /// <summary>
         /// 
         /// </summary>

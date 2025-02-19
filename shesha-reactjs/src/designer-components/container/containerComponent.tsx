@@ -82,25 +82,24 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...shadowStyles,
     });
 
-
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (model.hidden) return null;
 
     const flexAndGridStyles: ICommonContainerProps = {
-      display: model?.display,
-      flexDirection: model?.flexDirection,
-      direction: model?.direction,
-      justifyContent: model?.justifyContent,
-      alignItems: model?.alignItems,
-      alignSelf: model?.alignSelf,
-      justifyItems: model?.justifyItems,
-      textJustify: model?.textJustify,
-      justifySelf: model?.justifySelf,
-      noDefaultStyling: model?.noDefaultStyling,
-      gridColumnsCount: model?.gridColumnsCount,
-      flexWrap: model?.flexWrap,
-      gap: model?.gap,
+      display: model.display,
+      flexDirection: model.flexDirection,
+      direction: model.direction,
+      justifyContent: model.justifyContent,
+      alignItems: model.alignItems,
+      alignSelf: model.alignSelf,
+      justifyItems: model.justifyItems,
+      textJustify: model.textJustify,
+      justifySelf: model.justifySelf,
+      noDefaultStyling: model.noDefaultStyling,
+      gridColumnsCount: model.gridColumnsCount,
+      flexWrap: model.flexWrap,
+      gap: model.gap,
     };
     return (
       <ParentProvider model={model}>
@@ -156,9 +155,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IContainerComponentProps>(6, (prev) => {
-        return { ...prev, shadowStyle: 'none' };
-      })
       .add<IContainerComponentProps>(7, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
@@ -181,7 +177,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })
-      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))
+      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default ContainerComponent;

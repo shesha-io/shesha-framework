@@ -1,43 +1,41 @@
-import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, useRef } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { useParent } from '@/providers/parentProvider/index';
-import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
-import { useForm, useSheshaApplication } from '@/index';
+import { useCanvas, useForm, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import ComponentError from '@/components/componentErrors';
+import { useActualContextData } from '@/hooks/useActualContextData';
+import { formComponentActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
 }
 
-const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
-  const allData = useAvailableConstantsData();
+const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componentModel }) => {
+  const { activeDevice } = useCanvas();
   const formInstance = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { form } = formInstance;
   const getToolboxComponent = useFormDesignerComponentGetter();
 
   const componentRef = useRef();
-  const toolboxComponent = getToolboxComponent(model.type);
-  const parent = useParent(false);
+  const toolboxComponent = getToolboxComponent(componentModel.type);
 
-  const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
-    return getActualModelWithParent(
-      { ...model, editMode: typeof model.editMode === 'undefined' ? undefined : model.editMode }, // add editMode property if not exists
-      allData, parent);
-  }, [model, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
+  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
+    : componentModel;
+  
+  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name));
 
   if (!toolboxComponent) 
     return <ComponentError errors={{
-        hasErrors: true, componentId: model.id, componentName: model.componentName, componentType: model.type
-      }} message={`Component '${model.type}' not found`} type='error'
+        hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type
+      }} message={`Component '${componentModel.type}' not found`} type='error'
     />;
 
   // TODO: AS review hidden and enabled for SubForm
-  actualModel.hidden = allData.form?.formMode !== 'designer'
+  actualModel.hidden = formInstance.formMode !== 'designer'
     && (
       actualModel.hidden
       || !anyOfPermissionsGranted(actualModel?.permissions || []));
@@ -55,9 +53,9 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
       validationResult.errors.push({ propertyName, error });
     });
     if (validationResult.hasErrors) {
-      validationResult.componentId = model.id;
-      validationResult.componentName = model.componentName;
-      validationResult.componentType = model.type;
+      validationResult.componentId = componentModel.id;
+      validationResult.componentName = componentModel.componentName;
+      validationResult.componentType = componentModel.type;
       return <ComponentError errors={validationResult} message='' type='warning'/>;
     }
   }

@@ -1,5 +1,6 @@
 import { IConfigurableFormComponent } from "@/providers";
 
+type IBorderType = "dashed" | "dotted" | "none" | "solid";
 export interface IBorderValue {
     radius?: {
         all?: string | number;
@@ -12,31 +13,31 @@ export interface IBorderValue {
         all?: {
             width?: string | number;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         top?: {
             width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         right?: {
             width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         bottom?: {
             width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         left?: {
             width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
     };
     selectedCorner?: string;

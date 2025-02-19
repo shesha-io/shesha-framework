@@ -1,57 +1,59 @@
 import React, { FC, MutableRefObject } from 'react';
-import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
-import { IConfigurableFormComponent } from '@/interfaces';
-import { useParent } from '@/providers/parentProvider/index';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { useCanvas, useForm, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { useDeepCompareMemo } from '@/hooks';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
 }
 
+// skip some properties by default
+// nested components will be handled by their own FormComponent
+// action configuration details will be handled by their own FormComponent
+const propertiesToSkip = ['id', 'componentName', 'type', 'jsSetting', 'isDynamic', 'components', 'actionConfiguration'];
+export const standartActualModelPropertyFilter = (name: string) => {
+  return propertiesToSkip.indexOf(name) === -1;
+};
+
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string) => {
+  return (component.actualModelPropertyFilter ? component.actualModelPropertyFilter(name) : true)
+    && propertiesToSkip.indexOf(name) === -1;
+};
+
 const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   const formInstance = useForm();
-  const allData = useAvailableConstantsData();
-  const { form, isComponentFiltered } = formInstance;
+  const { form, isComponentFiltered, formMode } = formInstance;
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
 
-  const parent = useParent(false);
-
-  let actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
-    const result = getActualModelWithParent(
-      { ...componentModel, editMode: typeof componentModel.editMode === 'undefined' ? undefined : componentModel.editMode }, // add editMode property if not exists
-      allData, parent
-    );
-
-    return result;
-  }, [componentModel, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
+  const deviceModel = Boolean(activeDevice) && typeof activeDevice === 'string'
+    ? { ...componentModel, ...componentModel?.[activeDevice] }
+    : componentModel;
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
+
+  const actualModel = useActualContextData(deviceModel, undefined, undefined, (name: string) => formComponentActualModelPropertyFilter(toolboxComponent, name));
+
   if (!toolboxComponent) 
     return <ComponentError errors={{
-        hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type
-      }} message={`Component '${componentModel.type}' not found`} type='error'
+        hasErrors: true, componentId: actualModel.id, componentName: actualModel.componentName, componentType: actualModel.type
+      }} message={`Component '${actualModel.type}' not found`} type='error'
     />;
 
-  actualModel.hidden = allData.form?.formMode !== 'designer' 
+  actualModel.hidden = formMode !== 'designer' 
     && (
       actualModel.hidden
         || !anyOfPermissionsGranted(actualModel?.permissions || [])
-        || !isComponentFiltered(componentModel));
+        || !isComponentFiltered(actualModel));
 
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
-
-  actualModel = Boolean(activeDevice) && typeof activeDevice === 'string'
-      ? { ...actualModel, ...actualModel?.[activeDevice] }
-      : actualModel;
 
   if (formInstance.formMode === 'designer') {
     const validationResult: IModelValidation = {hasErrors: false, errors: []};
@@ -60,9 +62,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       validationResult.errors.push({ propertyName, error });
     });
     if (validationResult.hasErrors) {
-      validationResult.componentId = componentModel.id;
-      validationResult.componentName = componentModel.componentName;
-      validationResult.componentType = componentModel.type;
+      validationResult.componentId = actualModel.id;
+      validationResult.componentName = actualModel.componentName;
+      validationResult.componentType = actualModel.type;
       return <ComponentError errors={validationResult} message='' type='warning'/>;
     }
   }

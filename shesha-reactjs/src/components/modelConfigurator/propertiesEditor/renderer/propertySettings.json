@@ -446,34 +446,20 @@
       ]
     },
     {
-      "id": "MwjxidwaPufFS-PixP6_j",
-      "type": "container",
-      "propertyName": "container4",
-      "label": "Container4",
+      "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
+      "type": "autocomplete",
+      "propertyName": "entityType",
+      "label": "Entity Type",
       "labelAlign": "right",
-      "parentId": "root",
       "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'entity');", "_mode": "code", "_value": false},
-      "direction": "vertical",
-      "justifyContent": "left",
+      "parentId": "root",
+      "customEnabled": "return data.source != 1;",
+      "dataSourceType": "url",
+      "validate": {},
+      "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
       "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
-          "type": "autocomplete",
-          "propertyName": "entityType",
-          "label": "Entity Type",
-          "labelAlign": "right",
-          "hidden": false,
-          "parentId": "MwjxidwaPufFS-PixP6_j",
-          "customEnabled": "return data.source != 1;",
-          "dataSourceType": "url",
-          "validate": {},
-          "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
-          "settingsValidationErrors": [],
-          "useRawValues": true,
-          "textType": "text"
-        }
-      ]
+      "useRawValues": true,
+      "textType": "text"
     },
     {
       "id": "aYeIfcjqrSZpmuKd6Fij2",

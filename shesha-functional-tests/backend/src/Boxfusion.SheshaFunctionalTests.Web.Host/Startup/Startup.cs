@@ -31,6 +31,8 @@ using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
+using Shesha.Notifications.SMS;
+using Shesha.Notifications;
 using Shesha.Scheduler.Extensions;
 using Shesha.Swagger;
 using Shesha.Web;
@@ -90,7 +92,11 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			services.AddHttpContextAccessor();
 
-			services.AddHangfire(config =>
+
+            services.AddTransient<INotificationChannelSender, EmailChannelSender>();
+            services.AddTransient<INotificationChannelSender, SmsChannelSender>();
+
+            services.AddHangfire(config =>
 			{
                 var dbms = _appConfiguration.GetDbmsType();
                 var connStr = _appConfiguration.GetDefaultConnectionString();

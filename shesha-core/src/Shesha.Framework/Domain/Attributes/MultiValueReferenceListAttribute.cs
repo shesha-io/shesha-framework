@@ -9,6 +9,7 @@ namespace Shesha.Domain.Attributes
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class MultiValueReferenceListAttribute : ReferenceListAttributeBase
     {
+        [Obsolete("Use constructor that accepts single parameter instead")]
         public MultiValueReferenceListAttribute(string @namespace, string name) : base(@namespace, name)
         {
         }

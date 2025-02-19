@@ -16,6 +16,7 @@ using Shesha.DynamicEntities.Distribution;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Locks;
+using Shesha.Migrations;
 using Shesha.Modules;
 using Shesha.Services;
 using Shesha.Services.ReferenceLists;
@@ -75,6 +76,8 @@ namespace Shesha
                 // Scan the assembly for classes which inherit from AutoMapper.Profile
                 cfg => cfg.AddMaps(thisAssembly)
             );
+
+            IocManager.Register<MultiEntityReferenceMigration, MultiEntityReferenceMigration>(DependencyLifeStyle.Transient);
 
             IocManager.Register<IShaPermissionChecker, ShaPermissionChecker>(DependencyLifeStyle.Transient);
 

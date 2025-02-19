@@ -1,4 +1,4 @@
-import { componentsTreeToFlatStructure, getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
+import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
@@ -65,9 +65,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
           return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
-        })
-        .map(item => getActualModel(item, allData) as IWizardStepProps),
-    [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
+        }),
+    [tabs]
   );
 
   const currentStep = visibleSteps[current];
