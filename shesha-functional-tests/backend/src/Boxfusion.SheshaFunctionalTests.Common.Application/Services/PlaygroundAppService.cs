@@ -27,7 +27,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         {
             var obj = await _testClassRepo.GetAll().FirstOrDefaultAsync(x => x.Id == Guid.Parse("0ddb7a0f-50a2-42df-afb4-0b6ad5219b5b"));
             //var name = obj.JsonProp?.SomeName ?? "null";
-            return obj.JsonProp?.SomeName ?? "null";
+            return "OK";// obj.JsonProp?.SomeName ?? "null";
         }
 
         public async Task<string> TestAuditAsync()
