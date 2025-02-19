@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Xml;
-using Abp.Reflection.Extensions;
+﻿using Abp.Reflection.Extensions;
 using Castle.Core.Logging;
 using log4net;
 using log4net.Config;
 using log4net.Repository;
+using System;
+using System.IO;
+using System.Xml;
 
 namespace Shesha.Scheduler.Logging
 {
@@ -27,7 +27,8 @@ namespace Shesha.Scheduler.Logging
             );
 
             var log4NetConfig = new XmlDocument();
-            log4NetConfig.Load(File.OpenRead(configFileName));
+            using var configFile = File.OpenRead(configFileName);
+            log4NetConfig.Load(configFile);
             XmlConfigurator.Configure(_loggerRepository, log4NetConfig["log4net"]);
         }
 
@@ -45,7 +46,8 @@ namespace Shesha.Scheduler.Logging
             else
             {
                 var log4NetConfig = new XmlDocument();
-                log4NetConfig.Load(File.OpenRead(configFileName));
+                using var configFile = File.OpenRead(configFileName);
+                log4NetConfig.Load(configFile);
                 XmlConfigurator.Configure(_loggerRepository, log4NetConfig["log4net"]);
             }
         }

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using Abp.Configuration;
+﻿using Abp.Configuration;
 using Abp.Domain.Uow;
-using Shesha.Configuration;
-using Shesha.NHibernate.UoW;
-using Shesha.Reflection;
-using Shesha.Services;
 using Shouldly;
+using System;
 using Xunit;
 
 namespace Shesha.Tests.Settings
@@ -31,11 +24,8 @@ namespace Shesha.Tests.Settings
             LoginAsHostAdmin();
             try
             {
-                using (var uow = _unitOfWorkManager.Begin())
+                UsingNhSession(session =>
                 {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
-
                     var testSetting = _settingManager.GetSettingValue("TestSetting");
                     testSetting.ShouldNotBeNull();
 
@@ -51,12 +41,9 @@ namespace Shesha.Tests.Settings
                         .UniqueResult<int>().ShouldBe(1);
                     session.CreateSQLQuery("select count(1) from AbpEntityChangeSets where id in (select EntityChangeSetId from AbpEntityChanges where EntityId = 'TestSetting')")
                         .UniqueResult<int>().ShouldBe(1);
-                }
-                using (var uow = _unitOfWorkManager.Begin())
-                {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
+                });
 
+                UsingNhSession(session => {
                     var testSetting = _settingManager.GetSettingValue("TestSetting");
                     testSetting.ShouldNotBeNull();
 
@@ -71,12 +58,9 @@ namespace Shesha.Tests.Settings
                         .UniqueResult<int>().ShouldBe(2);
                     session.CreateSQLQuery("select count(1) from AbpEntityChangeSets where id in (select EntityChangeSetId from AbpEntityChanges where EntityId = 'TestSetting')")
                         .UniqueResult<int>().ShouldBe(2);
-                }
-                using (var uow = _unitOfWorkManager.Begin())
-                {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
+                });
 
+                UsingNhSession(session => {
                     var testSetting = _settingManager.GetSettingValue("TestSetting");
                     testSetting.ShouldNotBeNull();
 
@@ -91,12 +75,9 @@ namespace Shesha.Tests.Settings
                         .UniqueResult<int>().ShouldBe(3);
                     session.CreateSQLQuery("select count(1) from AbpEntityChangeSets where id in (select EntityChangeSetId from AbpEntityChanges where EntityId = 'TestSetting')")
                         .UniqueResult<int>().ShouldBe(3);
-                }
-                using (var uow = _unitOfWorkManager.Begin())
-                {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
+                });
 
+                UsingNhSession(session => {
                     var testSetting = _settingManager.GetSettingValue("TestSetting");
                     testSetting.ShouldNotBeNull();
 
@@ -111,17 +92,14 @@ namespace Shesha.Tests.Settings
                         .UniqueResult<int>().ShouldBe(4);
                     session.CreateSQLQuery("select count(1) from AbpEntityChangeSets where id in (select EntityChangeSetId from AbpEntityChanges where EntityId = 'TestSetting')")
                         .UniqueResult<int>().ShouldBe(4);
-                }
+                });
             }
             finally
             {
-                using (var uow = _unitOfWorkManager.Begin())
+                UsingNhSession(session =>
                 {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
-
                     // delete temporary values
-                    var entityChangeSetId = 
+                    var entityChangeSetId =
                         session.CreateSQLQuery("select EntityChangeSetId from AbpEntityChanges where EntityId = 'TestSetting'")
                             .List<Int64>();
 
@@ -138,7 +116,7 @@ namespace Shesha.Tests.Settings
                         .ExecuteUpdate();
 
                     session.Flush();
-                }
+                });
             }
         }
 
@@ -149,11 +127,8 @@ namespace Shesha.Tests.Settings
             LoginAsHostAdmin();
             try
             {
-                using (var uow = _unitOfWorkManager.Begin())
+                UsingNhSession(session =>
                 {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
-
                     var testSetting = _settingManager.GetSettingValue("TestSetting");
                     testSetting.ShouldNotBeNull();
                     var testSetting2 = _settingManager.GetSettingValue("TestSetting2");
@@ -162,15 +137,12 @@ namespace Shesha.Tests.Settings
                     _settingManager.ChangeSettingForApplication("TestSetting", "2");
                     _settingManager.ChangeSettingForApplication("TestSetting2", "b");
                     session.Flush();
-                }
+                });
             }
             finally
             {
-                using (var uow = _unitOfWorkManager.Begin())
+                UsingNhSession(session =>
                 {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
-
                     // delete temporary values
                     var entityChangeSetId =
                         session.CreateSQLQuery("select EntityChangeSetId from AbpEntityChanges where EntityId like 'TestSetting%'")
@@ -189,7 +161,7 @@ namespace Shesha.Tests.Settings
                         .ExecuteUpdate();
 
                     session.Flush();
-                }
+                });
             }
         }
 
@@ -200,11 +172,8 @@ namespace Shesha.Tests.Settings
             LoginAsHostAdmin();
             try
             {
-                using (var uow = _unitOfWorkManager.Begin())
+                UsingNhSession(session =>
                 {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
-
                     var testSetting = _settingManager.GetSettingValue("TestSetting");
                     testSetting.ShouldNotBeNull();
                     var testSetting2 = _settingManager.GetSettingValue("TestSetting2");
@@ -218,15 +187,12 @@ namespace Shesha.Tests.Settings
 
                     _settingManager.ChangeSettingForApplication("TestSetting.Boxfusion.Shesha.GDE.LowestPriorityApplicationTypeToProcessOffersFor.Round1", 9.ToString());
                     session.Flush();
-                }
+                });
             }
             finally
             {
-                using (var uow = _unitOfWorkManager.Begin())
+                UsingNhSession(session =>
                 {
-                    var nhuow = uow as NhUnitOfWork;
-                    var session = nhuow?.GetSession();
-
                     // delete temporary values
                     var entityChangeSetId =
                         session.CreateSQLQuery("select EntityChangeSetId from AbpEntityChanges where EntityId like '%TestSetting%'")
@@ -245,9 +211,8 @@ namespace Shesha.Tests.Settings
                         .ExecuteUpdate();
 
                     session.Flush();
-                }
+                });
             }
         }
-
     }
 }

@@ -12,6 +12,7 @@ export interface IProps<TModel extends IConfigurableActionArguments> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
+  cacheKey?: string;
 }
 
 function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
@@ -20,6 +21,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   markup,
   onValuesChange,
   readOnly = false,
+  cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
 

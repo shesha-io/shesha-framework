@@ -64,8 +64,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
      
       img {
-        width: var(--thumbnail-width, 101px) !important;
-        height: var(--thumbnail-height, 101px) !important;
+        width: var(--thumbnail-width, 54px) !important;
+        height: var(--thumbnail-height, 54px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
         display: flex !important;

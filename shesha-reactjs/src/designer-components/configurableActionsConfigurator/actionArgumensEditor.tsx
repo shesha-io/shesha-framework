@@ -21,11 +21,18 @@ export interface IActionArgumentsEditorProps {
 }
 
 const getDefaultFactory = (
-  markup: FormMarkup | FormMarkupFactory,
+  action: IConfigurableActionDescriptor,
   readOnly: boolean
 ): IConfigurableActionArgumentsFormFactory => {
+  const { argumentsFormMarkup: markup } = action;
   return ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
-    const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
+    
+    const markupFactory = typeof markup === 'function' 
+      ? (markup as FormMarkupFactory) 
+      : () => markup as FormMarkup;
+    const cacheKey = typeof markup !== 'function'
+      ? `${action.ownerUid}-${action.name}-args`
+      : undefined;
 
     const formMarkup = markupFactory({ exposedVariables, availableConstants });
     return (
@@ -36,6 +43,7 @@ const getDefaultFactory = (
         markup={formMarkup}
         onValuesChange={onValuesChange}
         readOnly={readOnly}
+        cacheKey={cacheKey}
       />
     );
   };
@@ -53,7 +61,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
-        ? getDefaultFactory(action.argumentsFormMarkup, readOnly)
+        ? getDefaultFactory(action, readOnly)
         : null;
 
     const onCancel = () => {

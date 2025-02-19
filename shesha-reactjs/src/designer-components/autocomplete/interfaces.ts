@@ -2,6 +2,7 @@ import { Key } from 'react';
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { FormIdentifier, IInputStyles } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
+import { GroupingItem, ISortingItem } from '@/providers/dataTable/interfaces';
 
 interface IQueryParamProp {
   id: string;
@@ -16,22 +17,14 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent,
   dataSourceUrl?: string;
   dataSourceType: AutocompleteDataSourceType;
   mode?: 'single' | 'multiple';
-  useRawValues: boolean;
-  queryParams?: IQueryParamProp[];
   keyPropName?: string;
-  valuePropName?: string;
   filter?: object;
   disableSearch?: boolean;
   placeholder?: string;
-  quickviewEnabled?: boolean;
-  quickviewFormPath?: FormIdentifier;
-  quickviewDisplayPropertyName?: string;
-  quickviewGetEntityUrl?: string;
-  quickviewWidth?: number;
   width?: string | number;
+  height?: string | number;
   minWidth?: string | number;
   maxWidth?: string | number;
-  allowFreeText?: boolean;
   borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;
@@ -39,6 +32,5 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent,
   fontSize?: string | number;
   fontWeight?: string | number;
   stylingBox?: string;
-  height?: string | number;
   backgroundColor?: string;
 }

@@ -18,7 +18,7 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
   isInput: true,
   isOutput: true,
   Factory: () => {
-    throw new Error('Form Autocomplete component was removed');
+    throw new Error('Reference List Autocomplete component was removed');
   },
   migrator: m => m
     .add<IReferenceListAutocompleteProps>(0, prev => ({ ...prev, convertToFullId: true }))
@@ -30,7 +30,7 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
         mode: 'single',
         type: 'configurableItemAutocomplete',
         version: 0,
-        entityType: 'Shesha.Framework.ReferenceList',        
+        entityType: 'Shesha.Framework.ReferenceList',
       };
     })
   ,

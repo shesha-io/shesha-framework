@@ -4,23 +4,19 @@ import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/au
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
 import {
-  evaluateString,
-  executeScriptSync,
+  executeExpression,
   getStyle,
   pickStyleFromModel,
-  replaceTags,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import { evaluateDynamicFilters } from '@/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
@@ -238,7 +234,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     // TODO: implement other types of datasources!
 
     return (
-      <ConfigurableFormItem {...formProps}>
+      <ConfigurableFormItem {...{model}}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
@@ -306,12 +302,19 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,
-      //useRawValues: true,
       dataSourceType: 'entitiesList',
-      entityTypeShortAlias: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
-      mode: undefined,
+      mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
+      entityType: isEntityReferencePropertyMetadata(propMetadata)
+        ? propMetadata.entityType 
+        : isEntityReferenceArrayPropertyMetadata(propMetadata)
+          ? propMetadata.entityType
+          : undefined,
+      valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
+        ? 'entityReference' 
+        : 'simple',
     };
   },
+  actualModelPropertyFilter: (propName) => propName !== 'queryParams',
 };
 
 export default AutocompleteComponent;

@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>Shesha.Import</PackageId>
@@ -21,11 +20,15 @@
     <Compile Remove="Example\**" />
     <EmbeddedResource Remove="Example\**" />
     <None Remove="Example\**" />
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
       <PrivateAssets>all</PrivateAssets>
@@ -38,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

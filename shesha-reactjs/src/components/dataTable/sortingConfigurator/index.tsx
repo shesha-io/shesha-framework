@@ -12,10 +12,11 @@ export interface ISortingEditorProps {
     onChange: (newValue?: SortingItem[]) => void;
     modelType: string;
     readOnly?: boolean;
+    maxItemsCount?: number;
 }
 
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
-    const { value, onChange, modelType, readOnly: editorReadOnly } = props;
+    const { value, onChange, modelType, readOnly: editorReadOnly, maxItemsCount } = props;
     return (
         <MetadataProvider modelType={modelType}>
             <ListEditor<SortingItem>
@@ -23,6 +24,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                 onChange={onChange}
                 initNewItem={(_items) => ({ id: getNanoId(), propertyName: '', sorting: 'asc' })}
                 readOnly={editorReadOnly}
+                maxItemsCount={maxItemsCount}
             >
                 {({ item, itemOnChange, readOnly }) => {
                     return (

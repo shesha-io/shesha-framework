@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Shesha.Application</AssemblyName>
@@ -8,8 +7,6 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>Shesha</RootNamespace>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <Title>Shesha.Application</Title>
     <Authors>Shesha</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -130,6 +127,10 @@
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
@@ -137,6 +138,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
     <PackageReference Include="Stubble.Core" Version="1.10.8" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +149,6 @@
     <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>

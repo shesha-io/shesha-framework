@@ -60,7 +60,7 @@ namespace Shesha.DynamicEntities.Distribution
                 // ToDo: Temporary update the current version.
                 // Need to update the rest of the other code to work with versioning first
 
-                await MapConfigAync(item, dbItem, context);
+                await MapConfigAsync(item, dbItem, context);
                 await _roleRepo.UpdateAsync(dbItem);
 
                 await _rolePermissionRepo.DeleteAsync(x => x.ShaRole.Id == dbItem.Id);
@@ -68,7 +68,7 @@ namespace Shesha.DynamicEntities.Distribution
             else
             {
                 dbItem = new ShaRole();
-                await MapConfigAync(item, dbItem, context);
+                await MapConfigAsync(item, dbItem, context);
 
                 // fill audit?
                 dbItem.VersionNo = 1;
@@ -95,7 +95,7 @@ namespace Shesha.DynamicEntities.Distribution
             return dbItem;
         }
 
-        protected async Task<ShaRole> MapConfigAync(DistributedShaRole item, ShaRole dbItem, IConfigurationItemsImportContext context)
+        protected async Task<ShaRole> MapConfigAsync(DistributedShaRole item, ShaRole dbItem, IConfigurationItemsImportContext context)
         {
             dbItem.Name = item.Name;
             dbItem.Module = await GetModuleAsync(item.ModuleName, context);
