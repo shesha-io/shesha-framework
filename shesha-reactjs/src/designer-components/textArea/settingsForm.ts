@@ -47,6 +47,7 @@ export const getSettings = (data: any) => {
                 validate: {
                   "required": true
                 },
+                styledLabel: true,
                 jsSetting: true,
               })
               .addLabelConfigurator({
