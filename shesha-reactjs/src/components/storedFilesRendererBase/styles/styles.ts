@@ -1,22 +1,29 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSize, borderColor, borderType, fontColor, fontSize, width, height, thumbnailHeight, borderRadius, thumbnailWidth, layout, gap, hideFileName, isDragger, styles }) => {
-  const uploadListMaxHeight = "80px"; // @sha-upload-list-max-height
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }) => {
+  const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
+    borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
+    borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
+    backgroundRepeat, backgroundSize, borderStyle, color, fontFamily, fontSize, fontWeight, height, maxHeight, minHeight, textAlign,
+    fontColor
+  } = style;
+
+  const { gap, layout, hideFileName, isDragger } = model; const uploadListMaxHeight = "80px"; // @sha-upload-list-max-height
 
   const storedFilesRendererBtnContainer = "stored-files-renderer-btn-container";
   const storedFilesRendererNoFiles = "stored-files-renderer-no-files";
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${thumbnailWidth ?? thumbnailHeight ?? '101px'};
-    --thumbnail-height: ${thumbnailHeight ?? thumbnailWidth ?? '101px'};
+    --thumbnail-width: ${width ?? height ?? '101px'};
+    --thumbnail-height: ${height ?? width ?? '101px'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-lg:  ${borderRadius ?? '8px'} !important;
     --container-width: ${width};
     --container-height: ${height};
-      ${styles}
+      
 
     .sha-stored-files-renderer {
       max-height: var(--container-height) !important;
@@ -50,8 +57,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
     .ant-upload-list-item-thumbnail {
       border-radius: ${borderRadius ?? '8px'} !important;
       padding: 0 !important;
-      border: ${borderSize ?? 0} ${borderType ?? 'solid'} ${borderColor ?? token.colorPrimary} !important;
-
+      border: ${borderWidth} ${borderStyle} ${borderColor};
+      border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
+      border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
+      border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
+      border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
+     
       img {
         width: var(--thumbnail-width, 101px) !important;
         height: var(--thumbnail-height, 101px) !important;
@@ -70,7 +81,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       display: ${hideFileName ? 'none !important' : 'block'};
       color: ${fontColor ?? token.colorPrimary};
       padding: 0 8px !important;
-      width: ${(layout && thumbnailWidth) ?? '101px'} !important;
+      width: ${(layout && width) ?? '101px'} !important;
       font-size: var(--font-size, 14px) !important;
     }
 
@@ -158,12 +169,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-horizontal", css`
       width: max-content;
-      padding: 0 ${borderSize ?? '2px'} !important;
+      padding: 0 ${borderWidth ?? '2px'} !important;
     .${prefixCls}-upload-list {
           display: flex !important;
           flex-direction: column !important;
           flex-wrap: nowrap !important;
-          padding: 0 ${borderSize ?? '2px'} !important;
+          padding: 0 ${borderWidth ?? '2px'} !important;
           height: calc(var(--height) - 32px) !important;
         }
 

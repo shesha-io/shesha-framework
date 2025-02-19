@@ -20,6 +20,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { defaultStyles } from './utils';
 
 export type layoutType = 'vertical' | 'horizontal' | 'grid';
 export type listType = 'text' | 'thumbnail';
@@ -146,7 +147,8 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType })),
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType }))
+    .add<IAttachmentsEditorProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })),
 };
 
 export default AttachmentsEditor;

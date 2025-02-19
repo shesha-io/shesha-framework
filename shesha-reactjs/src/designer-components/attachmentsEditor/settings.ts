@@ -33,56 +33,80 @@ export const getSettings = () => {
                   validate: { required: true },
                   jsSetting: false,
                 })
-                .addSettingsInput({
+                .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'Label',
-                  inputType: 'text',
+                  label: 'Label'
                 })
                 .addSettingsInput({
                   id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
                   propertyName: 'description',
-                  label: 'Description',
+                  label: 'Tooltip',
                   inputType: 'textArea',
                 })
-                .addSettingsInput({
-                  id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
-                  propertyName: 'isDragger',
-                  label: 'Is Dragger',
-                  inputType: 'switch',
-                  description: 'Where the uploader should show a dragger instead of a button',
+                .addSettingsInputRow({
+                  id: 'display-row-0-dragger',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
+                  inputs: [
+                    {
+                      id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
+                      propertyName: 'isDragger',
+                      label: 'Is Dragger',
+                      type: 'switch',
+                      description: 'Where the uploader should show a dragger instead of a button',
+                    }
+                  ],
                   hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
                 })
-                .addSettingsInput({
-                  id: 'b920ef96-ae27-4a01-bfad-bob7d07218da',
-                  propertyName: 'listType',
-                  label: 'List Type',
-                  inputType: 'dropdown',
+                .addSettingsInputRow({
+                  id: 'b920ef96-ae27-4a01-bfad-list-type',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                   hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
-                  dropdownOptions: [
-                    { label: 'File Name', value: 'text' },
-                    { label: 'Thumbnail', value: 'thumbnail' },
-                  ],
+                  inputs: [
+                    {
+                      id: 'b920ef96-ae27-4a01-bfad-bob7d07218da',
+                      propertyName: 'listType',
+                      label: 'List Type',
+                      type: 'dropdown',
+                      dropdownOptions: [
+                        { label: 'File Name', value: 'text' },
+                        { label: 'Thumbnail', value: 'thumbnail' },
+                      ],
+                    }]
                 })
-                .addSettingsInput({
-                  id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
-                  propertyName: 'layout',
-                  label: 'Layout',
-                  inputType: 'dropdown',
+                .addSettingsInputRow({
+                  id: 'b920ef96-layout-4a01-bfad-bob7d07218da',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
-                  dropdownOptions: [
-                    { label: 'Vertical', value: 'vertical' },
-                    { label: 'Horizontal', value: 'horizontal' },
-                    { label: 'Grid', value: 'grid' },
-                  ],
+                  inputs: [
+                    {
+                      id: 'f01e54aa-a1a4-4bd6-ba73-c39te48af8ce',
+                      propertyName: 'layout',
+                      label: 'Layout',
+                      type: 'dropdown',
+                      dropdownOptions: [
+                        { label: 'Vertical', value: 'vertical' },
+                        { label: 'Horizontal', value: 'horizontal' },
+                        { label: 'Grid', value: 'grid' },
+                      ]
+                    },]
                 })
-                .addSettingsInput({
-                  id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
-                  propertyName: 'gap',
-                  label: 'Gap',
-                  inputType: 'number',
-                  description: 'The gap between the thumbnails.',
+                .addSettingsInputRow({
+                  id: 'b920ef96-thumbnail-4a01-bfad-bob7d07218da',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'b920ef96-ae27-4a01-bfad-b5b7d07218da',
+                      propertyName: 'gap',
+                      label: 'Gap',
+                      type: 'number',
+                      description: 'The gap between the thumbnails.',
+                    }]
                 })
                 .addSettingsInputRow({
                   id: 'display-row-1',
@@ -91,30 +115,28 @@ export const getSettings = () => {
                   inputs: [
                     {
                       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
-                      propertyName: 'hide',
-                      label: 'Hidden',
+                      propertyName: 'hidden',
+                      label: 'Hide',
                       type: 'switch',
                     },
                     {
-                      id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
-                      propertyName: 'hideLabel',
-                      label: 'Hide Label',
-                      type: 'switch',
+                      id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
+                      propertyName: 'editMode',
+                      label: 'Edit Mode',
+                      type: 'editModeSelector',
                     },
                   ],
                 })
-                .addSettingsInput({
-                  id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-                  propertyName: 'editMode',
-                  label: 'Edit mode',
-                  inputType: 'editModeSelector',
-                })
-                .addSettingsInput({
-                  id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
-                  propertyName: 'hideFileName',
-                  label: 'Hide File Name',
-                  inputType: 'switch',
+                .addSettingsInputRow({
+                  id: 'b920ef96-ae27-hidefile-name-bfad-b5b7d0xc18da',
                   hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [{
+                    id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
+                    propertyName: 'hideFileName',
+                    label: 'Hide File Name',
+                    type: 'switch',
+                  }]
                 })
                 .addSettingsInputRow({
                   id: 'display-row-2',
@@ -208,7 +230,7 @@ export const getSettings = () => {
             ],
           },
           {
-            key: '3',
+            key: '4',
             title: 'Events',
             id: 'Cc47W08MWrKdhoGqFKMI2',
             components: [...new DesignerToolbarSettings()
@@ -223,7 +245,7 @@ export const getSettings = () => {
             ]
           },
           {
-            key: '4',
+            key: '5',
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [...new DesignerToolbarSettings()
@@ -388,19 +410,6 @@ export const getSettings = () => {
                                 propertyName: "dimensions.maxHeight",
                                 icon: "maxHeightIcon",
                               }
-                            ]
-                          })
-                          .addSettingsInput({
-                            id: 'predefinedSizes',
-                            inputType: 'dropdown',
-                            propertyName: 'size',
-                            label: 'Size',
-                            width: '150px',
-                            hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                            dropdownOptions: [
-                              { value: 'small', label: 'Small' },
-                              { value: 'medium', label: 'Medium' },
-                              { value: 'large', label: 'Large' },
                             ]
                           })
                           .toJson()
@@ -693,26 +702,6 @@ export const getSettings = () => {
                       }
                     })
                     .addCollapsiblePanel({
-                      id: 'styleCollapsiblePanel',
-                      propertyName: 'stylingBox',
-                      label: 'Margin & Padding',
-                      labelAlign: 'right',
-                      ghost: true,
-                      collapsible: 'header',
-                      content: {
-                        id: 'stylePnl-M5-911',
-                        components: [...new DesignerToolbarSettings()
-                          .addStyleBox({
-                            id: 'styleBoxPnl',
-                            label: 'Margin Padding',
-                            hideLabel: true,
-                            propertyName: 'stylingBox',
-                          })
-                          .toJson()
-                        ]
-                      }
-                    })
-                    .addCollapsiblePanel({
                       id: 'customStyleCollapsiblePanel',
                       propertyName: 'customStyle',
                       label: 'Custom Styles',
@@ -736,11 +725,153 @@ export const getSettings = () => {
                         ]
                       }
                     })
+                    .addCollapsiblePanel({
+                      id: 'containerStyleCollapsiblePanel',
+                      propertyName: 'pnlContainerStyle',
+                      label: 'Container',
+                      labelAlign: 'right',
+                      ghost: true,
+                      parentId: 'styleRouter',
+                      collapsible: 'header',
+                      content: {
+                        id: 'containerStylePnl',
+                        components: [...new DesignerToolbarSettings()
+                          .addCollapsiblePanel({
+                            id: 'containerDimensionsStyleCollapsiblePanel',
+                            propertyName: 'pnlDimensions',
+                            label: 'Dimensions',
+                            parentId: 'containerStylePnl',
+                            labelAlign: 'right',
+                            collapsible: 'header',
+                            content: {
+                              id: 'container-dimensionsStylePnl',
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInputRow({
+                                  id: 'dimensionsStyleRowWidth',
+                                  parentId: 'container-dimensionsStylePnl',
+                                  inline: true,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'text',
+                                      id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                      label: "Width",
+                                      width: 85,
+                                      propertyName: "container.dimensions.width",
+                                      icon: "widthIcon",
+                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+
+                                    },
+                                    {
+                                      type: 'text',
+                                      id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                      label: "Min Width",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.minWidth",
+                                      icon: "minWidthIcon",
+                                    },
+                                    {
+                                      type: 'text',
+                                      id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                      label: "Max Width",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.maxWidth",
+                                      icon: "maxWidthIcon",
+                                    }
+                                  ]
+                                })
+                                .addSettingsInputRow({
+                                  id: 'dimensionsStyleRowHeight',
+                                  parentId: 'container-dimensionsStylePnl',
+                                  inline: true,
+                                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  inputs: [
+                                    {
+                                      type: 'text',
+                                      id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                      label: "Height",
+                                      width: 85,
+                                      propertyName: "container.dimensions.height",
+                                      icon: "heightIcon",
+                                      tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                    },
+                                    {
+                                      type: 'text',
+                                      id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                      label: "Min Height",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.minHeight",
+                                      icon: "minHeightIcon",
+                                    },
+                                    {
+                                      type: 'text',
+                                      id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                      label: "Max Height",
+                                      width: 85,
+                                      hideLabel: true,
+                                      propertyName: "container.dimensions.maxHeight",
+                                      icon: "maxHeightIcon",
+                                    }
+                                  ]
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .addCollapsiblePanel({
+                            id: 'styleCollapsiblePanel',
+                            propertyName: 'stylingBox',
+                            label: 'Margin & Padding',
+                            labelAlign: 'right',
+                            collapsible: 'header',
+                            parentId: 'containerStylePnl',
+                            content: {
+                              id: 'stylingBoxPnl',
+                              components: [
+                                ...new DesignerToolbarSettings()
+                                  .addStyleBox({
+                                    id: 'styleBoxPnl',
+                                    label: 'Margin Padding',
+                                    hideLabel: true,
+                                    propertyName: 'stylingBox',
+                                  })
+                                  .toJson()
+                              ]
+                            }
+                          })
+                          .addCollapsiblePanel({
+                            id: 'customStyleCollapsiblePanel',
+                            propertyName: 'customStyle',
+                            label: 'Custom Styles',
+                            labelAlign: 'right',
+                            parentId: 'containerStylePnl',
+                            collapsible: 'header',
+                            content: {
+                              id: 'containerCustomStylePnl',
+                              components: [...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                  id: 'custom-css-412c-8461-4c8d55e5c073',
+                                  inputType: 'codeEditor',
+                                  propertyName: 'container.style',
+                                  hideLabel: false,
+                                  label: 'Style',
+                                  description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                })
+                                .toJson()
+                              ]
+                            }
+                          })
+                          .toJson()]
+                      }
+                    })
                     .toJson()]
               }).toJson()]
           },
           {
-            key: '5',
+            key: '6',
             title: 'Security',
             id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
             components: [
