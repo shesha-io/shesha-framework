@@ -2,27 +2,27 @@ import { IStyleType } from "@/index";
 
 export const buttonTypes = [
     {
-        label: 'default',
+        label: 'Default',
         value: 'default',
     },
     {
-        label: 'primary',
+        label: 'Primary',
         value: 'primary',
     },
     {
-        label: 'ghost',
+        label: 'Ghost',
         value: 'ghost',
     },
     {
-        label: 'dashed',
+        label: 'Dashed',
         value: 'dashed',
     },
     {
-        label: 'link',
+        label: 'Link',
         value: 'link',
     },
     {
-        label: 'text',
+        label: 'Text',
         value: 'text',
     }
 ];

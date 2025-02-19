@@ -20,6 +20,7 @@ using NHibernate.Engine;
 using NHibernate.Spatial.Dialect;
 using NHibernate.Spatial.Mapping;
 using NHibernate.Spatial.Metadata;
+using NHibernate.Type;
 using Npgsql;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
@@ -28,6 +29,7 @@ using Shesha.Configuration.Startup;
 using Shesha.Domain;
 using Shesha.Exceptions;
 using Shesha.FluentMigrator;
+using Shesha.Generators;
 using Shesha.Locks;
 using Shesha.NHibernate.Configuration;
 using Shesha.NHibernate.Filters;
@@ -121,7 +123,7 @@ namespace Shesha.NHibernate
                 _nhConfig.AddFilterDefinition(MayHaveTenantFilter.GetDefinition());
                 _nhConfig.AddFilterDefinition(MustHaveTenantFilter.GetDefinition());
 
-                var conventions = new Conventions();
+                var conventions = new Conventions(IocManager.IocContainer.Resolve<INameGenerator>());
                 var mappingAssemblies = new Dictionary<Assembly, string>
                 {
                     { typeof(UserToken).Assembly, "Abp" },
@@ -167,7 +169,8 @@ namespace Shesha.NHibernate
                 Component.For<IConnectionStringResolver, IDbPerTenantConnectionStringResolver, IDbConnectionSettingsResolver>()
                     .ImplementedBy<DbPerTenantConnectionStringResolver>()
                     .LifestyleTransient(),
-                Component.For<IAbpZeroDbMigrator>().ImplementedBy<SheshaDbMigrator>().LifestyleTransient()
+                Component.For<IAbpZeroDbMigrator>().ImplementedBy<SheshaDbMigrator>().LifestyleTransient(),
+                Component.For<SheshaAutoDbMigrator>().ImplementedBy<SheshaAutoDbMigrator>().LifestyleTransient()
             );
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
@@ -279,6 +282,11 @@ namespace Shesha.NHibernate
                         var dbMigrator = ioc.Resolve<IAbpZeroDbMigrator>();
                         dbMigrator?.CreateOrMigrateForHost();
                         Logger.Warn("Apply migrations - finished");
+
+                        Logger.Warn("Apply Auto migrations...");
+                        var dbAutoMigrator = ioc.Resolve<SheshaAutoDbMigrator>();
+                        dbAutoMigrator?.CreateOrMigrateForHost();
+                        Logger.Warn("Apply Auto migrations - finished");
                     }
                     else {
                         if (!dbIsReadyForLogging)

@@ -1,15 +1,14 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, EditableTagGroup, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, PropertyAutocomplete, SectionSeparator, ShaIcon } from '@/components';
-import TextArea from 'antd/es/input/TextArea';
+import { EditableTagGroup } from '@/components';
+import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
-import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
-import { ImagePicker } from '@/designer-components/imageUploader';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 import { useStyles } from './styles';
 import { customIcons } from './icons';
@@ -25,6 +24,9 @@ import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
 import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
 import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
+import { ImagePicker } from '../imagePicker';
+import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
+import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 
@@ -34,7 +36,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, type: type, dropdownOptions, buttonGroupOptions,
+    const { size, className, value, type, dropdownOptions, buttonGroupOptions, defaultValue,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
 
@@ -42,7 +44,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
         if (typeof icon === 'string') {
             return icons[icon] ?
-                <ShaIcon iconName={icon as IconType} style={style} /> :
+                <Tooltip title={hint}><ShaIcon iconName={icon as IconType} style={style} /></Tooltip> :
                 customIcons[icon] ?
                     <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
                     : icon === 'sectionSeparator' ?
@@ -84,7 +86,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const editModes = [
         { value: 'editable', icon: 'editIcon', title: 'Editable' },
         { value: 'readOnly', icon: 'readonlyIcon', title: 'Read only' },
-        { value: 'inherit', icon: 'inheritIcon', title: 'Inherit' }
+        { value: 'inherited', icon: 'inheritIcon', title: 'Inherit' }
     ];
 
     const editor = availableConstantsExpression?.trim()
@@ -103,6 +105,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 variant={variant}
                 className={className}
                 value={value}
+                defaultValue={defaultValue}
                 onChange={
                     onChange}
                 options={typeof dropdownOptions === 'string' ?
@@ -110,26 +113,32 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))}
             />;
         case 'radio':
-            return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-
                     return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null, tooltip)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
-            return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
+            return <Switch disabled={readOnly} size='small'
+                defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber min={props.min} max={props.max} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
+            return <InputNumber min={props.min} max={props.max}
+                defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
             />;
         case 'customDropdown':
             return <CustomDropdown
-                variant={variant} value={value} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} />;
+                variant={variant} value={value}
+                defaultValue={defaultValue} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
         case 'textArea':
-            return <TextArea readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ top: '4px' }} />;
+            return <Input.TextArea
+                rows={2}
+                value={value}
+                defaultValue={defaultValue}
+                readOnly={readOnly} size={size} onChange={onChange} style={{ top: '4px' }} />;
         case 'codeEditor':
             return editor;
         case 'iconPicker':
-            return <IconPickerWrapper iconSize={20} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPickerWrapper iconSize={20} selectBtnSize={size} defaultValue={value} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImagePicker
                 value={value}
@@ -137,11 +146,11 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button disabled={readOnly} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
+            return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
-            return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
@@ -156,12 +165,16 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
                 value={value}
+                defaultValue={defaultValue}
                 size={size}
                 {...{ ...props, style: {} }}
             />;
+        case 'referenceListAutocomplete':
+            return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
-                <QueryBuilder {...props} hideLabel={true} readOnly={props.readOnly}></QueryBuilder>
+                <QueryBuilder {...props} hideLabel={true}
+                    defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
@@ -170,9 +183,16 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'sizableColumnsConfig':
             return <SizableColumnsList {...props} readOnly={readOnly} />;
         case 'editableTagGroupProps':
-            return <EditableTagGroup value={value} defaultValue={props?.defaultValue} onChange={onChange} readOnly={props.readOnly} />;
+            return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
-            return <PropertyAutocomplete {...props} style={props.style as any} readOnly={readOnly} id="contextPropertyAutocomplete" />;
+            return <PropertyAutocomplete
+                id={props.id}
+                size={props.size}
+                readOnly={props.readOnly}
+                autoFillProps={props.autoFillProps ?? true}
+                value={value}
+                onChange={onChange}
+            />;
         case 'contextPropertyAutocomplete':
             return <ContextPropertyAutocomplete {...props} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'formAutocomplete':
@@ -180,10 +200,11 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 readOnly={readOnly}
                 convertToFullId={false}
                 value={value}
+                size={size}
                 onChange={onChange}
             />;
-        case 'labelValueEditor': 
-            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+        case 'labelValueEditor':
+               return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
@@ -193,7 +214,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 size={size}
                 onChange={(e) => onChange(e.target.value)}
                 readOnly={readOnly}
-                defaultValue={''}
+                defaultValue={defaultValue}
                 variant={variant}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
                 value={value?.value ? value.value : value}
@@ -212,7 +233,6 @@ export interface IInputRowProps {
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
-    const icons = require('@ant-design/icons');
 
     return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
@@ -221,22 +241,13 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             const width = type === 'number' ? 100 :
                 type === 'button' ? 24 :
                     type === 'dropdown' ? 120 :
-                        type === 'radio' ? props.buttonGroupOptions.length * 30 :
+                        type === 'radio' ? props.buttonGroupOptions.length * 32 :
                             type === 'color' ? 24 :
                                 type === 'customDropdown' ? 120 : 50;
 
             return (
                 <SettingInput key={i + props.label}
                     {...props}
-                    {...(type === 'radio' && {
-                        buttonGroupOptions: props.buttonGroupOptions.map(({ value, title, icon }) => {
-                            if (!icons[`${icon}`]) {
-                                return ({ value, title, icon: null });
-                            }
-                            const IconComponent = icons[`${icon}`];
-                            return ({ value, title, icon: <IconComponent /> });
-                        })
-                    })}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />

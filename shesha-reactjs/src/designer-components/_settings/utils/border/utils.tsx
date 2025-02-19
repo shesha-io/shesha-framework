@@ -19,8 +19,6 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     if (!input || jsStyle?.border) return {};
 
     const style: React.CSSProperties = {};
-
-    // Handle border
     const { all, top, right, bottom, left } = input?.border;
 
     const handleBorderPart = (part, prefix: string) => {
@@ -35,10 +33,8 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     handleBorderPart(bottom, 'borderBottom');
     handleBorderPart(left, 'borderLeft');
 
-    // Handle border radius
     if (input?.radius) {
         const { all, topLeft, topRight, bottomLeft, bottomRight } = input?.radius;
-        style.borderRadius = `${all}px`;
         style.borderRadius = `${topLeft || all || 8}px ${topRight || all || 8}px ${bottomRight || all || 8}px ${bottomLeft || all || 8}px`;
     }
 
@@ -61,131 +57,96 @@ export const radiusCorners: IDropdownOption[] = [
 ];
 
 export const borderSides = [
-    {
-        value: "all",
-        icon: "BorderOutlined",
-        title: "All"
-    },
-    {
-        value: "top",
-        icon: "BorderTopOutlined",
-        title: "Top"
-    },
-    {
-        value: "right",
-        icon: "BorderRightOutlined",
-        title: "Right"
-    },
-    {
-        value: "bottom",
-        icon: "BorderBottomOutlined",
-        title: "Bottom"
-    },
-    {
-        value: "left",
-        icon: "BorderLeftOutlined",
-        title: "Left"
-    }
+    { value: "all", icon: "BorderOutlined", title: "All" },
+    { value: "top", icon: "BorderTopOutlined", title: "Top" },
+    { value: "right", icon: "BorderRightOutlined", title: "Right" },
+    { value: "bottom", icon: "BorderBottomOutlined", title: "Bottom" },
+    { value: "left", icon: "BorderLeftOutlined", title: "Left" }
 ];
 
 export const borderCorners = [
-    {
-        value: "all",
-        icon: "ExpandOutlined",
-        title: "All"
-    },
-    {
-        value: "topLeft",
-        icon: "RadiusUpleftOutlined",
-        title: "Top Left"
-    },
-    {
-        value: "topRight",
-        icon: "RadiusUprightOutlined",
-        title: "Top Right"
-    },
-    {
-        value: "bottomLeft",
-        icon: "RadiusBottomleftOutlined",
-        title: "Bottom Left"
-    },
-    {
-        value: "bottomRight",
-        icon: "RadiusBottomrightOutlined",
-        title: "Bottom Right"
-    }
+    { value: "all", icon: "ExpandOutlined", title: "All" },
+    { value: "topLeft", icon: "RadiusUpleftOutlined", title: "Top Left" },
+    { value: "topRight", icon: "RadiusUprightOutlined", title: "Top Right" },
+    { value: "bottomLeft", icon: "RadiusBottomleftOutlined", title: "Bottom Left" },
+    { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
-export const getBorderInputs = (isResponsive: boolean = true) => borderSides.map(value => {
+const generateCode = (type, isResponsive: boolean, path: string, side: string) => {
+    const part = type === 'border' ? 'selectedSide' : 'selectedCorner';
+    const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
+    return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${part}) !== "${side}" || getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.hideBorder);`;
+};
+
+export const getBorderInputs = (isResponsive: boolean = true, path = '') => borderSides.map(value => {
     const side = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);'
-        : 'return  getSettingValue(data?.border?.selectedSide)' + `!== "${side}"` + ' || getSettingValue(data?.border?.hideBorder);';
+    const code = generateCode('border', isResponsive, path, side);
 
     return {
         id: `borderStyleRow-${side}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: { _code: 'return  getSettingValue(data?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+        readOnly: false,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
                 label: "Border",
                 hideLabel: true,
                 type: "button",
-                propertyName: "border.hideBorder",
+                propertyName: path ? `${path}.border.hideBorder` : "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
-                tooltip: "Select a border side to which the style will be applied",
+                tooltip: "Hide border",
             },
             {
                 label: "Select Side",
                 hideLabel: true,
-                propertyName: "border.selectedSide",
+                propertyName: path ? `${path}.border.selectedSide` : "border.selectedSide",
                 type: "radio",
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 buttonGroupOptions: borderSides
             },
             {
                 type: 'text',
                 label: "Width",
                 hideLabel: true,
-                propertyName: `border.border.${side}.width`,
+                propertyName: path ? `${path}.border.border.${side}.width` : `border.border.${side}.width`,
             },
             {
                 label: "Style",
-                propertyName: `border.border.${side}.style`,
+                propertyName: path ? `${path}.border.border.${side}.style` : `border.border.${side}.style`,
                 type: "dropdown",
                 hideLabel: true,
                 width: 60,
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 dropdownOptions: borderStyles,
             },
             {
                 label: `Color ${side}`,
-                propertyName: `border.border.${side}.color`,
+                propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
                 type: "color",
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
             }
         ]
     };
 });
 
-export const getCornerInputs = (isResponsive: boolean = true) => radiusCorners.map(value => {
+export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
     const corner = value.value;
-    const code = isResponsive ? 'return  getSettingValue(data?.border?.selectedCorner)' + `!== "${corner}";` : 'return  getSettingValue(data?.border?.selectedCorner)' + `!== "${corner}";`;
+    const code = generateCode('radius', isResponsive, path, corner);
 
     return {
         id: `borderStyleRow-${corner}`,
         parentId: 'borderStylePnl',
         inline: true,
-        readOnly: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+        readOnly: { _code: `return getSettingValue(data[${isResponsive ? '`${contexts.canvasContext?.designerDevice || "desktop"}`' : ''}]${path ? '?.' + path : ''}?.border?.hideBorder);`, _mode: 'code', _value: false } as any,
         hidden: { _code: code, _mode: 'code', _value: false } as any,
         inputs: [
             {
                 id: "corner-selector",
                 label: "Corner Radius",
-                propertyName: "border.selectedCorner",
+                propertyName: path ? `${path}.border.selectedCorner` : "border.selectedCorner",
                 type: "radio",
                 defaultValue: "all",
                 tooltip: "Select a corner to which the radius will be applied",
@@ -200,7 +161,7 @@ export const getCornerInputs = (isResponsive: boolean = true) => radiusCorners.m
                 defaultValue: 0,
                 inputType: 'number',
                 tooltip: "Select a corner to which the radius will be applied",
-                propertyName: `border.radius.${corner}`
+                propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };
 });

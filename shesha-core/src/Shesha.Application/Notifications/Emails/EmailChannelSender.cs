@@ -1,22 +1,17 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.UI;
 using Castle.Core.Logging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using NHibernate.Linq;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
+using Shesha.Notifications.MessageParticipants;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
@@ -35,7 +30,7 @@ namespace Shesha.Notifications
 
         public string GetRecipientId(Person person)
         {
-            return person.EmailAddress1;
+            return person?.EmailAddress1;
         }
 
         private async Task<EmailSettings> GetSettings()
@@ -56,7 +51,7 @@ namespace Shesha.Notifications
             return enabled;
         }
 
-        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender fromPerson, IMessageReceiver toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettings();
 
@@ -77,7 +72,7 @@ namespace Shesha.Notifications
                 };
             }
 
-            using (var mail = BuildMessageWith(GetRecipientId(fromPerson), GetRecipientId(toPerson), message.Subject, message.Message, cc))
+            using (var mail = BuildMessageWith(fromPerson.GetAddress(this), toPerson.GetAddress(this), message.Subject, message.Message, cc))
             {
                 if (attachments != null)
                 {
@@ -170,12 +165,23 @@ namespace Shesha.Notifications
                 IsBodyHtml = true,
             };
 
-            if (string.IsNullOrWhiteSpace(fromAddress) || !StringHelper.IsValidEmail(fromAddress))
+            if (string.IsNullOrWhiteSpace(fromAddress))
             {
-                throw new ArgumentException("Invalid 'from' email address.");
-            }
+                if (!StringHelper.IsValidEmail(smtpSettings.DefaultFromAddress))
+                {
+                    throw new UserFriendlyException("Default from address is not valid!");
+                }
 
-            message.From = string.IsNullOrWhiteSpace(fromAddress) ? new MailAddress(smtpSettings.DefaultFromAddress) : new MailAddress(fromAddress);
+                message.From = new MailAddress(smtpSettings.DefaultFromAddress);
+            }
+            else if (StringHelper.IsValidEmail(fromAddress))
+            {
+                message.From = new MailAddress(fromAddress);
+            }
+            else
+            {
+                throw new ArgumentException("Invalid email address provided.");
+            }
 
             string[] tos = toAddress.Split(';');
 

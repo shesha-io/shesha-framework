@@ -88,13 +88,13 @@ export const getItemSettings = (data) => {
                                                     type: "text",
                                                     propertyName: "label",
                                                     parentId: "root",
-                                                    label: "Label"
+                                                    label: "Caption"
                                                 },
                                                 {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",
                                                     type: "textArea",
                                                     propertyName: "tooltip",
-                                                    label: "Group Tooltip",
+                                                    label: "Tooltip",
                                                     labelAlign: "right",
                                                     parentId: "root",
                                                     hidden: false,
@@ -212,7 +212,7 @@ export const getItemSettings = (data) => {
                                     propertyName: 'pnlFontStyle',
                                     label: 'Font',
                                     labelAlign: 'right',
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     ghost: true,
                                     collapsible: 'header',
                                     content: {
@@ -277,7 +277,7 @@ export const getItemSettings = (data) => {
                                     id: 'dimensionsStyleCollapsiblePanel',
                                     propertyName: 'pnlDimensions',
                                     label: 'Dimensions',
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     labelAlign: 'right',
                                     ghost: true,
                                     collapsible: 'header',
@@ -380,7 +380,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     collapsible: 'header',
                                     content: {
                                         id: 'borderStylePnl',
@@ -444,7 +444,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     collapsible: 'header',
                                     content: {
                                         id: 'backgroundStylePnl',
@@ -541,6 +541,7 @@ export const getItemSettings = (data) => {
                                                             id: 'backgroundStyleRow-size',
                                                             label: "Size",
                                                             hideLabel: true,
+                                                            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                             propertyName: "background.size",
                                                             dropdownOptions: sizeOptions,
                                                         },
@@ -549,17 +550,17 @@ export const getItemSettings = (data) => {
                                                             hideLabel: true,
                                                             type: 'customDropdown',
                                                             id: 'backgroundStyleRow-position',
+                                                            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                             propertyName: "background.position",
                                                             dropdownOptions: positionOptions,
                                                         },
                                                         {
+                                                            type: 'radio',
+                                                            id: 'backgroundStyleRow-repeat',
                                                             label: "Repeat",
                                                             hideLabel: true,
                                                             propertyName: "background.repeat",
-                                                            type: 'customDropdown',
-                                                            id: 'backgroundStyleRow-repeat',
-                                                            width: 70,
-                                                            dropdownOptions: repeatOptions,
+                                                            buttonGroupOptions: repeatOptions,
                                                         }
                                                     ]
                                                 })
@@ -574,7 +575,7 @@ export const getItemSettings = (data) => {
                                     labelAlign: 'right',
                                     ghost: true,
                                     hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'styleRouter',
+                                    parentId: 'root',
                                     collapsible: 'header',
                                     content: {
                                         id: 'shadowStylePnl',
@@ -633,26 +634,6 @@ export const getItemSettings = (data) => {
                                                         propertyName: 'shadow.color',
                                                     },
                                                 ],
-                                            })
-                                            .toJson()
-                                        ]
-                                    }
-                                })
-                                .addCollapsiblePanel({
-                                    id: 'styleCollapsiblePanel',
-                                    propertyName: 'stylingBox',
-                                    label: 'Margin & Padding',
-                                    labelAlign: 'right',
-                                    ghost: true,
-                                    collapsible: 'header',
-                                    content: {
-                                        id: 'stylePnl-M5-911',
-                                        components: [...new DesignerToolbarSettings()
-                                            .addStyleBox({
-                                                id: 'styleBoxPnl',
-                                                label: 'Margin Padding',
-                                                hideLabel: true,
-                                                propertyName: 'stylingBox',
                                             })
                                             .toJson()
                                         ]

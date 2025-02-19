@@ -3,6 +3,7 @@ using Abp.TestBase;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.DynamicEntities;
+using Shesha.Generators;
 using Shesha.Migrations;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Maps;
@@ -66,7 +67,7 @@ namespace Shesha.Tests.DynamicEntities
                 nhConfig.AddFilterDefinition(MayHaveTenantFilter.GetDefinition());
                 nhConfig.AddFilterDefinition(MustHaveTenantFilter.GetDefinition());
 
-                var conventions = new Conventions();
+                var conventions = new Conventions(Resolve<INameGenerator>());
                 var dynamicPersonAssembly = dynamicPerson.GetType().Assembly;
                 conventions.AddAssembly(dynamicPersonAssembly, "Test_");
                 conventions.Compile(nhConfig);

@@ -28,6 +28,7 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
             convertToFullId={model.convertToFullId}
             value={value}
             onChange={onChange}
+            size={model.size}
           />}
       </ConfigurableFormItem>
     );

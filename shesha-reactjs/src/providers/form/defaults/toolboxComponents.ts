@@ -11,7 +11,6 @@ import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
 import DataList from '@/designer-components/dataList/dataListComponent';
 import DataSource from '@/designer-components/dataSource/dataSourceComponent';
-import Divider from '@/designer-components/_legacyComponents/divider';
 import Drawer from '@/designer-components/drawer';
 import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';
@@ -151,7 +150,6 @@ export const getToolboxComponents = (
         AutocompleteTagGroup,
         ColorPickerComponent,
         IconPicker,
-        EditableTagGroup,
         HtmlRender,
         Image,
         ImageAnnotationComponent,
@@ -196,7 +194,7 @@ export const getToolboxComponents = (
     },
     {
       name: 'Data Access',
-      visible: true,
+      visible: false,
       components: [DataSource, DataContextComponent],
     },
     {
@@ -207,7 +205,6 @@ export const getToolboxComponents = (
         CollapsiblePanel,
         Columns,
         ContainerComponent,
-        Divider,
         Drawer,
         KeyInformationBarComponent,
         SectionSeprator,
@@ -221,7 +218,8 @@ export const getToolboxComponents = (
     {
       visible: false,
       name: 'Legacy',
-      components: [Paragraph, Title, Toolbar, List],
+      components: [Paragraph, Title, Toolbar, List,
+        EditableTagGroup,],
     },
     {
       visible: devMode,

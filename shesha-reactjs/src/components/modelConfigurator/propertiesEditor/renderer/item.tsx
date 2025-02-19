@@ -6,6 +6,7 @@ import React, { FC } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { SimpleProperty } from './simpleProperty';
+import ArrayEntityProperty from './arrayEntityProperty';
 
 export interface IItemProps {
     itemProps: IModelItem;
@@ -15,13 +16,21 @@ export interface IItemProps {
 }
 
 export const Item: FC<IItemProps> = ({ itemProps, index, key, containerRendering }) => {
-    if (itemProps.dataType === DataTypes.object || itemProps.dataType === DataTypes.array) {
+    if (itemProps.dataType === DataTypes.object 
+      || (itemProps.dataType === DataTypes.array && itemProps.dataFormat === DataTypes.object)) {
         return <ComplexProperty
             id={index}
             index={index}
             {...itemProps}
             key={key}
             containerRendering={containerRendering}
+        />;
+    } else if (itemProps.dataType === DataTypes.array && itemProps.dataFormat === DataTypes.entityReference) {
+        return <ArrayEntityProperty
+            id={index}
+            index={index}
+            {...itemProps}
+            key={key}
         />;
     } else if (itemProps.dataType === DataTypes.objectReference) {
         return <JsonProperty
