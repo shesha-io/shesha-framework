@@ -39,7 +39,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const isFormSettings = formSettings?.isSettingsForm;
     const [finalStyle, setFinalStyle] = useState<React.CSSProperties>({});
-    const [headerFinalStyle, setCardFinalStyle] = useState<React.CSSProperties>({});
+    const [headerFinalStyle, setHeaderFinalStyle] = useState<React.CSSProperties>({});
 
     const {
       label,
@@ -109,7 +109,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         const backgroundStyle = await getBackgroundStyle(background, getBodyStyle, storedImageUrl);
         const headerBackgroundStyle = await getBackgroundStyle(headerBackground, getHeaderStyle, headerStoredImageUrl);
 
-        setCardFinalStyle({ ...headerBackgroundStyle, ...headerStyle });
+        setHeaderFinalStyle({ ...headerBackgroundStyle, ...headerStyle });
         setFinalStyle({ ...backgroundStyle, ...style });
       };
 

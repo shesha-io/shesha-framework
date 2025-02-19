@@ -23,6 +23,7 @@ export const getSettings = () => {
                         title: 'Common',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
+                                inputType: 'text',
                                 id: 'panel5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 propertyName: 'componentName',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
@@ -517,12 +518,12 @@ export const getSettings = () => {
                                                                     ],
                                                                 },
                                                                 {
-                                                                    type: 'dropdown',
+                                                                    type: 'radio',
                                                                     id: 'panelbackgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: repeatOptions,
+                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })
@@ -968,12 +969,12 @@ export const getSettings = () => {
                                                                             dropdownOptions: positionOptions,
                                                                         },
                                                                         {
-                                                                            type: 'dropdown',
+                                                                            type: 'radio',
                                                                             id: nanoid(),
                                                                             label: "Repeat",
                                                                             hideLabel: true,
                                                                             propertyName: "headerStyles.background.repeat",
-                                                                            dropdownOptions: repeatOptions,
+                                                                            buttonGroupOptions: repeatOptions,
                                                                         }
                                                                     ]
                                                                 })
