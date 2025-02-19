@@ -75,7 +75,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'hidden',
-                      label: 'Hidden',
+                      label: 'Hide',
                       size: 'small',
                       jsSetting: true,
                     }
