@@ -337,7 +337,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
     .addConfigurableActionConfigurator({
       id: 'ca210f0c-ac55-4b33-a7f5-be17cb3eeda5',
       propertyName: 'onBeforeRenderActionConfiguration',
-      label: 'Action configuration',
+      label: 'Action Configuration',
       hidden: false,
       validate: {},
       settingsValidationErrors: [],
@@ -372,7 +372,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       parentId: 'root',
       hidden: false,
       description:
-        'Enter custom visibility code.  You must return true to show the component. ' + 
+        'Enter custom visibility code.  You must return true to show the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
@@ -405,7 +405,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       hidden: false,
       customEnabled: null,
       description:
-        'Enter custom enabled code.  You must return true to enable the component. ' + 
+        'Enter custom enabled code.  You must return true to enable the component. ' +
         'The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
