@@ -16,7 +16,6 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { defaultStyles } from './utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { ConfigurableFormItem } from '@/components';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleType {
   className?: string;
