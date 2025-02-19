@@ -50,6 +50,7 @@ export const getSettings = (data: IRateProps) => {
                     id: nanoid(),
                     propertyName: 'count',
                     label: 'Max Rating',
+                    jsSetting: true,
                   },
                     {
                       type: 'iconPicker',
@@ -84,7 +85,7 @@ export const getSettings = (data: IRateProps) => {
                       type: 'editModeSelector',
                       id: nanoid(),
                       propertyName: 'editMode',
-                      label: 'Edit mode',
+                      label: 'Edit Mode',
                       size: 'small',
                       jsSetting: true,
                     },
@@ -92,8 +93,9 @@ export const getSettings = (data: IRateProps) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'hidden',
-                      label: 'Hidden',
+                      label: 'Hide',
                       size: 'small',
+                      defaultValue: 'inherit',
                       jsSetting: true,
                     }
                   ]
