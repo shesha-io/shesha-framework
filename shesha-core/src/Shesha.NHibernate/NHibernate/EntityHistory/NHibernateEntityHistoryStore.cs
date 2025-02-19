@@ -46,11 +46,14 @@ namespace Shesha.NHibernate.EntityHistory
                         entityChange.PropertyChanges = null;
                         entityChange.EntityChangeSetId = csId;
                         var cId = await _changesRepository.InsertAndGetIdAsync(entityChange);
-                        foreach (var propChange in propChanges)
+                        if (propChanges != null) 
                         {
-                            propChange.EntityChangeId = cId;
-                            var pId = await _propChangesRepository.InsertAndGetIdAsync(propChange);
-                        }
+                            foreach (var propChange in propChanges)
+                            {
+                                propChange.EntityChangeId = cId;
+                                var pId = await _propChangesRepository.InsertAndGetIdAsync(propChange);
+                            }
+                        }                        
                     }
                 }
             }
@@ -81,11 +84,15 @@ namespace Shesha.NHibernate.EntityHistory
                         entityChange.EntityId = entityChange.EntityEntry.GetType().GetProperty(nameof(IEntity.Id))?.GetValue(entityChange.EntityEntry)?.ToString();
                     }
                     var cId = _changesRepository.InsertAndGetId(entityChange);
-                    foreach (var propChange in propChanges)
+
+                    if (propChanges != null) 
                     {
-                        propChange.EntityChangeId = cId;
-                        var pId = _propChangesRepository.InsertAndGetId(propChange);
-                    }
+                        foreach (var propChange in propChanges)
+                        {
+                            propChange.EntityChangeId = cId;
+                            var pId = _propChangesRepository.InsertAndGetId(propChange);
+                        }
+                    }                    
                 }
             }
             catch (Exception e)
