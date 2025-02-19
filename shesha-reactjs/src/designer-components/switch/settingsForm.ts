@@ -121,7 +121,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                               inputType: 'dropdown',
                               propertyName: 'size',
                               label: 'Size',
-                              width: '150px',
+                              width: '100%',
                               hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
                               dropdownOptions: [
                                 { value: 'small', label: 'Small' },
