@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using Abp.Dependency;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Uow;
 using Abp.EntityHistory;
 using Abp.Events.Bus.Entities;
 using Abp.Extensions;
@@ -16,6 +13,8 @@ using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
 using Shesha.Services;
+using System;
+using System.Linq.Expressions;
 
 namespace Shesha.NHibernate.EntityHistory
 {
@@ -155,7 +154,10 @@ namespace Shesha.NHibernate.EntityHistory
             {
                 var uow = StaticContext.IocManager.Resolve<IUnitOfWorkManager>().Current;
                 var entityHistoryHelper = (uow as NhUnitOfWork)?.EntityHistoryHelper;
-                var session = StaticContext.IocManager.Resolve<ISessionFactory>().GetCurrentSession();
+                var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
+
+                using var sessionContext = StaticContext.IocManager.Resolve<INhCurrentSessionContext>();
+                var session = sessionContext.Session;
 
                 var abpSession = StaticContext.IocManager.Resolve<IAbpSession>();
 
@@ -195,5 +197,4 @@ namespace Shesha.NHibernate.EntityHistory
             }
         }
     }
-
 }

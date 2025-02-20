@@ -5,7 +5,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '@/components/listEditor';
-import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@/index';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 export interface IContainerRenderArgs {
   id?: string;
@@ -21,8 +21,7 @@ export interface ISidebarMenuGroupProps {
 
 export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, containerRendering }) => {
   const { styles } = useStyles();
-  const allData = useAvailableConstantsData();
-  const actialItem = useDeepCompareMemo(() => getActualModel(item, allData), [item, {...allData}]); // use spread to get the values of the ObservableProxy fields
+  const actialItem = useActualContextData(item);
   return (
     <>
       {actialItem.icon && <ShaIcon iconName={actialItem.icon as IconType} />}

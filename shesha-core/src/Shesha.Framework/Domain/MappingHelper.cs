@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json.Serialization;
-using Abp.Domain.Entities;
-using Newtonsoft.Json;
+﻿using Abp.Domain.Entities;
 using PluralizeService.Core;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Conventions;
@@ -16,11 +7,20 @@ using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Reflection;
 
 namespace Shesha.Domain
 {
     public static class MappingHelper
     {
+        public static readonly string AutoGeneratorSchema = "auto_gen";
+
         public static readonly ConcurrentDictionary<string, string> Prefixes = new ConcurrentDictionary<string, string>();
 
         public static void AddDatabasePrefixForAssembly(Assembly assembly, string databasePrefix)
@@ -100,6 +100,23 @@ namespace Shesha.Domain
             else
                 return GetTableName(GetRootEntity(entityType));
         }
+        
+        public static (Type parentType, Type parentIdType, Type childType, Type childIdType) GetManyToManyTableData(MemberInfo property)
+        {
+            var parentType = property.DeclaringType;
+            var parentIdType = parentType.GetProperty("Id")?.PropertyType;
+            if (parentIdType == null)
+                throw new NullReferenceException($"'Id' property not found for '{parentType.FullName}'");
+
+            if (!property.GetPropertyOrFieldType().IsGenericType)
+                throw new NullReferenceException($"'{property.Name}' of '{parentType.FullName}' is not a generic list");
+
+            var childType = property.GetPropertyOrFieldType().GetGenericArguments()[0];
+            var childIdType = childType.GetProperty("Id")?.PropertyType;
+            if (childIdType == null)
+                throw new NullReferenceException($"'Id' property not found for '{childType.FullName}'");
+            return (parentType, parentIdType, childType, childIdType);
+        }
 
         /// <summary>
         /// Returns schema name for the specified entity type
@@ -175,7 +192,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Get column name for the specified entity type
         /// </summary>
-        public static string GetNameForColumn(Type type, string prefix, string name, string suffix) 
+        public static string GetNameForColumn(Type type, string prefix, string name, string suffix)
         {
             var conventions = GetNamingConventions(type);
             return conventions.GetColumnName(prefix, name, suffix);
@@ -183,16 +200,16 @@ namespace Shesha.Domain
 
         private static INamingConventions GetNamingConventions(MemberInfo memberInfo)
         {
-            return GetNamingConventions(memberInfo.ReflectedType);            
+            return GetNamingConventions(memberInfo.ReflectedType);
         }
 
-        private static INamingConventions GetNamingConventions(Type type) 
+        private static INamingConventions GetNamingConventions(Type type)
         {
             var conventionsType = type.GetAttribute<NamingConventionsAttribute>(false)?.ConventionsType ?? typeof(DefaultNamingConventions);
             return Activator.CreateInstance(conventionsType) as INamingConventions;
         }
 
-        private static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
+        public static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
         {
             if (propertyOrField.MemberType == MemberTypes.Property)
             {
@@ -234,7 +251,7 @@ namespace Shesha.Domain
                         return GetTablePrefix(type);
                 }
             }
-            
+
             return "";
         }
 
@@ -338,7 +355,7 @@ namespace Shesha.Domain
         /// </summary>
         public static bool IsListType(Type type)
         {
-            return type.IsGenericType 
+            return type.IsGenericType
                 && (
                     type.GetGenericTypeDefinition().IsAssignableTo(typeof(IList<>))
                     || type.GetGenericTypeDefinition().IsAssignableTo(typeof(List<>))

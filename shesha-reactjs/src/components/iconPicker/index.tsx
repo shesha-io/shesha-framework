@@ -81,7 +81,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   });
 
   useEffect(() => {
-    setLocalSelectedIcon(typeof value === 'object' ? value.props.iconName : value || defaultValue);
+    setLocalSelectedIcon(typeof value === 'object' ? value?.props?.iconName : value || defaultValue);
     onIconChange(<ShaIcon iconName={defaultValue} style={{ fontSize: 30 }} {...props} />, defaultValue);
   }, [defaultValue, value]);
 

@@ -110,7 +110,10 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 if (fileVersion == null)
                     throw new Exception("File version not found");
 
+#pragma warning disable IDISP001 // Dispose created
                 var fileContentStream = await _storedFileService.GetStreamAsync(fileVersion);
+#pragma warning restore IDISP001 // Dispose created
+
                 await _storedFileService.MarkDownloadedAsync(fileVersion);
 
                 result = new FileStreamResult(fileContentStream, fileVersion.FileType.GetContentType())
@@ -126,7 +129,10 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 if (!File.Exists(jobExecution.LogFilePath))
                     throw new EntityNotFoundException("Log file is missing on disk");
 
+#pragma warning disable IDISP001 // Dispose created
                 var stream = new FileStream(jobExecution.LogFilePath, FileMode.Open);
+#pragma warning restore IDISP001 // Dispose created
+
                 var fileName = Path.GetFileName(jobExecution.LogFilePath);
                 var contentType = _mimeMappingService.Map(fileName);
 

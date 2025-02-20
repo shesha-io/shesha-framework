@@ -74,7 +74,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const { removeModal } = useDynamicModals();
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
-
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
 

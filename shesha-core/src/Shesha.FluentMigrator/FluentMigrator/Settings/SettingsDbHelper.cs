@@ -22,8 +22,6 @@ namespace Shesha.FluentMigrator.Settings
 
             // get module by name
             var moduleId = GetOrCreateModuleId(module);
-            if (moduleId == null)
-                throw new SheshaMigrationException($"Failed to get or create module with name `{module}`");
 
             ExecuteNonQuery($@"INSERT INTO ""Frwk_ConfigurationItems""
            (""Id""

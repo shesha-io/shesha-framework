@@ -47,7 +47,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   return (
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>
-      <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={formFlatMarkup} isScope >
+      <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={formFlatMarkup} formApi={shaForm.getPublicFormApi()} isScope >
         <ConditionalMetadataProvider modelType={formSettings?.modelType}>
           <FormFlatMarkupProvider markup={formFlatMarkup}>
             <FormProvider

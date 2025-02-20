@@ -73,13 +73,16 @@ namespace Shesha.Scheduler
                     .ToListAsync();
 
                 // remove all unused triggers
-                var allRecurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
-                var jobsToRemove = allRecurringJobs.Where(j => activeTriggers.All(t => t.Id.ToString() != j.Id)).ToList();
-
-                foreach (var jobDto in jobsToRemove)
+                using (var storageConnection = JobStorage.Current.GetConnection()) 
                 {
-                    RecurringJob.RemoveIfExists(jobDto.Id);
-                }
+                    var allRecurringJobs = storageConnection.GetRecurringJobs();
+                    var jobsToRemove = allRecurringJobs.Where(j => activeTriggers.All(t => t.Id.ToString() != j.Id)).ToList();
+
+                    foreach (var jobDto in jobsToRemove)
+                    {
+                        RecurringJob.RemoveIfExists(jobDto.Id);
+                    }
+                }                
 
                 // update existing triggers
                 foreach (var trigger in activeTriggers)

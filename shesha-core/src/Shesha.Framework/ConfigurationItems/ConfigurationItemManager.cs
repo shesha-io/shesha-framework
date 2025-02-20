@@ -2,6 +2,7 @@
 using Abp.Domain.Uow;
 using Abp.ObjectMapping;
 using Abp.Runtime.Validation;
+using Abp.UI;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
@@ -40,10 +41,28 @@ namespace Shesha.ConfigurationItems
             UnitOfWorkManager = unitOfWorkManager;
         }
 
+        private Dictionary<ConfigurationItemVersionStatus, List<ConfigurationItemVersionStatus>> AllowedTransition
+        {
+            get
+            {
+                return new Dictionary<ConfigurationItemVersionStatus, List<ConfigurationItemVersionStatus>>() {
+                    { ConfigurationItemVersionStatus.Ready, new() { ConfigurationItemVersionStatus.Draft } },
+                    { ConfigurationItemVersionStatus.Live, new() { ConfigurationItemVersionStatus.Draft, ConfigurationItemVersionStatus.Ready } },
+                    // TODO: review other transition rules
+                };
+            }
+        }
+
         public virtual async Task UpdateStatusAsync(TItem item, ConfigurationItemVersionStatus status)
         {
-            // todo: implement transition rules
-            // todo: cover transition rules by unit tests
+            if (item.VersionStatus == status)
+                return;
+
+            if (AllowedTransition.TryGetValue(status, out var transition))
+            {
+                if (!transition.Contains(item.VersionStatus))
+                    throw new AbpValidationException("Failed to update status", new List<ValidationResult> { new ValidationResult($"Item status cannot be updated from '{item.VersionStatus}' to '{status}'") });
+            }
 
             // mark previously published version as retired
             if (status == ConfigurationItemVersionStatus.Live)
@@ -74,7 +93,7 @@ namespace Shesha.ConfigurationItems
         public abstract Task<IConfigurationItemDto> MapToDtoAsync(TItem item);
 
         /// inheritedDoc
-        public virtual async Task CancelVersionAsync(TItem item) 
+        public virtual async Task CancelVersionAsync(TItem item)
         {
             item.VersionStatus = ConfigurationItemVersionStatus.Cancelled;
             await Repository.UpdateAsync(item);

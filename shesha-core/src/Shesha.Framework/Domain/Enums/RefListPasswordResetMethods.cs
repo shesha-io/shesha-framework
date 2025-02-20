@@ -8,6 +8,9 @@ namespace Shesha.Domain.Enums
     [Flags]
     public enum RefListPasswordResetMethods: long
     {
+        [Display(Name = "None")]
+        None = 0,
+
         [Display(Name = "Email Link")]
         EmailLink = 2,
 

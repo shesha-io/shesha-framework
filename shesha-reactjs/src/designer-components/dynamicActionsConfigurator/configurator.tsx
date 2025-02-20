@@ -10,7 +10,7 @@ import { ProviderSettingsEditor } from './providerSettingsEditor';
 export interface IDynamicActionsConfiguratorProps {
     value?: IDynamicActionsConfiguration;
     onChange?: (newValue: IDynamicActionsConfiguration) => void;
-    editorConfig: IDynamicActionsConfiguratorComponentProps;
+    editorConfig?: IDynamicActionsConfiguratorComponentProps;
     readOnly?: boolean;
 }
 

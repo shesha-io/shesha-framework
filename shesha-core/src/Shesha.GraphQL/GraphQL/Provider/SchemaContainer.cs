@@ -5,6 +5,7 @@ using Abp.Extensions;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using GraphQL.Types;
+using Shesha.Cache;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.GraphQL.Provider.Schemas;
@@ -16,35 +17,26 @@ using System.Threading.Tasks;
 
 namespace Shesha.GraphQL.Provider
 {
-    public class SchemaContainer : ISchemaContainer, ISingletonDependency, IEventHandler<EntityChangedEventData<EntityProperty>>
+    public class SchemaContainer : CacheHolder<string, ISchema>, ISchemaContainer, ISingletonDependency, IEventHandler<EntityChangedEventData<EntityProperty>>
     {
         private readonly ICacheManager _cacheManager;
         private readonly ITypeFinder _typeFinder;
         private readonly IServiceProvider _serviceProvider;
+        private readonly Schema _defaultSchema;
 
-        protected ISchema DefaultSchema { get; set; }
         /// <summary>
         /// Custom schemas
         /// </summary>
         protected Dictionary<string, ISchema> CustomSchemas { get; set; }
 
-        protected ITypedCache<string, ISchema> EntitySchemasCache
-        {
-            get
-            {
-                return _cacheManager.GetCache<string, ISchema>($"{this.GetType().Name}.{nameof(EntitySchemasCache)}");
-            }
-        }
-
         public SchemaContainer(
-            //IOptions<AbpGraphQLOptions> options,
             IServiceProvider serviceProvider,
             IEnumerable<ISchema> customSchemas,
             ITypeFinder typeFinder,
-            ICacheManager cacheManager)
+            ICacheManager cacheManager): base($"{nameof(SchemaContainer)}Cache", cacheManager)
         {
-            DefaultSchema = new Schema();
-            DefaultSchema.Query = new EmptyQuery();
+            _defaultSchema = new Schema();
+            _defaultSchema.Query = new EmptyQuery();
             _typeFinder = typeFinder;
             _cacheManager = cacheManager;
             _serviceProvider = serviceProvider;
@@ -60,7 +52,7 @@ namespace Shesha.GraphQL.Provider
             if (entityType == null)
                 return null;
 
-            return EntitySchemasCache.Get(schemaName, sn => GetEntitySchema(entityType, _serviceProvider));
+            return Cache.Get(schemaName, sn => GetEntitySchema(entityType, _serviceProvider));
         }
 
         private static ISchema GetEntitySchema(Type entityType, IServiceProvider serviceProvider) 
@@ -104,7 +96,7 @@ namespace Shesha.GraphQL.Provider
             }
             
             if (schema == null)
-                schema = defaultSchemaName != null ? CustomSchemas[defaultSchemaName] : DefaultSchema;
+                schema = defaultSchemaName != null ? CustomSchemas[defaultSchemaName] : _defaultSchema;
 
             return Task.FromResult(schema);
         }
@@ -114,12 +106,18 @@ namespace Shesha.GraphQL.Provider
             if (eventData.Entity?.EntityConfig == null)
                 return;
 
-            EntitySchemasCache.Remove(GetEntitySchemaName(eventData.Entity.EntityConfig.ClassName));
+            Cache.Remove(GetEntitySchemaName(eventData.Entity.EntityConfig.ClassName));
         }
 
         public void RegisterCustomSchema(string name, ISchema schema)
         {
             CustomSchemas[name] = schema;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _defaultSchema?.Dispose();
         }
     }
 }
