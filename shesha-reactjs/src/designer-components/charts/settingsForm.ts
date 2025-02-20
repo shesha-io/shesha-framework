@@ -563,7 +563,7 @@ export const getSettings = (data: any) => {
                 .addCollapsiblePanel({
                   id: dataSettingsForUrlId,
                   propertyName: 'dataSettingsForUrl',
-                  parentId: 'root',
+                  parentId: dataTabId,
                   label: 'Data Settings (URL)',
                   labelAlign: "left",
                   expandIconPosition: "start",
@@ -584,7 +584,7 @@ export const getSettings = (data: any) => {
                           label: 'URL',
                           description: 'The URL you want to use for the chart',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           hidden: false,
                           validate: { required: true },
                         })
@@ -593,7 +593,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'axisProperty',
                           label: 'Axis label',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           isDynamic: false,
                           description: 'Label for the axis property',
                           validate: { required: false },
@@ -608,7 +608,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'valueProperty',
                           label: 'Value axis label',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           isDynamic: false,
                           description: 'Label for the value property',
                           validate: { required: false },
@@ -625,7 +625,7 @@ export const getSettings = (data: any) => {
                 .addCollapsiblePanel({
                   id: dataSettingsId,
                   propertyName: 'dataSettings',
-                  parentId: 'root',
+                  parentId: dataTabId,
                   label: 'Data Settings',
                   labelAlign: "left",
                   expandIconPosition: "start",
@@ -646,7 +646,7 @@ export const getSettings = (data: any) => {
                           label: 'Entity Type',
                           description: 'The entity type you want to use for the chart.',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           hidden: false,
                           dataSourceType: 'url',
                           validate: { required: true },
@@ -660,7 +660,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'axisProperty',
                           label: 'Axis Property',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           isDynamic: false,
                           description: 'The property to be used on the x-axis.',
                           validate: { required: true },
@@ -679,39 +679,46 @@ export const getSettings = (data: any) => {
                           propertyName: 'isAxisTimeSeries',
                           label: 'Is Axis Property Time Series?',
                           description: 'If the x-axis is a time series, check this box.',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           defaultValue: false,
                           validate: { required: true },
-
                         })
-                        .addSettingsInput({
+                        .addSettingsInputRow({
                           id: nanoid(),
-                          propertyName: 'timeSeriesFormat',
-                          parentId: 'root',
-                          label: 'Time Series Format',
-                          inputType: 'dropdown',
-                          dropdownOptions: [
-                            { label: 'Day', value: 'day' },
-                            { label: 'Month', value: 'month' },
-                            { label: 'Year', value: 'year' },
-                            { label: 'Day-Month', value: 'day-month' },
-                            { label: 'Day-Month-Year', value: 'day-month-year' },
-                            { label: 'Month-Year', value: 'month-year' },
-                          ],
-                          // validate: { required: true },
-                          defaultValue: 'day-month-year',
+                          parentId: dataTabId,
+                          inline: true,
                           hidden: {
-                            _code: "console.log(getSettingValue(data?.isAxisTimeSeries)); return !getSettingValue(data?.isAxisTimeSeries);",
+                            _code: "return !getSettingValue(data?.isAxisTimeSeries);",
                             _mode: "code",
                             _value: true
-                          } as IPropertySetting<boolean>,
+                          } as any,
+                          readOnly: false,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'timeSeriesFormat',
+                              parentId: dataTabId,
+                              label: 'Time Series Format',
+                              type: 'dropdown',
+                              dropdownOptions: [
+                                { label: 'Day', value: 'day' },
+                                { label: 'Month', value: 'month' },
+                                { label: 'Year', value: 'year' },
+                                { label: 'Day-Month', value: 'day-month' },
+                                { label: 'Day-Month-Year', value: 'day-month-year' },
+                                { label: 'Month-Year', value: 'month-year' },
+                              ],
+                              validate: { required: true },
+                              defaultValue: 'day-month-year',
+                            }
+                          ]
                         })
                         .addPropertyAutocomplete({
                           id: nanoid(),
                           propertyName: 'valueProperty',
                           label: 'Value Property',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           isDynamic: false,
                           description: 'This is the property that will be used to calculate the data and hence show on the depenedent y-axis.',
                           validate: { required: true },
@@ -729,7 +736,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'legendProperty',
                           label: 'Legend Property',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           hidden: {
                             _code: "return getSettingValue(data?.simpleOrPivot) === `simple`",
                             _mode: "code",
@@ -747,7 +754,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'orderBy',
                           label: 'Order By',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           hidden: false,
                           isDynamic: false,
                           description: 'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
@@ -758,7 +765,7 @@ export const getSettings = (data: any) => {
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'orderDirection',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           label: 'Order Direction',
                           inputType: 'dropdown',
                           dropdownOptions: [
@@ -777,7 +784,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'allowFilter',
                           label: 'Allow Chart Filter',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           description: 'Allow users to filter the chart data directly from the chart.',
                           defaultValue: false,
                         })
@@ -787,7 +794,7 @@ export const getSettings = (data: any) => {
                           label: 'Filter Property list',
                           labelAlign: 'right',
                           mode: "multiple",
-                          parentId: 'root',
+                          parentId: dataTabId,
                           isDynamic: true,
                           description: 'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
                           modelType: '{{data.entityType}}',
@@ -802,7 +809,7 @@ export const getSettings = (data: any) => {
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'aggregationMethod',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           label: 'Aggregation Method',
                           inputType: 'dropdown',
                           dropdownOptions: [
@@ -820,7 +827,7 @@ export const getSettings = (data: any) => {
                           propertyName: 'filters',
                           label: 'Entity filter',
                           labelAlign: 'right',
-                          parentId: 'root',
+                          parentId: dataTabId,
                           hidden: false,
                           isDynamic: false,
                           validate: {},
