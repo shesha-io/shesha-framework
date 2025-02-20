@@ -77,7 +77,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
       onFinish={onSave}
-      markup={markup}
+      markup={newMarkUp as FormMarkup}
       cacheKey={cacheKey}
       initialValues={model}
       onValuesChange={onValuesChange}
