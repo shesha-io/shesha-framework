@@ -220,7 +220,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           flex-wrap: nowrap !important;
           padding: 2px ${borderWidth ?? '2px'} !important;
           height: var(--container-height) !important;
-          width: max-content !important;
+          width: 100% !important;
           max-height: calc(var(--container-max-height) - 32px) !important;
           min-height: calc(var(--container-min-height) - 32px) !important;
           min-height: calc(var(--container-min-height) - 32px) !important;
