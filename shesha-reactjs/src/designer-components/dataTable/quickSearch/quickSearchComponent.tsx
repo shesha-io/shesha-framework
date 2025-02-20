@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo } from 'react';
+import React from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { GlobalTableFilter } from '@/components';
 import { IToolboxComponent } from '@/interfaces';
@@ -6,18 +6,13 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SearchOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { getSettings } from './tabbedSettingsForm';
+import { getSettings } from './settingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { Alert } from 'antd';
 import { useDataTableStore } from '@/index';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
-import { removeUndefinedProps } from '@/utils/object';
-import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {
   block?: boolean;
-  dimensions?: IDimensionsValue;
 }
 
 const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
@@ -25,23 +20,12 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block, hidden, dimensions, size: _size} }) => {
+  Factory: ({ model: { block, hidden } }) => {
     const store = useDataTableStore(false);
-
-    const size = useMemo(() => _size, [_size]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...dimensionsStyles,
-    });
-    const finalStyle = removeUndefinedProps({ ...additionalStyles });
-
     return hidden 
       ? null 
       : store 
-        ? <GlobalTableFilter block={block} style={finalStyle} searchProps={{
-          size
-        }} />
+        ? <GlobalTableFilter block={block} />
         : <Alert
           className="sha-designer-warning"
           message="Quick Search must be used within a Data Table Context"
@@ -52,7 +36,6 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     return {
       ...model,
       items: [],
-      size: 'small',
     };
   },
   migrator: (m) =>
@@ -60,7 +43,6 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
       .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IQuickSearchComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
-      .add<IQuickSearchComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, { size: 'small' }) }))
   ,
   settingsFormMarkup: (context) => getSettings(context),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

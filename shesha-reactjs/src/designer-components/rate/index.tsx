@@ -2,7 +2,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import React from 'react';
 import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
-import { getSettings } from './settingsForm';
+import { getSettings } from './settings';
 import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';

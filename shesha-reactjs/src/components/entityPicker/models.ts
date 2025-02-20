@@ -42,7 +42,7 @@ export interface IEntityPickerState {
 
 export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onDblClick'> {
   formId?: FormIdentifier;
-  hideBorder?: boolean;
+
   onChange?: (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[], data: IAnyObject) => void;
   onSelect?: (data: IAnyObject) => void;
   value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;

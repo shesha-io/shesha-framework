@@ -24,7 +24,6 @@ export interface IConfigurableFormItemProps {
   customVisibility?: string;
   wrapperCol?: ColProps;
   labelCol?: ColProps;
-  hidden?: boolean;
 }
 
 export interface IConfigurableFormItem_FormProps {
@@ -112,7 +111,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const { hideLabel, hidden } = model;
+  const { hideLabel } = model;
 
   const formItemProps: FormItemProps = {
     className: classNames(className),
@@ -125,11 +124,8 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     rules: model.hidden ? [] : getValidationRules(model, { formData }),
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
-    //layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
-
-  if (hidden) return null;
 
   if (typeof children === 'function') {
     if (model.context) {

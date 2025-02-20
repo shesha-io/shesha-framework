@@ -5,14 +5,14 @@ import ConfigurableButton from "@/designer-components/button/configurableButton"
 import { useTheme } from "@/index";
 import { useStyles } from "./styles";
 import { fadeColor } from "@/providers/refList/provider/utils";
-import { IChevronButton, IChevronControlProps } from "./models";
+import { IChevronButton, IChevronControlProps} from "./models";
 import classNames from "classnames";
-import { addPx } from "@/designer-components/_settings/utils";
+import { addPx } from "@/designer-components/button/util";
 
 export const ChevronControl: FC<IChevronControlProps> = (props) => {
     const { value, activeColor, fontColor, showIcons, colorSource, items, width, height, fontSize } = props;
-    const { styles } = useStyles({ height });
-    const [form] = Form.useForm();
+    const { styles } = useStyles({height});
+    const [ form ] = Form.useForm();
     const { theme } = useTheme();
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
@@ -32,7 +32,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
             }
         }
 
-        const newStyles: CSSProperties = {
+        const newStyles: CSSProperties= {
             color: fontColor,
             backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource), 70),
             clipPath: 'polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%)',
@@ -64,39 +64,39 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     useEffect(() => {
         const container = containerRef.current;
         const handleScroll = () => {
-            setShowLeftArrow(container.scrollLeft > 0);
-            setShowRightArrow(
-                container.scrollLeft < container.scrollWidth - container.clientWidth
-            );
+          setShowLeftArrow(container.scrollLeft > 0);
+          setShowRightArrow(
+            container.scrollLeft < container.scrollWidth - container.clientWidth
+          );
         };
-
+    
         container.addEventListener('scroll', handleScroll);
         handleScroll(); // Call once to set initial state
-
+    
         return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
     const scroll = (e, scrollOffset: number) => {
         e.preventDefault();
         containerRef.current.scrollLeft += scrollOffset;
-    };
+      };
 
 
     return (
         <div className={styles.pipelineContainer}>
             {showLeftArrow && (
                 <Button onClick={(e) => scroll(e, -100)} className={classNames(styles.arrowButton, styles.leftArrow)}>
-                    &#8249;
+                &#8249;
                 </Button>
             )}
             <div ref={containerRef} className={styles.pipelineStages}>
-                {items?.map((item) => {
-                    return renderButton(item, item.id, form);
-                })}
+            {items?.map((item) => {
+              return renderButton(item, item.id, form);
+            })}
             </div>
             {showRightArrow && (
                 <Button onClick={(e) => scroll(e, 100)} className={classNames(styles.arrowButton, styles.rightArrow)}>
-                    &#8250;
+                &#8250;
                 </Button>
             )}
         </div>

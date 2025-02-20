@@ -26,7 +26,6 @@ interface IProps {
   readonly formProps?: FormProps;
   readonly formItemProps?: FormItemProps;
   readonly formItemConfirmProps?: FormItemProps;
-  readonly style?: React.CSSProperties;
 }
 
 const FormItem = Form.Item;
@@ -46,7 +45,6 @@ const PasswordInputCombo: FC<IProps> = ({
   formProps,
   formItemProps,
   formItemConfirmProps,
-  style
 }) => {
   useEffect(() => isPasswordOk(isSamePassword(newPassword, repeatPassword, passwordLength)), [
     newPassword,
@@ -67,7 +65,7 @@ const PasswordInputCombo: FC<IProps> = ({
         trigger="focus"
       >
         <FormItem {...formItemProps} {...passwordValidations(newPassword, errorMessage, passwordLength)}>
-          <Password {...inputProps} placeholder={placeholder} value={newPassword} onChange={onPasswordChange} style={style} />
+          <Password {...inputProps} placeholder={placeholder} value={newPassword} onChange={onPasswordChange} />
         </FormItem>
       </Popover>
 
@@ -84,7 +82,6 @@ const PasswordInputCombo: FC<IProps> = ({
             {...inputProps}
             placeholder={confirmPlaceholder}
             value={repeatPassword}
-            style={style}
             onChange={onConfirmPasswordChange}
           />
         </FormItem>

@@ -25,7 +25,7 @@ const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
   Factory: ({ model: passedModel }) => {
     const { size, ...model } = passedModel;
 
-    return model.hidden ? null : (
+    return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => <Box value={value} onChange={onChange} readOnly={model.readOnly} />}
       </ConfigurableFormItem>

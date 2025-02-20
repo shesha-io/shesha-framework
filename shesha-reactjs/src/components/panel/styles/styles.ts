@@ -5,17 +5,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
 
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
-  const overflow = "y-overflow";
 
   const shaCollapsiblePanel = cx("sha-collapsible-panel", css`
       &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
-      }
-
-      &.${overflow} {
-        .${prefixCls}-collapse-content-box {
-          overflow-y: auto;  
-        }
       }
 
       &.${prefixCls}-collapse-icon-position-left {
@@ -42,6 +35,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
           > .${prefixCls}-collapse-header {
             border-top-left-radius: ${borderRadius ?? token.borderRadiusLG}px;
             border-top-right-radius: ${borderRadius ?? token.borderRadiusLG}px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
             background-color: #f0f0f0;
             margin:'auto 0px';
             min-height: 50px;
@@ -130,6 +125,5 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { borderRa
     shaCollapsiblePanel,
     noContentPadding,
     hideWhenEmpty,
-    overflow
   };
 });

@@ -5,8 +5,8 @@ export interface IItemProps {
 }
 
 export interface ILabelValueEditorPropsBase {
-    labelTitle?: string;
-    labelName?: string;
-    valueTitle?: string;
-    valueName?: string;
+    labelTitle: string;
+    labelName: string;
+    valueTitle: string;
+    valueName: string;
 }

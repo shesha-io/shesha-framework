@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { ConfigProvider, Pagination } from 'antd';
+import { Pagination } from 'antd';
 import { useMedia } from 'react-use';
 
 export interface ITablePagerBaseProps {
@@ -29,7 +29,6 @@ export interface ITablePagerBaseProps {
 
   /** A function to change  */
   changePageSize: (size: number) => void;
-  style?: any;
 }
 
 export const TablePaging: FC<ITablePagerBaseProps> = ({
@@ -42,7 +41,6 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   showTotalItems = true,
   setCurrentPage,
   changePageSize,
-  style,
 }) => {
   const isWider = useMedia('(min-width: 1202px)');
 
@@ -71,31 +69,19 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   if (!isWider) return null;
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Pagination: {
-            colorText: style.color,
-            fontWeightStrong: style.fontWeight,
-          },
-        },
-      }}
-    >
-      <Pagination
-        style={style}
-        size="small"
-        total={totalRows}
-        pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
-        current={currentPage}
-        pageSize={selectedPageSize}
-        showSizeChanger={showSizeChanger}
-        onChange={onPageNumberChange}
-        onShowSizeChange={onShowSizeChange}
-        showLessItems
-        disabled={disabled}
-        showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
-      />
-    </ConfigProvider>
+    <Pagination
+      size="small"
+      total={totalRows}
+      pageSizeOptions={(pageSizeOptions || []).map(s => `${s}`)}
+      current={currentPage}
+      pageSize={selectedPageSize}
+      showSizeChanger={showSizeChanger}
+      onChange={onPageNumberChange}
+      onShowSizeChange={onShowSizeChange}
+      showLessItems
+      disabled={disabled}
+      showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
+    />
   );
 };
 

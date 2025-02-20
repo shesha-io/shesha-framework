@@ -1,18 +1,19 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { IconType } from '@/components';
+import { CSSProperties } from 'styled-components';
 
 export type TextType = 'text' | 'password';
 
 export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
+  desktop?: CSSProperties;
+  tablet?: CSSProperties;
+  mobile?: CSSProperties;
   placeholder?: string;
   prefix?: string;
   suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
+  suffixIcon?: string;
+  prefixIcon?: string;
   initialValue?: string;
+  passEmptyStringByDefault?: boolean;
   textType?: TextType;
-  desktop?: IInputStyles;
-  mobile?: IInputStyles;
-  tablet?: IInputStyles;
   spellCheck?: boolean;
 }

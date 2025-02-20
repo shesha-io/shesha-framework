@@ -2,7 +2,7 @@ import { FormItemProps, FormProps, InputProps } from 'antd';
 import React, { FC, useState } from 'react';
 import PasswordInputCombo from '@/components/passwordInputCombo';
 
-export interface IProps {
+interface IProps {
   readonly confirmPlaceholder: string;
   readonly errorMessage?: string;
   readonly formItemProps: FormItemProps;
@@ -11,8 +11,6 @@ export interface IProps {
   readonly inputProps: InputProps;
   readonly passwordLength: number;
   readonly placeholder: string;
-  readonly style?: React.CSSProperties;
-  readonly className?: string;
 }
 
 interface IState {
@@ -34,7 +32,6 @@ export const PasswordCombo: FC<IProps> = ({
   formItemConfirmProps,
   formProps,
   passwordLength,
-  style
 }) => {
   const [state, setState] = useState<IState>(INIT_STATE);
   const { newPassword, repeatPassword } = state;
@@ -57,7 +54,6 @@ export const PasswordCombo: FC<IProps> = ({
       passwordLength={passwordLength}
       errorMessage={errorMessage}
       isPasswordOk={_e => { /*nop*/ }}
-      style={style}
     />
   );
 };

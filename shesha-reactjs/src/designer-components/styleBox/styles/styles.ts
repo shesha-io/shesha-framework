@@ -23,9 +23,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const title = "title";
 
   const shaStyleBox = cx("sha-style-box", css`
-        height: 155px;
-        overflow: auto;
-        width: 240px;
+        height: 200px;
+        overflow: hidden;
+        width: 320px;
       
         .${prefixCls}-input {
           border: none;
@@ -33,42 +33,38 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           padding: unset;
           position: absolute;
           text-align: center;
-          width: 25px;
+          width: 26px;
         }
       
         .${center} {
           border-radius: 5px;
           background-color: ${background};
-          height: 40px;
-          left: 35px;
+          height: 50px;
+          left: 45px;
           overflow: hidden;
           position: relative;
-          top: 30px;
-          width: 90px;
+          top: 35px;
+          width: 134px;
         }
       
         .${margTop} {
-          position: absolute;
           top: 2px;
-          left: 107px;
+          left: 147px;
         }
       
         .${margLeft} {
-          position: absolute;
           left: 2px;
-          top: 69px;
+          top: 89px;
         }
       
         .${margBottom} {
-          position: absolute;
           bottom: 2px;
-          left: 107px;
+          left: 147px;
         }
       
         .${margRight} {
-          position: absolute;
-          left: 205px;
-          top: 69px;
+          left: 292px;
+          top: 89px;
         }
       
         .${margin} {
@@ -79,48 +75,42 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
       
         .${paddTop} {
-          position: absolute;
           top: 2px;
-          left: 70px;
+          left: 99px;
         }
       
         .${paddLeft} {
-          position: absolute;
           left: 2px;
-          top: 39px;
+          top: 49px;
         }
       
         .${paddBottom} {
-          position: absolute;
           bottom: 2px;
-          left: 70px;
+          left: 99px;
         }
       
         .${paddRight} {
-          position: absolute;
-          left: 130px;
-          top: 39px;
+          left: 196px;
+          top: 49px;
         }
       
         .${padding} {
           border-radius: 5px;
           background-color: #fff;
-          height: 100px;
-          left: 38px;
+          height: 120px;
+          left: 48px;
           overflow: hidden;
           position: relative;
-          top: 30px;
-          width: 160px;
+          top: 40px;
+          width: 224px;
         }
       
         .${title} {
-          font-size: 12px;
+          font-size: 14px;
+          font-weight: bold;
           position: absolute;
           left: 8px;
           top: 5px;
-          max-height: 28px;
-          color: darkslategrey;
-          font-weight: 500;
         }
       
         input::-webkit-outer-spin-button,
@@ -137,7 +127,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         input:focus-visible {
           outline: unset;
         }
-
     `);
   return {
     shaStyleBox,

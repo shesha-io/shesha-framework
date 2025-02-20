@@ -4,23 +4,19 @@ import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { evaluateValue, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React, { CSSProperties, useMemo } from 'react';
+import React, { CSSProperties } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IStyleType, StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { ImageField, ImageSourceType } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
 import { useTheme } from 'antd-style';
-import { getSettings } from './settingsForm';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
+
 
 export interface IImageStyleProps {
   height?: number | string;
@@ -28,7 +24,6 @@ export interface IImageStyleProps {
   objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
   objectPosition?: string;
   filter?: string;
-  filterIntensity?: number;
   borderSize?: number;
   borderRadius?: number;
   borderType?: string;
@@ -37,7 +32,7 @@ export interface IImageStyleProps {
   opacity?: number;
   style?: string;
 }
-export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps, IStyleType {
+export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps {
   url?: string;
   storedFileId?: string;
   base64?: string;
@@ -48,15 +43,6 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem, IIma
   allowPreview?: boolean;
   allowedFileTypes?: string[];
   alt?: string;
-  opacity?: number;
-  sepia?: number;
-  grayscale?: number;
-  blur?: number;
-  brightness?: number;
-  contrast?: number;
-  saturate?: number;
-  hueRotate?: number;
-  invert?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -76,30 +62,21 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const theme = useTheme();
 
     const styling = JSON.parse(model.stylingBox || '{}');
-    const { width, height, filter, filterIntensity } = model;
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-    const jsStyle = getStyle(model.style, data);
-
-    const borderStyles = useMemo(() => getBorderStyle(model?.border, jsStyle), [model.border, jsStyle]);
-    const shadowStyles = useMemo(() => getShadowStyle(model?.shadow), [model.shadow]);
-    const filterUnit = filter === 'blur' ? 'px' : filter === 'hue-rotate' ? 'deg' : '%';
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       objectFit: model.objectFit,
       objectPosition: model.objectPosition,
-      filter: `${filter ? `${filter}(${filterIntensity || 0}${filterUnit})` : 'none'}`,
+      filter: model.filter,
       borderWidth: model.borderSize || 0,
       borderRadius: model.borderRadius,
       borderStyle: model.borderType || 'solid',
       borderColor: model.borderColor || theme.colorBorder,
       opacity: model.opacity,
-      ...borderStyles,
-      ...shadowStyles,
       ...stylingBoxAsCSS
     });
-
+    const jsStyle = getStyle(model.style, data);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
-
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
@@ -140,9 +117,9 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
             >
               <ImageField
                 allowedFileTypes={model?.allowedFileTypes}
+                height={model.height}
+                width={model.width}
                 imageSource={model.dataSource}
-                width={width}
-                height={height}
                 styles={finalStyle}
                 value={val}
                 readOnly={readonly}
@@ -170,7 +147,6 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         ...prev,
         url: Boolean(prev.url) ? { _mode: 'code', _code: prev.url } : null,
         storedFileId: Boolean(prev.storedFileId) ? { _mode: 'code', _code: prev.storedFileId } : null,
-        border: { selectedCorner: 'all', selectedSide: 'all', border: { all: { width: 0, style: 'solid', color: '#d9d9d9' } } },
       } as any;
     })
     .add<IImageProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
@@ -188,8 +164,8 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IImageProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
-  settingsFormMarkup: (data) => getSettings(data),
+  ,
+  settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 

@@ -67,8 +67,7 @@
     <None Remove="ConfigMigrations\package20241113_1549.shaconfig" />
     <None Remove="ConfigMigrations\package20241125_1110.shaconfig" />
     <None Remove="ConfigMigrations\package20241203_1422.shaconfig" />
-    <None Remove="ConfigMigrations\package20241205_1605.shaconfig" />
-
+    <None Remove="ConfigMigrations\package20241211_1520.shaconfig" />
     <None Remove="ConfigMigrations\package20241210_2046.shaconfig" />
     <None Remove="ConfigMigrations\package20241211_1616.shaconfig" />
     <None Remove="ConfigMigrations\package20241218_1705.shaconfig" />

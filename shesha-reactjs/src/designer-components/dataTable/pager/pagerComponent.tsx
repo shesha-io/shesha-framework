@@ -1,6 +1,6 @@
 import { ControlOutlined } from '@ant-design/icons';
 import { ITablePagerProps, TablePager } from '@/components';
-import React, { CSSProperties, useMemo } from 'react';
+import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -8,14 +8,10 @@ import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { pickStyleFromModel, useDataTableStore } from '@/index';
+import { useDataTableStore } from '@/index';
 import { Alert } from 'antd';
-import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { removeUndefinedProps } from '@/utils/object';
-import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
 
-export interface IPagerComponentProps extends Omit<ITablePagerProps, 'style'>, IConfigurableFormComponent {}
+export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent {}
 
 const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.pager',
@@ -24,27 +20,17 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   icon: <ControlOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
-    const font = model?.font;
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    if (model.hidden) return null;  
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    if (model.hidden) return null;
+    
+    return <TablePager {...model} />;
 
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...fontStyles,
-    });
-    return <TablePager {...model} style={additionalStyles} />;
-
-    return store ? (
-      <TablePager {...model} style={additionalStyles} />
-    ) : (
-      <Alert
+    return store 
+      ? <TablePager {...model} />
+      : <Alert
         className="sha-designer-warning"
         message="Table Pager must be used within a Data Table Context"
         type="warning"
-      />
-    );
+      />;
   },
   initModel: (model: IPagerComponentProps) => {
     return {
@@ -53,17 +39,15 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
       showTotalItems: true,
       items: [],
     };
-  },
-  migrator: (m) =>
-    m
-      .add<IPagerComponentProps>(0, (prev) => ({ ...prev }) as IPagerComponentProps)
-      .add(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IPagerComponentProps>(2, (prev) => migrateVisibility(prev))
-      .add<IPagerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<IPagerComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
-
-  settingsFormMarkup: (context) => getSettings(context),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  },  
+  migrator:  m => m
+    .add<IPagerComponentProps>(0, prev => ({...prev} as IPagerComponentProps))
+    .add(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IPagerComponentProps>(2, (prev) => migrateVisibility(prev))
+    .add<IPagerComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
+  settingsFormMarkup: context => getSettings(context),
+  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default PagerComponent;
