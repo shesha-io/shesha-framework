@@ -43,12 +43,6 @@ export const getSettings = (data: any) =>
               label: 'Configure Menu Buttons',
               parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
             })
-            .addDivider({
-              id: nanoid(),
-              dividerType: 'vertical',
-              type: 'divider',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-            })
             .addCheckbox({
               id: nanoid(),
               propertyName: 'showUserInfo',

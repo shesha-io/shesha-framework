@@ -1,6 +1,6 @@
 import { Key } from 'react';
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
-import { FormIdentifier, IInputStyles } from '@/providers';
+import { FormIdentifier } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { GroupingItem, ISortingItem } from '@/providers/dataTable/interfaces';
 
@@ -10,9 +10,8 @@ interface IQueryParamProp {
   value?: Key;
 }
 
-export interface IAutocompleteComponentProps extends IConfigurableFormComponent, IInputStyles {
-  entityTypeShortAlias?: string;
-  entityDisplayProperty?: string;
+export interface IAutocompleteComponentProps extends IConfigurableFormComponent {
+  entityType?: string;
   hideBorder?: boolean;
   dataSourceUrl?: string;
   dataSourceType: AutocompleteDataSourceType;
@@ -33,4 +32,22 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent,
   fontWeight?: string | number;
   stylingBox?: string;
   backgroundColor?: string;
+  queryParams?: IQueryParamProp[];
+  quickviewEnabled?: boolean;
+  quickviewFormPath?: FormIdentifier;
+  quickviewDisplayPropertyName?: string;
+  quickviewGetEntityUrl?: string;
+  quickviewWidth?: number;
+  displayPropName?: string;
+  fields?: string[];
+  valueFormat?: 'simple' | 'entityReference' | 'custom';
+  keyValueFunc?: string;
+  displayValueFunc?: string;
+  outcomeValueFunc?: string;
+  filterKeysFunc?: string;
+  sorting?: ISortingItem[];
+  grouping?: GroupingItem[];
+
+  // ToDo: AS need to review
+  allowFreeText?: boolean;
 }

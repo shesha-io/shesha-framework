@@ -1,14 +1,12 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { INumberFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
-import { IAutocompleteComponentProps } from './interfaces';
 
-export const getSettings = (data: IAutocompleteComponentProps) => {
-
+export const getSettings = (data: INumberFieldComponentProps) => {
     return {
-
         components: new DesignerToolbarSettings(data)
             .addSearchableTabs({
                 id: 'W_m7doMyCpCYwAYDfRh6I',
@@ -48,16 +46,16 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a83338',
+                                        type: 'text',
+                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
-                                        type: 'text',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
-                                        id: '8615d12f-6ea0-4b11-a1a1-6088c7160fd9',
                                         type: 'textArea',
+                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'description',
                                         label: 'Tooltip',
                                         jsSetting: true,
@@ -71,16 +69,16 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        id: '8615d12f-6ea0-4c21-a1a1-6088c7160fd9',
                                         type: 'editModeSelector',
+                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'editMode',
                                         label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
-                                        id: '8615d12f-6ea0-4b23-a1a1-6088c7160fd9',
                                         type: 'switch',
+                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'hidden',
                                         label: 'Hide',
                                         jsSetting: true,
@@ -88,292 +86,118 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                     },
                                 ],
                             })
-                            .addSettingsInput({
-                                id: '3be9da3f-f47e-59ae-b4c3-f5cc36e534d9',
-                                inputType: 'dropdown',
-                                propertyName: 'mode',
-                                label: 'Selection Mode',
-                                size: 'small',
-                                dropdownOptions: [
-                                    { value: 'single', label: 'Single' },
-                                    { value: 'multiple', label: 'Multiple' },
+                            .addSettingsInputRow({
+                                id: 'prefix-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                inputs: [
+                                    {
+                                        type: 'text',
+                                        id: 'prefix-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'prefix',
+                                        label: 'Prefix',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'iconPicker',
+                                        id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'prefixIcon',
+                                        label: 'Prefix Icon',
+                                        jsSetting: true,
+                                    },
                                 ],
-                                defaultValue: 'single',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
-                            .addSettingsInput({
-                                id: '3be9da3f-f47e-59ae-s4c3-f5cc36e534d9',
-                                inputType: 'switch',
-                                propertyName: 'disableSearch',
-                                label: 'Disable Search',
-                                size: 'small',
-                                defaultValue: false,
+                            .addSettingsInputRow({
+                                id: 'suffix-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                inputs: [
+                                    {
+                                        type: 'text',
+                                        id: 'suffix-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'suffix',
+                                        label: 'Suffix',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'iconPicker',
+                                        id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'suffixIcon',
+                                        label: 'Suffix Icon',
+                                        jsSetting: true,
+                                    },
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ]
                     },
                     {
                         key: '2',
-                        title: 'Data',
-                        id: '6eBJvoll3xtLJxdvOAlnB',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                propertyName: 'defaultValue',
-                                label: 'Default Value',
-                                size: 'small',
-                                jsSetting: true,
-                                inputType: "codeEditor",
-                                tooltip: "Enter default value for component. Multiple values are exposed.",
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
-                            })
-                            .addSettingsInput({
-                                id: 'Scip2BCqWk6HniFIJTwtA',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                label: "Data Source type",
-                                propertyName: "dataSourceType",
-                                inputType: "dropdown",
-                                size: "small",
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    {
-                                        value: "entitiesList",
-                                        label: "Entities List"
-                                    },
-                                    {
-                                        value: "url",
-                                        label: "Url"
-                                    },
-                                ]
-                            })
-                            .addContainer({
-                                id: 'ELxx5jarWvInJXJF5xHN2',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                propertyName: 'container1',
-                                label: 'Container1',
-                                labelAlign: 'right',
-                                hidden: {
-                                    _code: `return  getSettingValue(data.dataSourceType) !== 'url';`,
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                                direction: 'vertical',
-                                justifyContent: 'left',
-                                settingsValidationErrors: [],
-                                components: [...new DesignerToolbarSettings()
-                                    .addSettingsInput({
-                                        id: 'Scip2BCqWk6HniFIGHHtA',
-                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                        label: "Data Source Url",
-                                        propertyName: "dataSourceUrl",
-                                        inputType: "text",
-                                        size: "small",
-                                        jsSetting: true,
-                                    })
-                                    .addSettingsInput({
-                                        id: 'Scip2BCqWk6HniFIGHHtA',
-                                        parentId: '6eBGvoll3xtLJxdvOAlnB',
-                                        label: "Key Prop Name",
-                                        propertyName: "keyPropName",
-                                        inputType: "text",
-                                        size: "small",
-                                        jsSetting: true,
-                                    })
-                                    .addSettingsInput({
-                                        id: 'Scip2BCqWk7HniFIGHHtA',
-                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                        label: "Value Prop Name",
-                                        propertyName: "valuePropName",
-                                        inputType: "text",
-                                        size: "small",
-                                        jsSetting: true,
-                                    })
-                                    .addLabelValueEditor({
-                                        id: 'Sbip2BCqWL4HniFIGHwdQ',
-                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                        propertyName: 'queryParams',
-                                        label: 'Query Param',
-                                        labelName: 'param',
-                                        labelTitle: 'Param',
-                                        valueName: 'value',
-                                        valueTitle: 'Value',
-                                        mode: 'dialog',
-                                        version: 2
-                                    })
-                                    .toJson()
-                                ]
-
-                            })
-                            .addContainer({
-                                id: 'BZxx5jarWvInJXJF5xHN2',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                propertyName: 'container2',
-                                label: 'Container2',
-                                labelAlign: 'right',
-                                hidden: {
-                                    _code: `return  getSettingValue(data.dataSourceType) !== 'entitiesList';`,
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                                direction: 'vertical',
-                                justifyContent: 'left',
-                                settingsValidationErrors: [],
-                                components: [...new DesignerToolbarSettings()
-                                    .addSettingsInput({
-                                        id: 'Scip2BCqWk6HniFIGHHtB',
-                                        parentId: 'BZxx5jarWvInJXJF5xHN2',
-                                        label: "Entity Type",
-                                        dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
-                                        propertyName: "entityTypeShortAlias",
-                                        inputType: 'autocomplete',
-                                        size: "small",
-                                        jsSetting: true,
-                                    })
-                                    .addPropertyAutocomplete({
-                                        id: 'Scip2BCqWk8HniFIGHHtB',
-                                        propertyName: 'entityDisplayProperty',
-                                        label: 'Display Property',
-                                        parentId: 'BZxx5jarWvInJXJF5xHN2',
-                                        modelType: "{{data.entityTypeShortAlias}}",
-                                        isDynamic: false,
-                                        autoFillProps: false,
-                                        settingsValidationErrors: [],
-                                        hidden: {
-                                            _code: 'return !getSettingValue(data.entityTypeShortAlias);',
-                                            _mode: 'code',
-                                            _value: false
-                                        },
-                                        size: 'small',
-                                        validate: {
-                                            required: true,
-                                        }
-                                    })
-                                    .addQueryBuilder({
-                                        id: 'Scip2BCqWk6HniFIGHwtC',
-                                        parentId: 'BZxx5jarWvInJXJF5xHN2',
-                                        propertyName: 'filter',
-                                        label: 'Entity Filter',
-                                        isDynamic: true,
-                                        jsSetting: true,
-                                        validate: {},
-                                        hidden: false,
-                                        settingsValidationErrors: [],
-                                        modelType: "{{data.entityTypeShortAlias}}",
-                                        fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
-                                        version: 2
-                                    })
-                                    .toJson()
-                                ]
-
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                inputType: 'switch',
-                                propertyName: 'useRawValues',
-                                label: 'Use raw values',
-                                size: 'small',
-                                layout: 'horizontal',
-                                jsSetting: true,
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '3',
-                        title: 'Quickview',
-                        id: 's4gmBg31azZC0UjZjpfTm',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: '5be9da3f-f47e-59ae-s4c3-f5cc36e534d9',
-                                inputType: 'switch',
-                                propertyName: 'quickviewEnabled',
-                                label: 'Use Quickview',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                size: 'small',
-                                defaultValue: false,
-                            })
-                            .addFormAutocomplete({
-                                id: '49c6712b-7e91-4dab-9f11-4e7c5e6b6c74',
-                                propertyName: 'quickviewFormPath',
-                                label: 'Form Path',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                size: 'small',
-                                validate: {
-                                    required: false,
-                                },
-                                hidden: {
-                                    _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                            })
-                            .addSettingsInput({
-                                id: 'c6ec53eb-3bec-40d6-b1a1-687c5d1c3d1d',
-                                inputType: 'text',
-                                propertyName: 'quickviewGetEntityUrl',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                label: 'Get Entity Url',
-                                size: 'small',
-                                hidden: {
-                                    _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                                version: 5
-                            })
-                            .addSettingsInput({
-                                id: 'b0eeb8cb-d9ad-479e-a731-10d5909a50a2',
-                                inputType: 'text',
-                                propertyName: 'quickviewDisplayPropertyName',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                label: 'Display Property Name',
-                                size: 'small',
-                                hidden: {
-                                    _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                                version: 5
-                            })
-                            .addSettingsInput({
-                                id: 'd690a0b7-a9d3-4ab2-8843-9dcfbac08adc',
-                                inputType: 'text',
-                                propertyName: 'quickviewWidth',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                label: 'Width',
-                                size: 'small',
-                                hidden: {
-                                    _code: 'return !getSettingValue(data?.quickviewEnabled);',
-                                    _mode: 'code',
-                                    _value: false
-                                },
-                                version: 5
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '4',
                         title: 'Validation',
                         id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                inputType: 'switch',
                                 propertyName: 'validate.required',
                                 label: 'Required',
+                                inputType: 'switch',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
+                            .addSettingsInputRow({
+                                id: 'qOkkwAnHvKJ0vYXeXMLsd',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                inputs: [
+                                    {
+                                        type: 'number',
+                                        id: 'minValue-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.minValue',
+                                        label: 'Min Value',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'number',
+                                        id: 'maxValue-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.maxValue',
+                                        label: 'Max Value',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
+                            .addSettingsInputRow({
+                                id: 'Scip2BCqWk6HniFIJTgtA',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                inputs: [
+                                    {
+                                        type: 'text',
+                                        id: 'message-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.message',
+                                        label: 'Message',
+                                        size: 'small',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        type: 'codeEditor',
+                                        id: 'validator-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.validator',
+                                        label: 'Validator',
+                                        labelAlign: 'right',
+                                        tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
+                                    }
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
                             .toJson()
                         ]
                     },
                     {
-                        key: '5',
+                        key: '3',
                         title: 'Events',
                         id: 'Cc47W08MWrKdhoGqFKMI2',
                         components: [...new DesignerToolbarSettings()
@@ -387,11 +211,31 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
                                 parentId: 'Cc47W08MWrKdhoGqFKMI2'
                             })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                                inputType: 'codeEditor',
+                                propertyName: 'onFocusCustom',
+                                label: 'On Focus',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                            })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                                inputType: 'codeEditor',
+                                propertyName: 'onBlurCustom',
+                                label: 'On Blur',
+                                labelAlign: 'right',
+                                tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
+                            })
                             .toJson()
                         ]
                     },
                     {
-                        key: '6',
+                        key: '4',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [...new DesignerToolbarSettings()
@@ -499,7 +343,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 label: "Width",
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
-                                                                icon: "widthIcon",
+                                                                icon: "width",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                             },
@@ -510,7 +354,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.minWidth",
-                                                                icon: "minWidthIcon",
+                                                                icon: "minWidth",
                                                             },
                                                             {
                                                                 type: 'text',
@@ -519,7 +363,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.maxWidth",
-                                                                icon: "maxWidthIcon",
+                                                                icon: "maxWidth",
                                                             }
                                                         ]
                                                     })
@@ -535,7 +379,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 label: "Height",
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
-                                                                icon: "heightIcon",
+                                                                icon: "height",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
@@ -545,7 +389,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.minHeight",
-                                                                icon: "minHeightIcon",
+                                                                icon: "minHeight",
                                                             },
                                                             {
                                                                 type: 'text',
@@ -554,7 +398,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.maxHeight",
-                                                                icon: "maxHeightIcon",
+                                                                icon: "maxHeight",
                                                             }
                                                         ]
                                                     })
@@ -882,7 +726,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: "offsetHorizontalIcon",
+                                                                icon: "offsetHorizontal",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
@@ -891,7 +735,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: 'offsetVerticalIcon',
+                                                                icon: 'offsetVertical',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
@@ -900,7 +744,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 label: 'Blur',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: 'blurIcon',
+                                                                icon: 'blur',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
@@ -909,7 +753,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                                                                 label: 'Spread',
                                                                 hideLabel: true,
                                                                 width: 60,
-                                                                icon: 'spreadIcon',
+                                                                icon: 'spread',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
@@ -973,7 +817,7 @@ export const getSettings = (data: IAutocompleteComponentProps) => {
                             }).toJson()]
                     },
                     {
-                        key: '7',
+                        key: '5',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()
