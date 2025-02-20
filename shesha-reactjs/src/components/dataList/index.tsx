@@ -116,7 +116,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const allData = useAvailableConstantsData();
   const { configurationItemMode } = useAppConfigurator();
-  const { executeAction } = useConfigurableActionDispatcher();
+  const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
+
+  const dynamicContext = useActionDynamicContext(props.dblClickActionConfiguration);
 
   const computedGroupStyle = getStyle(groupStyle, allData.data) ?? {};
 
@@ -327,6 +329,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         const evaluationContext = {
           ...allData,
           selectedRow: item,
+          ...dynamicContext
         };
         executeAction({
           actionConfiguration: props.dblClickActionConfiguration,

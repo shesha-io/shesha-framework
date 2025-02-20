@@ -36,7 +36,7 @@ using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
 namespace Shesha.Users
 {
-    [AbpAuthorize(PermissionNames.Pages_Users)]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, PermissionNames.Pages_Users)]
 
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
@@ -102,7 +102,7 @@ namespace Shesha.Users
                 CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return MapToEntityDto(user);
         }
@@ -132,7 +132,7 @@ namespace Shesha.Users
         }
 
         [HttpPost]
-        public async Task<bool> InactivateUser(long userId)
+        public async Task<bool> InactivateUserAsync(long userId)
         {
             CheckUpdatePermission();
 
@@ -149,7 +149,7 @@ namespace Shesha.Users
         }
 
         [HttpPost]
-        public async Task<bool> ActivateUser(long userId)
+        public async Task<bool> ActivateUserAsync(long userId)
         {
             CheckUpdatePermission();
 
@@ -165,13 +165,13 @@ namespace Shesha.Users
             return true;
         }
 
-        public async Task<ListResultDto<RoleDto>> GetRoles()
+        public async Task<ListResultDto<RoleDto>> GetRolesAsync()
         {
             var roles = await _roleRepository.GetAllListAsync();
             return new ListResultDto<RoleDto>(ObjectMapper.Map<List<RoleDto>>(roles));
         }
 
-        public async Task ChangeLanguage(ChangeUserLanguageDto input)
+        public async Task ChangeLanguageAsync(ChangeUserLanguageDto input)
         {
             await SettingManager.ChangeSettingForUserAsync(
                 AbpSession.ToUserIdentifier(),
@@ -260,7 +260,7 @@ namespace Shesha.Users
         /// </summary>
         /// <param name="mobileNo">mobile number of the user</param>
         [AbpAllowAnonymous]
-        public async Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtp(string mobileNo)
+        public async Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo)
         {
             // todo: cleanup mobile number
             // todo: store clear mobile number in the DB
@@ -284,7 +284,7 @@ namespace Shesha.Users
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
         [AbpAllowAnonymous]
-        public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptions(string username)
+        public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
@@ -353,7 +353,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<bool> SendSmsOtp(string username)
+        public async Task<bool> SendSmsOtpAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
@@ -377,7 +377,7 @@ namespace Shesha.Users
         /// <param name="username"></param>
         /// <returns></returns>
         [AbpAllowAnonymous]
-        public async Task<List<SecurityQuestionDto>> GetSecurityQuestions(string username)
+        public async Task<List<SecurityQuestionDto>> GetSecurityQuestionsAsync(string username)
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
@@ -396,7 +396,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<ResetPasswordVerifyOtpResponse> ValidateResetCode(ResetPasswordValidateCodeInput input)
+        public async Task<ResetPasswordVerifyOtpResponse> ValidateResetCodeAsync(ResetPasswordValidateCodeInput input)
         {
             var username = input.Username;
             if ((RefListPasswordResetMethods)input.Method == RefListPasswordResetMethods.EmailLink)
@@ -448,7 +448,7 @@ namespace Shesha.Users
         /// <returns></returns>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestions(SecurityQuestionVerificationDto input)
+        public async Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestionsAsync(SecurityQuestionVerificationDto input)
         {
             var user = await _userRepository.GetAll().Where(u => u.UserName == input.Username).FirstOrDefaultAsync();
 
@@ -499,7 +499,7 @@ namespace Shesha.Users
         /// <returns></returns>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<bool> SendEmailLink(string username)
+        public async Task<bool> SendEmailLinkAsync(string username)
         {
             var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
@@ -524,7 +524,7 @@ namespace Shesha.Users
         /// Verify one-time pin that was used for password reset. Returns a token that should be used for password update
         /// </summary>
         [AbpAllowAnonymous]
-        public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtp(ResetPasswordVerifyOtpInput input)
+        public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
             var otp = await _otpManager.GetAsync(input.OperationId);
             var personId = otp?.RecipientId.ToGuid() ?? Guid.Empty;
@@ -557,7 +557,7 @@ namespace Shesha.Users
         /// Resets a password of the user using token
         /// </summary>
         [AbpAllowAnonymous]
-        public async Task<bool> ResetPasswordUsingToken(ResetPasswordUsingTokenInput input)
+        public async Task<bool> ResetPasswordUsingTokenAsync(ResetPasswordUsingTokenInput input)
         {
             var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.UserName == input.Username);
             if (user == null)
@@ -579,7 +579,7 @@ namespace Shesha.Users
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
             user.PasswordResetCode = null;
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return true;
         }
@@ -624,7 +624,7 @@ namespace Shesha.Users
 
         #endregion
 
-        public async Task<bool> ChangePassword(ChangePasswordDto input)
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
             if (_abpSession.UserId == null)
             {
@@ -647,11 +647,11 @@ namespace Shesha.Users
             _personRepository.GetAll().FirstOrDefault(x => x.User == user)?.AddHistoryEvent("Password changed", "Password changed");
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> ResetPassword(ResetPasswordDto input)
+        public async Task<bool> ResetPasswordAsync(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)
             {
@@ -688,7 +688,7 @@ namespace Shesha.Users
             return true;
         }
 
-        public virtual async Task<AbpUserAuthConfigDto> GetUserAuthConfig()
+        public virtual async Task<AbpUserAuthConfigDto> GetUserAuthConfigAsync()
         {
             var config = new AbpUserAuthConfigDto();
 

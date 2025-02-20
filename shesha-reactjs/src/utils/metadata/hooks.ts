@@ -13,6 +13,7 @@ import {
     registerSetGlobalStateAction,
     registerQueryAction,
     registerMetadataBuilderAction,
+    registerFileSaverAction,
     //registerConstantsBuilderAction
 } from "@/utils/metadata/standardProperties";
 import { useAppContextRegistration, useFormDataRegistration } from "./useAvailableConstants";
@@ -31,6 +32,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.http, registerHttpAction);
         builder.registerStandardProperty(SheshaConstants.message, registerMessageAction);
         builder.registerStandardProperty(SheshaConstants.moment, registerMomentAction);
+        builder.registerStandardProperty(SheshaConstants.fileSaver, registerFileSaverAction);
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.setGlobalState, registerSetGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.selectedRow, registerSelectedRowAction);

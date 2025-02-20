@@ -13,7 +13,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { entityPickerSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
@@ -194,8 +194,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
-      entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
-      valueFormat: 'simple',
+      entityType: isEntityReferencePropertyMetadata(propMetadata)
+        ? propMetadata.entityType 
+        : isEntityReferenceArrayPropertyMetadata(propMetadata)
+          ? propMetadata.entityType
+          : undefined,
+      mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
+      valueFormat: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'entityReference' : 'simple',
     };
   },
   getFieldsToFetch: (propertyName, rawModel)  => {

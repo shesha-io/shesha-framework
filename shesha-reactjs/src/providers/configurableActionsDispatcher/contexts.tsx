@@ -7,7 +7,7 @@ import {
 import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 import { IApplicationApi } from '../sheshaApplication/publicApi';
-import { FormApi } from '../form/formApi';
+import { IFormApi } from '../form/formApi';
 import { createNamedContext } from '@/utils/react';
 
 export interface IConfigurableActionDispatcherStateContext {
@@ -19,7 +19,7 @@ export interface IGetConfigurableActionPayload {
 }
 
 export interface IArgumentsEvaluationContext extends GenericDictionary {
-  form?: FormApi;
+  form?: IFormApi;
   application?: IApplicationApi;
 }
 

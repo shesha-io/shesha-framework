@@ -22,9 +22,9 @@ namespace Shesha.FluentMigrator
         /// </summary>
         const string MigrationVersionFormat = "yyyyMMddHHmmff";
 
-        private readonly IAssemblyFinder _assemblyFinder;
-        private readonly IDbConnectionSettingsResolver _connectionSettingsResolver;
-        private readonly IModuleLocator _moduleLocator;
+        protected readonly IAssemblyFinder _assemblyFinder;
+        protected readonly IDbConnectionSettingsResolver _connectionSettingsResolver;
+        protected readonly IModuleLocator _moduleLocator;
         
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -63,7 +63,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Configure the dependency injection services
         /// </summary>
-        private IServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
+        protected virtual ServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
         {
             var services = new ServiceCollection();
             services.TryAddSingleton<IModuleLocator>(_moduleLocator);
@@ -121,7 +121,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Update the database
         /// </summary>
-        private void CreateOrMigrate(AbpTenantBase? tenant, Action? seedAction)
+        protected virtual void CreateOrMigrate(AbpTenantBase? tenant, Action? seedAction)
         {
             var args = new DbPerTenantConnectionStringResolveArgs(
                 tenant == null ? (int?)null : (int?)tenant.Id,
@@ -136,7 +136,8 @@ namespace Shesha.FluentMigrator
             // Put the database update into a scope to ensure
             // that all resources will be disposed.
             var connectionSettings = new DbConnectionSettings(dbmsType, connectionString);
-            using var scope = CreateServices(connectionSettings).CreateScope();
+            using var services = CreateServices(connectionSettings);
+            using var scope = services.CreateScope();
             using var connectionSettingsScope = DbConnectionSettings.BeginConnectionScope(connectionSettings);
 
             // Instantiate the runner
@@ -155,17 +156,17 @@ namespace Shesha.FluentMigrator
                 if (runner is MigrationRunner standardRunner)
                 {
                     var migrationsToApply = standardRunner.MigrationLoader.LoadMigrations().Where(mi => !standardRunner.VersionLoader.VersionInfo.HasAppliedMigration(mi.Key)).OrderBy(m => m.Key).ToList();
-                    Logger.Info($"Found {migrationsToApply.Count()} migrations to apply");
+                    Logger.Warn($"Found {migrationsToApply.Count()} migrations to apply");
 
                     foreach (var migration in migrationsToApply)
                     {
                         var migrationName = migration.Value.Migration.GetType().FullName;
 
-                        Logger.Info($"Applying migration {migrationName} (version={migration.Value.Version})...");
+                        Logger.Warn($"Applying migration {migrationName} (version={migration.Value.Version})...");
                         try
                         {
                             standardRunner.MigrateUp(migration.Value.Version);
-                            Logger.Info($"Migration {migrationName} (version={migration.Value.Version}) applied successfully");
+                            Logger.Warn($"Migration {migrationName} (version={migration.Value.Version}) applied successfully");
                         }
                         catch (Exception e)
                         {
@@ -186,7 +187,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Gets connection string from given connection string or name.
         /// </summary>
-        private static string GetConnectionString(string nameOrConnectionString)
+        protected static string GetConnectionString(string nameOrConnectionString)
         {
             var connStrSection = ConfigurationManager.ConnectionStrings[nameOrConnectionString];
             if (connStrSection != null)

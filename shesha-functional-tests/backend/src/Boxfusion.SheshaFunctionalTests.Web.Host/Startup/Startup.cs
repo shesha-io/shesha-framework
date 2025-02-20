@@ -31,6 +31,8 @@ using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
+using Shesha.Notifications.SMS;
+using Shesha.Notifications;
 using Shesha.Scheduler.Extensions;
 using Shesha.Swagger;
 using Shesha.Web;
@@ -39,6 +41,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Reflection;
+using Shesha.Specifications;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -72,6 +75,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
                 options.Filters.AddService(typeof(SheshaAuthorizationFilter));
                 options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
+                options.Filters.AddService(typeof(SpecificationsActionFilter), order: 1);
             })
             .AddApiExplorer()
             .AddNewtonsoftJson(options =>
@@ -90,7 +94,11 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			services.AddHttpContextAccessor();
 
-			services.AddHangfire(config =>
+
+            services.AddTransient<INotificationChannelSender, EmailChannelSender>();
+            services.AddTransient<INotificationChannelSender, SmsChannelSender>();
+
+            services.AddHangfire(config =>
 			{
                 var dbms = _appConfiguration.GetDbmsType();
                 var connStr = _appConfiguration.GetDefaultConnectionString();
@@ -104,7 +112,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                         }
                     case DbmsType.PostgreSQL:
                         {
-                            config.UsePostgreSqlStorage(connStr);
+                            config.UsePostgreSqlStorage(options => {
+								options.UseNpgsqlConnection(connStr);
+                            });
                             break;
                         }
                 }
@@ -138,28 +148,22 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			// note: already registered in the ABP
 			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
 
-
 			app.UseConfigurationFramework();
 
 			app.UseAbp(options =>
 			{
 				options.UseAbpRequestLocalization = false;
-			}); // Initializes ABP framework.​
-				//app.UseCors(_defaultCorsPolicyName); // Enable CORS!
-				// global cors policy
+			}); 
+
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
 				.SetIsOriginAllowed(origin => true) // allow any origin
 				.AllowCredentials()); // allow credentials​
 			app.UseStaticFiles();
-
 			app.UseAuthentication();
-
 			app.UseAbpRequestLocalization();
-
 			app.UseRouting();
-
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

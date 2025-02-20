@@ -45,6 +45,7 @@ export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<T
   children: ListEditorChildrenFn<TItem>;
   header?: ListEditorSectionRenderingFn<TItem>;
   initNewItem: (items: TItem[]) => TItem;
+  maxItemsCount?: number;
 }
 
 export interface IListEditorProviderProps {
@@ -105,6 +106,7 @@ export const ListEditor = <TItem extends ListItem>({
   onSelectionChange,
   initNewItem,
   readOnly = false,
+  maxItemsCount,
 }: IListEditorProps<TItem>) => {
   const component = useMemo(() => {
     return createListEditorComponent<TItem>();
@@ -122,6 +124,7 @@ export const ListEditor = <TItem extends ListItem>({
       <ListEditorRenderer
         contextAccessor={useListEditorComponent}
         header={header}
+        maxItemsCount={maxItemsCount}
       >
         {children}
       </ListEditorRenderer>

@@ -14,7 +14,7 @@ namespace Shesha.Utilities
         public static void RunSync(Func<Task> task)
         {
             var oldContext = SynchronizationContext.Current;
-            var synch = new ExclusiveSynchronizationContext();
+            using var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
 #pragma warning disable VSTHRD101 // Rethrow to preserve stack details
             synch.Post(async _ =>
@@ -48,7 +48,7 @@ namespace Shesha.Utilities
         public static T RunSync<T>(Func<Task<T>> task)
         {
             var oldContext = SynchronizationContext.Current;
-            var synch = new ExclusiveSynchronizationContext();
+            using var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
             T ret = default(T);
 #pragma warning disable VSTHRD101 // Rethrow to preserve stack details
@@ -74,13 +74,20 @@ namespace Shesha.Utilities
             return ret;
         }
 
-        private class ExclusiveSynchronizationContext : SynchronizationContext
+        private sealed class ExclusiveSynchronizationContext : SynchronizationContext, IDisposable
         {
             private bool done;
+            private bool disposed;
+
             public Exception InnerException { get; set; }
-            readonly AutoResetEvent workItemsWaiting = new AutoResetEvent(false);
+            private readonly AutoResetEvent _workItemsWaiting;
             readonly Queue<Tuple<SendOrPostCallback, object>> items =
                 new Queue<Tuple<SendOrPostCallback, object>>();
+
+            public ExclusiveSynchronizationContext()
+            {
+                _workItemsWaiting = new AutoResetEvent(false);
+            }
 
             public override void Send(SendOrPostCallback d, object state)
             {
@@ -93,7 +100,7 @@ namespace Shesha.Utilities
                 {
                     items.Enqueue(Tuple.Create(d, state));
                 }
-                workItemsWaiting.Set();
+                _workItemsWaiting.Set();
             }
 
             public void EndMessageLoop()
@@ -123,7 +130,7 @@ namespace Shesha.Utilities
                     }
                     else
                     {
-                        workItemsWaiting.WaitOne();
+                        _workItemsWaiting.WaitOne();
                     }
                 }
             }
@@ -131,6 +138,17 @@ namespace Shesha.Utilities
             public override SynchronizationContext CreateCopy()
             {
                 return this;
+            }
+
+            public void Dispose()
+            {
+                if (disposed)
+                {
+                    return;
+                }
+
+                disposed = true;
+                _workItemsWaiting.Dispose();
             }
         }
     }

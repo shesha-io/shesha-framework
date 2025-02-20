@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Button, Space, Select, Skeleton } from 'antd';
+import { Button, Space, Select, Skeleton, ConfigProvider } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import _ from 'lodash';
 import React, { useMemo, useRef, useState } from 'react';
@@ -16,10 +16,10 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
 
   // Check if all data for displaying is loaded
-  const isLoaded = value 
+  const isLoaded = value
     ? Array.isArray(value)
-      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
-      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
+      ? !value.find(x => typeof (getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
   const valueId = Array.isArray(value)
@@ -32,13 +32,16 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
     selection: !isLoaded ? valueId : null,
   });
 
-  const selectedItems = isLoaded
-    ? Array.isArray(value) ? value : [value]
-    : selection?.rows;
+  const selectionRows = selection?.rows;
+  const selectedItems = useMemo(() => {
+    return isLoaded
+      ? Array.isArray(value) ? value : [value]
+      : selectionRows;
+  }, [isLoaded, value, selectionRows]);
 
   const displayText = useMemo(() => {
     return selectedItems?.map(ent => getValueByPropertyName(ent, displayEntityKey)).join(', ');
-  }, [selectedItems]);
+  }, [selectedItems, displayEntityKey]);
 
   return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
 };
@@ -60,24 +63,30 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     title = 'Select Item',
     outcomeValueFunc,
     incomeValueFunc,
-    placeholder
+    placeholder,
+    hideBorder
   } = props;
 
-  const { styles } = useStyles();
+  if (!entityType)
+    throw SheshaError.throwPropertyError('entityType');
+
+  const { styles } = useStyles(style);
   const selectRef = useRef(undefined);
 
   const [showModal, setShowModal] = useState(false);
 
   // Check if all data for displaying is loaded
-  const isLoaded = value 
+  const isLoaded = value
     ? Array.isArray(value)
-      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
-      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
+      ? !value.find(x => typeof (getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
-  const valueId = Array.isArray(value)
-    ? value.map(x => props.incomeValueFunc(x, {}))
-    : props.incomeValueFunc(value, {});
+  const valueId = useMemo(() => {
+    return Array.isArray(value)
+      ? value.map(x => incomeValueFunc(x, {}))
+      : incomeValueFunc(value, {});
+  }, [value, incomeValueFunc]);
 
   const selection = useEntitySelectionData({
     entityType: entityType,
@@ -85,14 +94,40 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     selection: !isLoaded ? valueId : null,
   });
 
-  const selectedItems = isLoaded
-    ? Array.isArray(value) ? value : [value]
-    : selection?.rows;
+  const selectionRows = selection?.rows;
+  const selectedItems = useMemo(() => {
+    return isLoaded
+      ? Array.isArray(value) ? value : [value]
+      : selectionRows;
+  }, [isLoaded, value, selectionRows]);
+
+  const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
+    let result: DefaultOptionType[] = null;
+    if (selection.loading) {
+      const items = valueId
+        ? (Array.isArray(valueId)
+          ? valueId
+          : [valueId])
+        : [];
+      result = items.map(item => ({
+        label: 'loading...',
+        value: item,
+        rawValue: item
+      }));
+    } else {
+      result = (selectedItems ?? []).map(ent => {
+        const itemValue = incomeValueFunc(outcomeValueFunc(ent, {}), {});
+        return {
+          label: getValueByPropertyName(ent, displayEntityKey),
+          value: ent.id,
+          rawValue: itemValue
+        };
+      });
+    }
+    return result;
+  }, [selectedItems]);
 
   const selectedMode = mode === 'single' ? undefined : mode;
-
-  if (!entityType) 
-    throw SheshaError.throwPropertyError('entityType');
 
   const handleMultiChange = (selectedValues: string[]) => {
     const newValues = Array.isArray(value) ? value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {}))) : null;
@@ -113,65 +148,81 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     if (onChange) onChange(null, null);
   };
 
-  const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
-    let result: DefaultOptionType[] = null;
-    if (selection.loading) {
-      const items = valueId ? (Array.isArray(valueId) ? valueId : [valueId]) : [];
-      result = items.map(item => ({ label: 'loading...', value: item, key: item }));
-    } else {
-      result = (selectedItems ?? []).map(ent => {
-        const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
-        return { label: getValueByPropertyName(ent, displayEntityKey), value: key, key };
-      });
-    }
+  const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
+    borderBottomWidth, borderRightColor, borderRightStyle, borderColor, borderBottomLeftRadius,
+    borderTopLeftRadius, MozBorderTopColors, borderTopStyle, borderTopColor, borderTop, boxShadow,
+    borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, ...restStyle } = style;
 
-    return result;
-  }, [selectedItems]);
+  const borderRadii = style?.borderRadius?.toString().split(' ');
 
   return (
     <div className={styles.entityPickerContainer}>
       <div>
-        {useButtonPicker ? (
-          <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
-            {title}
-          </Button>
-        ) : (
-          <Space.Compact style={{ width: '100%' }}>
-            <Select
-              size={size}
-              onDropdownVisibleChange={(_e) =>{
-                selectRef.current.blur();
-                showPickerDialog();
-              }}
-              onClear={onClear}
-              value={selection.loading ? undefined : valueId}
-              placeholder={selection.loading ? 'Loading...' : placeholder}
-              notFoundContent={''}
-              defaultValue={defaultValue}
-              disabled={disabled || selection.loading}
-              ref={selectRef}
-              allowClear
-              mode={selectedMode}
-              options={options}
-              suffixIcon={null} // hide arrow              
-              onChange={handleMultiChange}
-              style={{ ...style, width: `calc(100% - ${size === 'large'? '40px' : '32px'})` }}
-              loading={selection.loading}
-            >
-              {''}
-            </Select>
-            <Button
-              onClick={showPickerDialog}
-              className={styles.pickerInputGroupEllipsis}
-              disabled={disabled}
-              loading={loading ?? false}
-              size={size}
-              icon={<EllipsisOutlined />}
-            />
-          </Space.Compact>
-        )}
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                fontSize: Number(style?.fontSize),
+                colorText: style?.color,
+                fontFamily: style?.fontFamily,
+                fontWeightStrong: Number(style.fontWeight)
+              },
+            },
+          }}
+        >
+          {useButtonPicker ? (
+            <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
+              {title}
+            </Button>
+          ) : (
+            <Space.Compact style={{ width: '100%', ...style }}>
+              <Select
+                size={size}
+                onDropdownVisibleChange={(_e) => {
+                  selectRef.current.blur();
+                  showPickerDialog();
+                }}
+                onClear={onClear}
+                value={selection.loading ? undefined : valueId}
+                placeholder={selection.loading ? 'Loading...' : placeholder}
+                notFoundContent={''}
+                defaultValue={defaultValue}
+                disabled={disabled || selection.loading}
+                ref={selectRef}
+                allowClear
+                mode={selectedMode}
+                options={options}
+                variant={hideBorder ? 'borderless' : null}
+                suffixIcon={null}
+                onChange={handleMultiChange}
+                className={styles.entitySelect}
+                style={{ width: '100%' }}
+                loading={selection.loading}
+              >
+                {''}
+              </Select>
+              <Button
+                onClick={showPickerDialog}
+                className={styles.pickerInputGroupEllipsis}
+                disabled={disabled}
+                loading={loading ?? false}
+                size={size}
+                icon={<EllipsisOutlined />}
+                style={{
+                  ...restStyle,
+                  borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
+                  background: 'transparent',
+                  borderLeft: '1px solid #d9d9d9',
+                  height: '100%',
+                  zIndex: 1,
+                }}
+                type='text'
+              />
+            </Space.Compact>
+          )}
+        </ConfigProvider>
       </div>
-      
+
       {showModal && <EntityPickerModal {...props} onCloseModal={() => setShowModal(false)} />}
     </div>
   );
@@ -179,7 +230,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
-
     <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />

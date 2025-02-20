@@ -19,8 +19,8 @@ export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
 export { EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
-export { FormAutocomplete } from './formAutocomplete';
-export { NotificationAutocomplete } from './notificationAutocomplete';
+export { FormAutocomplete } from './configurableItemAutocomplete/formAutocomplete';
+export { NotificationAutocomplete } from './configurableItemAutocomplete/notificationAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
 export { default as CustomErrorBoundary } from './customErrorBoundary';
@@ -91,12 +91,7 @@ export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
-export {
-  EntityDtoAutocomplete as Autocomplete,
-  EntityDtoAutocomplete,
-  RawAutocomplete,
-  type IAutocompleteProps,
-} from './autocomplete';
+export { Autocomplete, type IAutocompleteProps} from './autocomplete';
 export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 export { default as QuickView, type IQuickViewProps } from './quickView';
@@ -118,3 +113,4 @@ export { ListEditor } from './listEditor';
 export { ButtonGroupConfigurator } from './buttonGroupConfigurator';
 export { ConfigurableComponentRenderer } from "./configurableComponentRenderer";
 export { PermissionAutocomplete, type IPermissionAutocompleteProps } from './permissionAutocomplete';
+export { ConfigItemAutocomplete } from './configurableItemAutocomplete';

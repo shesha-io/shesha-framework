@@ -99,5 +99,29 @@ namespace Shesha.Extensions
                 ? source.Max()
                 : defaultValue;
         }
+
+
+        /// <summary>
+        /// Return added values and removed values from difference of two IEnumerable
+        /// </summary>
+        /// <typeparam name="Tt"></typeparam>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
+        public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object oldValue, object newValue)
+        {
+            if (newValue == null)
+                return (new List<Tt>(), ((IEnumerable<object>)oldValue).Cast<Tt>());
+            if (oldValue == null)
+                return (((IEnumerable<object>)newValue).Cast<Tt>(), new List<Tt>());
+
+            var newV = (IEnumerable<object>)newValue;
+            var oldV = (IEnumerable<object>)oldValue;
+
+            var addedValues = newV.Where(x => !oldV.Contains(x)).ToList<object>();
+            var removedValues = oldV.Where(x => !newV.Contains(x)).ToList();
+
+            return (addedValues.Cast<Tt>(), removedValues.Cast<Tt>());
+        }
     }
 }

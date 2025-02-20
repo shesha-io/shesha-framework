@@ -136,8 +136,6 @@ namespace Shesha.JsonEntities.Proxy
 
         public void _initialize(object proxy)
         {
-            _isInitialized = true;
-
             var context = new EntityModelBindingContext()
             {
                 GetEntityById = (entityType, id, displayName, propPath, ctx) =>
@@ -151,6 +149,8 @@ namespace Shesha.JsonEntities.Proxy
                 }
             };
             StaticContext.IocManager.Resolve<IEntityModelBinder>().BindPropertiesAsync(_json, proxy, context).WaitAndUnwrapException();
+
+            _isInitialized = true;
         }
 
         public void _changed()

@@ -1,12 +1,11 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using AutoMapper;
 using Shesha.AutoMapper;
 using Shesha.Domain;
+using Shesha.DynamicEntities.Mapper.Cache;
 using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
@@ -17,29 +16,15 @@ namespace Shesha.DynamicEntities.Mapper
 {
     public class DynamicDtoMappingHelper : IEventHandler<EntityChangedEventData<EntityProperty>>, IDynamicDtoMappingHelper, ITransientDependency
     {
-        private readonly ICacheManager _cacheManager;
-        private readonly IRepository<EntityProperty, Guid> _propertyRepository;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IocManager _iocManager;
-
-        public ITypedCache<string, List<MapperItem>> InternalCache
-        {
-            get
-            {
-                return _cacheManager.GetCache<string, List<MapperItem>>(this.GetType().Name);
-            }
-        }
+        private readonly ITypedCache<string, List<MapperItem>> _internalCache;
 
         public DynamicDtoMappingHelper(
             IocManager iocManager,
-            ICacheManager cacheManager,
-            IRepository<EntityProperty, Guid> propertyRepository,
-            IUnitOfWorkManager unitOfWorkManager)
+           IMapperCacheHolder mapperCacheHolder)
         {
             _iocManager = iocManager;
-            _cacheManager = cacheManager;
-            _propertyRepository = propertyRepository;
-            _unitOfWorkManager = unitOfWorkManager;
+            _internalCache = mapperCacheHolder.Cache;
         }
         
         private string GetCacheKey(Type sourceType, Type destinationType)
@@ -69,7 +54,7 @@ namespace Shesha.DynamicEntities.Mapper
                 return;
 
             var cacheKey = GetCacheKey(eventData.Entity.EntityConfig);
-            InternalCache.Remove(cacheKey);
+            _internalCache.Remove(cacheKey);
         }
 
         private IMapper GetMapper(Type srcType, Type dstType) 
@@ -118,7 +103,7 @@ namespace Shesha.DynamicEntities.Mapper
 
             IMapper mapper = null;
 
-            var mappers = await InternalCache.GetAsync(cacheKey, () => {
+            var mappers = await _internalCache.GetAsync(cacheKey, () => {
                 var cacheItem = itemFactory();
                 mapper = cacheItem.Mapper;
 
@@ -137,7 +122,7 @@ namespace Shesha.DynamicEntities.Mapper
             // cache exists but it doesn't contain mapper for specified DTO - create it and update cache
             cacheItem = itemFactory();
             mappers.Add(itemFactory());
-            await InternalCache.SetAsync(cacheKey, mappers);
+            await _internalCache.SetAsync(cacheKey, mappers);
 
             return cacheItem.Mapper;
         }

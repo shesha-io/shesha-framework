@@ -105,6 +105,7 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.http,
     SheshaConstants.message,
     SheshaConstants.moment,
+    SheshaConstants.fileSaver,
     SheshaConstants.form,
     SheshaConstants.formData,
 ];

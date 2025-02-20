@@ -1,4 +1,5 @@
-﻿using Abp.Localization;
+﻿using Abp.Extensions;
+using Abp.Localization;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -444,7 +445,8 @@ namespace Shesha.Utilities
         public static string ToMd5Fingerprint(this string s)
         {
             var bytes = Encoding.Unicode.GetBytes(s.ToCharArray());
-            var hash = MD5.Create().ComputeHash(bytes);
+            using var md5 = MD5.Create();
+            var hash = md5.ComputeHash(bytes);
 
             // concat the hash bytes into one long string
             return hash.Aggregate(new StringBuilder(32),
@@ -987,5 +989,63 @@ namespace Shesha.Utilities
         {
             return Regex.Replace(input, @"[_]{2,}", "_");
         }
+
+        /// <summary>
+        /// Trim each part of the snake_case text to match the length
+        /// </summary>
+        /// <param name="text">snake_case text</param>
+        /// <param name="length">Max length</param>
+        /// <returns></returns>
+        public static string SnakeCaseTrim(this string text, int length)
+        {
+            if (text.IsNullOrEmpty())
+                return text;
+            var delta = text?.Length - length;
+            if (delta < 1)
+                return text;
+            var parts = text.Split('_');
+            if (parts.Length < 2)
+                return text.Substring(0, length);
+            while (delta > 0)
+            {
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    parts[i] = parts[i].Substring(0, parts[i].Length - 1);
+                    if (delta-- < 1)
+                        break;
+                }
+            }
+            return string.Join("_", parts);
+        }
+
+        /// <summary>
+        /// Trim each part of the snake_case text to match the length
+        /// </summary>
+        /// <param name="parts">parts to compile snake_case text</param>
+        /// <param name="length">Max length</param>
+        /// <returns></returns>
+        public static string SnakeCaseTrim(this string[] parts, int length)
+        {
+            var text = string.Join("_", parts).ToSnakeCase();
+
+            if (text.IsNullOrEmpty())
+                return text;
+            var delta = text?.Length - length;
+            if (delta < 1)
+                return text;
+            if (parts.Length < 2)
+                return text.Substring(0, length);
+            while (delta > 0)
+            {
+                for (var i = 0; i < parts.Length; i++)
+                {
+                    parts[i] = parts[i].Substring(0, parts[i].Length - 1);
+                    if (delta-- < 1)
+                        break;
+                }
+            }
+            return string.Join("_", parts).ToSnakeCase();
+        }
+
     }
 }

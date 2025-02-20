@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '@/interfaces';
-import { executeScriptSync, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync, getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
 import React from 'react';
@@ -15,14 +15,17 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps> = {
   isInput: false,
   isOutput: true,
   Factory: ({ model }) => {
-    const  ctx = useAvailableConstantsData();    
-    return <ConfigurableFormItem model={{...model, hideLabel: true}}>
-      {(value) => {
+    const ctx = useAvailableConstantsData();
+    const jsStyle = getStyle(model.style, model);
+    return <div style={jsStyle}>
+      <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
+        {(value) => {
           return parse(model?.renderer
-          ? executeScriptSync(model?.renderer, { ...ctx, value }) || '<div><div/>'
-          : '<div><div/>');
-      }
-    }</ConfigurableFormItem>;
+            ? executeScriptSync(model?.renderer, { ...ctx, value }) || '<div><div/>'
+            : '<div><div/>');
+        }
+        }</ConfigurableFormItem>
+    </div>;
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

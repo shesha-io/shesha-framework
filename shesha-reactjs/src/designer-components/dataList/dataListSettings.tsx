@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import React, { FC, ReactNode, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
@@ -245,7 +245,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
         {model.formSelectionMode === 'name' &&
           <SettingsFormItem name="formId" label="Form">
-            <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
+            <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         }
 
@@ -375,7 +375,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
         {model.formSelectionMode !== 'view' && model.canAddInline !== 'no' &&
           <SettingsFormItem name="createFormId" label="Create form" jsSetting >
-            <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
+            <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         }
 

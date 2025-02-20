@@ -25,11 +25,12 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const httpClient = useHttpClient();
   const { formData, formMode } = useForm();
   const { globalState } = useGlobalState();
-  const { executeAction, prepareArguments } = useConfigurableActionDispatcher();
+  const { executeAction, prepareArguments, useActionDynamicContext } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
   const { message } = App.useApp();
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
+  const dynamicContext = useActionDynamicContext(actionConfiguration);
 
   const getRowData = (data) => {
     return data?.cell?.row?.original;
@@ -43,6 +44,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     http: httpClient,
     message: message,
     globalState: globalState,
+    ...dynamicContext
   };
 
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, LinkOutlined, PicCenterOutlined, TableOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
+import { customIcons } from "@/designer-components/inputComponent/icons";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -10,7 +10,23 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
     reader.onerror = reject;
 });
 
-export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
+export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, backendUrl: string, httpHeaders: any) => {
+    return (
+        propertyName?.storedFile?.id && propertyName?.type === 'storedFile'
+            ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${propertyName?.storedFile?.id}`, {
+                headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+            })
+                .then((response) => {
+                    return response.blob();
+                })
+                .then((blob) => {
+                    return URL.createObjectURL(blob);
+                })
+            : ''
+    );
+};
+
+export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): React.CSSProperties => {
 
     const style: React.CSSProperties = {};
 
@@ -36,7 +52,7 @@ export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React
     } else if (input?.type === 'url') {
         style.backgroundImage = `url(${input?.url})`;
     } else if (input?.type === 'image') {
-        style.backgroundImage = `url(${input?.uploadFile?.url})`;
+        style.backgroundImage = `url(${input?.uploadFile})`;
     } else if (input?.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
     }
@@ -56,22 +72,50 @@ export const gradientDirectionOptions: IDropdownOption[] = [
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [
-    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
-    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
-    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
-    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
-    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
+    {
+        value: "color",
+        icon: "FormatPainterOutlined",
+        title: "Color"
+    },
+    {
+        value: "gradient",
+        icon: "BgColorsOutlined",
+        title: "Gradient"
+    },
+    {
+        value: "image",
+        icon: "PictureOutlined",
+        title: "Image"
+    },
+    {
+        value: "url",
+        icon: "LinkOutlined",
+        title: "URL"
+    },
+    {
+        value: "storedFile",
+        icon: "DatabaseOutlined",
+        title: "Stored File"
+    },
 ];
 
 export const repeatOptions: IRadioOption[] = [
-    { value: 'no-repeat', title: 'No Repeat', icon: <PicCenterOutlined /> },
-    { value: 'repeat', title: 'Repeat', icon: <TableOutlined /> },
-    { value: 'repeat-x', title: 'Repeat X', icon: <InsertRowBelowOutlined /> },
-    { value: 'repeat-y', title: 'Repeat Y', icon: <InsertRowLeftOutlined /> },
+    { value: 'no-repeat', title: 'No Repeat', icon: customIcons['noRepeatIcon'] },
+    { value: 'repeat', title: 'Repeat', icon: customIcons['repeatIcon'] },
+    { value: 'repeat-x', title: 'Repeat X', icon: customIcons['repeatXIcon'] },
+    { value: 'repeat-y', title: 'Repeat Y', icon: customIcons['repeatYIcon'] },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
 
-export const positionOptions: IDropdownOption[] = [{ value: 'center', label: 'Center' }, { value: 'top', label: 'Top' }, { value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'bottom', label: 'Bottom' },
-{ value: 'top left', label: 'Top Left' }, { value: 'top right', label: 'Top Right' }, { value: 'bottom left', label: 'Bottom Left' }, { value: 'bottom right', label: 'Bottom Right' }];
+export const positionOptions: IDropdownOption[] = [
+    { value: 'center', label: 'Center' },
+    { value: 'top', label: 'Top' },
+    { value: 'left', label: 'Left' },
+    { value: 'right', label: 'Right' },
+    { value: 'bottom', label: 'Bottom' },
+    { value: 'top left', label: 'Top Left' },
+    { value: 'top right', label: 'Top Right' },
+    { value: 'bottom left', label: 'Bottom Left' },
+    { value: 'bottom right', label: 'Bottom Right' }];
 

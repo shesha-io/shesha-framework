@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Shesha.Authorization;
 using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Shesha.EntityHistory
     /// <summary>
     /// Entity history application service
     /// </summary>
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class EntityHistoryAppService : ApplicationService, IEntityHistoryAppService
     {
         private readonly IEntityHistoryProvider _entityHistoryProvider;
@@ -22,7 +24,7 @@ namespace Shesha.EntityHistory
             _entityHistoryProvider = entityHistoryProvider;
         }
 
-        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
+        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrailAsync(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
             var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName, includeEventsOnChildEntities);
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ConcurrentCollections;
+﻿using ConcurrentCollections;
 
 namespace Shesha.Authorization.Dtos
 {

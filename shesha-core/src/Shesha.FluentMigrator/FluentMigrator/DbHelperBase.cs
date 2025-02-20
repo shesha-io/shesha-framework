@@ -3,6 +3,7 @@ using System.Data;
 
 namespace Shesha.FluentMigrator
 {
+#nullable enable
     /// <summary>
     /// DB helper base
     /// </summary>
@@ -69,10 +70,10 @@ namespace Shesha.FluentMigrator
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected Guid? GetOrCreateModuleId(string name)
+        protected Guid GetOrCreateModuleId(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                return null;
+                throw new ArgumentException($"{nameof(name)} must not be null");
 
             var id = ExecuteScalar<Guid?>(@"select ""Id"" from ""Frwk_Modules"" where ""Name"" = @name", command => {
                 command.AddParameter("@name", name);
@@ -113,4 +114,5 @@ namespace Shesha.FluentMigrator
                 : value ? 1 : 0;
         }
     }
+#nullable restore
 }

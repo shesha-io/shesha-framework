@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.EntityHistory;
 using Abp.Runtime.Session;
 using Abp.Transactions.Extensions;
 using NHibernate;
+using System;
+using System.Data.Common;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.NHibernate.UoW
 {
@@ -18,9 +18,21 @@ namespace Shesha.NHibernate.UoW
     public class NhUnitOfWork : UnitOfWorkBase, ITransientDependency
     {
         /// <summary>
+        /// NHibernate session factory
+        /// </summary>
+        private readonly ISessionFactory _sessionFactory;
+
+        /// <summary>
         /// NH session
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP006:Implement IDisposable", Justification = $"Disposed in {nameof(DisposeUow)}")]
         private ISession _session;
+
+        /// <summary>
+        /// Active transaction
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP006:Implement IDisposable", Justification = $"Disposed in {nameof(DisposeUow)}")]
+        private ITransaction _transaction;
 
         /// <summary>
         /// Returns current session or starts a new one is missing and <paramref name="startNewIfMissing"/> is true
@@ -51,9 +63,6 @@ namespace Shesha.NHibernate.UoW
         /// Entity history helper
         /// </summary>
         public EntityHistoryHelperBase EntityHistoryHelper { get; set; }
-
-        private readonly ISessionFactory _sessionFactory;
-        private ITransaction _transaction;
 
         private readonly SheshaNHibernateModule _nhModule;
 
@@ -86,6 +95,7 @@ namespace Shesha.NHibernate.UoW
             var session = DbConnection != null
                 ? _sessionFactory.WithOptions().Connection(DbConnection).OpenSession()
                 : _sessionFactory.OpenSession();
+            _transaction?.Dispose();
 
             session.FlushMode = FlushMode.Commit;
 
@@ -124,7 +134,11 @@ namespace Shesha.NHibernate.UoW
             // Note: configuration of filters is still required irrespectively of the laziness of the session
 
             // set default value for IsDeleted parameter
+            //ApplyFilterParameterValue(AbpDataFilters.SoftDelete, AbpDataFilters.Parameters.IsDeleted, false);
+
+#pragma warning disable IDISP004 // Don't ignore created IDisposable
             SetFilterParameter(AbpDataFilters.SoftDelete, AbpDataFilters.Parameters.IsDeleted, false);
+#pragma warning restore IDISP004 // Don't ignore created IDisposable
 
             CheckAndSetSoftDelete();
             CheckAndSetMayHaveTenant();
@@ -233,7 +247,11 @@ namespace Shesha.NHibernate.UoW
                 _transaction = null;
             }
 
-            _session?.Dispose();
+            if (_session != null) 
+            {
+                _session.Dispose();
+                _session = null;
+            }            
         }
     }
 }

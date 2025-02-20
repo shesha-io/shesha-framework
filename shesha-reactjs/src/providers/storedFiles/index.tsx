@@ -44,7 +44,7 @@ export interface IStoredFilesProviderProps {
   filesCategory?: string;
   propertyName?: string;
   baseUrl?: string;
-  
+
   // used for requered field validation
   value?: string;
   onChange?: (value: string) => void;
@@ -67,7 +67,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   filesCategory,
   propertyName,
   baseUrl,
-  
+
   // used for requered field validation
   onChange,
   value = null
@@ -192,7 +192,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { mutate: deleteFileHttp } = useDeleteFileById();
 
   //#region delete file
-  
+
   const deleteFileSuccess = (fileIdToDelete: string) => {
     dispatch(deleteFileSuccessAction(fileIdToDelete));
   };
@@ -219,7 +219,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     const query = !!payload
       ? payload
       : !!ownerId
-        ? { 
+        ? {
           ownerId: ownerId,
           ownerType: ownerType,
           filesCategory: filesCategory,

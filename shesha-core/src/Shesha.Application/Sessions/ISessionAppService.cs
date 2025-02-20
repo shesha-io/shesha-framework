@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Shesha.Sessions.Dto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Sessions
 {
     public interface ISessionAppService : IApplicationService
     {
-        Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformations();
+        Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformationsAsync();
 
-        Task<List<string>> GetGrantedShaRoles();
+        Task<List<string>> GetGrantedShaRolesAsync();
     }
 }
