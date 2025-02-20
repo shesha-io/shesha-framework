@@ -21,8 +21,6 @@ const TypographyComponent: FC<ITypographyProps> = ({
 }) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
-
-  console.log('styles', styles);
   const val = typeof value === 'string'
     ? value 
     : isMoment(value)

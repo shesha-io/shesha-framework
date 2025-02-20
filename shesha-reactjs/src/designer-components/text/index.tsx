@@ -134,6 +134,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     underline: false,
     level: 1,
     textType: 'span',
+    contentDisplay: 'content',
     ...model,
   }),
   migrator: (m) => m
