@@ -3,7 +3,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormData, useGlobalState } from '@/providers';
+import { useForm, useFormData, useGlobalState } from '@/providers';
 import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
@@ -11,6 +11,26 @@ import { migratePropertyName, migrateCustomFunctions } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import Marquee from 'react-fast-marquee';
+
+
+const defaultTextForPreview = {
+  success: {
+    text: 'Success Alert Preview Text', 
+    description: 'This is a success alert preview text. More information here.'
+  },
+  info: {
+    text: 'Info Alert Preview Text',
+    description: 'This is an info alert preview text. More information here.'
+  },
+  warning: {
+    text: 'Warning Alert Preview Text',
+    description: 'This is a warning alert preview text. More information here.'
+  },
+  error: {
+    text: 'Error Alert Preview Text',
+    description: 'This is an error alert preview text. More information here.'
+  }
+};
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
@@ -20,13 +40,25 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
+    const { formMode } = useForm();
 
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
-    const evaluatedMessage = evaluateString(text, { data: formData, globalState });
-    const evaluatedDescription = evaluateString(description, formData);
+    var evaluatedMessage = evaluateString(text, { data: formData, globalState });
+    var evaluatedDescription = evaluateString(description, formData);
 
     if (model.hidden) return null;
+
+    if (formMode === 'designer') {
+      const previewData = defaultTextForPreview[alertType];
+      if (!evaluatedMessage || evaluatedMessage?.trim() === '') {
+        evaluatedMessage = previewData.text;
+      }
+      if (!evaluatedDescription || evaluatedDescription?.trim() === '') {
+        evaluatedDescription = previewData.description;
+      }
+    }
+
     return (
       <Alert
         className="sha-alert"
