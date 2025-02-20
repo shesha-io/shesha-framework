@@ -750,7 +750,7 @@ export const getSettings = () => {
                                   id: 'dimensionsStyleRowWidth',
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data?.layout) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
@@ -787,7 +787,7 @@ export const getSettings = () => {
                                   id: 'dimensionsStyleRowHeight',
                                   parentId: 'container-dimensionsStylePnl',
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data?.layout) === "vertical";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
                                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   inputs: [
                                     {
