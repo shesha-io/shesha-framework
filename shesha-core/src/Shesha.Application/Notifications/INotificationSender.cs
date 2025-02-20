@@ -11,7 +11,7 @@ namespace Shesha.Notifications
 {
     public interface INotificationSender
     {
-        Task SendNotification<TData>(NotificationTypeConfig type, 
+        Task SendNotificationAsync<TData>(NotificationTypeConfig type, 
             IMessageSender sender, 
             IMessageReceiver receiver, 
             TData data, 
@@ -20,7 +20,7 @@ namespace Shesha.Notifications
             GenericEntityReference triggeringEntity = null, 
             NotificationChannelConfig channel = null) where TData : NotificationData;
 
-        Task SendNotification<TData>(NotificationTypeConfig type,
+        Task SendNotificationAsync<TData>(NotificationTypeConfig type,
             Person sender,
             Person receiver,
             TData data,

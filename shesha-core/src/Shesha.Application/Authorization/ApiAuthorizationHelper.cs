@@ -12,7 +12,6 @@ using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -61,7 +60,8 @@ namespace Shesha.Authorization
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
-            var settings = _securitySettings?.SecuritySettings?.GetValue()?.DefaultEndpointAccess;
+            var securitySettings = await _securitySettings?.SecuritySettings?.GetValueAsync();
+            var settings = securitySettings?.DefaultEndpointAccess;
 
             if (settings == null)
                 throw new NullReferenceException("Cannot get DefaultEndpointAccess");

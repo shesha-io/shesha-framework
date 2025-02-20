@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Shesha.Web.Core</AssemblyName>
@@ -25,7 +24,7 @@
     <EmbeddedResource Remove="Authentication\**" />
     <None Remove="Application\PublicHolidays\**" />
     <None Remove="Authentication\**" />
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shesha.Application\Shesha.Application.csproj" />
@@ -42,6 +41,10 @@
 	<PackageReference Include="Abp.FluentValidation" Version="9.0.0" />
     <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
     <PackageReference Include="GraphQL" Version="5.3.0" />
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
@@ -57,6 +60,6 @@
     <Folder Include="Configuration\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
   </ItemGroup>
 </Project>

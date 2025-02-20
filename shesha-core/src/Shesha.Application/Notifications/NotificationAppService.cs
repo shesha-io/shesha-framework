@@ -23,7 +23,7 @@ namespace Shesha.Notifications
 
             var sender = await GetCurrentPersonAsync();
 
-            await _notificationService.SendNotification(type, sender, recipient, data, (RefListNotificationPriority)priority, null, triggeringEntity);
+            await _notificationService.SendNotificationAsync(type, sender, recipient, data, (RefListNotificationPriority)priority, null, triggeringEntity);
         }
     }
 }

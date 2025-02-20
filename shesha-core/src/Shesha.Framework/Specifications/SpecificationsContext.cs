@@ -52,7 +52,7 @@ namespace Shesha.Specifications
         public bool IsDisposed { get; private set; }
 
         /// inheritedDoc
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (IsDisposed)
                 return;
