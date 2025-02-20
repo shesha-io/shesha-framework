@@ -53,7 +53,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
     onClick: (event) => {
-      event.stopPropagation();
+      onCustomEvent(event, 'onClickCustom');
     },
   };
 };
