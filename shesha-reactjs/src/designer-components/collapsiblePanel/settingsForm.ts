@@ -247,17 +247,36 @@ export const getSettings = () => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInput({
-                                                        id: 'panelpredefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
+                                                    .addSettingsInputRow({
+                                                        id: nanoid(),
+                                                        parentId: 'displayCollapsiblePanel',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: 'overflow-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Overflow',
+                                                                propertyName: 'overflow',
+                                                                dropdownOptions: [
+                                                                    {
+                                                                        label: "Auto",
+                                                                        value: "auto",
+                                                                    },
+                                                                    {
+                                                                        label: "Hidden",
+                                                                        value: "hidden",
+                                                                    },
+                                                                    {
+                                                                        label: "Scroll",
+                                                                        value: "scroll",
+                                                                    },
+                                                                    {
+                                                                        label: "Visible",
+                                                                        value: "visible",
+                                                                    }
+                                                                ]
+                                                            }
                                                         ]
                                                     })
                                                     .toJson()
@@ -272,6 +291,7 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'panelborderStylePnl',
                                                 components: [...new DesignerToolbarSettings()
@@ -334,6 +354,7 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'panelbackgroundStylePnl',
                                                 components: [
@@ -537,6 +558,7 @@ export const getSettings = () => {
                                             label: 'Shadow',
                                             labelAlign: 'right',
                                             ghost: true,
+                                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
                                             content: {

@@ -38,6 +38,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     paddingBottom,
     paddingLeft,
     paddingRight,
+    overflow,
+    border,
     ...rest
   } = bodyStyle;
 
@@ -113,6 +115,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       max-height: ${maxHeight};
       background: ${backgroundImage || backgroundColor};
       position: relative;
+      overflow: ${overflow};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;
@@ -180,12 +183,33 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     `);
 
   const shaSimpleDesign = cx(css`
-    &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
-        display: none;
-    }
-        --ant-line-width: 0px !important;
+      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+          display: none;
+      }
+
+      width: ${width};
+      min-width: ${minWidth};
+      max-width: ${maxWidth};
+      height: max-content;
+      min-height: ${minHeight};
+      max-height: ${maxHeight};
+      margin-bottom: ${marginBottom};
+      margin-top: ${marginTop};
+      margin-left: ${marginLeft};
+      margin-right: ${marginRight};
+
+
+      .ant-collapse-header-text {
+        color: ${headerColor};
+        font-family: ${fontFamily};
+        text-align: ${textAlign};
+        font-size: ${fontSize};
+        font-weight: ${fontWeight};
+      }
+
+      --ant-line-width: 0px !important;
       --primary-color: ${token.colorPrimary};
-    &.${prefixCls}-collapse-ghost {
+      &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
             padding: 12px 16px !important;
@@ -194,19 +218,35 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
             font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
             font-weight: 'bold';
           }
-          > .${prefixCls}-collapse-content {
-            > .${prefixCls}-collapse-content-box {
-              padding: 5px 0;
-            }
-          }
+         
         }
+      }
+
+      .${prefixCls}-collapse-content-box {
+        padding: 5px 0;
+        width: ${width};
+        min-width: ${minWidth};
+        max-width: ${maxWidth};
+        height: max-content;
+        min-height: ${minHeight};
+        max-height: ${maxHeight};
+        overflow: ${overflow ?? 'auto'};
+        padding-top: ${paddingTop} !important;
+        padding-bottom: ${paddingBottom} !important;
+        padding-left: ${paddingLeft} !important;
+        padding-right: ${paddingRight} !important;
       }
 
       .ant-collapse-header {
         border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
         border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
         font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
-        font-weight: 'bold';
+        height: ${headerHeight};
+        min-height: ${headerMinHeight};
+        max-height: ${headerMaxHeight}
+        width: ${width};
+        min-width: ${minWidth};
+        max-width: ${maxWidth};
         `);
 
   return {

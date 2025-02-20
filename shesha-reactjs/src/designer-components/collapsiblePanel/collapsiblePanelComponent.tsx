@@ -110,7 +110,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         const headerBackgroundStyle = await getBackgroundStyle(headerBackground, getHeaderStyle, headerStoredImageUrl);
 
         setHeaderFinalStyle({ ...headerBackgroundStyle, ...headerStyle });
-        setFinalStyle({ ...backgroundStyle, ...style });
+        setFinalStyle({ ...backgroundStyle, ...style, overflow: model?.overflow });
       };
 
       fetchTabStyles();
@@ -205,6 +205,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           header,
           content,
           collapsible: 'icon',
+          overflow: 'auto',
         };
       })
       .add<ICollapsiblePanelComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -229,7 +230,11 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
         const defaultHeaderStyle = defaultHeaderStyles(prev);
 
-        return { ...newModel, desktop: { ...newModel.desktop, headerStyles: defaultHeaderStyle }, tablet: { ...newModel.tablet, headerStyles: defaultHeaderStyle }, mobile: { ...newModel.mobile, headerStyles: defaultHeaderStyle } };
+        return {
+          ...newModel, desktop: { ...newModel.desktop, overflow: 'auto', headerStyles: defaultHeaderStyle },
+          tablet: { ...newModel.tablet, overflow: 'auto', headerStyles: defaultHeaderStyle },
+          mobile: { ...newModel.mobile, overflow: 'auto', headerStyles: defaultHeaderStyle }
+        };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],
 };
