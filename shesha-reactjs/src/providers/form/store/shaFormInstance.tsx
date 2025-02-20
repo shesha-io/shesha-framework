@@ -11,7 +11,7 @@ import { FormInfo } from "../api";
 import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContexts, wrapConstantsData } from "../utils";
 import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
-import { FormApi } from "../formApi";
+import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
@@ -33,7 +33,7 @@ interface ShaFormInstanceArguments {
     antdForm: FormInstance;
 }
 
-class PublicFormApi<Values = any> implements FormApi<Values> {
+class PublicFormApi<Values = any> implements IFormApi<Values> {
     #form: IShaFormInstance;
     constructor(form: IShaFormInstance) {
         this.#form = form;
@@ -76,6 +76,12 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     };
     get formArguments() {
         return this.#form.formArguments;
+    }
+    get parentFormValues() {
+        return this.#form.parentFormValues;
+    }
+    get initialValues() {
+        return this.#form.initialValues;
     }
 };
 
@@ -210,7 +216,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
 
     #publicFormApi: PublicFormApi;
-    getPublicFormApi = (): FormApi<Values> => {
+    getPublicFormApi = (): IFormApi<Values> => {
         return this.#publicFormApi ?? (this.#publicFormApi = new PublicFormApi<Values>(this));
     };
 

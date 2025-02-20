@@ -66,7 +66,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
+        public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
             var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
@@ -78,7 +78,8 @@ namespace Shesha.Authorization
                 {
                     ResultType = AuthenticateResultType.RedirectNoAuth,
                     RedirectModule = registration.AdditionalRegistrationInfoForm.Module,
-                    RedirectForm = registration.AdditionalRegistrationInfoForm.Name
+                    RedirectForm = registration.AdditionalRegistrationInfoForm.Name,
+                    UserId = registration.UserId
                 };
             }
 
@@ -137,7 +138,7 @@ namespace Shesha.Authorization
         /// </summary>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPin(string userNameOrMobileNo)
+        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
             var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User.UserName == userNameOrMobileNo).ToListAsync();
             if (!persons.Any())
@@ -159,7 +160,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> OtpAuthenticate([FromBody] OtpAuthenticateModel model)
+        public async Task<AuthenticateResultModel> OtpAuthenticateAsync([FromBody] OtpAuthenticateModel model)
         {
             var tenancyName = GetTenancyNameOrNull();
             var loginResult = await _logInManager.LoginViaOtpAsync(model.MobileNo, model.OperationId, model.Code, model.IMEI, tenancyName);
@@ -182,9 +183,9 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticate([FromBody] ExternalAuthenticateModel model)
+        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticateAsync([FromBody] ExternalAuthenticateModel model)
         {
-            var externalUser = await GetExternalUserInfo(model);
+            var externalUser = await GetExternalUserInfoAsync(model);
 
             var loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
 
@@ -265,7 +266,7 @@ namespace Shesha.Authorization
             return user;
         }
 
-        private async Task<ExternalAuthUserInfo> GetExternalUserInfo(ExternalAuthenticateModel model)
+        private async Task<ExternalAuthUserInfo> GetExternalUserInfoAsync(ExternalAuthenticateModel model)
         {
             var userInfo = await _externalAuthManager.GetUserInfoAsync(model.AuthProvider, model.ProviderAccessCode);
             if (userInfo.ProviderKey != model.ProviderKey)

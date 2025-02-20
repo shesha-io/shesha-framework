@@ -14,7 +14,7 @@ namespace Shesha.RestSharp
     {
         public async Task<RT> PostOrPutMethodAsync(Method httpMethod, PT postObj, List<HttpHeader> headers, string apiMethod)
         {
-            var client = new RestClient(apiMethod);
+            using var client = new RestClient(apiMethod);
             var request = new RestRequest() { Method = httpMethod };
 
             foreach (var header in headers)
@@ -35,7 +35,7 @@ namespace Shesha.RestSharp
 
         public async Task<RT> GetApiMethodAsync(string apiMethod, List<HttpHeader> headers)
         {
-            var client = new RestClient(apiMethod);
+            using var client = new RestClient(apiMethod);
             var request = new RestRequest() { Method = Method.Get };
 
             foreach (var header in headers)

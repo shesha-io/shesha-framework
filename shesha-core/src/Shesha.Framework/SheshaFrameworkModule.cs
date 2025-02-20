@@ -16,6 +16,7 @@ using Shesha.DynamicEntities.Distribution;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Locks;
+using Shesha.Migrations;
 using Shesha.Modules;
 using Shesha.Services;
 using Shesha.Services.ReferenceLists;
@@ -76,6 +77,8 @@ namespace Shesha
                 cfg => cfg.AddMaps(thisAssembly)
             );
 
+            IocManager.Register<MultiEntityReferenceMigration, MultiEntityReferenceMigration>(DependencyLifeStyle.Transient);
+
             IocManager.Register<IShaPermissionChecker, ShaPermissionChecker>(DependencyLifeStyle.Transient);
 
             IocManager.Register<ILockFactory, NamedLockFactory>(DependencyLifeStyle.Singleton);
@@ -133,7 +136,8 @@ namespace Shesha
                     ResetPasswordSmsOtpLifetime = 60,
                     MobileLoginPinLifetime = 60,
                     UseResetPasswordViaSecurityQuestions = true,
-                    ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3
+                    ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3,
+                    DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AllowAnonymous
                 });
             });
 

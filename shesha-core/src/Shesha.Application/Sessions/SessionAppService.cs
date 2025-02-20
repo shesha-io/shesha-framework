@@ -1,9 +1,8 @@
 ﻿using Abp.Auditing;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
-using Shesha.Authorization.Roles;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -29,12 +28,16 @@ namespace Shesha.Sessions
         }
 
         [Obsolete]
-        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformations()
+        [AllowAnonymous]
+
+        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformationsAsync()
         {
-            return await GetCurrentLoginInfo();
+            return await GetCurrentLoginInfoAsync();
         }
 
-        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfo()
+
+        [AllowAnonymous]
+        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfoAsync()
         {
             var output = new GetCurrentLoginInfoOutput { };
 
@@ -60,7 +63,7 @@ namespace Shesha.Sessions
                     FullName = user.FullName,
                     Email = user.EmailAddress,
                     MobileNumber = user.PhoneNumber,
-                    GrantedPermissions = await GetGrantedPermissions(),
+                    GrantedPermissions = await GetGrantedPermissionsAsync(),
                     PersonId = person.Id,
                     HomeUrl = homeUrl
                 };
@@ -69,7 +72,7 @@ namespace Shesha.Sessions
             return output;
         }
 
-        private async Task<List<GrantedPermissionDto>> GetGrantedPermissions()
+        private async Task<List<GrantedPermissionDto>> GetGrantedPermissionsAsync()
         {
             var grantedPermissions = new List<GrantedPermissionDto>();
 
@@ -124,7 +127,7 @@ namespace Shesha.Sessions
         /// </summary>
         /// <returns></returns>
         [DisableAuditing]
-        public async Task<List<string>> GetGrantedShaRoles()
+        public async Task<List<string>> GetGrantedShaRolesAsync()
         {
             var currentUser = AbpSession.UserId.HasValue
                 ? await GetCurrentPersonAsync()
@@ -143,7 +146,7 @@ namespace Shesha.Sessions
         /// Clears permissions cache
         /// </summary>
         [HttpPost]
-        public async Task ClearPermissionsCache()
+        public async Task ClearPermissionsCacheAsync()
         {
             await _permissionChecker.ClearPermissionsCacheAsync();
         }

@@ -41,7 +41,7 @@ export const deepMergeValues = (target: any, source: any) => {
 };
 
 export const getValueByPropertyName = (data: any, propertyName: string): any => {
-    if (!!data) {
+    if (Boolean(data) && Boolean(propertyName)) {
         const path = propertyName.split('.');
         if (Array.isArray(path) && path.length > 0) {
             let value = data[path[0]];

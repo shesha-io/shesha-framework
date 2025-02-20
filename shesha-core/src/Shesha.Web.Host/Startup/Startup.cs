@@ -3,11 +3,11 @@ using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Extensions;
 using Castle.Facilities.Logging;
-using ElmahCore;
 using ElmahCore.Mvc;
 using GraphQL;
 using GraphQL.NewtonsoftJson;
 using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,17 +20,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
+using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
+using Shesha.Notifications.SMS;
+using Shesha.Notifications;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -38,7 +40,6 @@ using Shesha.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -61,17 +62,15 @@ namespace Shesha.Web.Host.Startup
             services.AddSingleton<IActionDescriptorChangeProvider>(SheshaActionDescriptorChangeProvider.Instance);
             services.AddSingleton(SheshaActionDescriptorChangeProvider.Instance);
 
+            services.AddTransient<INotificationChannelSender, EmailChannelSender>();
+            services.AddTransient<INotificationChannelSender, SmsChannelSender>();
+
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
             });
 
-            services.AddElmah<XmlFileErrorLog>(options =>
-            {
-                options.Path = @"elmah";
-                options.LogPath = Path.Combine(_hostEnvironment.ContentRootPath, "App_Data", "ElmahLogs");
-                //options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated; //note: looks like we have to use cookies for it
-            });
+            services.AddSheshaElmah(_appConfiguration);
 
             services.AddMvcCore(options =>
                 {
@@ -90,7 +89,6 @@ namespace Shesha.Web.Host.Startup
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);
-                    options.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
                 });
 
             IdentityRegistrar.Register(services);
@@ -103,13 +101,30 @@ namespace Shesha.Web.Host.Startup
             AddApiVersioning(services);
 
             services.AddHttpContextAccessor();
+
             services.AddHangfire(config =>
             {
-                config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
-            });
-            services.AddHangfireServer();
+                var dbms = _appConfiguration.GetDbmsType();
+                var connStr = _appConfiguration.GetDefaultConnectionString();
 
-            //services.AddScoped<SheshaSchema>();
+                switch (dbms)
+                {
+                    case DbmsType.SQLServer:
+                        {
+                            config.UseSqlServerStorage(connStr);
+                            break;
+                        }
+                    case DbmsType.PostgreSQL:
+                        {
+                            config.UsePostgreSqlStorage(options => {
+                                options.UseNpgsqlConnection(connStr);
+                            });
+                            break;
+                        }
+                }
+            });
+            services.AddHangfireServer(config => {
+            });
 
             // add Shesha GraphQL
             services.AddSheshaGraphQL();
@@ -127,17 +142,12 @@ namespace Shesha.Web.Host.Startup
             );
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
         {
-            app.UseElmah();
+            app.UseSheshaElmah();
 
             // note: already registered in the ABP
             AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
-
-            // use NHibernate session per request
-            //app.UseNHibernateSessionPerRequest();
-
-            app.UseHangfireDashboard();
 
             app.UseConfigurationFramework();
 
@@ -149,13 +159,9 @@ namespace Shesha.Web.Host.Startup
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials()); // allow credentials
-
             app.UseStaticFiles();
-
             app.UseAuthentication();
-
             app.UseAbpRequestLocalization();
-
             app.UseRouting();
             app.UseAuthorization();
 
@@ -191,7 +197,6 @@ namespace Shesha.Web.Host.Startup
             });
 
             app.UseMiddleware<GraphQLMiddleware>();
-
             app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
         }
 

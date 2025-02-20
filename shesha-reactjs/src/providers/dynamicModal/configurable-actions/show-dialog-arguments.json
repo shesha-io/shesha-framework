@@ -8,7 +8,7 @@
                 "required": true
             },
             "type": "textField",
-            "version": "latest",
+            "version": 5,
             "parentId": "root"
         },
         {
@@ -20,7 +20,7 @@
             },
             "convertToFullId": true,
             "type": "formAutocomplete",
-            "version": "latest",
+            "version": 2,
             "parentId": "root"
         },
         {
@@ -40,11 +40,13 @@
             "items": [
                 {
                     "label": "Edit",
-                    "value": "edit"
+                    "value": "edit",
+                    "icon": "edit"
                 },
                 {
                     "label": "Read only",
-                    "value": "readonly"
+                    "value": "readonly",
+                    "icon": "readonly"
                 }
             ],
             "validate": {},
@@ -81,7 +83,7 @@
             ],
             "dataSourceType": "values",
             "type": "dropdown",
-            "version": "latest",
+            "version": 7,
             "parentId": "root"
         },
         {
@@ -108,7 +110,7 @@
                 "_value": false
             },
             "type": "dropdown",
-            "version": "latest",
+            "version": 7,
             "parentId": "root"
         },
         {
@@ -122,7 +124,7 @@
             },
             "min": 0,
             "type": "numberField",
-            "version": "latest",
+            "version": 4,
             "parentId": "root"
         },
         {
@@ -190,7 +192,7 @@
                         ],
                         "defaultValue": "default",
                         "type": "dropdown",
-                        "version": "latest",
+                        "version": 7,
                         "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
                     },
                     {
@@ -202,15 +204,15 @@
                             "_value": false
                         },
                         "label": "Configure Modal Buttons",
-                        "type": "buttons",
+                        "type": "buttonGroupConfigurator",
                         "version": "latest",
                         "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
                     }
                 ]
             },
-            "collapsible": "icon",
-            "ghost": true,
-            "components": []
+            "collapsible": "header",
+            "ghost": false,
+            "isSimpleDesign": false
         }
     ],
     "formSettings": {

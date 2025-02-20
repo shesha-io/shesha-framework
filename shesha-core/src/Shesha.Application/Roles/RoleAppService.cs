@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
@@ -17,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Roles
 {
-    [AbpAuthorize(PermissionNames.Pages_Roles)]
+    [SheshaAuthorize(Shesha.Domain.Enums.RefListPermissionedAccess.RequiresPermissions, PermissionNames.Pages_Roles)]
     public class RoleAppService : AsyncCrudAppService<Role, RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
         private readonly RoleManager _roleManager;
@@ -97,7 +96,7 @@ namespace Shesha.Roles
             CheckErrors(await _roleManager.DeleteAsync(role));
         }
 
-        public Task<ListResultDto<PermissionDto>> GetAllPermissions()
+        public Task<ListResultDto<PermissionDto>> GetAllPermissionsAsync()
         {
             var permissions = PermissionManager.GetAllPermissions();
 
@@ -129,7 +128,7 @@ namespace Shesha.Roles
             identityResult.CheckErrors(LocalizationManager);
         }
 
-        public async Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input)
+        public async Task<GetRoleForEditOutput> GetRoleForEditAsync(EntityDto input)
         {
             var permissions = PermissionManager.GetAllPermissions();
             var role = await _roleManager.GetRoleByIdAsync(input.Id);

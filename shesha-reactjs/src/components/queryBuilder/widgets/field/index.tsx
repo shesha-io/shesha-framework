@@ -1,5 +1,6 @@
 import React from 'react';
-import { BaseFieldWidget, BasicConfig } from '@react-awesome-query-builder/antd';
+import { BasicConfig } from '@react-awesome-query-builder/antd';
+import type { FieldWidget as BaseFieldWidget } from '@react-awesome-query-builder/antd';
 import { Typography } from 'antd';
 import { FieldWidgetProvider } from './fieldWidgetContext';
 

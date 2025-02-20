@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Collections.Extensions;
+﻿using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,26 +16,22 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
-    [AbpAuthorize()]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class PermissionAppService : SheshaAppServiceBase
     {
-        private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ILocalizationContext _localizationContext;
-        private IPermissionDefinitionContext _defenitionContext => PermissionManager as IPermissionDefinitionContext;
         private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
         private readonly IShaPermissionChecker _permissionChecker;
 
         private const string emptyId = "_";
 
         public PermissionAppService(
-            IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
             IRepository<Module, Guid> moduleRepository,
             ILocalizationContext localizationContext,
             IShaPermissionChecker permissionChecker
             )
         {
-            _permissionDefinitionRepository = permissionDefinitionRepository;
             _moduleRepository = moduleRepository;
             _localizationContext = localizationContext;
             _permissionChecker = permissionChecker;
@@ -126,7 +121,7 @@ namespace Shesha.Permissions
                 Parent = permission.ParentName ?? permission.Parent?.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
                 VersionNo = 1,
-                VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
+                VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
             var res = await _shaPermissionManager.CreatePermissionAsync(dbp);
@@ -151,7 +146,7 @@ namespace Shesha.Permissions
                 Parent = permission.ParentName ?? permission.Parent?.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
                 VersionNo = 1,
-                VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
+                VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
             var res = await _shaPermissionManager.EditPermissionAsync(permission.Id, dbp);
@@ -198,8 +193,8 @@ namespace Shesha.Permissions
         /// Checks if current user is granted for a permission.
         /// </summary>
         [HttpGet]
-        [AbpAuthorize()]
-        public async Task<bool> IsPermissionGranted(IsPermissionGrantedInput input) 
+        [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
+        public async Task<bool> IsPermissionGrantedAsync(IsPermissionGrantedInput input) 
         {
             if (input.PermissionedEntityId.IsNullOrEmpty() || input.PermissionedEntityClass.IsNullOrEmpty())
                 return await _permissionChecker.IsGrantedAsync(input.PermissionName);

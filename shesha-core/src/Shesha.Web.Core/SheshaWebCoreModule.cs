@@ -2,6 +2,7 @@
 using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.SignalR;
 using Abp.AutoMapper;
+using Abp.FluentValidation;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
@@ -14,6 +15,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Bootstrappers;
 using Shesha.Configuration;
+using Shesha.Configuration.Startup;
 using Shesha.Elmah;
 using Shesha.Languages;
 using Shesha.NHibernate;
@@ -32,7 +34,8 @@ namespace Shesha
         typeof(AbpAutoMapperModule),
         typeof(SheshaElmahModule),
         typeof(SheshaSchedulerModule),
-        typeof(SheshaApplicationModule)
+        typeof(SheshaApplicationModule),
+        typeof(AbpFluentValidationModule)
      )]
     public class SheshaWebCoreModule : AbpModule
     {
@@ -47,9 +50,9 @@ namespace Shesha
 
         public override void PreInitialize()
         {
-            Configuration.DefaultNameOrConnectionString = _appConfiguration.GetConnectionString(
-                SheshaConsts.ConnectionStringName
-            );
+            var config = Configuration.Modules.ShaNHibernate();
+
+            config.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
             // Use database for language management
             Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();

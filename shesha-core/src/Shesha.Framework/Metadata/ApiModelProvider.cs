@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
-    public class ApiModelProvider : BaseModelProvider, ITransientDependency
+    public class ApiModelProvider : BaseModelProvider, ISingletonDependency
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
 
-        public ApiModelProvider(ICacheManager cacheManager, IApiDescriptionGroupCollectionProvider apiDescriptionsProvider) : base(cacheManager)
+        public ApiModelProvider(ICacheManager cacheManager, IApiDescriptionGroupCollectionProvider apiDescriptionsProvider) : base("ApiModelProviderCache", cacheManager)
         {
             _apiDescriptionsProvider = apiDescriptionsProvider;
         }

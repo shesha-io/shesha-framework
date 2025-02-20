@@ -5,12 +5,12 @@ export interface IBackgroundValue {
     type: 'color' | 'url' | 'image' | 'storedFile' | 'gradient';
     size?: 'cover' | 'contain' | 'auto' | string;
     position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right' | string;
-    repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
-    gradient?: { direction: string, colors: {} };
+    repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y' | 'round';
+    gradient?: { direction: string; colors: {} };
     color?: string;
     url?: string;
     uploadFile?: UploadFile;
-    storedFile?: { id: string, ownerId: string, fileCatergory: string, ownerType: string };
+    storedFile?: { id: string };
 }
 
 export interface IBackgroundProps extends IConfigurableFormComponent {

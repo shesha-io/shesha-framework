@@ -27,6 +27,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   exposedVariables,
   readOnly = false,
   language = 'typescript',
+  environment,
   ...props
 }) => {
   const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
@@ -56,12 +57,13 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       modal.confirm({
         title: 'Clear code editor?',
         icon: <ExclamationCircleFilled />,
-        content: 'If you clear the code editor, the changes will be lost.',
+        content: 'If you clear the code editor, the changes will be lost and the editor will be closed',
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
         onOk() {
           setInternalValue(null);
+          setShowDialog(false);
           if (props.onChange) props.onChange(null);
         }
       });
@@ -112,6 +114,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       availableConstants={props.availableConstants}
       resultType={props.resultType}
       style={mode === 'dialog' ? { height: "100%" } : undefined}
+      environment={environment}
     />
   );
 

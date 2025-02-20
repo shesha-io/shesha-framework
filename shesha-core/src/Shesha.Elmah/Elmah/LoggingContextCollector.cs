@@ -28,10 +28,19 @@ namespace Shesha.Elmah
             return MakeWatchDog(errorRef.Type, errorRef.Id);
         }
 
+        private IDisposable NewEmptyAction() 
+        {
+            return new DisposeAction(() => {
+                // empty action
+            });
+        }
+
         public IDisposable MakeWatchDog(ErrorReference errorRef) 
         {
             // todo: register watchdog in the list and check uncompleted ones on finish if the context
             var state = CurrentState;
+            if (state == null)
+                return NewEmptyAction();
 
             var watchDog = new ExceptionWatchDog((exception) => {
 
@@ -88,6 +97,8 @@ namespace Shesha.Elmah
         public IDisposable SetLocationScope(string location)
         {
             var state = CurrentState;
+            if (state == null)
+                return NewEmptyAction();
 
             var prevLocation = state.CurrentLocation;
             

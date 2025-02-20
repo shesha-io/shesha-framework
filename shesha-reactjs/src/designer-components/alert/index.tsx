@@ -3,13 +3,34 @@ import { IToolboxComponent } from '@/interfaces';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormData, useGlobalState } from '@/providers';
-import { getSettings } from './settings';
+import { useForm, useFormData, useGlobalState } from '@/providers';
+import { getSettings } from './settingsForm';
 import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import Marquee from 'react-fast-marquee';
+
+
+const defaultTextForPreview = {
+  success: {
+    text: 'Success Alert Preview Text', 
+    description: 'This is a success alert preview text. More information here.'
+  },
+  info: {
+    text: 'Info Alert Preview Text',
+    description: 'This is an info alert preview text. More information here.'
+  },
+  warning: {
+    text: 'Warning Alert Preview Text',
+    description: 'This is a warning alert preview text. More information here.'
+  },
+  error: {
+    text: 'Error Alert Preview Text',
+    description: 'This is an error alert preview text. More information here.'
+  }
+};
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
@@ -19,20 +40,32 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
+    const { formMode } = useForm();
 
     const { text, alertType, description, showIcon, closable, icon, style } = model;
 
-    const evaluatedMessage = evaluateString(text, { data: formData, globalState });
-    const evaluatedDescription = evaluateString(description, formData);
+    var evaluatedMessage = evaluateString(text, { data: formData, globalState });
+    var evaluatedDescription = evaluateString(description, formData);
 
     if (model.hidden) return null;
-    
+
+    if (formMode === 'designer') {
+      const previewData = defaultTextForPreview[alertType];
+      if (!evaluatedMessage || evaluatedMessage?.trim() === '') {
+        evaluatedMessage = previewData.text;
+      }
+      if (!evaluatedDescription || evaluatedDescription?.trim() === '') {
+        evaluatedDescription = previewData.description;
+      }
+    }
+
     return (
       <Alert
         className="sha-alert"
-        message={evaluatedMessage}
+        message={model.marquee ? (<Marquee pauseOnHover gradient={false}><div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} /></Marquee>) : <div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} />}
+        banner={model.banner}
         type={alertType}
-        description={evaluatedDescription}
+        description={!model.banner && evaluatedDescription}
         showIcon={showIcon}
         style={getStyle(style, formData)} // Temporary. Make it configurable
         closable={closable}
@@ -47,7 +80,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   migrator: (m) => m
     .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAlertComponentProps>(1, (prev) => migrateVisibility(prev))
-    .add<IAlertComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IAlertComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
   ,
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

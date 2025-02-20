@@ -43,6 +43,32 @@ export const getSettings = (data: any) =>
               label: 'Configure Menu Buttons',
               parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
             })
+            .addCheckbox({
+              id: nanoid(),
+              propertyName: 'showUserInfo',
+              label: 'Show User Info',
+              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5'
+            })
+            .addTextField({
+              id: nanoid(),
+              propertyName: 'popOverTitle',
+              label: 'Popover Title',
+              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
+              hidden: {
+                _mode: 'code',
+                _code: 'return data?.showUserInfo != true'
+              }
+            })
+            .addFormAutocomplete({
+              id: nanoid(),
+              propertyName: 'popOverFormId',
+              label: 'Popover Form',
+              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
+              hidden: {
+                _mode: 'code',
+                _code: 'return data?.showUserInfo != true'
+              }
+            })
             .toJson(),
         ],
       },
@@ -84,6 +110,13 @@ export const getSettings = (data: any) =>
               min: "1",
               max: "100",
               parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
+            })
+            .addCodeEditor({
+              id: nanoid(),
+              propertyName: "popOverContentStyle",
+              label: "Popover content Style",
+              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
+              mode: "dialog",
             })
             .toJson(),
         ],

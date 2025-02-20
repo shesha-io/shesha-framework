@@ -8,7 +8,7 @@ export interface IButtonGroupComponentProps extends IConfigurableFormComponent, 
 
 export interface IButtonGroupProps extends IBaseButtonGroupProps {
   id: string;
-  disabled?: boolean;
+  readOnly?: boolean;
   form?: FormInstance<any>;
 }
 

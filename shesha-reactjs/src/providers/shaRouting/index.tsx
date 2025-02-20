@@ -2,18 +2,15 @@ import React, {
   FC,
   PropsWithChildren,
   useContext,
-  useReducer
 } from 'react';
 import { isFormFullName } from '../form/utils';
 import { FormIdentifier } from '@/interfaces';
-import { getFlagSetters } from '../utils/flagsSetters';
 import { buildUrl } from '@/utils/url';
 import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { mapKeyValueToDictionary } from '@/utils/dictionary';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
-import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRouting, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
-import { shaRoutingReducer } from './reducer';
+import { ShaRouting, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
 export type NavigationType = 'url' | 'form';
@@ -48,19 +45,13 @@ interface ShaRoutingProviderProps {
 }
 
 const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn }) => {
-  const [state, dispatch] = useReducer(shaRoutingReducer, {
-    ...SHA_ROUTING_CONTEXT_INITIAL_STATE,
-    router,
-  });
-
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
   const goingToRoute = (route: string) => {
-    state?.router?.push(route);
+    router?.push(route);
   };
 
   const getFormUrl = (formId: FormIdentifier) => {
     const isLoggedIn = getIsLoggedIn();
-    if (getFormUrlFunc) 
+    if (getFormUrlFunc)
       return getFormUrlFunc(formId, isLoggedIn);
 
     const dynamicPage = isLoggedIn
@@ -73,8 +64,8 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   };
 
   const navigateToRawUrl = (url: string): Promise<boolean> => {
-    if (state?.router) {
-      state.router.push(url);
+    if (router) {
+      router.push(url);
       return Promise.resolve(true);
     }
 
@@ -87,7 +78,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
 
   const prepareUrl = (url: string, queryParameters?: IKeyValue[]) => {
     const queryParams = mapKeyValueToDictionary(queryParameters);
-    return buildUrl(url, queryParams);    
+    return buildUrl(url, queryParams);
   };
 
   const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
@@ -101,7 +92,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     }
   };
 
-  const actionDependencies = [state, state?.router];
+  const actionDependencies = [router];
   useConfigurableAction<INavigateActoinArguments>(
     {
       name: NAVIGATE_ACTION_NAME,
@@ -123,10 +114,9 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   );
 
   return (
-    <ShaRoutingStateContext.Provider value={{ ...state, router }}>
+    <ShaRoutingStateContext.Provider value={{ router }}>
       <ShaRoutingActionsContext.Provider
         value={{
-          ...getFlagSetters(dispatch),
           goingToRoute,
           getFormUrl,
           getUrlFromNavigationRequest,

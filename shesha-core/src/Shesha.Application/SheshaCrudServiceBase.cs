@@ -22,6 +22,7 @@ using Shesha.QuickSearch;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using Shesha.Web;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -95,7 +96,8 @@ namespace Shesha
         [EntityAction(StandardEntityActions.Delete)]
         public override async Task DeleteAsync(EntityDto<TPrimaryKey> input)
         {
-            await DeleteCascadeAsync(Repository.Get(input.Id));
+            var entity = await Repository.GetAsync(input.Id);
+            await DeleteCascadeAsync(entity);
             await base.DeleteAsync(input);
         }
 
@@ -177,11 +179,11 @@ namespace Shesha
                     ? await GetGqlTopLevelPropertiesAsync()
                     : await CleanupPropertiesAsync(input.Properties);
 
-            var query = $@"query{{
-  {schemaName}(id: ""{input.Id}"") {{
-    {properties}
-  }}
-}}";
+            var query = input.Id.GetType() == typeof(Int64)
+                || input.Id.GetType() == typeof(Int32)
+                || input.Id.GetType() == typeof(int)
+                ? $@"query{{{schemaName}(id: {input.Id}) {{{properties}}}}}"
+                : $@"query{{{schemaName}(id: ""{input.Id}"") {{{properties}}}}}";
 
             var result = await DocumentExecuter.ExecuteAsync(s =>
             {
@@ -252,7 +254,7 @@ namespace Shesha
                     { "quickSearchProperties", ExtractProperties(properties) },
                     { "sorting", input.Sorting },
                     { "skipCount", input.SkipCount },
-                    { "maxResultCount", input.MaxResultCount },                    
+                    { "maxResultCount", input.MaxResultCount },
                 });
 
                 if (httpContext != null)
@@ -266,7 +268,8 @@ namespace Shesha
                 }
             });
 
-            if (result.Errors != null) {
+            if (result.Errors != null)
+            {
                 var validationResults = result.Errors.Select(e => new ValidationResult(e.FullMessage())).ToList();
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
@@ -274,13 +277,13 @@ namespace Shesha
             return new GraphQLDataResult<PagedResultDto<TEntity>>(result);
         }
 
-        private List<string> ExtractProperties(string properties) 
+        private List<string> ExtractProperties(string properties)
         {
             var regex = new Regex(@"\s");
             return regex.Split(properties).ToList();
         }
 
-        private async Task<string> CleanupPropertiesAsync(string properties) 
+        private async Task<string> CleanupPropertiesAsync(string properties)
         {
             if (string.IsNullOrWhiteSpace(properties))
                 return properties;
@@ -357,17 +360,22 @@ namespace Shesha
 
             switch (property.DataType)
             {
-                
                 case DataTypes.Array:
-                    if (property.DataFormat == ArrayFormats.ReferenceListItem
-                        || property.DataFormat == ArrayFormats.ObjectReference
-                        || property.DataFormat == ArrayFormats.Object)
+                    switch (property.DataFormat)
                     {
-                        sb.AppendLine(propertyName);
-                        break;
+                        case ArrayFormats.ReferenceListItem:
+                        case ArrayFormats.ObjectReference:
+                        case ArrayFormats.Object:
+                            sb.AppendLine(propertyName);
+                            break;
+                        case ArrayFormats.EntityReference:
+                            sb.Append(propertyName);
+                            sb.AppendLine(" {id _className _displayName} ");
+                            break;
+
+                            // todo: implement other types
                     }
-                    else
-                        return; // todo: implement other types
+                    break;
                 case DataTypes.EntityReference:
                     if (fullReference || property.EntityType.IsNullOrWhiteSpace())
                     {
@@ -409,7 +417,7 @@ namespace Shesha
             }
 
             sb.AppendLine("id");
-            
+
             sb.AppendLine(EntityConstants.ClassNameField);
             sb.AppendLine(EntityConstants.DisplayNameField);
 
@@ -433,7 +441,7 @@ namespace Shesha
         /// </summary>
         /// <param name="filter">Filter in JsonLogic format</param>
         /// <returns></returns>
-        protected async Task<List<TEntity>> GetAllFiltered(string filter)
+        protected async Task<List<TEntity>> GetAllFilteredAsync(string filter)
         {
             return await AsyncQueryableExecuter.ToListAsync(Repository.GetAllFiltered(filter));
         }

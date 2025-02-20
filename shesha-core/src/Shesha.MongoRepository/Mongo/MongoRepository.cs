@@ -75,17 +75,10 @@ namespace Shesha.MongoRepository.Mongo
         /// <param name="entities"></param>
         public void Insert(IEnumerable<T> entities)
         {
-            try
-            {
-                if (entities == null)
-                    throw new NullReferenceException(nameof(entities));
+            if (entities == null)
+                throw new NullReferenceException(nameof(entities));
 
-                Document.InsertMany(entities);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            Document.InsertMany(entities);
         }
 
         /// <summary>
@@ -94,17 +87,10 @@ namespace Shesha.MongoRepository.Mongo
         /// <param name="entity"></param>
         public void Insert(T entity)
         {
-            try
-            {
-                if (entity == null)
-                    throw new NullReferenceException(nameof(entity));
+            if (entity == null)
+                throw new NullReferenceException(nameof(entity));
 
-                Document.InsertOne(entity);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            Document.InsertOne(entity);
         }
         #endregion
 
@@ -116,18 +102,11 @@ namespace Shesha.MongoRepository.Mongo
         /// <param name="entities"></param>
         public void Update(IEnumerable<T> entities)
         {
-            try
-            {
-                if (entities == null)
-                    throw new NullReferenceException(nameof(entities));
+            if (entities == null)
+                throw new NullReferenceException(nameof(entities));
 
-                foreach (var entity in entities)
-                    Update(entity);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            foreach (var entity in entities)
+                Update(entity);
         }
 
         /// <summary>
@@ -136,18 +115,11 @@ namespace Shesha.MongoRepository.Mongo
         /// <param name="entity"></param>
         public void Update(T entity)
         {
-            try
-            {
-                if (entity == null)
-                    throw new NullReferenceException(nameof(entity));
+            if (entity == null)
+                throw new NullReferenceException(nameof(entity));
 
-                var filter = Builders<T>.Filter.Eq(x => x.Id, entity.Id);
-                Document.ReplaceOne(filter, entity, new ReplaceOptions { IsUpsert = true });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var filter = Builders<T>.Filter.Eq(x => x.Id, entity.Id);
+            Document.ReplaceOne(filter, entity, new ReplaceOptions { IsUpsert = true });
         }
         #endregion
 
@@ -159,18 +131,11 @@ namespace Shesha.MongoRepository.Mongo
         /// <param name="documents"></param>
         public void Delete(IEnumerable<T> documents)
         {
-            try
-            {
-                if (documents == null)
-                    throw new NullReferenceException(nameof(documents));
+            if (documents == null)
+                throw new NullReferenceException(nameof(documents));
 
-                foreach (var entity in documents)
-                    Delete(entity);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            foreach (var entity in documents)
+                Delete(entity);
         }
 
         /// <summary>
@@ -179,19 +144,11 @@ namespace Shesha.MongoRepository.Mongo
         /// <param name="document"></param>
         public void Delete(T document)
         {
-            try
-            {
-                if (document == null)
-                    throw new NullReferenceException(nameof(document));
+            if (document == null)
+                throw new NullReferenceException(nameof(document));
 
-                var filter = Builders<T>.Filter.Eq(x => x.Id, document.Id);
-                Document.DeleteOne(filter);
-                
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var filter = Builders<T>.Filter.Eq(x => x.Id, document.Id);
+            Document.DeleteOne(filter);
         }
         #endregion
 
