@@ -204,6 +204,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   };
 
   if (props.readOnly) {
+    if (!props.value)
+      return null;
     const readonlyValue = props.mode === 'multiple' 
       ? selected.current?.map((x) => ({label: displayValueFunc(x, allData), value: keyValueFunc(outcomeValueFunc(x, allData), allData)}))
       : {
