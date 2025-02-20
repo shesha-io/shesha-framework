@@ -116,12 +116,19 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     ...new DesignerToolbarSettings()
                       .addSettingsInput({
                         id: nanoid(),
-                        propertyName: 'enityType',
+                        inputType: 'autocomplete',
+                        propertyName: 'entityType',
                         label: 'Entity Type',
-                        parentId: mainSettingsTabId,
-                        readOnly: false,
-                        inputType: 'typeAutoComplete',
-                        width: '100%',
+                        description: 'The entity type you want to use for the chart.',
+                        labelAlign: 'right',
+                        parentId: 'root',
+                        hidden: false,
+                        dataSourceType: 'url',
+                        validate: { required: true },
+                        dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                        settingsValidationErrors: [],
+                        useRawValues: true,
+                        width: '100%'
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -321,14 +328,29 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             id: dataTabId,
             components: [
               ...new DesignerToolbarSettings()
+                // .addSettingsInput({
+                //   id: nanoid(),
+                //   propertyName: 'getEntityUrl',
+                //   label: 'Get Entity URL',
+                //   jsSetting: true,
+                //   parentId: mainSettingsTabId,
+                //   size: 'small',
+                //   inputType: 'endpointsAutoComplete',
+                // })
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'autocomplete',
                   propertyName: 'getEntityUrl',
                   label: 'Get Entity URL',
-                  jsSetting: true,
+                  labelAlign: 'right',
                   parentId: mainSettingsTabId,
-                  size: 'small',
-                  inputType: 'endpointsAutoComplete',
+                  hidden: false,
+                  dataSourceType: 'url',
+                  validate: { required: true },
+                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                  settingsValidationErrors: [],
+                  useRawValues: true,
+                  width: '100%'
                 })
                 .addSettingsInput({
                   id: nanoid(),
