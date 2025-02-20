@@ -44,7 +44,7 @@ export interface TypeAndLocation extends GenericTypeDeclaration {
 }
 
 export interface ITypeDefinitionBuilder {
-  getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;  
+  getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;
   makeFormType: (formId: FormFullName, content: string) => TypeDefinition;
   makeFile: (fileName: string, content: string) => void;
 };
@@ -85,7 +85,7 @@ export interface ModelTypeIdentifier {
 export interface IHasEntityType {
   entityType: string | null; // TODO: split this property into two different (for objects and for entities) or rename existing
   entityModule?: string | null;
-  
+
   typeAccessor?: string;
   moduleAccessor?: string;
 }
@@ -243,7 +243,7 @@ export interface IHasMethods {
 }
 
 export interface IObjectMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
-  
+
 }
 
 export interface IEntityMetadata extends IObjectMetadata, IHasEntityType {
@@ -275,7 +275,7 @@ export const isContextMetadata = (value: IModelMetadata): value is IContextMetad
 };
 
 export const metadataHasNestedProperties = (value: IModelMetadata): value is IContainerWithNestedProperties & IModelMetadata => {
-  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value)) 
+  return (isEntityMetadata(value) || isObjectMetadata(value) || isContextMetadata(value))
     && Array.isArray((value as IContainerWithNestedProperties).properties);
 };
 

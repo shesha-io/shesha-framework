@@ -1,5 +1,5 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export type JustifyContent =
   | 'center'
@@ -25,14 +25,14 @@ export type JustifyContent =
 export type JustifyItems =
   | 'normal'
   | 'stretch'
-  | 'center  '
-  | 'start '
-  | 'end  '
+  | 'center'
+  | 'start'
+  | 'end'
   | 'flex-start'
   | 'flex-end'
   | 'self-start'
   | 'self-end'
-  | 'left  '
+  | 'left'
   | 'right'
   | 'baseline'
   | 'first baseline'
@@ -72,7 +72,7 @@ export type JustifySelf =
   | 'flex-end; '
   | 'self-start'
   | 'self-end'
-  | 'left;  '
+  | 'left'
   | 'right;'
   | 'baseline'
   | 'first baseline'
@@ -140,7 +140,7 @@ export type AlignSelf =
 
 export type ShadowStyleType = 'none' | 'above' | 'below';
 
-export interface ICommonContainerProps {
+export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   display?: 'block' | 'flex' | 'grid' | 'inline-grid';
   direction?: ContainerDirection;
   flexWrap?: FlexWrap;
@@ -166,10 +166,11 @@ export interface ICommonContainerProps {
   borderStyle?: string;
   borderRadius?: string | number;
   overflow?: string;
-  shadowStyle?: ShadowStyleType;
+  shadowStyle?: string;
+  style?: React.CSSProperties;
 }
 
-export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
+export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
@@ -181,4 +182,7 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, IC
   backgroundUrl?: string;
   backgroundBase64?: string;
   backgroundStoredFileId?: string;
+  desktop?: any;
+  tablet?: any;
+  mobile?: any;
 }

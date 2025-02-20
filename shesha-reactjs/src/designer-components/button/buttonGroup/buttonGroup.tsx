@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -18,6 +18,7 @@ import {
 import { ConfigurableButton } from '../configurableButton';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
+    getActualModel,
     getStyle,
     IApplicationContext,
     useAvailableConstantsData
@@ -25,16 +26,23 @@ import {
 import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupProps } from './models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useSheshaApplication } from '@/providers';
+import { useDeepCompareMemo } from '@/hooks';
+import { IStyleType, useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
-import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
-import { useActualContextData } from '@/hooks/useActualContextData';
-import { standartActualModelPropertyFilter } from '@/components/formDesigner/formComponent';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { initialValues } from '@/components/buttonGroupConfigurator/utils';
+import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
+import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
+import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 
 type MenuItem = MenuProps['items'][number];
+
+type PrepareItemFunc = (item: ButtonGroupItemProps, parentReadOnly: boolean) => ButtonGroupItemProps;
 
 type MenuButton = ButtonGroupItemProps & {
     childItems?: MenuButton[];
@@ -42,26 +50,14 @@ type MenuButton = ButtonGroupItemProps & {
 
 const renderButton = (props: ButtonGroupItemProps, uuid: string, appContext: IApplicationContext, form?: FormInstance<any>) => {
 
-    const { width, height, backgroundColor, fontSize, color, fontWeight, borderWidth, borderColor, borderStyle, borderRadius, size, buttonType } = props;
-    const newStyles = {
-        width: addPx(width),
-        height: addPx(height),
-        backgroundColor: backgroundColor,
-        fontSize: addPx(fontSize),
-        color: color,
-        fontWeight: fontWeight,
-        borderWidth: addPx(borderWidth),
-        borderColor: borderColor,
-        borderStyle: borderStyle,
-        borderRadius: addPx(borderRadius)
-    };
+    const { size, buttonType } = props;
 
     return (
         <ConfigurableButton
             key={uuid}
             {...props}
             size={size}
-            style={removeNullUndefined({ ...getStyle(props?.style, appContext.data), ...newStyles })}
+            style={removeNullUndefined({ ...getStyle(props?.style, appContext.data), ...props.styles })}
             readOnly={props.readOnly}
             buttonType={buttonType}
             form={form}
@@ -73,13 +69,14 @@ const createMenuItem = (
     props: MenuButton,
     getIsVisible: VisibilityEvaluator,
     appContext: IApplicationContext,
+    prepareItem: PrepareItemFunc,
     form: FormInstance<any>
 ): MenuItem => {
     const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
     const childItems = props.childItems && props.childItems.length > 0
-        ? props.childItems.filter(getIsVisible)?.map((props) => createMenuItem(props, getIsVisible, appContext, form))
+        ? props.childItems.map(x => prepareItem(x, props.readOnly)).filter(getIsVisible)?.map((props) => createMenuItem(props, getIsVisible, appContext, prepareItem, form))
         : null;
 
     return isDivider
@@ -103,15 +100,17 @@ interface InlineItemBaseProps {
 
 interface InlineItemProps extends InlineItemBaseProps {
     item: ButtonGroupItemProps;
+    prepareItem: PrepareItemFunc;
     form?: FormInstance<any>;
+    styles?: IStyleType;
 }
 const InlineItem: FC<InlineItemProps> = (props) => {
-    const { item, uuid, getIsVisible, appContext, form } = props;
+    const { item, uuid, getIsVisible, appContext, prepareItem, form } = props;
 
     if (isGroup(item)) {
-        const menuItems = item.childItems
+        const menuItems = item.childItems.map(x => prepareItem(x, item.readOnly))
             .filter(item => (getIsVisible(item)))
-            .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
+            .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, prepareItem, form)));
         return (
             <Dropdown
                 key={uuid}
@@ -133,9 +132,10 @@ const InlineItem: FC<InlineItemProps> = (props) => {
     }
 
     if (isItem(item)) {
+
         switch (item.itemSubType) {
             case 'button':
-                return renderButton(item, uuid, appContext, form);
+                return renderButton({ ...item, ...migratePrevStyles(item) }, uuid, appContext, form);
             case 'separator':
             case 'line':
                 return <Divider type='vertical' key={uuid} />;
@@ -149,10 +149,12 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
-export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, form }) => {
+export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, readOnly: disabled, form }) => {
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
+    const { backendUrl, httpHeaders } = useSheshaApplication();
+
 
     const isDesignMode = allData.form?.formMode === 'designer';
 
@@ -189,9 +191,72 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
 
-    const filteredItems = items?.filter(getIsVisible);
+    const prepareItem: PrepareItemFunc = useCallback((item, parentReadOnly) => {
+        if (item.editMode === undefined)
+            item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
+        const result = getActualModel(item, allData, parentReadOnly);
+        return { ...result };
+    }, [allData]);
 
-    if (items.length === 0 && isDesignMode)
+    const actualItems = useDeepCompareMemo(() => {
+        return items?.map((item) => {
+            const model = { ...item, type: '' };
+            const jsStyle = getStyle(model.style);
+            const dimensions = migratePrevStyles(model, initialValues()).dimensions;
+            const border = migratePrevStyles(model, initialValues())?.border;
+            const font = migratePrevStyles(model, initialValues())?.font;
+            const shadow = migratePrevStyles(model, initialValues())?.shadow;
+
+            const dimensionsStyles = getSizeStyle(dimensions);
+            const borderStyles = getBorderStyle(border, jsStyle);
+            const fontStyles = getFontStyle(font);
+            const shadowStyles = getShadowStyle(shadow);
+
+            const newStyles = {
+                ...dimensionsStyles,
+                ...borderStyles,
+                ...fontStyles,
+                ...shadowStyles,
+                ...jsStyle,
+            };
+
+            return prepareItem({ ...item, styles: newStyles }, disabled);
+        });
+    }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+
+    // State to store updated items with background styles
+    const [finalItems, setFinalItems] = useState(actualItems);
+
+    useEffect(() => {
+        const fetchBackgroundStyles = async () => {
+            const updatedItems = await Promise.all(
+                actualItems.map(async (item) => {
+                    const background = migratePrevStyles(item, initialValues())?.background;
+
+                    // Fetch background style asynchronously
+                    const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+
+                    const backgroundStyle = getBackgroundStyle(background, getStyle(item.style), storedImageUrl);
+
+                    const updatedStyles = {
+                        ...item.styles,
+                        ...backgroundStyle,
+                    };
+
+                    return prepareItem({ ...item, styles: updatedStyles }, disabled);
+                })
+            );
+
+            // Update state with the fully prepared items
+            setFinalItems(updatedItems);
+        };
+
+        fetchBackgroundStyles();
+    }, [actualItems, backendUrl, disabled, httpHeaders, prepareItem]);
+
+    const filteredItems = finalItems?.filter(getIsVisible);
+
+    if (actualItems.length === 0 && isDesignMode)
         return (
             <Alert
                 className="sha-designer-warning"
@@ -200,18 +265,20 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
             />
         );
 
+
     if (isInline) {
         return (
             <Button.Group size={size}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
-                        (<InlineItem item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />)
+                        (<InlineItem item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
                     )}
                 </Space>
             </Button.Group>
         );
     } else {
-        const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, form));
+        const menuItems = filteredItems?.map((props) => createMenuItem(props, getIsVisible, allData, prepareItem, form));
+
         return (
             <div className={styles.shaResponsiveButtonGroupContainer}>
                 <Menu
@@ -226,9 +293,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 };
 
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-    const items = useActualContextData(props.items, props.readOnly, null, standartActualModelPropertyFilter );
     return (
-        <DynamicActionsEvaluator items={items}>
+        <DynamicActionsEvaluator items={props.items}>
             {(items) => (<ButtonGroupInner {...props} items={items} />)}
         </DynamicActionsEvaluator>
     );

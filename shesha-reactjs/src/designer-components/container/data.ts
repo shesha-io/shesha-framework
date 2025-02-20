@@ -1,3 +1,4 @@
+import { ICommonContainerProps, IContainerComponentProps, IStyleType } from '@/index';
 import { nanoid } from '@/utils/uuid';
 
 export const JUSTIFY_ITEMS = [
@@ -146,3 +147,69 @@ export const ALIGN_SELF = [
   { id: nanoid(), label: 'revert-layer', value: 'revert-layer' },
   { id: nanoid(), label: 'unset', value: 'unset' },
 ];
+
+
+export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
+  const {
+    width = '100%',
+    height = 'auto',
+    maxHeight = 'auto',
+    maxWidth = 'auto',
+    minHeight = 'auto',
+    minWidth = '0px',
+    borderColor = '#000',
+    borderRadius = '8',
+    borderStyle = 'solid',
+    borderWidth = '0',
+    shadowStyle,
+  } = prev || {};
+
+
+  const isBelow = shadowStyle === 'below';
+  const isAbove = shadowStyle === 'above';
+
+  return {
+    dimensions: {
+      width,
+      height,
+      minHeight,
+      maxHeight,
+      minWidth,
+      maxWidth
+    },
+    border: {
+      selectedCorner: 'all',
+      selectedSide: 'all',
+      border: {
+        all: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        top: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        right: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        bottom: { width: borderWidth, color: borderColor, style: borderStyle as any },
+        left: { width: borderWidth, color: borderColor, style: borderStyle as any },
+      },
+      radius: { all: borderRadius }
+    },
+    shadow: {
+      blurRadius: isBelow || isAbove ? 4 : 0,
+      color: 'rgba(0, 0, 0, 0.15)',
+      offsetX: 0,
+      offsetY: isAbove ? -2 : isBelow ? 2 : 0,
+      spreadRadius: 0
+    },
+    position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
+    display: prev?.display,
+    direction: prev?.direction ?? "horizontal",
+    flexWrap: prev?.flexWrap ?? "wrap",
+    flexDirection: prev?.flexDirection ?? "row",
+    justifyContent: prev?.justifyContent ?? "left",
+    alignItems: prev?.alignItems ?? "normal",
+    alignSelf: prev?.alignSelf ?? "normal",
+    justifyItems: prev?.justifyItems ?? "normal",
+    textJustify: prev?.textJustify ?? "auto",
+    justifySelf: prev?.justifySelf ?? "normal",
+    noDefaultStyling: prev?.noDefaultStyling ?? false,
+    gridColumnsCount: prev?.gridColumnsCount ?? null,
+    gap: prev?.gap ?? '8px',
+    overflow: prev?.overflow ?? 'visible'
+  };
+};

@@ -1,13 +1,17 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
-
+import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
+import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -61,6 +65,42 @@ export interface IComponentValidationRules {
 }
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type PositionType = 'relative' | 'fixed';
+export interface IStyleType {
+  border?: IBorderValue;
+  background?: IBackgroundValue;
+  font?: IFontValue;
+  shadow?: IShadowValue;
+  dimensions?: IDimensionsValue;
+  position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
+  size?: SizeType;
+  style?: string;
+}
+
+export interface IInputStyles extends IStyleType {
+  borderSize?: string | number;
+  borderRadius?: string | number;
+  borderType?: string;
+  borderColor?: string;
+  fontColor?: string;
+  fontWeight?: string | number;
+  fontSize?: string | number;
+  stylingBox?: string;
+  height?: string | number;
+  width?: string | number;
+  backgroundColor?: string;
+  hideBorder?: boolean;
+  backgroundCover?: 'contain' | 'cover';
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
+  className?: string;
+  wrapperStyle?: string;
+  backgroundType?: 'image' | 'color';
+  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
+  backgroundUrl?: string;
+  backgroundBase64?: string;
+  backgroundStoredFileId?: string;
+  style?: string;
+};
 
 export type ConfigurableFormComponentTypes =
   | 'alert'
@@ -192,23 +232,15 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
-}
+  layout?: FormLayout;
 
-export interface IInputStyles {
-  size?: SizeType;
-  borderSize?: string | number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  fontColor?: string;
-  fontWeight?: string | number;
-  fontSize?: string | number;
-  stylingBox?: string;
-  height?: string | number;
-  width?: string | number;
-  backgroundColor?: string;
-  hideBorder?: boolean;
-  style?: string;
+  inputStyles?: IStyleType;
+
+  desktop?: any;
+
+  tablet?: any;
+
+  mobile?: any;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
@@ -310,8 +342,8 @@ export interface FormMarkupWithSettings {
 export type FormRawMarkup = IConfigurableFormComponent[];
 export type FormMarkup =
   | FormRawMarkup
-  | FormMarkupWithSettings
-  | ((data: any) => FormRawMarkup | FormMarkupWithSettings);
+  | FormMarkupWithSettings | ((data: any) => FormRawMarkup
+    | FormMarkupWithSettings);
 
 export type FormFullName  = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;

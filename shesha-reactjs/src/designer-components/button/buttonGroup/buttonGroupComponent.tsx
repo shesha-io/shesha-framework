@@ -1,7 +1,6 @@
 import React from 'react';
 import { ButtonGroup } from './buttonGroup';
 import { ButtonGroupItemProps, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
-import { ButtonGroupSettingsForm } from './settings';
 import { GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -11,14 +10,15 @@ import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
   isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
-  Factory: ({ model ,form}) => {
-    return model.hidden ? null : <ButtonGroup {...model} form={form} />;
+  Factory: ({ model, form }) => {
+    return model.hidden ? null : <ButtonGroup {...model} readOnly={model.readOnly} form={form} />;
   },
   actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
   migrator: (m) => m
@@ -53,14 +53,14 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
         return { ...item };
       };
-      
+
       newModel.items = prev.items?.map(updateItemDefaults);
       return newModel;
     })
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
     .add<IButtonGroupComponentProps>(7, (prev) => migrateButtonsNavigateAction(prev))
     .add<IButtonGroupComponentProps>(8, (prev) => {
-      const newModel = {...prev, editMode: 'editable'} as IButtonGroupComponentProps;
+      const newModel = { ...prev, editMode: 'editable' } as IButtonGroupComponentProps;
 
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         const newItem = migrateReadOnly(item, 'inherited');
@@ -70,9 +70,9 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       };
 
       newModel.items = newModel.items.map(updateItems);
-      return newModel ;
+      return newModel;
     })
-    .add<IButtonGroupComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IButtonGroupComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IButtonGroupComponentProps>(10, (prev) => {
       const setDownIcon = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         if (isGroup(item)) {
@@ -87,7 +87,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       };
     })
   ,
-  settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
+  settingsFormMarkup: (props) => getSettings(props),
 };
 
 export default ButtonGroupComponent;
