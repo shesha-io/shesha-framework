@@ -118,7 +118,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
             align-items: center;
 
           &.${prefixCls}-upload-btn {
-            padding: 8px 0;
       
             .${prefixCls}-upload-drag-icon {
               margin: unset;
@@ -135,6 +134,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
       
         .ant-btn {
+          padding: 0;
           *{
             font-size: ${fontSize ?? '14px'} !important;
             font-weight: ${fontWeight ?? '400'} !important;
