@@ -23,6 +23,10 @@ import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
 import { toSizeCssProp } from '@/utils/form';
 import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { Autocomplete } from '@/components/autocomplete';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { evaluateDynamicFilters } from '@/utils';
+import { useDeepCompareMemo, useNestedPropertyMetadatAccessor } from '@/index';
+import { useActualContextExecution } from '@/hooks/useActualContextExecution';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -36,6 +40,36 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
+    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
+      model.dataSourceType === 'entitiesList' ? model.entityType : null
+    );
+
+    const evaluatedFilters = useAsyncMemo(async () => {
+      if (model.dataSourceType !== 'entitiesList' || !model.filter)
+        return '';
+
+      const response = await evaluateDynamicFilters(
+        [{ expression: model.filter } as any],
+        [
+          { match: 'data', data: allData.data },
+          { match: 'globalState', data: allData.globalState },
+          { match: 'pageContext', data: { ...allData.pageContext }}
+        ],
+        propertyMetadataAccessor
+      );
+
+      if (response.find((f) => f?.unevaluatedExpressions?.length)) 
+        return undefined;
+
+      return response[0]?.expression ?? undefined;
+    }, [model.filter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
+
+    const memoizedFilter = useDeepCompareMemo(() => {
+      return evaluatedFilters;
+    }, [evaluatedFilters]);
+
+    const defaultValue = useActualContextExecution(model.defaultValue);
+    const formItemProps = defaultValue ? { model, initialValue: defaultValue } : { model };
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
@@ -63,7 +97,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       if (model.valueFormat === 'custom') {
         return executeExpression<string>(model.keyValueFunc, {...args, value}, null, null );
       }
-      return value;
+      return value?.id ?? value?.value ?? value;
     }, [model.valueFormat, model.keyValueFunc, model.keyPropName]);
 
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
@@ -85,7 +119,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
       }
       return getValueByPropertyName(value, model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText'))
-        || 'unknown';
+        || (model.readOnly ? '' : 'unknown');
     }, [model.valueFormat, model.displayValueFunc, model.displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any[]) => {
@@ -93,7 +127,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     }, [model.filterKeysFunc]);
 
     return (
-      <ConfigurableFormItem {...{model}}>
+      <ConfigurableFormItem {...formItemProps}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
@@ -104,6 +138,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
           return <Autocomplete
             {...model}
+            filter={memoizedFilter}
             grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
             keyValueFunc={keyValueFunc}
             outcomeValueFunc={outcomeValueFunc}
