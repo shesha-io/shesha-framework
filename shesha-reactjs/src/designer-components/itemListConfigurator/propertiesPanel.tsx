@@ -19,13 +19,13 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
     const [form] = Form.useForm();
 
     const formRef = useRef<ConfigurableFormInstance>(null);
-
+  
     const debouncedSave = useDebouncedCallback(
-        values => {
-            onChange?.({ ...item, ...values });
-        },
-        // delay in ms
-        300
+      values => {
+        onChange?.({ ...item, ...values });
+      },
+      // delay in ms
+      300
     );  
 
     const editor = useMemo(() => {

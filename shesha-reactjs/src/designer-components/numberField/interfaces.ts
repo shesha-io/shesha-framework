@@ -1,7 +1,6 @@
-import { IconType } from '@/components';
-import { IConfigurableFormComponent, IInputStyles, IStyleType } from '@/providers/form/models';;
+import { IConfigurableFormComponent } from '@/providers/form/models';
 
-export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
+export interface INumberFieldComponentProps extends IConfigurableFormComponent {
   hideBorder?: boolean;
   min?: number;
   max?: number;
@@ -9,8 +8,4 @@ export interface INumberFieldComponentProps extends IConfigurableFormComponent, 
   stepNumeric?: number;
   stepString?: string;
   placeholder?: string;
-  prefix?: string;
-  suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
 }

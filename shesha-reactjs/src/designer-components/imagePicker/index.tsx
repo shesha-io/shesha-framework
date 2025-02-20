@@ -15,8 +15,8 @@ interface IImageUploaderProps {
     readOnly: boolean;
 }
 
-export const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
-    const [fileList, setFileList] = useState<UploadFile[]>(typeof value == 'string' ? value : value ? [{ ...value }] : []);
+const ImagePicker = ({ onChange, value, readOnly }: IImageUploaderProps) => {
+    const [fileList, setFileList] = useState<UploadFile[]>(value ? [{ ...value }] : []);
     const { styles } = useStyles();
 
     const uploadBtnRef = useRef<HTMLButtonElement | null>(null);

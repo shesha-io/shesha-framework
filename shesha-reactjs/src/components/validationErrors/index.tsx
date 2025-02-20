@@ -30,14 +30,13 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   const renderValidationErrors = (props: AlertProps) => {
     if (renderMode === 'alert') {
       return (
-          <Alert
-            className={classNames(styles.shaValidationErrorAlert, className)}
-            type="error"
-            showIcon
-            closable
-            {...props}
-            style={{ ...props.style }}
-          />  
+        <Alert
+          className={classNames(styles.shaValidationErrorAlert, className)}
+          type="error"
+          showIcon
+          closable
+          {...props}
+        />
       );
     }
 

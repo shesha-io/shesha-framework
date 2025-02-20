@@ -74,7 +74,6 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
                 maxHeight: 400,
                 overflow: 'auto',
             }}
-            size='small'
             placeholder="Please select"
             allowClear
             //treeDefaultExpandAll

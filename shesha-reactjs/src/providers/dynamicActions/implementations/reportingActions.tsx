@@ -7,7 +7,7 @@ import { FC } from 'react';
 import { DynamicActionsProvider } from '../index';
 
 export interface IReportingActionsProps {
-
+    
 }
 
 const ReportTestItems: ButtonGroupItemProps[] = [
@@ -18,7 +18,7 @@ const ReportTestItems: ButtonGroupItemProps[] = [
 
 const useReportingActions: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
-
+    
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         if (!isEntityMetadata(metadata))
             return [];
@@ -34,8 +34,8 @@ const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
         const testItems = useMemo<ButtonGroupItemProps[]>(() => {
             return ReportTestItems;
         }, []);
-
-        return (<WrappedComponent {...props} items={testItems} hocType={'report'} />);
+    
+        return (<WrappedComponent {...props} items={testItems} hocType={'report'}/>);
     };
 };
 

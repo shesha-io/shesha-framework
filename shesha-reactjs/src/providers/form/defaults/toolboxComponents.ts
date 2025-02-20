@@ -11,6 +11,7 @@ import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
 import DataList from '@/designer-components/dataList/dataListComponent';
 import DataSource from '@/designer-components/dataSource/dataSourceComponent';
+import Divider from '@/designer-components/_legacyComponents/divider';
 import Drawer from '@/designer-components/drawer';
 import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';
@@ -102,12 +103,8 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
-import LabelConfigurator from '@/designer-components/styleLabel';
-import SearchableTabs from '@/designer-components/propertiesTabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
-import SettingsInput from '@/designer-components/settingsInput';
-import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
@@ -151,6 +148,7 @@ export const getToolboxComponents = (
         AutocompleteTagGroup,
         ColorPickerComponent,
         IconPicker,
+        EditableTagGroup,
         HtmlRender,
         Image,
         ImageAnnotationComponent,
@@ -195,7 +193,7 @@ export const getToolboxComponents = (
     },
     {
       name: 'Data Access',
-      visible: false,
+      visible: true,
       components: [DataSource, DataContextComponent],
     },
     {
@@ -206,6 +204,7 @@ export const getToolboxComponents = (
         CollapsiblePanel,
         Columns,
         ContainerComponent,
+        Divider,
         Drawer,
         KeyInformationBarComponent,
         SectionSeprator,
@@ -224,7 +223,6 @@ export const getToolboxComponents = (
         Title,
         Toolbar,
         List,
-        EditableTagGroup,,
         FormAutocompleteComponent,
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,
@@ -254,10 +252,6 @@ export const getToolboxComponents = (
         Buttons,
         Section,
         StyleBox,
-        LabelConfigurator,
-        SearchableTabs,
-        SettingsInput,
-        SettingsInputRow,
         CodeEditor,
         ImagePickerComponent,
         ComponentSelectorComponent,

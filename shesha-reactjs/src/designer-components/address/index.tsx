@@ -18,15 +18,15 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   icon: <HomeOutlined />,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          return (
-            <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly}>
-              <AutoCompletePlacesControl {...model} value={value} onChange={onChange} />
-            </ReadOnlyDisplayFormItemWrapper>
-          );
-        }}
-      </ConfigurableFormItem>
+        <ConfigurableFormItem model={model}>
+          {(value, onChange) => { 
+            return (
+              <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly}>
+                <AutoCompletePlacesControl {...model} value={value} onChange={onChange}/>
+              </ReadOnlyDisplayFormItemWrapper>
+            );
+          }}
+        </ConfigurableFormItem>
     );
   },
   settingsFormFactory: (props) => (<AddressSettingsForm {...props} />),
@@ -34,9 +34,9 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAddressCompomentProps>(1, (prev) => migrateVisibility(prev))
     .add<IAddressCompomentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IAddressCompomentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IAddressCompomentProps>(4, (prev) => ({ ...prev, onSelectCustom: migrateFormApi.withoutFormData(prev.onSelectCustom) }))
-  ,
+    .add<IAddressCompomentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IAddressCompomentProps>(4, (prev) => ({...prev, onSelectCustom: migrateFormApi.withoutFormData(prev.onSelectCustom)}))
+  ,  
 };
 
 export default AddressCompoment;

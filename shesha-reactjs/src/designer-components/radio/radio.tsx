@@ -1,9 +1,10 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import RadioGroup from './radioGroup';
 import React from 'react';
+import settingsFormJson from './settingsForm.json';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IRadioProps } from './utils';
@@ -12,8 +13,8 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
 
+const settingsForm = settingsFormJson as FormMarkup;
 
 interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'> {
   style?: string;
@@ -39,8 +40,8 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     );
   },
 
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: settingsForm,
+  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: m => m
     .add<IEnhancedRadioProps>(0, prev => ({
       ...prev,
@@ -56,18 +57,18 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
     .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
-    .add<IEnhancedRadioProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IEnhancedRadioProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
     .add<IEnhancedRadioProps>(6, (prev) => {
       const styles: IInputStyles = {
         style: prev.style
       };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
     })
   ,
   linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
-
+    
     return {
       ...model,
       dataSourceType: isRefList ? 'referenceList' : 'values',

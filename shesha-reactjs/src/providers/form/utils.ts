@@ -339,7 +339,6 @@ const getSettingValue = (
       return v;
     }
 
-
     // update setting value to actual
     if (isPropertySettings(value)) {
       const v = value._mode === 'code'

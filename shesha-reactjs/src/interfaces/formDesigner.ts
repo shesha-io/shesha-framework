@@ -186,7 +186,7 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors { }
+export interface IFormValidationErrors {}
 
 export { type ConfigurableFormInstance };
 

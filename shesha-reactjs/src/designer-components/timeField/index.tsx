@@ -4,8 +4,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IInputStyles } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';

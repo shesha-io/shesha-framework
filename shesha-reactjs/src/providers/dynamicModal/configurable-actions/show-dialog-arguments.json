@@ -40,13 +40,11 @@
             "items": [
                 {
                     "label": "Edit",
-                    "value": "edit",
-                    "icon": "edit"
+                    "value": "edit"
                 },
                 {
                     "label": "Read only",
-                    "value": "readonly",
-                    "icon": "readonly"
+                    "value": "readonly"
                 }
             ],
             "validate": {},
@@ -204,15 +202,14 @@
                             "_value": false
                         },
                         "label": "Configure Modal Buttons",
-                        "type": "buttonGroupConfigurator",
-                        "version": "latest",
+                        "type": "buttons",
                         "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
                     }
                 ]
             },
-            "collapsible": "header",
-            "ghost": false,
-            "isSimpleDesign": false
+            "collapsible": "icon",
+            "ghost": true,
+            "components": []
         }
     ],
     "formSettings": {

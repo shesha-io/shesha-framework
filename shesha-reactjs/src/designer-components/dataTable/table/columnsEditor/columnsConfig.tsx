@@ -2,23 +2,21 @@ import { Button } from 'antd';
 import React, { FC, Fragment, useState } from 'react';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsEditorModal } from './columnsEditorModal';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IColumnsConfigProps {
     value?: ColumnsItemProps[];
     onChange?: (value: ColumnsItemProps[]) => void;
     readOnly?: boolean;
-    size?: SizeType;
 }
 
-export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOnly = false, size }) => {
+export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOnly = false }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const toggleModalVisibility = () => setModalVisible((prev) => !prev);
 
     return (
         <Fragment>
-            <Button size={size} onClick={toggleModalVisibility}>{readOnly ? "View Columns" : "Configure Columns"}</Button>
+            <Button onClick={toggleModalVisibility}>{readOnly ? "View Columns" : "Configure Columns"}</Button>
 
             <ColumnsEditorModal
                 visible={modalVisible}

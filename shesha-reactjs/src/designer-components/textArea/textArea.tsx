@@ -1,9 +1,10 @@
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles } from '@/providers/form/models';
+import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import settingsFormJson from './settingsForm.json';
+import React, { CSSProperties } from 'react';
 import {
   evaluateString,
   getStyle,
@@ -13,9 +14,9 @@ import {
 } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps } from './interfaces';
-import { ConfigurableFormItem, ValidationErrors } from '@/components';
+import { ConfigurableFormItem } from '@/components';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -25,16 +26,8 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
-import { getSettings } from './settingsForm';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { useSheshaApplication } from '@/providers';
-// import { useStyles } from '../codeEditor/styles';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
+
+const settingsForm = settingsFormJson as FormMarkup;
 
 interface IJsonTextAreaProps {
   value?: any;
@@ -60,45 +53,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
 
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-
-    // const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
-    const dimensions = model?.dimensions;
-    const border = model?.border;
-    const font = model?.font;
-    const shadow = model?.shadow;
-    const background = model?.background;
-    const jsStyle = getStyle(model.style, model);
-
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [model.border]);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-      const fetchStyles = async () => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
-      return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
-
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
@@ -114,14 +68,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       fontWeight: model.fontWeight,
       fontSize: model.fontSize,
       ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles
     });
-
-    // const jsStyle = getStyle(model.style, allData.data);
+    const jsStyle = getStyle(model.style, allData.data);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
     const textAreaProps: TextAreaProps = {
@@ -131,7 +79,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       showCount: model.showCount,
       maxLength: model.validate?.maxLength,
       allowClear: model.allowClear,
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
+      variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
       style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
       spellCheck: model.spellCheck,
@@ -182,7 +130,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
-      autoSize: true,
+      autoSize: false,
       showCount: false,
       allowClear: false,
     };
@@ -211,16 +159,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           style: prev.style,
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      })
-      .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-  ,
-  linkToModelMetadata: (model, _): ITextAreaComponentProps => {
-    return {
-      ...model,
-    };
-  },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+      }),
+  settingsFormMarkup: settingsForm,
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };
 
 export default TextAreaComponent;

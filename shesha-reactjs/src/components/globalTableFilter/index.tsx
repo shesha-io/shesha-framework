@@ -6,18 +6,18 @@ import { useDataTable } from '@/providers';
 export interface IGlobalTableFilterProps {
   searchProps?: SearchProps;
   block?: boolean;
-  style?: React.CSSProperties;
 }
 
-export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, block, style }) => {
+export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, block }) => {
   const { changeQuickSearch, quickSearch, performQuickSearch } = useDataTable();
 
   const srcProps: SearchProps = {
+    size: 'small',
     allowClear: true,
     ...searchProps,
   };
 
-  return <GlobalTableFilterBase style={style} {...{ searchProps: srcProps, changeQuickSearch, performQuickSearch, quickSearch, block }} />;
+  return <GlobalTableFilterBase {...{ srcProps, changeQuickSearch, performQuickSearch, quickSearch, block }} />;
 };
 
 export default GlobalTableFilter;

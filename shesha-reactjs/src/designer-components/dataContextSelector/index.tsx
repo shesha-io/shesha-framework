@@ -7,12 +7,10 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
 import { useDataContextManager } from '@/providers/dataContextManager';
 import { useDataContext } from '@/providers/dataContextProvider/contexts';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IDataContextSelectorProps<TValue = any> {
   readOnly?: boolean;
   value?: TValue;
-  size?: SizeType;
   onChange?: (value: TValue) => void;
 }
 const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
@@ -28,7 +26,7 @@ const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   };
 
   return (
-    <Select allowClear={true} disabled={props.readOnly} showSearch value={props.value} size={props.size} onChange={onChange}>
+    <Select allowClear={true} disabled={props.readOnly} showSearch value={props.value} onChange={onChange}>
       {dataContexts.map((item) => {
         return <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>;
       })}

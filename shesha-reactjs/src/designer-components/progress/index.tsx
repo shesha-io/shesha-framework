@@ -1,6 +1,6 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { getSettings } from './settings';
+import { progressSettingsForm } from './settings';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
@@ -20,7 +20,6 @@ interface IProgressProps
   strokeColor?: string;
   lineStrokeColor?: string;
   circleStrokeColor?: string;
-  defaultValue?: number;
 }
 
 const ProgressComponent: IToolboxComponent<IProgressProps> = {
@@ -46,11 +45,9 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       gapPosition,
       strokeWidth,
       width,
-      defaultValue,
-      hidden
     } = model;
 
-    if (hidden) return null;
+    if (model.hidden) return null;
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
@@ -87,12 +84,15 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
+
+          const perc = percent || value;
+
           return (
             <ProgressWrapper
               type={progressType}
               strokeColor={getEvaluatedStrokeValue()}
               format={getEvaluatedFormat}
-              percent={percent || value}
+              percent={perc}
               width={width}
               strokeWidth={strokeWidth}
               gapPosition={gapPosition}
@@ -102,14 +102,13 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               showInfo={showInfo}
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
-              defaultValue={defaultValue}
             />);
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings, model),
+  settingsFormMarkup: progressSettingsForm,
+  validateSettings: model => validateConfigurableComponentSettings(progressSettingsForm, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))

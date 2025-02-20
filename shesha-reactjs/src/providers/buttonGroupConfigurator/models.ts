@@ -2,8 +2,7 @@ import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
-import { EditMode, IStyleType } from '@/index';
-import React from 'react';
+import { EditMode } from '@/index';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -23,7 +22,7 @@ export type ButtonActionType =
   | 'cancelFormEdit'
   | 'dispatchAnEvent';
 
-export interface IButtonGroupItemBase extends IStyleType {
+export interface IButtonGroupItemBase {
   id: string;
   name: string;
   block?: boolean;
@@ -40,27 +39,27 @@ export interface IButtonGroupItemBase extends IStyleType {
   buttonType?: ButtonType;
   ghost?: boolean;
   permissions?: string[];
+  style?: string;
   size?: SizeType;
   editMode?: EditMode;
   readOnly?: boolean;
   width?: string;
   height?: string;
   backgroundColor?: string;
-  fontSize?: number;
+  fontSize?: string;
   color?: string;
   fontWeight?: string;
   borderWidth?: string;
   borderColor?: string;
   borderStyle?: 'dotted' | 'solid' | 'dashed';
-  borderRadius?: number;
-  styles?: React.CSSProperties;
+  borderRadius?: string;
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
 }
 
-export interface IButtonItem extends Omit<IButtonGroupItem, 'type'> {
+export interface IButtonItem extends IButtonGroupItem {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
