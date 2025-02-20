@@ -43,12 +43,6 @@ export const getSettings = (data: any) =>
               label: 'Configure Menu Buttons',
               parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
             })
-            .addDivider({
-              id: nanoid(),
-              dividerType: 'vertical',
-              type: 'divider',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-            })
             .addCheckbox({
               id: nanoid(),
               propertyName: 'showUserInfo',
@@ -123,6 +117,10 @@ export const getSettings = (data: any) =>
               label: "Popover content Style",
               parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
               mode: "dialog",
+              hidden: {
+                _mode: 'code',
+                _code: 'return data?.showUserInfo != true'
+              }
             })
             .toJson(),
         ],
