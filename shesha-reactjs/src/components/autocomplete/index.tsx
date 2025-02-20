@@ -63,12 +63,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
       // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
-      const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
-      if (props.dataSourceType === 'entitiesList' && !props.displayPropName && hasDisplayName) {
-        setLoadingValues(false);
-        const values = Array.isArray(props.value) ? props.value : [props.value];
-        selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
-        return;
+      if (props.value) {
+        const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
+        if (props.dataSourceType === 'entitiesList' && !props.displayPropName && hasDisplayName) {
+          setLoadingValues(false);
+          const values = Array.isArray(props.value) ? props.value : [props.value];
+          selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+          return;
+        }
       }
       props.disableRefresh.current = false;
       if (selected.current?.length === 0 && keys.length) {
@@ -86,7 +88,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         }
       }
     }
-  }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl]);
+  }, [props.value, source?.tableData, props.dataSourceType, props.entityType, props.dataSourceUrl, props.readOnly]);
 
   const debouncedSearch = useDebouncedCallback<(searchText: string, force?: boolean) => void>(
     (searchText, force = false) => {
