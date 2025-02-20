@@ -1,10 +1,36 @@
-import React, { ReactNode, Key } from 'react';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { LabeledValue } from 'antd/lib/select';
-import { IReadOnly } from '@/interfaces/readOnly';
-import { FormIdentifier } from '@/providers';
+import { FormIdentifier, IEntityReferenceDto } from "@/index";
+import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { Key, MutableRefObject, ReactNode } from "react";
+import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
+import { SizeType } from "antd/lib/config-provider/SizeContext";
+
+/**
+ * Converts array of strings into IDataColumnsProps array
+ * @param fields - array of strings
+ * @returns IDataColumnsProps array
+ */
+export function getColumns(fields: string[]): IDataColumnsProps[] {
+  return (fields ?? []).map((field, index) => {
+    return {
+      id: `${index}`,
+      columnType: 'data',
+      caption: '',
+      sortOrder: index,
+      isVisible: true,
+      itemType: 'item',
+      propertyName: field,
+      allowSorting: false,
+    };
+  });
+}
 
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
+
+export type QueryParamFunc = (searchText: string, selected: any[]) => object;
+export type FilterSelectedFunc = (value: any) => object;
+export type KayValueFunc = (value: any, args: any) => string;
+export type DisplayValueFunc = (value: any, args: any) => string;
+export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
 
 export interface ISelectOption<TValue = any> {
   // TODO: make generic
@@ -13,184 +39,92 @@ export interface ISelectOption<TValue = any> {
   data: TValue;
 }
 
-interface IQueryParams {
-  // tslint:disable-next-line:typedef-whitespace
-  [prop: string]: Key;
+interface IQueryParamProp {
+  id: string;
+  param?: string;
+  value?: Key;
 }
 
-export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };
+export interface IAutocompleteBaseProps {
+  disableRefresh?: MutableRefObject<boolean>;
 
-export interface ICommonAutocompleteProps<TValue = any> extends IReadOnly {
-  /**
-   * The value of the autocomplete
-   *
-   * If the value is of this form, then we do not need to fetch items from the server
-   */
-  value?: TValue | TValue[];
+  uid: string;
+  onChange?: (value: any) => void;
+  onSearch?: (searchText: string) => void;
+  value?: any;
 
-  /**
-   * Default value
-   */
-  defaultValue?: TValue | TValue[];
-
-  /**
-   * Get option from an item fetched from the back-end
-   */
-  getOptionFromFetchedItem?: (fetchedItem: object) => ISelectOption<TValue>;
-
-  /**
-   * Get CustomLabeledValue from value
-   */
-  getLabeledValue?: (value: TValue, options: ISelectOption<TValue>[]) => CustomLabeledValue<TValue>;
-
-  /**
-   * Specify content to show when no result matches
-   */
-  notFoundContent?: ReactNode;
-
-  /**
-   * The placeholder to display on the autocomplete
-   */
+  /** Type of entity */
+  entityType?: string;
+  /** Data source type */
+  dataSourceType: AutocompleteDataSourceType;
+  /** Data source URL (required for dataSourceType === 'url', alternative for dataSourceType === 'entitiesList') */
+  dataSourceUrl?: string;
+  /** Placeholder */
   placeholder?: string;
+  /** Hide border */
+  hideBorder?: boolean;
+  /** A property used as label */
+  displayPropName?: string;
+  /** A property used as key/value */
+  keyPropName?: string;
+  /** Permanent filter (json logig) */
+  filter?: object;
+  /** Read only */
+  readOnly?: boolean;
+  /** Disable text search */
+  disableSearch?: boolean;
+  /** Selection mode */
+  mode?: 'single' | 'multiple';
+  /** Fields to fetch */
+  fields?: string[];
+  /** Query params, applicable only for dataSourceType === 'url' */
+  queryParams?: IQueryParamProp[];
 
-  /**
-   * A callback for when the value of this component changes
-   */
-  onChange?: any;
+  /** Quickview setting */
+  /** Use Quickview */
+  quickviewEnabled?: boolean;
+  /** Form path */
+  quickviewFormPath?: FormIdentifier;
+  /** A property used as label, шf empty, the displayPropName field is used. */
+  quickviewDisplayPropertyName?: string;
+  /** Get Entity details Url */
+  quickviewGetEntityUrl?: string;
+  /** Quickview form width */
+  quickviewWidth?: number;
 
-  /**
-   * Whether this control is disabled
-   */
-  disabled?: boolean;
-
-  /**
-   * Wether the component is bordered
-   */
-  bordered?: boolean;
-
-  /**
-   * Styles to apply to the select component that gets rendered by this control
-   */
+  /** Not found content */
+  notFoundContent?: ReactNode;
+  /** Style */
   style?: React.CSSProperties;
-
-  /**
-   * The size of the control
-   */
+  /** Filter (json logic) that used for filter selected values */
+  filterKeysFunc?: FilterSelectedFunc | null | undefined;
+  /** Function for get key (string) from value (outcome value format) */
+  keyValueFunc?: KayValueFunc | null | undefined;
+  /** Function for get label from item (received from the backend)*/
+  displayValueFunc?: DisplayValueFunc | null | undefined;
+  /** Function for get value (outcome value format) from item (received from the backend) */
+  outcomeValueFunc?: OutcomeValueFunc | null | undefined;
+  /** Sorting */
+  sorting?: ISortingItem[];
+  /** Grouping */
+  grouping?: GroupingItem;
+  /** Size */
   size?: SizeType;
 
-  /**
-   * The size of the control
-   */
-  mode?: 'multiple' | 'single';
-
+  // not implemented
+  allowFreeText?: boolean;
+  defaultValue?: any | any[];
   allowClear?: boolean;
 
-  /**
-   * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
-   */
-  readOnly?: boolean;
-
-  /**
-   * If true, search mode will be disabled for the autocomplete
-   */
-  disableSearch?: boolean;
-
-  /**
-   *
-   */
-  readOnlyMultipleMode?: 'raw' | 'tags';
-
-  /**
-   * @deprecated
-   * A list of event names which, when triggered, will trigger the autocomplete to refetch items
-   */
-  subscribedEventNames?: string[];
-}
-
-export interface IAutocompleteProps<TValue = any>
-  extends IEntityAutocompleteProps<TValue>,
-    IUrlAutocompleteProps<TValue> {
-  /**
-   * Data source of this Autocomplete
-   */
-  dataSourceType: AutocompleteDataSourceType;
-  className?: string;
-}
-
-export interface IEntityAutocompleteProps<TValue = any> extends ICommonAutocompleteProps<TValue> {
-  /**
-   * The short alias if this is a reference list
-   */
-  typeShortAlias?: string;
-
-  /**
-   * Name of the property to display. Live empty to use default display name property defined on the back-end
-   */
-  entityDisplayProperty?: string;
-
-  /**
-   * Applies if this is a reference list
-   */
+  // need to review (not used)
   allowInherited?: boolean;
 
   /**
-   * Deteremines if quickview is enabled when in read only mode
+   * @deprecated
    */
-  quickviewEnabled?: boolean;
-
-  /**
-   * Specifies the form to use when quickview is enabled
-   */
-  quickviewFormPath?: FormIdentifier;
-
-  /**
-   * Specifies the form to use a specific module
-   */
-  module?: string;
-  /**
-   * Specifies which property to display for the quickview
-   */
-  quickviewDisplayPropertyName?: string;
-
-  /**
-   * The Url that details of the entity are retreived
-   */
-  quickviewGetEntityUrl?: string;
-
-  /**
-   * The width of the quickview
-   */
-  quickviewWidth?: number;
-
-  filter?: string;
+  typeShortAlias?: string;
 }
 
-export interface IUrlAutocompleteProps<TValue = any> extends ICommonAutocompleteProps<TValue> {
-  /**
-   * Data source url. Applies if `dataSourceType` is `url`
-   */
-  dataSourceUrl?: string;
-
-  /**
-   * Query string params
-   */
-  queryParams?: IQueryParams;
-
-  /**
-   * If true, autocomplete allows to use free text that is missing in the source
-   */
-  allowFreeText?: boolean;
-}
-
-export interface IUrlFetcherQueryParams {
-  term?: string | null;
-  selectedValue?: string | null;
-}
-
-/**
- * Generic DTO of the simple autocomplete item
- */
-export interface AutocompleteItemDto {
-  value?: string | null;
-  displayText?: string | null;
+export interface IAutocompleteProps extends Omit<IAutocompleteBaseProps, 'uid'>{
+  
 }

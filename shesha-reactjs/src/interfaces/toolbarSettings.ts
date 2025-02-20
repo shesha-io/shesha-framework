@@ -194,11 +194,17 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addFormAutocomplete(props: FormAutocompleteType | ((data: T) => FormAutocompleteType)) {
-    return this.addProperty(props, 'formAutocomplete');
+    const model = typeof props !== 'function'
+      ? props
+      : props(this.data);
+    return this.addProperty({ ...model, version: 2 }, 'formAutocomplete');
   }
 
   public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)) {
-    return this.addProperty(props, 'referenceListAutocomplete');
+    const model = typeof props !== 'function'
+      ? props
+      : props(this.data);
+    return this.addProperty({ ...model, version: 2 }, 'referenceListAutocomplete');
   }
 
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
@@ -278,7 +284,14 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type, hidden: obj.hidden as any, version: 'latest' });
+    this.form.push({
+      ...obj,
+      type,
+      hidden: obj.hidden as any,
+      version: typeof (obj.version) === 'number'
+        ? obj.version
+        : 'latest'
+    });
 
     return this;
   }
