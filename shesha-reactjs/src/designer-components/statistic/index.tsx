@@ -143,7 +143,6 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         style={{ ...getStyle(style, formData), ...additionalStyles }}
         valueStyle={{ ...valueFontStyles, ...getStyle(valueStyle, formData) }}
         onClick={customEvents?.onClick}
-        onDoubleClick={customEvents?.onDoubleClick}
       />
     );
   },
