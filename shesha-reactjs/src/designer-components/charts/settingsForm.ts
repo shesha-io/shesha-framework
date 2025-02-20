@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings, IPropertySetting } from "@/index";
+import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
