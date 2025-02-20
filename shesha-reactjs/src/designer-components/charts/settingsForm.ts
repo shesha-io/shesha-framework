@@ -61,7 +61,6 @@ export const getSettings = (data: any) => {
                 ],
                 validate: { required: true },
                 defaultValue: 'entityType',
-
               })
               .toJson()
             ]
@@ -106,11 +105,11 @@ export const getSettings = (data: any) => {
                         propertyName: 'isDoughnut',
                         label: 'Is Doughnut',
                         parentId: appearanceTabId,
-                        hidden: {
-                          _code: "return getSettingValue(data?.chartType) !== `pie`",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.chartType) !== `pie`",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                         defaultValue: false,
                       })
                       .addSettingsInput({
@@ -133,11 +132,11 @@ export const getSettings = (data: any) => {
                         propertyName: 'stacked',
                         label: 'Stacked',
                         parentId: appearanceTabId,
-                        hidden: {
-                          _code: "return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                         defaultValue: true,
                       })
                       .addSettingsInput({
@@ -145,11 +144,11 @@ export const getSettings = (data: any) => {
                         inputType: 'text',
                         propertyName: 'title',
                         parentId: appearanceTabId,
-                        hidden: {
-                          _code: "return getSettingValue(data?.showTitle) !== true",
-                          _mode: "code",
-                          _value: false
-                        },
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.showTitle) !== true",
+                        //   _mode: "code",
+                        //   _value: false
+                        // },
                         label: 'Title',
                         description: 'The title of the chart (if any)',
                         labelAlign: 'right',
@@ -206,11 +205,11 @@ export const getSettings = (data: any) => {
                         label: 'Show X Axis Title',
                         parentId: appearanceTabId,
                         defaultValue: true,
-                        hidden: {
-                          _code: "return getSettingValue(data?.showXAxisScale) !== true",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.showXAxisScale) !== true",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -227,11 +226,11 @@ export const getSettings = (data: any) => {
                         label: 'Show Y Axis Title',
                         parentId: appearanceTabId,
                         defaultValue: true,
-                        hidden: {
-                          _code: "return getSettingValue(data?.showYAxisScale) !== true",
-                          _mode: "code",
-                          _value: true
-                        }
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.showYAxisScale) !== true",
+                        //   _mode: "code",
+                        //   _value: true
+                        // }
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -241,11 +240,11 @@ export const getSettings = (data: any) => {
                         label: 'Tension',
                         defaultValue: 0,
                         min: 0,
-                        hidden: {
-                          _code: "return getSettingValue(data?.chartType) !== `line`",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.chartType) !== `line`",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -325,11 +324,11 @@ export const getSettings = (data: any) => {
                         isDynamic: false,
                         description: 'Label for the value property',
                         validate: { required: false },
-                        hidden: {
-                          _code: "return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.chartType) === `pie` || getSettingValue(data?.chartType) === `polarArea`",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                       })
                       .toJson()
                     ]
@@ -445,11 +444,11 @@ export const getSettings = (data: any) => {
                         label: 'Legend Property',
                         labelAlign: 'right',
                         parentId: 'root',
-                        hidden: {
-                          _code: "return getSettingValue(data?.simpleOrPivot) === `simple`",
-                          _mode: "code",
-                          _value: false
-                        },
+                        // hidden: {
+                        //   _code: "return getSettingValue(data?.simpleOrPivot) === `simple`",
+                        //   _mode: "code",
+                        //   _value: false
+                        // },
                         isDynamic: false,
                         description: 'The properties you want to use on the Legend. This is the property that will be used to group the data for Pivot Charts.',
                         validate: { required: true },
@@ -483,11 +482,11 @@ export const getSettings = (data: any) => {
                         ],
                         validate: { required: true },
                         defaultValue: 'asc',
-                        hidden: {
-                          _code: "return !(getSettingValue(data?.orderBy))",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return !(getSettingValue(data?.orderBy))",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -511,11 +510,11 @@ export const getSettings = (data: any) => {
                         modelType: '{{data.entityType}}',
                         autoFillProps: false,
                         settingsValidationErrors: [],
-                        hidden: {
-                          _code: "return !(getSettingValue(data?.allowFilter))",
-                          _mode: "code",
-                          _value: true
-                        },
+                        // hidden: {
+                        //   _code: "return !(getSettingValue(data?.allowFilter))",
+                        //   _mode: "code",
+                        //   _value: true
+                        // },
                       })
                       .addSettingsInput({
                         id: nanoid(),
@@ -687,11 +686,11 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           parentId: dataTabId,
                           inline: true,
-                          hidden: {
-                            _code: "return !getSettingValue(data?.isAxisTimeSeries);",
-                            _mode: "code",
-                            _value: true
-                          } as any,
+                          // hidden: {
+                          //   _code: "return !getSettingValue(data?.isAxisTimeSeries);",
+                          //   _mode: "code",
+                          //   _value: true
+                          // } as any,
                           readOnly: false,
                           inputs: [
                             {
@@ -774,11 +773,11 @@ export const getSettings = (data: any) => {
                           ],
                           validate: { required: true },
                           defaultValue: 'asc',
-                          hidden: {
-                            _code: "return !(getSettingValue(data?.orderBy))",
-                            _mode: "code",
-                            _value: true
-                          },
+                          // hidden: {
+                          //   _code: "return !(getSettingValue(data?.orderBy))",
+                          //   _mode: "code",
+                          //   _value: true
+                          // },
                         })
                         .addCheckbox({
                           id: nanoid(),
