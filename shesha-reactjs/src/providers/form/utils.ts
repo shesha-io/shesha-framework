@@ -1288,7 +1288,7 @@ export const processRecursive = (
 ) => {
   func(component, parentId);
 
-  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
+  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c?.type === component?.type);
   if (!toolboxComponent) return;
   const containers = getContainerNames(toolboxComponent);
 

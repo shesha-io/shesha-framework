@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
-import TableViewSelectorSettings from './tableViewSelectorSettings';
+
 import { ITableViewSelectorComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
@@ -8,7 +8,8 @@ import { migratePropertyName } from '@/designer-components/_common-migrations/mi
 import { SelectOutlined } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
 import { Alert } from 'antd';
-import { useDataTableStore } from '@/index';
+import { useDataTableStore, validateConfigurableComponentSettings } from '@/index';
+import { getSettings } from './settingsForm';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
@@ -38,17 +39,8 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
     ))
     .add(2, (prev) => migratePropertyName(prev))
   ,
-  settingsFormFactory: ({ readOnly, model, onSave, onCancel, onValuesChange }) => {
-    return (
-      <TableViewSelectorSettings
-        readOnly={readOnly}
-        model={model as ITableViewSelectorComponentProps}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-      />
-    );
-  },
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default TableViewSelectorComponent;
