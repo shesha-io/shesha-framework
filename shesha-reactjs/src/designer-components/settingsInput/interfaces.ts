@@ -18,7 +18,8 @@ export interface IDropdownOption {
 export interface InputType {
     type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'filtersList'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig';
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig'
+    | 'typeAutoComplete' |  'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' |'configurableActionConfig';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
