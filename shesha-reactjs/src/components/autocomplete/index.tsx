@@ -182,6 +182,12 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     </>;
   }, [selected.current, source?.tableData, props.grouping]);
 
+  const title = useMemo(() => {
+    return props.mode === 'single' && selected.current.length
+      ? displayValueFunc(selected.current[0], allData)
+      : null;
+  }, [props.value]);
+
   const onDropdownVisibleChange = (open: boolean) => {
     if (!open) {
       setOpen(false);
@@ -216,12 +222,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       />
     );
   }
-
-  const title = useMemo(() => {
-    return props.mode === 'single' && selected.current.length
-      ? displayValueFunc(selected.current[0], allData)
-      : null;
-  }, [props.value]);
 
   return (
     <>
