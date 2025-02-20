@@ -1,7 +1,7 @@
 import { FormIdentifier, IEntityReferenceDto } from "@/index";
 import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import { Key, MutableRefObject, ReactNode } from "react";
-import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
+import { FilterExpression, GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 
 /**
@@ -68,7 +68,7 @@ export interface IAutocompleteBaseProps {
   /** A property used as key/value */
   keyPropName?: string;
   /** Permanent filter (json logig) */
-  filter?: object;
+  filter?: FilterExpression;
   /** Read only */
   readOnly?: boolean;
   /** Disable text search */

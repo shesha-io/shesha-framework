@@ -134,6 +134,10 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
+export interface IComponentJsSettings {
+  jsSettingsAvailableConstantsExpression?: string;
+}
+
 /**
  * Base model of the configurable component
  */
@@ -144,7 +148,8 @@ export interface IConfigurableFormComponent
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
-  IComponentMetadata {
+  IComponentMetadata,
+  IComponentJsSettings {
   /** Type of the component */
   type: string;
 
