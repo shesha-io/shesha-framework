@@ -135,7 +135,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     const value = outcomeValueFunc(row, allData);
     const key = keyValueFunc(value, allData);
     const label = displayValueFunc(row, allData);
-    return <Select.Option value={key} key={JSON.stringify(key || index)} data={row}><span dangerouslySetInnerHTML={{ __html: label }} /></Select.Option>;
+    return (
+      <Select.Option value={key} key={JSON.stringify(key || index)} data={row} title={label}>
+        <span dangerouslySetInnerHTML={{ __html: label }} />
+      </Select.Option>
+    );
   };
 
   const renderGroupTitle = (value: any, propertyName: string) => {
@@ -163,7 +167,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       const res =  <>
         {groups.map((group, index) => {
           const groupTitle = renderGroupTitle(group, groupProp) ?? 'empty';
-          return <Select.OptGroup key={index} label={groupTitle}>
+          return <Select.OptGroup key={index} label={groupTitle} title={groupTitle}>
             {list.filter((x) => isEqual(getValueByPropertyName(x, groupProp), group)).map((row, index) => renderOption(row, index))}
           </Select.OptGroup>;
         })}
@@ -213,9 +217,16 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     );
   }
 
+  const title = useMemo(() => {
+    return props.mode === 'single' && selected.current.length
+      ? displayValueFunc(selected.current[0], allData)
+      : null;
+  }, [props.value]);
+
   return (
     <>
     <Select
+      title={title}
       onDropdownVisibleChange={onDropdownVisibleChange}
       value={keys}
       className="sha-dropdown"
