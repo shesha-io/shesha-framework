@@ -31,8 +31,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     --container-min-height: ${containerMinHeight};
     --container-max-height: ${containerMaxHeight};
     --container-height: ${containerHeight};
+    --ant-button-content-font-size: ${fontSize ?? '14px'} !important;
+    --ant-button-font-weight: ${fontWeight ?? '400'} !important;
+    --ant-font-family: ${fontFamily ?? 'Segoe UI'} !important;
+    --ant-button-font-weight: ${fontWeight ?? '400'} !important;
       ${rest}
       ${containerStyles}
+      max-height: auto;
     
     .ant-upload:not(.ant-upload-disabled) {
           .icon {
@@ -94,12 +99,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-text {
-      height: var(--container-height) !important;
-      max-height: var(--container-max-height) !important;
-      min-height: var(--container-min-height) !important;
-      width: var(--container-width) !important;
-      max-width: var(--container-max-width) !important;
-      min-width: var(--container-min-width) !important;
+      height: cal(var(--container-height) - 32px) !important;
+      max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
+      min-height: calc(var(--container-min-height) - 32px) !important;
+      width: calc(var(--container-width) - 32px) !important;
+      max-width: calc(var(--container-max-width) - 32px) !important;
+      min-width: calc(var(--container-min-width) - 32px) !important;
     }
 
     .ant-upload-drag:hover:not(.ant-upload-disabled)  {
@@ -129,6 +134,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           }
         }
       
+        .ant-btn {
+          *{
+            font-size: ${fontSize ?? '14px'} !important;
+            font-weight: ${fontWeight ?? '400'} !important;
+            font-family: ${fontFamily ?? 'Segoe UI'} !important;
+            }
+        }
         .${storedFilesRendererBtnContainer} {
           display: flex;
           margin-top: 4px;
@@ -139,9 +151,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           padding: 2px !important; /*to remove scroller*/
           --ant-margin-xs: ${gap ?? '8px'} !important;
           overflow-y: auto;
-          
         }
-
+          
         .ant-upload-list-item-uploading {
           display: none;
           }
@@ -209,7 +220,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
       width: max-content;
       max-width: var(--container-max-width) !important;
-      padding: 0 ${borderWidth ?? '2px'} !important;
+      padding: ${borderWidth ?? '2px'} !important;
       width: max-content !important;
       height: var(--container-height) !important;
       max-height: var(--container-max-height) !important;
