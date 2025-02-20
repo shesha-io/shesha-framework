@@ -8,8 +8,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${thumbnailWidth ?? thumbnailHeight ?? '101px'};
-    --thumbnail-height: ${thumbnailHeight ?? thumbnailWidth ?? '101px'};
+    --thumbnail-width: ${thumbnailWidth ?? thumbnailHeight ?? '54px'};
+    --thumbnail-height: ${thumbnailHeight ?? thumbnailWidth ?? '54px'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
@@ -53,8 +53,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       border: ${borderSize ?? 0} ${borderType ?? 'solid'} ${borderColor ?? token.colorPrimary} !important;
 
       img {
-        width: var(--thumbnail-width, 101px) !important;
-        height: var(--thumbnail-height, 101px) !important;
+        width: var(--thumbnail-width, 54px) !important;
+        height: var(--thumbnail-height, 54px) !important;
         border-radius: ${borderRadius ?? '8px'} !important;
         object-fit: cover !important;
         display: flex !important;
@@ -70,7 +70,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { borderSi
       display: ${hideFileName ? 'none !important' : 'block'};
       color: ${fontColor ?? token.colorPrimary};
       padding: 0 8px !important;
-      width: ${(layout && thumbnailWidth) ?? '101px'} !important;
+      width: ${(layout && thumbnailWidth) ?? '54px'} !important;
       font-size: var(--font-size, 14px) !important;
     }
 

@@ -27,6 +27,8 @@ import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/config
 import { ImagePicker } from '../imagePicker';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
+import ColumnsList from '../columns/columnsList';
+import SizableColumnsList from '../sizableColumns/sizableColumnList';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -176,6 +178,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             </QueryBuilderWrapper>;
         case 'columnsConfig':
             return <ColumnsConfig size={size} />;
+        case 'columnsList':
+            return <ColumnsList {...props} readOnly={readOnly} />;
+        case 'sizableColumnsConfig':
+            return <SizableColumnsList {...props} readOnly={readOnly} />;
         case 'editableTagGroupProps':
             return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
@@ -196,7 +202,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'labelValueEditor':
-            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+               return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':

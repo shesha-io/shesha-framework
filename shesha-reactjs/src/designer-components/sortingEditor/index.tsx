@@ -12,6 +12,7 @@ import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
     modelType: string;
+    maxItemsCount?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -25,14 +26,14 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     icon: <GroupOutlined />,
     Factory: ({ model }) => {
         const { data: formData } = useFormData();
-        const { modelType: modelTypeExpression } = model;
+        const { modelType: modelTypeExpression, maxItemsCount } = model;
 
         const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
         const readOnly = model.readOnly;
         
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <SortingEditor value={value} onChange={onChange} modelType={modelType} readOnly={readOnly}/>}
+                {(value, onChange) => <SortingEditor value={value} onChange={onChange} modelType={modelType} readOnly={readOnly} maxItemsCount={maxItemsCount}/>}
             </ConfigurableFormItem>
         );
     },

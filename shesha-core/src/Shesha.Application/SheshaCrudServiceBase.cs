@@ -96,7 +96,8 @@ namespace Shesha
         [EntityAction(StandardEntityActions.Delete)]
         public override async Task DeleteAsync(EntityDto<TPrimaryKey> input)
         {
-            await DeleteCascadeAsync(Repository.Get(input.Id));
+            var entity = await Repository.GetAsync(input.Id);
+            await DeleteCascadeAsync(entity);
             await base.DeleteAsync(input);
         }
 
@@ -440,7 +441,7 @@ namespace Shesha
         /// </summary>
         /// <param name="filter">Filter in JsonLogic format</param>
         /// <returns></returns>
-        protected async Task<List<TEntity>> GetAllFiltered(string filter)
+        protected async Task<List<TEntity>> GetAllFilteredAsync(string filter)
         {
             return await AsyncQueryableExecuter.ToListAsync(Repository.GetAllFiltered(filter));
         }

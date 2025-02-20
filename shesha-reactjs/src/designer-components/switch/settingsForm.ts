@@ -31,6 +31,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   id: nanoid(),
                   propertyName: 'propertyName',
                   label: 'Property name',
+                  styledLabel: true,
                   parentId: commonTabId,
                   validate: { required: true },
                   jsSetting: true
@@ -65,15 +66,16 @@ export const getSettings = (data: ISwitchComponentProps) => {
                       type: 'editModeSelector',
                       id: nanoid(),
                       propertyName: 'editMode',
-                      label: 'Edit mode',
+                      label: 'Edit Mode',
                       size: 'small',
+                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'hidden',
-                      label: 'Hidden',
+                      label: 'Hide',
                       size: 'small',
                       jsSetting: true,
                     }
@@ -119,7 +121,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                               inputType: 'dropdown',
                               propertyName: 'size',
                               label: 'Size',
-                              width: '150px',
+                              width: '100%',
                               hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
                               dropdownOptions: [
                                 { value: 'small', label: 'Small' },

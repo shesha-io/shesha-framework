@@ -104,7 +104,7 @@ export const getSettings = () =>
                 id: 'b920ef96-aeq7-4a01-bfad-b5b7d07218da',
               },
               {
-                label: 'grid',
+                label: 'Grid',
                 value: 'grid',
                 id: 'b920ef96-ae27-4a01-bfad-b5b7x07218da',
               }
@@ -222,7 +222,9 @@ export const getSettings = () =>
             validate: {},
             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
             settingsValidationErrors: [],
-            useRawValues: true,
+            displayPropName: 'displayText',
+            keyPropName: 'value',
+            mode: 'single',
           })
           .addTextField({
             id: 'db913b1b-3b25-46c9-afef-21854d917ba7',

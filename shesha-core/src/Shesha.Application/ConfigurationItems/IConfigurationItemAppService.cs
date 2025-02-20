@@ -35,6 +35,6 @@ namespace Shesha.ConfigurationItems
         /// Clean client side cache
         /// </summary>
         /// <returns></returns>
-        Task ClearClientSideCache();
+        Task ClearClientSideCacheAsync();
     }
 }

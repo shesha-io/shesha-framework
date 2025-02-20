@@ -22,8 +22,6 @@ namespace Shesha.Authorization
     {
         private readonly IIocManager _iocManager;
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
-        private readonly IAuthorizationConfiguration _authorizationConfiguration;
-        private readonly IShaPermissionChecker _shaPermissionChecker;
 
         public ShaPermissionManager(
             IIocManager iocManager,
@@ -36,9 +34,7 @@ namespace Shesha.Authorization
             base(iocManager, authorizationConfiguration, unitOfWorkManager, multiTenancyConfig)
         {
             _iocManager = iocManager;
-            _authorizationConfiguration = authorizationConfiguration;
             _permissionDefinitionRepository = permissionDefinitionRepository;
-            _shaPermissionChecker = shaPermissionChecker;
         }
 
         [UnitOfWork]

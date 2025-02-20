@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import React, { FC, useState } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SectionSeparator from '@/components/sectionSeparator';
