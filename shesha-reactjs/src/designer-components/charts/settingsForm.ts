@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from "@/index";
+import { DesignerToolbarSettings, IPropertySetting } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 
@@ -698,13 +698,13 @@ export const getSettings = (data: any) => {
                             { label: 'Day-Month-Year', value: 'day-month-year' },
                             { label: 'Month-Year', value: 'month-year' },
                           ],
-                          validate: { required: true },
+                          // validate: { required: true },
                           defaultValue: 'day-month-year',
                           hidden: {
-                            _code: "return getSettingValue(data?.isAxisTimeSeries);",
+                            _code: "console.log(getSettingValue(data?.isAxisTimeSeries)); return !getSettingValue(data?.isAxisTimeSeries);",
                             _mode: "code",
                             _value: true
-                          },
+                          } as IPropertySetting<boolean>,
                         })
                         .addPropertyAutocomplete({
                           id: nanoid(),
