@@ -1,10 +1,10 @@
 import React, { FC, useCallback } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { EditableTagGroup } from '@/components';
+import { EditableTagGroup, EndpointsAutocomplete } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
+import { evaluateValue, executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -29,6 +29,7 @@ import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
+import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -93,6 +94,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
+    const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
+
     switch (type) {
         case 'color':
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
@@ -147,6 +150,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             />;
         case 'button':
             return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
+        case 'filtersList':
+            return <FiltersList  readOnly={readOnly}  {...props}/>;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -169,6 +174,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 size={size}
                 {...{ ...props, style: {} }}
             />;
+        case 'endpointsAutocomplete':
+            return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={onChange} />;
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
