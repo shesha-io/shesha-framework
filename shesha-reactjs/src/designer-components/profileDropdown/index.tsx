@@ -33,7 +33,6 @@ interface IProfileDropdown extends IConfigurableFormComponent {
   subTextFontSize?: string;
   subTextStyle?: string;
   showUserInfo?: boolean;
-  popOverTitle?: string;
   popOverFormId?: FormIdentifier;
   popOverContentStyle?: string;
 }
@@ -53,7 +52,6 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       subTextFontSize,
       subTextStyle,
       showUserInfo,
-      popOverTitle,
       popOverFormId,
       popOverContentStyle,
     } = model;
@@ -90,12 +88,19 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       return getItemsWithResolved(evaluation.items);
     }, [evaluation.items, numResolved]);
 
+    const [pop, setPop] = useState<boolean>(false);
+
     const menuItems = getMenuItem(finalItems, executeAction);
 
     const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
 
     const onDynamicItemEvaluated = () => {
       setNumResolved((prev) => prev + 1);
+    };
+
+    const onDropdownClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      e.preventDefault();
+      setPop(false);
     };
 
     if (model.hidden) return null;
@@ -121,14 +126,20 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
             condition={showUserInfo}
             wrap={(children) => {
               return (
-                <Popover title={popOverTitle} content={popoverContent} placement="bottomRight">
+                <Popover
+                  content={popoverContent}
+                  placement="bottomRight"
+                  trigger="hover"
+                  open={pop}
+                  onOpenChange={setPop}
+                >
                   {children}
                 </Popover>
               );
             }}
           >
             <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-              <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+              <a className="ant-dropdown-link" onClick={onDropdownClick}>
                 {loginInfo?.fullName} <DownOutlined />
               </a>
             </Dropdown>
