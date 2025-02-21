@@ -561,7 +561,7 @@ export const getSettings = (data: any) => {
                                     ],
                                   },
                                   {
-                                    type: 'dropdown',
+                                    type: 'radio',
                                     id: 'backgroundStyleRow-repeat',
                                     label: 'Repeat',
                                     hideLabel: true,
