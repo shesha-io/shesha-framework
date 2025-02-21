@@ -1,4 +1,5 @@
-﻿using Shesha.Domain;
+﻿using Shesha.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Notifications.MessageParticipants;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Shesha.Notifications
     /// <summary>
     /// Notification manager
     /// </summary>
-    public interface INotificationManager
+    public interface INotificationManager : IConfigurationItemManager<NotificationTypeConfig>
     {
         /// <summary>
         /// Get list of channels for the specified notification type, receiver and priority

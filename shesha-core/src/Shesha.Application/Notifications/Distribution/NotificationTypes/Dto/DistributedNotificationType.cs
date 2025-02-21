@@ -1,7 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
-using Shesha.Domain.Attributes;
-using Shesha.Domain.Enums;
-using System;
+using Shesha.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
@@ -9,7 +7,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
     /// <summary>
     /// Distributed file template
     /// </summary>
-    public class DistributedNotificationTypes: DistributedConfigurableItemBase
+    public class DistributedNotificationTypes: DistributedConfigurableItemBase, INotificationTypeSpecificProps
     {
         /// <summary>
         /// 
@@ -22,7 +20,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         /// <summary>
         /// If true indicates that users may opt out of this notification
         /// </summary>
-        public bool CanOtpOut { get; set; }
+        public bool CanOptOut { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -36,5 +34,9 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         /// </summary>
         [StringLength(int.MaxValue)]
         public string OverrideChannels { get; set; }
+        /// <summary>
+        ///  messages without which the user should not proceed in any case e.g. OTP
+        /// </summary>
+        public bool IsTimeSensitive { get; set; }
     }
 }
