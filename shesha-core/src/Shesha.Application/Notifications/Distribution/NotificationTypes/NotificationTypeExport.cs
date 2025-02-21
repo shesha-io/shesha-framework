@@ -4,8 +4,6 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
-using Shesha.Services;
-using Shesha.StoredFiles;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -53,15 +51,8 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 VersionStatus = itemConfig.VersionStatus,
                 ParentVersionId = itemConfig.ParentVersion?.Id,
                 Suppress = itemConfig.Suppress,
-
-                // specific properties
-                AllowAttachments = itemConfig.AllowAttachments,
-                Disable = itemConfig.Disable,
-                CanOtpOut = itemConfig.CanOptOut,
-                Category = itemConfig.Category,
-                OrderIndex = itemConfig.OrderIndex,
-                OverrideChannels = itemConfig.OverrideChannels,
             };
+            NotificationManager.CopyNotificationSpecificProps(itemConfig, result);
 
             return await Task.FromResult<DistributedConfigurableItemBase>(result);
         }

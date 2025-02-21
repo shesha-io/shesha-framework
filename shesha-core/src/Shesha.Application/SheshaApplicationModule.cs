@@ -10,13 +10,14 @@ using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
-using Shesha.ConfigurationItems.Distribution;
+using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
+using Shesha.Notifications;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Distribution.NotificationChannels;
 using Shesha.Notifications.Distribution.NotificationTypes;
@@ -146,37 +147,16 @@ namespace Shesha
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);
 
+            IocManager
+                .RegisterConfigurableItemManager<NotificationTypeConfig, INotificationManager, NotificationManager>()
+                .RegisterConfigurableItemExport<NotificationTypeConfig, INotificationTypeExport, NotificationTypeExport>()
+                .RegisterConfigurableItemImport<NotificationTypeConfig, INotificationTypeImport, NotificationTypeImport>()
+
+                .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
+                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
+
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
-
-            IocManager.IocContainer.Register(Component
-            .For<IConfigurableItemExport>()
-            .Named("NotificationChannelExport")
-            .Forward<IConfigurableItemExport<NotificationChannelConfig>>()
-            .Forward<INotificationChannelExport>()
-            .ImplementedBy<NotificationChannelExport>()
-            .LifestyleTransient())
-                      .Register(Component
-            .For<IConfigurableItemImport>()
-            .Named("NotificationChannelImport")
-            .Forward<IConfigurableItemImport<NotificationChannelConfig>>()
-            .Forward<INotificationChannelImport>()
-            .ImplementedBy<NotificationChannelImport>()
-            .LifestyleTransient())
-                      .Register(Component
-            .For<IConfigurableItemExport>()
-            .Named("NotificationTypeExport")
-            .Forward<IConfigurableItemExport<NotificationTypeConfig>>()
-            .Forward<INotificationTypeExport>()
-            .ImplementedBy<NotificationTypeExport>()
-            .LifestyleTransient())
-                      .Register(Component
-            .For<IConfigurableItemImport>()
-            .Named("NotificationTypeImport")
-            .Forward<IConfigurableItemImport<NotificationTypeConfig>>()
-            .Forward<INotificationTypeImport>()
-            .ImplementedBy<NotificationTypeImport>()
-            .LifestyleTransient());
 
             /* api not used now, this registration causes problems in the IoC. Need to solve IoC problem before uncommenting
             var schemaContainer = IocManager.Resolve<ISchemaContainer>();
