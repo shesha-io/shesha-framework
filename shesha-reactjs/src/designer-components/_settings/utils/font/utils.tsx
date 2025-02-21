@@ -50,8 +50,25 @@ export const fontTypes = [
     { value: 'Comic Sans MS', label: 'Comic Sans MS' },
     { value: 'Trebuchet MS', label: 'Trebuchet MS' },
     { value: 'Arial Black', label: 'Arial Black' },
-    { value: 'impact', label: 'Impact' }
+    { value: 'Impact', label: 'Impact' },
+    { value: '-apple-system', label: 'San Francisco' },
+    { value: 'BlinkMacSystemFont', label: 'BlinkMac System Font' },
+    { value: 'SF Mono', label: 'San Francisco Mono' },
+    { value: 'Roboto', label: 'Roboto' },
+    { value: 'Open Sans', label: 'Open Sans' },
+    { value: 'Lato', label: 'Lato' }, 
+    { value: 'Ubuntu', label: 'Ubuntu' },
+    { value: 'Merriweather', label: 'Merriweather' },
+    { value: 'PT Sans', label: 'PT Sans' },
+    { value: 'Source Sans Pro', label: 'Source Sans Pro' },
+    { value: 'Fira Sans', label: 'Fira Sans' },
+    { value: 'Playfair Display', label: 'Playfair Display' },
+    { value: 'Noto Sans', label: 'Noto Sans' },
+    { value: 'Droid Sans', label: 'Droid Sans' },
+    { value: 'Crimson Text', label: 'Crimson Text' },
+    { value: 'PT Serif', label: 'PT Serif' }
 ];
+
 
 export const fontWeights = [
     { value: '100', label: 'sectionSeparator' },

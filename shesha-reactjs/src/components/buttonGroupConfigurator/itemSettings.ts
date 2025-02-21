@@ -155,7 +155,7 @@ export const getItemSettings = (data) => {
                                         .addConfigurableActionConfigurator({
                                             id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                             propertyName: 'actionConfiguration',
-                                            label: 'Action configuration',
+                                            label: 'Action Configuration',
                                             validate: {},
                                             settingsValidationErrors: [],
                                         }).toJson()

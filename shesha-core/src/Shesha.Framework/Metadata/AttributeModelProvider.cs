@@ -2,23 +2,20 @@
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Shesha.Attributes;
-using Shesha.Domain;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
-    public class AttributeModelProvider : BaseModelProvider, ITransientDependency
+    public class AttributeModelProvider : BaseModelProvider, ISingletonDependency
     {
         private readonly IAssemblyFinder _assembleFinder;
 
-        public AttributeModelProvider(ICacheManager cacheManager, IAssemblyFinder assembleFinder) : base(cacheManager)
+        public AttributeModelProvider(ICacheManager cacheManager, IAssemblyFinder assembleFinder) : base("AttributeModelProviderCache", cacheManager)
         {
             _assembleFinder = assembleFinder;
         }

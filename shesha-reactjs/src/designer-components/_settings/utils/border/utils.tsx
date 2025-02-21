@@ -24,7 +24,7 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     const handleBorderPart = (part, prefix: string) => {
         if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = input?.hideBorder ? 0 : addPx(part.width);
         if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = part.style || 'solid';
-        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part.color || 'black';
+        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part.color || '#d9d9d9';
     };
 
     handleBorderPart(all, 'border');
@@ -96,7 +96,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
                 propertyName: path ? `${path}.border.hideBorder` : "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
-                tooltip: "Hide border",
+                tooltip: "Hide custom border",
             },
             {
                 label: "Select Side",

@@ -112,7 +112,6 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
         <Autocomplete.Raw
           defaultValue={defaultValue}
           size="small"
-          style={{ width: '100%' }}
           value={inputValue}
           onChange={handleInputChange}
           readOnly={rest?.readOnly}

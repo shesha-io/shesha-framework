@@ -37,33 +37,16 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [...new DesignerToolbarSettings()
-              .addContextPropertyAutocomplete({
-                id: propertyNameId,
-                propertyName: "propertyName",
-                parentId: commonTabId,
-                label: "Property Name",
-                size: "small",
-                validate: {
-                  "required": true
-                },
-                jsSetting: true,
-              })
-              .addLabelConfigurator({
-                id: nanoid(),
-                propertyName: 'hideLabel',
-                label: 'Label',
-                parentId: commonTabId,
-                hideLabel: true,
-              })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type: 'textArea',
-                    id: `tooltip-${commonTabId}`,
-                    propertyName: 'description',
-                    label: 'Tooltip',
+                    type: 'text',
+                    id: propertyNameId,
+                    propertyName: 'componentName',
+                    label: 'Component Name',
+                    size: 'small',
                     jsSetting: true,
                   },
                 ],

@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import { QueryBuilderRenderer } from '@/designer-components/queryBuilder/queryBuilderRenderer';
 import { QueryBuilderWithModelType } from '@/designer-components/queryBuilder/queryBuilderWithModelType';
 import { Autocomplete } from '@/components/autocomplete';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '@/components/sectionSeparator';
 import Show from '@/components/show';
@@ -146,7 +146,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
 
       <Show when={state?.renderStrategy === 'externalForm'}>
         <FormItem name="formId" label="Form Path">
-          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+          <FormAutocomplete readOnly={readOnly} />
         </FormItem>
       </Show>
 

@@ -1,15 +1,15 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Shesha.Roles.Dto;
+using System.Threading.Tasks;
 
 namespace Shesha.Roles
 {
     public interface IRoleAppService : IAsyncCrudAppService<RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>
     {
-        Task<ListResultDto<PermissionDto>> GetAllPermissions();
+        Task<ListResultDto<PermissionDto>> GetAllPermissionsAsync();
 
-        Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input);
+        Task<GetRoleForEditOutput> GetRoleForEditAsync(EntityDto input);
 
         Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
     }

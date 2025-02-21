@@ -18,6 +18,7 @@ import { IConfigurableFormComponent } from '@/providers';
 interface IShaDrawer {
   id?: string;
   propertyName?: string;
+  showFooter?: boolean;
   label?: string | ReactNode;
   onOkAction?: IConfigurableActionConfiguration;
   onCancelAction?: IConfigurableActionConfiguration;
@@ -61,6 +62,7 @@ const ShaDrawer: FC<IShaDrawer> = props => {
     showHeader,
     headerStyle,
     footerStyle,
+    showFooter,
   } = props;
   const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
@@ -149,7 +151,7 @@ const ShaDrawer: FC<IShaDrawer> = props => {
       placement={placement}
       width={width}
       onClose={closeDrawer}
-      styles={{ header: { display: showHeader ? 'block' : 'none', ...headerStyle }, footer: footerStyle, body: style }}
+      styles={{ header: { display: showHeader ? 'block' : 'none', ...headerStyle }, footer: {display: showFooter ? 'block' : 'none' , ...footerStyle}, body: style }}
       title={label}
       size="large"
       footer={

@@ -146,7 +146,7 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpPost]
-        public async Task<FileStreamResult> ExportToExcel(ExportToExcelInput input, CancellationToken cancellationToken)
+        public async Task<FileStreamResult> ExportToExcelAsync(ExportToExcelInput input, CancellationToken cancellationToken)
         {
             try
             {

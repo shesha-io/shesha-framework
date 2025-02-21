@@ -41,7 +41,7 @@ namespace Shesha.ShaRoleAppointedPersons
         {
             CheckCreatePermission();
 
-            var appointment = await BindAndValidate(input);
+            var appointment = await BindAndValidateAsync(input);
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
@@ -52,7 +52,7 @@ namespace Shesha.ShaRoleAppointedPersons
             return dto;
         }
 
-        private async Task<ShaRoleAppointedPerson> BindAndValidate(IShaRoleAppointedPersonDto input)
+        private async Task<ShaRoleAppointedPerson> BindAndValidateAsync(IShaRoleAppointedPersonDto input)
         {
             var entity = input is EntityDto<Guid> withId && withId.Id != Guid.Empty
                 ? await Repository.GetAsync(withId.Id)
@@ -116,7 +116,7 @@ namespace Shesha.ShaRoleAppointedPersons
         {
             CheckCreatePermission();
 
-            var appointment = await BindAndValidate(input);
+            var appointment = await BindAndValidateAsync(input);
 
             await CurrentUnitOfWork.SaveChangesAsync();
 

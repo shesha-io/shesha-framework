@@ -1,4 +1,17 @@
-import { IConfigurableFormComponent } from '@/providers';
+import { IConfigurableFormComponent, IStyleType } from '@/providers';
+
+export interface ISizableColumnInputProps extends IStyleType {
+  borderSize?: string | number;
+  borderRadius?: number;
+  borderType?: string;
+  borderColor?: string;
+  stylingBox?: string;
+  height?: string | number;
+  width?: string | number;
+  backgroundColor?: string;
+  hideBorder?: boolean;
+  columns?: ISizableColumnProps[];
+}
 
 export interface ISizableColumnProps {
   id: string;
@@ -6,6 +19,4 @@ export interface ISizableColumnProps {
   components: IConfigurableFormComponent[];
 }
 
-export interface ISizableColumnComponentProps extends IConfigurableFormComponent {
-  columns: ISizableColumnProps[];
-}
+export interface ISizableColumnComponentProps extends IConfigurableFormComponent, ISizableColumnInputProps { }
