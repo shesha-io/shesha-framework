@@ -101,7 +101,7 @@ export const getSettings = (data) => {
               .addConfigurableActionConfigurator({
                 id: 'actionConfiguration-4c18-468c-89e1-60c002ce96c5',
                 propertyName: 'actionConfiguration',
-                label: 'Action configuration',
+                label: 'Action Configuration',
                 validate: {},
                 settingsValidationErrors: [],
               })

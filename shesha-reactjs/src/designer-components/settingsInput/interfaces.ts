@@ -16,8 +16,8 @@ export interface IDropdownOption {
 }
 
 export interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'filtersList'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' |
+    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
@@ -65,6 +65,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     dataSourceUrl?: string;
     useRawValues?: boolean;
     modelType?: string;
+    httpVerb?: string;
     min?: number;
     max?: number;
     fieldsUnavailableHint?: string;
