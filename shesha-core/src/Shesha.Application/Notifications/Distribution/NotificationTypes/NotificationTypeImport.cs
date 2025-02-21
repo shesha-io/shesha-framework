@@ -4,13 +4,11 @@ using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.EntityReferences;
-using Shesha.Services;
+using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes
 {
@@ -96,12 +94,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             dbItem.Suppress = item.Suppress;
 
             // entity specific properties
-            dbItem.AllowAttachments = item.AllowAttachments;
-            dbItem.Disable = item.Disable;
-            dbItem.CanOptOut = item.CanOtpOut;
-            dbItem.Category = item.Category;
-            dbItem.OrderIndex = item.OrderIndex;
-            dbItem.OverrideChannels = item.OverrideChannels;
+            NotificationManager.CopyNotificationSpecificProps(item, dbItem);
 
             return dbItem;
         }
