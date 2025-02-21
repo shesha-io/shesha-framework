@@ -4,7 +4,7 @@ import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
 import { IObjectMetadata } from './metadata';
 import { IApplicationApi } from '@/providers';
-import { FormApi } from '@/providers/form/formApi';
+import { IFormApi } from '@/providers/form/formApi';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 
 export interface IHasPreviousActionResponse {
@@ -17,7 +17,7 @@ export interface IHasPreviousActionError {
 export type HasPreviousActionResult = IHasPreviousActionResponse | IHasPreviousActionError;
 
 export type IActionExecutionContext = GenericDictionary & HasPreviousActionResult & {
-  form?: FormApi;
+  form?: IFormApi;
   application?: IApplicationApi;
 };
 

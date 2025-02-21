@@ -11,6 +11,8 @@ export interface IStoredFilesRendererProps {
   disabled?: boolean;
   noFilesCaption?: ReactNode;
   accept?: string[];
+  layout?: 'vertical' | 'horizontal' | 'grid';
+  listType?: 'text' | 'thumbnail';
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
@@ -20,6 +22,8 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
   uploadBtnProps,
   disabled,
   accept = [],
+  layout,
+  listType,
 }) => {
   const {
     fileList,
@@ -46,7 +50,9 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
       uploadBtnProps={uploadBtnProps}
       disabled={disabled}
       allowedFileTypes={accept}
-      // noFilesCaption={noFilesCaption}
+      layout={layout}
+      listType={listType}
+    // noFilesCaption={noFilesCaption}
     />
   );
 };

@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Select, Space } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, Divider, Input, Select, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDropdownOption } from '@/designer-components/_settings/utils/background/interfaces';
 
@@ -10,6 +10,8 @@ interface CustomDropdownProps {
     readOnly?: boolean;
     label?: string | React.ReactNode;
     size?: SizeType;
+    defaultValue?: string;
+    customTooltip?: string;
     onAddCustomOption?: (newOption: string) => void;
     onChange?: (value: string) => void;
     variant?: 'borderless' | 'outlined' | 'filled';
@@ -20,22 +22,23 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     options,
     readOnly,
     label,
+    defaultValue,
+    customTooltip,
     onChange,
     size
 }) => {
-    const [customOption, setCustomOption] = useState({ x: '', y: '' });
+    const [customOption, setCustomOption] = useState('');
     const [customOptions, setCustomOptions] = useState(options);
 
     const clearInputs = () => {
-        setCustomOption({ x: '', y: '' });
+        setCustomOption('');
     };
 
     const addCustomOption = () => {
-        const { x, y } = customOption;
-        const newValue = `${x} ${y}`;
-        setCustomOptions(prev => [...prev, newValue]);
+        setCustomOptions(() => [...options, customOption]);
         clearInputs();
     };
+
 
     const renderCustomOptionInput = () => (
         <>
@@ -43,29 +46,28 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             <Space style={{ padding: '0 8px 4px' }} onClick={(e) => e.stopPropagation()}>
                 <Space.Compact size="large">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 8px', width: '100%' }}>
-                        {['x', 'y'].map((dim) => (
-                            <div key={dim} >
-                                <Space style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Input
-                                        type='number'
-                                        readOnly={readOnly}
-                                        value={customOption[dim].value}
-                                        onChange={(e) => setCustomOption(prev => ({ ...prev, [dim]: e.target.value }))}
-                                        size='small'
-                                        prefix={dim}
-                                        onClick={(e) => e.stopPropagation()}
-                                    />
-                                </Space>
 
-                            </div>
-                        ))}
+                        <div >
+                            <Space style={{ display: 'flex', flexDirection: 'row' }}>
+                                <Input
+                                    readOnly={readOnly}
+                                    value={customOption}
+                                    onChange={(e) => setCustomOption(e.target.value)}
+                                    size='small'
+                                    prefix={<Tooltip title={customTooltip} placement="top">
+                                        <QuestionCircleOutlined style={{ marginLeft: '2px', color: '#00000073' }} />
+                                    </Tooltip>}
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                            </Space>
+                        </div>
                     </div>
                 </Space.Compact>
                 <Button
                     type="text"
                     icon={<PlusOutlined />}
                     onClick={addCustomOption}
-                    disabled={readOnly}
+                    disabled={readOnly || !customOption}
                     style={{ width: 70, padding: '0 8px' }}
                 >
                     Apply {label}
@@ -80,6 +82,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             disabled={readOnly}
             size={size}
             onChange={onChange}
+            defaultValue={defaultValue}
             dropdownRender={(menu) => (
                 <>
                     {menu}

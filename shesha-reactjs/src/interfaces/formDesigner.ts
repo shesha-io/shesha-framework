@@ -141,6 +141,11 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
    */
   validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
+
+  /**
+   * Returns true if the property should be calculated for the actual model (calculated from JS code)
+   */
+  actualModelPropertyFilter?: (name: string) => boolean;
 }
 
 export interface SettingsMigrationContext {

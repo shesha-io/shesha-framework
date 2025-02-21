@@ -1,10 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Reflection;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
-using Remotion.Linq.Clauses.ResultOperators;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -21,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 
 namespace Shesha.DynamicEntities;
 
@@ -50,7 +46,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         _propertyRepository = propertyRepository;
     }
 
-    public async Task<FormIdFullNameDto> GetEntityConfigForm(string entityConfigName, string typeName)
+    public async Task<FormIdFullNameDto> GetEntityConfigFormAsync(string entityConfigName, string typeName)
     {
         var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
         if (entityConfig == null)
@@ -113,10 +109,10 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     [HttpDelete]
     public override Task DeleteAsync(EntityDto<Guid> input)
     {
-        return DeleteConfig(input.Id);
+        return DeleteConfigAsync(input.Id);
     }
 
-    public async Task RemoveConfigurationsOfMissingClasses()
+    public async Task RemoveConfigurationsOfMissingClassesAsync()
     {
         var entityTypes = _typeFinder.Find(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity)).ToList();
 
@@ -127,10 +123,10 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         var toDelete = dbConfigs.Where(ec => !entityTypes.Any(ct => ct.Namespace == ec.Namespace && ct.Name == ec.ClassName)).ToList();
 
         foreach (var config in toDelete)
-            await DeleteConfig(config.Id);
+            await DeleteConfigAsync(config.Id);
     }
 
-    private async Task DeleteConfig(Guid id)
+    private async Task DeleteConfigAsync(Guid id)
     {
         await _propertyRepository.DeleteAsync(x => x.EntityConfig.Id == id);
         await _configItemRepository.DeleteAsync(id);

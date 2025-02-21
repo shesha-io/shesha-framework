@@ -7,6 +7,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Permissions;
@@ -29,11 +30,7 @@ namespace Shesha.DynamicEntities.Distribution
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IEntityConfigManager _entityConfigManager;
-        private readonly ICacheManager _cacheManager;
-
-        public ITypedCache<string, ModelConfigurationDto> ModelConfigsCache =>
-            _cacheManager.GetCache<string, ModelConfigurationDto>($"{this.GetType().Name}_models");
-
+        private readonly ITypedCache<string, ModelConfigurationDto> _modelConfigsCache;
 
         public EntityConfigImport(
             IRepository<Module, Guid> moduleRepo,
@@ -42,16 +39,16 @@ namespace Shesha.DynamicEntities.Distribution
             IRepository<EntityProperty, Guid> propertyConfigRepo,
             IPermissionedObjectManager permissionedObjectManager,
             IEntityConfigManager entityConfigManager,
-            ICacheManager cacheManager,
-            IUnitOfWorkManager unitOfWorkManager
-        ): base (moduleRepo, frontEndAppRepo)
+            IUnitOfWorkManager unitOfWorkManager,
+            IModelConfigsCacheHolder modelConfigsCacheHolder
+        ) : base (moduleRepo, frontEndAppRepo)
         {
             _entityConfigRepo = entityConfigRepo;
             _propertyConfigRepo = propertyConfigRepo;
             _unitOfWorkManager = unitOfWorkManager;
             _permissionedObjectManager = permissionedObjectManager;
             _entityConfigManager = entityConfigManager;
-            _cacheManager = cacheManager;
+            _modelConfigsCache = modelConfigsCacheHolder.Cache;
         }
 
         public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
@@ -88,7 +85,7 @@ namespace Shesha.DynamicEntities.Distribution
 
                 await MapPropertiesAsync(dbItem, item.Properties);
 
-                await ModelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
+                await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
                 return dbItem;
 

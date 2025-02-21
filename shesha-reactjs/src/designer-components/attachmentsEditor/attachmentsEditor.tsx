@@ -6,7 +6,7 @@ import { CustomFile } from '@/components';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import {
   evaluateValue,
   executeScript,
@@ -21,7 +21,9 @@ import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
-export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
+export type layoutType = 'vertical' | 'horizontal' | 'grid';
+export type listType = 'text' | 'thumbnail';
+export interface IAttachmentsEditorProps extends IConfigurableFormComponent, IInputStyles {
   ownerId: string;
   ownerType: string;
   filesCategory?: string;
@@ -35,6 +37,12 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   maxHeight?: string;
   onFileChanged?: string;
   downloadZip?: boolean;
+  filesLayout?: layoutType;
+  listType: listType;
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  hideFileName?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -50,13 +58,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
 
-    const ownerId = evaluateValue(model.ownerId, { data: data, globalState });
+    const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 
     const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
 
-      if (!model.onFileChanged) 
+      if (!model.onFileChanged)
         return;
 
       executeScript<void>(model.onFileChanged, {
@@ -74,7 +82,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     return (
       // Add GHOST_PAYLOAD_KEY to remove field from the payload
       // File list uses propertyName only for support Required feature
-      <ConfigurableFormItem model={{...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}`}}> 
+      <ConfigurableFormItem model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}` }}>
         {(value, onChange) => {
           return (
             <StoredFilesProvider
@@ -85,7 +93,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
               baseUrl={backendUrl}
-              
               // used for requered field validation
               onChange={onChange}
               value={value}
@@ -93,6 +100,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               <CustomFile
                 isStub={form?.formMode === 'designer'}
                 allowAdd={enabled && model.allowAdd}
+                disabled={model.readOnly}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
@@ -101,6 +109,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 isDragger={model?.isDragger}
                 onFileListChanged={onFileListChanged}
                 downloadZip={model.downloadZip}
+                filesLayout={model.filesLayout}
+                listType={model.listType}
+                {...model}
+                ownerId={ownerId}
               />
             </StoredFilesProvider>
           );
@@ -122,17 +134,20 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         ownerId: '',
         ownerType: '',
         ownerName: '',
+        listType: 'text',
+        layout: 'horizontal',
+        hideFileName: true,
       };
     })
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAttachmentsEditorProps>(2, (prev) => migrateVisibility(prev))
     .add<IAttachmentsEditorProps>(3, (prev) => migrateReadOnly(prev))
-    .add<IAttachmentsEditorProps>(4, (prev) => ({...prev, downloadZip: true}))
+    .add<IAttachmentsEditorProps>(4, (prev) => ({ ...prev, downloadZip: true }))
     .add<IAttachmentsEditorProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
       onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
     }))
-  ,
+    .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: !prev.listType ? 'text' : prev.listType })),
 };
 
 export default AttachmentsEditor;

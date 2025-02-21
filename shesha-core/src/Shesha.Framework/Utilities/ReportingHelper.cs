@@ -18,18 +18,19 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static MemoryStream GetResourceStream(string resourceName, Assembly assembly)
         {
-            var resourceStream = assembly.GetManifestResourceStream(resourceName);
-
             var result = new MemoryStream();
 
-            var buffer = new byte[8 * 1024];
-            int len;
-            while ((len = resourceStream.Read(buffer, 0, buffer.Length)) > 0)
+            using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) 
             {
-                result.Write(buffer, 0, len);
-            }
+                var buffer = new byte[8 * 1024];
+                int len;
+                while ((len = resourceStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    result.Write(buffer, 0, len);
+                }
 
-            result.Position = 0;
+                result.Position = 0;
+            }
 
             return result;
         }

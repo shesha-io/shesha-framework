@@ -1,34 +1,34 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Shesha.Roles.Dto;
 using Shesha.SecurityQuestions.Dto;
 using Shesha.Users.Dto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Users
 {
     public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>
     {
-        Task<ListResultDto<RoleDto>> GetRoles();
+        Task<ListResultDto<RoleDto>> GetRolesAsync();
 
-        Task ChangeLanguage(ChangeUserLanguageDto input);
+        Task ChangeLanguageAsync(ChangeUserLanguageDto input);
 
-        Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtp(string mobileNo);
+        Task<ResetPasswordSendOtpResponse> ResetPasswordSendOtpAsync(string mobileNo);
 
-        Task<bool> SendSmsOtp(string username);
+        Task<bool> SendSmsOtpAsync(string username);
 
-        Task<List<SecurityQuestionDto>> GetSecurityQuestions(string username);
+        Task<List<SecurityQuestionDto>> GetSecurityQuestionsAsync(string username);
 
-        Task<ResetPasswordVerifyOtpResponse> ValidateResetCode(ResetPasswordValidateCodeInput input);
+        Task<ResetPasswordVerifyOtpResponse> ValidateResetCodeAsync(ResetPasswordValidateCodeInput input);
 
-        Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestions(SecurityQuestionVerificationDto input);
+        Task<ResetPasswordVerifyOtpResponse> ValidateSecurityQuestionsAsync(SecurityQuestionVerificationDto input);
 
-        Task<bool> SendEmailLink(string username);
+        Task<bool> SendEmailLinkAsync(string username);
 
-        Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptions(string username);
+        Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username);
 
-        Task<bool> ResetPasswordUsingToken(ResetPasswordUsingTokenInput input);
-        Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtp(ResetPasswordVerifyOtpInput input);
+        Task<bool> ResetPasswordUsingTokenAsync(ResetPasswordUsingTokenInput input);
+        Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input);
     }
 }

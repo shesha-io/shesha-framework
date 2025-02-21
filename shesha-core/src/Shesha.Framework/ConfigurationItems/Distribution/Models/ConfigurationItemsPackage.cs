@@ -22,7 +22,8 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             _zip = zip;
         }
 
-        public void Dispose()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected")]
+        public virtual void Dispose()
         {
             _zip?.Dispose();
         }

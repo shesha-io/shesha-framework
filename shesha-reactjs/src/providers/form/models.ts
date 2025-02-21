@@ -1,17 +1,17 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError, ICommonContainerProps, IDictionary } from '@/interfaces';
+import React, { ReactNode } from 'react';
+import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
-
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
@@ -66,22 +66,20 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
-
 export interface IStyleType {
   border?: IBorderValue;
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
-  style?: IConfigurableFormComponent["style"];
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
-  display?: ICommonContainerProps['display'];
   size?: SizeType;
+  style?: string;
 }
 
 export interface IInputStyles extends IStyleType {
   borderSize?: string | number;
-  borderRadius?: number;
+  borderRadius?: string | number;
   borderType?: string;
   borderColor?: string;
   fontColor?: string;
@@ -92,6 +90,15 @@ export interface IInputStyles extends IStyleType {
   width?: string | number;
   backgroundColor?: string;
   hideBorder?: boolean;
+  backgroundCover?: 'contain' | 'cover';
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
+  className?: string;
+  wrapperStyle?: string;
+  backgroundType?: 'image' | 'color';
+  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
+  backgroundUrl?: string;
+  backgroundBase64?: string;
+  backgroundStoredFileId?: string;
   style?: string;
 };
 
@@ -228,6 +235,12 @@ export interface IConfigurableFormComponent
   layout?: FormLayout;
 
   inputStyles?: IStyleType;
+
+  desktop?: any;
+
+  tablet?: any;
+
+  mobile?: any;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
@@ -332,13 +345,9 @@ export type FormMarkup =
   | FormMarkupWithSettings | ((data: any) => FormRawMarkup
     | FormMarkupWithSettings);
 
-export interface FormFullName {
-  readonly name: string;
-  readonly module?: string | null;
-  readonly version?: number;
-}
-export type FormUid = string;
-export type FormIdentifier = FormFullName | FormUid;
+export type FormFullName  = ConfigurableItemFullName;
+export type FormUid = ConfigurableItemUid;
+export type FormIdentifier = ConfigurableItemIdentifier;
 
 export interface IPersistedFormProps {
   id?: string;

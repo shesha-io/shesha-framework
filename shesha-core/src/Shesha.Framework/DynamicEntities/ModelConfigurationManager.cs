@@ -9,6 +9,7 @@ using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -34,11 +35,8 @@ namespace Shesha.DynamicEntities
         private readonly ITypeFinder _typeFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
-        private readonly ICacheManager _cacheManager;
         private readonly IRepository<Domain.ConfigurationItems.Module, Guid> _moduleRepository;
-
-        public ITypedCache<string, ModelConfigurationDto> ModelConfigsCache =>
-            _cacheManager.GetCache<string, ModelConfigurationDto>($"{this.GetType().Name}_models");
+        private readonly ITypedCache<string, ModelConfigurationDto> _modelConfigsCache;
 
         public ModelConfigurationManager(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -48,8 +46,8 @@ namespace Shesha.DynamicEntities
             IHardcodeMetadataProvider metadataProvider,
             IRepository<ConfigurationItem, Guid> configurationItemRepository,
             IMappingMetadataProvider mappingMetadataProvider,
-            ICacheManager cacheManager,
-            IRepository<Domain.ConfigurationItems.Module, Guid> moduleRepository
+            IRepository<Domain.ConfigurationItems.Module, Guid> moduleRepository,
+            IModelConfigsCacheHolder modelConfigsCacheHolder
             )
         {
             _entityConfigRepository = entityConfigRepository;
@@ -59,8 +57,8 @@ namespace Shesha.DynamicEntities
             _metadataProvider = metadataProvider;
             _configurationItemRepository = configurationItemRepository;
             _mappingMetadataProvider = mappingMetadataProvider;
-            _cacheManager = cacheManager;
             _moduleRepository = moduleRepository;
+            _modelConfigsCache = modelConfigsCacheHolder.Cache;
         }
 
         public async Task MergeConfigurationsAsync(EntityConfig source, EntityConfig destination, bool deleteAfterMerge, bool deepUpdate)
@@ -88,7 +86,7 @@ namespace Shesha.DynamicEntities
                 await _configurationItemRepository.DeleteAsync(source.Id);
             }
 
-            await ModelConfigsCache.RemoveAsync($"{destination.Namespace}|{destination.ClassName}");
+            await _modelConfigsCache.RemoveAsync($"{destination.Namespace}|{destination.ClassName}");
         }
 
         private void CopyViewConfigs(EntityConfig source, EntityConfig destination)
@@ -269,7 +267,7 @@ namespace Shesha.DynamicEntities
             // todo: add validation
 
             var res = await CreateOrUpdateAsync(modelConfig, input, false);
-            await ModelConfigsCache.RemoveAsync($"{res.Namespace}|{res.ClassName}");
+            await _modelConfigsCache.RemoveAsync($"{res.Namespace}|{res.ClassName}");
 
             return res;
         }
@@ -538,7 +536,7 @@ namespace Shesha.DynamicEntities
         public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null)
         {
             var cacheKey = $"{@namespace}|{name}";
-            var result = await ModelConfigsCache.GetAsync(cacheKey, async () => {
+            var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {
                 var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.ClassName == name && m.Namespace == @namespace && !m.IsDeleted).FirstOrDefaultAsync();
                 if (modelConfig == null)
                     return null;

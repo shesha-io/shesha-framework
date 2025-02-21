@@ -3,19 +3,19 @@ import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
-import { CustomLabeledValue } from '@/components/autocomplete';
 import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
-import { FormApi } from '@/providers/form/formApi';
+import { IFormApi } from '@/providers/form/formApi';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IApplicationContext, executeScriptSync } from '@/index';
 import { ObservableProxy } from '@/providers/form/observableProxy';
+import { CustomLabeledValue } from '@/components/refListDropDown/models';
 
 type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
 export interface ICustomEventHandler {
   model: IConfigurableFormComponent;
-  form: FormApi;
+  form: IFormApi;
   formData: any;
   globalState: IAnyObject;
   http: HttpClientApi;
@@ -134,7 +134,7 @@ export const customOnChangeValueEventHandler = (model: IConfigurableFormComponen
 export const onCustomEventsHandler = <FormCustomEvent = any>(
   event: FormCustomEvent,
   customEventAction: string,
-  form: FormApi,
+  form: IFormApi,
   formData: any,
   globalState: IAnyObject,
   http: HttpClientApi,
