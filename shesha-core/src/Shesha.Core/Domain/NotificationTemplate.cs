@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate")]
-    public class NotificationTemplate : FullAuditedEntity<Guid>
+    public class NotificationTemplate : FullAuditedEntity<Guid>, INotificationTemplateProps
     {
         public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
         public virtual NotificationTypeConfig PartOf { get; set; }

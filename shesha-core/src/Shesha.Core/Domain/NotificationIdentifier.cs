@@ -7,13 +7,13 @@ namespace Shesha.Domain
     /// Notification identifier
     /// </summary>
     [Serializable]
-    public class NotificationIdentifier : ConfigurationItemIdentifier
+    public class NotificationIdentifier : ConfigurationItemIdentifier<NotificationTypeConfig>
     {
         public NotificationIdentifier(string module, string name) : base(module, name)
         {
         }
 
         [JsonIgnore]
-        public override string ItemType => "notification";
+        public override string ItemTypeName => "notification";
     }
 }

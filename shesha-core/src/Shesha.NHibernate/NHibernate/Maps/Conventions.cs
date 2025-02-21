@@ -260,7 +260,7 @@ namespace Shesha.NHibernate.Maps
             {
                 var propertyType = ByCode.TypeExtensions.GetPropertyOrFieldType(member.LocalMember);
 
-                var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
+                var lazyAttribute = member.LocalMember.GetAttribute<NhLazyLoadAttribute>(true);
                 if (lazyAttribute != null)
                     propertyCustomizer.Lazy(true);
 
@@ -494,8 +494,12 @@ namespace Shesha.NHibernate.Maps
            {
                string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType);
 
-               var lazyAttribute = propertyPath.LocalMember.GetAttribute<LazyAttribute>(true);
-               var lazyRelation = lazyAttribute != null ? lazyAttribute.GetLazyRelation() : _defaultLazyRelation;
+               var lazyAttribute = propertyPath.LocalMember.GetAttribute<LazyLoadAttribute>(true);
+               var lazyRelation = lazyAttribute != null
+                    ? lazyAttribute is NhLazyLoadAttribute nhLazy
+                        ? nhLazy.GetLazyRelation()
+                        : LazyRelation.NoProxy
+                    : _defaultLazyRelation;
                if (lazyRelation != null)
                    map.Lazy(lazyRelation);
 
