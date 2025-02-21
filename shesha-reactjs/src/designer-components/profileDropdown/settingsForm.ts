@@ -49,16 +49,6 @@ export const getSettings = (data: any) =>
               label: 'Show User Info',
               parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5'
             })
-            .addTextField({
-              id: nanoid(),
-              propertyName: 'popOverTitle',
-              label: 'Popover Title',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-              hidden: {
-                _mode: 'code',
-                _code: 'return data?.showUserInfo != true'
-              }
-            })
             .addFormAutocomplete({
               id: nanoid(),
               propertyName: 'popOverFormId',
@@ -114,7 +104,7 @@ export const getSettings = (data: any) =>
             .addCodeEditor({
               id: nanoid(),
               propertyName: "popOverContentStyle",
-              label: "Popover content Style",
+              label: "Popover Content Style",
               parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
               mode: "dialog",
               hidden: {
