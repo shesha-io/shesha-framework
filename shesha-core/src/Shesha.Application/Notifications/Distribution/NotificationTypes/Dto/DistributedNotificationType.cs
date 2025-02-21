@@ -1,5 +1,6 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
@@ -7,7 +8,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
     /// <summary>
     /// Distributed file template
     /// </summary>
-    public class DistributedNotificationTypes: DistributedConfigurableItemBase, INotificationTypeSpecificProps
+    public class DistributedNotificationType: DistributedConfigurableItemBase, INotificationTypeSpecificProps
     {
         /// <summary>
         /// 
@@ -38,5 +39,10 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
         ///  messages without which the user should not proceed in any case e.g. OTP
         /// </summary>
         public bool IsTimeSensitive { get; set; }
+
+        /// <summary>
+        /// Templates
+        /// </summary>
+        public List<DistributedNotificationTemplateDto> Templates { get; set; } = new();
     }
 }

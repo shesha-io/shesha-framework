@@ -3,9 +3,12 @@ using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications.Distribution.NotificationTypes
@@ -16,10 +19,12 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     public class NotificationTypeExport : INotificationTypeExport, ITransientDependency
     {
         private readonly IRepository<NotificationTypeConfig, Guid> _configurationRepo;
+        private readonly IRepository<NotificationTemplate, Guid> _templateRepo;
 
-        public NotificationTypeExport(IRepository<NotificationTypeConfig, Guid> configurationRepo)
+        public NotificationTypeExport(IRepository<NotificationTypeConfig, Guid> configurationRepo, IRepository<NotificationTemplate, Guid> templateRepo)
         {
             _configurationRepo = configurationRepo;
+            _templateRepo = templateRepo;
         }
 
         public string ItemType => NotificationTypeConfig.ItemTypeName;
@@ -35,7 +40,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             if (!(item is NotificationTypeConfig itemConfig))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(NotificationTypeConfig)}, actual: {item.GetType().FullName}", nameof(item));
 
-            var result = new DistributedNotificationTypes
+            var result = new DistributedNotificationType
             {
                 Id = itemConfig.Id,
                 Name = itemConfig.Name,
@@ -52,9 +57,16 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 ParentVersionId = itemConfig.ParentVersion?.Id,
                 Suppress = itemConfig.Suppress,
             };
-            NotificationManager.CopyNotificationSpecificProps(itemConfig, result);
+            result.CopyNotificationSpecificPropsFrom(itemConfig);
+            result.Templates = await ExportTemplatesAsync(itemConfig);
 
             return await Task.FromResult<DistributedConfigurableItemBase>(result);
+        }
+
+        private async Task<List<DistributedNotificationTemplateDto>> ExportTemplatesAsync(NotificationTypeConfig notification)
+        {
+            var templates = await _templateRepo.GetAll().Where(t => t.PartOf == notification).ToListAsync();
+            return templates.Select(e => new DistributedNotificationTemplateDto { Id = e.Id }.CopyTemplatePropsFrom(e)).ToList();
         }
 
         /// inheritedDoc

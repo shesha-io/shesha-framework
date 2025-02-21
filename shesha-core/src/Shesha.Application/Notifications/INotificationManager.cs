@@ -20,5 +20,10 @@ namespace Shesha.Notifications
         /// <param name="priority"></param>
         /// <returns></returns>
         Task<List<NotificationChannelConfig>> GetChannelsAsync(NotificationTypeConfig type, IMessageReceiver receiver, RefListNotificationPriority priority);
+
+        /// <summary>
+        /// Create new version of the specified <paramref name="src"/> excluding detailing items
+        /// </summary>
+        Task<NotificationTypeConfig> CreateNewVersionWithoutDetailsAsync(NotificationTypeConfig src);
     }
 }
