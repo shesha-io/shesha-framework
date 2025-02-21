@@ -29,16 +29,16 @@ export interface IConfigurableActionDispatcherProviderProps { }
 
 const getActualActionArguments = (action: IConfigurableActionDescriptor, actionArguments: any) => {
   const { migrator } = action ?? {};
-  if (!migrator) 
-      return actionArguments;
+  if (!migrator)
+    return actionArguments;
 
-    const migratorInstance = new Migrator<any, any>();
-    const fluent = migrator(migratorInstance);
-    const versionedValue = {...actionArguments} as IHasVersion;
-    if (versionedValue.version === undefined) 
-      versionedValue.version = -1;
-    const model = fluent.migrator.upgrade(versionedValue, {});
-    return model;
+  const migratorInstance = new Migrator<any, any>();
+  const fluent = migrator(migratorInstance);
+  const versionedValue = { ...actionArguments } as IHasVersion;
+  if (versionedValue.version === undefined)
+    versionedValue.version = -1;
+  const model = fluent.migrator.upgrade(versionedValue, {});
+  return model;
 };
 
 function useConfigurableActionDispatcherState(require: boolean) {
@@ -127,7 +127,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
 
   const getActions = () => {
-    return {...parent?.getActions(), ...actions.current};
+    return { ...parent?.getActions(), ...actions.current };
   };
 
   const registerAction = (payload: IRegisterActionPayload) => {
@@ -171,7 +171,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const executeAction = (payload: IExecuteActionPayload) => {
     const { actionConfiguration, argumentsEvaluationContext } = payload;
-    if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
+    if (!actionConfiguration) return Promise.reject('Action Configuration is mandatory');
     const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } = actionConfiguration;
     if (!actionName) return Promise.reject('Action name is mandatory');
 
@@ -289,7 +289,7 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
 
     return !payload.isPermament
       ? () => {
-      unregisterAction(payload);
+        unregisterAction(payload);
       }
       : undefined;
   }, deps);
@@ -302,5 +302,5 @@ export {
   useConfigurableActionDispatcher,
   useConfigurableActionDispatcherProxy,
   getActualActionArguments,
-  type IConfigurableActionConfiguration,  
+  type IConfigurableActionConfiguration,
 };

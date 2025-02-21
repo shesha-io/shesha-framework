@@ -39,7 +39,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
   .addLabelValueEditor({
     id: nanoid(),
     propertyName: 'queryParameters',
-    label: 'Query String parameters',
+    label: 'Query String Parameters',
     labelName: 'key',
     labelTitle: 'Key',
     valueName: 'value',
