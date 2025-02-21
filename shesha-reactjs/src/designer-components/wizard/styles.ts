@@ -18,6 +18,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-font-size-lg: ${styles.fontSize || 16};
       --ant-steps-nav-arrow-color: ${styles.color}45;
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
+      --ant-color-text-light-solid: ${primaryTextColor} !important;
 
       * {
           font-weight: ${styles.fontWeight || 400};
@@ -25,25 +26,28 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       }
     }
 
-    .ant-btn-default {
-      --ant-button-default-color: ${secondaryTextColor} !important;
-      --ant-button-default-active-bg: ${secondaryBgColor} !important;
-      --ant-button-default-bg: ${secondaryBgColor} !important;
-      --ant-button-default-hover-border-color: ${primaryBgColor} !important;
-      --ant-button-default-hover-color: ${primaryBgColor} !important;
-      --ant-button-default-color: ${secondaryTextColor} !important;
-      font-family: ${styles.fontFamily};
-  }
-  .ant-btn-primary {
-      --ant-color-primary: ${primaryBgColor};
-      --ant-button-primary-active-bg: ${primaryBgColor} !important;
-      --ant-color-primary-hover: ${primaryBgColor}90 !important;
-      --ant-button-primary-hover-color: ${primaryTextColor} !important;
-      --ant-color-text-light-solid: ${primaryTextColor} !important;
-      --ant-button-primary-hover-border-color: ${secondaryBgColor} !important;
-      --ant-button-primary-color: ${primaryTextColor} !important;
-      font-family: ${styles.fontFamily};
+    .sha-steps-buttons-container {
+      .ant-btn-default {
+        --ant-button-default-color: ${secondaryTextColor} !important;
+        --ant-button-default-active-bg: ${secondaryBgColor} !important;
+        --ant-button-default-bg: ${secondaryBgColor} !important;
+        --ant-button-default-hover-border-color: ${primaryBgColor} !important;
+        --ant-button-default-hover-color: ${primaryBgColor} !important;
+        --ant-button-default-color: ${secondaryTextColor} !important;
+        font-family: ${styles.fontFamily};
     }
+
+    .ant-btn-primary {
+        --ant-color-primary: ${primaryBgColor};
+        --ant-button-primary-active-bg: ${primaryBgColor} !important;
+        --ant-color-primary-hover: ${primaryBgColor}90 !important;
+        --ant-button-primary-hover-color: ${primaryTextColor} !important;
+        --ant-color-text-light-solid: ${primaryTextColor} !important;
+        --ant-button-primary-hover-border-color: ${secondaryBgColor} !important;
+        --ant-button-primary-color: ${primaryTextColor} !important;
+        font-family: ${styles.fontFamily};
+      }
+  }
     
     ${styles}
       

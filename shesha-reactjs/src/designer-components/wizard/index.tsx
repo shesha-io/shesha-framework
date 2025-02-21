@@ -82,6 +82,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               beforeDoneActionConfiguration: step.doneButtonActionConfiguration,
             };
           }),
+          editMode: 'inherited'
         };
       })
       .add<IWizardComponentProps>(
