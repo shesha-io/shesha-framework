@@ -14,7 +14,7 @@ import { getStyle, IInputStyles, IStyleType, pickStyleFromModel, useSheshaApplic
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from '../textField/utils';
 import { removeUndefinedProps } from '@/utils/object';
-import { ConfigProvider, InputProps } from 'antd';
+import { ConfigProvider } from 'antd';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
@@ -75,23 +75,6 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       ...dimensionsStyles
     });
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
-
-    const inputProps: InputProps = removeUndefinedProps({ 
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
-      size: model.size,
-      disabled: model.readOnly,
-      readOnly: model.readOnly,
-      maxLength: model.validate?.maxLength,
-      max: model.validate?.maxLength,
-      minLength: model.validate?.minLength,
-      datatype: model.dataType,
-      content: model.content,
-      font: model.font,
-      textAlign: model.font.align,
-      contentType: model.contentType,
-      contentDisplay: model.contentDisplay,
-    });
-
     
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
@@ -107,9 +90,8 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
             },
           }}
         >
-
           <TypographyComponent
-            {...inputProps}
+            {...model}
             textType={model.textType}
             styles={{ ...finalStyle, ...jsStyle }}
             value={model?.contentDisplay === 'name' ? value : model?.content}

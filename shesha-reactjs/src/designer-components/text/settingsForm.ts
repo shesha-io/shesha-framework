@@ -3,6 +3,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { DEFAULT_CONTENT_TYPE } from './utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: any) => {
   return {
@@ -113,12 +114,61 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: {
-                    _code:
-                      'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.contentDisplay) === "name";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
+                  hidden: {_code: 'return  getSettingValue(data?.dataType) !== "date-time";', _mode: 'code', _value: false} as any,
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'text',
+                      id: 'type-s2gmBg3QaaZC0UjZjpfTm',
+                      hidden: false,
+                      propertyName: 'dateFormat',
+                      label: 'Date Format',                    
+                      size: 'small',
+                      jsSetting: true,
+                      allowClear: false,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  hidden: {_code: 'return  getSettingValue(data?.dataType) !== "number";', _mode: 'code', _value: false} as any,
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'dropdown',
+                      id: 'type-s2mBg3QaaZC0UjZjpfTm',
+                      hidden: false,
+                      propertyName: 'numberFormat',
+                      label: 'Number Format',
+                      size: 'small',
+                      jsSetting: true,
+                      allowClear: false,
+                      dropdownOptions: [
+                        {
+                          label: 'currency',
+                          value: 'currency',
+                        },
+                        {
+                          label: 'double',
+                          value: 'double',
+                        },
+                        {
+                          label: 'round',
+                          value: 'round',
+                        },
+                        {
+                          label: 'thousand separator',
+                          value: 'thousandSeparator',
+                        },
+                      ]
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  hidden: {_code: 'return getSettingValue(data?.contentDisplay) === "name";', _mode: 'code', _value: false} as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -722,29 +772,12 @@ export const getSettings = (data: any) => {
                                     ],
                                   },
                                   {
-                                    type: 'dropdown',
+                                    type: 'radio',
                                     id: 'backgroundStyleRow-repeat',
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                    dropdownOptions: [
-                                      {
-                                        value: 'repeat',
-                                        label: 'repeat',
-                                      },
-                                      {
-                                        value: 'repeat-x',
-                                        label: 'repeatX',
-                                      },
-                                      {
-                                        value: 'repeat-y',
-                                        label: 'repeatY',
-                                      },
-                                      {
-                                        value: 'no-repeat',
-                                        label: 'noRepeat',
-                                      },
-                                    ],
+                                     buttonGroupOptions: repeatOptions,
                                   },
                                 ],
                               })
