@@ -145,24 +145,33 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         parentId: mainSettingsTabId,
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'icon',
-                        label: 'Icon',
                         parentId: mainSettingsTabId,
-                        inputType: 'iconPicker',
-                        jsSetting: true,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: { _code: 'return getSettingValue(data?.displayType) !== "icon";', _mode: 'code', _value: false } as any,
+                        inputs: [{
+                          id: nanoid(),
+                          propertyName: 'icon',
+                          label: 'Icon',
+                          parentId: mainSettingsTabId,
+                          type: 'iconPicker',
+                          jsSetting: true,
+                        }]
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
+                        id: nanoid(),
+                        parentId: mainSettingsTabId,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return getSettingValue(data?.displayType) !== "textTitle";', _mode: 'code', _value: false } as any,
+                        inputs: [{
                         id: nanoid(),
                         propertyName: 'textTitle',
                         label: 'Text Title',
                         parentId: mainSettingsTabId,
-                        inputType: 'text',
+                        type: 'text',
                         jsSetting: true,
-                        hidden: { _code: 'return getSettingValue(data?.displayType) !== "textTitle";', _mode: 'code', _value: false } as any,
-                      })
+                      }]})
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'formSelectionMode',
@@ -176,14 +185,19 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         ],
                         defaultValue: 'name',
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'formIdentifier',
-                        label: 'Form Identifier',
                         parentId: mainSettingsTabId,
-                        inputType: 'fullIdFormAutocomplete',
-                        jsSetting: true,
-                        // hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "name";', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "name";', _mode: 'code', _value: false } as any,
+                        inputs: [{
+                          id: nanoid(),
+                          propertyName: 'formIdentifier',
+                          label: 'Form Identifier',
+                          parentId: mainSettingsTabId,
+                          type: 'fullIdFormAutocomplete',
+                          jsSetting: true,
+                        }]
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
@@ -290,25 +304,36 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                   { name: 'http', description: 'axiosHttp', type: '' },
                                 ]).map((item) => JSON.stringify(item)),
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'handleSuccess',
-                                label: 'Handle Success',
                                 parentId: mainSettingsTabId,
-                                inputType: 'switch',
-                                defaultValue: true,
-                                jsSetting: true,
+                                readOnly: false,
                                 hidden: { _code: 'return getSettingValue(data?.entityReferenceType) !== "dialog";', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  id: nanoid(),
+                                  propertyName: 'handleSuccess',
+                                  label: 'Handle Success',
+                                  parentId: mainSettingsTabId,
+                                  type: 'switch',
+                                  defaultValue: true,
+                                  jsSetting: true,
+                                  width: '100%',
+                                }]
                               })
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'handleFail',
-                                label: 'Handle Fail',
                                 parentId: mainSettingsTabId,
-                                inputType: 'switch',
-                                defaultValue: true,
-                                jsSetting: true,
+                                readOnly: false,
                                 hidden: { _code: 'return getSettingValue(data?.entityReferenceType) !== "dialog";', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  id: nanoid(),
+                                  propertyName: 'handleFail',
+                                  label: 'Handle Fail',
+                                  parentId: mainSettingsTabId,
+                                  type: 'switch',
+                                  defaultValue: true,
+                                  jsSetting: true,
+                                }]
                               })
                               .toJson()
                           ]
@@ -328,15 +353,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             id: dataTabId,
             components: [
               ...new DesignerToolbarSettings()
-                // .addSettingsInput({
-                //   id: nanoid(),
-                //   propertyName: 'getEntityUrl',
-                //   label: 'Get Entity URL',
-                //   jsSetting: true,
-                //   parentId: mainSettingsTabId,
-                //   size: 'small',
-                //   inputType: 'endpointsAutoComplete',
-                // })
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'autocomplete',
@@ -352,14 +368,20 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   useRawValues: true,
                   width: '100%'
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'displayProperty',
-                  label: 'Display Property',
                   parentId: mainSettingsTabId,
-                  inputType: 'propertyAutocomplete',
-                  jsSetting: true,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   hidden: { _code: 'return getSettingValue(data?.displayType) !== "displayProperty";', _mode: 'code', _value: false } as any,
+                  inputs: [{
+                    id: nanoid(),
+                    propertyName: 'displayProperty',
+                    label: 'Display Property',
+                    parentId: mainSettingsTabId,
+                    type: 'propertyAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                  }]
                 })
                 .addSettingsInput({
                   id: nanoid(),
@@ -375,14 +397,20 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   ],
                   defaultValue: 'Quickview',
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'formType',
-                  label: 'Form Type',
                   parentId: mainSettingsTabId,
-                  inputType: 'formTypeAutocomplete',
-                  jsSetting: true,
-                  // hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                  inputs: [{
+                    id: nanoid(),
+                    propertyName: 'formType',
+                    label: 'Form Type',
+                    parentId: mainSettingsTabId,
+                    type: 'formTypeAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                  }]
                 })
                 .toJson()
             ]
@@ -563,43 +591,61 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           ]
                         }
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'modalWidth',
-                        label: 'Dialog Width (%)',
-                        parentId: mainSettingsTabId,
-                        inputType: 'dropdown',
-                        jsSetting: true,
-                        dropdownOptions: [
-                          { value: '40%', label: 'Small' },
-                          { value: '60%', label: 'Medium' },
-                          { value: '80%', label: 'Large' },
-                          { value: 'custom', label: 'Custom' },
-                        ],
-                        // hidden: { _code: 'return getSettingValue(data?.entityReferenceType) !== "dialog";', _mode: 'code', _value: false } as any,
+                        parentId: appearanceTabId,
+                        readOnly: false,
+                        hidden: { _code: 'return getSettingValue(data?.entityReferenceType) !== "dialog";', _mode: 'code', _value: false } as any,
+                        inputs: [{
+                          id: nanoid(),
+                          propertyName: 'modalWidth',
+                          label: 'Dialog Width (%)',
+                          parentId: mainSettingsTabId,
+                          type: 'dropdown',
+                          jsSetting: true,
+                          dropdownOptions: [
+                            { value: '40%', label: 'Small' },
+                            { value: '60%', label: 'Medium' },
+                            { value: '80%', label: 'Large' },
+                            { value: 'custom', label: 'Custom' },
+                          ],
+                          width: '100%',
+                        }]
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'widthUnits',
-                        label: 'Width Units',
-                        parentId: mainSettingsTabId,
-                        inputType: 'dropdown',
-                        jsSetting: true,
-                        dropdownOptions: [
-                          { value: '%', label: 'Percentage (%)' },
-                          { value: 'px', label: 'Pixels (px)' },
-                        ],
-                        // hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false } as any,
+                        parentId: appearanceTabId,
+                        readOnly: false,
+                        hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false } as any,
+                        inputs: [{
+                          id: nanoid(),
+                          propertyName: 'widthUnits',
+                          label: 'Width Units',
+                          parentId: mainSettingsTabId,
+                          type: 'dropdown',
+                          jsSetting: true,
+                          dropdownOptions: [
+                            { value: '%', label: 'Percentage (%)' },
+                            { value: 'px', label: 'Pixels (px)' },
+                          ],
+                          width: '100%',
+                        }]
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        propertyName: 'customWidth',
-                        label: 'Custom Width',
-                        parentId: mainSettingsTabId,
-                        inputType: 'number',
-                        jsSetting: true,
-                        min: 0,
-                        // hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false } as any,
+                        parentId: appearanceTabId,
+                        readOnly: false,
+                        hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false } as any,
+                        inputs: [{
+                          id: nanoid(),
+                          propertyName: 'customWidth',
+                          label: 'Custom Width',
+                          parentId: mainSettingsTabId,
+                          type: 'text',
+                          jsSetting: true,
+                          min: 0,
+                          width: '100%',
+                        }]
                       })
                       .toJson(),
                   ]
