@@ -32,7 +32,9 @@
           "value": "form"
         }
       ],
-      "validate": { "required": true },
+      "validate": {
+        "required": true
+      },
       "settingsValidationErrors": [],
       "version": 7,
       "useRawValues": false,
@@ -40,7 +42,9 @@
       "placeholder": "",
       "description": "",
       "defaultValue": "",
-      "mode": [ "single" ],
+      "mode": [
+        "single"
+      ],
       "entityTypeShortAlias": "",
       "dataSourceUrl": "",
       "valueFormat": "listItem",
@@ -195,7 +199,7 @@
           "type": "configurableActionConfigurator",
           "jsSetting": false,
           "propertyName": "actionConfiguration",
-          "label": "Action configuration",
+          "label": "Action Configuration",
           "hidden": false,
           "validate": {},
           "settingsValidationErrors": [],
@@ -444,9 +448,15 @@
       "className": "",
       "settingsValidationErrors": [],
       "jsSetting": false,
-      "desktop": { "className": "" },
-      "tablet": { "className": "" },
-      "mobile": { "className": "" },
+      "desktop": {
+        "className": ""
+      },
+      "tablet": {
+        "className": ""
+      },
+      "mobile": {
+        "className": ""
+      },
       "shadowStyle": "none"
     },
     {
@@ -546,9 +556,15 @@
       "className": "",
       "settingsValidationErrors": [],
       "jsSetting": false,
-      "desktop": { "className": "" },
-      "tablet": { "className": "" },
-      "mobile": { "className": "" },
+      "desktop": {
+        "className": ""
+      },
+      "tablet": {
+        "className": ""
+      },
+      "mobile": {
+        "className": ""
+      },
       "shadowStyle": "none"
     },
     {
@@ -611,7 +627,9 @@
       "language": "typescript",
       "placeholder": "",
       "wrapInTemplate": true,
-      "templateSettings": { "functionName": "customVisibility" },
+      "templateSettings": {
+        "functionName": "customVisibility"
+      },
       "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();",
       "jsSetting": false,
       "environment": "front-end"
@@ -721,8 +739,12 @@
     "isSettingsForm": true,
     "layout": "horizontal",
     "colon": true,
-    "labelCol": { "span": 8 },
-    "wrapperCol": { "span": 16 },
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
     "access": null,
     "permissions": null,
     "version": 6,
@@ -741,7 +763,9 @@
       }
     },
     "dataLoadersSettings": {
-      "gql": { "endpointType": "default" },
+      "gql": {
+        "endpointType": "default"
+      },
       "custom": {}
     }
   }

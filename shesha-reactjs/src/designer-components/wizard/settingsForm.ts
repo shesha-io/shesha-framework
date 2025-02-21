@@ -1,18 +1,18 @@
+import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { onAddNewItem } from './utils';
+import { getItemSettings } from './itemSettings';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 
-export const getSettings = (data: ITextFieldComponentProps) => {
-
+export const getSettings = (data) => {
     return {
-
-        components: new DesignerToolbarSettings(data)
+        components: new DesignerToolbarSettings()
             .addSearchableTabs({
-                id: 'W_m7doMyCpCYwAYDfRh6I',
+                id: nanoid(),
                 propertyName: 'settingsTabs',
                 parentId: 'root',
                 label: 'Settings',
@@ -23,261 +23,94 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                     {
                         key: '1',
                         title: 'Common',
-                        id: 's4gmBg31azZC0UjZjpfTm',
+                        id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                            .addContextPropertyAutocomplete({
-                                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                                propertyName: 'propertyName',
-                                label: 'Property Name',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                styledLabel: true,
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'componentName',
+                                label: 'Component Name',
+                                parentId: 'root',
                                 size: 'small',
                                 validate: {
                                     required: true,
                                 },
-                                jsSetting: true,
-                            })
-                            .addLabelConfigurator({
-                                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                                propertyName: 'hideLabel',
-                                label: 'Label',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                hideLabel: true,
-                            })
-                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'placeholder',
-                                        label: 'Placeholder',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'description',
-                                        label: 'Tooltip',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                    {
-                                        type: 'editModeSelector',
-                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'editMode',
-                                        label: 'Edit Mode',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'switch',
-                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'hidden',
-                                        label: 'Hide',
-                                        jsSetting: true,
-                                        layout: 'horizontal',
-                                    },
-                                ],
-                            })
-                            .addSettingsInputRow({
-                                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                    {
-                                        type: 'dropdown',
-                                        id: 'type-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'textType',
-                                        label: 'Type',
-                                        size: 'small',
-                                        jsSetting: true,
-                                        dropdownOptions: [
-                                            {
-                                                label: 'text',
-                                                value: 'text',
-                                            },
-                                            {
-                                                label: 'password',
-                                                value: 'password',
-                                            },
-                                        ],
-                                    },
-                                    {
-                                        type: 'text',
-                                        id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'initialValue',
-                                        label: 'Default Value',
-                                        tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                                        jsSetting: true,
-                                    },
-                                ],
-                            })
-                            .addSettingsInputRow({
-                                id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'prefix',
-                                        label: 'Prefix',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'iconPicker',
-                                        id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'prefixIcon',
-                                        label: 'Prefix Icon',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'suffix',
-                                        label: 'Suffix',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'iconPicker',
-                                        id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'suffixIcon',
-                                        label: 'Suffix Icon',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInput({
-                                propertyName: 'spellCheck',
-                                id: 'spellCheck-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Spell Check',
+                                id: nanoid(),
+                                propertyName: 'wizardType',
+                                label: 'Wizard Type',
+                                parentId: 'root',
+                                inputType: 'dropdown',
+                                jsSetting: true,
+                                dropdownOptions: [
+                                    { value: 'default', label: 'Default' },
+                                    { value: 'navigation', label: 'Navigation' }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'steps',
+                                label: 'Configure Steps',
+                                parentId: 'root',
+                                inputType: 'itemListConfiguratorModal',
+                                onAddNewItem: onAddNewItem,
+                                listItemSettingsMarkup: getItemSettings(),
+                                modalProps: {
+                                    title: 'Configure Wizard Steps',
+                                    header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
+                                },
+                                buttonText: 'Configure Wizard Steps',
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'direction',
+                                label: 'Direction',
+                                parentId: 'root',
+                                inputType: 'dropdown',
+                                tooltip: 'To specify the direction of the step bar',
+                                jsSetting: true,
+                                dropdownOptions: [
+                                    { value: 'vertical', label: 'Vertical' },
+                                    { value: 'horizontal', label: 'Horizontal' }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'labelPlacement',
+                                label: 'Label Placement',
+                                parentId: 'root',
+                                inputType: 'dropdown',
+                                tooltip: 'To specify the label placement',
+                                jsSetting: true,
+                                dropdownOptions: [
+                                    { value: 'vertical', label: 'Vertical' },
+                                    { value: 'horizontal', label: 'Horizontal' }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'defaultActiveStep',
+                                label: 'Default Active Step',
+                                parentId: 'root',
+                                inputType: 'dropdown',
+                                tooltip: 'This will be the default step that is active',
+                                jsSetting: true,
+                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                dropdownOptions: data?.steps,
+                            })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'hidden',
+                                label: 'Hidden',
+                                parentId: 'root',
                                 inputType: 'switch',
+                                jsSetting: true
                             })
                             .toJson()
                         ]
                     },
                     {
                         key: '2',
-                        title: 'Validation',
-                        id: '6eBJvoll3xtLJxdvOAlnB',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                propertyName: 'validate.required',
-                                label: 'Required',
-                                inputType: 'switch',
-                                size: 'small',
-                                layout: 'horizontal',
-                                jsSetting: true,
-                                parentId: '6eBJvoll3xtLJxdvOAlnB'
-                            })
-                            .addSettingsInputRow({
-                                id: 'qOkkwAnHvKJ0vYXeXMLsd',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                inputs: [
-                                    {
-                                        type: 'number',
-                                        id: 'minLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.minLength',
-                                        label: 'Min Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'number',
-                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.maxLength',
-                                        label: 'Max Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: 'Scip2BCqWk6HniFIJTgtA',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'message-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.message',
-                                        label: 'Message',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'codeEditor',
-                                        id: 'validator-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.validator',
-                                        label: 'Validator',
-                                        labelAlign: 'right',
-                                        tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
-                                    }
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '3',
-                        title: 'Events',
-                        id: 'Cc47W08MWrKdhoGqFKMI2',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
-                                inputType: 'codeEditor',
-                                propertyName: 'onChangeCustom',
-                                label: 'On Change',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
-                                inputType: 'codeEditor',
-                                propertyName: 'onFocusCustom',
-                                label: 'On Focus',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
-                                inputType: 'codeEditor',
-                                propertyName: 'onBlurCustom',
-                                label: 'On Blur',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '4',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [...new DesignerToolbarSettings()
@@ -346,16 +179,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Align',
-                                                                propertyName: 'font.align',
-                                                                hideLabel: true,
-                                                                width: 60,
-                                                                dropdownOptions: textAlign,
-                                                            },
+                                                            }
                                                         ],
                                                     })
                                                     .toJson()
@@ -654,17 +478,65 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
-                                                                    dropdownOptions: sizeOptions,
+                                                                    dropdownOptions: [
+                                                                        {
+                                                                            value: "cover",
+                                                                            label: "Cover"
+                                                                        },
+                                                                        {
+                                                                            value: "contain",
+                                                                            label: "Contain"
+                                                                        },
+                                                                        {
+                                                                            value: "auto",
+                                                                            label: "Auto"
+                                                                        }
+                                                                    ],
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
-                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: positionOptions,
+                                                                    dropdownOptions: [
+                                                                        {
+                                                                            value: "center",
+                                                                            label: "Center"
+                                                                        },
+                                                                        {
+                                                                            value: "top",
+                                                                            label: "Top"
+                                                                        },
+                                                                        {
+                                                                            value: "left",
+                                                                            label: "Left"
+                                                                        },
+                                                                        {
+                                                                            value: "right",
+                                                                            label: "Right"
+                                                                        },
+                                                                        {
+                                                                            value: "bottom",
+                                                                            label: "Bottom"
+                                                                        },
+                                                                        {
+                                                                            value: "top left",
+                                                                            label: "Top Left"
+                                                                        },
+                                                                        {
+                                                                            value: "top right",
+                                                                            label: "Top Right"
+                                                                        },
+                                                                        {
+                                                                            value: "bottom left",
+                                                                            label: "Bottom Left"
+                                                                        },
+                                                                        {
+                                                                            value: "bottom right",
+                                                                            label: "Bottom Right"
+                                                                        }
+                                                                    ],
                                                                 },
                                                                 {
                                                                     type: 'radio',
@@ -790,22 +662,97 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                 ]
                                             }
                                         })
+                                        .addCollapsiblePanel({
+                                            id: 'additionalStylesCollapsiblePanel',
+                                            propertyName: 'additionalStyles',
+                                            label: 'Additional Styles',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: 'styleRouter',
+                                            collapsible: 'header',
+                                            content: {
+                                                id: 'additionalStylesPnl',
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'buttonsLayout',
+                                                        label: 'Buttons Layout',
+                                                        parentId: 'root',
+                                                        inputType: 'dropdown',
+                                                        tooltip: 'How you want the steps buttons to be aligned',
+                                                        jsSetting: true,
+                                                        dropdownOptions: [
+                                                            { value: 'left', label: 'Left' },
+                                                            { value: 'right', label: 'Right' },
+                                                            { value: 'spaceBetween', label: 'Space Between' }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: 'primary-additionalStylesRow',
+                                                        parentId: 'additionalStylesPnl',
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                id: 'primary-color-412c-8461-4c8d55e5c073',
+                                                                parentId: 'additionalStylesPnl',
+                                                                type: 'color',
+                                                                propertyName: 'primaryBgColor',
+                                                                hideLabel: false,
+                                                                label: 'Primary Color'
+                                                            },
+                                                            {
+                                                                id: 'primary-text-color-412c-8461-4c8d55e5c073',
+                                                                parentId: 'additionalStylesPnl',
+                                                                type: 'color',
+                                                                propertyName: 'primaryTextColor',
+                                                                hideLabel: false,
+                                                                label: 'Primary Text Color'
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: 'additionalStylesRow',
+                                                        parentId: 'additionalStylesPnl',
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                id: 'secondary-color-412c-8461-4c8d55e5c073',
+                                                                parentId: 'additionalStylesPnl',
+                                                                type: 'color',
+                                                                propertyName: 'secondaryBgColor',
+                                                                hideLabel: false,
+                                                                label: 'Secondary Color'
+                                                            },
+                                                            {
+                                                                id: 'secondary-text-color-412c-8461-4c8d55e5c073',
+                                                                parentId: 'additionalStylesPnl',
+                                                                type: 'color',
+                                                                propertyName: 'secondaryTextColor',
+                                                                hideLabel: false,
+                                                                label: 'Secondary Text Color'
+                                                            }
+                                                        ]
+                                                    })
+                                                    .toJson()
+                                                ]
+                                            }
+                                        })
                                         .toJson()]
                             }).toJson()]
                     },
                     {
-                        key: '5',
+                        key: '4',
                         title: 'Security',
-                        id: '6Vw9iiDw9d0MD_Rh5cbIn',
+                        id: nanoid(),
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
-                                inputType: 'permissions',
+                                id: nanoid(),
                                 propertyName: 'permissions',
                                 label: 'Permissions',
-                                size: 'small',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                parentId: 'root',
+                                inputType: 'permissions',
+                                tooltip: 'Enter a list of permissions that should be associated with this component',
+                                jsSetting: true
                             })
                             .toJson()
                         ]

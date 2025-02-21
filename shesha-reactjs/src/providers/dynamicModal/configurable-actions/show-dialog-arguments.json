@@ -14,7 +14,7 @@
         {
             "id": "adbc3b29-9a53-4305-869a-f37ba6e8bb94",
             "propertyName": "formId",
-            "label": "Modal form",
+            "label": "Modal Form",
             "validate": {
                 "required": true
             },
@@ -28,7 +28,7 @@
             "type": "radio",
             "propertyName": "formMode",
             "componentName": "formMode",
-            "label": "Form mode",
+            "label": "Form Mode",
             "labelAlign": "right",
             "parentId": "root",
             "hidden": false,
@@ -41,12 +41,12 @@
                 {
                     "label": "Edit",
                     "value": "edit",
-                    "icon": "edit"
+                    "icon": "editIcon"
                 },
                 {
                     "label": "Read only",
                     "value": "readonly",
-                    "icon": "readonly"
+                    "icon": "readonlyIcon"
                 }
             ],
             "validate": {},
@@ -171,7 +171,7 @@
                     {
                         "id": "eX3ZelYUEIbGAcxXAsqW0ZI3u6t9Iy",
                         "propertyName": "footerButtons",
-                        "label": "Buttons type",
+                        "label": "Buttons Type",
                         "dataSourceType": "values",
                         "values": [
                             {

@@ -75,6 +75,7 @@ export interface IStyleType {
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   size?: SizeType;
   style?: string;
+  stylingBox?: string;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -345,7 +346,7 @@ export type FormMarkup =
   | FormMarkupWithSettings | ((data: any) => FormRawMarkup
     | FormMarkupWithSettings);
 
-export type FormFullName  = ConfigurableItemFullName;
+export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;
 export type FormIdentifier = ConfigurableItemIdentifier;
 
