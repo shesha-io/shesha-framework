@@ -32,7 +32,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
         --ant-button-default-active-bg: ${secondaryBgColor} !important;
         --ant-button-default-bg: ${secondaryBgColor} !important;
         --ant-button-default-hover-border-color: ${primaryBgColor} !important;
-        --ant-button-default-hover-color: ${primaryBgColor} !important;
+        --ant-button-default-hover-color: ${primaryBgColor}45 !important;
         --ant-button-default-color: ${secondaryTextColor} !important;
         font-family: ${styles.fontFamily};
     }
@@ -40,8 +40,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
     .ant-btn-primary {
         --ant-color-primary: ${primaryBgColor};
         --ant-button-primary-active-bg: ${primaryBgColor} !important;
-        --ant-color-primary-hover: ${primaryBgColor}90 !important;
-        --ant-button-primary-hover-color: ${primaryTextColor} !important;
+        --ant-color-primary-hover: ${primaryBgColor}45 !important;
+        --ant-button-primary-hover-color: ${primaryTextColor}45 !important;
         --ant-color-text-light-solid: ${primaryTextColor} !important;
         --ant-button-primary-hover-border-color: ${secondaryBgColor} !important;
         --ant-button-primary-color: ${primaryTextColor} !important;

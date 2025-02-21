@@ -39,7 +39,6 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
-    stylingBox: "{\"marginBottom\":\"5\"}"
   }),
   migrator: (m) =>
     m
