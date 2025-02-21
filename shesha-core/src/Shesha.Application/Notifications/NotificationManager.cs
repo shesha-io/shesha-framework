@@ -151,7 +151,7 @@ namespace Shesha.Notifications
             newCopy.Origin = newCopy;
 
             // notification specific props
-            CopyNotificationSpecificProps(src, newCopy);
+            newCopy.CopyNotificationSpecificPropsFrom(src);
 
             newCopy.Normalize();
 
@@ -190,7 +190,7 @@ namespace Shesha.Notifications
             newVersion.VersionStatus = ConfigurationItemVersionStatus.Draft; // draft
 
             // notification specific props
-            CopyNotificationSpecificProps(src, newVersion);
+            newVersion.CopyNotificationSpecificPropsFrom(src);
 
             newVersion.Normalize();
 
@@ -206,22 +206,6 @@ namespace Shesha.Notifications
             await CopyTemplatesAsync(src, newVersion);
 
             return newVersion;
-        }
-
-        /// <summary>
-        /// Copy properties specific to <see cref="NotificationTypeConfig"/>
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="dst"></param>
-        public static void CopyNotificationSpecificProps(INotificationTypeSpecificProps src, INotificationTypeSpecificProps dst) 
-        {
-            dst.IsTimeSensitive = src.IsTimeSensitive;
-            dst.AllowAttachments = src.AllowAttachments;
-            dst.Disable = src.Disable;
-            dst.CanOptOut = src.CanOptOut;
-            dst.Category = src.Category;
-            dst.OrderIndex = src.OrderIndex;
-            dst.OverrideChannels = src.OverrideChannels;
         }
     }
 }
