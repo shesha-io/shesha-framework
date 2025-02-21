@@ -92,7 +92,7 @@ export const getSettings = (data: any) => {
                           inline: true,
                           hidden: {
                             _value: false,
-                            _code: "return getSettingValue(data.sourceType) !== 'Entity' && getSettingValue(data.sourceType) !== 'Url';",
+                            _code: "return getSettingValue(data.sourceType) !== 'Entity';",
                             _mode: "code"
                           } as any,
                           readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -120,7 +120,7 @@ export const getSettings = (data: any) => {
                           inline: true,
                           hidden: {
                             _value: false,
-                            _code: "return getSettingValue(data.sourceType) !== 'Entity' && getSettingValue(data.sourceType) !== 'Url';",
+                            _code: "return getSettingValue(data.sourceType) !== 'Url';",
                             _mode: "code"
                           } as any,
                           readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -276,6 +276,13 @@ export const getSettings = (data: any) => {
                               labelAlign: "right",
                               type: 'dropdown',
                               inputType: 'dropdown',
+                              validate: {
+                                required: {
+                                  "_code": "return data.sortMode === 'strict';",
+                                  "_mode": "code",
+                                  "_value": false
+                                } as any
+                              },
                               dropdownOptions: [
                                 {
                                   label: "Ascending",
@@ -287,7 +294,6 @@ export const getSettings = (data: any) => {
                                 }
                               ],
                               width: '100%',
-                              validate: { required: true },
                             }
                           ]
                         })
@@ -307,7 +313,7 @@ export const getSettings = (data: any) => {
                               type: "dataSortingEditor",
                               propertyName: "standardSorting",
                               componentName: "standardSorting",
-                              label: "Standard Sorting",
+                              label: "Sort By",
                               labelAlign: "right",
                               parentId: "root",
                               isDynamic: false,
@@ -328,6 +334,7 @@ export const getSettings = (data: any) => {
                             _code: "return !getSettingValue(data?.sourceType) || !(getSettingValue(data.sourceType) === 'Entity' && getSettingValue(data.sortMode) === 'strict' || getSettingValue(data.sourceType) === 'Form');",
                             _mode: "code"
                           },
+                          isDynamic: false,
                           readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           inputs: [
                             {
