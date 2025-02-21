@@ -1,10 +1,10 @@
-import React, { FC, useCallback, useState } from 'react';
-import { AutoComplete, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
+import React, { FC, useCallback } from 'react';
+import { Alert, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { executeScript, useAvailableConstantsData, useFormData } from '@/index';
+import { evaluateValue, executeScript, useAvailableConstantsData, useFormData } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -30,6 +30,9 @@ import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
+import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ITabPaneProps } from '../tabs/models';
+import { IWizardStepProps } from '../wizard/models';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
 
@@ -47,7 +50,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const { data: formData } = useFormData();
     const { size, className, value, type, dropdownOptions, buttonGroupOptions, defaultValue,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
 
@@ -101,6 +104,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const editor = availableConstantsExpression?.trim()
         ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
+
+    const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
     switch (type) {
         case 'color':
@@ -157,7 +162,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'button':
             return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'filtersList':
-            return <FiltersList  readOnly={readOnly}  {...props}/>;
+            return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -180,6 +185,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 size={size}
                 {...{ ...props, style: {} }}
             />;
+        case 'endpointsAutocomplete':
+            return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={onChange} />;
         case 'referenceListAutocomplete':
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
@@ -213,11 +220,43 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'labelValueEditor':
-               return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
+        case 'itemListConfiguratorModal':
+
+            return <ItemListConfiguratorModal<ITabPaneProps | IWizardStepProps>
+                readOnly={readOnly}
+                initNewItem={onAddNewItem}
+                value={value}
+                onChange={onChange}
+                size={size}
+                settingsMarkupFactory={() => {
+                    return {
+                        components: listItemSettingsMarkup,
+                        formSettings: {
+                            layout: "horizontal",
+                            isSettingsForm: true,
+                            colon: true,
+                            labelCol: { span: 5 },
+                            wrapperCol: { span: 13 }
+                        }
+                    };
+                }}
+                itemRenderer={({ item }) => ({
+                    label: item.title || item.label || item.name,
+                    description: item.tooltip,
+                    ...item
+                })}
+                buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
+                modalSettings={{
+                    title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
+                    header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
+                }}
+            >
+            </ItemListConfiguratorModal>;
         case 'formTypeAutocomplete':
             return <AutoComplete
                 disabled={readOnly}
