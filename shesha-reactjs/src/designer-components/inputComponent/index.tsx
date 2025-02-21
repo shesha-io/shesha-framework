@@ -30,6 +30,7 @@ import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
+import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -95,6 +96,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
     switch (type) {
+        case 'dataSortingEditor':
+            return <SortingEditor {...props} onChange={onChange} modelType={props.modelType} readOnly={readOnly} />;
         case 'color':
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
         case 'dropdown':
