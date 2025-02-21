@@ -1,10 +1,8 @@
 ﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
-namespace Shesha.Web.FormsDesigner.Domain
+namespace Shesha.Domain
 {
     /// <summary>
     /// Generic configurable component. Is used mostly to store configuration of the independent front-end components (e.g. sidebar menu, theme)

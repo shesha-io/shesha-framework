@@ -1,9 +1,8 @@
 ﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.NHibernate.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Shesha.Web.FormsDesigner.Domain
+namespace Shesha.Domain
 {
     /// <summary>
     /// Form configuration
@@ -19,7 +18,7 @@ namespace Shesha.Web.FormsDesigner.Domain
         /// Form markup
         /// </summary>
         [StringLength(int.MaxValue)]
-        [Lazy]
+        [LazyLoad]
         public virtual string Markup { get; set; }
 
         /// <summary>

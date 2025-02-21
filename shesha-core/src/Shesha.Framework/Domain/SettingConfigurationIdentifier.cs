@@ -1,18 +1,12 @@
-﻿using Shesha.EntityReferences;
-using System;
-using System.ComponentModel;
-
-namespace Shesha.Domain
+﻿namespace Shesha.Domain
 {
     /// <summary>
     /// Setting configuration identifier
     /// </summary>
-    public class SettingConfigurationIdentifier : ConfigurationItemIdentifier
+    public class SettingConfigurationIdentifier : ConfigurationItemIdentifier<SettingConfiguration>
     {
         public SettingConfigurationIdentifier(string module, string name) : base(module, name)
         {
         }
-
-        public override string ItemType => "setting-config";
     }    
 }
