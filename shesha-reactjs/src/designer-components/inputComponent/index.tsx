@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
+import { Alert, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { EditableTagGroup } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -30,6 +30,9 @@ import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
+import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ITabPaneProps } from '../tabs/models';
+import { IWizardStepProps } from '../wizard/models';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -149,7 +152,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'button':
             return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'filtersList':
-            return <FiltersList  readOnly={readOnly}  {...props}/>;
+            return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -205,7 +208,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'labelValueEditor':
-               return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
@@ -217,6 +220,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 initNewItem={onAddNewItem}
                 value={value}
                 onChange={onChange}
+                size={size}
                 settingsMarkupFactory={() => {
                     return {
                         components: listItemSettingsMarkup,
@@ -239,7 +243,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
                     header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
                 }}
-                actualModelContext={constantsAccessor}
             >
             </ItemListConfiguratorModal>;
         default:

@@ -20,12 +20,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
 
       * {
-        font-weight: ${styles.fontWeight || 400};
-        font-family: ${styles.fontFamily};
+          font-weight: ${styles.fontWeight || 400};
+          font-family: ${styles.fontFamily};
       }
     }
-
-
 
     .ant-btn-default {
       --ant-button-default-color: ${secondaryTextColor} !important;
@@ -34,6 +32,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-button-default-hover-border-color: ${primaryBgColor} !important;
       --ant-button-default-hover-color: ${primaryBgColor} !important;
       --ant-button-default-color: ${secondaryTextColor} !important;
+      font-family: ${styles.fontFamily};
   }
   .ant-btn-primary {
       --ant-color-primary: ${primaryBgColor};
@@ -43,6 +42,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       --ant-color-text-light-solid: ${primaryTextColor} !important;
       --ant-button-primary-hover-border-color: ${secondaryBgColor} !important;
       --ant-button-primary-color: ${primaryTextColor} !important;
+      font-family: ${styles.fontFamily};
     }
     
     ${styles}
