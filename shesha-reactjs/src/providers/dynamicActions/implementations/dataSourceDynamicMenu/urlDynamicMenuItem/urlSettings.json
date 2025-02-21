@@ -6,7 +6,7 @@
       "propertyName": "dataSourceUrl",
       "parentId": "root",
       "label": "Custom Endpoint",
-      "hidden": false,  
+      "hidden": false,
       "validate": {
         "minLength": "",
         "maxLength": "",
@@ -51,8 +51,8 @@
         "_value": false
       },
       "validate": {
-            "required": true
-          },
+        "required": true
+      },
       "settingsValidationErrors": []
     },
     {
@@ -120,7 +120,7 @@
       "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
       "type": "configurableActionConfigurator",
       "propertyName": "actionConfiguration",
-      "label": "Action configuration",
+      "label": "Action Configuration",
       "hidden": false,
       "validate": {},
       "settingsValidationErrors": [],
