@@ -37,14 +37,16 @@ export const getSettings = () => {
                                 id: 'panel46d07439-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'label',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Label'
+                                label: 'Label',
+                                jsSetting: true
                             })
                             .addSettingsInput({
                                 id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412558',
                                 propertyName: 'hasCustomHeader',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
                                 label: 'Custom Header',
-                                inputType: 'switch'
+                                inputType: 'switch',
+                                jsSetting: true
                             })
                             .addSettingsInput({
                                 id: 'panel57a40a33-7e08-4ce4-9f08-a34d24a83338',
@@ -52,6 +54,7 @@ export const getSettings = () => {
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
                                 label: 'Icon position',
                                 inputType: 'dropdown',
+                                jsSetting: true,
                                 dropdownOptions: [
                                     {
                                         label: 'Hide',
@@ -73,6 +76,7 @@ export const getSettings = () => {
                                 propertyName: 'collapsible',
                                 label: 'Collapsible',
                                 inputType: 'dropdown',
+                                jsSetting: true,
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
                                 dropdownOptions: [
                                     {
@@ -101,6 +105,7 @@ export const getSettings = () => {
                                 hidden: false,
                                 isDynamic: false,
                                 description: '',
+                                jsSetting: true,
                                 validate: {},
                             })
                             .addSettingsInput({
@@ -109,6 +114,7 @@ export const getSettings = () => {
                                 propertyName: 'ghost',
                                 inputType: 'switch',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                jsSetting: true
                             })
                             .addSettingsInput({
                                 id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
@@ -134,6 +140,7 @@ export const getSettings = () => {
                                 inputType: 'switch',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
                                 description: 'Hides the collapsible panel',
+                                jsSetting: true
                             })
                             .addSettingsInput({
                                 id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
@@ -142,6 +149,7 @@ export const getSettings = () => {
                                 labelAlign: 'right',
                                 parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
                                 inputType: 'switch',
+                                jsSetting: true,
                                 description: 'Allows to hide the panel when all components are hidden due to some conditions',
                             })
                             .toJson()]

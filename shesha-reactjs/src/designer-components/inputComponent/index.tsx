@@ -37,7 +37,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, type, dropdownOptions, buttonGroupOptions, defaultValue,
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
 
@@ -53,7 +53,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                             <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
                         </div> : icon;
         }
-
         return icon;
     };
 
@@ -123,7 +122,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber min={props.min} max={props.max}
+            return <InputNumber min={props.min} max={props.max} placeholder={placeholder}
                 defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
             />;
         case 'customDropdown':
@@ -133,6 +132,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'textArea':
             return <Input.TextArea
                 rows={2}
+                placeholder={placeholder}
                 value={value}
                 defaultValue={defaultValue}
                 readOnly={readOnly} size={size} onChange={onChange} style={{ top: '4px' }} />;
@@ -149,7 +149,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'button':
             return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'filtersList':
-            return <FiltersList  readOnly={readOnly}  {...props}/>;
+            return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -168,6 +168,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
                 value={value}
+                placeholder={placeholder}
                 defaultValue={defaultValue}
                 size={size}
                 {...{ ...props, style: {} }}
@@ -205,7 +206,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'labelValueEditor':
-               return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
@@ -217,6 +218,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 readOnly={readOnly}
                 defaultValue={defaultValue}
                 variant={variant}
+                placeholder={placeholder}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
                 value={value?.value ? value.value : value}
             />;

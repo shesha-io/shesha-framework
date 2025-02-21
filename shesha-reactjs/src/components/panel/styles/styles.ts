@@ -127,10 +127,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
   }
 
+    .ant-collapse-header[aria-expanded="false"] {
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
+    }
+
+    .ant-collapse-header[aria-expanded="true"] {
+      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
+    }
+
     .ant-collapse-header {
         position: relative;
         visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
-        border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
         background: ${headerBgImage || headerBgColor};
         height: ${headerHeight};
         min-height: ${headerMinHeight};
