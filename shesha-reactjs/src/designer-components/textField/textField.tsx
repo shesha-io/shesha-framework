@@ -148,7 +148,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
                 Input: {
                   fontFamily: model?.font?.type,
                   fontSize: model?.font?.size,
-                  // fontWeightStrong: Number(fontStyles.fontWeight)
+                  fontWeightStrong: Number(fontStyles.fontWeight)
                 },
               },
             }}

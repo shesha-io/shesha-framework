@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
+import { Alert, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -30,6 +30,9 @@ import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
+import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ITabPaneProps } from '../tabs/models';
+import { IWizardStepProps } from '../wizard/models';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -37,9 +40,9 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, type, dropdownOptions, buttonGroupOptions, defaultValue,
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
 
@@ -53,7 +56,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                             <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
                         </div> : icon;
         }
-
         return icon;
     };
 
@@ -125,7 +127,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber min={props.min} max={props.max}
+            return <InputNumber min={props.min} max={props.max} placeholder={placeholder}
                 defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
             />;
         case 'customDropdown':
@@ -135,6 +137,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'textArea':
             return <Input.TextArea
                 rows={2}
+                placeholder={placeholder}
                 value={value}
                 defaultValue={defaultValue}
                 readOnly={readOnly} size={size} onChange={onChange} style={{ top: '4px' }} />;
@@ -151,7 +154,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'button':
             return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
         case 'filtersList':
-            return <FiltersList  readOnly={readOnly}  {...props}/>;
+            return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
@@ -170,6 +173,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
                 value={value}
+                placeholder={placeholder}
                 defaultValue={defaultValue}
                 size={size}
                 {...{ ...props, style: {} }}
@@ -209,11 +213,43 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'labelValueEditor':
-               return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
+            return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
+        case 'itemListConfiguratorModal':
+
+            return <ItemListConfiguratorModal<ITabPaneProps | IWizardStepProps>
+                readOnly={readOnly}
+                initNewItem={onAddNewItem}
+                value={value}
+                onChange={onChange}
+                size={size}
+                settingsMarkupFactory={() => {
+                    return {
+                        components: listItemSettingsMarkup,
+                        formSettings: {
+                            layout: "horizontal",
+                            isSettingsForm: true,
+                            colon: true,
+                            labelCol: { span: 5 },
+                            wrapperCol: { span: 13 }
+                        }
+                    };
+                }}
+                itemRenderer={({ item }) => ({
+                    label: item.title || item.label || item.name,
+                    description: item.tooltip,
+                    ...item
+                })}
+                buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
+                modalSettings={{
+                    title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
+                    header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
+                }}
+            >
+            </ItemListConfiguratorModal>;
         default:
             return <Input
                 size={size}
@@ -221,6 +257,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 readOnly={readOnly}
                 defaultValue={defaultValue}
                 variant={variant}
+                placeholder={placeholder}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
                 value={value?.value ? value.value : value}
             />;
