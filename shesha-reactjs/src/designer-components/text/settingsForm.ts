@@ -125,6 +125,7 @@ export const getSettings = (data: any) => {
                       label: 'Date Format',                    
                       size: 'small',
                       jsSetting: true,
+                      placeholder: 'Date Format',
                       allowClear: false,
                     },
                   ],
