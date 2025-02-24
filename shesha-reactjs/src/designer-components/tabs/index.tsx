@@ -19,10 +19,10 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
-import { initializeStyles, migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultCardStyles, defaultStyles } from './utils';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useStyles } from './styles';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 type TabItem = TabsProps['items'][number];
 
@@ -187,7 +187,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       propertyName: 'custom Name',
       stylingBox: "{\"marginBottom\":\"5\"}",
       tabPosition: "top",
-      ...initializeStyles(model, defaultCardStyles),
       tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], type: '' }],
     };
     return tabsModel;
@@ -209,10 +208,10 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const newModel = migratePrevStyles(prev, defaultStyles);
       return {
         ...newModel,
-        card: { ...initializeStyles(prev.card, defaultCardStyles) },
-        desktop: { ...newModel.desktop, card: { ...initializeStyles(prev.card, defaultCardStyles) } },
-        tablet: { ...newModel.tablet, card: { ...initializeStyles(prev.card, defaultCardStyles) } },
-        mobile: { ...newModel.mobile, card: { ...initializeStyles(prev.card, defaultCardStyles) } }
+        card: defaultCardStyles,
+        desktop: { ...newModel.desktop },
+        tablet: { ...newModel.tablet },
+        mobile: { ...newModel.mobile }
       };
     }),
   settingsFormMarkup: () => getSettings(),

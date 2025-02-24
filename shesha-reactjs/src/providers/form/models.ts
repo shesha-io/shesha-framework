@@ -77,6 +77,7 @@ export interface IStyleType {
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   display?: ICommonContainerProps['display'];
   size?: SizeType;
+  stylingBox?: string;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -90,7 +91,14 @@ export interface IInputStyles extends IStyleType {
   stylingBox?: string;
   height?: string | number;
   width?: string | number;
+  backgroundCover?: 'contain' | 'cover';
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
+  backgroundType?: 'image' | 'color';
   backgroundColor?: string;
+  backgroundDataSource?: 'storedFileId' | 'base64' | 'url';
+  backgroundUrl?: string;
+  backgroundBase64?: string;
+  backgroundStoredFileId?: string;
   hideBorder?: boolean;
   style?: string;
 };

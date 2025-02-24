@@ -1,7 +1,7 @@
 import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
-import { initializeStyles } from "../_common-migrations/migrateStyles";
 import { IStyleType } from "@/index";
+import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 
 export const defaultStyles: IStyleType = {
 
@@ -19,7 +19,7 @@ export const defaultStyles: IStyleType = {
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
 };
 
-export const defaultCardStyles = {
+export const defaultCardStyles: IStyleType = {
     background: { type: 'color', color: 'rgba(0,0,0,0.02)' },
 };
 
@@ -34,7 +34,7 @@ export const onAddNewItem = (items) => {
         editMode: 'inherited',
         selectMode: 'editable',
         components: [],
-        ...initializeStyles({ id, type: '' })
+        ...migratePrevStyles(defaultStyles),
     };
 
     return buttonProps;
