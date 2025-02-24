@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import { IDropdownOption } from "../background/interfaces";
 import { addPx } from "../../utils";
+import { nanoid } from "@/utils/uuid";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
     if (!input || jsStyle?.border) return {};
@@ -72,6 +73,7 @@ export const borderCorners = [
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
+
 const generateCode = (type, isResponsive: boolean, path: string, side: string) => {
     const part = type === 'border' ? 'selectedSide' : 'selectedCorner';
     const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
@@ -83,7 +85,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
     const code = generateCode('border', isResponsive, path, side);
 
     return {
-        id: `borderStyleRow-${side}`,
+        id: nanoid(),
         parentId: 'borderStylePnl',
         inline: true,
         readOnly: false,
@@ -137,7 +139,7 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
     const code = generateCode('radius', isResponsive, path, corner);
 
     return {
-        id: `borderStyleRow-${corner}`,
+        id: nanoid(),
         parentId: 'borderStylePnl',
         inline: true,
         readOnly: { _code: `return getSettingValue(data[${isResponsive ? '`${contexts.canvasContext?.designerDevice || "desktop"}`' : ''}]${path ? '?.' + path : ''}?.border?.hideBorder);`, _mode: 'code', _value: false } as any,
