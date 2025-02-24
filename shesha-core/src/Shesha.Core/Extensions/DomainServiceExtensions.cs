@@ -18,7 +18,7 @@ namespace Shesha.Domain
     public static class DomainServiceExtensions
     {
 
-        public static async Task<Person> GetCurrentPerson(this DomainService service)
+        public static async Task<Person> GetCurrentPersonAsync(this DomainService service)
         {
             var personRepository = IocManager.Instance.Resolve<IRepository<Person, Guid>>();
             var _session = StaticContext.IocManager.Resolve<IAbpSession>();

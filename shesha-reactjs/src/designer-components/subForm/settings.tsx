@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import React, { FC, useState } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SectionSeparator from '@/components/sectionSeparator';
@@ -54,10 +54,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
   });
   const commonUrlsConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
-    standardConstants: [
-      SheshaConstants.globalState,
-      SheshaConstants.formData,
-    ],
     onBuild: (builder) => {
       builder.addObject("queryParams", "Query parameters", undefined);
     }
@@ -138,7 +134,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
 
         {(!formData?.formSelectionMode || formData?.formSelectionMode === 'name') && (
           <SettingsFormItem name="formId" label="Form" jsSetting>
-            <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+            <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>

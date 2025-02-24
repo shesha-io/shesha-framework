@@ -235,7 +235,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       const ctxs = getLocalDataContexts(topId);
       if (isRoot())
         return ctxs;
-      return ctxs.concat(getRoot()?.getDataContexts('all') ?? []);
+      return ctxs.concat(parentManager?.getDataContexts('all') ?? []);
     };
 
     const getNearestDataContext = (topId: string, type: DataContextType) => {
@@ -279,7 +279,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       const res = getLocalDataContextsData(topId, data);
       if (isRoot())
         return res;
-      getRoot()?.getDataContextsData('all', res);
+      parentManager?.getDataContextsData('all', res);
       return res;
     };
 

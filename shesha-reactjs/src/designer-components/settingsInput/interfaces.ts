@@ -17,10 +17,10 @@ export interface IDropdownOption {
 }
 
 export interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' |
+    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
-    | 'sizableColumnsConfig' | 'labelValueEditor' | 'itemListConfiguratorModal';
+    | 'sizableColumnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig' | 'itemListConfiguratorModal';
 }
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
@@ -36,6 +36,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    customTooltip?: string;
     suffix?: string;
     size?: SizeType;
     width?: string | number;
@@ -52,9 +53,11 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     valueTitle?: string;
     valueName?: string;
     value?: any;
+    placeholder?: string;
     mode?: any;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
+    customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
@@ -63,12 +66,18 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
-    onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
+    useRawValues?: boolean;
     modelType?: string;
+    httpVerb?: string;
     min?: number;
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
+    onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
+    listItemSettingsMarkup?: IConfigurableFormComponent[];
+    buttonText?: string;
+    modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
     settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
+    autoFillProps?: boolean;
 };

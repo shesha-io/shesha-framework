@@ -25,13 +25,13 @@ export const showConfirmationArgumentsForm = new DesignerToolbarSettings()
   .addTextField({
     id: nanoid(),
     propertyName: 'okText',
-    label: 'Ok text',
+    label: 'Ok Text',
     validate: { required: true },
   })
   .addTextField({
     id: nanoid(),
     propertyName: 'cancelText',
-    label: 'Cancel text',
+    label: 'Cancel Text',
     validate: { required: true },
   })
   .addCheckbox({

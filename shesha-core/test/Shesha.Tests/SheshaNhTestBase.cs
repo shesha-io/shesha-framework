@@ -1,18 +1,22 @@
 ﻿using Abp;
 using Abp.Authorization.Users;
+using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
 using Abp.TestBase;
+using DocumentFormat.OpenXml.Spreadsheet;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
 using Shesha.MultiTenancy;
+using Shesha.NHibernate.UoW;
 using Shesha.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.Tests
 {
@@ -187,6 +191,25 @@ namespace Shesha.Tests
         {
             var tenantId = AbpSession.GetTenantId();
             return await UsingDbSession(session => session.Query<Tenant>().SingleAsync(t => t.Id == tenantId));
+        }
+
+        protected void UsingNhSession(Action<ISession> action)
+        {
+            using (var uow = NewNhUnitOfWork())
+            {
+#pragma warning disable IDISP001 // Dispose created
+                var session = uow.GetSession();
+#pragma warning restore IDISP001 // Dispose created
+                action.Invoke(session);
+            }
+        }
+
+        protected NhUnitOfWork NewNhUnitOfWork() 
+        {
+            var unitOfWorkManager = Resolve<IUnitOfWorkManager>();
+            return unitOfWorkManager.Begin() is NhUnitOfWork nhuow
+                ? nhuow
+                : throw new Exception($"Unexpected type of UnitOfWork. Expected '{nameof(NhUnitOfWork)}'");
         }
     }
 

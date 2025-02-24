@@ -1,14 +1,14 @@
 import { nanoid } from "@/utils/uuid";
 import { addPx } from "../_settings/utils";
-import { IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
+import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
 
-type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
-export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<IInputStyles, 'style'>) => {
+export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style'>) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
-        const prevStyles: IInputStyles = screen && prev?.[`${screen}`] ? prev[`${screen}`] : prev;
+        const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
 
         const border = (side) => ({
             ...prev?.border?.border?.[side],

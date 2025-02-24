@@ -25,6 +25,14 @@
 		<PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
 		<PackageReference Include="Bogus" Version="35.5.1" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
+		<PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

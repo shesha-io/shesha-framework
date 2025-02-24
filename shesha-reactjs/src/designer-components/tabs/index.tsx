@@ -2,7 +2,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import React, { Fragment, useEffect, useState } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModelWithParent, getLayoutStyle, getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -10,7 +10,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { nanoid } from '@/utils/uuid';
 import { ConfigProvider, Tabs, TabsProps } from 'antd';
 import { useDeepCompareMemo } from '@/hooks';
-import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useFormData, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
@@ -35,7 +35,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const { backendUrl, httpHeaders, anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
     const { data } = useFormData();
-    const { globalState } = useGlobalState();
 
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top' } = model;
@@ -114,7 +113,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModelWithParent({ ...item, type: '' }, allData, { model: { readOnly: item.readOnly } });
         const {
           id,
           key,
@@ -131,7 +129,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           readOnly,
           selectMode,
           components,
-        } = tabModel;
+        } = item;
 
         const granted = anyOfPermissionsGranted(permissions || []);
         if ((!granted || hidden) && allData.form?.formMode !== 'designer') return;
@@ -154,9 +152,8 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           destroyInactiveTabPane: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
           disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
-          style: getLayoutStyle(tabModel, { data, globalState }),
           children: (
-            <ParentProvider model={tabModel}>
+            <ParentProvider model={item}>
               <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
             </ParentProvider>
           ),
@@ -165,7 +162,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       });
 
       return tabItems;
-    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+    }, [tabs]);
 
     return model.hidden ? null : (
       <ConfigProvider

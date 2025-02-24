@@ -1,31 +1,21 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Extensions;
 using Castle.Core.Logging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Newtonsoft.Json;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
-using Shesha.Notifications.Helpers;
-using Shesha.Services;
+using Shesha.Notifications.MessageParticipants;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Shesha.Notifications.SMS
 {
     public class SmsChannelSender : INotificationChannelSender
     {
         private readonly ISmsSettings _smsSettings;
-        private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly ISmsGateway _smsGateway;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -33,7 +23,6 @@ namespace Shesha.Notifications.SMS
         public SmsChannelSender(ISmsSettings smsSettings,IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, ISmsGateway smsGateway)
         {
             _smsSettings = smsSettings;
-            _notificationChannelRepository = notificationChannelRepository;
             _smsGateway = smsGateway;
         }
 
@@ -46,19 +35,18 @@ namespace Shesha.Notifications.SMS
         {
             return person.MobileNumber1;
         }
-
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task<SmsSettings> GetSettings()
+        private async Task<SmsSettings> GetSettingsAsync()
         {
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(Person fromPerson, Person toPerson, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver reciever, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
-            var settings = await GetSettings();
+            var settings = await GetSettingsAsync();
 
             if (!settings.IsSmsEnabled)
             {
@@ -69,7 +57,7 @@ namespace Shesha.Notifications.SMS
                 });
             }
 
-            return await _smsGateway.SendSmsAsync(GetRecipientId(toPerson), message.Message);
+            return await _smsGateway.SendSmsAsync(!settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : reciever.GetAddress(this), message.Message);
         }
 
         public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)

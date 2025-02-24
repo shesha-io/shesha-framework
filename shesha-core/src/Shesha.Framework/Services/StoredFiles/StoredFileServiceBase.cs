@@ -332,30 +332,49 @@ namespace Shesha.Services.StoredFiles
             }
         }
 
+        private IQueryable<StoredFileVersion> QueryLastVersion(Guid fileId)
+        {
+            return VersionRepository.GetAll().Where(v => v.File.Id == fileId && v.IsLast);
+        }
+
         /// <summary>
-        /// Returns last version of the <paramref name="file"/>
+        /// Get last version of file with the specified Id (<paramref name="fileId"/>)
+        /// </summary>
+        /// <param name="fileId">File Id</param>
+        /// <returns></returns>
+        protected async Task<StoredFileVersion> GetLastVersionAsync(Guid fileId) 
+        {
+            return await QueryLastVersion(fileId).FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Get last version of file with the specified Id (<paramref name="fileId"/>)
+        /// </summary>
+        /// <param name="fileId">File Id</param>
+        /// <returns></returns>
+        protected StoredFileVersion GetLastVersion(Guid fileId)
+        {
+            return QueryLastVersion(fileId).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get last version of the <paramref name="file"/>
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         public async Task<StoredFileVersion> GetLastVersionAsync(StoredFile file)
         {
-            return await VersionRepository.GetAll()
-                .Where(v => v.File == file)
-                .OrderByDescending(v => v.VersionNo)
-                .FirstOrDefaultAsync();
+            return await GetLastVersionAsync(file.Id);
         }
 
         /// <summary>
-        /// Returns last version of the <paramref name="file"/>
+        /// Get last version of the <paramref name="file"/>
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         public StoredFileVersion GetLastVersion(StoredFile file)
         {
-            return VersionRepository.GetAll()
-                .Where(v => v.File == file)
-                .OrderByDescending(v => v.VersionNo)
-                .FirstOrDefault();
+            return GetLastVersion(file.Id);
         }
 
         /// <summary>
@@ -410,14 +429,11 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// <summary>
-        /// Returns tru if file exists in the DB
+        /// Returns true if file exists in the DB and on storage
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<bool> FileExistsAsync(Guid id)
-        {
-            return await Task.FromResult(FileRepository.GetAll().Any(f => f.Id == id));
-        }
+        public abstract Task<bool> FileExistsAsync(Guid id);
 
         /// <summary>
         /// Get file by id or null if missing

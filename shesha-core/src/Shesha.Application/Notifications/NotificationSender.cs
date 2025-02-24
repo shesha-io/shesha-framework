@@ -1,101 +1,65 @@
-﻿using Abp.BackgroundJobs;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
 using Abp.UI;
 using Castle.Core.Logging;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Hangfire;
-using log4net;
-using NHibernate.Engine;
 using NHibernate.Linq;
-using Shesha.Configuration;
-using Shesha.Configuration.Email;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.EntityReferences;
 using Shesha.NHibernate;
-using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
 using Shesha.Notifications.Helpers;
+using Shesha.Notifications.MessageParticipants;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
-using System.IO.Pipelines;
 using System.Linq;
-using System.Net.Mail;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Shesha.Notifications
 {
     public class NotificationSender: INotificationSender, ITransientDependency
     {
         private readonly INotificationChannelSender _channelSender;
-        private readonly IIocManager _iocManager;
         private readonly IRepository<NotificationMessage, Guid> _notificationMessageRepository;
         private readonly IRepository<NotificationMessageAttachment, Guid> _attachmentRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly ISessionProvider _sessionProvider;
         private readonly IStoredFileService _fileService;
         private readonly IEnumerable<INotificationChannelSender> _channelSenders;
-        private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly IRepository<Notification, Guid> _notificationRepository;
         private readonly IRepository<NotificationTemplate, Guid> _messageTemplateRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
-        private readonly IRepository<NotificationTypeConfig, Guid> _typeRepo;
-        private readonly IRepository<Person, Guid> _personRepo;
-        private readonly INotificationSettings _notificationSettings;
-        private readonly IStoredFileService _storedFileService;
-        private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly INotificationManager _notificationManager;
 
         public ILogger Logger { get; set; }
 
-        public NotificationSender(INotificationChannelSender channelSender, 
-            IIocManager iocManager,
+        public NotificationSender(INotificationChannelSender channelSender,
             IRepository<NotificationMessage, Guid> notificationMessageRepository,
             IRepository<NotificationMessageAttachment, Guid> attachmentRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            ISessionProvider sessionProvider,
             IStoredFileService fileService,
             IEnumerable<INotificationChannelSender> channelSenders,
-                                   IRepository<NotificationChannelConfig, Guid> notificationChannelRepository,
-                                   IRepository<NotificationTemplate, Guid> messageTemplateRepository,
-                                   IRepository<Notification, Guid> notificationRepository,
-                                   IRepository<StoredFile, Guid> storedFileRepository,
-                                   IRepository<NotificationTypeConfig, Guid> typeRepo,
-                                   IRepository<Person, Guid> personRepo,
-                                   IStoredFileService storedFileService,
-                                   INotificationSettings notificationSettings,
-                                   IBackgroundJobManager backgroundJobManager,
-                                   INotificationManager notificationManager)
+            IRepository<NotificationTemplate, Guid> messageTemplateRepository,
+            IRepository<Notification, Guid> notificationRepository,
+            IRepository<StoredFile, Guid> storedFileRepository,
+            INotificationManager notificationManager)
         {
             _channelSender = channelSender;
-            _iocManager = iocManager;
             _unitOfWorkManager = unitOfWorkManager;
-            _sessionProvider = sessionProvider;
             _fileService = fileService;
             _channelSenders = channelSenders;
-            _notificationChannelRepository = notificationChannelRepository;
             _messageTemplateRepository = messageTemplateRepository;
-            _notificationSettings = notificationSettings;
-            _storedFileService = storedFileService;
-            _backgroundJobManager = backgroundJobManager;
             _notificationRepository = notificationRepository;
             _storedFileRepository = storedFileRepository;
             _notificationManager = notificationManager;
             _attachmentRepository = attachmentRepository;
             _notificationMessageRepository = notificationMessageRepository;
-            _typeRepo = typeRepo;
-            _personRepo = personRepo;
             Logger = NullLogger.Instance;
         }
 
@@ -103,8 +67,17 @@ namespace Shesha.Notifications
         {
             var attachments = await _attachmentRepository.GetAll().Where(a => a.Message.Id == message.Id).ToListAsync();
 
-            var result = attachments.Select(a => new EmailAttachment(a.FileName, _fileService.GetStream(a.File))).ToList();
+            var result = new List<EmailAttachment>();
+            foreach (var attachment in attachments) 
+            {
+                if (!await _fileService.FileExistsAsync(attachment.File.Id)) {
+                    Logger.Warn($"Attachment '{attachment.File.FileName}' (Id = '{attachment.File.Id}') is missing - skipped");
+                    continue;
+                }
 
+                var fileStream = await _fileService.GetStreamAsync(attachment.File);
+                result.Add(new EmailAttachment(attachment.FileName, fileStream));
+            }
             return result;
         }
 
@@ -113,21 +86,33 @@ namespace Shesha.Notifications
         /// </summary>
         /// <typeparam name="TData"></typeparam>
         /// <param name="type"></param>
-        /// <param name="fromPerson"></param>
-        /// <param name="toPerson"></param>
+        /// <param name="sender"></param>
+        /// <param name="receiver"></param>
         /// <param name="data"></param>
         /// <param name="priority"></param>
         /// <param name="attachments"></param>
         /// <param name="triggeringEntity"></param>
         /// <param name="channel"></param>
         /// <returns></returns>
-        public async Task SendNotification<TData>(NotificationTypeConfig type, Person fromPerson, Person toPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public async Task SendNotificationAsync<TData>(NotificationTypeConfig type, IMessageSender sender, IMessageReceiver receiver, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
         {
+            // Check if the notification type is disabled
+            if (type.Disable) 
+                return;
+
+            if (receiver != null && type.CanOptOut)
+            {
+                var optedOut = await receiver.IsNotificationOptedOutAsync(type);
+                if (optedOut)
+                    return;
+            }
+
             var notification = await _notificationRepository.InsertAsync(new Notification()
             {
+                Name = type.Name,
                 NotificationType = type,
-                FromPerson = fromPerson,
-                ToPerson = toPerson,
+                FromPerson = sender.GetPerson(),
+                ToPerson = receiver.GetPerson(),
                 NotificationData = JsonSerializer.Serialize(data),
                 TriggeringEntity = triggeringEntity,
                 Priority = priority
@@ -138,16 +123,16 @@ namespace Shesha.Notifications
             if (channel != null)
             {
                 // Send notification to a specific channel
-                await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channel, attachments);
+                await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channel, attachments);
             }
             else
             {
                 // Send notification to all determined channels
-                var channels = await _notificationManager.GetChannelsAsync(type, toPerson, (RefListNotificationPriority)priority);
+                var channels = await _notificationManager.GetChannelsAsync(type, receiver, (RefListNotificationPriority)priority);
 
                 foreach (var channelConfig in channels)
                 {
-                    await SendNotificationToChannel(notification, data, fromPerson, toPerson, type, priority, channelConfig, attachments);
+                    await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channelConfig, attachments);
                 }
             }
         }
@@ -158,15 +143,15 @@ namespace Shesha.Notifications
         /// <typeparam name="TData"></typeparam>
         /// <param name="notification"></param>
         /// <param name="data"></param>
-        /// <param name="fromPerson"></param>
-        /// <param name="toPerson"></param>
+        /// <param name="sender"></param>
+        /// <param name="receiver"></param>
         /// <param name="type"></param>
         /// <param name="priority"></param>
         /// <param name="channelConfig"></param>
         /// <param name="attachments"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        private async Task SendNotificationToChannel<TData>(Notification notification, TData data, Person fromPerson, Person toPerson, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+        private async Task SendNotificationToChannelAsync<TData>(Notification notification, TData data, IMessageSender sender, IMessageReceiver receiver, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
 
@@ -183,13 +168,14 @@ namespace Shesha.Notifications
                 RetryCount = 0,
                 ReadStatus = RefListNotificationReadStatus.Unread,
                 Direction = RefListNotificationDirection.Outgoing,
-                Status = RefListNotificationStatus.Preparing
+                Status = RefListNotificationStatus.Preparing,
+                RecipientText = receiver.GetAddress(_channelSender)
             });
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
-            // save attachments if specified
-            if (attachments != null)
+            // Save attachments if specified and allowed
+            if (attachments != null && attachments.Any() && channelConfig.SupportsAttachment && type.AllowAttachments)
             {
                 foreach (var attachmentDto in attachments)
                 {
@@ -206,42 +192,63 @@ namespace Shesha.Notifications
 
             if (type.IsTimeSensitive)
             {
-                await SendAsync(fromPerson.Id, toPerson.Id, message.Id, channelConfig.Name, channelConfig.SenderTypeName);
+                await SendAsync(message.Id);
             }
             else
             {
-                _unitOfWorkManager.Current.DoAfterTransaction(() => BackgroundJob.Enqueue(() => SendAsync(fromPerson.Id, toPerson.Id, message.Id,channelConfig.Name, channelConfig.SenderTypeName)));
+                _unitOfWorkManager.Current.DoAfterTransaction(() => BackgroundJob.Enqueue(() => SendAsync(message.Id)));
             }
         }
 
-        [AutomaticRetry(Attempts = 3, DelaysInSeconds = new int[] { 10, 20, 20})]
-        private async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName)
+        private INotificationChannelSender GetChannelSender(NotificationMessage message) 
+        {
+            var sender = _channelSenders.FirstOrDefault(x => x.GetType().Name == message.Channel.SenderTypeName);
+
+            if (sender == null)
+                throw new UserFriendlyException($"Sender not found for channel {message.Channel.Name}");
+
+            return sender;
+        }
+
+        private IMessageSender GetMessageSender(NotificationMessage message)
+        {
+            if (message.PartOf.FromPerson != null)
+                return new PersonMessageParticipant(message.PartOf.FromPerson);
+
+            if (!string.IsNullOrWhiteSpace(message.SenderText))
+                return new RawAddressMessageParticipant(message.SenderText);
+
+            throw new Exception($"{nameof(message.PartOf.FromPerson)} or {nameof(message.SenderText)} must not be null");
+        }
+        
+        private IMessageReceiver GetMessageReceiver(NotificationMessage message)
+        {
+            if (message.PartOf.ToPerson != null)
+                return new PersonMessageParticipant(message.PartOf.ToPerson);
+
+            if (!string.IsNullOrWhiteSpace(message.RecipientText))
+                return new RawAddressMessageParticipant(message.RecipientText);
+
+            throw new Exception($"{nameof(message.PartOf.ToPerson)} or {nameof(message.RecipientText)} must not be null");
+        }
+
+        [AutomaticRetry(Attempts = 3, DelaysInSeconds = new int[] { 10, 20, 20 })]
+        public async Task SendAsync(Guid messageId)
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var fromPerson = await _personRepo.GetAsync(fromPersonId);
-                if (fromPerson == null) 
-                    throw new Exception($"Person with Id {fromPersonId} not found");
-
-                var toPerson = await _personRepo.GetAsync(toPersonId);
-                if (toPerson == null)
-                    throw new Exception($"Person with Id {toPersonId} not found");
-            
                 var message = await _notificationMessageRepository.GetAsync(messageId);
-                if (message == null)
-                    throw new Exception($"Message with Id {messageId} not found");
-
-                var senderChannelInterface = _channelSenders.FirstOrDefault(x => x.GetType().Name == senderTypeName);
-
-                if (senderChannelInterface == null)
-                    throw new UserFriendlyException($"Sender not found for channel {channelName}");
+                var channelSender = GetChannelSender(message);
 
                 var attachments = await GetAttachmentsAsync(message);
 
-                message.RecipientText = senderChannelInterface.GetRecipientId(toPerson);
+                var sender = GetMessageSender(message);
+                var reciever = GetMessageReceiver(message);
+
+                message.RecipientText = reciever.GetAddress(channelSender);
 
                 // Use TrySendAsync to handle the send attempt
-                var sendResult = await TrySendAsync(fromPerson, toPerson, message, senderChannelInterface, attachments);
+                var sendResult = await TrySendAsync(sender, reciever, message, channelSender, attachments);
 
                 if (sendResult.IsSuccess)
                 {
@@ -249,7 +256,7 @@ namespace Shesha.Notifications
                     message.ErrorMessage = null; // Clear any previous error
                     message.DateSent = DateTime.Now;
                     await _notificationMessageRepository.UpdateAsync(message);
-                    _unitOfWorkManager.Current.SaveChanges();
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
 
                     await uow.CompleteAsync();
                 }
@@ -260,7 +267,7 @@ namespace Shesha.Notifications
                     message.ErrorMessage = sendResult.Message;
 
                     await _notificationMessageRepository.UpdateAsync(message);
-                    _unitOfWorkManager.Current.SaveChanges();
+                    await _unitOfWorkManager.Current.SaveChangesAsync();
 
                     await uow.CompleteAsync();
 
@@ -270,19 +277,25 @@ namespace Shesha.Notifications
             }
         }
 
+        [Obsolete("For backward compatibility only (is used by old scheduled jobs)")]
+        public async Task SendAsync(Guid fromPersonId, Guid toPersonId, Guid messageId, string channelName, string senderTypeName) 
+        {
+            await SendAsync(messageId);
+        }
+
         /// <summary>
         /// Attempts to send a notification and handles exceptions internally.
         /// </summary>
         private async Task<SendStatus> TrySendAsync(
-            Person fromPerson,
-            Person toPerson,
+            IMessageSender sender,
+            IMessageReceiver receiver,
             NotificationMessage message,
             INotificationChannelSender notificationChannelSender,
             List<EmailAttachment> attachments)
         {
             try
             {
-                var sendStatus = await notificationChannelSender.SendAsync(fromPerson, toPerson, message, "", attachments);
+                var sendStatus = await notificationChannelSender.SendAsync(sender, receiver, message, "", attachments);
 
                 return new SendStatus
                 {
@@ -300,6 +313,13 @@ namespace Shesha.Notifications
                     Message = $"Exception while sending notification: {ex.Message}"
                 };
             }
+        }
+
+        public async Task SendNotificationAsync<TData>(NotificationTypeConfig type, Person senderPerson, Person receiverPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        {
+            var sender = new PersonMessageParticipant(senderPerson);
+            var receiver = new PersonMessageParticipant(receiverPerson);            
+            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, triggeringEntity, channel);            
         }
     }
 }

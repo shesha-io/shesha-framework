@@ -4,11 +4,11 @@ import {
   FONT_SIZES,
   PADDING_SIZES, 
 } from './models';
-import {
+/*import {
   DEFAULT_CONTENT_DISPLAY,
   DEFAULT_CONTENT_TYPE,
   DEFAULT_PADDING_SIZE,
-} from './utils';
+} from './utils';*/
 
 export const settingsFormMarkup = new DesignerToolbarSettings()
   .addCollapsiblePanel({
@@ -61,7 +61,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Content Display',
           allowClear: false,
-          defaultValue: DEFAULT_CONTENT_DISPLAY,
+          defaultValue: 'content',
           values: [
             {
               label: 'Content',
@@ -224,7 +224,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'contentType',
           parentId: '3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Color',
-          defaultValue: DEFAULT_CONTENT_TYPE,
+          defaultValue: '',
           values: [
             {
               label: 'Default',
@@ -353,7 +353,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'padding',
           parentId: '4pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Padding',
-          defaultValue: DEFAULT_PADDING_SIZE,
+          defaultValue: 'none',
           values: [...Object.keys(PADDING_SIZES).map(key => ({ id: nanoid(), value: key, label: key }))],
           dataSourceType: 'values',
         })

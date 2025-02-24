@@ -16,9 +16,4 @@ export const DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE: IDelayedUpdateStateC
   groups: [],
 };
 
-export const DelayedUpdateProviderStateContext = createNamedContext<IDelayedUpdateStateContext>(
-  DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE,
-  "DelayedUpdateProviderStateContext"
-);
-
 export const DelayedUpdateProviderActionsContext = createNamedContext<IDelayedUpdateActionContext>(undefined, "DelayedUpdateProviderActionsContext");

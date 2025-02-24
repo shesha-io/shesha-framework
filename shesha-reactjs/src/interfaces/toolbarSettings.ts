@@ -29,12 +29,12 @@ import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index'
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
-import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 import { ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import { IImageFieldProps } from '@/designer-components/image/image';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -52,7 +52,7 @@ type ContextPropertyAutocompleteType = ToolbarSettingsProp &
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
-type ImagePickerType = ToolbarSettingsProp;
+type ImagePickerType = ToolbarSettingsProp & Omit<IImageFieldProps, 'hidden' | 'type'>;
 
 type TextAreaType = ToolbarSettingsProp & Omit<ITextAreaComponentProps, 'hidden' | 'type'>;
 
@@ -194,11 +194,17 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addFormAutocomplete(props: FormAutocompleteType | ((data: T) => FormAutocompleteType)) {
-    return this.addProperty(props, 'formAutocomplete');
+    const model = typeof props !== 'function'
+      ? props
+      : props(this.data);
+    return this.addProperty({ ...model, version: 2 }, 'formAutocomplete');
   }
 
   public addRefListAutocomplete(props: ReferenceListAutocompleteType | ((data: T) => ReferenceListAutocompleteType)) {
-    return this.addProperty(props, 'referenceListAutocomplete');
+    const model = typeof props !== 'function'
+      ? props
+      : props(this.data);
+    return this.addProperty({ ...model, version: 2 }, 'referenceListAutocomplete');
   }
 
   public addCheckbox(props: CheckboxType | ((data: T) => CheckboxType)) {
@@ -263,10 +269,6 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'slider');
   }
 
-  public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
-    return this.addProperty(props, 'divider');
-  }
-
   public addSettingsInput(props: SettingInputType | ((data: T) => SettingInputType)) {
     return this.addProperty(props, 'settingsInput');
   }
@@ -282,7 +284,14 @@ export class DesignerToolbarSettings<T> {
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
     const obj = typeof props !== 'function' ? props : props(this.data);
 
-    this.form.push({ ...obj, type, hidden: obj.hidden as any, version: 'latest' });
+    this.form.push({
+      ...obj,
+      type,
+      hidden: obj.hidden as any,
+      version: typeof (obj.version) === 'number'
+        ? obj.version
+        : 'latest'
+    });
 
     return this;
   }
