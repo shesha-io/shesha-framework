@@ -24,8 +24,13 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
     const { data: formData } = useFormData();
     const { modelType: modelTypeExpression } = model;
 
-    const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
+    let modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
 
+
+    if (typeof formData?.entityTypeShortAlias == 'object' && formData.entityTypeShortAlias.hasOwnProperty('_code')) {
+
+      modelType = new Function('data', formData?.entityTypeShortAlias?._code)({ data: formData });
+    }
     return (
       <ConditionalWrap
         condition={Boolean(modelType)}
