@@ -1,7 +1,6 @@
 import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
 import { IStyleType } from "@/index";
-import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 
 export const defaultStyles: IStyleType = {
 
@@ -33,8 +32,7 @@ export const onAddNewItem = (items) => {
         title: `Tab ${count + 1}`,
         editMode: 'inherited',
         selectMode: 'editable',
-        components: [],
-        ...migratePrevStyles(defaultStyles),
+        components: []
     };
 
     return buttonProps;

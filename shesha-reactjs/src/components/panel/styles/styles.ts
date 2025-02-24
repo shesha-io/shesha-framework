@@ -107,6 +107,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     }
       
     .ant-collapse-content-box {
+      ${rest}
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};

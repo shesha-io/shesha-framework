@@ -65,7 +65,7 @@ export const getSettings = () => {
                                     label: 'Tabs',
                                     labelAlign: 'right',
                                     parentId: 'root',
-                                    settingsMarkupFactory: getItemSettings(),
+                                    listItemSettingsMarkup: getItemSettings(),
                                     onAddNewItem: onAddNewItem,
                                     hidden: false
                                 })
@@ -544,12 +544,12 @@ export const getSettings = () => {
                                                                     ],
                                                                 },
                                                                 {
-                                                                    type: 'dropdown',
+                                                                    type: 'radio',
                                                                     id: 'backgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: repeatOptions,
+                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })
@@ -936,12 +936,12 @@ export const getSettings = () => {
                                                                                 ],
                                                                             },
                                                                             {
-                                                                                type: 'dropdown',
+                                                                                type: 'radio',
                                                                                 id: 'backgroundStyleRow-repeat',
                                                                                 label: "Repeat",
                                                                                 hideLabel: true,
                                                                                 propertyName: "card.background.repeat",
-                                                                                dropdownOptions: repeatOptions,
+                                                                                buttonGroupOptions: repeatOptions,
                                                                             }
                                                                         ]
                                                                     })

@@ -92,6 +92,8 @@ export interface IInputStyles extends IStyleType {
   height?: string | number;
   width?: string | number;
   hideBorder?: boolean;
+  backgroundColor?: string;
+  backgroundPosition?: string;
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
