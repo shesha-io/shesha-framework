@@ -315,7 +315,7 @@ export const getSettings = (data: any) => {
                                     label: 'Width',
                                     width: 85,
                                     propertyName: 'dimensions.width',
-                                    icon: 'width',
+                                    icon: 'widthIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
@@ -325,7 +325,7 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     hideLabel: true,
                                     propertyName: 'dimensions.minWidth',
-                                    icon: 'minWidth',
+                                    icon: 'minWidthIcon',
                                   },
                                   {
                                     type: 'text',
@@ -334,7 +334,7 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     hideLabel: true,
                                     propertyName: 'dimensions.maxWidth',
-                                    icon: 'maxWidth',
+                                    icon: 'maxWidthIcon',
                                   },
                                 ],
                               })
@@ -354,7 +354,7 @@ export const getSettings = (data: any) => {
                                     label: 'Height',
                                     width: 85,
                                     propertyName: 'dimensions.height',
-                                    icon: 'height',
+                                    icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
@@ -364,7 +364,7 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     hideLabel: true,
                                     propertyName: 'dimensions.minHeight',
-                                    icon: 'minHeight',
+                                    icon: 'minHeightIcon',
                                   },
                                   {
                                     type: 'text',
@@ -373,7 +373,7 @@ export const getSettings = (data: any) => {
                                     width: 85,
                                     hideLabel: true,
                                     propertyName: 'dimensions.maxHeight',
-                                    icon: 'maxHeight',
+                                    icon: 'maxHeightIcon',
                                   },
                                 ],
                               })
@@ -814,7 +814,7 @@ export const getSettings = (data: any) => {
                                     label: 'Offset X',
                                     hideLabel: true,
                                     width: 60,
-                                    icon: 'offsetHorizontal',
+                                    icon: 'offsetHorizontalIcon',
                                     propertyName: 'shadow.offsetX',
                                   },
                                   {
@@ -823,7 +823,7 @@ export const getSettings = (data: any) => {
                                     label: 'Offset Y',
                                     hideLabel: true,
                                     width: 60,
-                                    icon: 'offsetVertical',
+                                    icon: 'offsetVerticalIcon',
                                     propertyName: 'shadow.offsetY',
                                   },
                                   {
@@ -832,7 +832,7 @@ export const getSettings = (data: any) => {
                                     label: 'Blur',
                                     hideLabel: true,
                                     width: 60,
-                                    icon: 'blur',
+                                    icon: 'blurIcon',
                                     propertyName: 'shadow.blurRadius',
                                   },
                                   {

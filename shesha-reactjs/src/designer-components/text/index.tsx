@@ -137,8 +137,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextTypographyProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-    .add<ITextTypographyProps>(7, (prev) => {
+    .add<ITextTypographyProps>(6, (prev) => {
       const styles: IStyleType = {
         font: {
           weight: prev.strong ? '700' : '400',
@@ -146,6 +145,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
+    .add<ITextTypographyProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
   ,
 };
 
