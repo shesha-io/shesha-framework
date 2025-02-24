@@ -9,6 +9,7 @@ export interface IRadioOption {
     value: string | number;
     icon?: string | React.ReactNode;
     title?: string;
+    disabled?: boolean;
 }
 
 export interface IDropdownOption {
@@ -66,6 +67,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    entityType: string;
     useRawValues?: boolean;
     modelType?: string;
     httpVerb?: string;

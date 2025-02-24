@@ -6,6 +6,7 @@ import { getCornerInputs } from '../_settings/utils/border/utils';
 import { repeatOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
+import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = () => {
     return {
@@ -274,17 +275,13 @@ export const getSettings = () => {
                                                         ]
                                                     })
                                                     .addSettingsInput({
-                                                        id: 'predefinedSizes',
+                                                        id: 'overflow-s4gmBg31azZC0UjZjpfTm',
+                                                        parentId: 'displayCollapsiblePanel',
+                                                        inline: true,
                                                         inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
-                                                        ]
+                                                        label: 'Overflow',
+                                                        propertyName: 'dimensions.overflow',
+                                                        dropdownOptions: overflowOptions
                                                     })
                                                     .toJson()
                                                 ]

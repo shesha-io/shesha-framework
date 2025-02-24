@@ -4,6 +4,7 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
+import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = () => {
     return {
@@ -255,37 +256,14 @@ export const getSettings = () => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInputRow({
+                                                    .addSettingsInput({
                                                         id: nanoid(),
                                                         parentId: 'displayCollapsiblePanel',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'overflow-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Overflow',
-                                                                propertyName: 'overflow',
-                                                                dropdownOptions: [
-                                                                    {
-                                                                        label: "Auto",
-                                                                        value: "auto",
-                                                                    },
-                                                                    {
-                                                                        label: "Hidden",
-                                                                        value: "hidden",
-                                                                    },
-                                                                    {
-                                                                        label: "Scroll",
-                                                                        value: "scroll",
-                                                                    },
-                                                                    {
-                                                                        label: "Visible",
-                                                                        value: "visible",
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
+                                                        inputType: 'dropdown',
+                                                        label: 'Overflow',
+                                                        propertyName: 'overflow',
+                                                        dropdownOptions: overflowOptions
                                                     })
                                                     .toJson()
                                                 ]

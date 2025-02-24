@@ -99,6 +99,39 @@ export const getItemSettings = () => {
                                 parentId: 'root',
                                 label: 'Edit mode'
                             })
+                            .addSettingsInput({
+                                id: "8615d12f - 6ea0- 4b11 - a1a1 - 6088c7160fd9",
+                                inputType: "dropdown",
+                                propertyName: "selectMode",
+                                parentId: "root",
+                                label: "Select mode",
+                                allowClear: false,
+                                defaultValue: "editable",
+                                dropdownOptions: [
+                                    {
+                                        label: "Selectable",
+                                        value: "editable"
+                                    },
+                                    {
+                                        label: "Disabled",
+                                        value: "readOnly"
+                                    },
+                                    {
+                                        label: "Inherited from Edit mode",
+                                        value: "inherited"
+                                    }
+                                ],
+                            })
+                            .addSettingsInput({
+                                id: 'a8b12318-65a5-4b98-bcce-834b6a40b2fd',
+                                inputType: 'switch',
+                                propertyName: 'destroyInactiveTabPane',
+                                label: 'Destroy Inactive Tab Pane',
+                                labelAlign: 'right',
+                                parentId: 'root',
+                                hidden: false,
+                                validate: {}
+                            })
                             .toJson()
                     ]
                 },

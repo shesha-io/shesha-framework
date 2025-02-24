@@ -11,6 +11,9 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
         borderLeftWidth,
         backgroundColor,
         backgroundImage,
+        backgroundSize,
+        backgroundPosition,
+        backgroundRepeat,
         boxShadow,
         width,
         height,
@@ -26,6 +29,7 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
         paddingRight = '0px',
         paddingLeft = '0px',
         paddingBottom = '0px',
+        overflow,
         rest
     } = styles;
 
@@ -92,6 +96,10 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
                 ${isBottom || isLeft ? 'border-bottom-left-radius: 0px;' : `border-bottom-left-radius: ${borderBottomLeftRadius};`}
                 ${isBottom || isRight ? 'border-bottom-right-radius: 0px;' : `border-bottom-right-radius: ${borderBottomRightRadius};`}
                 padding: ${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft} !important;
+                background-size: ${backgroundSize} !important;
+                background-position: ${backgroundPosition} !important;
+                background-repeat: ${backgroundRepeat} !important;
+                overflow: ${overflow} !important;
             }
 
             .ant-tabs-tab {
