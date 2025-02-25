@@ -1,6 +1,6 @@
 # Release Notes
 
 ## 💪 Enhancements
-- Installed IDisposableAnalyzers
+- Installed Microsoft.VisualStudio.Threading.Analyzers and AsyncFixer
 ## 🐞 Bug Fixes
-- Fixed memory leaks
+- Fixes hanging issues in async code occurring in some specific cases
