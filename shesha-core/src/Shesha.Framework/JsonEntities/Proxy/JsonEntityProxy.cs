@@ -1,12 +1,11 @@
-﻿using AutoMapper.Internal;
+﻿using Abp.Threading;
+using AutoMapper.Internal;
 using Castle.DynamicProxy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Nito.AsyncEx.Synchronous;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.Services;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,7 +149,8 @@ namespace Shesha.JsonEntities.Proxy
                     return _factory.GetNewProxiedJsonEntity(objectType, jobject);
                 }
             };
-            StaticContext.IocManager.Resolve<IEntityModelBinder>().BindPropertiesAsync(_json, proxy, context).WaitAndUnwrapException();
+            var modelBinder = StaticContext.IocManager.Resolve<IEntityModelBinder>();
+            AsyncHelper.RunSync(async () => await modelBinder.BindPropertiesAsync(_json, proxy, context));
         }
 
         public void _changed()
