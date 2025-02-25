@@ -487,6 +487,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-controlss',
                                 parentId: 'backgroundStyleRow',
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 inline: true,
                                 readOnly: {
                                   _code: 'return  getSettingValue(data?.readOnly);',

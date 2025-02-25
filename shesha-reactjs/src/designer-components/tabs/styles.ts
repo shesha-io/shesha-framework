@@ -63,13 +63,13 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
 
     const borderTopLeftRadius = styles.borderRadius?.split(' ')[0] || 0;
     const borderTopRightRadius = styles.borderRadius?.split(' ')[1] || 0;
-    const borderBottomLeftRadius = styles.borderRadius?.split(' ')[2] || 0;
-    const borderBottomRightRadius = styles.borderRadius?.split(' ')[3] || 0;
+    const borderBottomRightRadius = styles.borderRadius?.split(' ')[2] || 0;
+    const borderBottomLeftRadius = styles.borderRadius?.split(' ')[3] || 0;
 
     const cardTopLeftRadius = cardStyles.borderRadius?.split(' ')[0] || 0;
     const cardTopRightRadius = cardStyles.borderRadius?.split(' ')[1] || 0;
-    const cardBottomLeftRadius = cardStyles.borderRadius?.split(' ')[2] || 0;
-    const cardBottomRightRadius = cardStyles.borderRadius?.split(' ')[3] || 0;
+    const cardBottomRightRadius = cardStyles.borderRadius?.split(' ')[2] || 0;
+    const cardBottomLeftRadius = cardStyles.borderRadius?.split(' ')[3] || 0;
 
     const content = cx(
         'content',

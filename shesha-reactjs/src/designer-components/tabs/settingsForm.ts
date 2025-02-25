@@ -1,14 +1,15 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { backgroundTypeOptions, repeatOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = () => {
+
+
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
@@ -50,6 +51,7 @@ export const getSettings = () => {
                                     inputType: 'dropdown',
                                     propertyName: 'tabType',
                                     label: 'Tab Type',
+                                    defaultValue: 'card',
                                     dropdownOptions: [
                                         { value: 'line', label: 'Label' },
                                         { value: 'card', label: 'Card' }
@@ -85,6 +87,7 @@ export const getSettings = () => {
                                     inputType: 'editModeSelector',
                                     propertyName: 'editMode',
                                     parentId: 'root',
+                                    defaultValue: 'inherited',
                                     label: 'Edit mode'
                                 })
                                 .toJson()
@@ -116,6 +119,7 @@ export const getSettings = () => {
                                             inputType: 'dropdown',
                                             propertyName: 'tabPosition',
                                             tooltip: "This will set the position for all buttons",
+                                            defaultValue: 'top',
                                             label: 'Position',
                                             dropdownOptions: [
                                                 { value: 'top', label: 'Top' },
@@ -280,6 +284,7 @@ export const getSettings = () => {
                                                         inline: true,
                                                         inputType: 'dropdown',
                                                         label: 'Overflow',
+                                                        defaultValue: 'auto',
                                                         propertyName: 'dimensions.overflow',
                                                         dropdownOptions: overflowOptions
                                                     })
@@ -369,33 +374,7 @@ export const getSettings = () => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -472,6 +451,7 @@ export const getSettings = () => {
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
@@ -864,6 +844,7 @@ export const getSettings = () => {
                                                                         id: "backgroundStyleRow-controls",
                                                                         parentId: 'backgroundStyleRow',
                                                                         inline: true,
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                         inputs: [
                                                                             {
@@ -890,7 +871,7 @@ export const getSettings = () => {
                                                                             {
                                                                                 type: 'customDropdown',
                                                                                 id: 'backgroundStyleRow-position',
-                                                                                label: "Tab Position",
+                                                                                label: "Position",
                                                                                 hideLabel: true,
                                                                                 propertyName: "card.background.position",
                                                                                 dropdownOptions: [

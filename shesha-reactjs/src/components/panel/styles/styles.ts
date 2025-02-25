@@ -116,7 +116,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       max-height: ${maxHeight};
       background: ${backgroundImage || backgroundColor};
       position: relative;
-      overflow: ${overflow};
+      overflow: ${overflow ?? 'auto'};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;

@@ -67,7 +67,7 @@ export const borderSides = [
 
 export const borderCorners = [
     { value: "all", icon: "ExpandOutlined", title: "All" },
-    { value: "topLeft", icon: "RadiusUpleftOutlined", title: "Top Left", disabled: true },
+    { value: "topLeft", icon: "RadiusUpleftOutlined", title: "Top Left" },
     { value: "topRight", icon: "RadiusUprightOutlined", title: "Top Right" },
     { value: "bottomLeft", icon: "RadiusBottomleftOutlined", title: "Bottom Left" },
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
@@ -134,7 +134,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
     };
 });
 
-export const getCornerInputs = (isResponsive: boolean = true, path = '',) => radiusCorners.map(value => {
+export const getCornerInputs = (isResponsive: boolean = true, path = '', disabledItemsExpression?: string) => radiusCorners.map(value => {
     const corner = value.value;
     const code = generateCode('radius', isResponsive, path, corner);
 
@@ -151,8 +151,9 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '',) => rad
                 propertyName: path ? `${path}.border.selectedCorner` : "border.selectedCorner",
                 type: "radio",
                 defaultValue: "all",
+                disabledItemsExpression: disabledItemsExpression,
                 tooltip: "Select a corner to which the radius will be applied",
-                buttonGroupOptions: borderCorners,
+                buttonGroupOptions: borderCorners
             },
             {
                 id: `borderRadiusStyleRow-${corner}`,
