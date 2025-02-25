@@ -103,7 +103,7 @@ namespace Shesha.Tests.Specifications
 
                     specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification), typeof(HasNoAccountSpecification) }, ignoreOrder: true);
                     
-                    var persons18PlusWithoutAccount = repository.GetAll().ToList();
+                    var persons18PlusWithoutAccount = await repository.GetAll().ToListAsync();
                     persons18PlusWithoutAccount.ShouldBe(expectedPersons18PlusWithoutAccount, ignoreOrder: true);
                 }
 
@@ -111,7 +111,7 @@ namespace Shesha.Tests.Specifications
 
                 specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification) }, ignoreOrder: true);
 
-                var persons18Plus2 = repository.GetAll().ToList();
+                var persons18Plus2 = await repository.GetAll().ToListAsync();
                 persons18Plus2.ShouldBe(expectedPersons18Plus, ignoreOrder: true);
             }
 
@@ -119,7 +119,7 @@ namespace Shesha.Tests.Specifications
 
             specAccessor.SpecificationTypes.ShouldBeEmpty();
             
-            var allPersonsCount2 = repository.GetAll().Count();
+            var allPersonsCount2 = await repository.GetAll().CountAsync();
             allPersonsCount2.ShouldBe(expectedAllPersonsCount);
         }
 

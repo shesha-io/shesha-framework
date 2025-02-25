@@ -569,12 +569,12 @@ namespace Shesha.Web.FormsDesigner.Services
             var configs = (await _entityConfigManager.GetMainDataListAsync()).Where(x => x.NotImplemented).ToList();
             var list = new List<object>();
 
-            var forms = Repository.GetAll().Where(x =>
+            var forms = await Repository.GetAll().Where(x =>
                     (int)x.VersionStatus < 4
                     && !x.Name.Contains(".json")
                     && x.Markup != null)
                 .Select(x => new { x.FullName, x.VersionNo, x.VersionStatus, x.Markup })
-                .ToList();
+                .ToListAsync();
 
             foreach (var config in configs)
             {

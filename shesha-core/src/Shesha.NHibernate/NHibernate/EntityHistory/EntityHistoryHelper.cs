@@ -8,14 +8,12 @@ using Abp.Events.Bus.Entities;
 using Abp.Extensions;
 using Abp.Json;
 using Abp.Reflection;
+using Abp.Threading;
 using Abp.Timing;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Proxy;
-using Nito.AsyncEx.Synchronous;
-using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
@@ -112,9 +110,7 @@ namespace Shesha.NHibernate.EntityHistory
                 return null;
             }
 
-            var entityConfig = _modelConfigurationManager
-                .GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name)
-                .WaitAndUnwrapException();
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
