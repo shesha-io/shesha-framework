@@ -1,27 +1,26 @@
 import React, { FC } from 'react';
 import { Alert } from 'antd';
-import { evaluateString, getStyle } from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { GenericText } from './genericText';
-import { ITextTypographyProps } from './models';
+import { ITypographyProps } from './models';
 import { useForm, useFormData } from '@/providers';
 import {
   getContent,
 } from './utils';
 import { isMoment } from 'moment';
 
-const TypographyComponent: FC<ITextTypographyProps> = ({
+const TypographyComponent: FC<ITypographyProps> = ({
   contentDisplay,
   dataType,
   dateFormat,
   numberFormat,
   value,
-  style,
+  styles,
   textAlign,
   ...model
 }) => {
   const { formMode } = useForm();
   const { data: formData } = useFormData();
-
   const val = typeof value === 'string'
     ? value 
     : isMoment(value)
@@ -35,10 +34,9 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
     return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
   }
 
-  const computedStyle = getStyle(style, formData) ?? {};
 
   return (
-    <GenericText style={{...computedStyle, justifyContent: textAlign, display: 'flex'}} {...model}>
+    <GenericText style={{...styles, justifyContent: textAlign, display: 'flex'}} {...model}>
       {content}
     </GenericText>
   );

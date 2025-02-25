@@ -20,7 +20,7 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { ButtonGroupConfigurator, IconPicker } from '@/components';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
+export const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
   const { readOnly } = props;
