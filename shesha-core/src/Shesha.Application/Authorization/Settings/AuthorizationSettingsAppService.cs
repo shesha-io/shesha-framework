@@ -19,7 +19,7 @@ namespace Shesha.Authorization.Settings
             _securitySettings = securitySettings;
         }
 
-        public async Task UpdateSettings(AuthorizationSettingsDto dto)
+        public async Task UpdateSettingsAsync(AuthorizationSettingsDto dto)
         {
             //Lockout
             await _securitySettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
@@ -48,7 +48,7 @@ namespace Shesha.Authorization.Settings
             await _passwordComplexitySettings.RequiredLength.SetValueAsync(dto.RequiredLength);
         }
 
-        public async Task<AuthorizationSettingsDto> GetSettings()
+        public async Task<AuthorizationSettingsDto> GetSettingsAsync()
         {
             var settings = await _securitySettings.SecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();

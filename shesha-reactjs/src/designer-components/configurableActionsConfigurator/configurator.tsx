@@ -119,7 +119,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             {
               value?.handleSuccess && (
                 <Collapse defaultActiveKey={['1']}>
-                  <Panel header={<StyledLabel label="On Success handler" />} key="1">
+                  <Panel header={<StyledLabel label="On Success Handler" />} key="1">
                     <Form.Item name="onSuccess">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
                     </Form.Item >
@@ -131,7 +131,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             {
               value?.handleFail && (
                 <Collapse defaultActiveKey={['1']}>
-                  <Panel header={<StyledLabel label="On Fail handler" />} key="1">
+                  <Panel header={<StyledLabel label="On Fail Handler" />} key="1">
                     <Form.Item name="onFail">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
                     </Form.Item>

@@ -12,110 +12,6 @@
             "isDynamic": false,
             "tabs": [
                 {
-                    "id": "67SvLUmiSKc5iooJGTArldHg31fX2e",
-                    "name": "tbAppearance",
-                    "key": "tbAppearance",
-                    "title": "Appearance",
-                    "editMode": "inherited",
-                    "selectMode": "editable",
-                    "components": [
-                        {
-                            "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",
-                            "type": "dropdown",
-                            "propertyName": "layout",
-                            "label": "Layout",
-                            "labelAlign": "right",
-                            "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
-                            "hidden": false,
-                            "allowClear": false,
-                            "validate": {
-                                "required": true
-                            },
-                            "dataSourceType": "values",
-                            "values": [
-                                {
-                                    "id": "3f7bd074-37e6-450c-8106-95e8d8164ada",
-                                    "label": "horizontal",
-                                    "value": "horizontal"
-                                },
-                                {
-                                    "id": "5709e098-7c1d-4a27-92e5-f25e998c26fd",
-                                    "label": "vertical",
-                                    "value": "vertical"
-                                }
-                            ],
-                            "version": 6,
-                            "referenceListId": null,
-                            "valueFormat": "listItem"
-                        },
-                        {
-                            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
-                            "type": "dropdown",
-                            "propertyName": "size",
-                            "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
-                            "label": "Size",
-                            "allowClear": true,
-                            "values": [
-                                {
-                                    "label": "Small",
-                                    "value": "small",
-                                    "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
-                                },
-                                {
-                                    "label": "Middle",
-                                    "value": "middle",
-                                    "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-                                },
-                                {
-                                    "label": "Large",
-                                    "value": "large",
-                                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-                                }
-                            ],
-                            "dataSourceType": "values",
-                            "version": 6,
-                            "referenceListId": null,
-                            "valueFormat": "listItem"
-                        },
-                        {
-                            "id": "b6bdf196-769f-4bce-b488-9ca50ad16176",
-                            "type": "checkbox",
-                            "propertyName": "colon",
-                            "label": "Colon",
-                            "labelAlign": "right",
-                            "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
-                            "hidden": false,
-                            "description": "Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)",
-                            "validate": {},
-                            "version": 3
-                        },
-                        {
-                            "id": "493e12cd-d4ab-4f2a-8c08-3a20ce0f617e",
-                            "type": "numberField",
-                            "propertyName": "labelCol.span",
-                            "label": "Label span",
-                            "labelAlign": "right",
-                            "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
-                            "hidden": false,
-                            "validate": {},
-                            "description": "Raster number of cells to occupy, 0 corresponds to display: none",
-                            "version": 3
-                        },
-                        {
-                            "id": "99c93c99-0005-429e-8f71-e899230f1c6e",
-                            "type": "numberField",
-                            "propertyName": "wrapperCol.span",
-                            "label": "Component span",
-                            "labelAlign": "right",
-                            "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
-                            "hidden": false,
-                            "validate": {},
-                            "description": "Raster number of cells to occupy, 0 corresponds to display: none",
-                            "version": 3
-                        }
-                    ]
-                },
-                {
                     "id": "07lU1-i-ftBrrhUFjJpbFNW5m3XKLB",
                     "name": "tbData",
                     "key": "tbData",
@@ -763,6 +659,110 @@
                     ]
                 },
                 {
+                  "id": "67SvLUmiSKc5iooJGTArldHg31fX2e",
+                  "name": "tbAppearance",
+                  "key": "tbAppearance",
+                  "title": "Appearance",
+                  "editMode": "inherited",
+                  "selectMode": "editable",
+                  "components": [
+                      {
+                          "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",
+                          "type": "dropdown",
+                          "propertyName": "layout",
+                          "label": "Layout",
+                          "labelAlign": "right",
+                          "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
+                          "hidden": false,
+                          "allowClear": false,
+                          "validate": {
+                              "required": true
+                          },
+                          "dataSourceType": "values",
+                          "values": [
+                              {
+                                  "id": "3f7bd074-37e6-450c-8106-95e8d8164ada",
+                                  "label": "horizontal",
+                                  "value": "horizontal"
+                              },
+                              {
+                                  "id": "5709e098-7c1d-4a27-92e5-f25e998c26fd",
+                                  "label": "vertical",
+                                  "value": "vertical"
+                              }
+                          ],
+                          "version": 6,
+                          "referenceListId": null,
+                          "valueFormat": "listItem"
+                      },
+                      {
+                          "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+                          "type": "dropdown",
+                          "propertyName": "size",
+                          "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
+                          "label": "Size",
+                          "allowClear": true,
+                          "values": [
+                              {
+                                  "label": "Small",
+                                  "value": "small",
+                                  "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+                              },
+                              {
+                                  "label": "Middle",
+                                  "value": "middle",
+                                  "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+                              },
+                              {
+                                  "label": "Large",
+                                  "value": "large",
+                                  "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                              }
+                          ],
+                          "dataSourceType": "values",
+                          "version": 6,
+                          "referenceListId": null,
+                          "valueFormat": "listItem"
+                      },
+                      {
+                          "id": "b6bdf196-769f-4bce-b488-9ca50ad16176",
+                          "type": "checkbox",
+                          "propertyName": "colon",
+                          "label": "Colon",
+                          "labelAlign": "right",
+                          "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
+                          "hidden": false,
+                          "description": "Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)",
+                          "validate": {},
+                          "version": 3
+                      },
+                      {
+                          "id": "493e12cd-d4ab-4f2a-8c08-3a20ce0f617e",
+                          "type": "numberField",
+                          "propertyName": "labelCol.span",
+                          "label": "Label span",
+                          "labelAlign": "right",
+                          "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
+                          "hidden": false,
+                          "validate": {},
+                          "description": "Raster number of cells to occupy, 0 corresponds to display: none",
+                          "version": 3
+                      },
+                      {
+                          "id": "99c93c99-0005-429e-8f71-e899230f1c6e",
+                          "type": "numberField",
+                          "propertyName": "wrapperCol.span",
+                          "label": "Component span",
+                          "labelAlign": "right",
+                          "parentId": "67SvLUmiSKc5iooJGTArldHg31fX2e",
+                          "hidden": false,
+                          "validate": {},
+                          "description": "Raster number of cells to occupy, 0 corresponds to display: none",
+                          "version": 3
+                      }
+                  ]
+              },
+              {
                     "id": "c9WBkqeaF-svQu3AzPA3RU8UVZMvnj",
                     "label": "Tab 1",
                     "title": "Security",

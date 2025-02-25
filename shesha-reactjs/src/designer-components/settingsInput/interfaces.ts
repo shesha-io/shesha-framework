@@ -3,6 +3,7 @@ import { CodeLanguages } from '../codeEditor/types';
 import { ResultType } from '@/components/codeEditor/models';
 import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
+import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 
 export interface IRadioOption {
     value: string | number;
@@ -17,10 +18,13 @@ export interface IDropdownOption {
 }
 
 export interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' |
-    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'labelValueEditor';
+    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
+    'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
+    | 'sizableColumnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig' | 'itemListConfiguratorModal'
+    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfig';
 }
+
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
     label: string;
@@ -52,6 +56,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     valueTitle?: string;
     valueName?: string;
     value?: any;
+    placeholder?: string;
     mode?: any;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
@@ -66,10 +71,15 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     dataSourceUrl?: string;
     useRawValues?: boolean;
     modelType?: string;
+    httpVerb?: string;
     min?: number;
     max?: number;
     fieldsUnavailableHint?: string;
     items?: [];
+    onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
+    listItemSettingsMarkup?: IConfigurableFormComponent[];
+    buttonText?: string;
+    modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
     _formFields?: string[];
     autoFillProps?: boolean;
 };

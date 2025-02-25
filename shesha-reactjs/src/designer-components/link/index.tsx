@@ -1,9 +1,8 @@
-import React, { CSSProperties, ReactNode } from 'react';
+import React, { CSSProperties, ReactNode, useMemo } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { LinkOutlined } from '@ant-design/icons';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IInputStyles, FormMarkup, IConfigurableFormComponent, useForm, useFormData } from '@/providers';
-import settingsFormJson from './settingsForm.json';
+import { IInputStyles, IConfigurableFormComponent, useForm, useFormData } from '@/providers';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/container/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -11,6 +10,12 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import ParentProvider from '@/providers/parentProvider/index';
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { IFontValue } from '../_settings/utils/font/interfaces';
+import { removeUndefinedProps } from '@/utils/object';
+import { defaultStyles } from './utils';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;
@@ -31,10 +36,10 @@ export interface ILinkProps extends IConfigurableFormComponent {
   justifyItems?: JustifyItems;
   className?: string;
   icon?: ReactNode;
+  font?: IFontValue;
   components?: IConfigurableFormComponent[];
 }
 
-const settingsForm = settingsFormJson as FormMarkup;
 const LinkComponent: IToolboxComponent<ILinkProps> = {
   type: 'link',
   isInput: false,
@@ -56,7 +61,11 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       alignItems,
       justifyItems,
       hasChildren,
+      font,
     } = model;
+
+    const fontStyles = useMemo(() => getFontStyle(font), [font]);
+    const finalStyle = removeUndefinedProps({ ...fontStyles, ...getStyle(style, data) });
 
     const linkStyle: CSSProperties = {};
 
@@ -69,18 +78,16 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
     const isDesignerMode = formMode === 'designer';
 
-    if (model.hidden)
-      return null;
+    if (model.hidden) return null;
 
     return (
-      <ConfigurableFormItem model={model}  >
+      <ConfigurableFormItem model={model}>
         {() => {
-
           const href = evaluateString(initialHref || model?.href, data);
 
           if (!hasChildren) {
             return (
-              <a href={href} target={target} className="sha-link" style={{ ...linkStyle, ...getStyle(style, data) }}>
+              <a href={href} target={target} className="sha-link" style={{ ...linkStyle, ...finalStyle }}>
                 {content}
               </a>
             );
@@ -112,14 +119,15 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   initModel: (model: ILinkProps) => {
     const customProps: ILinkProps = {
       ...model,
       direction: 'vertical',
       target: '_self',
       justifyContent: 'left',
+      hideLabel: true,
     };
 
     return customProps;
@@ -141,10 +149,9 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
         style: prev.style
       };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-  ,
-
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      })
+      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };
 
 export default LinkComponent;

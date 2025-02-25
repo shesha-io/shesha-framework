@@ -32,7 +32,7 @@ namespace Shesha.Configuration.Runtime
 
         protected void Initialise()
         {
-            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType() && t != typeof(JsonEntity))
+            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType()) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 .Select(t => new { Type = t, TypeShortAlias = t.GetAttribute<EntityAttribute>()?.TypeShortAlias })
                 .ToList();
 

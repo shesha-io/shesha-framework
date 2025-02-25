@@ -68,7 +68,7 @@ namespace Shesha.DynamicEntities
             var assemblies = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
                 .Where(a => !a.IsDynamic
-                            && a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
+                            && a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 )
                 .ToList();
 
@@ -126,7 +126,7 @@ namespace Shesha.DynamicEntities
         {
             var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
 
-            var entityTypes = assembly.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
+            var entityTypes = assembly.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 .ToList();
 
             Logger.Info($"{assembly.FullName}: found {entityTypes.Count()} entity types");

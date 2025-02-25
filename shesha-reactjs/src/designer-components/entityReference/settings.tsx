@@ -4,7 +4,7 @@ import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAuto
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import Show from '@/components/show';
 import { Autocomplete } from '@/components/autocomplete';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { MetadataProvider, useForm } from '@/providers';
 import { LabelValueEditor } from '@/components/labelValueEditor/labelValueEditor';
@@ -20,7 +20,7 @@ import { useFormDesignerState } from '@/providers/formDesigner';
 import { ButtonGroupConfigurator, IconPicker } from '@/components';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
+export const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
   const { readOnly } = props;
@@ -149,7 +149,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         )}
         {values?.formSelectionMode === 'name' && (
           <SettingsFormItem name="formIdentifier" label="Form" jsSetting>
-            <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+            <FormAutocomplete readOnly={readOnly} />
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>
