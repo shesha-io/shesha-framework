@@ -87,9 +87,9 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
 
     const result: T = {
         ...prev,
-        desktop: { ...migrateStyles('desktop') },
-        tablet: { ...migrateStyles('tablet') },
-        mobile: { ...migrateStyles('mobile') },
+        desktop: { ...prev.desktop, ...migrateStyles('desktop') },
+        tablet: { ...prev.tablet, ...migrateStyles('tablet') },
+        mobile: { ...prev.mobile, ...migrateStyles('mobile') },
     };
 
     return result;

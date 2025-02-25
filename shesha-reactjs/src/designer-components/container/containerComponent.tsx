@@ -156,7 +156,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IContainerComponentProps>(7, (prev) => {
+      .add<IContainerComponentProps>(6, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
@@ -170,16 +170,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap,
-          position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' }
+          gap: prev?.gap || 8,
+          position: defaultStyles().position,
         };
 
         return {
-          ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
+          ...prev, position: defaultStyles().position, desktop: { ...prev.desktop, ...flexAndGridStyles },
           tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })
-      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default ContainerComponent;

@@ -206,6 +206,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
     gap: prev?.gap ?? '8px',
-    overflow: prev?.overflow ?? 'visible'
+    overflow: prev?.overflow ?? 'auto'
   };
 };
