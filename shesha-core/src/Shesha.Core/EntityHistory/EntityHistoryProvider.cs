@@ -405,7 +405,7 @@ namespace Shesha.EntityHistory
                 var action = Expression.Equal(idExpression, Expression.Constant(Guid.Parse(entityId)));
                 var lambda = Expression.Lambda(action, parameterExpression);
 
-                var res = _dynamicRepository.Where(manyToManyType, lambda).ToDynamicList();
+                var res = await _dynamicRepository.Where(manyToManyType, lambda).ToDynamicListAsync();
 
                 var childItems = res
                     .Select(x =>
@@ -427,7 +427,7 @@ namespace Shesha.EntityHistory
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds.AddRange(childItems.Select(x => x.InnerObject.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToList();
+                var persons = await _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToListAsync();
 
                 foreach (var childItem in childItems)
                 {
@@ -590,7 +590,7 @@ namespace Shesha.EntityHistory
                 var action = Expression.Equal(idExpression, Expression.Constant(Guid.Parse(entityId)));
                 var lambda = Expression.Lambda(action, parameterExpression);
 
-                var res = _dynamicRepository.Where(manyToOneType, lambda).ToDynamicList();
+                var res = await _dynamicRepository.Where(manyToOneType, lambda).ToDynamicListAsync();
 
                 var childItems = res
                     .Select(x =>
@@ -605,7 +605,7 @@ namespace Shesha.EntityHistory
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToList();
+                var persons = await _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToListAsync();
 
                 foreach (var childItem in childItems)
                 {

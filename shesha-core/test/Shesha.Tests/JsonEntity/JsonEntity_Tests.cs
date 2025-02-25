@@ -261,7 +261,7 @@ namespace Shesha.Tests.JsonEntity
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var o = new ComplexTest()
                 {
@@ -346,7 +346,7 @@ namespace Shesha.Tests.JsonEntity
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var json = @"
 {
@@ -444,7 +444,7 @@ namespace Shesha.Tests.JsonEntity
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var o = new ComplexTest()
                 {

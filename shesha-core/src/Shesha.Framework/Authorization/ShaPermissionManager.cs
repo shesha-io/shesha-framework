@@ -7,7 +7,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
-using Nito.AsyncEx.Synchronous;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Utilities;
@@ -41,7 +40,8 @@ namespace Shesha.Authorization
         public override void Initialize()
         {
             base.Initialize();
-            InitializeDbPermissionsAsync().WaitAndUnwrapException();
+
+            AsyncHelper.RunSync(async () => await InitializeDbPermissionsAsync());
         }
 
         

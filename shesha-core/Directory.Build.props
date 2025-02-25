@@ -1,7 +1,7 @@
 <Project>
     <PropertyGroup>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>$(NoWarn);CS1591;612;618;809</NoWarn>
+        <NoWarn>$(NoWarn);CS1591;612;618;809;AsyncFixer01;</NoWarn>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release' ">
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

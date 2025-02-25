@@ -57,10 +57,12 @@ namespace Shesha.DynamicEntities
         {
             var config = entity.GetType().GetEntityConfiguration();
 
-            var prop = _entityPropertyValueRepository.GetAll()
+            var prop = await _entityPropertyValueRepository
+                .GetAll()
                 .Where(x => x.EntityProperty.Id == property.Id && x.OwnerId == entity.Id.ToString() &&
                             x.OwnerType == config.TypeShortAlias)
-                .OrderByDescending(x => x.CreationTime).FirstOrDefault();
+                .OrderByDescending(x => x.CreationTime)
+                .FirstOrDefaultAsync();
 
             if (prop?.Value == value) return;
 
