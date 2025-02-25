@@ -10,11 +10,11 @@ using Abp.Extensions;
 using Abp.Json;
 using Abp.Reflection;
 using Abp.Runtime.Session;
+using Abp.Threading;
 using Abp.Timing;
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Proxy;
-using Nito.AsyncEx.Synchronous;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
@@ -106,9 +106,7 @@ namespace Shesha.NHibernate.EntityHistory
                 return null;
             }
 
-            var entityConfig = _modelConfigurationManager
-                .GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name)
-                .WaitAndUnwrapException();
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
@@ -402,9 +400,7 @@ namespace Shesha.NHibernate.EntityHistory
                 ? propInfo.PropertyType.GetGenericArguments()[0] 
                 : propInfo.PropertyType;
 
-            var entityConfig = _modelConfigurationManager
-                .GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name)
-                .WaitAndUnwrapException();
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
 
             var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
             var audited = propInfo.GetCustomAttribute<AuditedAttribute>();
