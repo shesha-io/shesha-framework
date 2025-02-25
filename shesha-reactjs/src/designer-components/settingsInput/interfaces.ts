@@ -81,4 +81,6 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
     _formFields?: string[];
     autoFillProps?: boolean;
+    wrapInTemplate?: boolean;
+    templateSettings?: any;
 };

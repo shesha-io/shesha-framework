@@ -35,6 +35,8 @@ import { ITabPaneProps } from '../tabs/models';
 import { IWizardStepProps } from '../wizard/models';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
+import ColumnsConfigurator from '../dataTable/table/columnsEditor/columnsConfigurator';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -196,7 +198,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
-            return <ColumnsConfig size={size} />;
+            return <ColumnsConfig {...props}/>;
         case 'columnsList':
             return <ColumnsList {...props} readOnly={readOnly} />;
         case 'sizableColumnsConfig':
