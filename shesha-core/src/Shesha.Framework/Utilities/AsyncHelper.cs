@@ -52,6 +52,7 @@ namespace Shesha.Utilities
             SynchronizationContext.SetSynchronizationContext(synch);
             T ret = default(T);
 #pragma warning disable VSTHRD101 // Rethrow to preserve stack details
+#pragma warning disable AsyncFixer03 // Avoid unsupported fire-and-forget async-void methods or delegates. Unhandled exceptions will crash the process.
             synch.Post(async _ =>
             {
                 try
@@ -68,6 +69,7 @@ namespace Shesha.Utilities
                     synch.EndMessageLoop();
                 }
             }, null);
+#pragma warning restore AsyncFixer03 // Avoid unsupported fire-and-forget async-void methods or delegates. Unhandled exceptions will crash the process.
 #pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
             SynchronizationContext.SetSynchronizationContext(oldContext);
