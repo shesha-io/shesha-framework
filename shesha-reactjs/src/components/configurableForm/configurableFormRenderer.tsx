@@ -112,7 +112,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           onFinishFailed={onFinishFailedInternal}
           onValuesChange={onValuesChangeInternal}
           initialValues={initialValues}
-          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className, "sha-f")}
+          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
           {...mergedProps}
           data-sha-form-id={shaForm.form.id}
         >

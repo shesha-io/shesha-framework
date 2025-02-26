@@ -69,7 +69,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     }
   }
 
-  return <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />;
+  return (
+    <div data-sha-c-id={`${componentModel.id}`} data-sha-c-name={`${componentModel.componentName}`} data-sha-c-type={`${componentModel.type}`}>
+      <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
+    </div>
+  );
 };
 
 const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
