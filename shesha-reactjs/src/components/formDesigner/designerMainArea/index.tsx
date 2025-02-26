@@ -3,7 +3,7 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import { MetadataProvider, useCanvas, useForm } from '@/providers';
 import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { DebugPanel } from '../debugPanel';
@@ -17,13 +17,18 @@ export interface IDesignerMainAreaProps {
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesignerState();
     const { setSelectedComponent } = useFormDesignerActions();
+    const { selectedComponentId  } = useFormDesignerState();
     const { form, formMode, formSettings } = useForm();
     const { designerWidth, zoom } = useCanvas();
     const { styles } = useStyles();
+    const [previousSelectedComponentId, setPreviousSelectedComponentId] = useState<string | null>(null);
 
     useEffect(() => {
         if (formMode !== 'designer') {
+            if (selectedComponentId) setPreviousSelectedComponentId(selectedComponentId);
             setSelectedComponent(null);
+        } else {
+            if (previousSelectedComponentId) setSelectedComponent(previousSelectedComponentId);
         }
     }, [formMode]);
 
