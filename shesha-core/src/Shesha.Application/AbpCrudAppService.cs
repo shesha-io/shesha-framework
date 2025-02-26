@@ -22,15 +22,15 @@ namespace Shesha
     {
         protected readonly IRepository<TEntity, TPrimaryKey> Repository;
 
-        protected virtual string GetPermissionName { get; set; }
+        protected virtual string? GetPermissionName { get; set; }
 
-        protected virtual string GetAllPermissionName { get; set; }
+        protected virtual string? GetAllPermissionName { get; set; }
 
-        protected virtual string CreatePermissionName { get; set; }
+        protected virtual string? CreatePermissionName { get; set; }
 
-        protected virtual string UpdatePermissionName { get; set; }
+        protected virtual string? UpdatePermissionName { get; set; }
 
-        protected virtual string DeletePermissionName { get; set; }
+        protected virtual string? DeletePermissionName { get; set; }
 
         protected AbpCrudAppService(IRepository<TEntity, TPrimaryKey> repository)
         {
@@ -131,7 +131,7 @@ namespace Shesha
             ObjectMapper.Map(updateInput, entity);
         }
 
-        protected virtual void CheckPermission(string permissionName)
+        protected virtual void CheckPermission(string? permissionName)
         {
             if (!string.IsNullOrEmpty(permissionName))
             {

@@ -2,8 +2,6 @@
 using Abp.AspNetCore.Mvc.Authorization;
 using Abp.AspNetCore.Mvc.Extensions;
 using Abp.Authorization;
-using Abp.Collections.Extensions;
-using Abp.Modules;
 using Abp.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,38 +54,23 @@ namespace Shesha.Permissions
             return false;
         }
 
-        public string GetObjectType(Type type)
+        public string? GetObjectType(Type type)
         {
             var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
 
-            return !(type.IsPublic && !type.IsAbstract
-                                 && (shaServiceType.IsAssignableFrom(type) || controllerType.IsAssignableFrom(type)))
-                   ? null // if not controller
-                   : IsCrud(type)
-                        ? ShaPermissionedObjectsTypes.WebCrudApi
-                        : ShaPermissionedObjectsTypes.WebApi;
-        }
-
-        private string GetMethodType(string parentType)
-        {
-            return parentType == ShaPermissionedObjectsTypes.WebApi
-                ? ShaPermissionedObjectsTypes.WebApiAction
-                : parentType == ShaPermissionedObjectsTypes.WebCrudApi
-                    ? ShaPermissionedObjectsTypes.WebCrudApiAction
-                    : null;
-        }
-
-        private Type GetModuleOfType(Type type)
-        {
-            return type.Assembly.GetTypes().FirstOrDefault(t => t.IsPublic && !t.IsAbstract && typeof(AbpModule).IsAssignableFrom(t));
+            return !(type.IsPublic && !type.IsAbstract && (shaServiceType.IsAssignableFrom(type) || controllerType.IsAssignableFrom(type)))
+                ? null // if not controller
+                : IsCrud(type)
+                    ? ShaPermissionedObjectsTypes.WebCrudApi
+                    : ShaPermissionedObjectsTypes.WebApi;
         }
 
         private Dictionary<Assembly, Module> _modules = new Dictionary<Assembly, Module>();
 
-        private async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
+        private async Task<Module?> GetModuleOfAssemblyAsync(Assembly assembly)
         {
-            Module module = null;
+            Module? module = null;
             if (_modules.TryGetValue(assembly, out module))
             {
                 return module;
@@ -103,37 +86,42 @@ namespace Shesha.Permissions
                 .ToMd5Fingerprint();
         }
 
-        public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null, bool skipUnchangedAssembly = false)
+        public async Task<List<PermissionedObjectDto>> GetAllAsync(string? objectType = null, bool skipUnchangedAssembly = false)
         {
             if (objectType != null && !GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
-            var modules = (await _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectManyAsync(async g => await g.Items.SelectAsync(async a =>
+            var apiDescriptors = new List<ApiDescriptor>();
+            foreach (var apiDescGroup in _apiDescriptionsProvider.ApiDescriptionGroups.Items) 
             {
-                var descriptor = a.ActionDescriptor.AsControllerActionDescriptor();
-                var service = descriptor.ControllerTypeInfo.AsType();
-                var module = GetModuleOfType(service);
-                var name = service.Name;
-                var isDynamic = service.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDynamicCrudAppService<,,>));
-
-                if (isDynamic || skipUnchangedAssembly && _startupSession.AssemblyStaysUnchanged(module.Assembly))
-                    return null;
-
-                return new ApiDescriptor()
+                foreach (var apiDesc in apiDescGroup.Items) 
                 {
-                    Description = a,
-                    Module = await GetModuleOfAssemblyAsync(module.Assembly),
-                    Service = service,
-                    HttpMethod = a.HttpMethod,
-                    Endpoint = a.RelativePath,
-                    Action = descriptor.MethodInfo,
-                    Assembly = module.Assembly,
-                };
-            })))
-            .Where(x => x != null)
-            .GroupBy(x => x.Module);
+                    var descriptor = apiDesc.ActionDescriptor.AsControllerActionDescriptor();
+                    var service = descriptor.ControllerTypeInfo.AsType();
+                    var moduleType = service.GetConfigurableModuleType();
+                    var name = service.Name;
+                    var isDynamic = service.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDynamicCrudAppService<,,>));
 
-            var allApiPermissions =
-                new List<PermissionedObjectDto>();
+                    if (isDynamic || skipUnchangedAssembly && _startupSession.AssemblyStaysUnchanged(moduleType.Assembly))
+                        continue;
+
+                    var module = await GetModuleOfAssemblyAsync(moduleType.Assembly);
+                    if (module != null)
+                        apiDescriptors.Add(new ApiDescriptor()
+                        {
+                            Description = apiDesc,
+                            Module = await GetModuleOfAssemblyAsync(moduleType.Assembly),
+                            Service = service,
+                            HttpMethod = apiDesc.HttpMethod,
+                            Endpoint = apiDesc.RelativePath,
+                            Action = descriptor.MethodInfo,
+                            Assembly = moduleType.Assembly,
+                        });                    
+                }
+            }
+
+            var modules = apiDescriptors.GroupBy(x => x.Module);
+
+            var allApiPermissions = new List<PermissionedObjectDto>();
 
             foreach (var module in modules)
             {
@@ -274,13 +262,13 @@ namespace Shesha.Permissions
 
         private class ApiDescriptor
         {
-            public ApiDescription Description { get; set; }
-            public Module Module { get; set; }
-            public Type Service { get; set; }
-            public MethodInfo Action { get; set; }
-            public string HttpMethod { get; set; }
-            public string Endpoint { get; set; }
-            public Assembly Assembly { get; set; }
+            public required ApiDescription Description { get; set; }
+            public Module? Module { get; set; }
+            public required Type Service { get; set; }
+            public required MethodInfo Action { get; set; }
+            public string? HttpMethod { get; set; }
+            public string? Endpoint { get; set; }
+            public required Assembly Assembly { get; set; }
         }
     }
 }

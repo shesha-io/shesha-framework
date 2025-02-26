@@ -22,7 +22,6 @@ namespace Shesha.UserManagements
     public class UserManagementAppService: SheshaAppServiceBase
     {
         private readonly UserManager _userManager;
-        private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
         private readonly IRepository<Person, Guid> _repository;
         private readonly IRepository<ShaUserRegistration, Guid> _userRegistration;
         private readonly ISecuritySettings _securitySettings;
@@ -31,26 +30,15 @@ namespace Shesha.UserManagements
         public UserManagementAppService(
             IRepository<Person, Guid> repository, 
             UserManager userManager, 
-            IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository,
             ISecuritySettings securitySettings,
             IUserManagementSettings userManagementSettings,
             IRepository<ShaUserRegistration, Guid> userRegistration)
         {
             _userManager = userManager;
-            _rolePersonRepository = rolePersonRepository;
             _repository = repository;
             _securitySettings = securitySettings;
             _userManagementSettings = userManagementSettings;
             _userRegistration = userRegistration;
-        }
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <param name="repository"></param>
-        public UserManagementAppService(IRepository<Person, Guid> repository)
-        {
-
         }
 
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
@@ -171,7 +159,7 @@ namespace Shesha.UserManagements
         /// Checks is specified mobile number already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> MobileNoAlreadyInUseAsync(string mobileNo, Guid? id)
+        private async Task<bool> MobileNoAlreadyInUseAsync(string? mobileNo, Guid? id)
         {
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return false;
@@ -186,7 +174,7 @@ namespace Shesha.UserManagements
         /// Checks is specified email already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> EmailAlreadyInUseAsync(string email, Guid? id)
+        private async Task<bool> EmailAlreadyInUseAsync(string? email, Guid? id)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return false;
