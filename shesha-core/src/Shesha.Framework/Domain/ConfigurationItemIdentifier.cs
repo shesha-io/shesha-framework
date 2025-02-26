@@ -74,7 +74,7 @@ namespace Shesha.Domain
         }
     }
 
-    public abstract class ConfigurationItemIdentifier<TItem> : ConfigurationItemIdentifier where TItem: IConfigurationItem
+    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : IConfigurationItem
     {
         protected ConfigurationItemIdentifier(string module, string name) : base(module, name)
         {
@@ -82,5 +82,14 @@ namespace Shesha.Domain
 
         public override Type ItemType => typeof(TItem);
         public override string ItemTypeName => ItemType.Name;
+    }
+
+    public interface IIdentifierFactory 
+    { 
+    }
+
+    public interface IIdentifierFactory<TSelf>: IIdentifierFactory where TSelf : IIdentifierFactory<TSelf>
+    {
+        static abstract TSelf New(string module, string name);
     }
 }
