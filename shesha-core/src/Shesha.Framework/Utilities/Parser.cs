@@ -21,7 +21,7 @@ namespace Shesha.Utilities
         /// <param name="isDateOnly"></param>
         /// <param name="returnNullEvenIfNonNullable"></param>
         /// <returns>Returns true if the value could be converted successfully to the target property's type.</returns>
-        public static bool TryParseToValueType(string value, Type targetType, out object parsedValue, string format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
+        public static bool TryParseToValueType(string value, Type targetType, out object? parsedValue, string format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
         {
             try
             {

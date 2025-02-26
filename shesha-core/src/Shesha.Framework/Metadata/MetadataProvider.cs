@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.ObjectMapping;
 using Abp.Reflection;
-using Abp.Runtime.Validation;
 using Abp.Threading;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.VisualBasic;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities;
@@ -30,7 +28,7 @@ namespace Shesha.Metadata
     public class MetadataProvider: IMetadataProvider, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-        private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
+        private readonly IActionDescriptorCollectionProvider? _actionDescriptorCollectionProvider;
         private readonly ISpecificationsFinder _specificationsFinder;
         private readonly IModelConfigurationManager _modelConfigurationProvider;
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
@@ -80,7 +78,7 @@ namespace Shesha.Metadata
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
-                ClassName = containerType.FullName,
+                ClassName = containerType.GetRequiredFullName(),
 
                 ChangeTime = changeTime,
             };
@@ -173,11 +171,12 @@ namespace Shesha.Metadata
             var parameters = method.GetParameters().Skip(1);
             foreach (var parameter in parameters) 
             {
-                result.Add(new VariableDef 
-                { 
-                     Name = parameter.Name,
-                     DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null),
-                });
+                if (!string.IsNullOrWhiteSpace(parameter.Name))
+                    result.Add(new VariableDef 
+                    { 
+                         Name = parameter.Name,
+                         DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null),
+                    });
             }
             
             return Task.FromResult(result);
@@ -211,7 +210,7 @@ namespace Shesha.Metadata
                     if (!string.IsNullOrWhiteSpace(url) && httpVerbs.Count() == 1)
                         result.Add(entityActionAttribute.Action, new ApiEndpointDto
                         {
-                            HttpVerb = httpVerbs.FirstOrDefault(),
+                            HttpVerb = httpVerbs.First(),
                             Url = url,
                         });
                 }

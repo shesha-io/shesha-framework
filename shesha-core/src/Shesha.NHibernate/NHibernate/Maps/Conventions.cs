@@ -46,7 +46,7 @@ namespace Shesha.NHibernate.Maps
     /// </summary>
     public class Conventions
     {
-        private LazyRelation _defaultLazyRelation;
+        private LazyRelation? _defaultLazyRelation;
         private readonly INameGenerator _nameGenerator;
 
         public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>> idMapper = null)

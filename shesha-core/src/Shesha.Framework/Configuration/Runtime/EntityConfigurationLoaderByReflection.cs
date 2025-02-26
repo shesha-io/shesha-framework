@@ -68,7 +68,7 @@ namespace Shesha.Configuration.Runtime
             }
 
             config.Accessor = config.EntityType.GetTypeAccessor();
-            config.TypeShortAlias = config.EntityType.GetTypeShortAliasOrNull();
+            config.SetTypeShortAlias(config.EntityType.GetTypeShortAliasOrNull());
 
             LoadChangeLoggingConfiguration(config);
             config.DisplayNamePropertyInfo = config.EntityType.GetDisplayNamePropertyInfoOrNull();
@@ -108,9 +108,7 @@ namespace Shesha.Configuration.Runtime
                         break;
                     }
                 case GeneralDataType.Enum:
-                    var enumType = prop.PropertyType;
-                    if (enumType.IsNullableType())
-                        enumType = Nullable.GetUnderlyingType(prop.PropertyType);
+                    var enumType = prop.PropertyType.GetUnderlyingTypeIfNullable();
                     propConfig.EnumType = enumType;
                     break;
                 case GeneralDataType.MultiValueReferenceList: 

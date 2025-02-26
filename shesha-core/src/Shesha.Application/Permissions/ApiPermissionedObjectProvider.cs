@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Startup;
 using Shesha.Utilities;
@@ -175,7 +176,7 @@ namespace Shesha.Permissions
 
                     var parent = new PermissionedObjectDto()
                     {
-                        Object = service.FullName,
+                        Object = service.GetRequiredFullName(),
                         ModuleId = module.Key?.Id,
                         Module = module.Key?.Name,
                         Name = GetName(service, serviceName),

@@ -218,7 +218,7 @@ namespace Shesha.Web.FormsDesigner.Services
             /// <summary>
             /// Application key
             /// </summary>
-            public string FrontEndApplication { get; set; }
+            public string? FrontEndApplication { get; set; }
 
             /// <summary>
             /// If true, indicates that component is application specific

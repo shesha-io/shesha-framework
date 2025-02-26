@@ -812,10 +812,10 @@ namespace Shesha.EntityHistory
 
         private class Relation
         {
-            public string Id { get; set; }
-            public IFullAudited RelatedObject { get; set; }
-            public IFullAudited InnerObject { get; set; }
-            public string InnerObjectId { get; set; }
+            public string? Id { get; set; }
+            public IFullAudited? RelatedObject { get; set; }
+            public IFullAudited? InnerObject { get; set; }
+            public string? InnerObjectId { get; set; }
             public string Name { get; set; }
         }
     }

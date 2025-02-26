@@ -34,11 +34,11 @@ namespace Shesha.EntityReferences
             _displayName = _entity.GetEntityDisplayName();
         }
 
-        public virtual string Id { get; internal set; }
+        public virtual string? Id { get; internal set; }
 
-        public virtual string _className { get; internal set; }
+        public virtual string? _className { get; internal set; }
 
-        public virtual string _displayName { get; internal set; }
+        public virtual string? _displayName { get; internal set; }
 
         public static implicit operator Entity<Guid>(GenericEntityReference reference) => GetEntity<Guid>(reference);
         private static Entity<T> GetEntity<T>(GenericEntityReference reference)

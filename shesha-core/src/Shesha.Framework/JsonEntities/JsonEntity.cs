@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Shesha.Extensions;
 using Shesha.JsonEntities.Converters;
 
 namespace Shesha.JsonEntities
@@ -12,7 +13,7 @@ namespace Shesha.JsonEntities
         { 
             get
             {
-                return __className ??= this.GetType().FullName;
+                return __className ??= this.GetType().GetRequiredFullName();
             } 
         }
 

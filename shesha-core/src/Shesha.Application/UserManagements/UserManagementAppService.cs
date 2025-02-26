@@ -122,7 +122,8 @@ namespace Shesha.UserManagements
                 UserNameOrEmailAddress = user.UserName,
                 GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration,
                 AdditionalRegistrationInfoForm = !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormModule) && !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormName)
-                ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) : null,
+                    ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) 
+                    : null,
                 IsComplete = registrationSettings.AdditionalRegistrationInfo ? false : true
             };
           
@@ -184,6 +185,5 @@ namespace Shesha.UserManagements
                 .WhereIf(id.HasValue, e => e.Id != id)
                 .AnyAsync();
         }
-
     }
 }
