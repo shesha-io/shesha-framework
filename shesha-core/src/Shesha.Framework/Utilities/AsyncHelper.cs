@@ -85,8 +85,7 @@ namespace Shesha.Utilities
 
             public Exception InnerException { get; set; }
             private readonly AutoResetEvent _workItemsWaiting;
-            readonly Queue<Tuple<SendOrPostCallback, object>> items =
-                new Queue<Tuple<SendOrPostCallback, object>>();
+            readonly Queue<Tuple<SendOrPostCallback, object?>> items = new Queue<Tuple<SendOrPostCallback, object>>();
 
             public ExclusiveSynchronizationContext()
             {

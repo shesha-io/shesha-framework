@@ -88,7 +88,8 @@ namespace Shesha.Metadata
                         t != typeof(string) &&
                         t != typeof(object) &&
                         !(t.Namespace ?? string.Empty).StartsWith("Abp"))
-                    .Select(t => t.GetElementType());
+                    .Select(t => t.GetElementType())
+                    .WhereNotNull();
 
                 if (arrayTypes?.Count() > 0)
                 {

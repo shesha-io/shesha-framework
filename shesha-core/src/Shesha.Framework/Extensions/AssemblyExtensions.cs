@@ -26,7 +26,7 @@ namespace Shesha.Extensions
                         : null;
                 
                 })
-                .Where(item => item != null)
+                .WhereNotNull()
                 .ToList();
             
             var subModuleTypes = typeFinder.Find(t => !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t)).ToList();
@@ -42,7 +42,7 @@ namespace Shesha.Extensions
                 }
                 return null;
             })
-                .Where(item => item != null)
+                .WhereNotNull()
                 .ToList();
 
             _cacheItems = moduleItems.Cast<ModuleCacheItem>().ToList();

@@ -247,7 +247,7 @@ namespace Shesha
                 s.Schema = schema;
 
                 s.Query = query;
-                s.Variables = new Inputs(new Dictionary<string, object> {
+                s.Variables = new Inputs(new Dictionary<string, object?> {
                     { "filter", input.Filter },
                     { "specifications", input.Specifications },
                     { "quickSearch", input.QuickSearch },

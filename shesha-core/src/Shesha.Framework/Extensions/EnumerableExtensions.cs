@@ -123,5 +123,13 @@ namespace Shesha.Extensions
 
             return (addedValues.Cast<Tt>(), removedValues.Cast<Tt>());
         }
+
+        /// <summary>
+        /// Returns a sequence with the `null` instances removed.
+        /// </summary>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : class
+        {
+            return source.Where(x => x != null);
+        }
     }
 }
