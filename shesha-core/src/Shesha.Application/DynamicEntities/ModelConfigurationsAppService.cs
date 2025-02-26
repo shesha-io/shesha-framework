@@ -1,16 +1,13 @@
 ﻿using Abp.Application.Services;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Elmah;
 using Shesha.Extensions;
-using Shesha.Permissions;
 using Shesha.Swagger;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.Swagger;
@@ -27,31 +24,22 @@ namespace Shesha.DynamicEntities
     public class ModelConfigurationsAppService : SheshaAppServiceBase, IApplicationService
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IModelConfigurationManager _modelConfigurationManager;
-        private readonly IPermissionedObjectManager _permissionedObjectManager;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly ISwaggerProvider _swaggerProvider;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
 
 
         public ModelConfigurationsAppService(
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IRepository<Module, Guid> moduleRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IModelConfigurationManager modelConfigurationProvider,
-            IPermissionedObjectManager permissionedObjectManager,
-            IUnitOfWorkManager unitOfWorkManager,
             ISwaggerProvider swaggerProvider,
             IEntityConfigurationStore entityConfigurationStore)
         {
             _entityConfigRepository = entityConfigRepository;
-            _moduleRepository = moduleRepository;
             _entityPropertyRepository = entityPropertyRepository;
             _modelConfigurationManager = modelConfigurationProvider;
-            _permissionedObjectManager = permissionedObjectManager;
-            _unitOfWorkManager = unitOfWorkManager;
             _swaggerProvider = swaggerProvider;
             _entityConfigurationStore = entityConfigurationStore;
         }
@@ -124,24 +112,15 @@ namespace Shesha.DynamicEntities
             if (SheshaActionDescriptorChangeProvider.Instance != null)
             {
                 SheshaActionDescriptorChangeProvider.Instance.HasChanged = true;
-                SheshaActionDescriptorChangeProvider.Instance.TokenSource?.Cancel();
-                (_swaggerProvider as CachingSwaggerProvider)?.ClearCache();
+                var tokenSource = SheshaActionDescriptorChangeProvider.Instance.TokenSource;
+                if (tokenSource != null)
+                    await tokenSource.CancelAsync();
+
+                if (_swaggerProvider is CachingSwaggerProvider cachedProvider)
+                    await cachedProvider.ClearCacheAsync();
             }
 
             return await _modelConfigurationManager.GetModelConfigurationAsync(destination);
-        }
-
-        private async Task<ModelConfigurationDto> GetAsync(EntityConfig modelConfig)
-        {
-            var dto = ObjectMapper.Map<ModelConfigurationDto>(modelConfig);
-
-            var properties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfig == modelConfig && p.ParentProperty == null)
-                .OrderBy(p => p.SortOrder)
-                .ToListAsync();
-
-            dto.Properties = properties.Select(p => ObjectMapper.Map<ModelPropertyDto>(p)).ToList();
-
-            return dto;
         }
     }
 }

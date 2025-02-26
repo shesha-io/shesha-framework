@@ -82,7 +82,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...shadowStyles,
     });
 
-
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (model.hidden) return null;
@@ -170,7 +169,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap
+          gap: prev?.gap,
+          position: defaultStyles().position,
         };
 
         return {
@@ -180,5 +180,5 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       })
       .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
- 
+
 export default ContainerComponent;

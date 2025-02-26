@@ -3,7 +3,6 @@ using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.EntityHistory;
 using Castle.Core.Logging;
-using NUglify.Helpers;
 using System;
 using System.Threading.Tasks;
 
@@ -40,19 +39,19 @@ namespace Shesha.NHibernate.EntityHistory
                     var entityChanges = obj.EntityChanges;
                     obj.EntityChanges = null;
                     var csId = await _changeSetRepository.InsertAndGetIdAsync(obj);
-                    entityChanges.ForEach(async x =>
-                    {
-                        var propChanges = x.PropertyChanges;
-                        x.PropertyChanges = null;
-                        x.EntityChangeSetId = csId;
-                        var cId = await _changesRepository.InsertAndGetIdAsync(x);
-                        propChanges.ForEach(async p =>
-                        {
-                            p.EntityChangeId = cId;
-                            var pId = await _propChangesRepository.InsertAndGetIdAsync(p);
-                        });
 
-                    });
+                    foreach (var entityChange in entityChanges) 
+                    {
+                        var propChanges = entityChange.PropertyChanges;
+                        entityChange.PropertyChanges = null;
+                        entityChange.EntityChangeSetId = csId;
+                        var cId = await _changesRepository.InsertAndGetIdAsync(entityChange);
+                        foreach (var propChange in propChanges) 
+                        {
+                            propChange.EntityChangeId = cId;
+                            var pId = await _propChangesRepository.InsertAndGetIdAsync(propChange);
+                        }                        
+                    }                    
                 }
             }
             catch (Exception e)
@@ -70,24 +69,24 @@ namespace Shesha.NHibernate.EntityHistory
                 var entityChanges = obj.EntityChanges;
                 obj.EntityChanges = null;
                 var csId = _changeSetRepository.InsertAndGetId(obj);
-                entityChanges.ForEach(x =>
+
+                foreach (var entityChange in entityChanges) 
                 {
-                    var propChanges = x.PropertyChanges;
-                    x.PropertyChanges = null;
-                    x.EntityChangeSetId = csId;
-                    if (string.IsNullOrEmpty(x.EntityId))
+                    var propChanges = entityChange.PropertyChanges;
+                    entityChange.PropertyChanges = null;
+                    entityChange.EntityChangeSetId = csId;
+                    if (string.IsNullOrEmpty(entityChange.EntityId))
                     {
                         // update id for inserted entity
-                        x.EntityId = x.EntityEntry.GetType().GetProperty(nameof(IEntity.Id))?.GetValue(x.EntityEntry)?.ToString();
+                        entityChange.EntityId = entityChange.EntityEntry.GetType().GetProperty(nameof(IEntity.Id))?.GetValue(entityChange.EntityEntry)?.ToString();
                     }
-                    var cId = _changesRepository.InsertAndGetId(x);
-                    propChanges.ForEach(p =>
+                    var cId = _changesRepository.InsertAndGetId(entityChange);
+                    foreach (var propChange in propChanges) 
                     {
-                        p.EntityChangeId = cId;
-                        var pId = _propChangesRepository.InsertAndGetId(p);
-                    });
-
-                });
+                        propChange.EntityChangeId = cId;
+                        var pId = _propChangesRepository.InsertAndGetId(propChange);
+                    }
+                }
             }
             catch (Exception e)
             {

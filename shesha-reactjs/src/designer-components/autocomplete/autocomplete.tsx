@@ -1,37 +1,28 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { CSSProperties, Key } from 'react';
-import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import React, { useCallback } from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import {
-  evaluateString,
-  executeScriptSync,
+  executeExpression,
   getStyle,
   pickStyleFromModel,
-  replaceTags,
   useAvailableConstantsData,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import { evaluateDynamicFilters } from '@/utils';
 import { IAutocompleteComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { ConfigurableFormItem } from '@/components';
+import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
 import { toSizeCssProp } from '@/utils/form';
-import { removeUndefinedProps } from '@/utils/object';
-
-interface IQueryParams {
-  // tslint:disable-next-line:typedef-whitespace
-  [name: string]: Key;
-}
+import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
+import { Autocomplete } from '@/components/autocomplete';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -44,114 +35,12 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
-    const { queryParams, filter } = model;
-
     const allData = useAvailableConstantsData();
-
-    const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
-      model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
-    );
-
-    const dataSourceUrl = model.dataSourceUrl ? replaceTags(model.dataSourceUrl, { data: allData.data }) : model.dataSourceUrl;
-
-    const evaluatedFilters = useAsyncMemo(async () => {
-      if (model.dataSourceType !== 'entitiesList' || !filter)
-        return '';
-
-      const response = await evaluateDynamicFilters(
-        [{ expression: filter } as any],
-        [
-          {
-            match: 'data',
-            data: allData.data,
-          },
-          {
-            match: 'globalState',
-            data: allData.globalState,
-          },
-          {
-            match: 'pageContext',
-            data: { ...allData.pageContext },
-          },
-        ],
-        propertyMetadataAccessor
-      );
-
-      if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
-
-      return JSON.stringify(response[0]?.expression) || '';
-    }, [filter, allData.data, allData.globalState]);
-
-    const getQueryParams = (): IQueryParams => {
-      const queryParamObj: IQueryParams = {};
-
-      if (model.dataSourceType === 'url') {
-        if (queryParams && typeof (queryParams) === 'object') {
-          if (Array.isArray(queryParams)) {
-            queryParams.forEach(({ param, value }) => {
-              const valueAsString = value as string;
-              if (param?.length && valueAsString.length) {
-                queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data: allData.data }) : value;
-              }
-            });
-          } else
-            Object.assign(queryParamObj, queryParams);
-        }
-      }
-
-      if (model.dataSourceType === 'entitiesList') {
-        if (filter) queryParamObj['filter'] = typeof filter === 'string' ? filter : evaluatedFilters;
-      }
-
-      return queryParamObj;
-    };
-
-    const getFetchedItemData = (
-      item: object,
-      useRawValues: boolean,
-      value: string = 'value',
-      displayText: string = 'displayText'
-    ) =>
-      useRawValues
-        ? item[value]
-        : {
-          id: item[value],
-          _displayName: item[displayText],
-          _className: model.entityTypeShortAlias,
-        };
-
-    const getOptionFromFetchedItem = (item: object): ISelectOption => {
-      const { dataSourceType, keyPropName, useRawValues, valuePropName } = model;
-
-      if (dataSourceType === 'url' && keyPropName && valuePropName) {
-        return {
-          value: item[keyPropName],
-          label: item[valuePropName],
-          data: getFetchedItemData(item, useRawValues, keyPropName, valuePropName),
-        };
-      }
-
-      return {
-        value: item['value'],
-        label: item['displayText'],
-        data: getFetchedItemData(item, useRawValues),
-      };
-    };
-
-    const getDefaultValue = () => {
-      try {
-        if (model?.defaultValue) {
-          return executeScriptSync(model?.defaultValue, allData);
-        }
-      } catch {
-        return undefined;
-      }
-    };
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-    const additionalStyles: CSSProperties = removeUndefinedProps({
+    const additionalStyles: React.CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       fontWeight: model.fontWeight,
@@ -167,42 +56,46 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const jsStyle = getStyle(model.style, allData.data);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
-    const defaultValue = getDefaultValue();
+    const keyValueFunc: KayValueFunc = useCallback( (value: any, args: any) => {
+      if (model.valueFormat === 'entityReference') {
+        return Boolean(value) ? getValueByPropertyName(value, model.keyPropName || 'id') : null;
+      }
+      if (model.valueFormat === 'custom') {
+        return executeExpression<string>(model.keyValueFunc, {...args, value}, null, null );
+      }
+      return value;
+    }, [model.valueFormat, model.keyValueFunc, model.keyPropName]);
 
-    const autocompleteProps: IAutocompleteProps = {
-      className: 'sha-autocomplete',
-      typeShortAlias: model.entityTypeShortAlias,
-      entityDisplayProperty: model.entityDisplayProperty,
-      allowInherited: true /*hardcoded for now*/,
-      bordered: !model.hideBorder,
-      dataSourceUrl,
-      dataSourceType: model.dataSourceType,
-      mode: model.mode,
-      placeholder: model.placeholder,
-      queryParams: getQueryParams(),
-      readOnly: model.readOnly,
-      defaultValue,
-      getOptionFromFetchedItem,
-      disableSearch: model.disableSearch,
-      filter: evaluatedFilters,
-      quickviewEnabled: model.quickviewEnabled,
-      quickviewFormPath: model.quickviewFormPath,
-      quickviewDisplayPropertyName: model.quickviewDisplayPropertyName,
-      quickviewGetEntityUrl: model.quickviewGetEntityUrl,
-      quickviewWidth: model.quickviewWidth,
-      subscribedEventNames: model.subscribedEventNames,
-      style: finalStyle,
-      size: model.size,
-      allowFreeText: model.allowFreeText,
-    };
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
+      if (model.valueFormat === 'entityReference') {
+        return Boolean(value)
+          ? {id: value.id, _displayName: value._displayName || getValueByPropertyName(value, model.displayPropName), _className: model.entityType}
+          : null;
+      }
+      if (model.valueFormat === 'custom') {
+        return executeExpression(model.outcomeValueFunc, {...args, item: value}, null, null );
+      }
+      return typeof(value) === 'object' 
+        ? getValueByPropertyName(value, model.keyPropName || 'id')
+        : value;
+    }, [model.valueFormat, model.outcomeValueFunc, model.keyPropName, model.entityType]);
 
-    const formProps = defaultValue ? { model, initialValue: defaultValue } : { model };
+    const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
+      if (model.displayValueFunc) {
+        return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
+      }
+      return (model.displayPropName
+        ? getValueByPropertyName(value, model.displayPropName)
+        : value?._displayName)  
+        || 'unknown'; 
+    }, [model.valueFormat, model.displayValueFunc, model.displayPropName]);
 
-    // TODO: implement other types of datasources!
-
+    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any[]) => {
+      return executeExpression(model.filterKeysFunc, {value}, null, null );
+    }, [model.filterKeysFunc]);
 
     return (
-      <ConfigurableFormItem {...formProps}>
+      <ConfigurableFormItem {...{model}}>
         {(value, onChange) => {
           const customEvent = customDropDownEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
@@ -211,17 +104,22 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
               onChange(...args);
           };
 
-
-          return (
-            model.useRawValues ? (
-              <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
-            ) : (
-              <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
-            ));
+          return <Autocomplete
+            {...model}
+            grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
+            keyValueFunc={keyValueFunc}
+            outcomeValueFunc={outcomeValueFunc}
+            displayValueFunc={displayValueFunc}
+            filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
+            style={finalStyle}
+            value={value}
+            onChange={onChangeInternal} 
+          />;
         }}
       </ConfigurableFormItem>
     );
-  },
+  }
+  ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
@@ -265,16 +163,38 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
+    .add<IAutocompleteComponentProps>(7, (prev) => {
+      return { 
+        ...prev,
+        entityType: prev.entityType || prev['entityTypeShortAlias'],
+        valueFormat: prev.dataSourceType === 'entitiesList'
+          ? prev['useRawValues'] ? 'simple' : 'entityReference'
+          : 'simple',
+        displayPropName: prev.dataSourceType === 'entitiesList' 
+          ? prev['entityDisplayProperty'] 
+          : prev['useRawValues']
+            ? 'displayText'
+            : prev['valuePropName'],
+        keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? 'value' : undefined,
+      };
+    })
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,
-      //useRawValues: true,
       dataSourceType: 'entitiesList',
-      entityTypeShortAlias: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
-      mode: undefined,
+      mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
+      entityType: isEntityReferencePropertyMetadata(propMetadata)
+        ? propMetadata.entityType 
+        : isEntityReferenceArrayPropertyMetadata(propMetadata)
+          ? propMetadata.entityType
+          : undefined,
+      valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
+        ? 'entityReference' 
+        : 'simple',
     };
   },
+  actualModelPropertyFilter: (propName) => propName !== 'queryParams',
 };
 
 export default AutocompleteComponent;

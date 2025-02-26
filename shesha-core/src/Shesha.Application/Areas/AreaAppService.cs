@@ -26,7 +26,7 @@ namespace Shesha.Areas
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> Autocomplete(string term, RefListAreaType? areaType, Guid? parentAreaId)
+        public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string term, RefListAreaType? areaType, Guid? parentAreaId)
         {
             term = (term ?? "").ToLower();
 
@@ -66,7 +66,7 @@ namespace Shesha.Areas
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> CascadeSelect(RefListAreaType? areaType, Guid? parentAreaId)
+        public async Task<List<AutocompleteItemDto>> CascadeSelectAsync(RefListAreaType? areaType, Guid? parentAreaId)
         {
             if (parentAreaId.HasValue)
             {
@@ -118,7 +118,7 @@ namespace Shesha.Areas
         /// Returns child areas of the specified parent
         /// </summary>
         [HttpPost]
-        public async Task<List<AreaTreeItemDto>> GetChildTreeItems(GetChildAreasInput input)
+        public async Task<List<AreaTreeItemDto>> GetChildTreeItemsAsync(GetChildAreasInput input)
         {
             var areas = await _areaTreeItemRepository.GetAll().Where(e => e.ParentId == input.Id).OrderBy(e => e.Name).ToListAsync();
             return areas.Select(a => ObjectMapper.Map<AreaTreeItemDto>(a)).ToList();
@@ -128,7 +128,7 @@ namespace Shesha.Areas
         /// Returns child areas of the specified parent
         /// </summary>
         [HttpPost]
-        public async Task<AreaTreeItemDto> GetTreeItem(EntityDto<Guid> input)
+        public async Task<AreaTreeItemDto> GetTreeItemAsync(EntityDto<Guid> input)
         {
             var item = await _areaTreeItemRepository.GetAsync(input.Id);
             return ObjectMapper.Map<AreaTreeItemDto>(item);
@@ -141,7 +141,7 @@ namespace Shesha.Areas
 
             // delete all child areas
             var area = await Repository.GetAsync(input.Id);
-            await DeleteChildAreas(area);
+            await DeleteChildAreasAsync(area);
 
             await Repository.DeleteAsync(input.Id);
             
@@ -153,12 +153,12 @@ namespace Shesha.Areas
         /// </summary>
         /// <param name="area"></param>
         /// <returns></returns>
-        private async Task DeleteChildAreas(Area area)
+        private async Task DeleteChildAreasAsync(Area area)
         {
             var childs = await Repository.GetAll().Where(a => a.ParentArea == area).ToListAsync();
             foreach (var child in childs)
             {
-                await DeleteChildAreas(child);
+                await DeleteChildAreasAsync(child);
                 await Repository.DeleteAsync(child);
             }
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -170,7 +170,7 @@ namespace Shesha.Areas
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task MoveArea(MoveAreaInput input)
+        public async Task MoveAreaAsync(MoveAreaInput input)
         {
             var area = await Repository.GetAsync(input.Id);
             var newParent = input.NewParentId.HasValue

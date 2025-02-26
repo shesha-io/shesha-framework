@@ -308,7 +308,7 @@ namespace Shesha.Web.FormsDesigner.Services
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-            var forms = await GetAllFiltered(input.Filter);
+            var forms = await GetAllFilteredAsync(input.Filter);
 
             foreach (var form in forms)
             {

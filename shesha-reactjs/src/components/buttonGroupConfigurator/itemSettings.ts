@@ -88,13 +88,13 @@ export const getItemSettings = (data) => {
                                                     type: "text",
                                                     propertyName: "label",
                                                     parentId: "root",
-                                                    label: "Label"
+                                                    label: "Caption"
                                                 },
                                                 {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",
                                                     type: "textArea",
                                                     propertyName: "tooltip",
-                                                    label: "Group Tooltip",
+                                                    label: "Tooltip",
                                                     labelAlign: "right",
                                                     parentId: "root",
                                                     hidden: false,
@@ -155,7 +155,7 @@ export const getItemSettings = (data) => {
                                         .addConfigurableActionConfigurator({
                                             id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                             propertyName: 'actionConfiguration',
-                                            label: 'Action configuration',
+                                            label: 'Action Configuration',
                                             validate: {},
                                             settingsValidationErrors: [],
                                         }).toJson()
@@ -541,6 +541,7 @@ export const getItemSettings = (data) => {
                                                             id: 'backgroundStyleRow-size',
                                                             label: "Size",
                                                             hideLabel: true,
+                                                            customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                             propertyName: "background.size",
                                                             dropdownOptions: sizeOptions,
                                                         },
@@ -549,17 +550,17 @@ export const getItemSettings = (data) => {
                                                             hideLabel: true,
                                                             type: 'customDropdown',
                                                             id: 'backgroundStyleRow-position',
+                                                            customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                             propertyName: "background.position",
                                                             dropdownOptions: positionOptions,
                                                         },
                                                         {
+                                                            type: 'radio',
+                                                            id: 'backgroundStyleRow-repeat',
                                                             label: "Repeat",
                                                             hideLabel: true,
                                                             propertyName: "background.repeat",
-                                                            type: 'customDropdown',
-                                                            id: 'backgroundStyleRow-repeat',
-                                                            width: 70,
-                                                            dropdownOptions: repeatOptions,
+                                                            buttonGroupOptions: repeatOptions,
                                                         }
                                                     ]
                                                 })

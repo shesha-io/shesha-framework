@@ -32,13 +32,16 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
     selection: !isLoaded ? valueId : null,
   });
 
-  const selectedItems = isLoaded
-    ? Array.isArray(value) ? value : [value]
-    : selection?.rows;
+  const selectionRows = selection?.rows;
+  const selectedItems = useMemo(() => {
+    return isLoaded
+      ? Array.isArray(value) ? value : [value]
+      : selectionRows;
+  }, [isLoaded, value, selectionRows]);
 
   const displayText = useMemo(() => {
     return selectedItems?.map(ent => getValueByPropertyName(ent, displayEntityKey)).join(', ');
-  }, [selectedItems]);
+  }, [selectedItems, displayEntityKey]);
 
   return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
 };
@@ -64,6 +67,9 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     hideBorder
   } = props;
 
+  if (!entityType)
+    throw SheshaError.throwPropertyError('entityType');
+
   const { styles } = useStyles(style);
   const selectRef = useRef(undefined);
 
@@ -76,9 +82,11 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
       : typeof (getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
-  const valueId = Array.isArray(value)
-    ? value.map(x => props.incomeValueFunc(x, {}))
-    : props.incomeValueFunc(value, {});
+  const valueId = useMemo(() => {
+    return Array.isArray(value)
+      ? value.map(x => incomeValueFunc(x, {}))
+      : incomeValueFunc(value, {});
+  }, [value, incomeValueFunc]);
 
   const selection = useEntitySelectionData({
     entityType: entityType,
@@ -86,14 +94,40 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     selection: !isLoaded ? valueId : null,
   });
 
-  const selectedItems = isLoaded
-    ? Array.isArray(value) ? value : [value]
-    : selection?.rows;
+  const selectionRows = selection?.rows;
+  const selectedItems = useMemo(() => {
+    return isLoaded
+      ? Array.isArray(value) ? value : [value]
+      : selectionRows;
+  }, [isLoaded, value, selectionRows]);
+
+  const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
+    let result: DefaultOptionType[] = null;
+    if (selection.loading) {
+      const items = valueId
+        ? (Array.isArray(valueId)
+          ? valueId
+          : [valueId])
+        : [];
+      result = items.map(item => ({
+        label: 'loading...',
+        value: item,
+        rawValue: item
+      }));
+    } else {
+      result = (selectedItems ?? []).map(ent => {
+        const itemValue = incomeValueFunc(outcomeValueFunc(ent, {}), {});
+        return {
+          label: getValueByPropertyName(ent, displayEntityKey),
+          value: ent.id,
+          rawValue: itemValue
+        };
+      });
+    }
+    return result;
+  }, [selectedItems]);
 
   const selectedMode = mode === 'single' ? undefined : mode;
-
-  if (!entityType)
-    throw SheshaError.throwPropertyError('entityType');
 
   const handleMultiChange = (selectedValues: string[]) => {
     const newValues = Array.isArray(value) ? value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {}))) : null;
@@ -113,22 +147,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   const onClear = () => {
     if (onChange) onChange(null, null);
   };
-
-  const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
-    let result: DefaultOptionType[] = null;
-    if (selection.loading) {
-      const items = valueId ? (Array.isArray(valueId) ? valueId : [valueId]) : [];
-      result = items.map(item => ({ label: 'loading...', value: item, key: item }));
-    } else {
-      result = (selectedItems ?? []).map(ent => {
-        const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
-        return { label: getValueByPropertyName(ent, displayEntityKey), value: key, key };
-      });
-    }
-
-    return result;
-  }, [selectedItems]);
-
 
   const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
     borderBottomWidth, borderRightColor, borderRightStyle, borderColor, borderBottomLeftRadius,
@@ -212,7 +230,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
-
     <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />

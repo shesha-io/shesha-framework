@@ -72,7 +72,7 @@ namespace Shesha.Tests.DynamicEntities
                 conventions.AddAssembly(dynamicPersonAssembly, "Test_");
                 conventions.Compile(nhConfig);
 
-                var sessionFactory = nhConfig.BuildSessionFactory();
+                using var sessionFactory = nhConfig.BuildSessionFactory();
 
                 var migrationsGenerator = LocalIocManager.Resolve<IMigrationGenerator>();
                 var migration = migrationsGenerator.GenerateMigrations(new List<Type> { dynamicPersonType });

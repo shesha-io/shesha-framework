@@ -4,7 +4,7 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IPasswordComponentProps } from './utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: IPasswordComponentProps) => {
 
@@ -40,7 +40,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                             .addLabelConfigurator({
                                 id: 'label-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
-                                label: 'label',
+                                label: 'Label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
@@ -62,51 +62,36 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                     jsSetting: true,
                                 }]
                             })
-                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                            .addSettingsInput({
+                                id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'placeholder',
+                                label: 'Placeholder',
+                                size: 'small',
+                                jsSetting: true,
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'placeholder',
-                                        label: 'Placeholder',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'description',
-                                        label: 'Tooltip',
-                                        jsSetting: true,
-                                    },
-
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
-                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                            .addSettingsInput({
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'text',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'confirmPlaceholder',
-                                        label: 'Placeholder: Confirmation',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'confirmDescription',
-                                        label: 'Tooltip',
-                                        jsSetting: true,
-                                    },
-
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'confirmPlaceholder',
+                                label: 'Placeholder: Confirmation',
+                                size: 'small',
+                                jsSetting: true,
+                            })
+                            .addSettingsInput({
+                                inputType: 'textArea',
+                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'description',
+                                label: 'Tooltip',
+                                jsSetting: true,
+                            })
+                            .addSettingsInput({
+                                inputType: 'textArea',
+                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'confirmDescription',
+                                label: 'Tooltip: Confirmation',
+                                jsSetting: true,
                             })
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -578,20 +563,8 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: sizeOptions,
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -599,52 +572,16 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: positionOptions,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                 },
                                                                 {
-                                                                    type: 'dropdown',
+                                                                    type: 'radio',
                                                                     id: 'backgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: repeatOptions,
+                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -10,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Shesha.Configuration;
 using Shesha.Domain;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Shesha.Services.StoredFiles
 {
@@ -77,7 +77,7 @@ namespace Shesha.Services.StoredFiles
             var props = await blob.GetPropertiesAsync();
             if (props.Value.ContentLength > 0)
             {
-                await blob.DownloadToAsync(stream);
+                using var response = await blob.DownloadToAsync(stream);
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
@@ -98,7 +98,7 @@ namespace Shesha.Services.StoredFiles
             var props = blob.GetProperties();
             if (props.Value.ContentLength > 0)
             {
-                blob.DownloadTo(stream);
+                using var response = blob.DownloadTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
@@ -137,14 +137,14 @@ namespace Shesha.Services.StoredFiles
         protected override async Task DeleteFromStorageAsync(StoredFileVersion version)
         {
             var blob = GetBlobClient(GetAzureFileName(version));
-            await blob.DeleteAsync();
+            using var response = await blob.DeleteAsync();
         }
 
         /// inheritedDoc
         protected override void DeleteFromStorage(StoredFileVersion version)
         {
             var blob = GetBlobClient(GetAzureFileName(version));
-            blob.Delete();
+            using var response = blob.Delete();
         }
 
         public override async Task<bool> FileExistsAsync(Guid id)

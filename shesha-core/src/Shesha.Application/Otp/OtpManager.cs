@@ -50,7 +50,7 @@ namespace Shesha.Otp
             var sendTime = DateTime.Now;
             try
             {
-                await SendInternal(otp);
+                await SendInternalAsync(otp);
             }
             catch (Exception e)
             {
@@ -130,7 +130,7 @@ namespace Shesha.Otp
                 {
                     otp.SentOn = DateTime.Now;
 
-                    await SendInternal(otp);
+                    await SendInternalAsync(otp);
 
                     otp.SendStatus = OtpSendStatus.Sent;
                 }
@@ -181,7 +181,7 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
-        private async Task SendInternal(OtpDto otp)
+        private async Task SendInternalAsync(OtpDto otp)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             switch (otp.SendType)

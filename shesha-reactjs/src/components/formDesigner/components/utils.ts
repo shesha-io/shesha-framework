@@ -3,13 +3,13 @@ import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
-import { CustomLabeledValue } from '@/components/autocomplete';
 import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
 import { IFormApi } from '@/providers/form/formApi';
 import { HttpClientApi } from '@/publicJsApis/httpClient';
 import { IApplicationContext, executeScriptSync } from '@/index';
 import { ObservableProxy } from '@/providers/form/observableProxy';
+import { CustomLabeledValue } from '@/components/refListDropDown/models';
 
 type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
@@ -53,7 +53,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
     onClick: (event) => {
-      event.stopPropagation();
+      onCustomEvent(event, 'onClickCustom');
     },
   };
 };

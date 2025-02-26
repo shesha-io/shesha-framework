@@ -22,7 +22,7 @@ export const JsonProperty: FC<IProps> = props => {
         <DragHandle id={props.id} />
         {props.suppress && <span><EyeInvisibleOutlined /> </span>}
         <JsonOutlined />
-        <span className={styles.shaToolbarItemName}>{props.name} : <i>{props.entityType ?? 'udefined' }</i></span>
+        <span className={styles.shaToolbarItemName}>{props.name} : <i>{props.entityType ?? 'undefined' }</i></span>
         {props.description && (
           <Tooltip title={props.description}>
             <QuestionCircleOutlined className={styles.shaHelpIcon} />

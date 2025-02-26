@@ -2,8 +2,8 @@ import { Alert, Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
 import { useFormData, useGlobalState, useSubForm } from '@/providers';
 import { useForm } from '@/providers/form';
-import { evaluateString, getStyle } from '@/providers/form/utils';
-import { IMarkdownProps } from './interfaces';
+import { evaluateString } from '@/providers/form/utils';
+import { IMarkdownComponentProps } from './interfaces';
 import './styles.module.scss'; // This manually loads github-markdown-css, as per https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css
 
 let SyntaxHighlighter;
@@ -26,7 +26,7 @@ const ReactMarkdown = lazy(async () => {
   return import('react-markdown');
 });
 
-const Markdown: FC<IMarkdownProps> = model => {
+const Markdown: FC<IMarkdownComponentProps> = model => {
   const { formMode } = useForm();
   // NOTE: to be replaced with a generic context implementation
   const { value: subFormData } = useSubForm(false) ?? {};
@@ -47,7 +47,7 @@ const Markdown: FC<IMarkdownProps> = model => {
     <Skeleton loading={true} />
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
-      <div className="markdown-body" style={getStyle(model?.style, { data, globalState })}>
+      <div className="markdown-body" style={model.style}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]?.filter(Boolean)}
           components={{

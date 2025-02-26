@@ -1,11 +1,6 @@
 ﻿using Shesha.AutoMapper;
 using Shesha.Domain;
 using Shesha.Persons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.UserManagements
 {
