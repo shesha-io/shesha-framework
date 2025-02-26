@@ -26,10 +26,14 @@ export interface ICustomEventHandler {
 
 export const addContextData = (context: any, additionalContext: any) => {
   // if context is an ObservableProxy
-  if (context instanceof ObservableProxy) 
-    for(const propName in additionalContext)
-      if (additionalContext.hasOwnProperty(propName))
+  if (context instanceof ObservableProxy) {
+    for(const propName in additionalContext) {
+      if (additionalContext.hasOwnProperty(propName)) {
         context.addAccessor(propName, () => additionalContext[propName]);
+      }
+    }
+    return context;
+  }
   // if context is a simple object
   return {...context, ...additionalContext};
 };
