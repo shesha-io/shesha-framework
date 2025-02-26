@@ -14,6 +14,7 @@ export * from './components/mainLayout/constant';
 
 export * from './providers/form/utils';
 export { requestHeaders } from './utils/requestHeaders';
+export * from './providers/form/observableProxy';
 
 export { ConfigurableComponentRenderer } from './components/configurableComponentRenderer';
 
