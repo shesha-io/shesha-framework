@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Shesha.Authorization.Users;
-using Shesha.AutoMapper;
 
 namespace Shesha.Users.Dto
 {

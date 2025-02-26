@@ -29,13 +29,13 @@ namespace Shesha.Domain
         /// Label (display name)
         /// </summary>
         [StringLength(300)]
-        public virtual string Label { get; set; }
+        public virtual string? Label { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
         [DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
 
         /// <summary>
         /// Data type
@@ -47,25 +47,25 @@ namespace Shesha.Domain
         /// Data format
         /// </summary>
         [StringLength(100)]
-        public virtual string DataFormat { get; set; }
+        public virtual string? DataFormat { get; set; }
 
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
         [StringLength(300)]
-        public virtual string EntityType { get; set; }
+        public virtual string? EntityType { get; set; }
 
         /// <summary>
         /// Reference list name
         /// </summary>
         [StringLength(100)]
-        public virtual string ReferenceListName { get; set; }
+        public virtual string? ReferenceListName { get; set; }
 
         /// <summary>
         /// Reference list module
         /// </summary>
         [StringLength(300)]
-        public virtual string ReferenceListModule { get; set; }
+        public virtual string? ReferenceListModule { get; set; }
         
         /// <summary>
         /// Source of the property (code/user)
@@ -148,12 +148,12 @@ namespace Shesha.Domain
         /// <summary>
         /// Validation RegularExpression 
         /// </summary>
-        public virtual string RegExp { get; set; }
+        public virtual string? RegExp { get; set; }
 
         /// <summary>
         /// Validation message
         /// </summary>
-        public virtual string ValidationMessage { get; set; }
+        public virtual string? ValidationMessage { get; set; }
 
         /// <summary>
         /// Allows to create child/nested entity

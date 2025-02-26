@@ -61,7 +61,7 @@ namespace Shesha.Scheduler
         private const string JobExecutionIdKey = "JobExecutionId";
 
         private IHubContext<SignalrAppenderHub> _signalrHub;
-        internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager?.Resolve<IHubContext<SignalrAppenderHub>>();
+        internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager.Resolve<IHubContext<SignalrAppenderHub>>();
 
         /// inheritedDoc
         public async Task EnqueueAllAsync()
@@ -185,10 +185,10 @@ namespace Shesha.Scheduler
         [ForwardDisableConcurrentExecution]
         public async Task RunJobAsync(Guid jobId, string jobType, Guid executionId, Int64? startedById, CancellationToken cancellationToken)
         {
-            await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", new object[] { executionId, startedById, cancellationToken });
+            await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", [executionId, startedById, cancellationToken]);
         }
 
-        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object[] methodArgs)
+        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object?[] methodArgs)
         {
             var recordedType = !string.IsNullOrEmpty(jobType) ? Type.GetType(jobType) : GetJobTypeById(jobId).BaseType;
 
@@ -232,7 +232,7 @@ namespace Shesha.Scheduler
             }
         }
 
-        private void ConfigureLogger(string name, out Logger logger, out ILog log)
+        private void ConfigureLogger(string name, out Logger? logger, out ILog log)
         {
             //Get the logger repository hierarchy.  
             var repository = LogManager.GetRepository(Assembly.GetCallingAssembly()) as Hierarchy;

@@ -22,14 +22,14 @@ namespace Shesha.Scheduler.Domain
         /// Namespace
         /// </summary>
         [StringLength(300, MinimumLength = 3)]
-        public virtual string JobNamespace { get; set; }
+        public virtual string? JobNamespace { get; set; }
 
         /// <summary>
         /// Description of the job
         /// </summary>
         [DataType(DataType.MultilineText)]
         [StringLength(int.MaxValue)]
-        public virtual string JobDescription { get; set; }
+        public virtual string? JobDescription { get; set; }
 
         /// <summary>
         /// Job status (Active/Inactive). Is used to switch job on/off.

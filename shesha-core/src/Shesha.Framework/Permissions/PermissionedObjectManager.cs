@@ -388,7 +388,7 @@ namespace Shesha.Permissions
         public virtual async Task<PermissionedObjectDto> SetAsync(PermissionedObjectDto permissionedObject)
         {
             // ToDo: AS - check if permission names exist
-            var obj = 
+            var obj =
                 await _permissionedObjectRepository.GetAll()
                     .Where(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type).FirstOrDefaultAsync()
                 ??
@@ -397,10 +397,10 @@ namespace Shesha.Permissions
                     Object = permissionedObject.Object,
                     Type = permissionedObject.Type,
                     Module = permissionedObject.Module != null
-                    ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
-                    : !permissionedObject.Module.IsNullOrEmpty()
-                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
-                        : null,
+                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
+                        : !permissionedObject.Module.IsNullOrEmpty()
+                            ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
+                            : null,
                     Parent = permissionedObject.Parent,
                     Name = permissionedObject.Name ?? permissionedObject.Object,
                 };

@@ -323,7 +323,7 @@ namespace Shesha.NHibernate.EntityHistory
                             var attr = propInfo.GetCustomAttribute<AuditedBooleanAttribute>();
                             if (attr != null)
                             {
-                                var description = (bool)newValue ? attr.TrueText : attr.FalseText;
+                                var description = newValue != null && (bool)newValue ? attr.TrueText : attr.FalseText;
                                 // Add extended (friendly) description for Reference types
                                 EntityHistoryEvents.Add(new EntityHistoryEvent()
                                 {

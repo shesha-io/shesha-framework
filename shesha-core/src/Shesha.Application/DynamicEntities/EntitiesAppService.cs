@@ -87,8 +87,8 @@ namespace Shesha.DynamicEntities
                 await CheckPermissionAsync(entityConfig, methodName);
 
                 // invoke query
-                var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType);
-                var convertedInput = Activator.CreateInstance(convertedInputType);
+                var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType) ?? throw new Exception($"Failed to create generic type '{typeof(GetDynamicEntityInput<>).FullName}', id type: '{entityConfig.IdType.FullName}'");
+                var convertedInput = Activator.CreateInstance(convertedInputType) ?? throw new Exception($"Failed to create instance of type '{convertedInputType.FullName}'");
                 AutoMapper.Map(input, convertedInput);
 
                 var task = (Task)method.Invoke(appService, new object[] { convertedInput });
