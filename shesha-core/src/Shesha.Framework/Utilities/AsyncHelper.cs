@@ -93,12 +93,12 @@ namespace Shesha.Utilities
                 _workItemsWaiting = new AutoResetEvent(false);
             }
 
-            public override void Send(SendOrPostCallback d, object state)
+            public override void Send(SendOrPostCallback d, object? state)
             {
                 throw new NotSupportedException("We cannot send to our same thread");
             }
 
-            public override void Post(SendOrPostCallback d, object state)
+            public override void Post(SendOrPostCallback d, object? state)
             {
                 lock (items)
                 {

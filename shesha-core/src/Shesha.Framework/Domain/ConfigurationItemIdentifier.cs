@@ -35,13 +35,13 @@ namespace Shesha.Domain
             Name = name;
         }
 
-        public bool Equals(ConfigurationItemIdentifier other)
+        public bool Equals(ConfigurationItemIdentifier? other)
         {
             return other != null && 
                 ItemTypeName == other.ItemTypeName && Module == other.Module && Name == other.Name;
         }
 
-        public override bool Equals(object obj) => this.Equals(obj as ConfigurationItemIdentifier);
+        public override bool Equals(object? obj) => this.Equals(obj as ConfigurationItemIdentifier);
 
         public static bool operator ==(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r)
         {

@@ -21,7 +21,7 @@ namespace Shesha.Elmah
             AppDomain.CurrentDomain.FirstChanceException += OnException;
         }
 
-        private void OnException(object sender, FirstChanceExceptionEventArgs e)
+        private void OnException(object? sender, FirstChanceExceptionEventArgs e)
         {
             if (_disposed)
                 return;

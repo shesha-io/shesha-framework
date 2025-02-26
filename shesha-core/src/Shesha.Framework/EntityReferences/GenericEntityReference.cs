@@ -57,9 +57,9 @@ namespace Shesha.EntityReferences
             return new GenericEntityReference(entity);
         }
 
-        public override bool Equals(object obj) => this.Equals(obj as GenericEntityReference);
+        public override bool Equals(object? obj) => this.Equals(obj as GenericEntityReference);
 
-        public bool Equals(GenericEntityReference obj)
+        public bool Equals(GenericEntityReference? obj)
         {
             return obj != null && 
                 Id == obj.Id && _className == obj._className;

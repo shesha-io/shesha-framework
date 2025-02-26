@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Startup;
 using Shesha.Utilities;
@@ -97,25 +96,25 @@ namespace Shesha.Permissions
                 {
                     var descriptor = apiDesc.ActionDescriptor.AsControllerActionDescriptor();
                     var service = descriptor.ControllerTypeInfo.AsType();
-                    var moduleType = service.GetConfigurableModuleType();
+                    var assembly = service.Assembly;
                     var name = service.Name;
                     var isDynamic = service.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDynamicCrudAppService<,,>));
 
-                    if (isDynamic || skipUnchangedAssembly && _startupSession.AssemblyStaysUnchanged(moduleType.Assembly))
+                    if (isDynamic || skipUnchangedAssembly && _startupSession.AssemblyStaysUnchanged(assembly))
                         continue;
 
-                    var module = await GetModuleOfAssemblyAsync(moduleType.Assembly);
-                    if (module != null)
-                        apiDescriptors.Add(new ApiDescriptor()
-                        {
-                            Description = apiDesc,
-                            Module = await GetModuleOfAssemblyAsync(moduleType.Assembly),
-                            Service = service,
-                            HttpMethod = apiDesc.HttpMethod,
-                            Endpoint = apiDesc.RelativePath,
-                            Action = descriptor.MethodInfo,
-                            Assembly = moduleType.Assembly,
-                        });                    
+                    var module = await GetModuleOfAssemblyAsync(assembly);
+                    
+                    apiDescriptors.Add(new ApiDescriptor()
+                    {
+                        Description = apiDesc,
+                        Module = module,
+                        Service = service,
+                        HttpMethod = apiDesc.HttpMethod,
+                        Endpoint = apiDesc.RelativePath,
+                        Action = descriptor.MethodInfo,
+                        Assembly = assembly,
+                    });                    
                 }
             }
 
