@@ -13,6 +13,7 @@ export * from './utils/publicUtils';
 export * from './components/mainLayout/constant';
 
 export * from './providers/form/utils';
+export * from './components/formDesigner/components/utils';
 export { requestHeaders } from './utils/requestHeaders';
 export * from './providers/form/observableProxy';
 
