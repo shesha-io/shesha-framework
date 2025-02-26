@@ -117,9 +117,9 @@ namespace Shesha.Metadata
 
         private class ParameterTypeComparer : IEqualityComparer<Type>
         {
-            bool IEqualityComparer<Type>.Equals(Type x, Type y)
+            bool IEqualityComparer<Type>.Equals(Type? x, Type? y)
             {
-                return x.FullName == y.FullName;
+                return x != null && y != null && x.FullName == y.FullName || x == null && y == null;
             }
 
             int IEqualityComparer<Type>.GetHashCode(Type obj)
