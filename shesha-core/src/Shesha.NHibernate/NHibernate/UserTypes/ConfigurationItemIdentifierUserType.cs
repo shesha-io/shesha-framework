@@ -8,13 +8,13 @@ using System.Data.Common;
 
 namespace Shesha.NHibernate.UserTypes
 {
-    internal class ConfigurationItemIdentifierUserType : ICompositeUserType
+    internal class ConfigurationItemIdentifierUserType<TIdentifier> : ICompositeUserType where TIdentifier: ConfigurationItemIdentifier, IIdentifierFactory<TIdentifier>
     {
-        public string[] PropertyNames => new string[] { nameof(FormIdentifier.Module), nameof(FormIdentifier.Name) };
+        public string[] PropertyNames => [nameof(ConfigurationItemIdentifier.Module), nameof(ConfigurationItemIdentifier.Name)];
 
-        public IType[] PropertyTypes => new IType[] { NHibernateUtil.String, NHibernateUtil.String };
+        public IType[] PropertyTypes => [NHibernateUtil.String, NHibernateUtil.String];
 
-        public Type ReturnedClass => typeof(FormIdentifier);
+        public Type ReturnedClass => typeof(TIdentifier);
 
         public bool IsMutable => true;
 
@@ -25,8 +25,8 @@ namespace Shesha.NHibernate.UserTypes
 
         public object DeepCopy(object value)
         {
-            if (value is FormIdentifier er)
-                return new FormIdentifier(er.Module, er.Name);
+            if (value is ConfigurationItemIdentifier er)
+                return TIdentifier.New(er.Module, er.Name);
             return null;
         }
 
@@ -39,7 +39,7 @@ namespace Shesha.NHibernate.UserTypes
         {
             if (x == null && y == null) return true;
 
-            if (x is FormIdentifier erx && y is FormIdentifier ery)
+            if (x is TIdentifier erx && y is TIdentifier ery)
                 return erx == ery;
             return false;
         }
@@ -51,7 +51,7 @@ namespace Shesha.NHibernate.UserTypes
 
         public object GetPropertyValue(object component, int property)
         {
-            if (component is FormIdentifier formId)
+            if (component is TIdentifier formId)
             {
                 switch (property)
                 {
@@ -75,7 +75,7 @@ namespace Shesha.NHibernate.UserTypes
                 return null;
             }
 
-            return new FormIdentifier(module, name);
+            return TIdentifier.New(module, name);
         }
 
         public void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
@@ -83,7 +83,7 @@ namespace Shesha.NHibernate.UserTypes
             var parameterId = (DbParameter)cmd.Parameters[index];
             var parameterType = (DbParameter)cmd.Parameters[index + 1];
 
-            if (value is FormIdentifier formId)
+            if (value is TIdentifier formId)
             {
                 parameterId.Value = formId.Module;
                 parameterType.Value = formId.Name;
