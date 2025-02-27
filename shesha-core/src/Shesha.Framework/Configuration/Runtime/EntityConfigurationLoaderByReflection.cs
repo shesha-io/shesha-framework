@@ -33,7 +33,7 @@ namespace Shesha.Configuration.Runtime
                     .Select(dp => new { IsOwn = ownProps.Contains(dp), Prop = dp })
                     .OrderByDescending(dp => dp.IsOwn ? 1 : 0)
                     .Select(dp => dp.Prop)
-                    .FirstOrDefault()
+                    .First()
                 ).ToList();
             if (propsWithoutDuplicates.Count < props.Count)
             {

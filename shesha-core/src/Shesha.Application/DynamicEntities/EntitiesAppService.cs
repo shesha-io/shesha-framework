@@ -11,6 +11,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
+using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -186,9 +187,9 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private IEnumerable<Dictionary<string, object>> ExtractGqlListData(IDynamicDataResult dataResult)
+        private IEnumerable<Dictionary<string, object?>> ExtractGqlListData(IDynamicDataResult dataResult)
         {
-            var jsonData = (Microsoft.AspNetCore.Mvc.JsonResult)dataResult;
+            var jsonData = (JsonResult)dataResult;
             if (jsonData.Value is ExecutionResult executionResult && executionResult.Data is ExecutionNode executionNode)
             {
                 var value = executionNode.ToValue();
@@ -203,12 +204,14 @@ namespace Shesha.DynamicEntities
                         if (itemsArray != null)
                         {
                             var rows = itemsArray.Items.OfType<ObjectExecutionNode>();
-                            return rows.Select(row => row.ToValue() as Dictionary<string, object>);
+                            return rows != null
+                                ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
+                                : [];
                         }
                     }
                 }
             }
-            return null;
+            return [];
         }
 
         /// <summary>

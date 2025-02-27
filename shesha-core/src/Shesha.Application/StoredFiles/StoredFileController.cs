@@ -525,7 +525,7 @@ namespace Shesha.StoredFiles
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
 
-            var list = fileVersions.Select(v => GetFileDto(v)).ToList();
+            var list = fileVersions.Select(v => GetFileDto(v)).WhereNotNull().ToList();
             return list;
         }
 

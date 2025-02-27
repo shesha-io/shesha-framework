@@ -275,8 +275,8 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<IList<string>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
         {
-            return await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct()
-                .ToListAsync();
+            var categories = await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct().ToListAsync();
+            return categories.WhereNotNullOrWhiteSpace().ToList();
         }
 
         /// <summary>
