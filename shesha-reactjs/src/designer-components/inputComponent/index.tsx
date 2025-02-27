@@ -35,6 +35,7 @@ import { ITabPaneProps } from '../tabs/models';
 import { IWizardStepProps } from '../wizard/models';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
+import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -107,6 +108,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
     switch (type) {
+        case 'dataSortingEditor':
+            return <SortingEditor {...props} onChange={onChange} modelType={props.modelType} readOnly={readOnly} />;
         case 'color':
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
         case 'dropdown':
