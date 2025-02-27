@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import WizardSettingsForm from './settings';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
-import { IToolboxComponent } from '@/interfaces';
+import { DataTypes, IObjectMetadata, IToolboxComponent } from '@/interfaces';
 import { IWizardComponentProps } from './models';
 import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateWizardActions } from './migrations/migrateWizardActions';
@@ -16,6 +16,7 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
+import { wizardApiCode } from '@/publicJsApis';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -23,13 +24,19 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model, form }) => {
+    const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
+      typeDefinitionLoader: () => Promise.resolve({typeName: 'IWizardApi',files: [{ content: wizardApiCode, fileName: 'apis/wizard.ts' }]}),
+      properties: [{path: 'current', dataType: DataTypes.number}],
+      dataType: DataTypes.object
+    } as IObjectMetadata), []);
+
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
         type="control"
-
+        metadata={contextMetadata}
       >
         <Tabs {...model} form={form} />
       </DataContextProvider>

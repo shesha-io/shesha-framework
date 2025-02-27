@@ -1,5 +1,5 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
-import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
+import { IHasEntityType, IMethodMetadata, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
 import { Environment, PropertiesBuilder, StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
 import { registerMetadataBuilderAction } from "./standardProperties";
 import {
@@ -17,6 +17,7 @@ export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
     addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this;
     setPropertiesLoader(loader: PropertiesLoader): this;
     setProperties(properties: IPropertyMetadata[]);
+    setMethods(methods: IMethodMetadata[]);
     setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader): this;
 }
 
@@ -182,6 +183,13 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
             throw new Error("Properties can be set only once");
 
         this.metadata.properties = [...properties];
+    }
+
+    setMethods(methods: IMethodMetadata[]) {
+        if (this.metadata.methods)
+            throw new Error("Methods can be set only once");
+
+        this.metadata.methods = [...methods];
     }
 
     setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader) {
