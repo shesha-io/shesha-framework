@@ -2,10 +2,6 @@ import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { ITableComponentProps } from "./models";
-import { YesNoInheritJs } from '@/components/dataTable/interfaces';
-import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from '@/components/reactTable/interfaces';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import { ColumnsConfig } from "./columnsEditor/columnsConfig";
 
 const NEW_ROW_EXPOSED_VARIABLES = [
     {

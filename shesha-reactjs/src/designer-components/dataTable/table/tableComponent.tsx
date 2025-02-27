@@ -25,7 +25,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
 
-    //console.log("TABLE MODEL", model);
+    console.log("TABLE MODEL", model);
     if (model.hidden)
       return null;
     return store ? (

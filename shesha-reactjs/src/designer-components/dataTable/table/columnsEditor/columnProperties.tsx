@@ -1,4 +1,5 @@
 import columnSettingsJson from './columnSettings.json';
+//import { getSettings } from './columnSettings';
 import React, {
   FC,
   useEffect,
