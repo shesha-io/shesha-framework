@@ -209,10 +209,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     description: 'Return true to enable inline editing and false to disable.',
                                     exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
-                                    templateSettings: {
-                                        functionName: 'canEditInlineExpression'
-                                    },
-                                    wrapInTemplate: true,
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
@@ -273,10 +269,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     description: 'Return true to enable inline creation of new rows and false to disable.',
                                     exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
-                                    templateSettings: {
-                                        functionName: 'canAddInlineExpression'
-                                    },
-                                    wrapInTemplate: true,
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),

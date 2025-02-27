@@ -35,8 +35,6 @@ import { ITabPaneProps } from '../tabs/models';
 import { IWizardStepProps } from '../wizard/models';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
-import ColumnsConfigurator from '../dataTable/table/columnsEditor/columnsConfigurator';
-import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');

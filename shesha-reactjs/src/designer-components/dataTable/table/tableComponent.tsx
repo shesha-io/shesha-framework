@@ -1,5 +1,4 @@
 import React from 'react';
-import TableSettings from './tableComponent-settings';
 import { getSettings } from './tableSettings';
 import { Alert } from 'antd';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
@@ -25,7 +24,6 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
 
-    console.log("TABLE MODEL", model);
     if (model.hidden)
       return null;
     return store ? (
