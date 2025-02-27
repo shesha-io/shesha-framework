@@ -18,7 +18,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// <summary>
         /// ModelType
         /// </summary>
-        public string ModelType { get; set; }
+        public string? ModelType { get; set; }
 
         public Guid? TemplateId { get; set; }
 
@@ -26,6 +26,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         public RefListPermissionedAccess? Access { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
     }
 }

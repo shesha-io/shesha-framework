@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Reflection;
 using Shesha.Attributes;
 using Shesha.Domain;
@@ -100,7 +99,7 @@ namespace Shesha.Reflection
         /// <param name="propInfo">Returns the <see cref="PropertyInfo"/> of
         /// the last property in the property hierachy.</param>
         /// <returns></returns>
-        public static object GetPropertyValue(object obj, string propertyName, out object parent,
+        public static object GetPropertyValue(object obj, string propertyName, out object? parent,
             out PropertyInfo propInfo)
         {
             //Entity propertyEntity;
@@ -139,7 +138,7 @@ namespace Shesha.Reflection
         /// child object e.g. 'Parent.ReferencedChildEntity.ChildEntityPropertyName', then will return the
         /// child entity the property belongs to i.e. 'ReferencedChildEntity' from the example.</param>
         /// <returns>Return the requested PropertyInfo.</returns>
-        public static PropertyInfo GetProperty(object entity, string propertyName, out object propertyEntity)
+        public static PropertyInfo GetProperty(object entity, string propertyName, out object? propertyEntity)
         {
             return GetProperty(entity, null, propertyName, out propertyEntity);
         }
@@ -149,7 +148,7 @@ namespace Shesha.Reflection
             return GetProperty(entity, null, propertyName, out var propertyEntity);
         }
 
-        private static PropertyInfo GetProperty(object entity, Type type, string propertyName, out object propertyEntity)
+        private static PropertyInfo GetProperty(object entity, Type type, string propertyName, out object? propertyEntity)
         {
             var propTokens = propertyName.Split('.');
             var currentEntity = entity;

@@ -46,7 +46,7 @@ namespace Shesha.NHibernate.Maps
     /// </summary>
     public class Conventions
     {
-        private LazyRelation _defaultLazyRelation;
+        private LazyRelation? _defaultLazyRelation;
         private readonly INameGenerator _nameGenerator;
 
         public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>> idMapper = null)
@@ -260,7 +260,7 @@ namespace Shesha.NHibernate.Maps
             {
                 var propertyType = ByCode.TypeExtensions.GetPropertyOrFieldType(member.LocalMember);
 
-                var lazyAttribute = member.LocalMember.GetAttribute<LazyAttribute>(true);
+                var lazyAttribute = member.LocalMember.GetAttribute<NhLazyLoadAttribute>(true);
                 if (lazyAttribute != null)
                     propertyCustomizer.Lazy(true);
 
@@ -299,15 +299,18 @@ namespace Shesha.NHibernate.Maps
 
                 if (propertyType.IsAssignableTo(typeof(ConfigurationItemIdentifier)))
                 {
+                    if (!propertyType.IsAssignableTo(typeof(IIdentifierFactory)))
+                        throw new Exception($"Type '{propertyType.Name}' must implement '{nameof(IIdentifierFactory)}'");
+
                     var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType);
-                    var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Module));
-                    var nameColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(FormIdentifier.Name));
+                    var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(ConfigurationItemIdentifier.Module));
+                    var nameColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(ConfigurationItemIdentifier.Name));
 
                     propertyCustomizer.Columns(
                             c => { c.Name(moduleColumn); },
                             c => { c.Name(nameColumn); }
                         );
-                    var gtype = typeof(ConfigurationItemIdentifierUserType);
+                    var gtype = typeof(ConfigurationItemIdentifierUserType<>).MakeGenericType(propertyType);
                     propertyCustomizer.Type(gtype, null);
                     return;
                 }
@@ -494,8 +497,12 @@ namespace Shesha.NHibernate.Maps
            {
                string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType);
 
-               var lazyAttribute = propertyPath.LocalMember.GetAttribute<LazyAttribute>(true);
-               var lazyRelation = lazyAttribute != null ? lazyAttribute.GetLazyRelation() : _defaultLazyRelation;
+               var lazyAttribute = propertyPath.LocalMember.GetAttribute<LazyLoadAttribute>(true);
+               var lazyRelation = lazyAttribute != null
+                    ? lazyAttribute is NhLazyLoadAttribute nhLazy
+                        ? nhLazy.GetLazyRelation()
+                        : LazyRelation.NoProxy
+                    : _defaultLazyRelation;
                if (lazyRelation != null)
                    map.Lazy(lazyRelation);
 

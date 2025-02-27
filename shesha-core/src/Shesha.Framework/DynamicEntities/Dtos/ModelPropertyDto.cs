@@ -24,7 +24,7 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Data type
@@ -34,17 +34,17 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Data format
         /// </summary>
-        public string DataFormat { get; set; }
+        public string? DataFormat { get; set; }
 
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string EntityType { get; set; }
+        public string? EntityType { get; set; }
 
         /// <summary>
         /// Module the entity belongs to. Aplicable for entity references
         /// </summary>
-        public string EntityModule { get; set; }
+        public string? EntityModule { get; set; }
 
         /// <summary>
         /// Type accessor
@@ -59,12 +59,12 @@ namespace Shesha.DynamicEntities.Dtos
         /// <summary>
         /// Reference list name
         /// </summary>
-        public string ReferenceListName { get; set; }
+        public string? ReferenceListName { get; set; }
 
         /// <summary>
         /// Reference list module
         /// </summary>
-        public string ReferenceListModule { get; set; }
+        public string? ReferenceListModule { get; set; }
 
         /// <summary>
         /// Source type (ApplicationCode = 1, UserDefined = 2)

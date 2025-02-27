@@ -1,7 +1,5 @@
 ﻿using Shesha.ConfigurationItems;
 using Shesha.Domain.ConfigurationItems;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {

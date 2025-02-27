@@ -161,9 +161,9 @@ namespace Shesha.Metadata
 
         private class ModelDtoTypeComparer : IEqualityComparer<ModelDto>
         {
-            bool IEqualityComparer<ModelDto>.Equals(ModelDto x, ModelDto y)
+            bool IEqualityComparer<ModelDto>.Equals(ModelDto? x, ModelDto? y)
             {
-                return x.ClassName == y.ClassName;
+                return x != null && y != null && x.ClassName == y.ClassName || x == null && y == null;
             }
 
             int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)

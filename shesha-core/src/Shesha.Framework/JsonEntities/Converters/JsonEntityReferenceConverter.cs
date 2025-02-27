@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Entities;
-using Abp.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.Domain;
@@ -19,7 +18,7 @@ namespace Shesha.JsonEntities.Converters
             return objectType.IsEntityType();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             var jObj = JObject.Load(reader);
             var id = jObj?.GetValue("id");
@@ -28,7 +27,7 @@ namespace Shesha.JsonEntities.Converters
             return null;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             if (value is IEntity entity)
             {

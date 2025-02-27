@@ -15,7 +15,7 @@ namespace Shesha.Roles.Dto
         }
 
         public Guid? ModuleId { get; set; }
-        public EntityReferenceDto<Guid> Module { get; set; }
+        public EntityReferenceDto<Guid>? Module { get; set; }
 
         public string Name { get; set; }
 

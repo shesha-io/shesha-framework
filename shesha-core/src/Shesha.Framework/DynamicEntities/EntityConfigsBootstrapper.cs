@@ -11,7 +11,6 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;

@@ -1,5 +1,5 @@
-import React, { FC, useCallback } from 'react';
-import { Alert, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
+import React, { FC, useCallback, useState } from 'react';
+import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -33,11 +33,19 @@ import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList'
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ITabPaneProps } from '../tabs/models';
 import { IWizardStepProps } from '../wizard/models';
+import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
+import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
     const { styles } = useStyles();
+
+    const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
+        formTypes.map((i) => {
+            return { value: i };
+        })
+    );
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
@@ -253,6 +261,35 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 }}
             >
             </ItemListConfiguratorModal>;
+        case 'formTypeAutocomplete':
+            return <AutoComplete
+                disabled={readOnly}
+                options={formTypesOptions}
+                onSearch={(t) =>
+                    setFormTypesOptions(
+                        (t
+                            ? formTypes.filter((f) => {
+                                return f.toLowerCase().includes(t.toLowerCase());
+                            })
+                            : formTypes
+                        ).map((i) => {
+                            return { value: i };
+                        })
+                    )
+                }
+            />;
+        case 'configurableActionConfig':
+            return <ConfigurableActionConfigurator editorConfig={null} level={0} />;
+        case 'fullIdFormAutocomplete':
+            return <FormAutocomplete readOnly={readOnly} />;
+        case 'typeAutoComplete':
+            return <Autocomplete.Raw
+                dataSourceType="url"
+                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                readOnly={readOnly}
+            />;
+        case 'endpointsAutoComplete':
+            return <EndpointsAutocomplete readOnly={readOnly} />;
         default:
             return <Input
                 size={size}

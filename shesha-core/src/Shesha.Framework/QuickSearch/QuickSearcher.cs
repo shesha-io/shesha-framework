@@ -10,6 +10,7 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -30,8 +31,8 @@ namespace Shesha.QuickSearch
         /// </summary>
         private readonly ITypedCache<string, List<QuickSearchPropertyInfo>> _quickSearchPropertiesCache;
 
-        private readonly MethodInfo stringContainsMethod = typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) });
-        private readonly MethodInfo queryableAnyMethod = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2);
+        private readonly MethodInfo stringContainsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string)]) ?? throw new Exception($"Method {nameof(string.Contains)} not found in type '{typeof(string).FullName}'");
+        private readonly MethodInfo queryableAnyMethod = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2) ?? throw new Exception($"Method {nameof(Queryable.Any)} not found in type '{typeof(Queryable).FullName}'");
 
         public QuickSearcher(
             IEntityConfigurationStore entityConfigurationStore, 
@@ -362,7 +363,7 @@ namespace Shesha.QuickSearch
             return _quickSearchPropertiesCache.Get(cacheKey, (s) => DoGetPropertiesForSqlQuickSearch<TEntity>(properties));
         }
 
-        private bool TryGetProperty(EntityConfiguration entityConfig, string name, out PropertyConfiguration propConfig) 
+        private bool TryGetProperty(EntityConfiguration entityConfig, string name, [NotNullWhen(true)] out PropertyConfiguration? propConfig) 
         {
             if (name == EntityConstants.DisplayNameField) 
             {
@@ -396,7 +397,7 @@ namespace Shesha.QuickSearch
                     var effectivePathParts = new List<string>();
 
                     var currentEntityConfig = entityConfig;
-                    PropertyConfiguration property = null;
+                    PropertyConfiguration? property = null;
                     if (propName.Contains('.'))
                     {
                         var parts = propName.Split('.');
@@ -424,8 +425,7 @@ namespace Shesha.QuickSearch
                         }
                     }
                     else {
-                        TryGetProperty(currentEntityConfig, propName, out property);
-                        if (property != null)
+                        if (TryGetProperty(currentEntityConfig, propName, out property))
                             effectivePathParts.Add(property.PropertyInfo.Name);
                     }
 

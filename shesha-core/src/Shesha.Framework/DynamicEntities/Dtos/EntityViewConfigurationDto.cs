@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shesha.DynamicEntities.Dtos
+﻿namespace Shesha.DynamicEntities.Dtos
 {
     public class EntityViewConfigurationDto
     {
@@ -17,8 +11,8 @@ namespace Shesha.DynamicEntities.Dtos
 
     public class FormIdFullNameDto
     {
-        public string Name { get; set; }
-        public string Module { get; set; }
+        public string? Name { get; set; }
+        public string? Module { get; set; }
     }
 
     public static class FormIdFullNameDtoExtensions
