@@ -70,6 +70,7 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  showExpandedView?: boolean;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -102,6 +103,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataSecondaryText,
   noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
+  showExpandedView,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -704,6 +706,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
     onResizedChange: onResizedChange,
+
+    showExpandedView,
   };
 
   return (

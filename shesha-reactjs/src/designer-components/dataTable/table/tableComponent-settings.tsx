@@ -208,9 +208,14 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         <ColumnsConfig readOnly={readOnly} />
       </SettingsFormItem>
 
+      <SettingsFormItem name="showExpandedView" label="Show Expanded View" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
+
       <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
+
       <SettingsFormItem name="freezeHeaders" label="Freeze Headers" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
