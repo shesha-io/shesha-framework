@@ -2,9 +2,11 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Newtonsoft.Json;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,7 +63,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
         protected async Task<ConfigurationItemBase> ImportRefListAsync(DistributedReferenceList item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingList = await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var existingList = await _refListRepo.GetByByFullName(item.ModuleName, item.Name).FirstOrDefaultAsync(e => e.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -82,7 +84,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 {
                     var liveVersion = existingList.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingList
-                        : await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _refListRepo.GetByByFullName(item.ModuleName, item.Name).FirstOrDefaultAsync(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveVersion != null)
                     {
                         await _refListManger.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);

@@ -20,6 +20,6 @@ namespace Shesha.StoredFiles.Dto
         /// </summary>
         [Required]
         [BindProperty(Name = "file")]
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
     }
 }

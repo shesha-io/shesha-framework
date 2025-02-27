@@ -1,5 +1,4 @@
-﻿using Shesha.Domain;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
@@ -25,7 +24,7 @@ namespace Shesha.Domain
         /// ModelType
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string ModelType { get; set; }
+        public virtual string? ModelType { get; set; }
 
         /// <summary>
         /// Type
@@ -43,7 +42,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Template that was used for the form creation
         /// </summary>
-        public virtual FormConfiguration Template { get; set; }
+        public virtual FormConfiguration? Template { get; set; }
 
         public virtual string FullName => Module != null
                 ? $"{Module.Name}.{Name}"

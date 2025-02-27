@@ -30,7 +30,7 @@ namespace Shesha.Domain
         /// Shesha Module of the permissioned object
         /// </summary>
         [NotNull]
-        public virtual Module Module { get; set; }
+        public virtual Module? Module { get; set; }
 
         /// <summary>
         /// Type of the permissioned object

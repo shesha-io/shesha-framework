@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
+#pragma warning disable CS8619
     public class ShaPermissionManager : PermissionManager, IShaPermissionManager
     {
         private readonly IIocManager _iocManager;
@@ -296,4 +297,5 @@ namespace Shesha.Authorization
                 base.RemovePermission(name);
         }
     }
+#pragma warning restore CS8619
 }

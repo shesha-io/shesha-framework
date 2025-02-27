@@ -3,7 +3,6 @@ using Abp.Reflection;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.Reflection;
 using System;
 using System.Collections;
@@ -42,7 +41,7 @@ namespace Shesha.Configuration.Runtime
                 .GroupBy(i => i.TypeShortAlias, (t, items) => new {TypeShortAlias = t, Types = items.Select(i => i.Type)})
                 .Where(g => g.Types.Count() > 1).ToList();
             if (duplicates.Any())
-                throw new DuplicatedTypeShortAliasesException(duplicates.ToDictionary(i => i.TypeShortAlias, i => i.Types));
+                throw new DuplicatedTypeShortAliasesException(duplicates.ToDictionary(i => i.TypeShortAlias ?? "empty", i => i.Types));
 
             foreach (var entityType in entityTypes)
             {

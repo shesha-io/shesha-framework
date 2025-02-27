@@ -328,11 +328,11 @@ namespace Shesha.AutoMapper
 
             if (dstType.IsEnum) {
                 var enumUnderlayingType = dstType.GetEnumUnderlyingType();
-                var numericValue = System.Convert.ChangeType(dto.ItemValue.Value, enumUnderlayingType);
+                var numericValue = System.Convert.ChangeType(dto.ItemValue, enumUnderlayingType);
                 return Enum.ToObject(dstType, numericValue);
             }
                         
-            return System.Convert.ChangeType(dto.ItemValue.Value, dstType);
+            return System.Convert.ChangeType(dto.ItemValue, dstType);
         }
     }
 }

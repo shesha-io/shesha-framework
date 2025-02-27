@@ -43,24 +43,34 @@ namespace Shesha.Sms.Clickatell
             query["user"] = settings.Username;
             query["password"] = settings.Password;
             query["to"] = MobileHelper.CleanupMobileNo(mobileNumber);
-            //query["text"] = HttpUtility.UrlEncode(body);
             query["text"] = body;
 
-            var url = $"https://api.clickatell.com/http/sendmsg?{query}";
+            // Calculate message parts based on length
+            int messagePartsCount = 1;
+            if (body.Length > settings.SingleMessageMaxLength)
+            {
+                // Calculate number of parts needed for multipart message
+                messagePartsCount = (int)Math.Ceiling((double)body.Length / settings.MessagePartLength);
+            }
 
+            // Add concat parameter for multipart messages
+            if (messagePartsCount > 1)
+            {
+                query["concat"] = messagePartsCount.ToString();
+            }
+
+            var url = $"https://api.clickatell.com/http/sendmsg?{query}";
             try
             {
                 // Send the GET request
                 using var response = await httpClient.GetAsync(url);
-
                 var responseContent = await response.Content.ReadAsStringAsync();
-
                 if (response.IsSuccessStatusCode && responseContent.StartsWith("ID"))
                 {
-                    Logger.InfoFormat("SMS successfully sent, response: {0}", response);
+                    Logger.InfoFormat("SMS successfully sent as {0} part(s), response: {1}",
+                        messagePartsCount, responseContent);
                     return SendStatus.Success();
                 }
-
                 var errorMessage = $"Could not send SMS to '{mobileNumber}'. Response: '{responseContent}'";
                 Logger.ErrorFormat(errorMessage);
                 return SendStatus.Failed(errorMessage);
