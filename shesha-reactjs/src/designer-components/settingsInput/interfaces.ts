@@ -9,6 +9,7 @@ export interface IRadioOption {
     value: string | number;
     icon?: string | React.ReactNode;
     title?: string;
+    hint?: string;
 }
 
 export interface IDropdownOption {

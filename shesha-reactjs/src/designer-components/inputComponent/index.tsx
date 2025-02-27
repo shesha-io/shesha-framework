@@ -131,7 +131,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null, tooltip)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
