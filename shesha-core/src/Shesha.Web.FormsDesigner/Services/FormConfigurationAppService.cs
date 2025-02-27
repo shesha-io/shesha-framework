@@ -13,6 +13,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
+using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -21,7 +22,6 @@ using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Utilities;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Exceptions;
 using System;
@@ -184,10 +184,10 @@ namespace Shesha.Web.FormsDesigner.Services
             else {
                 switch (mode)
                 {
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
+                    case ConfigurationItemViewMode.Live:
                         query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                         break;
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                    case ConfigurationItemViewMode.Ready:
                         {
                             var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -197,7 +197,7 @@ namespace Shesha.Web.FormsDesigner.Services
                             query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                             break;
                         }
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                    case ConfigurationItemViewMode.Latest:
                         {
                             var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,

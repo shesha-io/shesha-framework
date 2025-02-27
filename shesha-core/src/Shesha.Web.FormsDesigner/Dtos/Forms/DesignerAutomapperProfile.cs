@@ -1,5 +1,5 @@
 ﻿using Shesha.AutoMapper;
-using Shesha.Web.FormsDesigner.Domain;
+using Shesha.Domain;
 using System;
 
 namespace Shesha.Web.FormsDesigner.Dtos

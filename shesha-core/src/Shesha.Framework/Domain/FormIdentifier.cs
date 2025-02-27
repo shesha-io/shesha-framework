@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using Shesha.EntityReferences;
-using System;
-using System.ComponentModel;
+﻿using System;
 
 namespace Shesha.Domain
 {

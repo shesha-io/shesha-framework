@@ -5,8 +5,6 @@
     /// </summary>
     public class ReferenceListIdentifier : ConfigurationItemIdentifier<ReferenceList>, IIdentifierFactory<ReferenceListIdentifier>
     {
-        public override string ItemType => "ref-list";
-
         public ReferenceListIdentifier(string module, string name) : base(module, name)
         {
         }

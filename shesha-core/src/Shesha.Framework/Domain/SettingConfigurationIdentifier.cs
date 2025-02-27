@@ -1,8 +1,4 @@
-﻿using Shesha.EntityReferences;
-using System;
-using System.ComponentModel;
-
-namespace Shesha.Domain
+﻿namespace Shesha.Domain
 {
     /// <summary>
     /// Setting configuration identifier
