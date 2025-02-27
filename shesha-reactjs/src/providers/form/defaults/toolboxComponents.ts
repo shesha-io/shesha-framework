@@ -107,6 +107,7 @@ import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
+import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -217,7 +218,15 @@ export const getToolboxComponents = (
     {
       visible: false,
       name: 'Legacy',
-      components: [Paragraph, Title, Toolbar, List],
+      components: [
+        Paragraph,
+        Title,
+        Toolbar,
+        List,
+        FormAutocompleteComponent,
+        ReferenceListAutocompleteComponent,
+        NotificationAutocompleteComponent,
+      ],
     },
     {
       visible: devMode,
@@ -228,7 +237,6 @@ export const getToolboxComponents = (
         MainMenuEditorComponent,
         PermissionAutocompleteComponent,
         ColumnsEditorComponent, // Hidden
-        ReferenceListAutocompleteComponent,
         PropertyAutocompleteComponent,
         SortingEditorComponent,
         EditModeSelectorComponent,
@@ -248,8 +256,7 @@ export const getToolboxComponents = (
         ImagePickerComponent,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
-        FormAutocompleteComponent,
-        NotificationAutocompleteComponent,
+        ConfigurableItemAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,

@@ -8,6 +8,6 @@
         /// <summary>
         /// Front-end application
         /// </summary>
-        FrontEndApp Application { get; set; }
+        FrontEndApp? Application { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, } from 'react';
 import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/providers';
@@ -41,11 +41,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
 
   const { backendUrl } = useSheshaApplication();
 
-  // Customizations
-  useEffect(() => {
-    if (props?.onFileListChanged) props?.onFileListChanged(fileList);
-  }, [fileList]);
-
   return (
     <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
@@ -61,6 +56,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
+        onFileListChanged={props.onFileListChanged}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}

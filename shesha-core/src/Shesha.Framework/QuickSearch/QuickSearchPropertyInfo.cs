@@ -20,11 +20,11 @@ namespace Shesha.QuickSearch
         /// <summary>
         /// Referencelist module
         /// </summary>
-        public string ReferenceListModule { get; set; }
+        public string? ReferenceListModule { get; set; }
 
         /// <summary>
         /// Referencelist name
         /// </summary>
-        public string ReferenceListName { get; set; }
+        public string? ReferenceListName { get; set; }
     }
 }

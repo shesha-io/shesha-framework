@@ -28,7 +28,7 @@ namespace Shesha.Specifications
                 SpecificationsType = specificationType,
                 EntityType = et,
 
-                Name = specificationType.FullName,
+                Name = specificationType.GetRequiredFullName(),
                 FriendlyName = ReflectionHelper.GetDisplayName(specificationType),
                 Description = specificationType.GetDescription(),
                 IsGlobal = specificationType.IsGlobalSpecificationType(),

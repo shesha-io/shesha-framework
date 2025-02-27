@@ -110,6 +110,11 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object oldValue, object newValue)
         {
+            if (newValue == null)
+                return (new List<Tt>(), ((IEnumerable<object>)oldValue).Cast<Tt>());
+            if (oldValue == null)
+                return (((IEnumerable<object>)newValue).Cast<Tt>(), new List<Tt>());
+
             var newV = (IEnumerable<object>)newValue;
             var oldV = (IEnumerable<object>)oldValue;
 
@@ -117,6 +122,24 @@ namespace Shesha.Extensions
             var removedValues = oldV.Where(x => !newV.Contains(x)).ToList();
 
             return (addedValues.Cast<Tt>(), removedValues.Cast<Tt>());
+        }
+
+        /// <summary>
+        /// Returns a sequence with the `null` instances removed.
+        /// </summary>
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : class
+        {
+            return source.Where(x => x != null).OfType<T>();
+        }
+
+        /// <summary>
+        /// Returns a sequence of strings without nulls and empty strings
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string?> source) 
+        {
+            return source.Where(x => !string.IsNullOrWhiteSpace(x)).OfType<string>();
         }
     }
 }

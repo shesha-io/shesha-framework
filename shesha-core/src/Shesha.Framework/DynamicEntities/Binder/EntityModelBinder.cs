@@ -110,7 +110,7 @@ namespace Shesha.DynamicEntities.Binder
             {
                 var _formFields = jobject.Property(nameof(IHasFormFieldsList._formFields));
                 var formFieldsArray = _formFields?.Value as JArray;
-                formFieldsInternal = formFieldsArray?.Select(f => f.Value<string>()).ToList() ?? new List<string>();
+                formFieldsInternal = formFieldsArray?.Select(f => f.Value<string>()).WhereNotNull().ToList() ?? new List<string>();
             }
 
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();
@@ -213,7 +213,7 @@ namespace Shesha.DynamicEntities.Binder
                                 case DataTypes.ReferenceListItem:
                                 case DataTypes.Time: // ToDo: Review parsing of time
                                                      //case DataTypes.Enum: // Enum binded as integer
-                                    object parsedValue = null;
+                                    object? parsedValue = null;
                                     result = Parser.TryParseToValueType(jproperty.Value.ToString(), property.PropertyType, out parsedValue, isDateOnly: propType.DataType == DataTypes.Date);
                                     if (result && dbValue?.ToString() != parsedValue?.ToString())
                                         if (await ValidateAsync(entity, jFullName, parsedValue, context))
@@ -363,7 +363,7 @@ namespace Shesha.DynamicEntities.Binder
                                                         totalVal += val;
                                                 }
                                             }
-                                            object refValue = null;
+                                            object? refValue = null;
                                             result = Parser.TryParseToValueType(totalVal.ToString(), property.PropertyType, out refValue);
                                             if (result && (await ValidateAsync(entity, jFullName, refValue, context)))
                                                 property.SetValue(entity, refValue);
@@ -674,7 +674,7 @@ namespace Shesha.DynamicEntities.Binder
             var entityType = entity.GetType().StripCastleProxyType();
             var entityTypeName = entityType.FullName;
             var references = _entityPropertyRepository.GetAll().Where(x => x.EntityType == typeShortAlias || x.EntityType == entityTypeName);
-            if (!references.Any())
+            if (!await references.AnyAsync())
                 return false;
 
             var parentId = parentEntity.GetId();

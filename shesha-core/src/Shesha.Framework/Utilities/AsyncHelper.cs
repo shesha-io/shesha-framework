@@ -14,9 +14,10 @@ namespace Shesha.Utilities
         public static void RunSync(Func<Task> task)
         {
             var oldContext = SynchronizationContext.Current;
-            var synch = new ExclusiveSynchronizationContext();
+            using var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
 #pragma warning disable VSTHRD101 // Rethrow to preserve stack details
+#pragma warning disable AsyncFixer03
             synch.Post(async _ =>
             {
                 try
@@ -33,6 +34,7 @@ namespace Shesha.Utilities
                     synch.EndMessageLoop();
                 }
             }, null);
+#pragma warning restore AsyncFixer03
 #pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
 
@@ -48,10 +50,11 @@ namespace Shesha.Utilities
         public static T RunSync<T>(Func<Task<T>> task)
         {
             var oldContext = SynchronizationContext.Current;
-            var synch = new ExclusiveSynchronizationContext();
+            using var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
             T ret = default(T);
 #pragma warning disable VSTHRD101 // Rethrow to preserve stack details
+#pragma warning disable AsyncFixer03 // Avoid unsupported fire-and-forget async-void methods or delegates. Unhandled exceptions will crash the process.
             synch.Post(async _ =>
             {
                 try
@@ -68,32 +71,39 @@ namespace Shesha.Utilities
                     synch.EndMessageLoop();
                 }
             }, null);
+#pragma warning restore AsyncFixer03 // Avoid unsupported fire-and-forget async-void methods or delegates. Unhandled exceptions will crash the process.
 #pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
             SynchronizationContext.SetSynchronizationContext(oldContext);
             return ret;
         }
 
-        private class ExclusiveSynchronizationContext : SynchronizationContext
+        private sealed class ExclusiveSynchronizationContext : SynchronizationContext, IDisposable
         {
             private bool done;
-            public Exception InnerException { get; set; }
-            readonly AutoResetEvent workItemsWaiting = new AutoResetEvent(false);
-            readonly Queue<Tuple<SendOrPostCallback, object>> items =
-                new Queue<Tuple<SendOrPostCallback, object>>();
+            private bool disposed;
 
-            public override void Send(SendOrPostCallback d, object state)
+            public Exception InnerException { get; set; }
+            private readonly AutoResetEvent _workItemsWaiting;
+            readonly Queue<Tuple<SendOrPostCallback, object?>> items = new Queue<Tuple<SendOrPostCallback, object?>>();
+
+            public ExclusiveSynchronizationContext()
+            {
+                _workItemsWaiting = new AutoResetEvent(false);
+            }
+
+            public override void Send(SendOrPostCallback d, object? state)
             {
                 throw new NotSupportedException("We cannot send to our same thread");
             }
 
-            public override void Post(SendOrPostCallback d, object state)
+            public override void Post(SendOrPostCallback d, object? state)
             {
                 lock (items)
                 {
                     items.Enqueue(Tuple.Create(d, state));
                 }
-                workItemsWaiting.Set();
+                _workItemsWaiting.Set();
             }
 
             public void EndMessageLoop()
@@ -105,7 +115,7 @@ namespace Shesha.Utilities
             {
                 while (!done)
                 {
-                    Tuple<SendOrPostCallback, object> task = null;
+                    Tuple<SendOrPostCallback, object?> task = null;
                     lock (items)
                     {
                         if (items.Count > 0)
@@ -123,7 +133,7 @@ namespace Shesha.Utilities
                     }
                     else
                     {
-                        workItemsWaiting.WaitOne();
+                        _workItemsWaiting.WaitOne();
                     }
                 }
             }
@@ -131,6 +141,17 @@ namespace Shesha.Utilities
             public override SynchronizationContext CreateCopy()
             {
                 return this;
+            }
+
+            public void Dispose()
+            {
+                if (disposed)
+                {
+                    return;
+                }
+
+                disposed = true;
+                _workItemsWaiting.Dispose();
             }
         }
     }

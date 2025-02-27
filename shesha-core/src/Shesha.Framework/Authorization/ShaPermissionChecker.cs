@@ -1,6 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
+using Shesha.Authorization.Cache;
 using Shesha.Authorization.Dtos;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
@@ -15,42 +16,22 @@ namespace Shesha.Authorization
     /// </summary>
     public class ShaPermissionChecker : PermissionChecker<Role, User>, IShaPermissionChecker
     {
-        private const string CustomUserPermissionsCacheName = "CustomUserPermissionsCache";
-
-        private readonly ICacheManager _cacheManager;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly UserManager _userManager;
 
         public Guid Id { get; set; }
 
-        internal ITypedCache<string, CustomUserPermissionCacheItem> _cupCache;
-        protected ITypedCache<string, CustomUserPermissionCacheItem> CustomUserPermissionCache
-        {
-            get
-            {
-                if (_cupCache == null)
-                {
-                    var cache = _cacheManager.GetCustomUserPermissionCache();
-                    _cupCache = cache;
-                }
-
-                return _cupCache;
-            }
-        }
+        protected readonly ITypedCache<string, CustomUserPermissionCacheItem> CustomUserPermissionCache;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ShaPermissionChecker(UserManager userManager, ICacheManager cacheManager, IUnitOfWorkManager unitOfWorkManager)
+        public ShaPermissionChecker(UserManager userManager, IUnitOfWorkManager unitOfWorkManager, ICustomUserPermissionCacheHolder cacheHolder)
             : base(userManager)
         {
-            _cacheManager = cacheManager;
             _unitOfWorkManager = unitOfWorkManager;
 
-            _userManager = userManager;
-
             Id = Guid.NewGuid();
-            //Debug.WriteLine($"PermissionChecker Create: {Id.ToString()}");
+            CustomUserPermissionCache = cacheHolder.Cache;
         }
 
         private int? GetCurrentTenantId()

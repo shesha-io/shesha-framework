@@ -25,7 +25,10 @@ namespace Shesha.Email.Dtos
 
         protected virtual void Dispose(bool disposing)
         {
-            Stream?.Dispose();
+#pragma warning disable IDISP007 // Don't dispose injected
+            if (disposing)
+                Stream?.Dispose();
+#pragma warning restore IDISP007 // Don't dispose injected            
         }
     }
 }

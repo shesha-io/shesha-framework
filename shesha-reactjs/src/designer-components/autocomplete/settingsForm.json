@@ -276,43 +276,6 @@
             "settingsValidationErrors": [],
             "components": [
               {
-                "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
-                "type": "textField",
-                "propertyName": "dataSourceUrl",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Data Source Url",
-                "settingsValidationErrors": [],
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
-                "type": "textField",
-                "propertyName": "keyPropName",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Key Prop Name",
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
-                "type": "textField",
-                "propertyName": "valuePropName",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Value Prop Name",
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
                 "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
                 "type": "labelValueEditor",
                 "propertyName": "queryParams",
@@ -327,7 +290,8 @@
                 "description": "",
                 "settingsValidationErrors": [],
                 "version": 3,
-                "mode": "dialog"
+                "mode": "dialog",
+                "jsSettingsAvailableConstantsExpression": "return metadataBuilder.object(\"constants\").addAllStandard().addObject(\"searchText\", \"Search text\").build();"
               }
             ],
             "version": 4,
@@ -354,7 +318,7 @@
               {
                 "id": "c1ffda30-8eea-4621-aae7-0af583143df6",
                 "type": "autocomplete",
-                "propertyName": "entityTypeShortAlias",
+                "propertyName": "entityType",
                 "label": "Entity Type",
                 "labelAlign": "right",
                 "parentId": "uEFBpy19tApJMiBuFyj9s",
@@ -367,27 +331,6 @@
                 "version": 5
               },
               {
-                "id": "hpm6rN_aj-L_KaG5MLIZt",
-                "type": "propertyAutocomplete",
-                "propertyName": "entityDisplayProperty",
-                "label": "Display Property",
-                "labelAlign": "right",
-                "parentId": "uEFBpy19tApJMiBuFyj9s",
-                "hidden": {
-                  "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
-                  "_mode": "code",
-                  "_value": false
-                },
-                "isDynamic": false,
-                "placeholder": "",
-                "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
-                "validate": {},
-                "modelType": "{{data.entityTypeShortAlias}}",
-                "autoFillProps": false,
-                "settingsValidationErrors": [],
-                "version": 2
-              },
-              {
                 "id": "n4enebtmhFgvkP5ukQK1f",
                 "type": "queryBuilder",
                 "propertyName": "filter",
@@ -398,7 +341,7 @@
                 "isDynamic": false,
                 "validate": {},
                 "settingsValidationErrors": [],
-                "modelType": "{{data.entityTypeShortAlias}}",
+                "modelType": "{{data.entityType}}",
                 "fieldsUnavailableHint": "Please select `Entity Type` to be able to configure this filter.",
                 "version": 2
               }
@@ -407,16 +350,128 @@
             "flexWrap": "wrap"
           },
           {
-            "id": "dde8e245-1555-4a99-a333-4b7c31bcc5f4",
-            "type": "checkbox",
-            "propertyName": "useRawValues",
-            "label": "Use raw values",
+            "id": "oamRBlEs6O2Jlc2FGL_gY",
+            "type": "endpointsAutocomplete",
+            "propertyName": "dataSourceUrl",
+            "label": {
+              "_code": "return getSettingValue(data?.dataSourceType) === 'entitiesList' ? 'Custom Source Url' : 'Data Source Url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "isDynamic": false,
+            "prefix": "GET",
+            "settingsValidationErrors": [],
+            "version": 3,
+            "mode": "url",
+            "httpVerb": "get"
+          },
+          {
+            "id": "acb2d566-fe48-43bd-84e0-28b7103354c1",
+            "type": "dropdown",
+            "propertyName": "valueFormat",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "label": "Value format",
+            "hidden": false,
+            "values": [
+              {
+                "label": "Simple Id",
+                "value": "simple",
+                "id": "329a001c-3c42-44b2-8616-a8fde0959323"
+              },
+              {
+                "label": "Entity reference",
+                "value": "entityReference",
+                "id": "722eb4ea-9e00-4f4e-addb-e7300fa0c74c"
+              },
+              {
+                "label": "Autocomplete (displayText, value)",
+                "value": "autocomplete",
+                "id": "332eb4ea-9e00-4f4e-addb-e7300fa0c74c"
+              },
+              {
+                "label": "Custom",
+                "value": "custom",
+                "id": "faaeb4ea-9e00-4f4e-addb-e7300fa0c74c"
+              }
+            ],
+            "dataSourceType": "values"
+          },
+          {
+            "id": "111ce49e-3067-4285-a1cb-104d4a8ee570",
+            "type": "codeEditor",
+            "propertyName": "keyValueFunc",
+            "label": "Key value Function",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
+            "description": "Return key from item value",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [{ "name": "value", "description": "Value of item", "type": "object" }],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": { "functionName": "keyValueFunc"},
+            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"value\", \"Value of item\").build();"
+          },
+          {
+            "id": "444ce49e-3067-4285-a1cb-104d4a8ee570",
+            "type": "codeEditor",
+            "propertyName": "filterKeysFunc",
+            "label": "Filter selected Function",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
+            "description": "Return filter object for selected value(s). Use this settings to configure non-standard values format",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [{ "name": "item", "description": "Item of list", "type": "object" }],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": { "functionName": "filterSelectedFunc"},
+            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"value\", \"Value of autocomplete\").build();"
+          },
+          {
+            "id": "222ce49e-3067-4285-a1cb-104d4a8ee570",
+            "type": "codeEditor",
+            "propertyName": "outcomeValueFunc",
+            "label": "Value Function",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
+            "description": "Return value for item object",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [{ "name": "item", "description": "Item of list", "type": "object" }],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": { "functionName": "outcomeValueFunc"},
+            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"item\", \"Item of list\").build();"
+          },
+          {
+            "id": "333ce49e-3067-4285-a1cb-104d4a8ee570",
+            "type": "codeEditor",
+            "propertyName": "displayValueFunc",
+            "label": "Display value Function",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
             "hidden": false,
+            "description": "Return display value for item's object",
             "validate": {},
             "settingsValidationErrors": [],
-            "version": 3
+            "exposedVariables": [{ "name": "item", "description": "Item of list", "type": "object" }],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": { "functionName": "displayValueFunc"},
+            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"item\", \"Item of list\").build();"
           },
           {
             "id": "Wda2Q9DU5DDExAb7MEEfK",
@@ -435,6 +490,78 @@
             "validate": {},
             "settingsValidationErrors": [],
             "version": 3
+          },
+          {
+            "id": "hpm6rN_aj-L_KaG5MLIZt",
+            "type": "propertyAutocomplete",
+            "propertyName": "displayPropName",
+            "label": "Display Property",
+            "labelAlign": "right",
+            "parentId": "uEFBpy19tApJMiBuFyj9s",
+            "hidden": false,
+            "isDynamic": false,
+            "placeholder": "",
+            "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
+            "validate": {},
+            "modelType": "{{data.entityType}}",
+            "autoFillProps": false,
+            "settingsValidationErrors": [],
+            "version": 2
+          },
+          {
+            "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
+            "type": "propertyAutocomplete",
+            "propertyName": "keyPropName",
+            "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+            "label": "Key Property Name",
+            "modelType": "{{data.entityType}}",
+            "autoFillProps": false,
+            "settingsValidationErrors": [],
+            "version": 2
+          },
+          {
+            "id": "11hpm6rN_aj-L_KaG5MLIZt",
+            "type": "propertyAutocomplete",
+            "propertyName": "fields",
+            "label": "Fields to fetch",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "mode": "multiple",
+            "validate": {},
+            "modelType": "{{data.entityType}}",
+            "settingsValidationErrors": [],
+            "version": 2
+          },
+          {
+            "id": "casrMotX62bQPBNc9D6jK",
+            "type": "dataSortingEditor",
+            "propertyName": "sorting",
+            "componentName": "standardSorting",
+            "label": "Sort By",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": { "_code": "return getSettingValue(data?.dataSourceType) !== 'entitiesList';", "_mode": "code", "_value": false },
+            "isDynamic": false,
+            "version": 0,
+            "modelType": "{{data.entityType}}",
+            "validate": {},
+            "settingsValidationErrors": []
+          },
+          {
+            "id": "hWKZzsgtRKKXBy8TdBFMy",
+            "type": "dataSortingEditor",
+            "propertyName": "grouping",
+            "componentName": "grouping",
+            "label": "Grouping",
+            "labelAlign": "right",
+            "maxItemsCount": 1,
+            "parentId": "root",
+            "hidden": { "_code": "return getSettingValue(data?.dataSourceType) !== 'entitiesList';", "_mode": "code", "_value": false },
+            "isDynamic": false,
+            "version": 0,
+            "validate": {},
+            "settingsValidationErrors": [],
+            "modelType": "{{data.entityType}}"
           }
         ]
       },
@@ -620,37 +747,41 @@
           },
           {
             "id": "c6ec53eb-3bec-40d6-b1a1-687c5d1c3d1d",
-            "type": "textField",
+            "type": "endpointsAutocomplete",
             "propertyName": "quickviewGetEntityUrl",
-            "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Get Entity Url",
-            "version": 5,
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "hidden": {
               "_code": "return !getSettingValue(data?.quickviewEnabled);",
               "_mode": "code",
               "_value": false
-            },
-            "textType": "text",
-            "desktop": {},
-            "tablet": {},
-            "mobile": {}
-          },
+            },            
+            "isDynamic": false,
+            "prefix": "GET",
+            "settingsValidationErrors": [],
+            "version": 3,
+            "mode": "url",
+            "httpVerb": "get"
+          },          
           {
             "id": "b0eeb8cb-d9ad-479e-a731-10d5909a50a2",
-            "type": "textField",
+            "type": "propertyAutocomplete",
             "propertyName": "quickviewDisplayPropertyName",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Display Property Name",
-            "version": 5,
+            "labelAlign": "right",
             "hidden": {
               "_code": "return !getSettingValue(data?.quickviewEnabled);",
               "_mode": "code",
               "_value": false
             },
-            "textType": "text",
-            "desktop": {},
-            "tablet": {},
-            "mobile": {}
+            "isDynamic": false,
+            "placeholder": "",
+            "validate": {},
+            "modelType": "{{data.entityType}}",
+            "autoFillProps": false,
+            "settingsValidationErrors": [],
+            "version": 2
           },
           {
             "id": "d690a0b7-a9d3-4ab2-8843-9dcfbac08adc",

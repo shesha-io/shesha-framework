@@ -92,31 +92,7 @@ namespace Shesha.Test
 
         [EntityReference(true)]
         public virtual GenericEntityReference AnyEntity { get; set; }
-
-        //        public virtual JsonEntity Json { get; set; }
     }
-
-    /*[Table("Test_ComplexTest")]
-    public class ComplexTest : BaseComplexTest<JsonEntity>
-    {
-        [SaveAsJson]
-        public override JsonEntity Any { get; set; }
-    }
-
-    [Table("Test_ComplexTest")]
-    public class ComplexPersonTest : BaseComplexTest<JsonPerson>
-    {
-        [SaveAsJson]
-        [Column("Any")]
-        public override JsonPerson Any { get; set; }
-    }
-
-    [Table("Test_ComplexTest")]
-    public class ComplexAddressTest : BaseComplexTest<JsonPerson>   
-    {
-        [SaveAsJson]
-        public override JsonPerson Any { get; set; }
-    }*/
 
     public class InnerComplexTest
     {
@@ -145,7 +121,7 @@ namespace Shesha.Test
 
     public class JsonPerson : JsonBase
     {
-        public virtual Person Person { get; set; }
+        public virtual Person? Person { get; set; }
         public virtual JsonAddress Address { get; set; }
 
         public virtual List<JsonPerson> Persons { get; set; }
@@ -158,7 +134,7 @@ namespace Shesha.Test
 
     public class JsonEntityReference<T, TId> where T : IEntity<TId>
     {
-        private PropertyInfo _displayNamePropertyInfo;
+        private PropertyInfo? _displayNamePropertyInfo;
         public JsonEntityReference()
         {
             _displayNamePropertyInfo = typeof(T).GetEntityConfiguration()?.DisplayNamePropertyInfo;

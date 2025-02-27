@@ -1,4 +1,6 @@
 import {
+  ConfigurableForm,
+  FormIdentifier,
   IButtonGroup,
   IConfigurableFormComponent,
   IToolboxComponent,
@@ -10,7 +12,7 @@ import {
 } from '@/index';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Dropdown } from 'antd';
+import { Avatar, Dropdown, Popover } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
@@ -22,6 +24,7 @@ import {
   IResolvedDynamicItem,
 } from '@/providers/dynamicActions/evaluator/utils';
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroup[];
@@ -29,6 +32,9 @@ interface IProfileDropdown extends IConfigurableFormComponent {
   subTextColor?: string;
   subTextFontSize?: string;
   subTextStyle?: string;
+  showUserInfo?: boolean;
+  popOverFormId?: FormIdentifier;
+  popOverContentStyle?: string;
 }
 
 const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
@@ -40,7 +46,15 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
   Factory: ({ model }) => {
     const [numResolved, setNumResolved] = useState(0);
 
-    const { subText, subTextColor, subTextFontSize, subTextStyle } = model;
+    const {
+      subText,
+      subTextColor,
+      subTextFontSize,
+      subTextStyle,
+      showUserInfo,
+      popOverFormId,
+      popOverContentStyle,
+    } = model;
 
     const { styles } = useStyles({
       subText,
@@ -74,6 +88,8 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       return getItemsWithResolved(evaluation.items);
     }, [evaluation.items, numResolved]);
 
+    const [pop, setPop] = useState<boolean>(false);
+
     const menuItems = getMenuItem(finalItems, executeAction);
 
     const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
@@ -82,7 +98,20 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       setNumResolved((prev) => prev + 1);
     };
 
+    const onDropdownClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      e.preventDefault();
+      setPop(false);
+    };
+
     if (model.hidden) return null;
+
+    const popoverContent = popOverFormId ? (
+      <div style={getStyle(popOverContentStyle, formData, globalState)}>
+        <ConfigurableForm formId={popOverFormId} mode="readonly" />
+      </div>
+    ) : (
+      <div>Select Popover Form</div>
+    );
 
     return (
       <div className={styles.shaProfileDropdownWrapper}>
@@ -93,11 +122,28 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         ))}
 
         <div className={styles.shaProfileDropdown}>
-          <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-              {loginInfo?.fullName} <DownOutlined />
-            </a>
-          </Dropdown>
+          <ConditionalWrap
+            condition={showUserInfo}
+            wrap={(children) => {
+              return (
+                <Popover
+                  content={popoverContent}
+                  placement="bottomRight"
+                  trigger="hover"
+                  open={pop}
+                  onOpenChange={setPop}
+                >
+                  {children}
+                </Popover>
+              );
+            }}
+          >
+            <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={onDropdownClick}>
+                {loginInfo?.fullName} <DownOutlined />
+              </a>
+            </Dropdown>
+          </ConditionalWrap>
           <Avatar icon={<UserOutlined />} />
         </div>
       </div>
