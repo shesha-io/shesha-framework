@@ -1,14 +1,3 @@
-const evaluateString = (expression: string, data: any): any => {
-    try {
-        // Create a new function with 'data' as a parameter and the expression as the function body
-        const func = new Function('data', expression);
-        // Execute the function with the provided data
-        return func(data);
-    } catch (error) {
-        console.error('Error evaluating expression:', expression, error);
-        return null;
-    }
-};
 
 export const filterDynamicComponents = (components, query, data) => {
     if (!components || !Array.isArray(components)) return [];
@@ -114,17 +103,6 @@ export const filterDynamicComponents = (components, query, data) => {
     return filterResult.filter(c => {
         if (!c) return false;
 
-        // Evaluate final hidden state
-        const hasVisibleChildren = (
-            (c.components && c.components.length > 0) ||
-            (c.content?.components && c.content.components.length > 0) ||
-            (c.inputs && c.inputs.length > 0)
-        );
-
-        const isHidden = typeof c.hidden === 'string'
-            ? evaluateString(c.hidden, data)
-            : c.hidden;
-
-        return !isHidden || hasVisibleChildren;
+        return true;
     });
 };
