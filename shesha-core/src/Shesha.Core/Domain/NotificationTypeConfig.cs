@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
-using System;
+using Shesha.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -84,6 +84,7 @@ namespace Shesha.Domain
                             {
                                 PropertyNameCaseInsensitive = true
                             }))
+                            .WhereNotNull()
                             .ToList();
                     }
                     catch (JsonException)

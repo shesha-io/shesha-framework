@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
@@ -19,10 +14,6 @@ namespace Shesha.DynamicEntities
         /// </summary>
         [Display(Name = "JSON data", Description = "Is used for ")]
         [JsonIgnore]
-        JObject _jObject { get; set; }
-
-        //bool _changed { get; set; }
-
-        //void Update();
+        JObject? _jObject { get; set; }
     }
 }

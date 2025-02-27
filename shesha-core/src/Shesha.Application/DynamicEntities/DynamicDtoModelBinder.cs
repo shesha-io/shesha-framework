@@ -237,7 +237,7 @@ namespace Shesha.DynamicEntities
                     {
                         // Add JObject only if not a DtoProxy
                         modelDynamicDto._jObject = !bindingSettings.UseDynamicDtoProxy
-                            ? Newtonsoft.Json.Linq.JObject.Parse(body)
+                            ? JObject.Parse(body)
                             : null;
 
                         // Attempt to proxy DTo to determine changed properties

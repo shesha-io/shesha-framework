@@ -351,20 +351,39 @@ namespace Shesha.DynamicEntities
             var dto = await GetModelConfigurationAsync(modelConfig);
             // update permissions from the input because data is not saved to DB yet
             dto.Permission = input.Permission;
-            dto.Permission.ActualAccess = input.Permission.Access;
-            dto.Permission.ActualPermissions = input.Permission.Permissions;
+            if (input.Permission != null) 
+            {
+                dto.Permission.ActualAccess = input.Permission.Access;
+                dto.Permission.ActualPermissions = input.Permission.Permissions;
+            }
+            
             dto.PermissionGet = input.PermissionGet;
-            dto.PermissionGet.ActualAccess = input.PermissionGet.Access;
-            dto.PermissionGet.ActualPermissions = input.PermissionGet.Permissions;
+            if (input.PermissionGet != null) 
+            {
+                dto.PermissionGet.ActualAccess = input.PermissionGet.Access;
+                dto.PermissionGet.ActualPermissions = input.PermissionGet.Permissions;
+            }
+            
             dto.PermissionUpdate = input.PermissionUpdate;
-            dto.PermissionUpdate.ActualAccess = input.PermissionUpdate.Access;
-            dto.PermissionUpdate.ActualPermissions = input.PermissionUpdate.Permissions;
+            if (input.PermissionUpdate != null) 
+            {
+                dto.PermissionUpdate.ActualAccess = input.PermissionUpdate.Access;
+                dto.PermissionUpdate.ActualPermissions = input.PermissionUpdate.Permissions;
+            }
+            
             dto.PermissionDelete = input.PermissionDelete;
-            dto.PermissionDelete.ActualAccess = input.PermissionDelete.Access;
-            dto.PermissionDelete.ActualPermissions = input.PermissionDelete.Permissions;
+            if (input.PermissionDelete != null) 
+            {
+                dto.PermissionDelete.ActualAccess = input.PermissionDelete.Access;
+                dto.PermissionDelete.ActualPermissions = input.PermissionDelete.Permissions;
+            }
+            
             dto.PermissionCreate = input.PermissionCreate;
-            dto.PermissionCreate.ActualAccess = input.PermissionCreate.Access;
-            dto.PermissionCreate.ActualPermissions = input.PermissionCreate.Permissions;
+            if (input.PermissionCreate != null) 
+            {
+                dto.PermissionCreate.ActualAccess = input.PermissionCreate.Access;
+                dto.PermissionCreate.ActualPermissions = input.PermissionCreate.Permissions;
+            }
 
             return dto;
         }

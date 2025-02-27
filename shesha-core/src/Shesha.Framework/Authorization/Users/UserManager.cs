@@ -278,9 +278,14 @@ namespace Shesha.Authorization.Users
             return await Users.Where(u => u.NormalizedUserName == normalizedUsername).AnyAsync();
         }
 
+        private IdentityOptions GetOptionsCopy()
+        {
+            return JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString()) ?? throw new Exception($"Failed to make a copy of '{nameof(IdentityOptions)}'");
+        }
+
         public override void InitializeOptions(int? tenantId)
         {
-            Options = JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString());
+            Options = GetOptionsCopy();
 
             //Lockout
             Options.Lockout.AllowedForNewUsers = _securitySettings.UserLockOutEnabled.GetValue();
@@ -298,7 +303,7 @@ namespace Shesha.Authorization.Users
 
         public override async Task InitializeOptionsAsync(int? tenantId)
         {
-            Options = JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString());
+            Options = GetOptionsCopy();
 
             //Lockout
             Options.Lockout.AllowedForNewUsers = await _securitySettings.UserLockOutEnabled.GetValueAsync();

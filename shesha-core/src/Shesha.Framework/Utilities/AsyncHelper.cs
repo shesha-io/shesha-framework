@@ -85,20 +85,19 @@ namespace Shesha.Utilities
 
             public Exception InnerException { get; set; }
             private readonly AutoResetEvent _workItemsWaiting;
-            readonly Queue<Tuple<SendOrPostCallback, object>> items =
-                new Queue<Tuple<SendOrPostCallback, object>>();
+            readonly Queue<Tuple<SendOrPostCallback, object?>> items = new Queue<Tuple<SendOrPostCallback, object?>>();
 
             public ExclusiveSynchronizationContext()
             {
                 _workItemsWaiting = new AutoResetEvent(false);
             }
 
-            public override void Send(SendOrPostCallback d, object state)
+            public override void Send(SendOrPostCallback d, object? state)
             {
                 throw new NotSupportedException("We cannot send to our same thread");
             }
 
-            public override void Post(SendOrPostCallback d, object state)
+            public override void Post(SendOrPostCallback d, object? state)
             {
                 lock (items)
                 {
@@ -116,7 +115,7 @@ namespace Shesha.Utilities
             {
                 while (!done)
                 {
-                    Tuple<SendOrPostCallback, object> task = null;
+                    Tuple<SendOrPostCallback, object?> task = null;
                     lock (items)
                     {
                         if (items.Count > 0)

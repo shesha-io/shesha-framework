@@ -7,6 +7,6 @@ namespace Shesha.Domain
     [DiscriminatorValue((int)ShaRoleAppointmentType.Person)]
     public class ShaRoleAppointedPerson : ShaRoleAppointment
     {
-        public virtual Person Person { get; set; }
+        public virtual Person? Person { get; set; }
     }
 }

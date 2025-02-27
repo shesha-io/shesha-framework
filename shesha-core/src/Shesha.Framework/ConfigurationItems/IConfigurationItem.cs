@@ -24,7 +24,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Module
         /// </summary>
-        Module Module { get; set; }
+        Module? Module { get; set; }
 
         /// <summary>
         /// Version number

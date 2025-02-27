@@ -12,11 +12,11 @@ namespace Shesha.DynamicEntities.Distribution.Dto
     public class DistributedEntityConfig: DistributedConfigurableItemBase
     {
         public string FriendlyName { get; set; }
-        public string TypeShortAlias { get; set; }
-        public string TableName { get; set; }
+        public string? TypeShortAlias { get; set; }
+        public string? TableName { get; set; }
         public string ClassName { get; set; }
-        public string Namespace { get; set; }
-        public string DiscriminatorValue { get; set; }
+        public string? Namespace { get; set; }
+        public string? DiscriminatorValue { get; set; }
 
         public bool GenerateAppService { get; set; }
 

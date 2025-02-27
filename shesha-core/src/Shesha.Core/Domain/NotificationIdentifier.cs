@@ -1,4 +1,3 @@
-﻿using Newtonsoft.Json;
 using System;
 
 namespace Shesha.Domain
@@ -7,13 +6,15 @@ namespace Shesha.Domain
     /// Notification identifier
     /// </summary>
     [Serializable]
-    public class NotificationIdentifier : ConfigurationItemIdentifier<NotificationTypeConfig>
+    public class NotificationIdentifier : ConfigurationItemIdentifier<NotificationTypeConfig>, IIdentifierFactory<NotificationIdentifier>
     {
         public NotificationIdentifier(string module, string name) : base(module, name)
         {
         }
 
-        [JsonIgnore]
-        public override string ItemTypeName => "notification";
+        public static NotificationIdentifier New(string module, string name)
+        {
+            return new NotificationIdentifier(module, name);
+        }
     }
 }

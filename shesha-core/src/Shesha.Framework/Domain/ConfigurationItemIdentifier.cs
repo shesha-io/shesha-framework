@@ -35,13 +35,13 @@ namespace Shesha.Domain
             Name = name;
         }
 
-        public bool Equals(ConfigurationItemIdentifier other)
+        public bool Equals(ConfigurationItemIdentifier? other)
         {
             return other != null && 
                 ItemType == other.ItemType && Module == other.Module && Name == other.Name;
         }
 
-        public override bool Equals(object obj) => this.Equals(obj as ConfigurationItemIdentifier);
+        public override bool Equals(object? obj) => this.Equals(obj as ConfigurationItemIdentifier);
 
         public static bool operator ==(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r)
         {
@@ -67,5 +67,29 @@ namespace Shesha.Domain
         {
             return NormalizedFullName.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return NormalizedFullName;
+        }
+    }
+
+    public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : IConfigurationItem
+    {
+        protected ConfigurationItemIdentifier(string module, string name) : base(module, name)
+        {
+        }
+
+        public override Type ItemType => typeof(TItem);
+        public override string ItemTypeName => ItemType.Name;
+    }
+
+    public interface IIdentifierFactory 
+    { 
+    }
+
+    public interface IIdentifierFactory<TSelf>: IIdentifierFactory where TSelf : IIdentifierFactory<TSelf>
+    {
+        static abstract TSelf New(string module, string name);
     }
 }

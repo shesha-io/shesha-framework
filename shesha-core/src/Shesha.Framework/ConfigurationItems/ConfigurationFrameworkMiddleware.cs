@@ -1,7 +1,5 @@
 ﻿using Abp.Dependency;
-using Abp.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using Shesha.ConfigurationItems.Models;
 using System;
 using System.Threading.Tasks;
@@ -42,7 +40,7 @@ namespace Shesha.ConfigurationItems
                     a.ViewMode = configItemMode.HasValue
                         ? configItemMode.Value
                         : ConfigurationItemViewMode.Live;
-                    a.FrontEndApplication = frontEndApp.IsNullOrWhiteSpace() 
+                    a.FrontEndApplication = string.IsNullOrWhiteSpace(frontEndApp)
                         ? FrontEndAppKeyConsts.SheshaDefaultFrontend 
                         : frontEndApp;
                 }))

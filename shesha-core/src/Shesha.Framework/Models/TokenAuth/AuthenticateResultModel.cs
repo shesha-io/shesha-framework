@@ -14,7 +14,7 @@ namespace Shesha.Models.TokenAuth
 
         public long UserId { get; set; }
         public Guid? PersonId { get; set; }
-        public string DeviceName { get; set; }
+        public string? DeviceName { get; set; }
 
         public AuthenticateResultType ResultType { get; set; }
         

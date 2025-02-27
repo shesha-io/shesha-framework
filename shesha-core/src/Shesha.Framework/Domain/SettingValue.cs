@@ -27,12 +27,12 @@ namespace Shesha.Domain
         /// Front-end application, is used for application specific settings only
         /// </summary>
         [Audited]
-        public virtual FrontEndApp Application { get; set; }
+        public virtual FrontEndApp? Application { get; set; }
 
         /// <summary>
         /// This is used for user specific settings only
         /// </summary>
         [Audited]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
     }
 }
