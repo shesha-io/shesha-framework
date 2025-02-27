@@ -231,9 +231,9 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         const defaultHeaderStyle = defaultHeaderStyles(prev);
 
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: 'auto', headerStyles: defaultHeaderStyle }
+          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
+          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
+          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle }
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

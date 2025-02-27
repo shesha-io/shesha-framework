@@ -199,7 +199,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
-            return <ColumnsConfig size={size} />;
+            return <ColumnsConfig {...props} size={size} />;
         case 'columnsList':
             return <ColumnsList {...props} readOnly={readOnly} />;
         case 'sizableColumnsConfig':
@@ -230,7 +230,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
         case 'itemListConfiguratorModal':
-
             return <ItemListConfiguratorModal<ITabPaneProps | IWizardStepProps>
                 readOnly={readOnly}
                 initNewItem={onAddNewItem}

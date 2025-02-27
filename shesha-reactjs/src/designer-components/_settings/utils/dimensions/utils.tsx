@@ -1,5 +1,5 @@
 import React from "react";
-import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined, EllipsisOutlined } from "@ant-design/icons";
+import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
 
 export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
@@ -28,9 +28,8 @@ export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
 };
 
 export const overflowOptions = [
-    { value: "visible", title: "Visible", icon: <EyeOutlined /> },
-    { value: "hidden", title: "Hidden", icon: <EyeInvisibleOutlined /> },
-    { value: "scroll", title: "Scroll", icon: <ColumnWidthOutlined /> },
-    { value: "auto", title: "Auto", icon: <BorderlessTableOutlined /> },
-    { value: "ellipsis", title: "Ellipsis", icon: <EllipsisOutlined /> },
+    { value: "visible", label: "Visible", icon: <EyeOutlined /> },
+    { value: "hidden", label: "Hidden", icon: <EyeInvisibleOutlined /> },
+    { value: "scroll", label: "Scroll", icon: <ColumnWidthOutlined /> },
+    { value: "auto", label: "Auto", icon: <BorderlessTableOutlined /> },
 ];

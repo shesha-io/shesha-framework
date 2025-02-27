@@ -18,12 +18,12 @@ export interface IItemListConfiguratorProps<TItem extends ListItemWithId> {
 }
 
 export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemListConfiguratorProps<TItem>) => {
-    const { 
-        value, 
-        onChange, 
-        initNewItem, 
-        readOnly, 
-        settingsMarkupFactory, 
+    const {
+        value,
+        onChange,
+        initNewItem,
+        readOnly,
+        settingsMarkupFactory,
         itemRenderer,
         header,
     } = props;
