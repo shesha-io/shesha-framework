@@ -7,7 +7,7 @@ import ChartDataProvider from '../../providers/chartData';
 import ChartControl from './chartControl';
 import ChartControlURL from './chartControlURL';
 import { IChartProps } from './model';
-import { settingsForm } from './settings';
+import { getSettings } from './settingsForm';
 
 const ChartComponent: IToolboxComponent<IChartProps> = {
   type: 'chart',
@@ -31,12 +31,12 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
   initModel: (model) => ({
     chartType: 'line', showTitle: false, showLegend: true, legendPosition: 'top', ...model
   }),
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   migrator: (m) => m
     .add<IChartProps>(0, prev => ({ ...prev, hideLabel: true }))
-    .add<IChartProps>(1, prev => ({...prev, showBorder: true}))
-    .add<IChartProps>(2, prev => ({...prev, isDoughnut: false}))
+    .add<IChartProps>(1, prev => ({ ...prev, showBorder: true }))
+    .add<IChartProps>(2, prev => ({ ...prev, isDoughnut: false }))
 };
 
 export default ChartComponent;
