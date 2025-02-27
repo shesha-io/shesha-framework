@@ -1,27 +1,34 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import React, { useCallback, useMemo } from 'react';
-import { EntityPicker } from '@/components';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { EntityPicker, ValidationErrors } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps } from '@/providers';
+import { ButtonGroupItemProps, IStyleType, useSheshaApplication } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { executeExpression, getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression, getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
-import { entityPickerSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
+import { customOnChangeValueEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName, removeUndefinedProps } from '@/utils/object';
+import { getSettings } from './settingsForm';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getBackgroundStyle } from '../_settings/utils/background/utils';
+import { CSSProperties } from 'styled-components';
+import { defaultStyles } from './utils';
 
-export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
+export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
   placeholder?: string;
   items: IConfigurableColumnsProps[];
   hideBorder?: boolean;
@@ -51,9 +58,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-   Factory: ({ model }) => {
+  Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
-
+    const { backendUrl, httpHeaders } = useSheshaApplication();
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
 
     const displayEntityKey = model.displayEntityKey || '_displayName';
@@ -71,12 +78,12 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ];
     }, [filters]);
 
-    const incomeValueFunc: IncomeValueFunc = useCallback( (value: any, args: any) => {
+    const incomeValueFunc: IncomeValueFunc = useCallback((value: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
         return !!value ? value.id : null;
       }
       if (model.valueFormat === 'custom') {
-        return executeExpression<string>(model.incomeCustomJs, {...args, value}, null, null );
+        return executeExpression<string>(model.incomeCustomJs, { ...args, value }, null, null);
       }
       return value;
     }, [model.valueFormat, model.incomeCustomJs]);
@@ -84,17 +91,71 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
         return !!value
-          ? {id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ??  value._displayName, _className: model.entityType}
+          ? { id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ?? value._displayName, _className: model.entityType }
           : null;
       }
       if (model.valueFormat === 'custom') {
-        return executeExpression(model.outcomeCustomJs, {...args, value}, null, null );
+        return executeExpression(model.outcomeCustomJs, { ...args, value }, null, null);
       }
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
 
-    const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
+    const dimensions = model?.dimensions;
+    const border = model?.border;
+    const font = model?.font;
+    const shadow = model?.shadow;
+    const background = model?.background;
+    const jsStyle = getStyle(model.style, model);
+
+    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const fontStyles = useMemo(() => getFontStyle(font), [font]);
+    const [backgroundStyles, setBackgroundStyles] = useState({});
+    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+
+    useEffect(() => {
+
+      const fetchStyles = async () => {
+        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+            .then((response) => {
+              return response.blob();
+            })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            }) : '';
+
+        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+        setBackgroundStyles(style);
+      };
+
+      fetchStyles();
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
+
+    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+      return <ValidationErrors error="The provided StoredFileId is invalid" />;
+    }
+
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
     const computedStyle = getStyle(style, allData.data) ?? {};
+
+    const additionalStyles = removeUndefinedProps({
+      ...stylingBoxAsCSS,
+      ...dimensionsStyles,
+      ...(border?.hideBorder ? {} : {
+        ...borderStyles
+      }),
+      ...fontStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+    }) as CSSProperties;
+
+
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400, ...computedStyle });
+
+    const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
@@ -107,38 +168,38 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               onChange(...args);
           };
           return (
-          <EntityPicker
-            incomeValueFunc={incomeValueFunc}
-            outcomeValueFunc={outcomeValueFunc}
-
-            placeholder={model.placeholder}
-            style={computedStyle}
-            formId={model.id}
-            readOnly={model.readOnly}
-            displayEntityKey={displayEntityKey}
-            entityType={model.entityType}
-            filters={entityPickerFilter}
-            mode={model.mode}
-            addNewRecordsProps={
-              model.allowNewRecord
-                ? {
-                  modalFormId: model.modalFormId,
-                  modalTitle: model.modalTitle,
-                  showModalFooter: model.showModalFooter,
-                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                  buttons: model?.buttons,
-                  footerButtons: model?.footerButtons                  
-                }
-                : undefined
-            }
-            name={model?.componentName}
-            width={width}
-            configurableColumns={model.items ?? []}
-            value={value}
-            onChange={onChangeInternal}
-            size={model.size}
-          />
-        );
+            <EntityPicker
+              incomeValueFunc={incomeValueFunc}
+              outcomeValueFunc={outcomeValueFunc}
+              placeholder={model.placeholder}
+              style={finalStyle}
+              formId={model.id}
+              readOnly={model.readOnly}
+              displayEntityKey={displayEntityKey}
+              entityType={model.entityType}
+              filters={entityPickerFilter}
+              mode={model.mode}
+              hideBorder={model.hideBorder}
+              addNewRecordsProps={
+                model.allowNewRecord
+                  ? {
+                    modalFormId: model.modalFormId,
+                    modalTitle: model.modalTitle,
+                    showModalFooter: model.showModalFooter,
+                    modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                    buttons: model?.buttons,
+                    footerButtons: model?.footerButtons
+                  }
+                  : undefined
+              }
+              name={model?.componentName}
+              width={width}
+              configurableColumns={model.items ?? []}
+              value={value}
+              onChange={onChangeInternal}
+              size={model.size}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -173,12 +234,12 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     .add<IEntityPickerComponentProps>(6, (prev) => migrateReadOnly(prev))
     .add<IEntityPickerComponentProps>(7, (prev, context) => ({
       ...prev,
-      valueFormat: prev.valueFormat  ??
+      valueFormat: prev.valueFormat ??
         context.isNew
+        ? 'simple'
+        : prev['useRawValue'] === true
           ? 'simple'
-          : prev['useRawValue'] === true 
-            ? 'simple' 
-            : 'entityReference',
+          : 'entityReference',
     }))
     .add<IEntityPickerComponentProps>(8, (prev, context) => ({
       ...prev,
@@ -186,14 +247,15 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         ? 'default'
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
-    .add<IEntityPickerComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-  ,
-  settingsFormMarkup: entityPickerSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),
+    .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, desktop: { ...defaultStyles(prev) }, mobile: { ...defaultStyles(prev) }, tablet: { ...defaultStyles(prev) } })),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
+      editMode: 'inherited',
       entityType: isEntityReferencePropertyMetadata(propMetadata)
         ? propMetadata.entityType 
         : isEntityReferenceArrayPropertyMetadata(propMetadata)
@@ -203,17 +265,17 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       valueFormat: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'entityReference' : 'simple',
     };
   },
-  getFieldsToFetch: (propertyName, rawModel)  => {
-      if (rawModel.valueFormat === 'entityReference') {
-        return [
-          `${propertyName}.id`,
-          rawModel.displayEntityKey
-            ? `${propertyName}.${rawModel.displayEntityKey}`
-            : `${propertyName}._displayName`,
-          `${propertyName}._className`
-        ];
-      }
-      return null;
+  getFieldsToFetch: (propertyName, rawModel) => {
+    if (rawModel.valueFormat === 'entityReference') {
+      return [
+        `${propertyName}.id`,
+        rawModel.displayEntityKey
+          ? `${propertyName}.${rawModel.displayEntityKey}`
+          : `${propertyName}._displayName`,
+        `${propertyName}._className`
+      ];
+    }
+    return null;
   },
   validateModel: (model, addModelError) => {
     if (!model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');

@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { EditableTagGroup, EndpointsAutocomplete } from '@/components';
+import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector } from '@/components';
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateValue, executeScript, useAvailableConstantsData, useFormData } from '@/index';
+import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -48,9 +48,9 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue,
-        propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup } = props;
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
+        propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
 
@@ -93,6 +93,16 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         templateSettings: { functionName: functionName },
         exposedVariables: defaultExposedVariables
     };
+
+    const property = propertyAccessor
+        ? evaluateString(propertyAccessor, { data: formData })
+        : null;
+
+    const meta = useMetadata(false);
+
+    const propertyMeta = property && meta
+        ? meta.getPropertyMeta(property)
+        : null;
 
     const editModes = [
         { value: 'editable', icon: 'editIcon', title: 'Editable' },
@@ -196,7 +206,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
-            return <ColumnsConfig size={size} />;
+            return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
             return <ColumnsList {...props} readOnly={readOnly} />;
         case 'sizableColumnsConfig':
@@ -287,6 +297,15 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             />;
         case 'endpointsAutoComplete':
             return <EndpointsAutocomplete readOnly={readOnly} />;
+        case 'componentSelector':
+            return <FormComponentSelector
+                componentType={componentType}
+                noSelectionItem={
+                    noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
+                }
+                readOnly={readOnly}
+                propertyMeta={propertyMeta}
+            />;
         default:
             return <Input
                 size={size}
