@@ -1,347 +1,303 @@
-import { DesignerToolbarSettings } from "@/index";
-import { nanoid } from "@/utils/uuid";
-import { FormLayout } from "antd/lib/form/Form";
+import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data?: any) => {
-  const searchableTabsId = nanoid();
-  const commonTabId = nanoid();
-  const dataTabId = nanoid();
-  const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
-  const visibilityTabId = nanoid();
-  
-  const dataContainerId = nanoid();
-  const formContainerId = nanoid();
-  const actionContainerId = nanoid();
-  const dataComponentsContainerId = nanoid();
-  const formComponentsContainerId = nanoid();
-
-  return {
-    components: new DesignerToolbarSettings(data)
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
-        tabs: [
-          {
-            id: commonTabId,
-            key: 'common',
-            title: 'Common',
-            components: [...new DesignerToolbarSettings()
-      .addSettingsInput({
-        id: nanoid(),
-        propertyName: "columnType",
-        parentId: commonTabId,
-        label: "Type",
-        inputType: "dropdown",
-        validate: {
-          required: true
-        },
-        dropdownOptions: [
-          {
-            label: "Action",
-            value: "action"
-          },
-          {
-            label: "CRUD Operations",
-            value: "crud-operations"
-          },
-          {
-            label: "Data",
-            value: "data"
-          },
-          {
-            label: "Form",
-            value: "form"
-          }
-        ]
-      })
-      .addContainer({
-        id: dataContainerId,
-        propertyName: "dataContainer",
-        parentId: commonTabId,
-        label: "Data Container",
-        hidden: { _code: 'return getSettingValue(data?.columnType) !== "data";', _mode: 'code', _value: false },
-        direction: "vertical",
-        components: [
-          ...new DesignerToolbarSettings()
-            .addSettingsInput({
-              id: nanoid(),
-              propertyName: "propertyName",
-              parentId: dataContainerId,
-              label: "Property Name",
-              inputType: "propertyAutocomplete"
-            })
-            .toJson()
-        ]
-      })
-      .addContainer({
-        id: formContainerId,
-        propertyName: "dataContainerp",
-        parentId: commonTabId,
-        label: "Form Container",
-        hidden: { _code: 'return getSettingValue(data?.columnType) !== "form";', _mode: 'code', _value: false },
-        direction: "vertical",
-        components: [
-          ...new DesignerToolbarSettings()
-            .addSettingsInput({
-              id: nanoid(),
-              propertyName: "propertiesNames",
-              parentId: formContainerId,
-              label: "Properties to fetch",
-              inputType: "propertyAutocomplete",
-              mode: "multiple"
-            })
-            .toJson()
-        ]
-      })
-      .addSettingsInput({
-        id: nanoid(),
-        propertyName: "caption",
-        parentId: commonTabId,
-        label: "Caption",
-        inputType: "text"
-      })
-      .addSettingsInput({
-        id: nanoid(),
-        propertyName: "description",
-        parentId: commonTabId,
-        label: "Tooltip Description",
-        inputType: "textArea"
-      })
-      .addContainer({
-        id: actionContainerId,
-        propertyName: "cntButton",
-        parentId: commonTabId,
-        label: "Action Container",
-        hidden: { _code: 'return getSettingValue(data?.columnType) !== "action";', _mode: 'code', _value: false },
-        direction: "vertical",
-        components: [
-          ...new DesignerToolbarSettings()
-            .addSettingsInput({
-              id: nanoid(),
-              propertyName: "icon",
-              parentId: actionContainerId,
-              label: "Icon",
-              inputType: "iconPicker"
-            })
-            .addConfigurableActionConfigurator({
-              id: nanoid(),
-              propertyName: "actionConfiguration",
-              parentId: actionContainerId,
-              label: "Action Configuration",
-            })
-            .toJson()
-        ]
-      })
-      .toJson()
-          ]
-          },
-          {
-            id: dataTabId,
-            key: 'data',
-            title: 'Data',
-            components: [...new DesignerToolbarSettings()
-              .addContainer({
-                id: dataComponentsContainerId,
-                propertyName: "container3",
-                parentId: dataTabId,
-                label: "Data Components",
-                hidden: { _code: 'return getSettingValue(data?.columnType) !== "data";', _mode: 'code', _value: false },
-                direction: "vertical",
-                components: []
-              })
-              .addContainer({
-                id: formComponentsContainerId,
-                propertyName: "container3fp",
-                parentId: dataTabId,
-                label: "Form Components",
-                hidden: { _code: 'return getSettingValue(data?.columnType) !== "form";', _mode: 'code', _value: false },
-                direction: "vertical",
-                components: [
-                  ...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: "displayFormId",
-                      parentId: formComponentsContainerId,
-                      label: "Display form",
-                      inputType: "formAutocomplete"
-                    })
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: "createFormId",
-                      parentId: formComponentsContainerId,
-                      label: "Create form",
-                      inputType: "formAutocomplete"
-                    })
-                    .addSettingsInput({
-                      id: nanoid(),
-                      propertyName: "editFormId",
-                      parentId: formComponentsContainerId,
-                      label: "Edit form",
-                      inputType: "formAutocomplete"
-                    })
-                    .toJson()
+export const getColumnSettings = (data) => {
+    return {
+        components: new DesignerToolbarSettings(data)
+            .addSearchableTabs({
+                id: 'columnSettingsTabs',
+                propertyName: 'settingsTabs',
+                parentId: 'root',
+                label: 'Settings',
+                hideLabel: true,
+                labelAlign: 'right',
+                size: 'small',
+                tabs: [
+                    {
+                        key: '1',
+                        title: 'Common',
+                        id: 'commonTab',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                id: "840aee56-42d2-40ed-a2c6-57abb255fb95",
+                                inputType: "dropdown",
+                                propertyName: "columnType",
+                                label: "Type",
+                                labelAlign: "right",
+                                parentId: "root",
+                                hidden: false,
+                                jsSetting: false,
+                                dropdownOptions: [
+                                    { label: "Action", value: "action" },
+                                    { label: "CRUD Operations", value: "crud-operations" },
+                                    { label: "Data", value: "data" },
+                                    { label: "Form", value: "form" }
+                                ],
+                                validate: {
+                                    required: true
+                                }
+                            })
+                            .addContainer({
+                                id: 'data-container',
+                                parentId: 'commonTab',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "data";',
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: '52f4460d-2e64-4d79-a900-7cd28b0bebd3',
+                                            propertyName: 'propertyName',
+                                            label: 'Property Name',
+                                            inputType: 'propertyAutocomplete',
+                                        })
+                                        .toJson()
+                                ]
+                            })
+                            .addContainer({
+                                id: 'form-container',
+                                parentId: 'commonTab',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "form";',
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: '5314460d-2e64-4d79-a900-7cd28b0bebd3',
+                                            propertyName: 'propertiesNames',
+                                            label: 'Properties to fetch',
+                                            inputType: 'propertyAutocomplete',
+                                            mode: 'multiple'
+                                        })
+                                        .toJson()
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: 'caption-description-row',
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: '5d4d56fb-d7f8-4835-a529-c4fa93f3596d',
+                                        type: 'text',
+                                        propertyName: 'caption',
+                                        label: 'Caption'
+                                    },
+                                    {
+                                        id: '9e5cad3f-b9af-4b19-aebb-d630265f6619',
+                                        type: 'textArea',
+                                        propertyName: 'description',
+                                        label: 'Tooltip Description'
+                                    }
+                                ]
+                            })
+                            .addContainer({
+                                id: 'action-container',
+                                parentId: 'commonTab',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "action";',
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: '91b404a6-4021-4b0a-b9ef-007167a93075',
+                                            propertyName: 'icon',
+                                            label: 'Icon',
+                                            inputType: 'iconPicker'
+                                        })
+                                        .addConfigurableActionConfigurator({
+                                            id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+                                            propertyName: 'actionConfiguration',
+                                            label: 'Action Configuration'
+                                        })
+                                        .toJson()
+                                ]
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '2',
+                        title: 'Display',
+                        id: 'displayTab',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                                id: 'width-settings-row',
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: 'b1803af1-37fb-4f03-b2b6-727b7f17730c',
+                                        type: 'number',
+                                        propertyName: 'minWidth',
+                                        label: 'Min Width'
+                                    },
+                                    {
+                                        id: '65bb484c-ab85-472c-bde7-e447c481ed47',
+                                        type: 'number',
+                                        propertyName: 'maxWidth',
+                                        label: 'Max Width'
+                                    }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: 'adc03af1-37fb-4f03-b2b6-727b7f17730c',
+                                propertyName: 'minHeight',
+                                label: 'Min Height',
+                                inputType: 'number',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "form";',
+                                    _mode: 'code',
+                                    _value: false
+                                }
+                            })
+                            .addSettingsInputRow({
+                                id: 'visibility-settings-row',
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: '77ceb915-f4f9-4957-b62f-7a4e4ba00846',
+                                        type: 'switch',
+                                        propertyName: 'isVisible',
+                                        label: 'Is Visible'
+                                    },
+                                    {
+                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a82338',
+                                        type: 'dropdown',
+                                        propertyName: 'anchored',
+                                        label: 'Anchored',
+                                        dropdownOptions: [
+                                            { label: 'Left', value: 'left' },
+                                            { label: 'Right', value: 'right' }
+                                        ],
+                                        allowClear: true
+                                    }
+                                ]
+                            })
+                            .addContainer({
+                                id: 'data-display-container',
+                                parentId: 'displayTab',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "data";',
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: 'FGIcguhDkag6a801GXSgm',
+                                            propertyName: 'displayComponent',
+                                            label: 'Display component',
+                                            inputType: 'componentSelector',
+                                            componentType: 'output',
+                                            noSelectionItemText: 'Default',
+                                            noSelectionItemValue: '[default]'
+                                        })
+                                        .addSettingsInput({
+                                            id: 'rYYm0wT-TDnBfqmOMVmIX',
+                                            propertyName: 'editComponent',
+                                            label: 'Edit component',
+                                            inputType: 'componentSelector',
+                                            componentType: 'input',
+                                            noSelectionItemText: 'Not editable',
+                                            noSelectionItemValue: '[not-editable]'
+                                        })
+                                        .addSettingsInput({
+                                            id: 'L2bRSuStgiAmWfd5Z09CR',
+                                            propertyName: 'createComponent',
+                                            label: 'Create component',
+                                            inputType: 'componentSelector',
+                                            componentType: 'input',
+                                            noSelectionItemText: 'Not editable',
+                                            noSelectionItemValue: '[not-editable]'
+                                        })
+                                        .toJson()
+                                ]
+                            })
+                            .addContainer({
+                                id: 'form-display-container',
+                                parentId: 'displayTab',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "form";',
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                components: [
+                                    ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: '1FGIcguhDkag6a801GXSgm',
+                                            propertyName: 'displayFormId',
+                                            label: 'Display form',
+                                            inputType: 'formAutocomplete'
+                                        })
+                                        .addSettingsInput({
+                                            id: '1rYYm0wT-TDnBfqmOMVmIX',
+                                            propertyName: 'createFormId',
+                                            label: 'Create form',
+                                            inputType: 'formAutocomplete'
+                                        })
+                                        .addSettingsInput({
+                                            id: '1L2bRSuStgiAmWfd5Z09CR',
+                                            propertyName: 'editFormId',
+                                            label: 'Edit form',
+                                            inputType: 'formAutocomplete'
+                                        })
+                                        .toJson()
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: '33IOXJRmPdfU9KLeDUF64',
+                                propertyName: 'allowSorting',
+                                label: 'Allow sorting',
+                                inputType: 'switch',
+                                hidden: {
+                                    _code: 'return  getSettingValue(data?.columnType) !== "data";',
+                                    _mode: 'code',
+                                    _value: false
+                                }
+                            })
+                            .addSettingsInput({
+                                id: 'WwHwuygM-SKcqDbHVbPNkoMAcsUHGJ',
+                                propertyName: 'backgroundColor',
+                                label: 'Background color',
+                                inputType: 'color',
+                                allowClear: true
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '3',
+                        title: 'Security',
+                        id: 'securityTab',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                id: 'eda790c5-3cea-4755-9c75-039eca9318f3',
+                                propertyName: 'customVisibility',
+                                label: 'Custom Visibility',
+                                inputType: 'codeEditor',
+                                description: 'Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
+                            })
+                            .addSettingsInput({
+                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                propertyName: 'permissions',
+                                label: 'Permissions',
+                                inputType: 'permissions'
+                            })
+                            .toJson()
+                        ]
+                    }
                 ]
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "allowSorting",
-                parentId: dataTabId,
-                label: "Allow sorting",
-                inputType: "switch",
-                hidden: { _code: 'return getSettingValue(data?.columnType) !== "data";', _mode: 'code', _value: false }
-              })
-              .toJson()
-            ]
-          },
-          {
-            id: appearanceTabId,
-            key: 'appearance',
-            title: 'Appearance',
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "minWidth",
-                parentId: appearanceTabId,
-                label: "Min Width",
-                inputType: "number"
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "maxWidth",
-                parentId: appearanceTabId,
-                label: "Max Width",
-                inputType: "number"
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "minHeight",
-                parentId: appearanceTabId,
-                label: "Min Height",
-                inputType: "number",
-                hidden: { _code: 'return getSettingValue(data?.columnType) !== "form";', _mode: 'code', _value: false }
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "isVisible",
-                parentId: appearanceTabId,
-                label: "Is Visible",
-                inputType: "switch"
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "anchored",
-                parentId: appearanceTabId,
-                label: "Anchored",
-                inputType: "dropdown",
-                dropdownOptions: [
-                  {
-                    label: "Left",
-                    value: "left"
-                  },
-                  {
-                    label: "Right",
-                    value: "right"
-                  }
-                ],
-                allowClear: true
-              })
-              .addColorPicker({
-                id: nanoid(),
-                propertyName: "backgroundColor",
-                parentId: appearanceTabId,
-                label: "Background color",
-                allowClear: true,
-                showText: true,
-              })
-              .toJson()
-            ]
-          },
-          {
-            id: visibilityTabId,
-            key: 'visibility',
-            title: 'Visibility',
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: "customVisibility",
-                parentId: visibilityTabId,
-                label: "Custom Visibility",
-                inputType: "codeEditor",
-                description: "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-                exposedVariables: [
-                  `{
-                    name: "globalState",
-                    description: "The global state of the application",
-                    type: "object"
-                  }`,
-                  `{
-                    name: "data",
-                    description: "Selected form values",
-                    type: "object"
-                  }`
-                ],
-                language: "typescript",
-                wrapInTemplate: true,
-                templateSettings: {
-                  functionName: "customVisibility"
-                },
-                availableConstantsExpression: "return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-              })
-              .toJson()
-            ]
-          },
-          {
-            id: securityTabId,
-            key: 'security',
-            title: 'Security',
-            components: [...new DesignerToolbarSettings()
-              .addPermissionAutocomplete({
-                id: nanoid(),
-                propertyName: "permissions",
-                parentId: securityTabId,
-                label: "Permissions",
-              })
-              .toJson()
-            ]
-          }
-        ]
-      })
-      .toJson(),
-    formSettings: {
-      isSettingsForm: true,
-      layout: "horizontal" as FormLayout,
-      colon: true,
-      labelCol: { span: 8 },
-      wrapperCol: { span: 16 },
-      access: null,
-      permissions: null,
-      version: 6,
-      dataLoaderType: "gql",
-      dataSubmitterType: "gql",
-      onBeforeDataLoad: "form.setFieldsValue({...form.formArguments});",
-      onAfterDataLoad: null,
-      onPrepareSubmitData: null,
-      onBeforeSubmit: null,
-      onSubmitSuccess: null,
-      onSubmitFailed: null,
-      dataSubmittersSettings: {
-        gql: {
-          endpointType: "default",
-          dynamicEndpoint: "return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+            }).toJson(),
+        formSettings: {
+            colon: true,
+            layout: 'horizontal' as FormLayout,
+            labelCol: { span: 8 },
+            wrapperCol: { span: 16 }
         }
-      },
-      dataLoadersSettings: {
-        gql: {
-          endpointType: "default"
-        },
-        custom: {}
-      }
-    }
-  };
+    };
 };

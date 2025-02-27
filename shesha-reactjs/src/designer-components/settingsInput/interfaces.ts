@@ -4,6 +4,7 @@ import { ResultType } from '@/components/codeEditor/models';
 import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ComponentType } from '@/components/formComponentSelector';
 
 export interface IRadioOption {
     value: string | number;
@@ -20,7 +21,7 @@ export interface InputType {
     type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
-    | 'sizableColumnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig' | 'itemListConfiguratorModal'
+    | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal'
     | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfig';
 }
 
@@ -81,6 +82,8 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
     _formFields?: string[];
     autoFillProps?: boolean;
-    wrapInTemplate?: boolean;
-    templateSettings?: any;
+    propertyAccessor?: string;
+    noSelectionItemText?: string;
+    noSelectionItemValue?: string;
+    componentType?: ComponentType;
 };

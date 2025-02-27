@@ -1,4 +1,4 @@
-import columnSettingsJson from './columnSettings.json';
+//import columnSettingsJson from './columnSettings.json';
 //import { getSettings } from './columnSettings';
 import React, {
   FC,
@@ -13,11 +13,13 @@ import { useDebouncedCallback } from 'use-debounce';
 import { sheshaStyles } from '@/styles';
 import { usePrevious } from 'react-use';
 import { IMetadataContext } from '@/providers/metadata/contexts';
+import { getColumnSettings } from './columnSettings';
 
-export interface IColumnPropertiesProps { 
+export interface IColumnPropertiesProps {
   item?: ColumnsItemProps;
   onChange?: (item: ColumnsItemProps) => void;
   readOnly: boolean;
+  componentName?: string;
   metadata?: IMetadataContext;
 }
 
@@ -25,15 +27,16 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
   const [form] = Form.useForm();
 
   const columnType = Form.useWatch('columnType', form);
+
   const prevColumnType = usePrevious(columnType);
   useEffect(() => {
     if (columnType) {
-      const fromDataToAction=!['action', 'crud-operations'].includes(prevColumnType) && ['action', 'crud-operations'].includes(columnType);
-      const fromActionToData=['action', 'crud-operations'].includes(prevColumnType) && !['action', 'crud-operations'].includes(columnType);
+      const fromDataToAction = !['action', 'crud-operations'].includes(prevColumnType) && ['action', 'crud-operations'].includes(columnType);
+      const fromActionToData = ['action', 'crud-operations'].includes(prevColumnType) && !['action', 'crud-operations'].includes(columnType);
 
-      if(fromDataToAction){
+      if (fromDataToAction) {
         form.setFieldsValue({ minWidth: 35, maxWidth: 35 });
-      }else if(fromActionToData){
+      } else if (fromActionToData) {
         form.setFieldsValue({ minWidth: 100, maxWidth: 0 });
       }
     }
@@ -66,7 +69,9 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
-      markup={columnSettingsJson as FormMarkup}
+      markup={{
+        ...getColumnSettings({ type: item?.columnType }),
+      } as FormMarkup}
       form={form}
       initialValues={item}
       onValuesChange={debouncedSave}
