@@ -22,11 +22,12 @@ import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getColumnAnchored, getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { useDataTableStore } from '@/providers/index';
+import { useConfigurableActionDispatcher, useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
 import { EmptyState } from '..';
+import { useAvailableConstantsData } from '@/index';
 
 interface IReactTableState {
   allRows: any[];
@@ -79,14 +80,40 @@ export const ReactTable: FC<IReactTableProps> = ({
   noDataSecondaryText = "No data is available for this table",
   noDataIcon,
   onRowsRendering,
-  onRowsReordered
+  onRowsReordered,
+  striped,
+  onRowClick,
+  onRowDblClick,
+  onRowSelect,
+  shadowObject,
+  renderedShadow,
+  renderedBorder,
+  tableFontSize,
+  fontFamily,
+  headerFontSize,
+  headerBackgroundColor,
+  headerHeight,
+  headerTextColor,
+  backgroundColor,
+  width,
+  tableHeight,
+  zebraStripeColor,
+  hoverHighlight,
+  rowPadding,
+  rowHeight,
+  tableFontColor,
+  rowSelectedColor,
+  overflowX,
+  overflowY,
+  borderRadius,
+  sortIndicator,
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
     allColumns: columns,
   });
   const { styles } = useStyles();
-  const { styles: mainStyles } = useMainStyles();
+  const { styles: mainStyles } = useMainStyles({ hoverColor: hoverHighlight, oddRowColor: zebraStripeColor, selectedColor: rowSelectedColor, sortIndicatorColor: sortIndicator });
 
   const { setDragState } = useDataTableStore();
 
@@ -101,6 +128,12 @@ export const ReactTable: FC<IReactTableProps> = ({
     }),
     []
   );
+
+  const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
+  const clickDynamicContext = useActionDynamicContext(onRowClick?.actionArguments);
+  const dblClickDynamicContext = useActionDynamicContext(onRowDblClick?.actionArguments);
+  const selectDynamicContext = useActionDynamicContext(onRowSelect?.actionArguments);
+  const allData = useAvailableConstantsData();
 
   const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
     callback(e);
@@ -259,19 +292,43 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [sortBy]);
 
+
+  const performOnRowSelect = (row) => {
+    const evaluationContext = {
+      data,
+      selectedRow: row,
+      ...allData,
+    };
+    try {
+      executeAction({
+        actionConfiguration: { ...onRowSelect },
+        argumentsEvaluationContext: { ...evaluationContext, ...selectDynamicContext },
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  //we need this to prevent performOnRowSelect calling when datatable content renders
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
     if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
-      const arrays: string[] = allRows
-        ?.map(({ id }, index) => {
+      const selectedRows = allRows
+        ?.map((index) => {
           if (selectedRowIds[index]) {
-            return id;
+            return allRows[index];
           }
-
           return null;
         })
         ?.filter(Boolean);
 
-      onSelectedIdsChanged(arrays);
+      onSelectedIdsChanged(selectedRows.map(row => row.id)); // Keep the original ID callback
+
+      if (onRowSelect && Boolean(isFirstRender) === true) {
+        isFirstRender.current = false;
+        performOnRowSelect(selectedRows);
+      }
     }
   }, [selectedRowIds]);
 
@@ -342,7 +399,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   );
 
   const containerStyleFinal = useMemo<CSSProperties>(() => {
-    const result = containerStyle ?? {};
+    const result: CSSProperties = { ...containerStyle };
     if (minHeight) result.minHeight = `${minHeight}px`;
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 
@@ -352,16 +409,69 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
 
     return result;
-  }, [containerStyle, minHeight, maxHeight]);
+  }, [containerStyle, minHeight, maxHeight, freezeHeaders]);
 
-  const renderRow = (row: Row<any>, rowIndex: number) => {
+  const renderRow = (row: Row<any>, rowIndex: number, striped?: boolean) => {
+    if (!onRowClick) {
+      /* do nothing */
+    }
+
     const id = row.original?.id;
+
+    const performOnRowClick = (row) => {
+      const evaluationContext = {
+        data,
+        selectedRow: row,
+        ...allData,
+      };
+      try {
+        executeAction({
+          actionConfiguration: { ...onRowClick },
+          argumentsEvaluationContext: { ...evaluationContext, ...clickDynamicContext },
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const performOnRowDblClick = (row) => {
+      if (!onRowDblClick) {
+        /* do nothing */
+      }
+
+      const evaluationContext = {
+        data,
+        selectedRow: row,
+        ...allData,
+      };
+      try {
+        executeAction({
+          actionConfiguration: { ...onRowDblClick },
+          argumentsEvaluationContext: { ...evaluationContext, ...dblClickDynamicContext },
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     return (
       <Row
         key={id ?? rowIndex}
+        rowHeight={rowHeight}
+        rowPadding={rowPadding}
         prepareRow={prepareRow}
-        onClick={handleSelectRow}
-        onDoubleClick={handleDoubleClickRow}
+        onClick={(row) => {
+          if (onRowClick) {
+            performOnRowClick(row);
+          }
+          handleSelectRow(row);
+        }}
+        onDoubleClick={(row, index) => {
+          if (onRowDblClick) {
+            performOnRowDblClick(row);
+          }
+          handleDoubleClickRow(row, index);
+        }}
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
@@ -374,6 +484,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        striped={striped}
       />
     );
   };
@@ -381,7 +492,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const renderRows = () => {
     return onRowsRendering
       ? onRowsRendering({ rows: rows, defaultRender: renderRow })
-      : rows.map((row, rowIndex) => renderRow(row, rowIndex));
+      : rows.map((row, rowIndex) => renderRow(row, rowIndex, striped));
   };
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
     ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
@@ -397,7 +508,11 @@ export const ReactTable: FC<IReactTableProps> = ({
         </span>
       }
     >
-      <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
+      <div className={mainStyles.shaReactTable}
+        style={{
+          ...containerStyleFinal, boxShadow: renderedShadow, margin: shadowObject.blur + 'px', border: renderedBorder, fontFamily: fontFamily, fontSize: tableFontSize + 'px', backgroundColor: backgroundColor, height: tableHeight + 'px', width: width + 'px',
+          color: tableFontColor, overflowX: overflowX, overflowY: overflowY, borderRadius: borderRadius + 'px'
+        }}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
           {columns?.length > 0 &&
             headerGroups.map((headerGroup) => {
@@ -407,7 +522,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   key={key}
                   {...headerGroupProps}
                   className={classNames(styles.tr, styles.trHead)}
-                  style={{ ...fixedHeadersStyle, display: 'flex' }} // Make the header row sticky
+                  style={{ ...fixedHeadersStyle, display: 'flex', fontSize: headerFontSize + 'px', fontFamily: fontFamily, color: headerTextColor, height: headerHeight + 'px', backgroundColor: headerBackgroundColor }} // Make the header row sticky
                 >
                   {headerGroup?.headers?.map((column, index) => {
                     const anchored = getColumnAnchored((column as any)?.anchored);
@@ -472,7 +587,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                         style={{
                           ...headerProps?.style,
                           [direction]: shiftedBy,
-                          backgroundColor: 'white',
+                          backgroundColor: headerBackgroundColor ?? 'white',
                           borderBottom: '1px solid #f0f0f0',
                           fontWeight: '600',
                         }}

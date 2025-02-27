@@ -25,9 +25,11 @@ export interface IRowCellProps {
   row?: Cell<any, any, any>[];
   rowIndex?: number;
   preContent?: ReactNode;
+  rowPadding?: number;
+  rowHeight?: number;
 }
 
-export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex }) => {
+export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex, rowHeight, rowPadding }) => {
   const { styles } = useStyles();
   const { key, style, ...restProps } = cell.getCellProps(cellProps);
 
@@ -54,7 +56,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex }) 
     <div
       key={key}
       {...restProps}
-      style={style || cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle } : undefined}
+      style={style || cellStyle ? { ...anchoredCellStyle, ...style, ...cellStyle, padding: rowPadding+'px', height: rowHeight+'px' } : undefined}
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,

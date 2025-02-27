@@ -1,4 +1,5 @@
 import React, {
+    CSSProperties,
     FC,
     Fragment,
 } from 'react';
@@ -88,6 +89,42 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     };
 
 
+    const shadowObject = {
+        x: props.boxShadowX || 0,
+        y: props.boxShadowY || 0,
+        blur: props.boxShadowBlur || '0px',
+        spread: props.boxShadowSpread || '0px',
+        color: props.boxShadowColor || '#000000',
+        inset: props.boxShadowInset || false
+    };
+
+    const borderObject = {
+        width: props.borderWidth || 0,
+        style: props.borderStyle || 'solid',
+        color: props.borderColor || '#000000'
+    };
+
+    const createBoxShadow = (shadowObj: {
+        x: number;
+        y: number;
+        blur: string;
+        spread: string;
+        color: string;
+        inset: boolean;
+    }): string => {
+        const { x, y, blur, spread, color, inset } = shadowObj;
+        return `${inset ? 'inset ' : ''}${x}px ${y}px ${blur}px ${spread}px ${color}`;
+    };
+
+    const createBorder = (borderObj: {
+        width: number;
+        style: CSSProperties['borderStyle'];
+        color: string;
+      }): string => {
+        const { width, style, color } = borderObj;
+        return `${width}px ${style} ${color}`;
+      };
+
     return (
         <SidebarContainer
             rightSidebarProps={{
@@ -101,6 +138,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         >
             <GlobalTableStyles />
             {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
+
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
@@ -129,6 +167,34 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 noDataText={props.noDataText}
                 noDataSecondaryText={props.noDataSecondaryText}
                 noDataIcon={props.noDataIcon}
+                striped={props.toggleZebraStripes}
+                onRowClick={props.onRowClick}
+                onRowDblClick={props.onRowDblClick}
+                onRowSelect={props.onRowSelect}
+                shadowObject={shadowObject}
+                renderedShadow={createBoxShadow(shadowObject)}
+                renderedBorder={createBorder(borderObject)}
+                borderObject={borderObject}
+                fontFamily={props.fontFamily}
+                tableFontSize={props.tableFontSize}
+                headerFontSize={props.headerFontSize}
+                headerTextColor={props.headerTextColor}
+                headerHeight={props.headerHeight}
+                headerBorder={props.headerBorder}
+                headerBackgroundColor={props.headerBackgroundColor}
+                width={props.width}
+                tableHeight={props.tableHeight}
+                backgroundColor={props.backgroundColor}
+                zebraStripeColor={props.zebraStripeColor}
+                hoverHighlight={props.hoverHighlight}
+                rowHeight={props.rowHeight}
+                rowPadding={props.rowPadding}
+                tableFontColor={props.fontColor}
+                rowSelectedColor={props.rowSelectedColor}
+                overflowX={props.overflowX}
+                overflowY={props.overflowY}
+                borderRadius={props.borderRadius}
+                sortIndicator={props.sortIndicator}
             />
         </SidebarContainer>
     );
