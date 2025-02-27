@@ -110,7 +110,7 @@ namespace Shesha.DynamicEntities.Binder
             {
                 var _formFields = jobject.Property(nameof(IHasFormFieldsList._formFields));
                 var formFieldsArray = _formFields?.Value as JArray;
-                formFieldsInternal = formFieldsArray?.Select(f => f.Value<string>()).ToList() ?? new List<string>();
+                formFieldsInternal = formFieldsArray?.Select(f => f.Value<string>()).WhereNotNull().ToList() ?? new List<string>();
             }
 
             formFieldsInternal = formFieldsInternal.Select(x => x.ToCamelCase()).ToList();

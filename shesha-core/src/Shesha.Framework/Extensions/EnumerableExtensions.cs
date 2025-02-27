@@ -129,7 +129,17 @@ namespace Shesha.Extensions
         /// </summary>
         public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source) where T : class
         {
-            return source.Where(x => x != null);
+            return source.Where(x => x != null).OfType<T>();
+        }
+
+        /// <summary>
+        /// Returns a sequence of strings without nulls and empty strings
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> WhereNotNullOrWhiteSpace(this IEnumerable<string?> source) 
+        {
+            return source.Where(x => !string.IsNullOrWhiteSpace(x)).OfType<string>();
         }
     }
 }

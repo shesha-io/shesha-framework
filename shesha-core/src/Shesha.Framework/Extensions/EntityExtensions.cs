@@ -22,7 +22,6 @@ using System.Reflection;
 
 namespace Shesha.Extensions
 {
-#nullable enable
     /// <summary>
     /// Entity extensions
     /// </summary>
@@ -566,5 +565,4 @@ namespace Shesha.Extensions
             return provider.GetEntityType(entity);
         }        
     }
-#nullable restore
 }
