@@ -35,7 +35,7 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                Person testPerson = null;
+                Person? testPerson = null;
 
                 try
                 {
@@ -60,7 +60,7 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
 
                 try
                 {
@@ -94,8 +94,8 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                Person newTestPerson1 = null;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
+                Person? newTestPerson1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
 
                 try
                 {
@@ -160,16 +160,16 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                Person newTestPerson1 = null;
-                Person newTestPerson2 = null;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
-                TestOrganisationAllowContactUpdate newTestOrg2 = null;
-                TestOrganisationAllowContactUpdate newTestOrg3 = null;
-                TestOrganisationAllowContactUpdate newTestOrg4 = null;
-                TestOrganisationAllowContactUpdate newTestOrg5 = null;
-                TestOrganisationAllowContactUpdate newTestOrg6 = null;
-                TestOrganisationAllowContactUpdate newTestOrg7 = null;
-                TestOrganisationAllowContactUpdate newTestOrg8 = null;
+                Person? newTestPerson1 = null;
+                Person? newTestPerson2 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg2 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg3 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg4 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg5 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg6 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg7 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg8 = null;
 
                 try
                 {

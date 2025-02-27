@@ -46,7 +46,7 @@ namespace Shesha.Scheduler
         private readonly IIocManager _iocManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public Castle.Core.Logging.ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         public ScheduledJobManager(IRepository<ScheduledJobTrigger, Guid> triggerRepository, IUnitOfWorkManager unitOfWorkManager, ITypeFinder typeFinder, IIocManager iocManager, IServiceProvider serviceProvider)
         {
@@ -198,7 +198,7 @@ namespace Shesha.Scheduler
                 var jobInstance = _serviceProvider.GetService(jobInstanceType);
                 var methodInfo = recordedType.GetMethod(methodName);
 
-                Task task = (Task)methodInfo.Invoke(jobInstance, methodArgs);
+                Task task = methodInfo.Invoke<Task>(jobInstance, methodArgs).NotNull();
                 await task;
             }
             
@@ -320,7 +320,7 @@ namespace Shesha.Scheduler
 
             #region Configure file appender
 
-            FileAppender fileAppender = null;
+            FileAppender? fileAppender = null;
 
             if (!string.IsNullOrWhiteSpace(job.LogFilePath))
             {

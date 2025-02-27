@@ -92,7 +92,7 @@ namespace Shesha.DynamicEntities
                 var convertedInput = Activator.CreateInstance(convertedInputType) ?? throw new Exception($"Failed to create instance of type '{convertedInputType.FullName}'");
                 AutoMapper.Map(input, convertedInput);
 
-                var task = (Task)method.Invoke(appService, new object[] { convertedInput });
+                var task = method.Invoke<Task>(appService, [convertedInput]);
                 await task.ConfigureAwait(false);
 
                 var resultProperty = task.GetType().GetProperty("Result");

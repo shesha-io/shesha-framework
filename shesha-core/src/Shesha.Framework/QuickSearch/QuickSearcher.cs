@@ -290,33 +290,6 @@ namespace Shesha.QuickSearch
             var query = Expression.Lambda<Func<ReferenceListItem, bool>>(expr, param);
 
             return query;
-            /*
-            var moduleExpr = string.IsNullOrWhiteSpace(module)
-                ? Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceListItem.ReferenceList.Configuration)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Module)}"), Expression.Constant(null))
-                : Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceListItem.ReferenceList.Configuration)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Module)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Module.Name)}"), Expression.Constant(module));
-
-            var nameExpr = Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceListItem.ReferenceList.Configuration)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Name)}"), Expression.Constant(name));
-
-            var propExpression = ExpressionExtensions.GetMemberExpression(entityExpression, propName);
-            var valuePredicateExpr = comparer.Invoke(
-                Expression.Convert(propExpression, typeof(Int64?)),
-                Expression.Convert(ExpressionExtensions.GetMemberExpression(param, nameof(ReferenceListItem.ItemValue)), typeof(Int64?))
-            );
-
-            var constExpression = Expression.Constant(quickSearch);
-
-            var itemTextExpr = ExpressionExtensions.GetMemberExpression(param, nameof(ReferenceListItem.Item));
-            var containsExpression = Expression.Call(
-                                    itemTextExpr,
-                                    stringContainsMethod,
-                                    constExpression);
-
-            var expr = CombineExpressions(new List<Expression> { moduleExpr, nameExpr, valuePredicateExpr, containsExpression }, Expression.AndAlso, entityExpression);
-
-            var query = Expression.Lambda<Func<ReferenceListItem, bool>>(expr, param);
-
-            return query;
-            */
         }
 
         /// <summary>
@@ -327,6 +300,13 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private delegate Expression Binder(Expression left, Expression right);
 
+        private Expression Reduce(Expression acc, Expression right, Binder binder)
+        {
+            return acc == null
+                ? right
+                : binder(acc, right);
+        }
+
         /// <summary>
         /// Combine expressions list using specified <paramref name="binder"/>
         /// </summary>
@@ -336,13 +316,11 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private Expression CombineExpressions(List<Expression> expressions, Binder binder, ParameterExpression param)
         {
-            Expression acc = null;
-
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
+            Expression? acc = null;
 
             foreach (var expression in expressions)
             {
-                acc = bind(acc, expression);
+                acc = Reduce(acc, expression, binder);
             }
 
             return acc;

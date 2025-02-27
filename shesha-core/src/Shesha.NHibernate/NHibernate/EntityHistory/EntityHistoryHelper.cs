@@ -13,7 +13,6 @@ using Abp.Runtime.Session;
 using Abp.Threading;
 using Abp.Timing;
 using NHibernate;
-using NHibernate.Engine;
 using NHibernate.Proxy;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -94,7 +93,7 @@ namespace Shesha.NHibernate.EntityHistory
             }
         }
 
-        public virtual EntityChange CreateEntityChange(object entity)
+        public virtual EntityChange? CreateEntityChange(object entity)
         {
             if (!IsEntityHistoryEnabled) return null;
             if (IsChangesEntity(entity)) return null;
@@ -128,9 +127,10 @@ namespace Shesha.NHibernate.EntityHistory
             }
 
             var entityTypeFullName = typeOfEntity.FullName;
-            EntityEntry entityEntry;
+            var entityEntry = Session?.GetEntry(entity, false);
+            if (entityEntry == null) 
+                return null;
 
-            if ((entityEntry = Session?.GetEntry(entity, false)) == null) return null;
             var id = entityEntry.Id;
 
             EntityChangeType changeType;
@@ -243,7 +243,7 @@ namespace Shesha.NHibernate.EntityHistory
                     if (propType.GetInterfaces().Contains(typeof(IEntity))
                         || propType.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEntity<>)))
                     {
-                        EntityPropertyChange propchange = null;
+                        EntityPropertyChange? propchange = null;
                         // skip creating property changes
                         if (propInfo.GetCustomAttribute<AuditedAsEventAttribute>()?.SaveFullInfo ?? true)
                         {
@@ -293,7 +293,7 @@ namespace Shesha.NHibernate.EntityHistory
                         var oldValue = property.OldValue;
                         var newValue = property.NewValue;
 
-                        EntityPropertyChange propchange = null;
+                        EntityPropertyChange? propchange = null;
                         // skip creating property changes
                         if (propInfo.GetCustomAttribute<AuditedAsEventAttribute>()?.SaveFullInfo ?? true)
                         {

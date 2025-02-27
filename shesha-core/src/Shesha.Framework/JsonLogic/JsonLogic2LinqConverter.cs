@@ -45,16 +45,20 @@ namespace Shesha.JsonLogic
 
         private delegate Expression Binder(Expression left, Expression right);
 
+        private Expression Reduce(Expression acc, Expression right, Binder binder)
+        {
+            return acc == null 
+                ? right 
+                : binder(acc, right);
+        }
+
         private Expression CombineExpressions<T>(JToken[] tokens, Binder binder, ParameterExpression param) 
         {
-            Expression acc = null;
-
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
-
+            Expression? acc = null;
             foreach (var argument in tokens)
             {
                 var parsedArgument = ParseTree<T>(argument, param);
-                acc = bind(acc, parsedArgument);
+                acc = Reduce(acc, parsedArgument, binder);
             }
 
             return acc;
@@ -62,13 +66,10 @@ namespace Shesha.JsonLogic
 
         private Expression CombineExpressions<T>(Expression[] expressions, Binder binder, ParameterExpression param)
         {
-            Expression acc = null;
-
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
-
+            Expression? acc = null;
             foreach (var expression in expressions)
             {
-                acc = bind(acc, expression);
+                acc = Reduce(acc, expression, binder);
             }
 
             return acc;
@@ -118,7 +119,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair, 
                                 pair => 
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -188,7 +189,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair, 
                                 pair => 
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -258,7 +259,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair,
                                 pair =>
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -328,7 +329,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair,
                                 pair =>
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -856,7 +857,7 @@ namespace Shesha.JsonLogic
                         throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
                 }
                 else
-                    if (constExpr.Type == typeof(string) && int.TryParse((string)constExpr.Value, out var intValue)) 
+                    if (constExpr.Type == typeof(string) && int.TryParse((string?)constExpr.Value, out var intValue)) 
                         numericConstToConvert = Expression.Constant(intValue);
             }
             if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64) && constExpr.Value != null)
@@ -870,7 +871,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string)) 
                 {
-                    if (double.TryParse((string)constExpr.Value, out var doubleValue))
+                    if (double.TryParse((string?)constExpr.Value, out var doubleValue))
                         numericConstToConvert = Expression.Constant(doubleValue);
                 } else
                     numericConstToConvert = Expression.Constant(Convert.ToDouble(constExpr.Value));
@@ -879,7 +880,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (decimal.TryParse((string)constExpr.Value, out var decimalValue))
+                    if (decimal.TryParse((string?)constExpr.Value, out var decimalValue))
                         numericConstToConvert = Expression.Constant(decimalValue);
                 }
                 else
@@ -889,7 +890,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (Single.TryParse((string)constExpr.Value, out var singleValue))
+                    if (Single.TryParse((string?)constExpr.Value, out var singleValue))
                         numericConstToConvert = Expression.Constant(singleValue);
                 }
                 else
@@ -899,7 +900,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (byte.TryParse((string)constExpr.Value, out var byteValue))
+                    if (byte.TryParse((string?)constExpr.Value, out var byteValue))
                         numericConstToConvert = Expression.Constant(byteValue);
                 }
                 else

@@ -226,7 +226,7 @@ namespace Shesha.NHibernate.Interceptors
                 if (collection is IPersistentCollection map)
                 {
                     // find exact property by loop because map.Role is empty here
-                    PropertyInfo property = null;
+                    PropertyInfo? property = null;
                     var props = map.Owner.GetType().GetProperties();
                     foreach (var prop in props)
                     {

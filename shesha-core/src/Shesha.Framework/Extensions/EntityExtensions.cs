@@ -189,12 +189,11 @@ namespace Shesha.Extensions
                                 : entity.GetType().GetProperty("Id")?.GetValue(entity);
         }
 
-        //[Obsolete("To be reviewed")]
         public static string? GetPropertyDisplayText(this object entity, string propertyName, string defaultValue = "")
         {
             try
             {
-                var val = ReflectionHelper.GetPropertyValue(entity, propertyName, out object parentEntity, out var propInfo);
+                var val = ReflectionHelper.GetPropertyValue(entity, propertyName, out var parentEntity, out var propInfo);
                 if (val == null)
                     return defaultValue;
 
@@ -223,37 +222,7 @@ namespace Shesha.Extensions
                         }
                     default:
                         return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
-                        //return val.ToString();
                 }
-                // todo: review and remove
-                /*
-                var propConfig = EntityConfiguration.Get(parentEntity.GetType())[propInfo.Name];
-                var generalDataType = propConfig.GeneralType;
-
-                entity = parentEntity;
-                propertyName = propInfo.Name;
-
-                switch (generalDataType)
-                {
-                    case GeneralDataType.Enum:
-                        var itemValue = (int)val;
-                        return ReflectionHelper.GetEnumDescription(propConfig.EnumType, itemValue);
-                    case GeneralDataType.ReferenceList:
-                        return entity.GetReferenceListItemName(propertyName, defaultValue);
-                    case GeneralDataType.MultiValueReferenceList:
-                        return entity.GetMultiValueReferenceListItemNames(propertyName, defaultValue);
-                    case GeneralDataType.EntityReference:
-                    case GeneralDataType.StoredFile:
-                        var referencedEntity = entity.GetReferencedEntity(propertyName);
-
-                        if (referencedEntity == null)
-                            return defaultValue ?? "";
-                        else
-                            return referencedEntity.GetDisplayName();
-                    default:
-                        return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
-                }
-                */
             }
             catch (Exception ex)
             {

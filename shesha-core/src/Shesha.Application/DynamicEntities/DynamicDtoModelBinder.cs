@@ -12,9 +12,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
-using Shesha.Reflection;
-using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -159,7 +156,7 @@ namespace Shesha.DynamicEntities
                 _readerFactory,
                 AllowEmptyBody);
 
-            var formatter = (IInputFormatter)null;
+            IInputFormatter? formatter = null;
             for (var i = 0; i < _formatters.Count; i++)
             {
                 if (_formatters[i].CanRead(formatterContext))
@@ -393,9 +390,9 @@ namespace Shesha.DynamicEntities
             return modelConfigMapperConfig.CreateMapper();
         }
 
-        private PropertyInfo FindProperty(Type type, string path)
+        private PropertyInfo? FindProperty(Type type, string path)
         {
-            PropertyInfo currentProperty = null;
+            PropertyInfo? currentProperty = null;
             var currentType = type;
 
             var pathParts = path.Split('.');

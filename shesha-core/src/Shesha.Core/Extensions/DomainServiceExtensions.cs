@@ -5,6 +5,7 @@ using Abp.Domain.Services;
 using Abp.Runtime.Session;
 using Abp.UI;
 using FluentValidation;
+using Shesha.Extensions;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -73,9 +74,9 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId: struct
         {
-			var item = id != null
+            var item = id != null
                 ? await GetEntityAsync<T, TId>(service, id.Value)
-				: (T)Activator.CreateInstance(typeof(T));
+                : ActivatorHelper.CreateNotNullInstance<T>();
 
 			await action.Invoke(item);
 

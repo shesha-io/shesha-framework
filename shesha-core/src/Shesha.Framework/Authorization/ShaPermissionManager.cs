@@ -271,7 +271,7 @@ namespace Shesha.Authorization
 
         public override void RemovePermission(string name)
         {
-            Abp.Authorization.Permission parent = null;
+            Abp.Authorization.Permission? parent = null;
             var permissions = GetAllPermissions();
             foreach (var permission in permissions)
             {
