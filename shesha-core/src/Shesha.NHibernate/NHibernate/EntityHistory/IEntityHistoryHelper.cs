@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Abp.EntityHistory;
+using System.Collections.Generic;
 using System.Reflection;
-using Abp.EntityHistory;
-using Shesha.Domain;
 
 namespace Shesha.NHibernate.EntityHistory
 {
@@ -39,7 +38,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// </summary>
         /// <param name="entity">Entity</param>
         /// <returns>EntityChange object</returns>
-        EntityChange CreateEntityChange(object entity);
+        EntityChange? CreateEntityChange(object entity);
 
         /// <summary>
         /// Create entity changes set

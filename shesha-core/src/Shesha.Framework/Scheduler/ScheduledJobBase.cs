@@ -390,7 +390,7 @@ namespace Shesha.Scheduler
                 using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
                 {
                     var existingExecution = await JobExecutionRepository.GetAll().Where(ex => ex.Id == executionId).FirstOrDefaultAsync();
-                    ScheduledJobExecution jobExecution = null;
+                    ScheduledJobExecution? jobExecution = null;
 
                     if (existingExecution != null && existingExecution.Status == ExecutionStatus.Enqueued)
                     {

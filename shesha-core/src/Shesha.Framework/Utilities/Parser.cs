@@ -75,15 +75,11 @@ namespace Shesha.Utilities
                         }
                         else
                         {
-                            Type nonNullableTargetType;
-                            if (ReflectionHelper.IsNullableType(targetType))
-                                nonNullableTargetType = Nullable.GetUnderlyingType(targetType);
-                            else
-                                nonNullableTargetType = targetType;
+                            var nonNullableTargetType = targetType.GetUnderlyingTypeIfNullable();
 
                             if (nonNullableTargetType.IsEnum)
                             {
-                                parsedValue = System.Enum.Parse(nonNullableTargetType, value);
+                                parsedValue = Enum.Parse(nonNullableTargetType, value);
                             }
                             else
                             {

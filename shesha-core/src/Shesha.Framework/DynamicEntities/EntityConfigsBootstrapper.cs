@@ -106,7 +106,7 @@ namespace Shesha.DynamicEntities
             {
                 var name = entityType.Name;
                 var parent = entityType;
-                EntityConfig dbParent = null;
+                EntityConfig? dbParent = null;
                 while (parent != typeof(object) && dbParent == null)
                 {
                     parent = parent.BaseType;

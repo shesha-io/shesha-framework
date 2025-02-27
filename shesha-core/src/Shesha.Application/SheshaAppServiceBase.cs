@@ -186,7 +186,7 @@ namespace Shesha
         {
             var item = id.HasValue
                 ? await GetEntityAsync<T, TId>(id.Value)
-                : (T)Activator.CreateInstance(typeof(T));
+                : ActivatorHelper.CreateNotNullInstance<T>();
 
             await action.Invoke(item);
 

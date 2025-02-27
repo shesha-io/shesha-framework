@@ -13,13 +13,10 @@ using Abp.MultiTenancy;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
-using NetTopologySuite.Operation.Valid;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
-using Shesha.MultiTenancy;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
 using Shesha.Utilities;
@@ -95,12 +92,7 @@ namespace Shesha.Authorization
 
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
         {
-            ShaLoginResult<TUser> result = null;
-            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
-            {
-                result = await LoginInternalAsync(login, tenancyName);
-                await uow.CompleteAsync();
-            }
+            var result = await LoginInternalAsync(login, tenancyName);
 
             await SaveLoginAttemptAsync(result, imei, tenancyName, login.ProviderKey + "@" + login.LoginProvider);
 
@@ -109,35 +101,40 @@ namespace Shesha.Authorization
 
         protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string tenancyName)
         {
-            if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
+            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                throw new ArgumentException("login");
+                if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
+                    throw new ArgumentException("login");
+
+                var result = await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) => {
+                    var user = await UserManager.FindAsync(tenant?.Id, login);
+                    if (user == null)
+                    {
+                        return new ShaLoginResult<TUser>(ShaLoginResultType.UnknownExternalLogin, tenant);
+                    }
+
+                    return await CreateLoginResultAsync(user, tenant);
+                });
+
+                await uow.CompleteAsync();
+                return result;
             }
-
-            return await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) => {
-                var user = await UserManager.FindAsync(tenant?.Id, login);
-                if (user == null)
-                {
-                    return new ShaLoginResult<TUser>(ShaLoginResultType.UnknownExternalLogin, tenant);
-                }
-
-                return await CreateLoginResultAsync(user, tenant);
-            });
         }
 
         public virtual async Task<ShaLoginResult<TUser>> AnonymousLoginViaDeviceIdAsync(Guid deviceId, string imei = null, string tenancyName = null)
         {
-            ShaLoginResult<TUser> result = null;
             var user = await UserManager.FindByNameAsync(deviceId.ToString());
             if (user == null)
                 throw new UserFriendlyException("User with the specified deviceId not found");
 
-            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () =>
             {
-                result = await ProcessTenancyLoginActionAsync(imei, tenancyName, false, async (tenant) => {
+                return await ProcessTenancyLoginActionAsync(imei, tenancyName, false, async (tenant) =>
+                {
                     return await CreateLoginResultAsync(user, tenant);
                 });
-            }
+            }, TransactionScopeOption.RequiresNew);
+
             await SaveLoginAttemptAsync(result, imei, tenancyName, deviceId.ToString());
 
             return result;
@@ -175,11 +172,8 @@ namespace Shesha.Authorization
         {
             CheckOtpAuthAvailability();
             
-            ShaLoginResult<TUser> result = null;
-
-            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew)) 
-            {
-                result = await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async() => { 
+                return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
 
                     var otp = await OtpManager.GetAsync(operationId);
                     if (otp == null)
@@ -221,8 +215,7 @@ namespace Shesha.Authorization
 
                     return await CreateLoginResultAsync(user, tenant);
                 });
-
-            }
+            }, TransactionScopeOption.RequiresNew);
 
             await SaveLoginAttemptAsync(result, imei, tenancyName, mobileNo);
 
@@ -230,13 +223,10 @@ namespace Shesha.Authorization
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
-        { 
-            ShaLoginResult<TUser> result = null;
-            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
-            {
-                result = await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
-                await uow.CompleteAsync();
-            }
+        {
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async() => { 
+                return await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
+            }, TransactionScopeOption.RequiresNew);
             
             await SaveLoginAttemptAsync(result, imei, tenancyName, userNameOrEmailAddress);
             return result;
@@ -245,7 +235,7 @@ namespace Shesha.Authorization
         private async Task<ShaLoginResult<TUser>> ProcessTenancyLoginActionAsync(string imei, string tenancyName, bool shouldLockout, Func<TTenant, Task<ShaLoginResult<TUser>>> action) 
         {
             // Get and check tenant
-            TTenant tenant = null;
+            TTenant? tenant = null;
             using (UnitOfWorkManager.Current.SetTenantId(null))
             {
                 if (!MultiTenancyConfig.IsEnabled)

@@ -131,7 +131,7 @@ namespace Shesha.DynamicEntities
             var destProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == destination.Id).ToListAsync();
             var sourceProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == source.Id).ToListAsync();
 
-            Func<List<EntityProperty>, List<EntityProperty>, EntityProperty, Task> copyProps = null;
+            Func<List<EntityProperty>, List<EntityProperty>, EntityProperty, Task>? copyProps = null;
             copyProps = async (List<EntityProperty> destPs, List<EntityProperty> sourcePs, EntityProperty parent) =>
             {
                 foreach (var prop in sourcePs)

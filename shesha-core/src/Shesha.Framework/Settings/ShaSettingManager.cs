@@ -13,7 +13,6 @@ using Shesha.Settings.Json;
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
 using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 
@@ -93,15 +92,13 @@ namespace Shesha.Settings
 
             var setting = _settingDefinitionManager.GetOrNull(module, name);
 
-            SettingConfiguration configuration = null;
-
             if (setting == null)
             {
                 setting = _settingDefinitionManager.CreateUserSettingDefinition(module, name, dataType, value);
                 _settingDefinitionManager.AddDefinition(setting);
             }
 
-            configuration = await EnsureConfigurationAsync(setting);
+            var configuration = await EnsureConfigurationAsync(setting);
 
             var settingValue = await _settingStore.GetSettingValueAsync(setting, context);
             if (settingValue == null)
@@ -212,7 +209,7 @@ namespace Shesha.Settings
             };
         }
 
-        private TValue Deserialize<TValue>(string value) 
+        private TValue? Deserialize<TValue>(string value) 
         {
             if (typeof(TValue).IsClass)
             {
@@ -240,11 +237,13 @@ namespace Shesha.Settings
                 return To(value, targetType);
         }
 
-        private static T To<T>(object obj) 
+        private static T? To<T>(object obj) 
         {
             if (typeof(T) == typeof(Guid) || typeof(T) == typeof(TimeSpan))
             {
-                return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(obj.ToString());
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                var value = converter.ConvertFromInvariantString(obj.ToString());
+                return (T?)value;
             }
 
             if (typeof(T).IsEnum)

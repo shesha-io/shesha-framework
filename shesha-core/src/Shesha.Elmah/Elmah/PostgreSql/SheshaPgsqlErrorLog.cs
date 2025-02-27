@@ -126,7 +126,7 @@ namespace Shesha.Elmah.PostgreSql
             {
                 command.Connection = connection;
                 connection.Open();
-                errorXml = (string)command.ExecuteScalar();
+                errorXml = command.ExecuteScalar()?.ToString() ?? string.Empty;
             }
 
             if (errorXml == null)

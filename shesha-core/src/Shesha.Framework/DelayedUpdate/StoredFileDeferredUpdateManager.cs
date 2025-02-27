@@ -36,7 +36,7 @@ namespace Shesha.DelayedUpdate
 
                 if (data?.PropertyName?.IsNullOrEmpty() ?? true)
                 {
-                    object owner = entity;
+                    object? owner = entity;
                     if (!data?.OwnerName?.IsNullOrEmpty() ?? false)
                     {
                         var prop = ReflectionHelper.GetProperty(owner, data.OwnerName);
