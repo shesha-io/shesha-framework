@@ -72,10 +72,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
   return (
     <AttributeDecorator attributes={{
-        'data-sha-c-id': `${componentModel.id}`,
-        'data-sha-c-name': `${componentModel.componentName}`,
-        'data-sha-c-type': `${componentModel.type}`
-      }}
+      'data-sha-c-id': `${componentModel.id}`,
+      'data-sha-c-name': `${componentModel.componentName}`,
+      'data-sha-c-type': `${componentModel.type}`
+    }}
     >
       <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
     </AttributeDecorator>
