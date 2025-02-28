@@ -43,7 +43,7 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: "text",
+                  inputType: "textField",
                   propertyName: "description",
                   parentId: "root",
                   label: "Description",

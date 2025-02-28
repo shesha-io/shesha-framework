@@ -26,7 +26,7 @@ export const getSettings = (data: DynamicViewComponentProps) => {
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
                                 propertyName: 'componentName',
                                 label: 'Component name',
-                                inputType: 'text',
+                                inputType: 'textField',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
