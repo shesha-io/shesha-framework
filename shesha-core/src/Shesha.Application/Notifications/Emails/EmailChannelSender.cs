@@ -36,7 +36,7 @@ namespace Shesha.Notifications
             return await _emailSettings.EmailSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver receiver, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver receiver, NotificationMessage message, List<EmailAttachment> attachments = null)
         {
             var settings = await GetSettingsAsync();
 
@@ -57,7 +57,7 @@ namespace Shesha.Notifications
                 };
             }
 
-            using (var mail = BuildMessageWith(sender.GetAddress(this), !settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : receiver.GetAddress(this), message.Subject, message.Message, cc))
+            using (var mail = BuildMessageWith(sender.GetAddress(this), !settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : receiver.GetAddress(this), message.Subject, message.Message,message.Cc))
             {
                 if (attachments != null)
                 {
