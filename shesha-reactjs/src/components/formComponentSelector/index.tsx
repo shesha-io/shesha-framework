@@ -8,6 +8,7 @@ import { upgradeComponent } from '@/providers/form/utils';
 import React, { FC, useMemo, useState } from 'react';
 import { editorAdapters } from './adapters';
 import ComponentSettingsModal from './componentSettingsModal';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export type ComponentType = 'input' | 'output';
 
@@ -22,6 +23,7 @@ export interface IFormComponentSelectorProps {
   value?: ComponentSelectorValue;
   onChange?: (value?: ComponentSelectorValue) => void;
   readOnly?: boolean;
+  size?: SizeType;
   propertyMeta?: IPropertyMetadata;
 }
 
@@ -133,10 +135,11 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         value={value?.type}
         onChange={onSelectChange}
         onClear={onClear}
+        size={props.size}
         allowClear
       />
       {canConfigure && (
-        <Button style={{ width: '100px' }} onClick={onConfigureClick}>
+        <Button style={{ width: '100px' }} size={props.size} onClick={onConfigureClick}>
           Configure
         </Button>
       )}

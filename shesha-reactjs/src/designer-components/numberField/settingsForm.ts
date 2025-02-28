@@ -46,7 +46,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
@@ -91,7 +91,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'prefix-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'prefix',
                                         label: 'Prefix',
@@ -112,7 +112,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'suffix-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'suffix',
                                         label: 'Suffix',
@@ -152,7 +152,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
-                                        type: 'number',
+                                        type: 'numberField',
                                         id: 'minValue-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.minValue',
                                         label: 'Min Value',
@@ -160,7 +160,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                         jsSetting: true,
                                     },
                                     {
-                                        type: 'number',
+                                        type: 'numberField',
                                         id: 'maxValue-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.maxValue',
                                         label: 'Max Value',
@@ -175,7 +175,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'message-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.message',
                                         label: 'Message',
@@ -281,7 +281,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 dropdownOptions: fontTypes,
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
@@ -299,7 +299,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 width: 100,
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -338,7 +338,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -348,7 +348,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
@@ -357,7 +357,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 icon: "minWidth",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
@@ -374,7 +374,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -383,7 +383,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
@@ -392,7 +392,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 icon: "minHeight",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
@@ -534,7 +534,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
@@ -563,7 +563,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
@@ -592,7 +592,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
+                                                                    type: 'textField',
                                                                     id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
@@ -722,7 +722,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -731,7 +731,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -740,7 +740,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -749,7 +749,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -758,7 +758,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,

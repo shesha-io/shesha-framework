@@ -52,7 +52,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: 'href-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'text',
+                  inputType: 'textField',
                   propertyName: 'href',
                   label: 'Href',
                   size: 'small',
@@ -209,7 +209,7 @@ export const getSettings = (data: any) => {
                                     dropdownOptions: fontTypes,
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Size',
                                     propertyName: 'font.size',
@@ -227,7 +227,7 @@ export const getSettings = (data: any) => {
                                     width: 100,
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Color',
                                     hideLabel: true,
@@ -470,7 +470,7 @@ export const getSettings = (data: any) => {
                         } as any,
                         inputs: [
                           {
-                            type: 'text',
+                            type: 'textField',
                             id: 'customCss-s4gmBg31azZC0UjZjpfTm',
                             propertyName: 'className',
                             label: 'Custom CSS Class',

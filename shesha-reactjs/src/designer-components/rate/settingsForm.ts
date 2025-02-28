@@ -46,13 +46,13 @@ export const getSettings = (data: IRateProps) => {
                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
-                  {
-                    type: 'number',
-                    id: nanoid(),
-                    propertyName: 'count',
-                    label: 'Max Rating',
-                    jsSetting: true,
-                  },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'count',
+                      label: 'Max Rating',
+                      jsSetting: true,
+                    },
                     {
                       type: 'iconPicker',
                       id: nanoid(),

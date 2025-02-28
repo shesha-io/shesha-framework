@@ -62,7 +62,7 @@ export const getSettings = (data: any) => {
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type: 'text',
+                    type: 'textField',
                     id: `placeholder-${commonTabId}`,
                     propertyName: 'placeholder',
                     label: 'Placeholder',
@@ -85,7 +85,7 @@ export const getSettings = (data: any) => {
                 readOnly: false,
                 inputs: [
                   {
-                    type: 'text',
+                    type: 'textField',
                     id: nanoid(),
                     propertyName: "initialValue",
                     parentId: commonTabId,
@@ -191,7 +191,7 @@ export const getSettings = (data: any) => {
                   parentId: validationId,
                   inputs: [
                     {
-                      type: 'number',
+                      type: 'numberField',
                       id: nanoid(),
                       propertyName: 'validate.minLength',
                       label: 'Min Length',
@@ -199,7 +199,7 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                     {
-                      type: 'number',
+                      type: 'numberField',
                       id: nanoid(),
                       propertyName: 'validate.maxLength',
                       label: 'Max Length',
@@ -220,7 +220,7 @@ export const getSettings = (data: any) => {
                       label: "Message",
                       validate: {},
                       version: 3,
-                      type: "text",
+                      type: "textField",
                       jsSetting: true,
                     },
                     {
@@ -333,7 +333,7 @@ export const getSettings = (data: any) => {
                                   dropdownOptions: fontTypes,
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: `fontSize-${styleRouterId}`,
                                   label: 'Size',
                                   propertyName: 'font.size',
@@ -351,7 +351,7 @@ export const getSettings = (data: any) => {
                                   width: 100,
                                 },
                                 {
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: `fontColor-${styleRouterId}`,
                                   label: 'Color',
                                   hideLabel: true,
@@ -390,7 +390,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `width-${styleRouterId}`,
                                   label: "Width",
                                   width: 85,
@@ -399,7 +399,7 @@ export const getSettings = (data: any) => {
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `minWidth-${styleRouterId}`,
                                   label: "Min Width",
                                   width: 85,
@@ -408,7 +408,7 @@ export const getSettings = (data: any) => {
                                   icon: "minWidthIcon",
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `maxWidth-${styleRouterId}`,
                                   label: "Max Width",
                                   width: 85,
@@ -425,7 +425,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `height-${dimensionsStylePnlId}`,
                                   label: "Height",
                                   width: 85,
@@ -434,7 +434,7 @@ export const getSettings = (data: any) => {
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `minHeight-${dimensionsStylePnlId}`,
                                   label: "Min Height",
                                   width: 85,
@@ -443,7 +443,7 @@ export const getSettings = (data: any) => {
                                   icon: "minHeightIcon",
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `maxHeight-${dimensionsStylePnlId}`,
                                   label: "Max Height",
                                   width: 85,
@@ -587,8 +587,8 @@ export const getSettings = (data: any) => {
                                 id: "backgroundStyleRow-color",
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
-                                  type: 'color',
-                                  id: 'backgroundStyleRow-color',
+                                  type: 'colorPicker',
+                                  id: nanoid(),
                                   label: "Color",
                                   propertyName: "background.color",
                                   hideLabel: true,
@@ -616,8 +616,8 @@ export const getSettings = (data: any) => {
                                 id: "backgroundStyle-url",
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
-                                  type: 'text',
-                                  id: 'backgroundStyle-url',
+                                  type: 'textField',
+                                  id: nanoid(),
                                   propertyName: "background.url",
                                   jsSetting: false,
                                   label: "URL",
@@ -645,7 +645,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
@@ -709,7 +709,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Offset X',
                                   hideLabel: true,
@@ -719,7 +719,7 @@ export const getSettings = (data: any) => {
                                   tooltip: 'OffsetX. The larger the value, the bigger the shadow',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Offset Y',
                                   hideLabel: true,
@@ -729,7 +729,7 @@ export const getSettings = (data: any) => {
                                   description: 'OffsetY. The larger the value, the bigger the shadow',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Blur',
                                   hideLabel: true,
@@ -739,7 +739,7 @@ export const getSettings = (data: any) => {
                                   description: 'Blur. The larger the value, the bigger the blur',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Spread',
                                   hideLabel: true,
@@ -749,7 +749,7 @@ export const getSettings = (data: any) => {
                                   description: 'Spread. The larger the value, the bigger the spread',
                                 },
                                 {
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: nanoid(),
                                   label: 'Color',
                                   hideLabel: true,

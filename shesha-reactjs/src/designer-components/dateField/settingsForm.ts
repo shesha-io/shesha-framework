@@ -104,7 +104,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                         id: '57a40a33-7e10-4ce4-9f08-a34d24a83338',
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
-                                        type: 'text',
+                                        type: 'textField',
                                         size: 'small',
                                         jsSetting: true,
                                     },
@@ -155,7 +155,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Date Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "DD/MM/YYYY",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -165,7 +165,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Time Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "HH:mm:ss",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -175,7 +175,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Year Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -185,7 +185,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Quarter Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY-\\QQ",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -195,7 +195,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Month Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY-MM",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -205,7 +205,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                 label: 'Week Format',
                                 size: 'small',
                                 jsSetting: true,
-                                inputType: "text",
+                                inputType: "textField",
                                 defaultValue: "YYYY-wo",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
                             })
@@ -394,7 +394,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 dropdownOptions: fontTypes,
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
@@ -412,7 +412,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 width: 100,
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -451,7 +451,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -461,7 +461,7 @@ export const getSettings = (data: IDateFieldProps) => {
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
@@ -470,7 +470,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 icon: "minWidthIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
@@ -487,7 +487,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -496,7 +496,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
@@ -505,7 +505,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 icon: "minHeightIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
@@ -647,7 +647,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
@@ -676,7 +676,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
@@ -705,7 +705,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
+                                                                    type: 'textField',
                                                                     id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
@@ -835,7 +835,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -844,7 +844,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -853,7 +853,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -862,7 +862,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -871,7 +871,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,

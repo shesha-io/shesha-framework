@@ -24,7 +24,7 @@ export const getSettings = () => {
                         title: 'Common',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                inputType: 'text',
+                                inputType: 'textField',
                                 id: 'panel5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 propertyName: 'componentName',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
@@ -193,7 +193,7 @@ export const getSettings = () => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelwidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -202,7 +202,7 @@ export const getSettings = () => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelminWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
@@ -211,7 +211,7 @@ export const getSettings = () => {
                                                                 icon: "minWidthIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelmaxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
@@ -228,7 +228,7 @@ export const getSettings = () => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelheight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -237,7 +237,7 @@ export const getSettings = () => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelminHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
@@ -246,7 +246,7 @@ export const getSettings = () => {
                                                                 icon: "minHeightIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelmaxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
@@ -387,7 +387,7 @@ export const getSettings = () => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'panelbackgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
@@ -416,7 +416,7 @@ export const getSettings = () => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'panelbackgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
@@ -445,7 +445,7 @@ export const getSettings = () => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
+                                                                    type: 'textField',
                                                                     id: 'panelbackgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
@@ -559,7 +559,7 @@ export const getSettings = () => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'panelshadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -568,7 +568,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'panelshadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -577,7 +577,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'panelshadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -586,7 +586,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'panelshadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -595,7 +595,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'panelshadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -690,7 +690,7 @@ export const getSettings = () => {
                                                                             dropdownOptions: fontTypes,
                                                                         },
                                                                         {
-                                                                            type: 'number',
+                                                                            type: 'numberField',
                                                                             id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                             label: 'Size',
                                                                             propertyName: 'headerStyles.font.size',
@@ -708,7 +708,7 @@ export const getSettings = () => {
                                                                             width: 100,
                                                                         },
                                                                         {
-                                                                            type: 'color',
+                                                                            type: 'colorPicker',
                                                                             id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                             label: 'Color',
                                                                             hideLabel: true,
@@ -746,7 +746,7 @@ export const getSettings = () => {
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
-                                                                            type: 'text',
+                                                                            type: 'textField',
                                                                             id: 'header-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Height",
                                                                             width: 85,
@@ -755,7 +755,7 @@ export const getSettings = () => {
                                                                             tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                                         },
                                                                         {
-                                                                            type: 'text',
+                                                                            type: 'textField',
                                                                             id: 'header-minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Height",
                                                                             width: 85,
@@ -764,7 +764,7 @@ export const getSettings = () => {
                                                                             icon: "minHeightIcon",
                                                                         },
                                                                         {
-                                                                            type: 'text',
+                                                                            type: 'textField',
                                                                             id: 'header-maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Height",
                                                                             width: 85,
@@ -890,7 +890,7 @@ export const getSettings = () => {
                                                                     id: "header-backgroundStyleRow-color",
                                                                     parentId: "panel-header-styles-pnl",
                                                                     inputs: [{
-                                                                        type: 'color',
+                                                                        type: 'colorPicker',
                                                                         id: 'backgroundStyleRow-color',
                                                                         label: "Color",
                                                                         propertyName: "headerStyles.background.color",
@@ -919,7 +919,7 @@ export const getSettings = () => {
                                                                     id: nanoid(),
                                                                     parentId: "panel-header-styles-pnl",
                                                                     inputs: [{
-                                                                        type: 'text',
+                                                                        type: 'textField',
                                                                         id: 'backgroundStyle-url',
                                                                         propertyName: "headerStyles.background.url",
                                                                         jsSetting: false,
@@ -948,7 +948,7 @@ export const getSettings = () => {
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
-                                                                            type: 'text',
+                                                                            type: 'textField',
                                                                             id: 'backgroundStyle-storedFile',
                                                                             jsSetting: false,
                                                                             propertyName: "headerStyles.background.storedFile.id",
