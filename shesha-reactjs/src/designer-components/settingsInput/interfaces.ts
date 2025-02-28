@@ -60,6 +60,8 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     value?: any;
     placeholder?: string;
     mode?: any;
+    /** Can be any valid number e.g.: 1, 0.1, 3, 3.14 */
+    step?: number;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
     customDropdownMode?: 'single' | 'multiple';
