@@ -182,7 +182,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
-      autoSize: false,
+      autoSize: true,
       showCount: false,
       allowClear: false,
     };
@@ -213,10 +213,10 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
       .add<ITextAreaComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-      ,
+  ,
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {
-      ...model,    
+      ...model,
     };
   },
   settingsFormMarkup: (data) => getSettings(data),

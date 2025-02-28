@@ -82,7 +82,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ...shadowStyles,
     });
 
-
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (model.hidden) return null;
@@ -130,6 +129,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         display: prev['display'] /* ?? 'block'*/,
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
+        editMode: 'inherited',
       }))
       .add<IContainerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev))
@@ -156,7 +156,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<IContainerComponentProps>(7, (prev) => {
+      .add<IContainerComponentProps>(6, (prev) => {
         const flexAndGridStyles = {
           display: prev?.display,
           flexDirection: prev?.flexDirection,
@@ -170,15 +170,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           noDefaultStyling: prev?.noDefaultStyling,
           gridColumnsCount: prev?.gridColumnsCount,
           flexWrap: prev?.flexWrap,
-          gap: prev?.gap
+          gap: prev?.gap || 8,
+          position: defaultStyles().position,
         };
 
         return {
-          ...prev, desktop: { ...prev.desktop, ...flexAndGridStyles },
+          ...prev, position: defaultStyles().position, desktop: { ...prev.desktop, ...flexAndGridStyles },
           tablet: { ...prev.tablet, ...flexAndGridStyles }, mobile: { ...prev.mobile, ...flexAndGridStyles }
         };
       })
-      .add<IContainerComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      .add<IContainerComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
- 
+
 export default ContainerComponent;

@@ -13,12 +13,12 @@ namespace Shesha.Domain
         /// <summary>
         /// Owning entity ID
         /// </summary>
-        string OwnerId { get; }
+        string? OwnerId { get; }
 
         /// <summary>
         /// Owning entity type alias
         /// </summary>
-        string OwnerType { get; }
+        string? OwnerType { get; }
 
         /*/// <summary>
         /// Gets the owning entity object

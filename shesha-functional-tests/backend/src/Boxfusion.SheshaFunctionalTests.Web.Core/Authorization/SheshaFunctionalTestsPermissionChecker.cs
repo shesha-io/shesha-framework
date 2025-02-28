@@ -1,4 +1,5 @@
 using Abp.Domain.Repositories;
+using Abp.Threading;
 using NHibernate.Linq;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
@@ -58,7 +59,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// <returns></returns>
         public bool IsGranted(long userId, string permissionName)
         {
-            throw new NotImplementedException();
+            return AsyncHelper.RunSync(async () => await IsGrantedAsync(userId, permissionName));
         }
 
         /// <summary>

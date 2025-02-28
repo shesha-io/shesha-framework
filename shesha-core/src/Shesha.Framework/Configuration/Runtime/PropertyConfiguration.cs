@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using Shesha.Services;
+using System;
 using System.Reflection;
-using Abp.Dependency;
-using Shesha.Services;
 
 namespace Shesha.Configuration.Runtime
 {
@@ -19,32 +17,32 @@ namespace Shesha.Configuration.Runtime
         /// <summary>
         /// If the property is a ReferenceList, gets or sets the name of the reference list.
         /// </summary>
-        public string ReferenceListName { get; set; }
+        public string? ReferenceListName { get; set; }
 
         /// <summary>
         /// If the property is a ReferenceList, gets or sets the module name of the reference list.
         /// </summary>
-        public string ReferenceListModule { get; set; }
+        public string? ReferenceListModule { get; set; }
 
         public GeneralDataType GeneralType { get; set; }
 
         /// <summary>
         /// Returns the Type of the enum referenced by the property
         /// </summary>
-        public Type EnumType { get; set; }
+        public Type? EnumType { get; set; }
 
         /// <summary>
         /// Returns the Type of the entity referenced by the property, either directly or through an Id
         /// provided by a property marked with an EntityReference attribute.
         /// </summary>
-        public Type EntityReferenceType { get; set; }
+        public Type? EntityReferenceType { get; set; }
 
         /// <summary>
         /// Name of the property to which any searches will be redirected. 
         /// E.g. this is useful if the property itself is calculated and therefore not persited to the DB
         /// and therefore cannot be queried.
         /// </summary>
-        public string BackingSearchProperty { get; set; }
+        public string? BackingSearchProperty { get; set; }
 
         public PropertyInfo PropertyInfo { get; set; }
 
@@ -64,7 +62,7 @@ namespace Shesha.Configuration.Runtime
         /// </summary>
         public virtual string AuditLogEntryNamespaceOnChange { get; set; }
 
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
         private bool? _isMapped;
         

@@ -186,7 +186,7 @@ namespace Shesha.Test
             using (var con = new SqlConnection(connStr))
             {
                 await con.OpenAsync();
-                var backupCommand = new SqlCommand(@"
+                using var backupCommand = new SqlCommand(@"
                     CREATE TABLE [dbo].[Test_ComplexTest](
 	                    [Id] [uniqueidentifier] NOT NULL,
 	                    [Name] [nvarchar](100) NULL,
@@ -215,7 +215,7 @@ namespace Shesha.Test
             using (var con = new SqlConnection(connStr))
             {
                 await con.OpenAsync();
-                var backupCommand = new SqlCommand("DROP TABLE [dbo].[Test_ComplexTest]", con);
+                using var backupCommand = new SqlCommand("DROP TABLE [dbo].[Test_ComplexTest]", con);
                 await backupCommand.ExecuteNonQueryAsync();
             }
         }

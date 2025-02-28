@@ -12,11 +12,8 @@ using Abp.TestBase;
 using Abp.Zero.Configuration;
 using Castle.Facilities.Logging;
 using Castle.MicroKernel.Registration;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
@@ -70,7 +67,7 @@ namespace Shesha.Tests
             // mock IWebHostEnvironment
             //var hostingEnvironment = Mock.Of<IWebHostEnvironment>(e => e.ApplicationName == "test");
 
-            var inMemorySettings = new Dictionary<string, string> {
+            var inMemorySettings = new Dictionary<string, string?> {
                 /* in memory settings:
                 {"TopLevelKey", "TopLevelValue"},
                 {"SectionName:SomeKey", "SectionValue"},

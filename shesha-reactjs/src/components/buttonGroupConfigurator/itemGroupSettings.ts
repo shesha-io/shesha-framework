@@ -23,7 +23,7 @@ export const getGroupSettings = (data) => {
                             .addSettingsInput({
                                 id: 'f061d971-8b38-4b82-b192-563259afc159',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputType: 'text',
+                                inputType: 'textField',
                                 propertyName: 'name',
                                 label: 'Group Name',
                                 jsSetting: false,
@@ -38,7 +38,7 @@ export const getGroupSettings = (data) => {
                                 inputs: [
                                     {
                                         id: "A-qcRVk-qlnGDLtFvK-2X",
-                                        type: "text",
+                                        type: "textField",
                                         propertyName: "label",
                                         parentId: "root",
                                         label: "Label"

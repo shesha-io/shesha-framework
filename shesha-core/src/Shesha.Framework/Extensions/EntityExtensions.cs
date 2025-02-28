@@ -22,7 +22,6 @@ using System.Reflection;
 
 namespace Shesha.Extensions
 {
-#nullable enable
     /// <summary>
     /// Entity extensions
     /// </summary>
@@ -484,7 +483,7 @@ namespace Shesha.Extensions
             return result;
         }
 
-        private static Int64[] GetMultiValueReferenceListItemValuesAr(this object entity, string propertyName, out string refListModule, out string refListName)
+        private static Int64[] GetMultiValueReferenceListItemValuesAr(this object entity, string propertyName, out string? refListModule, out string? refListName)
         {
             var propInfo = ReflectionHelper.GetProperty(entity, propertyName, out var propertyEntity);
 
@@ -566,5 +565,4 @@ namespace Shesha.Extensions
             return provider.GetEntityType(entity);
         }        
     }
-#nullable restore
 }

@@ -1,20 +1,17 @@
 import React, { FC } from 'react';
-import { Collapse, Skeleton, theme } from 'antd';
+import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
-import styled from 'styled-components';
+import { IStyleType } from '@/index';
 import { useStyles } from './styles/styles';
-
-const { useToken } = theme;
 
 export type headerType = 'parent' | 'child' | 'default';
 
-export interface ICollapsiblePanelProps extends CollapseProps {
+export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 'style'> {
   isActive?: boolean;
   header?: React.ReactNode;
   className?: string;
   extraClassName?: string;
-  style?: React.CSSProperties;
   showArrow?: boolean;
   forceRender?: boolean;
   extra?: React.ReactNode;
@@ -30,6 +27,9 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   primaryColor?: string;
   dynamicBorderRadius?: number;
   panelHeadType?: headerType;
+  headerStyles?: IStyleType;
+  bodyStyle?: React.CSSProperties;
+  headerStyle?: React.CSSProperties;
 }
 
 /**
@@ -41,70 +41,42 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * 
  */
 
-const StyledCollapse: any = styled(Collapse) <
-  Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
->`
-  .ant-collapse-header {
-    visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
-    border-top: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'parent' ? `3px solid  ${primaryColor}` : 'none')};
-    border-left: ${({ primaryColor, panelHeadType }) => (panelHeadType === 'child' ? `3px solid  ${primaryColor}` : 'none')};
-    font-size: ${({ panelHeadType }) => (panelHeadType === 'parent' ? '13px' : '16px')};
-    font-weight: 'bold';
-    background-color: ${({ headerColor }) => headerColor} !important;
-    
-  }
-  .ant-collapse-content {
-    .ant-collapse-content-box > .sha-components-container {
-      background-color: ${({ bodyColor }) => bodyColor};
-    }
-  }
-`;
-
 export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'radiusRight'>> = ({
   expandIconPosition = 'end',
   onChange,
   header,
   extra,
   children,
-  noContentPadding,
   loading,
   className,
   extraClassName,
-  style,
   collapsedByDefault = false,
   showArrow,
   collapsible,
   ghost,
-  bodyColor = 'unset',
-  headerColor = 'unset',
+  bodyStyle = { borderRadius: '8px 8px 8px 8px', },
+  headerStyle = {
+    borderRadius: '8px 8px 8px 8px'
+  },
   isSimpleDesign,
-  hideCollapseContent,
-  hideWhenEmpty = false,
-  panelHeadType = 'default',
-  dynamicBorderRadius,
-
+  panelHeadType,
+  noContentPadding,
+  hideWhenEmpty,
+  hideCollapseContent
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
-  const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
-  const { token } = useToken();
 
-
-  const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
+  const { styles } = useStyles({ bodyStyle, headerStyles: headerStyle, panelHeadType, ghost, noContentPadding, hideWhenEmpty, hideCollapseContent });
+  const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
   return (
-    <StyledCollapse
+    <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
       expandIconPosition={expandIconPosition}
-      className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
-      style={{ ...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius }}
+      className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
       ghost={ghost}
-      bodyColor={bodyColor}
-      headerColor={headerColor}
-      hideCollapseContent={hideCollapseContent}
-      primaryColor={token.colorPrimary}
-      panelHeadType={panelHeadType}
       items={[
         {
           key: "1",

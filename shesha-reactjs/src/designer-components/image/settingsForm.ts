@@ -36,7 +36,7 @@ export const getSettings = (data) => {
                             .addLabelConfigurator({
                                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
-                                label: 'label',
+                                label: 'Label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
@@ -120,7 +120,7 @@ export const getSettings = (data) => {
                                 id: "image-url",
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [{
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'data-source-url',
                                     propertyName: "url",
                                     jsSetting: false,
@@ -161,7 +161,7 @@ export const getSettings = (data) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'image-storedFile-id',
                                         jsSetting: false,
                                         propertyName: "storedFileId",
@@ -229,7 +229,7 @@ export const getSettings = (data) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -239,7 +239,7 @@ export const getSettings = (data) => {
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -299,6 +299,7 @@ export const getSettings = (data) => {
                                                                     type: 'customDropdown',
                                                                     id: 'size-position-Row-position',
                                                                     label: "Object Position",
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "objectPosition",
                                                                     dropdownOptions: positionOptions,
                                                                 }
@@ -358,7 +359,7 @@ export const getSettings = (data) => {
                                                                     id: 'filter-intensity',
                                                                     label: 'Filter Intensity',
                                                                     propertyName: 'filterIntensity',
-                                                                    type: 'number',
+                                                                    type: 'numberField',
                                                                 }
                                                             ]
                                                         })
@@ -368,7 +369,7 @@ export const getSettings = (data) => {
                                                             id: 'opacity-filter',
                                                             label: 'Opacity',
                                                             propertyName: 'opacity',
-                                                            inputType: 'number',
+                                                            inputType: 'numberField',
                                                         })
                                                         .toJson()
                                                 ],
@@ -454,7 +455,7 @@ export const getSettings = (data) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -463,7 +464,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -472,7 +473,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -481,7 +482,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -490,7 +491,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,

@@ -10,14 +10,11 @@ using Abp.Extensions;
 using Abp.Json;
 using Abp.Reflection;
 using Abp.Runtime.Session;
+using Abp.Threading;
 using Abp.Timing;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using NHibernate;
 using NHibernate.Engine;
-using NHibernate.Intercept;
 using NHibernate.Proxy;
-using Nito.AsyncEx.Synchronous;
-using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
@@ -30,7 +27,6 @@ using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SessionExtensions = Shesha.NHibernate.Session.SessionExtensions;
@@ -48,8 +44,6 @@ namespace Shesha.NHibernate.EntityHistory
         private readonly IRepository<EntityHistoryEvent, Guid> _historyEventRepository;
         private readonly IIocResolver _iocResolver;
         private readonly IModelConfigurationManager _modelConfigurationManager;
-        //private readonly ISession _session;
-        //private readonly IAbpSession _abpSession;
 
 
         //[DebuggerStepThrough]
@@ -61,9 +55,7 @@ namespace Shesha.NHibernate.EntityHistory
             NHibernateEntityHistoryStore historyStore,
             IRepository<EntityHistoryEvent, Guid> historyEventRepository,
             IModelConfigurationManager modelConfigurationManager,
-            IIocResolver iocResolver/*,
-            ISession session,
-            IAbpSession abpSession*/
+            IIocResolver iocResolver
             )
             : base(configuration, unitOfWorkManager)
         {
@@ -77,8 +69,6 @@ namespace Shesha.NHibernate.EntityHistory
             _historyEventRepository = historyEventRepository;
             _iocResolver = iocResolver;
             _modelConfigurationManager = modelConfigurationManager;
-            //_session = session;
-            //_abpSession = abpSession;
         }
 
         public Guid Id { get; set; }
@@ -116,9 +106,7 @@ namespace Shesha.NHibernate.EntityHistory
                 return null;
             }
 
-            var entityConfig = _modelConfigurationManager
-                .GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name)
-                .WaitAndUnwrapException();
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
@@ -335,7 +323,7 @@ namespace Shesha.NHibernate.EntityHistory
                             var attr = propInfo.GetCustomAttribute<AuditedBooleanAttribute>();
                             if (attr != null)
                             {
-                                var description = (bool)newValue ? attr.TrueText : attr.FalseText;
+                                var description = newValue != null && (bool)newValue ? attr.TrueText : attr.FalseText;
                                 // Add extended (friendly) description for Reference types
                                 EntityHistoryEvents.Add(new EntityHistoryEvent()
                                 {
@@ -412,9 +400,7 @@ namespace Shesha.NHibernate.EntityHistory
                 ? propInfo.PropertyType.GetGenericArguments()[0] 
                 : propInfo.PropertyType;
 
-            var entityConfig = _modelConfigurationManager
-                .GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name)
-                .WaitAndUnwrapException();
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
 
             var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
             var audited = propInfo.GetCustomAttribute<AuditedAttribute>();

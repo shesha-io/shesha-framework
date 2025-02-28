@@ -242,7 +242,7 @@ namespace Shesha.Excel
             return xmlStream;
         }
 
-        public async Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object>> list, IList<ExcelColumn> columns, string sheetName)
+        public async Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object?>> list, IList<ExcelColumn> columns, string sheetName)
         {
             var headers = columns
                 .Select(t => ReplaceSpecialCharacters(t.Label))
@@ -412,7 +412,7 @@ namespace Shesha.Excel
                             : row.TryGetValue(name, out var partValue)
                                 ? partValue
                                 : null;
-                        return container != null && container is Dictionary<string, object> dict
+                        return container != null && container is Dictionary<string, object?> dict
                             ? getter.Invoke(dict)
                             : null;
                     });
@@ -457,7 +457,7 @@ namespace Shesha.Excel
         }
 
         public delegate Task WriteRowsDelegate(OpenXmlWriter xmlWriter);
-        public delegate object GetValueDelegate(Dictionary<string, object> container);
+        public delegate object GetValueDelegate(Dictionary<string, object?> container);
 
         public class ExcelColumnProcessing
         {

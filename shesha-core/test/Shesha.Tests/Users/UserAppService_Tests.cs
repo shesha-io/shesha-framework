@@ -100,10 +100,10 @@ namespace Shesha.Tests.Users
             }
             
             // send OTP for password reset
-            var sendOtpResponse = await userAppService.ResetPasswordSendOtp(mobileNo);
+            var sendOtpResponse = await userAppService.ResetPasswordSendOtpAsync(mobileNo);
 
             // verify response
-            var verifyResponse = await userAppService.ResetPasswordVerifyOtp(new ResetPasswordVerifyOtpInput()
+            var verifyResponse = await userAppService.ResetPasswordVerifyOtpAsync(new ResetPasswordVerifyOtpInput()
             {
                 MobileNo = mobileNo,
                 OperationId = sendOtpResponse.OperationId,
@@ -112,7 +112,7 @@ namespace Shesha.Tests.Users
 
             // change password
             var resetPasswordResponse =
-                await userAppService.ResetPasswordUsingToken(new ResetPasswordUsingTokenInput()
+                await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
                 {
                     Username = verifyResponse.Username,
                     Token = verifyResponse.Token,
@@ -192,7 +192,7 @@ namespace Shesha.Tests.Users
             firstLoginAttempt.ShouldBeTrue("Failed to login as a new user");
 
             // send OTP for password reset
-            var response = await userAppService.SendEmailLink(userName);
+            var response = await userAppService.SendEmailLinkAsync(userName);
             response.ShouldBeTrue();
             var token = "";
 
@@ -204,7 +204,7 @@ namespace Shesha.Tests.Users
                 user.PasswordResetCode.ShouldNotBeNullOrEmpty();
 
                 // verify response
-                var verifyResponse = await userAppService.ValidateResetCode(new ResetPasswordValidateCodeInput()
+                var verifyResponse = await userAppService.ValidateResetCodeAsync(new ResetPasswordValidateCodeInput()
                 {
                     Code = currentPin,
                     Username = userName,
@@ -218,7 +218,7 @@ namespace Shesha.Tests.Users
 
             // change password
             var resetPasswordResponse =
-                await userAppService.ResetPasswordUsingToken(new ResetPasswordUsingTokenInput()
+                await userAppService.ResetPasswordUsingTokenAsync(new ResetPasswordUsingTokenInput()
                 {
                     Username = userName,
                     Token = token,
@@ -265,7 +265,7 @@ namespace Shesha.Tests.Users
                     var controller = Resolve<TokenAuthController>();
 
                     // Call the Authenticate method
-                    var response = await controller.Authenticate(new AuthenticateModel()
+                    var response = await controller.AuthenticateAsync(new AuthenticateModel()
                     {
                         UserNameOrEmailAddress = username,
                         Password = password

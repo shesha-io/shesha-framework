@@ -4,7 +4,7 @@ import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
 import { IPasswordComponentProps } from './utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: IPasswordComponentProps) => {
 
@@ -40,7 +40,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                             .addLabelConfigurator({
                                 id: 'label-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
-                                label: 'label',
+                                label: 'Label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
@@ -54,7 +54,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 } as any,
                                 readOnly: false,
                                 inputs: [{
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'confirmLabel',
                                     label: 'Label: Confirmation',
                                     propertyName: 'confirmLabel',
@@ -71,18 +71,18 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                             })
                             .addSettingsInput({
-                                inputType: 'textArea',
-                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
-                                propertyName: 'description',
-                                label: 'Tooltip',
-                                jsSetting: true,
-                            })
-                            .addSettingsInput({
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'confirmPlaceholder',
                                 label: 'Placeholder: Confirmation',
                                 size: 'small',
+                                jsSetting: true,
+                            })
+                            .addSettingsInput({
+                                inputType: 'textArea',
+                                id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
+                                propertyName: 'description',
+                                label: 'Tooltip',
                                 jsSetting: true,
                             })
                             .addSettingsInput({
@@ -140,7 +140,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
-                                        type: 'number',
+                                        type: 'numberField',
                                         id: 'minLength-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.minLength',
                                         label: 'Min Length',
@@ -148,7 +148,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                         jsSetting: true,
                                     },
                                     {
-                                        type: 'number',
+                                        type: 'numberField',
                                         id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
                                         defaultValue: 4,
                                         propertyName: 'validate.maxLength',
@@ -164,7 +164,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                 parentId: '6eBJvoll3xtLJxdvOAlnB',
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'message-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'validate.message',
                                         label: 'Message',
@@ -232,7 +232,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 dropdownOptions: fontTypes,
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
@@ -250,7 +250,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 width: 100,
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -289,7 +289,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -299,7 +299,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
@@ -308,7 +308,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 icon: "minWidthIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
@@ -325,7 +325,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -334,7 +334,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
@@ -343,7 +343,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 icon: "minHeightIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
@@ -485,7 +485,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
@@ -514,7 +514,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
@@ -543,7 +543,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
+                                                                    type: 'textField',
                                                                     id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
@@ -563,20 +563,8 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: sizeOptions,
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -584,52 +572,16 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: positionOptions,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                 },
                                                                 {
-                                                                    type: 'dropdown',
+                                                                    type: 'radio',
                                                                     id: 'backgroundStyleRow-repeat',
                                                                     label: "Repeat",
                                                                     hideLabel: true,
                                                                     propertyName: "background.repeat",
-                                                                    dropdownOptions: repeatOptions,
+                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
                                                         })
@@ -655,7 +607,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -664,7 +616,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -673,7 +625,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -682,7 +634,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -691,7 +643,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,

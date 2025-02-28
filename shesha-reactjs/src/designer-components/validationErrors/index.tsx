@@ -16,10 +16,9 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { defaultStyles } from './utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { ConfigurableFormItem } from '@/components';
 
-export interface IValidationErrorsComponentProps extends IConfigurableFormComponent,  IStyleType {
-  className?: string; 
+export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleType {
+  className?: string;
   borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;
@@ -75,7 +74,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     if (model.hidden) return null;
-    
+
     if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
       return (
         <ValidationErrors error="The provided StoredFileId is invalid" />
@@ -92,38 +91,29 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
       ...shadowStyles
     });
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });  
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (formMode === 'designer')
       return (
-        <ConfigurableFormItem
-          model={model}
-        >
-          <ValidationErrors
-            className={model?.className}
-            style={{ ...getStyle(model?.style, formData), ...finalStyle }}
-            error="Validation Errors (visible in the runtime only)"
-          />
-        </ConfigurableFormItem>
-      );
-
-    return (
-
-      <ConfigurableFormItem
-        model={model}
-      >
         <ValidationErrors
           className={model?.className}
           style={{ ...getStyle(model?.style, formData), ...finalStyle }}
-          error={validationErrors}
+          error="Validation Errors (visible in the runtime only)"
         />
-      </ConfigurableFormItem>
+      );
+
+    return (
+      <ValidationErrors
+        className={model?.className}
+        style={{ ...getStyle(model?.style, formData), ...finalStyle }}
+        error={validationErrors}
+      />
     );
   },
   /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   settingsFormMarkup: (data) => getSettings(data),
-  migrator: (m) => m.add<IValidationErrorsComponentProps>(0, (prev) => ({...migratePrevStyles(prev, defaultStyles())})),
+  migrator: (m) => m.add<IValidationErrorsComponentProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default ValidationErrorsComponent;

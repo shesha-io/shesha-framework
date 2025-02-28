@@ -4,7 +4,6 @@ using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
 using Abp.TestBase;
-using Boxfusion.SheshaFunctionalTests.Common.Tests;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;

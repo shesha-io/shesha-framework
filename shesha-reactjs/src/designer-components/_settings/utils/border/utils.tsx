@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import { IDropdownOption } from "../background/interfaces";
 import { addPx } from "../../utils";
+import { nanoid } from "@/utils/uuid";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
     if (!input || jsStyle?.border) return {};
@@ -24,7 +25,7 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     const handleBorderPart = (part, prefix: string) => {
         if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = input?.hideBorder ? 0 : addPx(part.width);
         if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = part.style || 'solid';
-        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part.color || 'black';
+        if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part.color || '#d9d9d9';
     };
 
     handleBorderPart(all, 'border');
@@ -72,6 +73,7 @@ export const borderCorners = [
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
+
 const generateCode = (type, isResponsive: boolean, path: string, side: string) => {
     const part = type === 'border' ? 'selectedSide' : 'selectedCorner';
     const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
@@ -83,7 +85,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
     const code = generateCode('border', isResponsive, path, side);
 
     return {
-        id: `borderStyleRow-${side}`,
+        id: nanoid(),
         parentId: 'borderStylePnl',
         inline: true,
         readOnly: false,
@@ -96,7 +98,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
                 propertyName: path ? `${path}.border.hideBorder` : "border.hideBorder",
                 icon: "EyeOutlined",
                 iconAlt: "EyeInvisibleOutlined",
-                tooltip: "Select a border side to which the style will be applied",
+                tooltip: "Hide custom border",
             },
             {
                 label: "Select Side",
@@ -137,7 +139,7 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
     const code = generateCode('radius', isResponsive, path, corner);
 
     return {
-        id: `borderStyleRow-${corner}`,
+        id: nanoid(),
         parentId: 'borderStylePnl',
         inline: true,
         readOnly: { _code: `return getSettingValue(data[${isResponsive ? '`${contexts.canvasContext?.designerDevice || "desktop"}`' : ''}]${path ? '?.' + path : ''}?.border?.hideBorder);`, _mode: 'code', _value: false } as any,
@@ -160,7 +162,6 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
                 width: 65,
                 defaultValue: 0,
                 inputType: 'number',
-                tooltip: "Select a corner to which the radius will be applied",
                 propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };

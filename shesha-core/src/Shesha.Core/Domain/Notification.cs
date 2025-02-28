@@ -21,11 +21,11 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual Person ToPerson { get; set; }
+        public virtual Person? ToPerson { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public virtual Person FromPerson { get; set; }
+        public virtual Person? FromPerson { get; set; }
         /// <summary>
         /// Serialized Json of the notification data
         /// </summary>

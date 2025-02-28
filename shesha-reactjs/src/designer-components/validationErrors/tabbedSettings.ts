@@ -3,6 +3,7 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
+import { positionOptions, repeatOptions, sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -10,7 +11,7 @@ export const getSettings = (data: any) => {
   const appearanceId = nanoid();
   const securityId = nanoid();
   const styleRouterId = nanoid();
-  const pnlFontStyleId = nanoid(); 
+  const pnlFontStyleId = nanoid();
   const dimensionsStylePnlId = nanoid();
   const borderStylePnlId = nanoid();
   const borderStyleRowId = nanoid();
@@ -35,55 +36,38 @@ export const getSettings = (data: any) => {
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [ ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
-                  id: propertyNameId,
-                  propertyName: "propertyName",
-                  parentId: commonTabId,
-                  label: "Property Name",
-                  size: "small",
-                  validate: {
-                    "required": true
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: propertyNameId,
+                    propertyName: 'componentName',
+                    label: 'Component Name',
+                    size: 'small',
+                    jsSetting: true,
                   },
-                  jsSetting: true,
-                })
-                .addLabelConfigurator({
-                  id: nanoid(),
-                  propertyName: 'hideLabel',
-                  label: 'Label',
-                  parentId: commonTabId,
-                  hideLabel: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'textArea',
-                      id: `tooltip-${commonTabId}`,
-                      propertyName: 'description',
-                      label: 'Tooltip',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: nanoid(),
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson()
+                ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'editModeSelector',
+                    id: nanoid(),
+                    propertyName: 'editMode',
+                    label: 'Edit Mode',
+                    size: 'small',
+                    jsSetting: true,
+                  },
+                ],
+              })
+              .toJson()
             ]
           },
           {
@@ -149,7 +133,7 @@ export const getSettings = (data: any) => {
                                   dropdownOptions: fontTypes,
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: `fontSize-${styleRouterId}`,
                                   label: 'Size',
                                   propertyName: 'font.size',
@@ -167,7 +151,7 @@ export const getSettings = (data: any) => {
                                   width: 100,
                                 },
                                 {
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: `fontColor-${styleRouterId}`,
                                   label: 'Color',
                                   hideLabel: true,
@@ -206,7 +190,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `width-${styleRouterId}`,
                                   label: "Width",
                                   width: 85,
@@ -215,7 +199,7 @@ export const getSettings = (data: any) => {
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `minWidth-${styleRouterId}`,
                                   label: "Min Width",
                                   width: 85,
@@ -224,7 +208,7 @@ export const getSettings = (data: any) => {
                                   icon: "minWidthIcon",
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `maxWidth-${styleRouterId}`,
                                   label: "Max Width",
                                   width: 85,
@@ -241,7 +225,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `height-${dimensionsStylePnlId}`,
                                   label: "Height",
                                   width: 85,
@@ -250,7 +234,7 @@ export const getSettings = (data: any) => {
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `minHeight-${dimensionsStylePnlId}`,
                                   label: "Min Height",
                                   width: 85,
@@ -259,7 +243,7 @@ export const getSettings = (data: any) => {
                                   icon: "minHeightIcon",
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `maxHeight-${dimensionsStylePnlId}`,
                                   label: "Max Height",
                                   width: 85,
@@ -318,7 +302,7 @@ export const getSettings = (data: any) => {
                             })
                             .addSettingsInputRow(
                               getBorderInputs()[0] as any
-                            )                           
+                            )
                             .addSettingsInputRow(
                               getBorderInputs()[1] as any
                             )
@@ -403,7 +387,7 @@ export const getSettings = (data: any) => {
                                 id: `${backgroundStylePnlId}-color`,
                                 parentId: backgroundStylePnlId,
                                 inputs: [{
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: nanoid(),
                                   label: "Color",
                                   propertyName: "background.color",
@@ -432,7 +416,7 @@ export const getSettings = (data: any) => {
                                 id: `${backgroundStylePnlId}-url`,
                                 parentId: backgroundStylePnlId,
                                 inputs: [{
-                                  type: 'text',
+                                  type: 'textField',
                                   id: nanoid(),
                                   propertyName: "background.url",
                                   jsSetting: false,
@@ -461,7 +445,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
@@ -481,20 +465,7 @@ export const getSettings = (data: any) => {
                                     label: "Size",
                                     hideLabel: true,
                                     propertyName: "background.size",
-                                    dropdownOptions: [
-                                      {
-                                        value: "cover",
-                                        label: "Cover"
-                                      },
-                                      {
-                                        value: "contain",
-                                        label: "Contain"
-                                      },
-                                      {
-                                        value: "auto",
-                                        label: "Auto"
-                                      }
-                                    ],
+                                    dropdownOptions: sizeOptions,
                                   },
                                   {
                                     type: 'customDropdown',
@@ -502,69 +473,15 @@ export const getSettings = (data: any) => {
                                     label: "Position",
                                     hideLabel: true,
                                     propertyName: "background.position",
-                                    dropdownOptions: [
-                                      {
-                                        value: "center",
-                                        label: "Center"
-                                      },
-                                      {
-                                        value: "top",
-                                        label: "Top"
-                                      },
-                                      {
-                                        value: "left",
-                                        label: "Left"
-                                      },
-                                      {
-                                        value: "right",
-                                        label: "Right"
-                                      },
-                                      {
-                                        value: "bottom",
-                                        label: "Bottom"
-                                      },
-                                      {
-                                        value: "top left",
-                                        label: "Top Left"
-                                      },
-                                      {
-                                        value: "top right",
-                                        label: "Top Right"
-                                      },
-                                      {
-                                        value: "bottom left",
-                                        label: "Bottom Left"
-                                      },
-                                      {
-                                        value: "bottom right",
-                                        label: "Bottom Right"
-                                      }
-                                    ],
+                                    dropdownOptions: positionOptions,
                                   },
                                   {
-                                    type: 'dropdown',
+                                    type: 'radio',
                                     id: nanoid(),
                                     label: "Repeat",
                                     hideLabel: true,
                                     propertyName: "background.repeat",
-                                    dropdownOptions: [
-                                      {
-                                        value: "repeat",
-                                        label: "repeat"
-                                      },
-                                      {
-                                        value: "repeat-x",
-                                        label: "repeatX"
-                                      },
-                                      {
-                                        value: "repeat-y",
-                                        label: "repeatY"
-                                      },
-                                      {
-                                        value: "no-repeat",
-                                        label: "noRepeat"
-                                      }
-                                    ],
+                                    buttonGroupOptions: repeatOptions,
                                   }
                                 ]
                               })
@@ -590,7 +507,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Offset X',
                                   hideLabel: true,
@@ -600,7 +517,7 @@ export const getSettings = (data: any) => {
                                   tooltip: 'OffsetX. The larger the value, the bigger the shadow',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Offset Y',
                                   hideLabel: true,
@@ -610,7 +527,7 @@ export const getSettings = (data: any) => {
                                   description: 'OffsetY. The larger the value, the bigger the shadow',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Blur',
                                   hideLabel: true,
@@ -620,7 +537,7 @@ export const getSettings = (data: any) => {
                                   description: 'Blur. The larger the value, the bigger the blur',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   label: 'Spread',
                                   hideLabel: true,
@@ -630,7 +547,7 @@ export const getSettings = (data: any) => {
                                   description: 'Spread. The larger the value, the bigger the spread',
                                 },
                                 {
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: nanoid(),
                                   label: 'Color',
                                   hideLabel: true,
@@ -685,7 +602,7 @@ export const getSettings = (data: any) => {
                             .addSettingsInput({
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               id: nanoid(),
-                              inputType: 'text',
+                              inputType: 'textField',
                               jsSetting: true,
                               propertyName: 'className',
                               hideLabel: false,

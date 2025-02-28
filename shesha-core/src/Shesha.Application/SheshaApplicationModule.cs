@@ -4,14 +4,15 @@ using Abp.AutoMapper;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Modules;
+using Abp.MultiTenancy;
 using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
-using Abp.Notifications;
 using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Shesha.Authorization;
-using Shesha.ConfigurationItems.Distribution;
+using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -22,7 +23,7 @@ using Shesha.Notifications;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Distribution.NotificationChannels;
 using Shesha.Notifications.Distribution.NotificationTypes;
-using Shesha.Otp;
+using Shesha.Notifications.SMS;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
@@ -30,8 +31,6 @@ using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using Shesha.UserManagements.Configurations;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -76,9 +75,9 @@ namespace Shesha
             {
                 s.NotificationSettings.WithDefaultValue(new NotificationSettings
                 {
-                    Low = new List<string> { },
-                    Medium = new List<string> { },
-                    High = new List<string> { },
+                    Low = new (),
+                    Medium = new(),
+                    High = new(),
                 });
 
             });
@@ -151,37 +150,20 @@ namespace Shesha
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);
 
+            IocManager
+                .RegisterConfigurableItemManager<NotificationTypeConfig, INotificationManager, NotificationManager>()
+                .RegisterConfigurableItemExport<NotificationTypeConfig, INotificationTypeExport, NotificationTypeExport>()
+                .RegisterConfigurableItemImport<NotificationTypeConfig, INotificationTypeImport, NotificationTypeImport>()
+
+                .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
+                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
+
+
+            IocManager.RegisterIfNot<INotificationChannelSender, EmailChannelSender>(DependencyLifeStyle.Transient);
+            IocManager.RegisterIfNot<INotificationChannelSender, SmsChannelSender>(DependencyLifeStyle.Transient);
+
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
-
-            IocManager.IocContainer.Register(Component
-            .For<IConfigurableItemExport>()
-            .Named("NotificationChannelExport")
-            .Forward<IConfigurableItemExport<NotificationChannelConfig>>()
-            .Forward<INotificationChannelExport>()
-            .ImplementedBy<NotificationChannelExport>()
-            .LifestyleTransient())
-                      .Register(Component
-            .For<IConfigurableItemImport>()
-            .Named("NotificationChannelImport")
-            .Forward<IConfigurableItemImport<NotificationChannelConfig>>()
-            .Forward<INotificationChannelImport>()
-            .ImplementedBy<NotificationChannelImport>()
-            .LifestyleTransient())
-                      .Register(Component
-            .For<IConfigurableItemExport>()
-            .Named("NotificationTypeExport")
-            .Forward<IConfigurableItemExport<NotificationTypeConfig>>()
-            .Forward<INotificationTypeExport>()
-            .ImplementedBy<NotificationTypeExport>()
-            .LifestyleTransient())
-                      .Register(Component
-            .For<IConfigurableItemImport>()
-            .Named("NotificationTypeImport")
-            .Forward<IConfigurableItemImport<NotificationTypeConfig>>()
-            .Forward<INotificationTypeImport>()
-            .ImplementedBy<NotificationTypeImport>()
-            .LifestyleTransient());
 
             /* api not used now, this registration causes problems in the IoC. Need to solve IoC problem before uncommenting
             var schemaContainer = IocManager.Resolve<ISchemaContainer>();
