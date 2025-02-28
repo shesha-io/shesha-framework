@@ -34,11 +34,11 @@ namespace Shesha.EntityReferences
             _displayName = _entity.GetEntityDisplayName();
         }
 
-        public virtual string Id { get; internal set; }
+        public virtual string? Id { get; internal set; }
 
-        public virtual string _className { get; internal set; }
+        public virtual string? _className { get; internal set; }
 
-        public virtual string _displayName { get; internal set; }
+        public virtual string? _displayName { get; internal set; }
 
         public static implicit operator Entity<Guid>(GenericEntityReference reference) => GetEntity<Guid>(reference);
         private static Entity<T> GetEntity<T>(GenericEntityReference reference)
@@ -57,9 +57,9 @@ namespace Shesha.EntityReferences
             return new GenericEntityReference(entity);
         }
 
-        public override bool Equals(object obj) => this.Equals(obj as GenericEntityReference);
+        public override bool Equals(object? obj) => this.Equals(obj as GenericEntityReference);
 
-        public bool Equals(GenericEntityReference obj)
+        public bool Equals(GenericEntityReference? obj)
         {
             return obj != null && 
                 Id == obj.Id && _className == obj._className;

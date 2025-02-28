@@ -68,7 +68,7 @@ export const getItemSettings = (data) => {
 
                                             inputs: [{
                                                 id: 'name-8b38-4b82-b192-563259afc159',
-                                                type: 'text',
+                                                type: 'textField',
                                                 propertyName: 'name',
                                                 label: 'Name',
                                                 jsSetting: false,
@@ -85,7 +85,7 @@ export const getItemSettings = (data) => {
                                             inputs: [
                                                 {
                                                     id: "A-qcRVk-qlnGDLtFvK-2X",
-                                                    type: "text",
+                                                    type: "textField",
                                                     propertyName: "label",
                                                     parentId: "root",
                                                     label: "Caption"
@@ -234,7 +234,7 @@ export const getItemSettings = (data) => {
                                                         dropdownOptions: fontTypes,
                                                     },
                                                     {
-                                                        type: 'number',
+                                                        type: 'numberField',
                                                         id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                         label: 'Size',
                                                         propertyName: 'font.size',
@@ -252,7 +252,7 @@ export const getItemSettings = (data) => {
                                                         width: 100,
                                                     },
                                                     {
-                                                        type: 'color',
+                                                        type: 'colorPicker',
                                                         id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                         label: 'Color',
                                                         propertyName: 'font.color',
@@ -291,7 +291,7 @@ export const getItemSettings = (data) => {
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'dimensionsStyleRowWidth',
                                                         label: "Width",
                                                         width: 85,
@@ -301,7 +301,7 @@ export const getItemSettings = (data) => {
 
                                                     },
                                                     {
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'dimensionsStyleRowMinWidth',
                                                         label: "Min Width",
                                                         width: 85,
@@ -310,7 +310,7 @@ export const getItemSettings = (data) => {
                                                         icon: "minWidthIcon",
                                                     },
                                                     {
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'dimensionsStyleRowMaxWidth',
                                                         label: "Max Width",
                                                         width: 85,
@@ -327,7 +327,7 @@ export const getItemSettings = (data) => {
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'dimensionsStyleRowHeight',
                                                         label: "Height",
                                                         width: 85,
@@ -336,7 +336,7 @@ export const getItemSettings = (data) => {
                                                         tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                     },
                                                     {
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'dimensionsStyleRowMinHeight',
                                                         label: "Min Height",
                                                         width: 85,
@@ -345,7 +345,7 @@ export const getItemSettings = (data) => {
                                                         icon: "minHeightIcon",
                                                     },
                                                     {
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'dimensionsStyleRowMaxHeight',
                                                         label: "Max Height",
                                                         width: 85,
@@ -465,7 +465,7 @@ export const getItemSettings = (data) => {
                                                     id: "backgroundStyleRow-color",
                                                     parentId: "backgroundStylePnl",
                                                     inputs: [{
-                                                        type: 'color',
+                                                        type: 'colorPicker',
                                                         id: 'backgroundStyleRow-color',
                                                         label: "Color",
                                                         propertyName: "background.color",
@@ -494,7 +494,7 @@ export const getItemSettings = (data) => {
                                                     id: "backgroundStyle-url",
                                                     parentId: "backgroundStylePnl",
                                                     inputs: [{
-                                                        type: 'text',
+                                                        type: 'textField',
                                                         id: 'backgroundStyle-url',
                                                         propertyName: "background.url",
                                                         jsSetting: false,
@@ -523,7 +523,7 @@ export const getItemSettings = (data) => {
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {
-                                                            type: 'text',
+                                                            type: 'textField',
                                                             id: 'backgroundStyleRow-storedFile',
                                                             propertyName: "background.storedFile.id",
                                                             label: "File ID"
@@ -587,47 +587,47 @@ export const getItemSettings = (data) => {
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
-                                                        type: 'number',
+                                                        type: 'numberField',
                                                         id: 'shadowStyleRow-offsetX',
                                                         label: 'Offset X',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        inputType: 'number',
+                                                        inputType: 'numberField',
                                                         icon: "offsetHorizontalIcon",
                                                         propertyName: 'shadow.offsetX',
                                                     },
                                                     {
-                                                        type: 'number',
+                                                        type: 'numberField',
                                                         id: 'shadowStyleRow-offsetY',
                                                         label: 'Offset Y',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        inputType: 'number',
+                                                        inputType: 'numberField',
                                                         icon: 'offsetVerticalIcon',
                                                         propertyName: 'shadow.offsetY',
                                                     },
                                                     {
-                                                        type: 'number',
+                                                        type: 'numberField',
                                                         id: 'shadowStyleRow-blur',
                                                         label: 'Blur',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        inputType: 'number',
+                                                        inputType: 'numberField',
                                                         icon: 'blurIcon',
                                                         propertyName: 'shadow.blurRadius',
                                                     },
                                                     {
-                                                        type: 'number',
+                                                        type: 'numberField',
                                                         id: 'shadowStyleRow-spread',
                                                         label: 'Spread',
                                                         hideLabel: true,
                                                         width: 60,
-                                                        inputType: 'number',
+                                                        inputType: 'numberField',
                                                         icon: 'spreadIcon',
                                                         propertyName: 'shadow.spreadRadius',
                                                     },
                                                     {
-                                                        type: 'color',
+                                                        type: 'colorPicker',
                                                         id: 'shadowStyleRow-color',
                                                         label: 'Color',
                                                         hideLabel: true,

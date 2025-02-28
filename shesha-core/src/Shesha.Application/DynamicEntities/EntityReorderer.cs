@@ -51,10 +51,16 @@ namespace Shesha.DynamicEntities
             if (!idConverter.CanConvertFrom(typeof(string)))
                 throw new NotSupportedException($"Conversion of string to type `{typeof(TId).FullName}` is not supported");
 
-            var passedItems = input.Items.Select(item => new ReorderingItem<TId, TOrderIndex> {
-                OrderIndex = convertOrderIndex(item.OrderIndex),
-                Id = (TId)idConverter.ConvertFrom(item.Id) }
-                )
+            var passedItems = input.Items.Select(item => 
+                {
+                    var id = idConverter.ConvertFrom(item.Id);
+                
+                    return new ReorderingItem<TId, TOrderIndex>
+                    {
+                        OrderIndex = convertOrderIndex(item.OrderIndex),
+                        Id = id != null ? (TId)id : throw new Exception($"Failed to convert id = '{item.Id}' to type '{typeof(TId).FullName}'")
+                    };
+                })
                 .ToList();
             
             var ids = passedItems.Select(item => item.Id).ToList();

@@ -1,6 +1,6 @@
 using Abp.Domain.Repositories;
+using Abp.Threading;
 using NHibernate.Linq;
-using Nito.AsyncEx.Synchronous;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
@@ -59,7 +59,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// <returns></returns>
         public bool IsGranted(long userId, string permissionName)
         {
-            return IsGrantedAsync(userId, permissionName).WaitAndUnwrapException();
+            return AsyncHelper.RunSync(async () => await IsGrantedAsync(userId, permissionName));
         }
 
         /// <summary>

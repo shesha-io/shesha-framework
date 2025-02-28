@@ -1,5 +1,4 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -172,7 +171,7 @@ namespace Shesha.ConfigurationItems
             public Type ModuleType { get; set; }
             public SheshaModule Instance { get;set; }
             public SheshaModuleInfo ModuleInfo { get; set; }
-            public string Version { get; set; }
+            public string? Version { get; set; }
             public string Accessor { get; set; }
             public bool IsNewModule { get; set; }            
         }

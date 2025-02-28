@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
-using Abp.Reflection;
 using Castle.MicroKernel.Registration;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Reflection;
 using System;
-using System.Linq;
 
 namespace Shesha.ConfigurationItems
 {

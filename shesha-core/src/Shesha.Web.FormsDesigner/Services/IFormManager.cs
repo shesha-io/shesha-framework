@@ -1,7 +1,7 @@
 ﻿using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
+using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;

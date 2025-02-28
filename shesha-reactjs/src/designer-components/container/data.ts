@@ -151,16 +151,16 @@ export const ALIGN_SELF = [
 
 export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
   const {
-    width = '100%',
+    width = 'auto',
     height = 'auto',
     maxHeight = 'auto',
     maxWidth = 'auto',
     minHeight = 'auto',
     minWidth = '0px',
-    borderColor = '#000',
+    borderColor = '#d9d9d9',
     borderRadius = '8',
     borderStyle = 'solid',
-    borderWidth = '0',
+    borderWidth = '0px',
     shadowStyle,
   } = prev || {};
 
@@ -182,10 +182,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       selectedSide: 'all',
       border: {
         all: { width: borderWidth, color: borderColor, style: borderStyle as any },
-        top: { width: borderWidth, color: borderColor, style: borderStyle as any },
-        right: { width: borderWidth, color: borderColor, style: borderStyle as any },
-        bottom: { width: borderWidth, color: borderColor, style: borderStyle as any },
-        left: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },
       radius: { all: borderRadius }
     },
@@ -210,6 +206,6 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     noDefaultStyling: prev?.noDefaultStyling ?? false,
     gridColumnsCount: prev?.gridColumnsCount ?? null,
     gap: prev?.gap ?? '8px',
-    overflow: prev?.overflow ?? 'visible'
+    overflow: prev?.overflow ?? 'auto'
   };
 };

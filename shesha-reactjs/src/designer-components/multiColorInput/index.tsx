@@ -44,7 +44,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                                 setColors(newColors);
                             }}
                         >
-                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='color' id={nanoid()} />
+                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='colorPicker' id={nanoid()} />
                         </Tag>
                     );
                 })}

@@ -75,8 +75,8 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
       theme={{
         components: {
           Pagination: {
-            colorText: style.color,
-            fontWeightStrong: style.fontWeight,
+            colorText: style?.color,
+            fontWeightStrong: style?.fontWeight,
           },
         },
       }}

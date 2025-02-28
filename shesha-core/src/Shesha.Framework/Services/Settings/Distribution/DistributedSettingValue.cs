@@ -1,6 +1,4 @@
-﻿using Shesha.ConfigurationItems.Distribution;
-
-namespace Shesha.Services.Settings.Distribution
+﻿namespace Shesha.Services.Settings.Distribution
 {
     /// <summary>
     /// Distributed setting value
@@ -8,6 +6,6 @@ namespace Shesha.Services.Settings.Distribution
     public class DistributedSettingValue
     {
         public string Value { get; set; }
-        public string AppKey { get; set; }
+        public string? AppKey { get; set; }
     }
 }

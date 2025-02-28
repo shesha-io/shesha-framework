@@ -62,7 +62,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type: 'text',
+                    type: 'textField',
                     id: `placeholder-${commonTabId}`,
                     propertyName: 'placeholder',
                     label: 'Placeholder',
@@ -165,13 +165,14 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                         readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         hidden: { _code: 'return getSettingValue(data?.displayType) !== "textTitle";', _mode: 'code', _value: false } as any,
                         inputs: [{
-                        id: nanoid(),
-                        propertyName: 'textTitle',
-                        label: 'Text Title',
-                        parentId: mainSettingsTabId,
-                        type: 'text',
-                        jsSetting: true,
-                      }]})
+                          id: nanoid(),
+                          propertyName: 'textTitle',
+                          label: 'Text Title',
+                          parentId: mainSettingsTabId,
+                          type: 'textField',
+                          jsSetting: true,
+                        }]
+                      })
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'formSelectionMode',
@@ -195,7 +196,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           propertyName: 'formIdentifier',
                           label: 'Form Identifier',
                           parentId: mainSettingsTabId,
-                          type: 'fullIdFormAutocomplete',
+                          type: 'formAutocomplete',
                           jsSetting: true,
                         }]
                       })
@@ -217,7 +218,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                 propertyName: 'quickviewWidth',
                                 label: 'Quickview width',
                                 parentId: mainSettingsTabId,
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 jsSetting: true,
                                 defaultValue: 600,
                                 min: 0,
@@ -243,7 +244,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                 propertyName: 'modalTitle',
                                 label: 'Title',
                                 parentId: mainSettingsTabId,
-                                inputType: 'text',
+                                inputType: 'textField',
                                 jsSetting: true,
                                 hidden: { _code: 'return getSettingValue(data?.entityReferenceType) !== "dialog";', _mode: 'code', _value: false } as any,
                               })
@@ -438,7 +439,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           propertyName: 'onSuccess',
                           label: 'On Success',
                           parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfig',
+                          inputType: 'configurableActionConfigurator',
                           jsSetting: true,
                         })
                         .toJson()
@@ -463,7 +464,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           propertyName: 'onFail',
                           label: 'On Fail',
                           parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfig',
+                          inputType: 'configurableActionConfigurator',
                           jsSetting: true,
                         })
                         .toJson()
@@ -564,7 +565,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               readOnly: false,
                               inputs: [
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   propertyName: 'labelCol',
                                   label: 'Label Col',
@@ -575,7 +576,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                                   defaultValue: 8,
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: nanoid(),
                                   propertyName: 'wrapperCol',
                                   label: 'Wrapper Col',
@@ -641,7 +642,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           propertyName: 'customWidth',
                           label: 'Custom Width',
                           parentId: mainSettingsTabId,
-                          type: 'text',
+                          type: 'textField',
                           jsSetting: true,
                           min: 0,
                           width: '100%',
