@@ -1,3 +1,4 @@
+import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 
@@ -90,32 +91,7 @@ export const getGroupSettings = (data) => {
                                 parentId: "root",
                                 hidden: false,
                                 validate: {},
-                                dropdownOptions: [
-                                    {
-                                        label: "primary",
-                                        value: "primary"
-                                    },
-                                    {
-                                        label: "ghost",
-                                        value: "ghost"
-                                    },
-                                    {
-                                        label: "dashed",
-                                        value: "dashed"
-                                    },
-                                    {
-                                        label: "link",
-                                        value: "link"
-                                    },
-                                    {
-                                        label: "text",
-                                        value: "text"
-                                    },
-                                    {
-                                        label: "default",
-                                        value: "default"
-                                    }
-                                ],
+                                dropdownOptions: buttonTypes,
                                 jsSetting: false
                             })
                             .addSettingsInputRow({
