@@ -60,7 +60,7 @@ namespace Shesha.Authorization
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
-            var securitySettings = await _securitySettings?.SecuritySettings?.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
             var settings = securitySettings?.DefaultEndpointAccess;
 
             if (settings == null)

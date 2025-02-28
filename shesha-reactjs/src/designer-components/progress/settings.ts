@@ -39,6 +39,7 @@ export const getSettings = (data: any) => {
                   propertyName: 'hideLabel',
                   label: 'Hide Label',
                   inputType: 'switch',
+                  hideLabel: true,
                   jsSetting: true,
                 })
                 .addSettingsInput({

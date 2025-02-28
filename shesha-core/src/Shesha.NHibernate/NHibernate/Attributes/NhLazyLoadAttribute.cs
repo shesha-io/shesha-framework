@@ -1,13 +1,14 @@
 ﻿using System;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using Shesha.Domain.Attributes;
 
 namespace Shesha.NHibernate.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class LazyAttribute : Attribute
+    public class NhLazyLoadAttribute : LazyLoadAttribute
     {
-        public LazyAttribute()
+        public NhLazyLoadAttribute()
         {
             // NoProxy is used by default, see http://ayende.com/blog/4378/nhibernate-new-feature-no-proxy-associations
             Laziness = HbmLaziness.NoProxy;

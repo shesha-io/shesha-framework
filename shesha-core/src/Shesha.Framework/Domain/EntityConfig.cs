@@ -4,7 +4,6 @@ using Shesha.DynamicEntities.Dtos;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -22,15 +21,15 @@ namespace Shesha.Domain
         [StringLength(255)]
         public virtual string FriendlyName { get; set; }
         [StringLength(100)]
-        public virtual string TypeShortAlias { get; set; }
+        public virtual string? TypeShortAlias { get; set; }
         [StringLength(255)]
-        public virtual string TableName { get; set; }
+        public virtual string? TableName { get; set; }
         [StringLength(500)]
         public virtual string ClassName { get; set; }
         [StringLength(500)]
-        public virtual string Namespace { get; set; }
+        public virtual string? Namespace { get; set; }
         [StringLength(255)]
-        public virtual string DiscriminatorValue { get; set; }
+        public virtual string? DiscriminatorValue { get; set; }
 
         public virtual EntityConfig Parent { get; set; }
 

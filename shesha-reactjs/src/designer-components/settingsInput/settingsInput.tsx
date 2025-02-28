@@ -38,6 +38,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                         hasUnits={hasUnits} propertyName={property}
                         tooltip={tooltip}
                         readOnly={readOnly}
+                        modelType={modelType}
                         {...rest} />
                     }
                 </FormItem>

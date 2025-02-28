@@ -36,6 +36,7 @@ export const getSettings = () => {
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
+                  hideLabel: true,
                   label: 'Label'
                 })
                 .addSettingsInput({

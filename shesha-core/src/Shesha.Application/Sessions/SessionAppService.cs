@@ -39,7 +39,7 @@ namespace Shesha.Sessions
         [AllowAnonymous]
         public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfoAsync()
         {
-            var output = new GetCurrentLoginInfoOutput { };
+            var output = new GetCurrentLoginInfoOutput();
 
             if (AbpSession.TenantId.HasValue)
             {

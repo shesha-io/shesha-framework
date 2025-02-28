@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications.MessageParticipants
 {
-#nullable enable
     public class PersonMessageParticipant : IMessageSender, IMessageReceiver
     {
         private readonly Person _person;
@@ -31,5 +30,4 @@ namespace Shesha.Notifications.MessageParticipants
             return await userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == _person.Id && x.NotificationType.Id == type.Id && x.OptOut);            
         }
     }
-#nullable restore
 }

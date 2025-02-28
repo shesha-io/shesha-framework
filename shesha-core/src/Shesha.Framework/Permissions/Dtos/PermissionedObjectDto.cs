@@ -26,7 +26,7 @@ namespace Shesha.Permissions
 
         public string Category { get; set; }
 
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public Guid? ModuleId { get; set; }
 
         public string Type { get; set; }
@@ -35,10 +35,10 @@ namespace Shesha.Permissions
 
         public string Description { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
 
-        public List<string> ActualPermissions { get; set; }
-        public List<string> InheritedPermissions { get; set; }
+        public List<string>? ActualPermissions { get; set; }
+        public List<string>? InheritedPermissions { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }
 

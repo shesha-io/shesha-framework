@@ -12,7 +12,6 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions;
 using Shesha.Services;
 using Shesha.Utilities;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Services;
 using Shesha.Web.FormsDesigner.Services.Distribution;
 using Shouldly;

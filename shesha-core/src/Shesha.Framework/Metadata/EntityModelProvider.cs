@@ -73,7 +73,7 @@ namespace Shesha.Metadata
                         Metadata = metadata,
                     };
                 }))
-                .Where(t => t != null)
+                .WhereNotNull()
                 .ToList();
 
             return dtos;

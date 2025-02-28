@@ -1,7 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Microsoft.OpenApi.Models;
-using Nito.AsyncEx.Synchronous;
-using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
@@ -47,7 +45,7 @@ namespace Shesha.DynamicEntities.Swagger
             var entityReferenceProperties = srcProperties?.Where(x => x.PropertyType.IsEntityType()).Select(x => x.Name).ToList();
 
             var propertiesConfigs = srcType != null 
-                ? _entityConfigCache.GetEntityPropertiesAsync(srcType).WaitAndUnwrapException() 
+                ? AsyncHelper.RunSync(async () => await _entityConfigCache.GetEntityPropertiesAsync(srcType))
                 : null;
 
             var dtoBuilder = StaticContext.IocManager.Resolve<IDynamicDtoTypeBuilder>();

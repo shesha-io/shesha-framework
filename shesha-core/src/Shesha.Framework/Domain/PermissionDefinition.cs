@@ -12,6 +12,6 @@ namespace Shesha.Domain
         /// <summary>
         /// Parent of this permission if one exists.
         /// </summary>
-        public virtual string Parent { get; set; }
+        public virtual string? Parent { get; set; }
     }
 }
