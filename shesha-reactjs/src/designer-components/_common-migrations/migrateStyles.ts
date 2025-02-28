@@ -5,7 +5,7 @@ import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyle
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
-export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style'>) => {
+export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
         const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;

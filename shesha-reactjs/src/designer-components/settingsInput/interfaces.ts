@@ -1,7 +1,7 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeLanguages } from '../codeEditor/types';
 import { ResultType } from '@/components/codeEditor/models';
-import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ComponentType } from '@/components/formComponentSelector';
@@ -11,6 +11,7 @@ export interface IRadioOption {
     icon?: string | React.ReactNode;
     title?: string;
     hint?: string;
+    disabled?: boolean;
 }
 
 export interface IDropdownOption {
@@ -70,6 +71,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    entityType?: string;
     useRawValues?: boolean;
     modelType?: string;
     httpVerb?: string;
@@ -81,6 +83,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     listItemSettingsMarkup?: IConfigurableFormComponent[];
     buttonText?: string;
     modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
+    settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;
     propertyAccessor?: string;
