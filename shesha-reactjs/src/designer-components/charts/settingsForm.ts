@@ -86,7 +86,7 @@ export const getSettings = (data: any) => {
                           parentId: 'root',
                           label: 'Width',
                           description: 'The width (px) of the chart. If not provided, the default width will be used. Minimum width is 300px. For responsiveness, setting the width will automatically set the height to proportionate value.',
-                          inputType: 'number',
+                          inputType: 'numberField',
                           step: 1,
                           min: 300,
                           readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -97,7 +97,7 @@ export const getSettings = (data: any) => {
                           parentId: 'root',
                           label: 'Height',
                           description: 'The height (px) of the chart. If not provided, the default height will be used. Minimum height is 200px. For responsiveness, setting the height will automatically set the width to proportionate value.',
-                          inputType: 'number',
+                          inputType: 'numberField',
                           step: 1,
                           min: 200,
                           readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -173,7 +173,7 @@ export const getSettings = (data: any) => {
                         })
                         .addSettingsInput({
                           id: nanoid(),
-                          inputType: 'text',
+                          inputType: 'textField',
                           propertyName: 'title',
                           parentId: appearanceTabId,
                           hidden: {
@@ -274,7 +274,7 @@ export const getSettings = (data: any) => {
                         })
                         .addSettingsInput({
                           id: nanoid(),
-                          inputType: 'number',
+                          inputType: 'numberField',
                           propertyName: 'tension',
                           parentId: chartSettingsId,
                           label: 'Tension',
@@ -291,7 +291,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'strokeWidth',
                           parentId: chartSettingsId,
-                          inputType: 'number',
+                          inputType: 'numberField',
                           label: 'Stroke width',
                           defaultValue: 0.0,
                           description: 'The width of the stroke for the elements (bars, lines, etc.) in the c in the chart. Default is 0.0',
@@ -304,7 +304,7 @@ export const getSettings = (data: any) => {
                           parentId: 'root',
                           label: 'Stroke Color',
                           allowClear: true,
-                          inputType: 'color',
+                          inputType: 'colorPicker',
                           readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         })
                         .toJson()
@@ -332,7 +332,7 @@ export const getSettings = (data: any) => {
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'url',
-                          inputType: 'text',
+                          inputType: 'textField',
                           label: 'URL',
                           description: 'The URL you want to use for the chart',
                           labelAlign: 'right',
@@ -345,7 +345,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'axisProperty',
                           label: 'Axis label',
-                          inputType: 'text',
+                          inputType: 'textField',
                           labelAlign: 'right',
                           parentId: dataTabId,
                           isDynamic: false,
@@ -362,7 +362,7 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           propertyName: 'valueProperty',
                           label: 'Value axis label',
-                          inputType: 'text',
+                          inputType: 'textField',
                           labelAlign: 'right',
                           parentId: dataTabId,
                           isDynamic: false,
