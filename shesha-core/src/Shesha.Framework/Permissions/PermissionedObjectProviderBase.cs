@@ -44,7 +44,7 @@ namespace Shesha.Permissions
 
         protected async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
         {
-            Module module = null;
+            Module? module = null;
             if (_modules.TryGetValue(assembly, out module))
             {
                 return module;
