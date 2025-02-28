@@ -144,7 +144,7 @@ export const getSettings = (data: any) => {
                                         } as any,
                                         inputs: [
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'fontSize-s04gmBg31azZC0UjZjpfTm',
                                             label: 'Size',
                                             propertyName: 'lineFont.size',
@@ -152,7 +152,7 @@ export const getSettings = (data: any) => {
                                             width: 50,
                                           },
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
                                             label: 'Color',
                                             hideLabel: true,
@@ -217,7 +217,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'width-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
@@ -243,7 +243,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'height-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
@@ -302,7 +302,7 @@ export const getSettings = (data: any) => {
                                             dropdownOptions: fontTypes,
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                             label: 'Size',
                                             propertyName: 'font.size',
@@ -320,7 +320,7 @@ export const getSettings = (data: any) => {
                                             width: 100,
                                           },
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                             label: 'Color',
                                             hideLabel: true,

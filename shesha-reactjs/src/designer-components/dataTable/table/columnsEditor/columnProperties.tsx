@@ -1,6 +1,7 @@
 import React, {
   FC,
   useEffect,
+  useMemo,
 } from 'react';
 import { ConfigurableForm } from '@/components';
 import { Form } from 'antd';
@@ -17,14 +18,15 @@ export interface IColumnPropertiesProps {
   item?: ColumnsItemProps;
   onChange?: (item: ColumnsItemProps) => void;
   readOnly: boolean;
-  componentName?: string;
+  parentComponentType?: string;
   metadata?: IMetadataContext;
 }
 
-export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly }) => {
+export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly, parentComponentType }) => {
   const [form] = Form.useForm();
 
   const columnType = Form.useWatch('columnType', form);
+  const columnSettings = useMemo(() => getColumnSettings({ type: parentComponentType }), [parentComponentType]);
 
   const prevColumnType = usePrevious(columnType);
   useEffect(() => {
@@ -67,9 +69,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
-      markup={{
-        ...getColumnSettings({ type: item?.columnType }),
-      } as FormMarkup}
+      markup={columnSettings as FormMarkup}
       form={form}
       initialValues={item}
       onValuesChange={debouncedSave}

@@ -117,7 +117,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
     switch (type) {
-        case 'color':
+        case 'colorPicker':
             return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
         case 'dropdown':
             return <Select
@@ -144,7 +144,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'switch':
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
-        case 'number':
+        case 'numberField':
             return <InputNumber min={props.min} max={props.max} placeholder={placeholder}
                 defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
             />;
@@ -237,7 +237,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'multiColorPicker':
             return <MultiColorInput value={value} onChange={onChange} readOnly={readOnly} propertyName={propertyName} />;
         case 'itemListConfiguratorModal':
-
             return <ItemListConfiguratorModal<ITabPaneProps | IWizardStepProps>
                 readOnly={readOnly}
                 initNewItem={onAddNewItem}
@@ -285,18 +284,17 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     )
                 }
             />;
-        case 'configurableActionConfig':
+        case 'configurableActionConfigurator':
             return <ConfigurableActionConfigurator editorConfig={null} level={0} />;
-        case 'fullIdFormAutocomplete':
-            return <FormAutocomplete readOnly={readOnly} />;
         case 'typeAutoComplete':
             return <Autocomplete.Raw
                 dataSourceType="url"
                 dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
                 readOnly={readOnly}
+                size={size}
             />;
         case 'endpointsAutoComplete':
-            return <EndpointsAutocomplete readOnly={readOnly} />;
+            return <EndpointsAutocomplete readOnly={readOnly} size={size} />;
         case 'componentSelector':
             return <FormComponentSelector
                 componentType={componentType}
@@ -304,6 +302,9 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
                 }
                 readOnly={readOnly}
+                size={size}
+                value={value}
+                onChange={onChange}
                 propertyMeta={propertyMeta}
             />;
         default:
@@ -336,11 +337,11 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
         {inputs.map((props, i) => {
             const { type } = props;
 
-            const width = type === 'number' ? 100 :
+            const width = type === 'numberField' ? 100 :
                 type === 'button' ? 24 :
                     type === 'dropdown' ? 120 :
                         type === 'radio' ? props.buttonGroupOptions.length * 32 :
-                            type === 'color' ? 24 :
+                            type === 'colorPicker' ? 24 :
                                 type === 'customDropdown' ? 120 : 50;
 
             return (
