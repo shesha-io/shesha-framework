@@ -162,7 +162,7 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '', disable
                 hideLabel: true,
                 width: 65,
                 defaultValue: 0,
-                inputType: 'number',
+                inputType: 'numberField',
                 propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };

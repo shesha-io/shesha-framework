@@ -21,7 +21,7 @@ export const getItemSettings = () => {
                         ...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
-                                inputType: 'text',
+                                inputType: 'textField',
                                 propertyName: 'name',
                                 label: 'Name',
                                 labelAlign: 'right',
@@ -30,7 +30,7 @@ export const getItemSettings = () => {
                             })
                             .addSettingsInput({
                                 id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
-                                inputType: 'text',
+                                inputType: 'textField',
                                 propertyName: 'title',
                                 label: 'Title',
                                 labelAlign: 'right',
@@ -38,7 +38,7 @@ export const getItemSettings = () => {
                             })
                             .addSettingsInput({
                                 id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
-                                inputType: 'text',
+                                inputType: 'textField',
                                 propertyName: 'key',
                                 label: 'Key',
                                 jsSetting: false,
@@ -47,7 +47,7 @@ export const getItemSettings = () => {
                             })
                             .addSettingsInput({
                                 id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
-                                inputType: 'text',
+                                inputType: 'textField',
                                 propertyName: 'className',
                                 label: 'Class Name',
                                 labelAlign: 'right',

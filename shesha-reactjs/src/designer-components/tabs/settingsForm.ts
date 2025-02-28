@@ -30,7 +30,7 @@ export const getSettings = () => {
                             ...new DesignerToolbarSettings()
                                 .addSettingsInput({
                                     id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
-                                    inputType: 'text',
+                                    inputType: 'textField',
                                     propertyName: 'componentName',
                                     label: 'Component Name',
                                     labelAlign: 'right',
@@ -40,7 +40,7 @@ export const getSettings = () => {
                                 })
                                 .addSettingsInput({
                                     id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
-                                    inputType: 'text',
+                                    inputType: 'textField',
                                     propertyName: 'defaultActiveKey',
                                     label: 'Default Active Tab',
                                     labelAlign: 'right',
@@ -157,7 +157,7 @@ export const getSettings = () => {
                                                                 dropdownOptions: fontTypes,
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Size',
                                                                 propertyName: 'font.size',
@@ -175,7 +175,7 @@ export const getSettings = () => {
                                                                 width: 100,
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -214,7 +214,7 @@ export const getSettings = () => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
@@ -224,7 +224,7 @@ export const getSettings = () => {
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Width",
                                                                 width: 85,
@@ -233,7 +233,7 @@ export const getSettings = () => {
                                                                 icon: "minWidthIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Width",
                                                                 width: 85,
@@ -250,7 +250,7 @@ export const getSettings = () => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
@@ -259,7 +259,7 @@ export const getSettings = () => {
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Min Height",
                                                                 width: 85,
@@ -268,7 +268,7 @@ export const getSettings = () => {
                                                                 icon: "minHeightIcon",
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Max Height",
                                                                 width: 85,
@@ -381,7 +381,7 @@ export const getSettings = () => {
                                                             id: "backgroundStyleRow-color",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'backgroundStyleRow-color',
                                                                 label: "Color",
                                                                 propertyName: "background.color",
@@ -410,7 +410,7 @@ export const getSettings = () => {
                                                             id: "backgroundStyle-url",
                                                             parentId: "backgroundStylePnl",
                                                             inputs: [{
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'backgroundStyle-url',
                                                                 propertyName: "background.url",
                                                                 jsSetting: false,
@@ -439,7 +439,7 @@ export const getSettings = () => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
-                                                                    type: 'text',
+                                                                    type: 'textField',
                                                                     id: 'backgroundStyle-storedFile',
                                                                     jsSetting: false,
                                                                     propertyName: "background.storedFile.id",
@@ -552,7 +552,7 @@ export const getSettings = () => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -561,7 +561,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -570,7 +570,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -579,7 +579,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -588,7 +588,7 @@ export const getSettings = () => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,
@@ -682,7 +682,7 @@ export const getSettings = () => {
                                                                             dropdownOptions: fontTypes,
                                                                         },
                                                                         {
-                                                                            type: 'number',
+                                                                            type: 'numberField',
                                                                             id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                                                             label: 'Size',
                                                                             propertyName: 'card.font.size',
@@ -700,7 +700,7 @@ export const getSettings = () => {
                                                                             width: 100,
                                                                         },
                                                                         {
-                                                                            type: 'color',
+                                                                            type: 'colorPicker',
                                                                             id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                                                             label: 'Color',
                                                                             hideLabel: true,
@@ -774,7 +774,7 @@ export const getSettings = () => {
                                                                         id: "backgroundStyleRow-color",
                                                                         parentId: "backgroundStylePnl",
                                                                         inputs: [{
-                                                                            type: 'color',
+                                                                            type: 'colorPicker',
                                                                             id: 'backgroundStyleRow-color',
                                                                             label: "Color",
                                                                             propertyName: "card.background.color",
@@ -803,7 +803,7 @@ export const getSettings = () => {
                                                                         id: "backgroundStyle-url",
                                                                         parentId: "backgroundStylePnl",
                                                                         inputs: [{
-                                                                            type: 'text',
+                                                                            type: 'textField',
                                                                             id: 'backgroundStyle-url',
                                                                             propertyName: "card.background.url",
                                                                             jsSetting: false,
@@ -832,7 +832,7 @@ export const getSettings = () => {
                                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                         inputs: [
                                                                             {
-                                                                                type: 'text',
+                                                                                type: 'textField',
                                                                                 id: 'backgroundStyle-storedFile',
                                                                                 jsSetting: false,
                                                                                 propertyName: "card.background.storedFile.id",
