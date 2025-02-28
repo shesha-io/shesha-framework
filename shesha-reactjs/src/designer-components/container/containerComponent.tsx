@@ -107,10 +107,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           wrapperStyle={{
             ...positionstyle,
             ...stylingBoxAsCSS,
+            ...finalStyle,
             ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
           }}
           style={{
-            ...finalStyle,
             ...getStyle(model?.style, formData),
           }}
           className={model.className}
