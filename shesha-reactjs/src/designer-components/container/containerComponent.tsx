@@ -75,7 +75,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const additionalStyles = removeUndefinedProps({
-      ...stylingBoxAsCSS,
       ...dimensionsStyles,
       ...borderStyles,
       ...backgroundStyles,
@@ -105,9 +104,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       <ParentProvider model={model}>
         <ComponentsContainer
           containerId={model.id}
-          wrapperStyle={{ ...positionstyle, ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }) }}
-          style={{
+          wrapperStyle={{
             ...positionstyle,
+            ...stylingBoxAsCSS,
+            ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })
+          }}
+          style={{
             ...finalStyle,
             ...getStyle(model?.style, formData),
           }}
