@@ -164,7 +164,7 @@ export const getSettings = (data: any) => {
                       layout: 'horizontal',
                     },
                     {
-                      type: 'text',
+                      type: 'textField',
                       id: 'default-s4gmBg31azZC0UjZjpfTm',
                       propertyName: 'defaultValue',
                       label: 'Default Checked',

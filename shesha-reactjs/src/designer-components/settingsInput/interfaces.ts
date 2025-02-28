@@ -1,14 +1,17 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeLanguages } from '../codeEditor/types';
 import { ResultType } from '@/components/codeEditor/models';
-import { IComponentLabelProps, IConfigurableFormComponent } from '@/index';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
+import { ComponentType } from '@/components/formComponentSelector';
 
 export interface IRadioOption {
     value: string | number;
     icon?: string | React.ReactNode;
     title?: string;
+    hint?: string;
+    disabled?: boolean;
 }
 
 export interface IDropdownOption {
@@ -17,11 +20,13 @@ export interface IDropdownOption {
 }
 
 export interface InputType {
-    type: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
-    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'text' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
+    type: 'colorPicker' | 'dropdown' | 'radio' | 'switch' | 'numberField' | 'button' | 'buttonGroupConfigurator' | 'editableTagGroupProps' | 'dynamicItemsConfigurator' | 'endpointsAutocomplete'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'textField' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
-    | 'sizableColumnsConfig' | 'labelValueEditor' | 'columnsList' | 'sizableColumnsConfig' | 'itemListConfiguratorModal';
+    | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | "dataSortingEditor"
+    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator';
 }
+
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
     type: InputType['type'];
     label: string;
@@ -68,6 +73,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     inputType?: InputType['type'];
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
+    entityType?: string;
     useRawValues?: boolean;
     modelType?: string;
     httpVerb?: string;
@@ -79,6 +85,12 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     listItemSettingsMarkup?: IConfigurableFormComponent[];
     buttonText?: string;
     modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
+    settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;
+    propertyAccessor?: string;
+    noSelectionItemText?: string;
+    noSelectionItemValue?: string;
+    componentType?: ComponentType;
+    parentComponentType?: string;
 };

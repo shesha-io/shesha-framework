@@ -1,21 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
-using System;
+using Shesha.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
     [DiscriminatorValue(ItemTypeName)]
     [JoinedProperty("Core_NotificationTypeConfigs")]
     [Entity(TypeShortAlias = "Shesha.Domain.NotificationTypeConfig")]
-    public class NotificationTypeConfig: ConfigurationItemBase
+    public class NotificationTypeConfig : ConfigurationItemBase, INotificationTypeSpecificProps
     {
         public NotificationTypeConfig()
         {
@@ -84,6 +81,7 @@ namespace Shesha.Domain
                             {
                                 PropertyNameCaseInsensitive = true
                             }))
+                            .WhereNotNull()
                             .ToList();
                     }
                     catch (JsonException)

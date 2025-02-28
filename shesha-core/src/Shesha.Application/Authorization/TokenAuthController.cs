@@ -103,10 +103,11 @@ namespace Shesha.Authorization
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
 
             var personId = loginResult?.User != null
-                ? _personRepository.GetAll()
+                ? await _personRepository.GetAll()
                     .Where(p => p.User == loginResult.User)
                     .OrderBy(p => p.CreationTime)
-                    .Select(p => p.Id).FirstOrDefault()
+                    .Select(p => p.Id)
+                    .FirstOrDefaultAsync()
                 : (Guid?)null;
             var device = !string.IsNullOrWhiteSpace(imei)
                 ? await _mobileDeviceRepository.FirstOrDefaultAsync(e => e.IMEI == imei.Trim())

@@ -28,12 +28,12 @@ namespace Shesha.NHibernate
             return Task.FromResult(queryable.ToList());
         }
 
-        public Task<T> FirstOrDefaultAsync<T>(IQueryable<T> queryable)
+        public async Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> queryable)
         {
-            if ((queryable.Provider is INhQueryProvider nhQueryProvider))
-                return LinqExtensionMethods.FirstOrDefaultAsync(queryable);
+            if (queryable.Provider is INhQueryProvider nhQueryProvider)
+                return await LinqExtensionMethods.FirstOrDefaultAsync(queryable);
 
-            return Task.FromResult(queryable.FirstOrDefault());
+            return queryable.FirstOrDefault();
         }
 
         public Task<bool> AnyAsync<T>(IQueryable<T> queryable)

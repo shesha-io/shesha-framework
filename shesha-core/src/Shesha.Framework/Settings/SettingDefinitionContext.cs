@@ -1,7 +1,6 @@
 ﻿using Abp.Collections.Extensions;
 using Shesha.Reflection;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Shesha.Settings
 {
@@ -12,7 +11,7 @@ namespace Shesha.Settings
     {
         protected Dictionary<SettingIdentifier, SettingDefinition> Settings { get; }
 
-        public string ModuleName { get; private set; }
+        public string? ModuleName { get; private set; }
 
         public SettingDefinitionContext(Dictionary<SettingIdentifier, SettingDefinition> settings, ISettingDefinitionProvider provider)
         {

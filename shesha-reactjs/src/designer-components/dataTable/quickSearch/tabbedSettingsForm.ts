@@ -74,7 +74,7 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `width-${styleRouterId}`,
                                   label: "Width",
                                   width: 85,
@@ -83,7 +83,7 @@ export const getSettings = (data: any) => {
                                   tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `minWidth-${styleRouterId}`,
                                   label: "Min Width",
                                   width: 85,
@@ -92,7 +92,7 @@ export const getSettings = (data: any) => {
                                   icon: "minWidthIcon",
                                 },
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: `maxWidth-${styleRouterId}`,
                                   label: "Max Width",
                                   width: 85,

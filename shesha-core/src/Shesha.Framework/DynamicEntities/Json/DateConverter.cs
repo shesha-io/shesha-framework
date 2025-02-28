@@ -1,11 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Json
 {
@@ -16,7 +12,7 @@ namespace Shesha.DynamicEntities.Json
     {
         private const string DefaultDateFormat = "yyyy'-'MM'-'dd";
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) 
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) 
         {
             string text;
 

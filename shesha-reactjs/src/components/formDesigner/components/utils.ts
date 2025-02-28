@@ -24,6 +24,20 @@ export interface ICustomEventHandler {
   setGlobalState: (payload: ISetStatePayload) => void;
 };
 
+export const addContextData = (context: any, additionalContext: any) => {
+  // if context is an ObservableProxy
+  if (context instanceof ObservableProxy) {
+    for(const propName in additionalContext) {
+      if (additionalContext.hasOwnProperty(propName)) {
+        context.addAccessor(propName, () => additionalContext[propName]);
+      }
+    }
+    return context;
+  }
+  // if context is a simple object
+  return {...context, ...additionalContext};
+};
+
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onChange: Function;
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;
@@ -35,16 +49,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
     if (Boolean(expression)) {
-      // if context is an ObservableProxy
-      if (typeof context['addAccessor'] === 'function') {
-        const ctx = context as any as ObservableProxy<IApplicationContext>;
-        ctx.addAccessor('event', () => event);
-        ctx.addAccessor('value', () => event?.currentTarget.value);
-        return executeScriptSync(expression, context);
-      }
-
-      // if context is a simple object
-      return executeScriptSync(expression, { ...context, event, value: event?.currentTarget.value });
+      return executeScriptSync(expression, addContextData(context, {event, value: event?.currentTarget.value}));
     }
   };
 
@@ -62,16 +67,7 @@ export const customDateEventHandler = (model: IConfigurableFormComponent, contex
   onChange: (value: any | null, dateString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      // if context is an ObservableProxy
-      if (typeof context['addAccessor'] === 'function') {
-        const ctx = context as any as ObservableProxy<IApplicationContext>;
-        ctx.addAccessor('dateString', () => dateString);
-        ctx.addAccessor('value', () => value);
-        return executeScriptSync(expression, context);
-      }
-
-      // if context is a simple object
-      return executeScriptSync(expression, { ...context, dateString, value });
+      return executeScriptSync(expression, addContextData(context, {dateString, value}));
     }
   },
 });
@@ -80,16 +76,7 @@ export const customTimeEventHandler = (model: IConfigurableFormComponent, contex
   onChange: (value: any | null, timeString: string | [string, string]) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      // if context is an ObservableProxy
-      if (typeof context['addAccessor'] === 'function') {
-        const ctx = context as any as ObservableProxy<IApplicationContext>;
-        ctx.addAccessor('timeString', () => timeString);
-        ctx.addAccessor('value', () => value);
-        return executeScriptSync(expression, context);
-      }
-
-      // if context is a simple object
-      return executeScriptSync(expression, { ...context, timeString, value });
+      return executeScriptSync(expression, addContextData(context, {timeString, value}));
     }
   },
 });
@@ -98,16 +85,7 @@ export const customDropDownEventHandler = <T = any>(model: IConfigurableFormComp
   onChange: (value: CustomLabeledValue<T>, option: any) => {
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      // if context is an ObservableProxy
-      if (typeof context['addAccessor'] === 'function') {
-        const ctx = context as any as ObservableProxy<IApplicationContext>;
-        ctx.addAccessor('option', () => option);
-        ctx.addAccessor('value', () => value);
-        return executeScriptSync(expression, context);
-      }
-
-      // if context is a simple object
-      return executeScriptSync(expression, { ...context, option, value });
+      return executeScriptSync(expression, addContextData(context, {option, value}));
     }
   },
 });
@@ -118,15 +96,7 @@ export const customOnChangeValueEventHandler = (model: IConfigurableFormComponen
       changeEvent(value);
     const expression = model?.onChangeCustom;
     if (Boolean(expression)) {
-      // if context is an ObservableProxy
-      if (typeof context['addAccessor'] === 'function') {
-        const ctx = context as any as ObservableProxy<IApplicationContext>;
-        ctx.addAccessor('value', () => value);
-        return executeScriptSync(expression, context);
-      }
-
-      // if context is a simple object
-      return executeScriptSync(expression, { ...context, value });
+      return executeScriptSync(expression, addContextData(context, {value}));
     }
   },
 });

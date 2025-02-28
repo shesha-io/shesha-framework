@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Shesha.Domain;
+using System.Collections.Generic;
 using System.Linq;
-using NUglify.Helpers;
-using Shesha.Domain;
 
 namespace Shesha.ShaRoles.Dto
 {
@@ -9,18 +8,16 @@ namespace Shesha.ShaRoles.Dto
     {
         public static List<ShaRolePermission> MapPermissions(this ShaRole role, IEnumerable<string> permissions)
         {
-            var roles = role.Permissions.ToList();
-            permissions.Where(x => !roles.Any(p => p.Permission == x && p.IsGranted)).ForEach(x =>
-            {
-                roles.Add(new ShaRolePermission() { Permission = x, IsGranted = true, ShaRole = role });
-            });
+            var rolesPermissions = role.Permissions.ToList();
+            var toAdd = permissions.Where(x => !rolesPermissions.Any(p => p.Permission == x && p.IsGranted));
+            foreach (var permission in toAdd) 
+                rolesPermissions.Add(new ShaRolePermission() { Permission = permission, IsGranted = true, ShaRole = role });
 
-            roles.Where(x => permissions.All(p => x.Permission != p)).ToList().ForEach(x =>
-            {
-                roles.Remove(x);
-            });
+            var toRemove = rolesPermissions.Where(x => permissions.All(p => x.Permission != p)).ToList();
+            foreach (var permission in toRemove)
+                rolesPermissions.Remove(permission);
 
-            return roles;
+            return rolesPermissions;
         }
     }
 }

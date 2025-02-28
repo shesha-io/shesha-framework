@@ -189,7 +189,7 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static string ReplaceTags(this string value, Dictionary<string, string> tags)
         {
-            return String.IsNullOrEmpty(value) ? value : tags.Aggregate(value, (current, tag) => current.Replace(tag.Key, tag.Value));
+            return string.IsNullOrEmpty(value) ? value : tags.Aggregate(value, (current, tag) => current.Replace(tag.Key, tag.Value));
         }
 
         public static string LeftPart(this string value, char delimiter, ProcessDirection direction)
@@ -212,16 +212,16 @@ namespace Shesha.Utilities
             return value.RightPart(delimiter, ProcessDirection.RightToLeft);
         }
 
-        public static string Delimited(this IEnumerable<string> list, string delimiter)
+        public static string Delimited(this IEnumerable<string?> list, string delimiter)
         {
             if (!list.Any())
-                return String.Empty;
+                return string.Empty;
 
-            var res = String.Empty;
+            var res = string.Empty;
 
             foreach (var item in list)
             {
-                res += (String.IsNullOrWhiteSpace(res) ? String.Empty : delimiter) + item ?? String.Empty;
+                res += (string.IsNullOrWhiteSpace(res) ? string.Empty : delimiter) + item ?? string.Empty;
             }
             return res;
         }
@@ -238,7 +238,7 @@ namespace Shesha.Utilities
         [DebuggerStepThrough]
         public static bool IsEmail(this string target)
         {
-            return !String.IsNullOrEmpty(target) && EmailExpression.IsMatch(target);
+            return !string.IsNullOrEmpty(target) && EmailExpression.IsMatch(target);
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace Shesha.Utilities
         {
             T convertedValue = defaultValue;
 
-            if (!String.IsNullOrEmpty(target))
+            if (!string.IsNullOrEmpty(target))
             {
                 try
                 {
@@ -331,7 +331,7 @@ namespace Shesha.Utilities
         {
             for (int i = 0; i < args.Length; i++)
             {
-                if (!String.IsNullOrWhiteSpace(args[i]))
+                if (!string.IsNullOrWhiteSpace(args[i]))
                     return args[i];
             }
             return null;
@@ -434,7 +434,7 @@ namespace Shesha.Utilities
             var c = (int)((amount - r) * 100);
 
             var result = r.NumberToWords() +
-                (c > 0 ? String.Format(" and {0} cents", c.NumberToWords()) : "");
+                (c > 0 ? string.Format(" and {0} cents", c.NumberToWords()) : "");
 
             return result;
         }
@@ -467,7 +467,7 @@ namespace Shesha.Utilities
                 : text
                     .Replace("\n\r", "\n").Replace("\r\n", "\n")
                     .Split('\n')
-                    .Select(p => String.Format("<p>{0}</p>", p))
+                    .Select(p => string.Format("<p>{0}</p>", p))
                     .Delimited("");
         }
 
@@ -499,14 +499,14 @@ namespace Shesha.Utilities
         {
             return (value ?? "").Split(',')
                 .Select(v => v.Trim())
-                .Where(v => !String.IsNullOrWhiteSpace(v))
+                .Where(v => !string.IsNullOrWhiteSpace(v))
                 .Select(v => Convert.ToInt32(v))
                 .ToList();
         }
 
         public static bool EqualsOrEmpty(this string s1, string s2, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
         {
-            return String.IsNullOrEmpty(s1) && String.IsNullOrEmpty(s2) ||
+            return string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2) ||
                 s1 != null && s2 != null && s1.Equals(s2, comparisonType);
         }
 
@@ -523,7 +523,7 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static List<string> ConvertCommaSeparatedStringToList(string value)
         {
-            if (!String.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(value))
             {
                 return
                     value.Split(',')
@@ -684,8 +684,8 @@ namespace Shesha.Utilities
         /// </summary>
         public static decimal ToDecimal(this string source, decimal defaultValue)
         {
-            if (String.IsNullOrEmpty(source) ||
-                !Decimal.TryParse(source, out var result))
+            if (string.IsNullOrEmpty(source) ||
+                !decimal.TryParse(source, out var result))
                 return defaultValue;
             return result;
         }
@@ -722,7 +722,7 @@ namespace Shesha.Utilities
             if (initialString == null)
                 return "";
             var nonNumericCharacters = new System.Text.RegularExpressions.Regex(@"\D");
-            return nonNumericCharacters.Replace(initialString, String.Empty);
+            return nonNumericCharacters.Replace(initialString, string.Empty);
         }
 
         /// <summary>
@@ -733,12 +733,12 @@ namespace Shesha.Utilities
             if (initialString == null)
                 return "";
             var nonAlphaNumericCharacters = new System.Text.RegularExpressions.Regex(@"[^a-zA-Z\d]");
-            return nonAlphaNumericCharacters.Replace(initialString, String.Empty);
+            return nonAlphaNumericCharacters.Replace(initialString, string.Empty);
         }
 
         public static string ToCurrencyString(this decimal currency, bool showEmptyIfZero = false)
         {
-            return showEmptyIfZero && currency == 0 ? "" : String.Format("{0:R#,##0.00}", currency);
+            return showEmptyIfZero && currency == 0 ? "" : string.Format("{0:R#,##0.00}", currency);
         }
 
         public static string ToCurrencyString(this decimal? currency, bool showEmptyIfZero = false)
@@ -834,13 +834,13 @@ namespace Shesha.Utilities
                 if (Char.IsUpper(letters[i]))
                 {
                     //Grab everything before the current index.
-                    words.Add(new String(letters, wordStartIndex, i - wordStartIndex));
+                    words.Add(new string(letters, wordStartIndex, i - wordStartIndex));
                     wordStartIndex = i;
                 }
             }
 
             //We need to have the last word.
-            words.Add(new String(letters, wordStartIndex, letters.Length - wordStartIndex));
+            words.Add(new string(letters, wordStartIndex, letters.Length - wordStartIndex));
 
             //Copy to a string array.
             string[] wordArray = new string[words.Count];
@@ -861,7 +861,7 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static string SplitUpperCaseToString(this string source)
         {
-            return String.Join(" ", SplitUpperCase(source));
+            return string.Join(" ", SplitUpperCase(source));
         }
 
         public static bool IsValidEmail(this string inputEmail)
@@ -886,9 +886,9 @@ namespace Shesha.Utilities
             var result = StringHelper.HtmlTrim(target, ' ', '\n', '\r', '\t');
 
             result = StripHTMLStyleExpression
-                .Replace(target, String.Empty);
+                .Replace(target, string.Empty);
             result = StripHTMLExpression
-                .Replace(result, String.Empty)
+                .Replace(result, string.Empty)
                 .Replace("&nbsp;", " ")
                 .Replace("&nbsp;", " ")
                 .Replace("&gt;", ">")

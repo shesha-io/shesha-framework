@@ -1,12 +1,13 @@
 import { ListItemRenderingArgs } from "@/components/listEditor";
-import { FormMarkup } from "@/providers";
+import { FormMarkup, IStyleType } from "@/providers";
 
 export type ItemSettingsMarkupFactory<TItem = any> = (item: TItem) => FormMarkup;
 
-export interface DefaultItemRenderingProps {
+export interface DefaultItemRenderingProps extends IStyleType {
     label: string;
     description?: string;
     icon?: string;
+    stylingBox?: string;
 }
 
 export const isDefaultItemRenderingProps = (renderer: any): renderer is DefaultItemRenderingProps => {

@@ -30,7 +30,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                   parentId: commonTabId,
                   inputs: [
                     {
-                      type: 'text',
+                      type: 'textField',
                       id: nanoid(),
                       propertyName: 'componentName',
                       label: 'Component name',
@@ -114,7 +114,8 @@ export const getSettings = (data: IAlertComponentProps) => {
                       label: 'Icon',
                       size: 'small',
                       jsSetting: true,
-                      hidden: { _code: 'return !getSettingValue(data?.showIcon);', _mode: 'code', _value: false
+                      hidden: {
+                        _code: 'return !getSettingValue(data?.showIcon);', _mode: 'code', _value: false
                       } as any
                     }
                   ],

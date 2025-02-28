@@ -7,7 +7,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
-using Nito.AsyncEx.Synchronous;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Utilities;
@@ -18,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
+#pragma warning disable CS8619
     public class ShaPermissionManager : PermissionManager, IShaPermissionManager
     {
         private readonly IIocManager _iocManager;
@@ -41,7 +41,8 @@ namespace Shesha.Authorization
         public override void Initialize()
         {
             base.Initialize();
-            InitializeDbPermissionsAsync().WaitAndUnwrapException();
+
+            AsyncHelper.RunSync(async () => await InitializeDbPermissionsAsync());
         }
 
         
@@ -296,4 +297,5 @@ namespace Shesha.Authorization
                 base.RemovePermission(name);
         }
     }
+#pragma warning restore CS8619
 }
