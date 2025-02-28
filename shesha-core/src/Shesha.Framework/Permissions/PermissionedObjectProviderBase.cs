@@ -1,21 +1,62 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml;
 using Abp.Dependency;
+using Abp.Domain.Uow;
+using Abp.Modules;
 using Abp.Reflection;
+using Shesha.ConfigurationItems;
 using Shesha.Reflection;
 using Shesha.Utilities;
+
+using Module = Shesha.Domain.ConfigurationItems.Module;
 
 namespace Shesha.Permissions
 {
     public class PermissionedObjectProviderBase : ITransientDependency
     {
         protected readonly IAssemblyFinder _assembleFinder;
+        protected readonly IModuleManager _moduleManager;
+        protected readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public PermissionedObjectProviderBase(IAssemblyFinder assembleFinder)
+        public PermissionedObjectProviderBase(
+            IAssemblyFinder assembleFinder,
+            IModuleManager moduleManager,
+            IUnitOfWorkManager unitOfWorkManager
+            )
         {
             _assembleFinder = assembleFinder;
+            _moduleManager = moduleManager;
+            _unitOfWorkManager = unitOfWorkManager;
+        }
+
+        protected string GetMd5(PermissionedObjectDto dto)
+        {
+            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{string.Join(',', dto.Permissions)}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
+                .ToMd5Fingerprint();
+        }
+
+        private Dictionary<Assembly, Module> _modules = new Dictionary<Assembly, Module>();
+
+        protected async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
+        {
+            Module module = null;
+            if (_modules.TryGetValue(assembly, out module))
+            {
+                return module;
+            }
+            module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            _modules.Add(assembly, module);
+            return module;
+        }
+
+        protected Type GetModuleOfType(Type type)
+        {
+            return type.Assembly.GetTypes().FirstOrDefault(t => t.IsPublic && !t.IsAbstract && typeof(AbpModule).IsAssignableFrom(t));
         }
 
         protected string GetName(Type service, string defaultName = null)

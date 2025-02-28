@@ -41,7 +41,8 @@ namespace Shesha.Permissions
                 { "UpdateGql", "Update" },
                 { "Delete", "Delete" },
             };
-
+        public static string GetCrudMethod(string method, string? defaultValue = null) =>
+            CrudMethods.ContainsKey(method.RemovePostfix("Async")) ? CrudMethods[method.RemovePostfix("Async")] : defaultValue;
 
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -444,9 +445,7 @@ namespace Shesha.Permissions
             {
                 var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
                 // remove disabled endpoints
-                var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
-                    ? PermissionedObjectManager.CrudMethods[methodName]
-                    : null;
+                var method = GetCrudMethod(methodName);
 
                 var obj = "";
                 if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !method.IsNullOrEmpty())
