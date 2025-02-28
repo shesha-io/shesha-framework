@@ -112,8 +112,7 @@ namespace Shesha.Tests.DynamicEntities
                 // Create temporary Entity Properties configs
                 var entityConfigRepo = Resolve<IRepository<EntityConfig, Guid>>();
                 var entityPropRepo = Resolve<IRepository<EntityProperty, Guid>>();
-                var config = entityConfigRepo.GetAll().FirstOrDefault(x =>
-                    x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
+                var config = entityConfigRepo.GetAll().First(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
                 foreach (var prop in props)
                 {
                     var propConf = new EntityProperty()

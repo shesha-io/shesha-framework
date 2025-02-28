@@ -1,9 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Timing;
-using Castle.Core;
 using Newtonsoft.Json.Linq;
-using NUglify;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
@@ -16,9 +14,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Shesha.JsonLogic
 {
@@ -682,7 +677,7 @@ namespace Shesha.JsonLogic
             if (IsDateTimeMember(left) &&
                 right is ConstantExpression constExpr && constExpr.Type == typeof(DateTime))
             {
-                var dateExpr = Expression.Constant(dateConverter.Invoke((DateTime)constExpr.Value));
+                var dateExpr = Expression.Constant(dateConverter.Invoke(EnsureDateTime(constExpr.Value)));
                 expression = SafeNullable(left, dateExpr, binder);
                 return true;
             }
@@ -696,7 +691,7 @@ namespace Shesha.JsonLogic
             if (IsDateMember(left) &&
                 right is ConstantExpression constExpr && constExpr.Type == typeof(DateTime))
             {
-                var dateExpr = Expression.Constant(dateConverter.Invoke((DateTime)constExpr.Value));
+                var dateExpr = Expression.Constant(dateConverter.Invoke(EnsureDateTime(constExpr.Value)));
                 expression = SafeNullable(left, dateExpr, binder);
                 return true;
             }
@@ -797,7 +792,7 @@ namespace Shesha.JsonLogic
         {
             if (expression is ConstantExpression constExpr && constExpr.Type == typeof(DateTime))
             {
-                return Expression.Constant(convertor.Invoke((DateTime)constExpr.Value));
+                return Expression.Constant(convertor.Invoke(EnsureDateTime(constExpr.Value)));
             }
             return expression;
         }
@@ -808,8 +803,8 @@ namespace Shesha.JsonLogic
                 return expression;
 
             TimeSpan? value = constExpr.Type == typeof(TimeSpan)
-                ? (TimeSpan)constExpr.Value
-                : constExpr.Type == typeof(Int64)
+                ? (TimeSpan?)constExpr.Value
+                : constExpr.Type == typeof(Int64) && constExpr.Value != null
                     ? TimeSpan.FromSeconds((Int64)constExpr.Value)
                     : null;
             
@@ -852,7 +847,7 @@ namespace Shesha.JsonLogic
 
             if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(int)) 
             {
-                if (constExpr.Type == typeof(Int64))
+                if (constExpr.Type == typeof(Int64) && constExpr.Value != null)
                 {
                     var constValue = (Int64)constExpr.Value;
                     if (constValue <= int.MaxValue)
@@ -864,7 +859,7 @@ namespace Shesha.JsonLogic
                     if (constExpr.Type == typeof(string) && int.TryParse((string)constExpr.Value, out var intValue)) 
                         numericConstToConvert = Expression.Constant(intValue);
             }
-            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64))
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64) && constExpr.Value != null)
             {
                 if (constExpr.Type == typeof(int))
                     numericConstToConvert = Expression.Constant((Int64)constExpr.Value);
@@ -1148,8 +1143,38 @@ namespace Shesha.JsonLogic
             var method = this.GetType().GetMethod(nameof(EvaluatePredicateInternal));
             var modelType = model.GetType();
             var genericMethod = method.MakeGenericMethod(modelType);
-            return (bool)genericMethod.Invoke(this, new object[] { model, predicate });
+
+            var result = genericMethod.Invoke(this, [model, predicate]);
+            return EnsureBool(result);
         }
+
+        #region Type guards
+
+        private DateTime EnsureDateTime(object? value)
+        {
+            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(DateTime))
+                throw new ArgumentException($"Value must be of type {typeof(DateTime).FullName}");
+
+            return (DateTime)value;
+        }
+
+        private TimeSpan EnsureTimeSpan(object? value)
+        {
+            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(TimeSpan))
+                throw new ArgumentException($"Value must be of type {typeof(TimeSpan).FullName}");
+
+            return (TimeSpan)value;
+        }
+
+        private bool EnsureBool(object? value)
+        {
+            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(bool))
+                throw new ArgumentException($"Value must be of type {typeof(bool).FullName}");
+
+            return (bool)value;
+        }
+
+        #endregion
     }
 
     public static class JsOperators

@@ -190,7 +190,7 @@ namespace Shesha.Users
         protected override void MapToEntity(UserDto updateInput, User user)
         {
             ObjectMapper.Map(updateInput, user);
-            user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods.Sum();
+            user.SupportedPasswordResetMethods = updateInput.SupportedPasswordResetMethods?.Sum();
             user.SetNormalizedNames();
         }
 
@@ -242,7 +242,7 @@ namespace Shesha.Users
 
         #region Reset password using OTP
 
-        private async Task<User> GetUniqueUserByMobileNoAsync(string mobileNo)
+        private async Task<User?> GetUniqueUserByMobileNoAsync(string mobileNo)
         {
             var users = await _userRepository.GetAll().Where(u => u.PhoneNumber == mobileNo).ToListAsync();
 

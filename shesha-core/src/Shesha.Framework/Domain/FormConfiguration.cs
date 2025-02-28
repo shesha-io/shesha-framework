@@ -1,9 +1,7 @@
-﻿using Shesha.Domain;
-using Shesha.Domain.Attributes;
-using Shesha.NHibernate.Attributes;
+﻿using Shesha.Domain.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Shesha.Web.FormsDesigner.Domain
+namespace Shesha.Domain
 {
     /// <summary>
     /// Form configuration
@@ -19,14 +17,14 @@ namespace Shesha.Web.FormsDesigner.Domain
         /// Form markup
         /// </summary>
         [StringLength(int.MaxValue)]
-        [Lazy]
+        [LazyLoad]
         public virtual string Markup { get; set; }
 
         /// <summary>
         /// ModelType
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string ModelType { get; set; }
+        public virtual string? ModelType { get; set; }
 
         /// <summary>
         /// Type
@@ -44,7 +42,7 @@ namespace Shesha.Web.FormsDesigner.Domain
         /// <summary>
         /// Template that was used for the form creation
         /// </summary>
-        public virtual FormConfiguration Template { get; set; }
+        public virtual FormConfiguration? Template { get; set; }
 
         public virtual string FullName => Module != null
                 ? $"{Module.Name}.{Name}"

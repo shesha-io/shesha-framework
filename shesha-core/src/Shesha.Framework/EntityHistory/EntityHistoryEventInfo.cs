@@ -16,8 +16,8 @@ namespace Shesha.EntityHistory
     {
         public virtual object Entity { get; set; }
         public virtual PropertyInfo Property { get; set; }
-        public virtual object OldValue { get; set; }
-        public virtual object NewValue { get; set; }
+        public virtual object? OldValue { get; set; }
+        public virtual object? NewValue { get; set; }
 
         public DateTime DateTime { get; set; }
     }

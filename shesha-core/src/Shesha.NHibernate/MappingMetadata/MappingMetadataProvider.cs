@@ -2,6 +2,7 @@
 using NHibernate;
 using NHibernate.Persister.Entity;
 using Shesha.Configuration.MappingMetadata;
+using Shesha.Extensions;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.Utilites;
 using System;
@@ -41,23 +42,26 @@ namespace Shesha.MappingMetadata
             return mappingMetadata;
         }
 
-        public PropertyMappingMetadata GetPropertyMappingMetadata(Type entityType, string propertyName)
+        public PropertyMappingMetadata? GetPropertyMappingMetadata(Type entityType, string propertyName)
         {
-            var persister = _sessionFactory.GetClassMetadata(entityType) as SingleTableEntityPersister;
-
-            var propertyMetadata = new PropertyMappingMetadata
+            if (_sessionFactory.GetClassMetadata(entityType) is SingleTableEntityPersister persister)
             {
-                ColumnNames = persister?.GetPropertyColumnNames(propertyName),
-                TableName = persister?.GetPropertyTableName(propertyName),
-            };
-            return propertyMetadata;
+                var propertyMetadata = new PropertyMappingMetadata
+                {
+                    ColumnNames = persister.GetPropertyColumnNames(propertyName),
+                    TableName = persister.GetPropertyTableName(propertyName),
+                };
+                return propertyMetadata;
+            }
+            else
+                return null;
         }
 
         public async Task UpdateClassNamesAsync(Type entityType, List<PropertyInfo> properties, string oldValue, string newValue, bool replace)
         {
             var session = _currentSessionContext.Session;
 
-            var propsMetadata = properties.Select(x => GetPropertyMappingMetadata(entityType, x.Name)).ToList();
+            var propsMetadata = properties.Select(x => GetPropertyMappingMetadata(entityType, x.Name)).WhereNotNull().ToList();
 
             if (replace)
             {

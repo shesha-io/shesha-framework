@@ -42,7 +42,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Front-end Application Key
         /// </summary>
-        public string ApplicationKey { get; set; }
+        public string? ApplicationKey { get; set; }
 
         /// <summary>
         /// Item type
@@ -62,6 +62,6 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Corresponding importer
         /// </summary>
-        public IConfigurableItemImport Importer { get; set; }
+        public IConfigurableItemImport? Importer { get; set; }
     }
 }

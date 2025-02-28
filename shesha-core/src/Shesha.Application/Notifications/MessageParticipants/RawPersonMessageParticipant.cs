@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.Notifications.MessageParticipants
 {
-#nullable enable
     public class RawAddressMessageParticipant : IMessageSender, IMessageReceiver
     {
         private readonly string _address;
@@ -26,5 +25,4 @@ namespace Shesha.Notifications.MessageParticipants
             return Task.FromResult(false);
         }
     }
-#nullable restore
 }

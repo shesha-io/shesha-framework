@@ -20,7 +20,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Send type (email/sms/push etc)
         /// </summary>
-        public virtual string RecipientText { get; set; }
+        public virtual string? RecipientText { get; set; }
         /// <summary>
         /// Sender text (email address/mobile number etc)
         /// </summary>
@@ -61,7 +61,7 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual string ErrorMessage { get; set; }
+        public virtual string? ErrorMessage { get; set; }
         /// <summary>
         /// 
         /// </summary>
