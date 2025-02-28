@@ -10,7 +10,6 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -43,9 +42,7 @@ namespace Shesha.Authorization
                 return;
             }
 
-            var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodInfo.Name.RemovePostfix("Async")) 
-                ? PermissionedObjectManager.CrudMethods[methodInfo.Name.RemovePostfix("Async")] 
-                : null;
+            var method = PermissionedObjectManager.GetCrudMethod(methodInfo.Name);
             // It is not a Crud method
             if (method == null) return;
 

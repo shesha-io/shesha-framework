@@ -50,7 +50,8 @@ namespace Shesha.DynamicEntities
 
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
+            var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
+            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, crudMethod, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
         [HttpGet]
@@ -63,10 +64,6 @@ namespace Shesha.DynamicEntities
                     throw new EntityTypeNotFoundException(entityType);
 
                 var typeName = entityConfig.EntityType.FullName;
-
-                //var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
-                //if (!(config?.GenerateAppService ?? true))
-                //    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -121,12 +118,6 @@ namespace Shesha.DynamicEntities
                 if (entityConfig == null)
                     throw new EntityTypeNotFoundException(entityType);
 
-                /* we MUST NOT disable it here
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == entityConfig.EntityType.FullName);
-                if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {entityConfig.EntityType.FullName}");
-                */
-
                 var appServiceType = entityConfig.ApplicationServiceType;
 
                 if (entityConfig.ApplicationServiceType == null)
@@ -156,12 +147,6 @@ namespace Shesha.DynamicEntities
                     throw new EntityTypeNotFoundException(input.EntityType);
 
                 var typeName = entityConfig.EntityType.FullName;
-
-                /* we MUST NOT disable it here
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
-                if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
-                */
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 

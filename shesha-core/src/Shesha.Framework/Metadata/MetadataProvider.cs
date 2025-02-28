@@ -58,12 +58,10 @@ namespace Shesha.Metadata
         }
 
         // ToDo: support Dynamic entities
-        public async Task<MetadataDto> GetAsync(Type containerType, string containerName)
+        public async Task<MetadataDto> GetAsync(Type? containerType, string? containerName = "")
         {
-            var isEntity = containerType.IsEntityType();
-            var isJsonEntity = containerType.IsJsonEntityType();
-
-            var moduleInfo = containerType.GetConfigurableModuleInfo();
+            var isEntity = containerType?.IsEntityType() ?? false;
+            var isJsonEntity = containerType?.IsJsonEntityType() ?? false;
 
             var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
 
@@ -78,7 +76,7 @@ namespace Shesha.Metadata
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
-                ClassName = containerType.GetRequiredFullName(),
+                ClassName = containerType?.GetRequiredFullName() ?? containerName,
 
                 ChangeTime = changeTime,
             };
@@ -87,6 +85,8 @@ namespace Shesha.Metadata
 
             if (isEntity || isJsonEntity)
             {
+                var moduleInfo = containerType?.GetConfigurableModuleInfo();
+
                 dto.TypeAccessor = containerType.GetTypeAccessor();
                 dto.Module = moduleInfo?.Name;
                 dto.ModuleAccessor = moduleInfo?.GetModuleAccessor();
@@ -104,6 +104,9 @@ namespace Shesha.Metadata
 
         private async Task<List<MethodMetadataDto>> GetMethodsAsync(Type containerType)
         {
+            if (containerType == null)
+                return new List<MethodMetadataDto>();
+
             var assemblies = _assemblyFinder.GetAllAssemblies();
 
             var methods = ReflectionHelper.GetExtensionMethods(_assemblyFinder, containerType)
@@ -244,13 +247,13 @@ namespace Shesha.Metadata
             return Task.FromResult(dtos);
         }
 
-        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName)
+        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type? containerType, string containerName)
         {
             var (date, properties) = await GetPropertiesInternalAsync(containerType, containerName);
             return properties;
         }
 
-        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type containerType, string containerName)
+        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type? containerType, string containerName)
         {
             var metadataContext = new MetadataContext(containerType);
             var hardCodedProps = containerType == null
