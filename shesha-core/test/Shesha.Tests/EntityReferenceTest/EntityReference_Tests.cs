@@ -74,7 +74,7 @@ namespace Shesha.Tests.EntityReferenceTest
                 {
                     //var b = i == item.PermissionedEntity1;
                     //i = item.PermissionedEntity1;
-                    var entry = session?.GetEntry(item, false);
+                    var entry = session.GetEntry(item, false);
                     var dirty = session.GetDirtyProperties(item);
                 }
 

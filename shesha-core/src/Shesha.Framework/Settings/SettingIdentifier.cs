@@ -31,7 +31,7 @@ namespace Shesha.Settings
             return Equals(obj as SettingIdentifier);
         }
 
-        public bool Equals(SettingIdentifier obj)
+        public bool Equals(SettingIdentifier? obj)
         {
             return obj != null && obj.NormalizedFullName == this.NormalizedFullName;
         }

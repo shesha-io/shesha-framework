@@ -105,7 +105,7 @@ namespace Shesha.Excel
             Stylesheet styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
             cell.SetAttribute(new OpenXmlAttribute("", "s", "", "1"));
             OpenXmlAttribute cellStyleAttribute = cell.GetAttribute("s", "");
-            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats;
+            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats.NotNull();
 
             // pick the first cell format.
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
@@ -395,7 +395,7 @@ namespace Shesha.Excel
         {
             var parts = column.PropertyName.Split(".").Select(p => p.ToCamelCase()).Reverse().ToList();
 
-            var getterFactory = new Func<string, GetValueDelegate, GetValueDelegate>((name, getter) => {
+            var getterFactory = new Func<string, GetValueDelegate?, GetValueDelegate>((name, getter) => {
                 if (getter == null)
                 {
                     return new GetValueDelegate(row => row == null

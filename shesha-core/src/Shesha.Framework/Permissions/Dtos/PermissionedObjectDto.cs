@@ -59,10 +59,14 @@ namespace Shesha.Permissions
             var permissions = Hidden 
                 ? "Hidden" 
                 : Access == RefListPermissionedAccess.RequiresPermissions
-                    ? string.Join(", ", Permissions)
-                : Access.ToString();
+                    ? PermissionsDelimited
+                    : Access.ToString();
             return $"{Object} -> ({permissions})";
         }
+
+        public string PermissionsDelimited => Permissions != null
+                        ? string.Join(", ", Permissions)
+                        : string.Empty;
 
         public string Md5 { get; set; } 
     }
