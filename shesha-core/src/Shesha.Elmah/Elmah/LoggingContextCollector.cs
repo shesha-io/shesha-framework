@@ -22,7 +22,7 @@ namespace Shesha.Elmah
 
         public LoggingContextState CurrentState => _scopeProvider.GetValue(ScopeKey);
 
-        public IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity)
+        public IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity) where TId: notnull
         {
             var errorRef = WatchDogExtensions.GetEntityErrorRef(entity);
             return MakeWatchDog(errorRef.Type, errorRef.Id);

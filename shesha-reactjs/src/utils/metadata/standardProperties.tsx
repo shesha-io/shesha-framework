@@ -110,21 +110,11 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
   });
 };
 
-export const registerContextsAction: MetadataBuilderAction = (builder, name = "contexts") => {
-  builder.addCustom(name, "Contexts data", () => {
-    const definition: TypeDefinition = {
-      typeName: 'any',
-      files: [],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
 export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
   builder.addCustom(name, "Contexts data of current page", () => {
     const definition: TypeDefinition = {
-      typeName: 'any',
-      files: [],
+      typeName: 'IPageContexts',
+      files: [{content: 'export interface IPageContexts { [key: string]: any; setFieldValue(key: string, value: any): void; }', fileName: 'apis/pageContext.ts'}],
     };
     return Promise.resolve(definition);
   });

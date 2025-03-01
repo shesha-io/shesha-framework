@@ -60,7 +60,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 context.Logger.Info($"Check package '{embeddedPackage.ResourceName}'");
 
-                using (var stream = embeddedPackage.Assembly.GetManifestResourceStream(embeddedPackage.ResourceName)) 
+                using (var stream = embeddedPackage.Assembly.GetEmbeddedResourceStream(embeddedPackage.ResourceName)) 
                 {
                     var md5 = FileHelper.GetMD5(stream);
 

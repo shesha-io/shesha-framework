@@ -27,9 +27,9 @@ namespace Shesha.Domain
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; private set; }
+        public string? Module { get; private set; }
 
-        public ConfigurationItemIdentifier(string module, string name)
+        public ConfigurationItemIdentifier(string? module, string name)
         {
             Module = module;
             Name = name;
@@ -43,7 +43,7 @@ namespace Shesha.Domain
 
         public override bool Equals(object? obj) => this.Equals(obj as ConfigurationItemIdentifier);
 
-        public static bool operator ==(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r)
+        public static bool operator ==(ConfigurationItemIdentifier? l, ConfigurationItemIdentifier? r)
         {
             if (l is null)
             {
@@ -56,7 +56,7 @@ namespace Shesha.Domain
             return l.Equals(r);
         }
 
-        public static bool operator !=(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r) => !(l == r);
+        public static bool operator !=(ConfigurationItemIdentifier? l, ConfigurationItemIdentifier? r) => !(l == r);
 
         [BindNever]
         [Bindable(false)]
@@ -76,7 +76,7 @@ namespace Shesha.Domain
 
     public abstract class ConfigurationItemIdentifier<TItem>: ConfigurationItemIdentifier where TItem : IConfigurationItem
     {
-        protected ConfigurationItemIdentifier(string module, string name) : base(module, name)
+        protected ConfigurationItemIdentifier(string? module, string name) : base(module, name)
         {
         }
 
@@ -90,6 +90,6 @@ namespace Shesha.Domain
 
     public interface IIdentifierFactory<TSelf>: IIdentifierFactory where TSelf : IIdentifierFactory<TSelf>
     {
-        static abstract TSelf New(string module, string name);
+        static abstract TSelf New(string? module, string name);
     }
 }

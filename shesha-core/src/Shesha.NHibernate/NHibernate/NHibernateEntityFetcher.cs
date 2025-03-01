@@ -27,7 +27,7 @@ namespace Shesha.NHibernate
 
         public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties)
         {
-            IQueryable<T> fetcher = null;
+            IQueryable<T>? fetcher = null;
 
             foreach (var propName in properties)
             {

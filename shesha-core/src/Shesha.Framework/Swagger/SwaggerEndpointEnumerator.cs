@@ -38,18 +38,21 @@ namespace Shesha.Swagger
                     {
                         // entity service
                         var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
-                        var entityType = genericInterface.GenericTypeArguments.FirstOrDefault();
+                        var entityType = genericInterface.GenericTypeArguments.First();
                         var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
                         var entityAttribute = entityType.GetAttribute<EntityAttribute>();
+                        var crudAttribute = entityType.GetAttribute<CrudAccessAttribute>();
+                        var permission = pmo.Get($"{entityType.FullName}", ShaPermissionedObjectsTypes.Entity);
                         if (entityAttribute?.GenerateApplicationService == GenerateApplicationServiceState.DisableGenerateApplicationService
+                            || (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
+                            || crudAttribute?.All == RefListPermissionedAccess.Disable
                             || !model.GenerateAppService)
                             continue;
                     }
                     else
                     {
                         // api service
-                        var obj = $"{service.FullName}";
-                        var permission = pmo.Get(obj, ShaPermissionedObjectsTypes.WebApi);
+                        var permission = pmo.Get($"{service.FullName}", ShaPermissionedObjectsTypes.WebApi);
                         if (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
                             continue;
                     }

@@ -41,7 +41,7 @@ namespace Shesha.Domain.ConfigurationItems
         /// </summary>
         [StringLength(int.MaxValue)]
         [DataType(DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
         
         /// <summary>
         /// Module

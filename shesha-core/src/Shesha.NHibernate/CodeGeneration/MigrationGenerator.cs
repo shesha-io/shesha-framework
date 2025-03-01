@@ -244,7 +244,7 @@ namespace Shesha.CodeGeneration
                 {
                     var primaryTable = MappingHelper.GetTableName(property.PropertyType);
                     var primaryTableSchema = MappingHelper.GetSchemaName(property.PropertyType);
-                    var primaryIdName = MappingHelper.GetColumnName(property.PropertyType.GetProperty(nameof(Entity.Id)));
+                    var primaryIdName = MappingHelper.GetColumnName(property.PropertyType.GetRequiredProperty(nameof(Entity.Id)));
 
                     var fkColumn = MappingHelper.GetForeignKeyColumn(property);
                     var schema = MappingHelper.GetSchemaName(entityType);
@@ -469,7 +469,7 @@ namespace Shesha.CodeGeneration
             {
                 properties.Remove(formProperty);
 
-                var prefix = MappingHelper.GetColumnPrefix(formProperty.DeclaringType);
+                var prefix = MappingHelper.GetColumnPrefix(formProperty.DeclaringType.NotNull());
                 var moduleColumn = MappingHelper.GetNameForMember(formProperty, prefix, formProperty.Name, nameof(FormIdentifier.Module));
                 var nameColumn = MappingHelper.GetNameForMember(formProperty, prefix, formProperty.Name, nameof(FormIdentifier.Name));
 

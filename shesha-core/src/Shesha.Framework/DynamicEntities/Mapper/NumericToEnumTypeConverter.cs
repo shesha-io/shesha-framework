@@ -13,7 +13,7 @@ namespace Shesha.DynamicEntities.Mapper
             var enumUnderlayingType = typeof(TDestination).GetEnumUnderlyingType();
             var numericValue = System.Convert.ChangeType(source, enumUnderlayingType);
 
-            return (TDestination)numericValue;
+            return numericValue != null ? (TDestination)numericValue : throw new Exception($"Failed to convert value '{numericValue}' of type '{typeof(TSource).FullName}' to type '{typeof(TDestination).FullName}'");
         }
     }
 }

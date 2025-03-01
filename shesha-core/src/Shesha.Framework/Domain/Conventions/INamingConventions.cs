@@ -5,7 +5,7 @@
     /// </summary>
     public interface INamingConventions
     {
-        string GetColumnName(string prefix, string propertyName, string suffix);
+        string GetColumnName(string prefix, string propertyName, string? suffix);
         string GetTableName(string className);
     }
 }

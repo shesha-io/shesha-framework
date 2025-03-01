@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shesha.JsonLogic
 {
@@ -13,7 +14,7 @@ namespace Shesha.JsonLogic
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static bool IsNullOrEmpty(this JToken token)
+        public static bool IsNullOrEmpty([NotNullWhen(false)]this JToken? token)
         {
             return (token == null) ||
                    (token.Type == JTokenType.Array && !token.HasValues) ||
@@ -27,7 +28,7 @@ namespace Shesha.JsonLogic
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static bool IsNull(this JToken token)
+        public static bool IsNull([NotNullWhen(true)] this JToken? token)
         {
             return (token == null) ||
                    (token.Type == JTokenType.Array && !token.HasValues) ||

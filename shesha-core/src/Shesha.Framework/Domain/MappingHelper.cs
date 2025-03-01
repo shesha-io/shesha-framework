@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -25,6 +26,8 @@ namespace Shesha.Domain
 
         public static void AddDatabasePrefixForAssembly(Assembly assembly, string databasePrefix)
         {
+            ArgumentException.ThrowIfNullOrWhiteSpace(assembly.FullName);
+
             Prefixes[assembly.FullName] = databasePrefix;
         }
 
@@ -146,7 +149,7 @@ namespace Shesha.Domain
                 return columnAttribute.Name;
 
             // Handle overrided properties. Try to search the same property in the base class and if it declared on the upper level - use name from base class
-            if (!IsRootEntity(memberInfo.DeclaringType) && memberInfo.DeclaringType.BaseType != null)
+            if (!IsRootEntity(memberInfo.DeclaringType.NotNull()) && memberInfo.DeclaringType.BaseType != null)
             {
                 var upperLevelProperty = memberInfo.DeclaringType.BaseType.GetProperty(memberInfo.Name);
                 if (upperLevelProperty != null)
@@ -183,7 +186,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Get column name for the specified member (property/field) with explicitly specified prefix, name and suffix
         /// </summary>
-        public static string GetNameForMember(MemberInfo memberInfo, string prefix, string name, string suffix)
+        public static string GetNameForMember(MemberInfo memberInfo, string prefix, string name, string? suffix)
         {
             var conventions = GetNamingConventions(memberInfo);
             return conventions.GetColumnName(prefix, name, suffix);
@@ -200,7 +203,7 @@ namespace Shesha.Domain
 
         private static INamingConventions GetNamingConventions(MemberInfo memberInfo)
         {
-            return GetNamingConventions(memberInfo.ReflectedType);
+            return GetNamingConventions(memberInfo.ReflectedType.NotNull());
         }
 
         private static INamingConventions GetNamingConventions(Type type)
@@ -243,12 +246,18 @@ namespace Shesha.Domain
             if (!IsRootEntity(type))
             {
                 Type rootType = GetRootEntity(type);
-                if (rootType != null && rootType.Assembly.FullName != type.Assembly.FullName)
+                
+                if (rootType != null)
                 {
-                    // This column extends a table created in another module - we should add a prefix
-                    if (!Prefixes.ContainsKey(rootType.Assembly.FullName)
-                        || Prefixes[rootType.Assembly.FullName] != Prefixes[type.Assembly.FullName])
-                        return GetTablePrefix(type);
+                    var typeAssemblyName = type.GetAssemblyFullName();
+                    var rootTypeAssemblyName = rootType.GetAssemblyFullName();
+                    if (rootTypeAssemblyName != typeAssemblyName) 
+                    {
+                        // This column extends a table created in another module - we should add a prefix
+                        if (!Prefixes.ContainsKey(rootTypeAssemblyName)
+                            || Prefixes[rootTypeAssemblyName] != Prefixes[typeAssemblyName])
+                            return GetTablePrefix(type);
+                    }                    
                 }
             }
 
@@ -262,9 +271,9 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static string GetTablePrefix(Type type)
         {
-            return Prefixes.ContainsKey(type.Assembly.FullName)
-                ? Prefixes[type.Assembly.FullName] ?? ""
-                : "";
+            return Prefixes.TryGetValue(type.GetAssemblyFullName(), out var prefix)
+                ? prefix ?? string.Empty
+                : string.Empty;
         }
 
 
@@ -273,7 +282,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static Type GetRootEntity(Type type)
+        private static Type GetRootEntity(Type? type)
         {
             if (type == null)
                 return null;
@@ -288,7 +297,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsRootEntity(Type type)
+        public static bool IsRootEntity(Type? type)
         {
             return (IsEntity(type)
                     && !type.HasAttribute<NotMappedAttribute>()
@@ -299,7 +308,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Returns true if the specified type is an entity type
         /// </summary>
-        public static bool IsEntity(Type type)
+        public static bool IsEntity([NotNullWhen(true)]Type? type)
         {
             // todo: use global helper
             return type != null &&
@@ -381,7 +390,7 @@ namespace Shesha.Domain
             if (foreignKeyAttribute != null)
                 return foreignKeyAttribute.Name;
 
-            var columnPrefix = GetColumnPrefix(prop.DeclaringType);
+            var columnPrefix = GetColumnPrefix(prop.DeclaringType.NotNull());
 
             var conventions = GetNamingConventions(prop);
             return conventions.GetColumnName(columnPrefix, prop.Name, "Id");
@@ -399,7 +408,7 @@ namespace Shesha.Domain
             if (discriminatorValueAttribute != null)
                 return discriminatorValueAttribute.Value;
 
-            var prefix = Prefixes[type.Assembly.FullName]?.TrimEnd('_', '.');
+            var prefix = Prefixes[type.Assembly.FullName.NotNull()]?.TrimEnd('_', '.');
 
             var discriminatorValue = !string.IsNullOrWhiteSpace(prefix)
                 ? prefix + "." + type.Name

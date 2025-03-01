@@ -295,7 +295,7 @@ namespace Shesha
 
             var sb = new StringBuilder();
 
-            await AppendPropertiesAsync(sb, typeof(TEntity).FullName, propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
+            await AppendPropertiesAsync(sb, typeof(TEntity).GetRequiredFullName(), propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
             return "id " + sb.ToString();
         }
@@ -306,7 +306,7 @@ namespace Shesha
             var entityConfig = EntityConfigurationStore.Get(entityType);
 
             var propConfigs = entityConfig != null
-                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.FullName)
+                ? await EntityConfigCache.GetEntityPropertiesAsync(entityConfig.EntityType.GetRequiredFullName())
                 : null;
 
             while (i < propList.Count)

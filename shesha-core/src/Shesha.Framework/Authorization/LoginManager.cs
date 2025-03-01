@@ -5,12 +5,10 @@ using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Extensions;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
@@ -56,7 +54,7 @@ namespace Shesha.Authorization
             _cfRuntime = cfRuntime;
         }
 
-        protected override ShaLoginResult<User> AdditionalVerification(User user, Tenant tenant)
+        protected override ShaLoginResult<User> AdditionalVerification(User user, Tenant? tenant)
         {
             if (user.AllowedFrontEndApps != null
                 && user.AllowedFrontEndApps.Any()

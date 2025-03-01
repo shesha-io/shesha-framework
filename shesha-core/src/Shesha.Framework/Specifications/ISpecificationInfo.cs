@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.Specifications
+﻿namespace Shesha.Specifications
 {
     /// <summary>
     /// Stores basic information about specifications
@@ -30,6 +28,6 @@ namespace Shesha.Specifications
         /// <summary>
         /// Description
         /// </summary>
-        string Description { get; }
+        string? Description { get; }
     }
 }

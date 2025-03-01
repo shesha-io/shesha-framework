@@ -207,7 +207,7 @@ namespace Shesha.Services.StoredFiles
 
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
         {
-            IQueryable<StoredFile> query = null;
+            IQueryable<StoredFile>? query = null;
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             if (config != null)

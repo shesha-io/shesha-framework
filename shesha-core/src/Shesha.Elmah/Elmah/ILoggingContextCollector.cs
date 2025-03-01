@@ -8,7 +8,7 @@ namespace Shesha.Elmah
         /// <summary>
         /// Make a watchdog for entity to link all unhandled exception to a specified entity
         /// </summary>
-        IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity);
+        IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity) where TId : notnull;
 
         IDisposable MakeWatchDog(string type, string id);
         IDisposable MakeWatchDog(ErrorReference errorRef);

@@ -13,9 +13,9 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="person">Person</param>
         /// <returns></returns>
-        public static string GetEmail(this Person person) 
+        public static string? GetEmail(this Person person) 
         {
-            return StringHelper.FirstNotEmpty(person?.EmailAddress1, person?.EmailAddress2);
+            return StringHelper.FirstNotEmpty(person.EmailAddress1, person.EmailAddress2);
         }
 
         /// <summary>
@@ -23,9 +23,9 @@ namespace Shesha.Extensions
         /// </summary>
         /// <param name="person">Person</param>
         /// <returns></returns>
-        public static string GetMobileNumber(this Person person)
+        public static string? GetMobileNumber(this Person person)
         {
-            return StringHelper.FirstNotEmpty(person?.MobileNumber1, person?.MobileNumber2);
+            return StringHelper.FirstNotEmpty(person.MobileNumber1, person.MobileNumber2);
         }
 
         /// <summary>

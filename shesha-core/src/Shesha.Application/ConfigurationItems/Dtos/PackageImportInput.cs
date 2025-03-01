@@ -23,6 +23,6 @@ namespace Shesha.ConfigurationItems.Dtos
         /// List of items to import
         /// </summary>
         [BindProperty(BinderType = typeof(ItemsToImportBinder))]
-        public List<Guid> ItemsToImport { get; set; } = new List<Guid>();
+        public List<Guid> ItemsToImport { get; set; } = new();
     }
 }

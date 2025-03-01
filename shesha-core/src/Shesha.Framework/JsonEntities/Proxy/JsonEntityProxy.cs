@@ -51,7 +51,7 @@ namespace Shesha.JsonEntities.Proxy
             return ProxyUtil.IsProxy(pobj) ? ProxyUtil.GetUnproxiedInstance(pobj) : pobj;
         }
 
-        public static JObject GetJson(object proxyObj, JObject jObj = null)
+        public static JObject GetJson(object proxyObj, JObject? jObj = null)
         {
             JObject json = jObj ?? new JObject();
             if (proxyObj == null) return json;
@@ -69,7 +69,7 @@ namespace Shesha.JsonEntities.Proxy
             return json;
         }
         
-        public static bool IsChanged(object proxyObj)
+        public static bool IsChanged(object? proxyObj)
         {
             if (proxyObj == null) return false;
 
@@ -139,7 +139,7 @@ namespace Shesha.JsonEntities.Proxy
             {
                 GetEntityById = (entityType, id, displayName, propPath, ctx) =>
                 {
-                    _references.Add(propPath.Split(".").LastOrDefault(), new JsonReference() { Id = id, _displayName = displayName });
+                    _references.Add(propPath.Split(".").Last(), new JsonReference() { Id = id, _displayName = displayName });
                     return null;
                 },
                 GetObjectOrObjectReference = (objectType, jobject, ctx, formFields) =>

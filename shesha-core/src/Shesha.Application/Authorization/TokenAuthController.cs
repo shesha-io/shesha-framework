@@ -71,7 +71,7 @@ namespace Shesha.Authorization
             // Check for user registration status
             var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
 
-            if (registration != null && !registration.IsComplete)
+            if (registration != null && !registration.IsComplete && registration.AdditionalRegistrationInfoForm != null)
             {
                 // Return a result indicating a client-side redirect
                 return new AuthenticateResultModel
@@ -151,6 +151,9 @@ namespace Shesha.Authorization
 
             if (person.User == null)
                 throw new UserFriendlyException("User with the specified mobile has no internal account");
+
+            if (string.IsNullOrWhiteSpace(person.MobileNumber1))
+                throw new UserFriendlyException("User has no mobile no");
 
             var sendPinResponse = await _logInManager.SendLoginOtpAsync(person.User, person.MobileNumber1);
 

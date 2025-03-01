@@ -18,7 +18,7 @@ namespace Shesha.ConfigurationItems.Cache
         /// <param name="name">Item Name</param>
         /// <param name="mode">View mode</param>
         /// <returns></returns>
-        Task<string> GetCachedMd5Async(string itemType, string applicationKey, string module, string name, ConfigurationItemViewMode mode);
+        Task<string> GetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode);
 
         /// <summary>
         /// Set cached MD5 for configuration item with specified name
@@ -30,7 +30,7 @@ namespace Shesha.ConfigurationItems.Cache
         /// <param name="mode">View mode</param>
         /// <param name="md5">MD5 value</param>
         /// <returns></returns>
-        Task SetCachedMd5Async(string itemType, string applicationKey, string module, string name, ConfigurationItemViewMode mode, string md5);
+        Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode, string md5);
 
         /// <summary>
         /// Get cached MD5 for configuration item with specified id

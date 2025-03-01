@@ -40,6 +40,6 @@ namespace Shesha.Specifications
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

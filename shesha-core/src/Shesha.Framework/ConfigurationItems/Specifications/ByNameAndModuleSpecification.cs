@@ -10,9 +10,9 @@ namespace Shesha.ConfigurationItems.Specifications
     public class ByNameAndModuleSpecification<TItem> : ISpecification<TItem> where TItem : IConfigurationItem
     {
         public string Name { get; private set; }
-        public string ModuleName { get; private set; }
+        public string? ModuleName { get; private set; }
 
-        public ByNameAndModuleSpecification(string name, string moduleName)
+        public ByNameAndModuleSpecification(string name, string? moduleName)
         {
             Name = name;
             ModuleName = moduleName;

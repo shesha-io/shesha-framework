@@ -16,9 +16,9 @@ namespace Shesha.GraphQL.Provider
         /// <param name="defaultSchemaName">Used to get a schema if the operation name was not specified.</param>
         /// <returns>A dictionary result.</returns>
         Task<ExecutionResult> ExecuteAsync(
-            [CanBeNull] string operationName,
+            [CanBeNull] string? operationName,
             [NotNull] string query,
-            [CanBeNull] Dictionary<string, object> variables,
-            [CanBeNull] string defaultSchemaName = null);
+            [CanBeNull] Dictionary<string, object>? variables,
+            [CanBeNull] string? defaultSchemaName = null);
     }
 }

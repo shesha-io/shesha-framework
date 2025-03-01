@@ -45,7 +45,7 @@ namespace Shesha.Configuration.Runtime
 
             foreach (var entityType in entityTypes)
             {
-                _entityByClassName.Add(entityType.Type.FullName, entityType.Type);
+                _entityByClassName.Add(entityType.Type.GetRequiredFullName(), entityType.Type);
                 if (!string.IsNullOrWhiteSpace(entityType.TypeShortAlias))
                     _entityByTypeShortAlias.Add(entityType.TypeShortAlias, entityType.Type);
             }

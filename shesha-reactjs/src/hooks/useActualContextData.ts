@@ -13,7 +13,7 @@ export function useActualContextData<T = any>(
 ) {
   const parent = useParent(false);
   const fullContext = useAvailableConstantsContexts();
-  const accessors = wrapConstantsData({ fullContext });
+  const accessors = wrapConstantsData({ fullContext, topContextId: 'all' });
 
   const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
   if (!contextProxyRef.current) {

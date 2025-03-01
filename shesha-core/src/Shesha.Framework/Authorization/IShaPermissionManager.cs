@@ -34,7 +34,7 @@ namespace Shesha.Authorization
 
         Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permission);
 
-        Task UpdateParentAsync(string name, string parentName, Module module);
+        Task UpdateParentAsync(string name, string parentName, Module? module);
 
         Task DeletePermissionAsync(string name);
 

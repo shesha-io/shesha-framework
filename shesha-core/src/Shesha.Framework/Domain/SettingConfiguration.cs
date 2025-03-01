@@ -38,7 +38,7 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(200)]
         [Audited]
-        public virtual string Category { get; set; }
+        public virtual string? Category { get; set; }
 
         /// <summary>
         /// If true, indicates that this setting should be specific to each of the application's clients

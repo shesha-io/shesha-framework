@@ -118,6 +118,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     />
   );
 
+  if (props.hidden) return null;
   if (mode === 'inline')
     return renderCodeEditor();
 

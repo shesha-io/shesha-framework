@@ -46,7 +46,7 @@ namespace Shesha.Scheduler
         private readonly IIocManager _iocManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public Castle.Core.Logging.ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         public ScheduledJobManager(IRepository<ScheduledJobTrigger, Guid> triggerRepository, IUnitOfWorkManager unitOfWorkManager, ITypeFinder typeFinder, IIocManager iocManager, IServiceProvider serviceProvider)
         {
@@ -196,9 +196,9 @@ namespace Shesha.Scheduler
             {
                 var jobInstanceType = GetJobTypeById(jobId);
                 var jobInstance = _serviceProvider.GetService(jobInstanceType);
-                var methodInfo = recordedType.GetMethod(methodName);
+                var methodInfo = recordedType.GetRequiredMethod(methodName);
 
-                Task task = (Task)methodInfo.Invoke(jobInstance, methodArgs);
+                Task task = methodInfo.Invoke<Task>(jobInstance, methodArgs).NotNull();
                 await task;
             }
             
@@ -232,7 +232,7 @@ namespace Shesha.Scheduler
             }
         }
 
-        private void ConfigureLogger(string name, out Logger? logger, out ILog log)
+        private void ConfigureLogger(string name, out Logger logger, out ILog log)
         {
             //Get the logger repository hierarchy.  
             var repository = LogManager.GetRepository(Assembly.GetCallingAssembly()) as Hierarchy;
@@ -242,8 +242,8 @@ namespace Shesha.Scheduler
 
             repository.Root.Level = log4net.Core.Level.Info;
 
-            logger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
-            if (logger == null)
+            var existingLogger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
+            if (existingLogger == null)
             {
                 // Configure default logger for scheduled job
                 logger = repository.LoggerFactory.CreateLogger(repository, name);
@@ -259,7 +259,8 @@ namespace Shesha.Scheduler
                 // Mark repository as configured and notify that is has changed.  
                 repository.Configured = true;
                 repository.RaiseConfigurationChanged(EventArgs.Empty);
-            }
+            } else
+                logger = existingLogger;
 
             log = LogManager.GetLogger(Assembly.GetCallingAssembly(), name);
         }
@@ -320,7 +321,7 @@ namespace Shesha.Scheduler
 
             #region Configure file appender
 
-            FileAppender fileAppender = null;
+            FileAppender? fileAppender = null;
 
             if (!string.IsNullOrWhiteSpace(job.LogFilePath))
             {

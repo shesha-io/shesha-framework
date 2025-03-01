@@ -15,12 +15,12 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public static class ConfigurationItemsExtensions
     {
-        public static IQueryable<TItem> FilterByFullName<TItem>(this IQueryable<TItem> queryable, string module, string name) where TItem : class, IConfigurationItem 
+        public static IQueryable<TItem> FilterByFullName<TItem>(this IQueryable<TItem> queryable, string? module, string name) where TItem : class, IConfigurationItem 
         {
             return queryable.Where(new ByNameAndModuleSpecification<TItem>(name, module).ToExpression());
         }
 
-        public static IQueryable<TItem> GetByByFullName<TItem>(this IRepository<TItem, Guid> repository, string module, string name) where TItem : class, IConfigurationItem 
+        public static IQueryable<TItem> GetByByFullName<TItem>(this IRepository<TItem, Guid> repository, string? module, string name) where TItem : class, IConfigurationItem 
         {
             return repository.GetAll().FilterByFullName(module, name);
         }
@@ -28,7 +28,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get <see cref="IConfigurationItem"/> by <paramref name="module"/>, <paramref name="name"/> and <paramref name="mode"/>
         /// </summary>
-        public static async Task<TItem> GetItemByFullNameAsync<TItem>(this IQueryable<TItem> queryable, string module, string name, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem 
+        public static async Task<TItem> GetItemByFullNameAsync<TItem>(this IQueryable<TItem> queryable, string? module, string name, ConfigurationItemViewMode mode) where TItem : class, IConfigurationItem 
         {
             var query = queryable.FilterByFullName(module, name);
 

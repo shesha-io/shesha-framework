@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
 using Shesha.Tests.DynamicEntities;
@@ -41,6 +42,8 @@ namespace Shesha.Tests
         )]
     public class SheshaTestModule : AbpModule
     {
+        private const string ConnectionStringName = "TestDB";
+
         public SheshaTestModule(SheshaNHibernateModule nhModule)
         {
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
@@ -51,7 +54,7 @@ namespace Shesha.Tests
             IocManager.MockWebHostEnvirtonment();
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            var connectionString = config.GetConnectionString("TestDB");
+            var connectionString = config.GetConnectionString(ConnectionStringName).NotNullOrWhiteSpace($"Connection string '{ConnectionStringName}' is unavailable");
 
             var nhConfig = Configuration.Modules.ShaNHibernate();
             nhConfig.UseMsSql(connectionString);

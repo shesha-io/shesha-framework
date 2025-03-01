@@ -31,7 +31,7 @@ namespace Shesha.Services.ConfigurationItems
         /// <param name="context">Import context</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        protected async Task<Module> GetModuleAsync(string name, IConfigurationItemsImportContext context)
+        protected async Task<Module?> GetModuleAsync(string? name, IConfigurationItemsImportContext context)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return null;
@@ -59,7 +59,7 @@ namespace Shesha.Services.ConfigurationItems
         /// <param name="context">Import context</param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        protected async Task<FrontEndApp> GetFrontEndAppAsync(string appKey, IConfigurationItemsImportContext context)
+        protected async Task<FrontEndApp?> GetFrontEndAppAsync(string? appKey, IConfigurationItemsImportContext context)
         {
             if (string.IsNullOrWhiteSpace(appKey))
                 return null;

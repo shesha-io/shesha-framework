@@ -126,7 +126,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
             {
                 label: `Color ${side}`,
                 propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
-                type: "color",
+                type: "colorPicker",
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
             }

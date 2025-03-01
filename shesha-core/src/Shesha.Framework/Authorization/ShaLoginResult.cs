@@ -11,18 +11,18 @@ namespace Shesha.Authorization
 
         public int? TenantId { get; private set; }
 
-        public TUser User { get; private set; }
+        public TUser? User { get; private set; }
 
         public ClaimsIdentity Identity { get; private set; }
 
-        public ShaLoginResult(ShaLoginResultType result, AbpTenantBase tenant = null, TUser user = null)
+        public ShaLoginResult(ShaLoginResultType result, AbpTenantBase? tenant = null, TUser? user = null)
         {
             Result = result;
             TenantId = tenant?.Id;
             User = user;
         }
 
-        public ShaLoginResult(AbpTenantBase tenant, TUser user, ClaimsIdentity identity)
+        public ShaLoginResult(AbpTenantBase? tenant, TUser user, ClaimsIdentity identity)
             : this(ShaLoginResultType.Success, tenant)
         {
             User = user;

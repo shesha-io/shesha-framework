@@ -6,7 +6,6 @@ using Shesha.Configuration.Runtime;
 using Shesha.EntityReferences;
 using System;
 using System.Data.Common;
-using System.Data.SqlTypes;
 
 namespace Shesha.NHibernate.UserTypes
 {

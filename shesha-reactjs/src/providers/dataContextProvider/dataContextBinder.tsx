@@ -30,12 +30,14 @@ export interface IDataContextBinderProps {
   data?: any;
   api?: any;
   metadata?: Promise<IModelMetadata>;
+  distributeMetadata?: boolean;
   getData?: ContextGetData;
   getFieldValue?: ContextGetFieldValue;
   setData?: ContextSetData;
   setFieldValue?: ContextSetFieldValue;
   onChangeData?: ContextOnChangeData;
   actionsOverride?: IDataContextProviderActionsContextOverride;
+  includeSetFieldValue?: boolean;
 }
 
 const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props) => {
@@ -47,6 +49,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     type, 
     data,
     onChangeData,
+    includeSetFieldValue = true,
   } = props;
 
   const { onChangeContext, onChangeContextData } = useDataContextManager();
@@ -120,7 +123,8 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     const api = getApi();
     if (!!api) 
       data.api = api;
-    data.setFieldValue = setFieldValue;
+    if (includeSetFieldValue)
+      data.setFieldValue = setFieldValue;
     return data;
   };
 
@@ -175,7 +179,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   return (
     <ConditionalWrap
-      condition={!!props.metadata}
+      condition={props.metadata && (props.distributeMetadata ?? false)}
       wrap={children => <MetadataProvider id={id} modelType={id} dataType='context' > {children} </MetadataProvider>}
     >
       <DataContextProviderActionsContext.Provider value={{ ...actionContext }}>

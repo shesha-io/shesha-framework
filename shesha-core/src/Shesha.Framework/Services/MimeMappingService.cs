@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 
 namespace Shesha.Services
 {
@@ -17,12 +14,9 @@ namespace Shesha.Services
 
         public string Map(string fileName)
         {
-            string contentType;
-            if (!_contentTypeProvider.TryGetContentType(fileName, out contentType))
-            {
-                contentType = "application/octet-stream";
-            }
-            return contentType;
+            return _contentTypeProvider.TryGetContentType(fileName, out var contentType)
+                ? contentType
+                : "application/octet-stream";
         }
     }
 }

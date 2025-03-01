@@ -1,7 +1,6 @@
 ﻿using FluentMigrator;
 using Shesha.Configuration;
 using Shesha.FluentMigrator;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.Migrations
 {
@@ -12,7 +11,7 @@ namespace Shesha.Migrations
         {
             this.Shesha().SettingCreate(SheshaSettingNames.MainMenuSettings, "Main menu settings")
                 .IsClientSpecific()
-                .AsComplexObject(typeof(MainMenuSettings).FullName)
+                .AsComplexObject("Shesha.Configuration.MainMenuSettings")
                 .WithEditForm("Shesha", "main-menu-settings")
                 .WithCategory("Frontend");
 

@@ -1,12 +1,9 @@
 ﻿using Abp.Extensions;
-using Shesha.Configuration;
-using Shesha.DynamicEntities.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Security.Cryptography.Xml;
 
 namespace Shesha.Settings.Ioc
 {
@@ -122,16 +119,16 @@ namespace Shesha.Settings.Ioc
                 throw new ArgumentNullException("data");
             }
 
-            var constructorArguments = new List<object>();
+            var constructorArguments = new List<object?>();
             foreach (var ctorArg in data.ConstructorArguments)
             {
                 constructorArguments.Add(ctorArg.Value);
             }
 
             var propertyArguments = new List<PropertyInfo>();
-            var propertyArgumentValues = new List<object>();
+            var propertyArgumentValues = new List<object?>();
             var fieldArguments = new List<FieldInfo>();
-            var fieldArgumentValues = new List<object>();
+            var fieldArgumentValues = new List<object?>();
             foreach (var namedArg in data.NamedArguments)
             {
                 var fi = namedArg.MemberInfo as FieldInfo;

@@ -1,8 +1,8 @@
-﻿using System;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Uow;
 using NHibernate;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
+using System;
 
 namespace Shesha.NHibernate
 {

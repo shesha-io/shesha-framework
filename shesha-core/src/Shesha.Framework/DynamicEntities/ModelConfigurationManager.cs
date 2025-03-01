@@ -126,61 +126,60 @@ namespace Shesha.DynamicEntities
             }
         }
 
+        private async Task CopyPropertiesAsync(EntityConfig destination, List<EntityProperty>? destPs, List<EntityProperty> sourcePs, EntityProperty parent)
+        {
+            foreach (var prop in sourcePs)
+            {
+                var destProp = destPs?.FirstOrDefault(x => x.Name == prop.Name);
+                if (destProp == null && prop.Source == MetadataSourceType.UserDefined)
+                {
+                    destProp = new EntityProperty()
+                    {
+                        Name = prop.Name,
+                        EntityConfig = destination,
+                        DataType = prop.DataType,
+                        DataFormat = prop.DataFormat,
+                        EntityType = prop.EntityType,
+                        IsFrameworkRelated = prop.IsFrameworkRelated,
+                        ItemsType = prop.ItemsType,
+                        ReferenceListName = prop.ReferenceListName,
+                        ReferenceListModule = prop.ReferenceListModule,
+                        Source = destination.Source == MetadataSourceType.ApplicationCode ? prop.Source : MetadataSourceType.UserDefined,
+                        Suppress = prop.Suppress,
+                        ParentProperty = parent
+                    };
+                }
+
+                if (destProp != null)
+                {
+                    destProp.Audited = prop.Audited;
+                    destProp.Description = prop.Description;
+                    destProp.Label = prop.Label;
+                    destProp.Max = prop.Max;
+                    destProp.Min = prop.Min;
+                    destProp.Required = prop.Required;
+                    destProp.MaxLength = prop.MaxLength;
+                    destProp.MinLength = prop.MinLength;
+                    destProp.ReadOnly = prop.ReadOnly;
+                    destProp.RegExp = prop.RegExp;
+                    destProp.CascadeCreate = destProp.CascadeCreate || prop.CascadeCreate;
+                    destProp.CascadeUpdate = destProp.CascadeUpdate || prop.CascadeUpdate;
+                    destProp.CascadeDeleteUnreferenced = destProp.CascadeDeleteUnreferenced || prop.CascadeDeleteUnreferenced;
+
+                    await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
+
+                    if (prop.Properties?.Any() ?? false)
+                        await CopyPropertiesAsync(destination, destProp.Properties?.ToList(), prop.Properties.ToList(), destProp);
+                }
+            }
+        }
+
         private async Task CopyPropertiesAsync(EntityConfig source, EntityConfig destination)
         {
             var destProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == destination.Id).ToListAsync();
             var sourceProps = await _entityPropertyRepository.GetAll().Where(x => x.EntityConfig.Id == source.Id).ToListAsync();
 
-            Func<List<EntityProperty>, List<EntityProperty>, EntityProperty, Task> copyProps = null;
-            copyProps = async (List<EntityProperty> destPs, List<EntityProperty> sourcePs, EntityProperty parent) =>
-            {
-                foreach (var prop in sourcePs)
-                {
-                    var destProp = destPs?.FirstOrDefault(x => x.Name == prop.Name);
-                    if (destProp == null && prop.Source == MetadataSourceType.UserDefined)
-                    {
-                        destProp = new EntityProperty()
-                        {
-                            Name = prop.Name,
-                            EntityConfig = destination,
-                            DataType = prop.DataType,
-                            DataFormat = prop.DataFormat,
-                            EntityType = prop.EntityType,
-                            IsFrameworkRelated = prop.IsFrameworkRelated,
-                            ItemsType = prop.ItemsType,
-                            ReferenceListName = prop.ReferenceListName,
-                            ReferenceListModule = prop.ReferenceListModule,
-                            Source = destination.Source == MetadataSourceType.ApplicationCode ? prop.Source : MetadataSourceType.UserDefined,
-                            Suppress = prop.Suppress,
-                            ParentProperty = parent
-                        };
-                    }
-
-                    if (destProp != null)
-                    {
-                        destProp.Audited = prop.Audited;
-                        destProp.Description = prop.Description;
-                        destProp.Label = prop.Label;
-                        destProp.Max = prop.Max;
-                        destProp.Min = prop.Min;
-                        destProp.Required = prop.Required;
-                        destProp.MaxLength = prop.MaxLength;
-                        destProp.MinLength = prop.MinLength;
-                        destProp.ReadOnly = prop.ReadOnly;
-                        destProp.RegExp = prop.RegExp;
-                        destProp.CascadeCreate = destProp.CascadeCreate || prop.CascadeCreate;
-                        destProp.CascadeUpdate = destProp.CascadeUpdate || prop.CascadeUpdate;
-                        destProp.CascadeDeleteUnreferenced = destProp.CascadeDeleteUnreferenced || prop.CascadeDeleteUnreferenced;
-
-                        await _entityPropertyRepository.InsertOrUpdateAsync(destProp);
-
-                        if (prop.Properties?.Any() ?? false)
-                            await copyProps(destProp.Properties?.ToList(), prop.Properties.ToList(), destProp);
-                    }
-                }
-            };
-
-            await copyProps(destProps, sourceProps, null);
+            await CopyPropertiesAsync(destination, destProps, sourceProps, null);
         }
 
         private async Task CopyPermissionsAsync(EntityConfig source, EntityConfig destination)
@@ -191,11 +190,14 @@ namespace Shesha.DynamicEntities
                 var destinationPermission = await _permissionedObjectManager.GetOrDefaultAsync($"{destination.FullClassName}{method}", type);
                 destinationPermission.Access = sourcePermission.Access;
                 destinationPermission.Type = type;
-                sourcePermission.Permissions.ToList().ForEach(x =>
+                if (sourcePermission.Permissions != null) 
                 {
-                    if (!destinationPermission.Permissions.Contains(x))
-                        destinationPermission.Permissions.Add(x);
-                });
+                    sourcePermission.Permissions.ToList().ForEach(x =>
+                    {
+                        if (!destinationPermission.Permissions.Contains(x))
+                            destinationPermission.Permissions.Add(x);
+                    });
+                }                
                 await _permissionedObjectManager.SetAsync(destinationPermission);
             };
 
@@ -552,7 +554,7 @@ namespace Shesha.DynamicEntities
             return dto;
         }
 
-        public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null)
+        public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null)
         {
             var cacheKey = $"{@namespace}|{name}";
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {

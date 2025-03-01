@@ -7,6 +7,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Persons;
+using Shesha.Reflection;
 using Shesha.UserManagements.Configurations;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,11 @@ namespace Shesha.UserManagements
             var validationResults = new List<ValidationResult>();
             var supportedPasswordResetMethods = new List<int>();
 
+            if (!registrationSettings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.UserName))
+                validationResults.Add(new ValidationResult("Username is mandatory"));
+            if (registrationSettings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.EmailAddress))
+                validationResults.Add(new ValidationResult("Email Address is mandatory"));
+
             if (input.TypeOfAccount == null)
                 validationResults.Add(new ValidationResult("Type of account is mandatory"));
 
@@ -91,8 +97,9 @@ namespace Shesha.UserManagements
             var defaultMethods = supportedPasswordResetMethods.Count > 0 ? supportedPasswordResetMethods.Sum() : 0;
 
             // Creating User Account to enable login into the application
+            var userName = registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             User user = await _userManager.CreateUserAsync(
-                registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName,
+                userName.NotNull(),
                 input.TypeOfAccount?.ItemValue == (long)RefListTypeOfAccount.Internal,
                 input.Password,
                 input.PasswordConfirmation,

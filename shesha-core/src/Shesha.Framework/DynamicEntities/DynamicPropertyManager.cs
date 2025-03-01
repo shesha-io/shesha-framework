@@ -176,17 +176,18 @@ namespace Shesha.DynamicEntities
             if (serializedValue == null)
                 return null;
 
-            Type simpleType = null;
+            Type? simpleType = null;
             switch (dynamicProperty.DataType) 
             {
                 case DataTypes.EntityReference:
                     {
                         var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityType);
                         var id = SerializationManager.DeserializeProperty(entityConfig.IdType, serializedValue);
-                        if (id == null)
+                        var stringId = id?.ToString();
+                        if (string.IsNullOrWhiteSpace(stringId))
                             return null;
 
-                        return await _dynamicRepository.GetAsync(entityConfig.EntityType, id.ToString());
+                        return await _dynamicRepository.GetAsync(entityConfig.EntityType, stringId);
                     }
                 case DataTypes.Boolean:
                     simpleType = typeof(bool?);

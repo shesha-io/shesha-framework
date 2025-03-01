@@ -2,7 +2,7 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { backgroundTypeOptions, repeatOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { overflowOptions } from '../_settings/utils/dimensions/utils';
@@ -679,6 +679,7 @@ export const getSettings = () => {
                                                                             label: 'Family',
                                                                             propertyName: 'card.font.type',
                                                                             hideLabel: true,
+                                                                            defaultValue: 'Arial',
                                                                             dropdownOptions: fontTypes,
                                                                         },
                                                                         {
@@ -687,6 +688,7 @@ export const getSettings = () => {
                                                                             label: 'Size',
                                                                             propertyName: 'card.font.size',
                                                                             hideLabel: true,
+                                                                            defaultValue: 14,
                                                                             width: 50,
                                                                         },
                                                                         {
@@ -695,6 +697,7 @@ export const getSettings = () => {
                                                                             label: 'Weight',
                                                                             propertyName: 'card.font.weight',
                                                                             hideLabel: true,
+                                                                            defaultValue: 400,
                                                                             tooltip: "Controls text thickness (light, normal, bold, etc.)",
                                                                             dropdownOptions: fontWeights,
                                                                             width: 100,
@@ -705,16 +708,7 @@ export const getSettings = () => {
                                                                             label: 'Color',
                                                                             hideLabel: true,
                                                                             propertyName: 'card.font.color',
-                                                                        },
-                                                                        {
-                                                                            type: 'dropdown',
-                                                                            id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                                                            label: 'Align',
-                                                                            propertyName: 'card.font.align',
-                                                                            hideLabel: true,
-                                                                            width: 60,
-                                                                            dropdownOptions: textAlign,
-                                                                        },
+                                                                        }
                                                                     ],
                                                                 })
                                                                 .toJson()
@@ -740,34 +734,9 @@ export const getSettings = () => {
                                                                         jsSetting: false,
                                                                         propertyName: "card.background.type",
                                                                         inputType: "radio",
+                                                                        defaultValue: "color",
                                                                         tooltip: "Select a type of background",
-                                                                        buttonGroupOptions: [
-                                                                            {
-                                                                                value: "color",
-                                                                                icon: "FormatPainterOutlined",
-                                                                                title: "Color"
-                                                                            },
-                                                                            {
-                                                                                value: "gradient",
-                                                                                icon: "BgColorsOutlined",
-                                                                                title: "Gradient"
-                                                                            },
-                                                                            {
-                                                                                value: "image",
-                                                                                icon: "PictureOutlined",
-                                                                                title: "Image"
-                                                                            },
-                                                                            {
-                                                                                value: "url",
-                                                                                icon: "LinkOutlined",
-                                                                                title: "URL"
-                                                                            },
-                                                                            {
-                                                                                value: "storedFile",
-                                                                                icon: "DatabaseOutlined",
-                                                                                title: "Stored File"
-                                                                            }
-                                                                        ],
+                                                                        buttonGroupOptions: backgroundTypeOptions,
                                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .addSettingsInputRow({
@@ -777,6 +746,7 @@ export const getSettings = () => {
                                                                             type: 'colorPicker',
                                                                             id: 'backgroundStyleRow-color',
                                                                             label: "Color",
+                                                                            defaultValue: 'rgba(0,0,0,0.02)',
                                                                             propertyName: "card.background.color",
                                                                             hideLabel: true,
                                                                             jsSetting: false,
@@ -851,72 +821,25 @@ export const getSettings = () => {
                                                                                 type: 'customDropdown',
                                                                                 id: 'backgroundStyleRow-size',
                                                                                 label: "Size",
+                                                                                defaultValue: 'cover',
                                                                                 hideLabel: true,
                                                                                 propertyName: "card.background.size",
-                                                                                dropdownOptions: [
-                                                                                    {
-                                                                                        value: "cover",
-                                                                                        label: "Cover"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "contain",
-                                                                                        label: "Contain"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "auto",
-                                                                                        label: "Auto"
-                                                                                    }
-                                                                                ],
+                                                                                dropdownOptions: sizeOptions,
                                                                             },
                                                                             {
                                                                                 type: 'customDropdown',
                                                                                 id: 'backgroundStyleRow-position',
                                                                                 label: "Position",
                                                                                 hideLabel: true,
+                                                                                defaultValue: 'center',
                                                                                 propertyName: "card.background.position",
-                                                                                dropdownOptions: [
-                                                                                    {
-                                                                                        value: "center",
-                                                                                        label: "Center"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "top",
-                                                                                        label: "Top"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "left",
-                                                                                        label: "Left"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "right",
-                                                                                        label: "Right"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "bottom",
-                                                                                        label: "Bottom"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "top left",
-                                                                                        label: "Top Left"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "top right",
-                                                                                        label: "Top Right"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "bottom left",
-                                                                                        label: "Bottom Left"
-                                                                                    },
-                                                                                    {
-                                                                                        value: "bottom right",
-                                                                                        label: "Bottom Right"
-                                                                                    }
-                                                                                ],
+                                                                                dropdownOptions: positionOptions,
                                                                             },
                                                                             {
                                                                                 type: 'radio',
                                                                                 id: 'backgroundStyleRow-repeat',
                                                                                 label: "Repeat",
+                                                                                defaultValue: 'no-repeat',
                                                                                 hideLabel: true,
                                                                                 propertyName: "card.background.repeat",
                                                                                 buttonGroupOptions: repeatOptions,

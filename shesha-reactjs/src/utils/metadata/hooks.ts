@@ -2,7 +2,6 @@ import { useMetadataFetcher } from "@/providers";
 import { IMetadataBuilder, MetadataBuilder } from "./metadataBuilder";
 import {
     SheshaConstants,
-    registerContextsAction,
     registerFormAction,
     registerPageContextAction,
     registerGlobalStateAction,
@@ -16,14 +15,15 @@ import {
     registerFileSaverAction,
     //registerConstantsBuilderAction
 } from "@/utils/metadata/standardProperties";
-import { useAppContextRegistration, useFormDataRegistration } from "./useAvailableConstants";
+import { useAppContextRegistration, useContextsRegistration, useFormDataRegistration } from "./useAvailableConstants";
 
 export type MetadataBuilderFactory = () => IMetadataBuilder;
 
 export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
     const metadataFetcher = useMetadataFetcher();
     const registerFormDataAction = useFormDataRegistration();
-    const registerApplicationAction = useAppContextRegistration();    
+    const registerApplicationAction = useAppContextRegistration();
+    const registerContexts = useContextsRegistration();
 
     return () => {
         const builder = new MetadataBuilder(metadataFetcher);
@@ -36,7 +36,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.setGlobalState, registerSetGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.selectedRow, registerSelectedRowAction);
-        builder.registerStandardProperty(SheshaConstants.contexts, registerContextsAction);
+        builder.registerStandardProperty(SheshaConstants.contexts, registerContexts);
         builder.registerStandardProperty(SheshaConstants.pageContext, registerPageContextAction);
         builder.registerStandardProperty(SheshaConstants.form, registerFormAction);
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);

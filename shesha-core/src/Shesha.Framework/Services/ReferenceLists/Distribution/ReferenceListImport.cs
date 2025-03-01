@@ -115,7 +115,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
                 // fill audit?
                 newList.VersionNo = 1;
-                newList.Module = await GetModuleAsync(item.ModuleName, context);
+                newList.Module = await GetModuleOrNullAsync(item.ModuleName, context);
 
                 // important: set status according to the context
                 newList.VersionStatus = statusToImport;
@@ -167,7 +167,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
             dst.ShortAlias = src.ShortAlias;
         }
 
-        private async Task<Module> GetModuleAsync(string name, IConfigurationItemsImportContext context) 
+        private async Task<Module> GetModuleOrNullAsync(string? name, IConfigurationItemsImportContext context) 
         {
             if (string.IsNullOrWhiteSpace(name))
                 return null;

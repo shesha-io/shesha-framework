@@ -7,7 +7,7 @@ namespace Shesha.Domain.Conventions
     /// </summary>
     public class DefaultNamingConventions : INamingConventions
     {
-        public string GetColumnName(string prefix, string propertyName, string suffix)
+        public string GetColumnName(string prefix, string propertyName, string? suffix)
         {
             return $"{prefix}{propertyName}{suffix}";
         }

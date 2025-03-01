@@ -29,7 +29,8 @@ namespace Boxfusion.Authorization
 
             foreach (var permission in permissions)
             {
-                context.CreatePermission(permission.Name, L(permission.Description ?? permission.Name));
+                if (!string.IsNullOrWhiteSpace(permission.Name))
+                    context.CreatePermission(permission.Name, L(permission.Description ?? permission.Name));
             }
         }
 

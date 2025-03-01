@@ -37,7 +37,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Module name

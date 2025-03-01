@@ -8,6 +8,7 @@ using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,9 +52,7 @@ namespace Shesha.Authorization
                 return;
             }
 
-            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method) 
-                ? PermissionedObjectManager.CrudMethods[method] 
-                : method;
+            var methodName = PermissionedObjectManager.GetCrudMethod(method, method);
             var permissionName = $"{permissionedObject}@{methodName}";
 
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(permissionName, objectType);

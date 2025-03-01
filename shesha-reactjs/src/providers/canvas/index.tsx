@@ -1,8 +1,10 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
 import CanvasReducer from './reducer';
 import { setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setScreenWidthAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasStateContext, IDeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
+import { DataTypes, IObjectMetadata } from '@/index';
+import { canvasContextCode } from '@/publicJsApis';
 
 export interface ICanvasProviderProps {
 }
@@ -10,6 +12,26 @@ export interface ICanvasProviderProps {
 const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
   children,
 }) => {
+
+  const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
+    typeDefinitionLoader: () => {
+      return Promise.resolve({
+        typeName: 'ICanvasContextApi',
+        files: [{
+          content: canvasContextCode,
+          fileName: 'apis/CanvasContextApi.ts',
+        }]
+      });
+    },
+    properties: [
+      { path: 'zoom', dataType: DataTypes.number },
+      { path: 'designerWidth', dataType: DataTypes.string },
+      { path: 'designerDevice', dataType: DataTypes.string },
+      { path: 'physicalDevice', dataType: DataTypes.string },
+      { path: 'activeDevice', dataType: DataTypes.string },
+    ],
+    dataType: DataTypes.object
+  } as IObjectMetadata), []);
 
   const [state, dispatch] = useReducer(CanvasReducer, {
     ...CANVAS_CONTEXT_INITIAL_STATE,
@@ -60,6 +82,7 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
       data={state}
       api={actions}
       onChangeData={contextOnChangeData}
+      metadata={contextMetadata}
     >
       <CanvasStateContext.Provider value={state}>
         <CanvasActionsContext.Provider value={actions}>

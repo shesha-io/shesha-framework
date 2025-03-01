@@ -46,6 +46,9 @@ namespace Shesha.Extensions
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 
+            if (string.IsNullOrWhiteSpace(linkGeneratorContext.State.Scheme) || string.IsNullOrWhiteSpace(linkGeneratorContext.State.Host))
+                return string.Empty;
+
             var port = linkGeneratorContext.State.Port;
 
             return linkGenerator.GetUriByAction(

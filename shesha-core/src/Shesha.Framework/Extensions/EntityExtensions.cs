@@ -80,7 +80,7 @@ namespace Shesha.Extensions
         /// Returns the DisplayName of the entity.
         /// </summary>
         /// <returns>Returns the DisplayName of the entity.</returns>
-        public static string? GetEntityDisplayName(this object entity)
+        public static string GetEntityDisplayName(this object entity)
         {
             if (entity == null)
                 return string.Empty;
@@ -189,12 +189,11 @@ namespace Shesha.Extensions
                                 : entity.GetType().GetProperty("Id")?.GetValue(entity);
         }
 
-        //[Obsolete("To be reviewed")]
         public static string? GetPropertyDisplayText(this object entity, string propertyName, string defaultValue = "")
         {
             try
             {
-                var val = ReflectionHelper.GetPropertyValue(entity, propertyName, out object parentEntity, out var propInfo);
+                var val = ReflectionHelper.GetPropertyValue(entity, propertyName, out var parentEntity, out var propInfo);
                 if (val == null)
                     return defaultValue;
 
@@ -208,11 +207,11 @@ namespace Shesha.Extensions
                 {
                     case GeneralDataType.Enum:
                         var itemValue = Convert.ToInt32(val);
-                        return ReflectionHelper.GetEnumDescription(propConfig.EnumType, itemValue);
+                        return ReflectionHelper.GetEnumDescription(propConfig.EnumType.NotNull($"{nameof(propConfig.EnumType)} must not be null"), itemValue);
                     case GeneralDataType.ReferenceList:
                         {
                             var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
-                            return refListHelper.GetItemDisplayText(new ReferenceListIdentifier(propConfig.ReferenceListModule, propConfig.ReferenceListName), (int)val);
+                            return refListHelper.GetItemDisplayText(propConfig.GetRefListIdentifier(), (int)val);
                         }
                     case GeneralDataType.EntityReference:
                         {
@@ -223,37 +222,7 @@ namespace Shesha.Extensions
                         }
                     default:
                         return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
-                        //return val.ToString();
                 }
-                // todo: review and remove
-                /*
-                var propConfig = EntityConfiguration.Get(parentEntity.GetType())[propInfo.Name];
-                var generalDataType = propConfig.GeneralType;
-
-                entity = parentEntity;
-                propertyName = propInfo.Name;
-
-                switch (generalDataType)
-                {
-                    case GeneralDataType.Enum:
-                        var itemValue = (int)val;
-                        return ReflectionHelper.GetEnumDescription(propConfig.EnumType, itemValue);
-                    case GeneralDataType.ReferenceList:
-                        return entity.GetReferenceListItemName(propertyName, defaultValue);
-                    case GeneralDataType.MultiValueReferenceList:
-                        return entity.GetMultiValueReferenceListItemNames(propertyName, defaultValue);
-                    case GeneralDataType.EntityReference:
-                    case GeneralDataType.StoredFile:
-                        var referencedEntity = entity.GetReferencedEntity(propertyName);
-
-                        if (referencedEntity == null)
-                            return defaultValue ?? "";
-                        else
-                            return referencedEntity.GetDisplayName();
-                    default:
-                        return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
-                }
-                */
             }
             catch (Exception ex)
             {
@@ -301,7 +270,7 @@ namespace Shesha.Extensions
             else if (underlyingType == typeof(DateTime))
             {
                 var typedVal = (DateTime)val;
-                string finalFormat;
+                string? finalFormat;
 
                 var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
                 if (dataTypeAtt != null && dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))
@@ -349,7 +318,7 @@ namespace Shesha.Extensions
 
         public static GeneralDataType GetGeneralDataType(this PropertyInfo propInfo)
         {
-            return propInfo.DeclaringType.GetEntityConfiguration()[propInfo.Name].GeneralType;
+            return propInfo.DeclaringType.NotNull().GetEntityConfiguration()[propInfo.Name].GeneralType;
         }
 
         public static List<T> GetFullChain<T>(this T entity, Func<T, T?> parentFunc) where T : class
@@ -428,97 +397,6 @@ namespace Shesha.Extensions
         }
 
         #region Multivalue reference list todo: review
-
-        /// <summary>
-        /// Returns a comma separated list of Reference List Item referenced by the property.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="propertyName">Name of the Reference List Item property.</param>
-        /// <param name="defaultValue">Value to return if reference list item value is null or empty.</param>
-        /// <param name="separator"></param>
-        /// <returns>If property value is null returns the <paramref name="defaultValue"/>, else
-        /// returns a comma separated list of the Rerefence List Items.</returns>
-        [Obsolete("Should use native MVC functionality and related DataAnnotations e.g. Display")]
-        public static string GetMultiValueReferenceListItemNames(this object entity, string propertyName, string? defaultValue = null, string separator = ", ")
-        {
-            var items = GetMultiValueReferenceListItemNamesAr(entity, propertyName);
-            if (defaultValue != null && items.Length == 0)
-            {
-                return defaultValue;
-            }
-            else
-            {
-                return String.Join(separator, items);
-            }
-        }
-
-        /// <summary>
-        /// Returns a string array of allReference List items referenced by the property.
-        /// </summary>
-        /// <param name="entity">Entity</param>
-        /// <param name="propertyName">Name of the Reference List Item property.</param>
-        /// <returns>If property value is null or zero-length string, returns a zero length array, else
-        /// returns a list Rerefence List items specified by the property value.</returns>
-        public static string[] GetMultiValueReferenceListItemNamesAr(this object entity, string propertyName)
-        {
-            //string refListNamespace, refListName;
-            var itemsInt = GetMultiValueReferenceListItemValuesAr(entity, propertyName, out var refListModule, out var refListName);
-
-            var result = new string[itemsInt.Length];
-
-            var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
-
-            var property = entity.GetType().GetProperty(propertyName);
-            if (property == null)
-                throw new ArgumentException($"Property '{propertyName}' not found in type '{entity.GetType().FullName}'");
-
-            for (int i = 0; i < itemsInt.Length; i++)
-            {
-                if (refListName == "" && refListModule == "")
-                    result[i] = ReflectionHelper.GetEnumDescription(ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType), itemsInt[i]);
-                else
-                    result[i] = refListHelper.GetItemDisplayText(new ReferenceListIdentifier(refListModule, refListName), itemsInt[i]);
-            }
-
-            return result;
-        }
-
-        private static Int64[] GetMultiValueReferenceListItemValuesAr(this object entity, string propertyName, out string? refListModule, out string? refListName)
-        {
-            var propInfo = ReflectionHelper.GetProperty(entity, propertyName, out var propertyEntity);
-
-            var propConfig = entity.GetType().GetEntityConfiguration()[propertyName];
-            if (propConfig.GeneralType != GeneralDataType.MultiValueReferenceList)
-                throw new InvalidOperationException($"GetMultiValueReferenceListItemNamesAr cannot be called on property '{propertyName}' of type '{entity.GetType().FullName}' as property is not defined as a MultiValueReferenceList property.");
-
-            refListModule = propConfig.ReferenceListModule;
-            refListName = propConfig.ReferenceListName;
-
-            var propValue = propInfo.GetValue(propertyEntity, null);
-
-            if (propValue == null)
-                return new Int64[] { };
-
-            long intVal;
-
-            try
-            {
-                intVal = Convert.ToInt64(propValue);
-            }
-            catch
-            {
-                throw new ConfigurationErrorsException($"Property '{propertyName}' on type '{entity.GetType().FullName}' is marked as MultiValueReferenceList but it's type cannot be cast to 'int'.");
-            }
-
-            if (refListName == "" && refListModule == "")
-            {
-                return
-                    ReflectionHelper.FlagEnumToListOfValues(
-                        ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType), intVal).ToArray();
-            }
-
-            return DecomposeIntoBitFlagComponents(intVal);
-        }
 
         /// <summary>
         /// Decomposes an integers into an array of its constituent BitFlag values (i.e. 1, 2, 4, etc...).

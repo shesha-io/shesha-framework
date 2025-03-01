@@ -114,6 +114,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           initialValues={initialValues}
           className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
           {...mergedProps}
+          data-sha-form-id={shaForm.form.id}
         >
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
           {children}

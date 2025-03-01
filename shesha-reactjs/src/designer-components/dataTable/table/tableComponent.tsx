@@ -98,6 +98,11 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         onNewRowInitialize: migrateFormApi.full(prev.onNewRowInitialize),
         onRowSave: migrateFormApi.full(prev.onRowSave)
       }))
+      .add<ITableComponentProps>(11, (prev) => ({
+        ...prev,
+        noDataText: prev.noDataText ?? 'No Data',
+        noDataSecondaryText: prev.noDataSecondaryText ?? 'No data is available for this table',
+      }))
   ,
   settingsFormFactory: (props) => <TableSettings {...props} />,
   actualModelPropertyFilter: (name) => name !== 'items',

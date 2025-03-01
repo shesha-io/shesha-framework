@@ -395,11 +395,11 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
 
       <SettingsCollapsiblePanel header='Empty Table'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
-          <Input defaultValue={"No Data"} readOnly={readOnly} />
+          <Input readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="noDataSecondaryText" label="Secondary Text" jsSetting>
-          <Input defaultValue={"No data is available for this table"} readOnly={readOnly} />
+          <Input readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="noDataIcon" label="Icon" jsSetting>

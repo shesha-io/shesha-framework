@@ -2,6 +2,7 @@
 using Abp.AspNetCore.Mvc.Authorization;
 using Abp.AspNetCore.Mvc.Extensions;
 using Abp.Authorization;
+using Abp.Domain.Uow;
 using Abp.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,18 +26,17 @@ namespace Shesha.Permissions
     {
 
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
-        private readonly IModuleManager _moduleManager;
         private readonly IApplicationStartupSession _startupSession;
 
         public ApiPermissionedObjectProvider(
             IAssemblyFinder assembleFinder,
             IApiDescriptionGroupCollectionProvider apiDescriptionsProvider,
+            IApplicationStartupSession startupSession,
             IModuleManager moduleManager,
-            IApplicationStartupSession startupSession
-            ) : base(assembleFinder)
+            IUnitOfWorkManager unitOfWorkManager
+            ) : base(assembleFinder, moduleManager, unitOfWorkManager)
         {
             _apiDescriptionsProvider = apiDescriptionsProvider;
-            _moduleManager = moduleManager;
             _startupSession = startupSession;
         }
 
@@ -58,35 +58,15 @@ namespace Shesha.Permissions
         {
             var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
-
-            return !(type.IsPublic && !type.IsAbstract && (shaServiceType.IsAssignableFrom(type) || controllerType.IsAssignableFrom(type)))
-                ? null // if not controller
-                : IsCrud(type)
-                    ? ShaPermissionedObjectsTypes.WebCrudApi
-                    : ShaPermissionedObjectsTypes.WebApi;
+            return !(type.IsPublic && !type.IsAbstract
+                                 && (shaServiceType.IsAssignableFrom(type) || controllerType.IsAssignableFrom(type)))
+                   ? null // if not controller
+                   : IsCrud(type)
+                        ? ShaPermissionedObjectsTypes.WebCrudApi
+                        : ShaPermissionedObjectsTypes.WebApi;
         }
 
-        private Dictionary<Assembly, Module> _modules = new Dictionary<Assembly, Module>();
-
-        private async Task<Module?> GetModuleOfAssemblyAsync(Assembly assembly)
-        {
-            Module? module = null;
-            if (_modules.TryGetValue(assembly, out module))
-            {
-                return module;
-            }
-            module = await _moduleManager.GetOrCreateModuleAsync(assembly);
-            _modules.Add(assembly, module);
-            return module;
-        }
-
-        private string GetMd5(PermissionedObjectDto dto)
-        {
-            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{string.Join(',', dto.Permissions)}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
-                .ToMd5Fingerprint();
-        }
-
-        public async Task<List<PermissionedObjectDto>> GetAllAsync(string? objectType = null, bool skipUnchangedAssembly = false)
+        public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null, bool skipUnchangedAssembly = false)
         {
             if (objectType != null && !GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
@@ -247,8 +227,11 @@ namespace Shesha.Permissions
                             Hardcoded = methodHardcoded,
                         };
 
-                        child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);
-                        child.AdditionalParameters.Add("Endpoint", methodInfo.Endpoint);
+                        if (!string.IsNullOrWhiteSpace(methodInfo.HttpMethod))
+                            child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);
+
+                        if (!string.IsNullOrWhiteSpace(methodInfo.Endpoint))
+                            child.AdditionalParameters.Add("Endpoint", methodInfo.Endpoint);
 
                         //parent.Child.Add(child);
                         child.Md5 = GetMd5(child);

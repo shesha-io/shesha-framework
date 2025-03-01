@@ -1,11 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Shesha.Configuration;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Utilities;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Shesha.Services.StoredFiles
 {
@@ -21,14 +20,6 @@ namespace Shesha.Services.StoredFiles
         {
             _sheshaSettings = sheshaSettings;
             _pathHelper = pathHelper;
-        }
-
-        /// <summary>
-        /// Returns physical path of the latest version of the specified <paramref name="file"/>
-        /// </summary>
-        public string PhysicalFilePath(StoredFile file)
-        {
-            return PhysicalFilePath(file?.LastVersion());
         }
 
         /// <summary>

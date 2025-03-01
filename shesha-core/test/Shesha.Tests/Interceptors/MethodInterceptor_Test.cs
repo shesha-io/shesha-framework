@@ -25,7 +25,7 @@ namespace Shesha.Tests.Interceptors
             public MyTest Link { get; set; }
         }
 
-        private string GetSqlExpression(Expression expr, Dictionary<string, object> pars, Dictionary<string, object> tables)
+        private string GetSqlExpression(Expression expr, Dictionary<string, object?> pars, Dictionary<string, object> tables)
         {
             if (expr is BinaryExpression binary)
             {
@@ -74,18 +74,6 @@ namespace Shesha.Tests.Interceptors
                 var pname = $"@P{pars.Count + 1} ";
                 pars.Add(pname, cons.Value);
                 return $"{pname} ";
-            }
-
-            return "";
-            //LogicalBinaryExpression
-            //InstanceMethodCallExpression
-        }
-
-        private string GetSql<T>(Expression<Func<T, bool>> expr, Dictionary<string, object> pars, Dictionary<string, object> tables)
-        {
-            if (expr is LambdaExpression lambda)
-            {
-                return GetSqlExpression(lambda.Body, pars, tables);
             }
 
             return "";

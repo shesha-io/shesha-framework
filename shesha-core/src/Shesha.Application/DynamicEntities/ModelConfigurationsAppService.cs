@@ -89,10 +89,10 @@ namespace Shesha.DynamicEntities
         {
             var source = await AsyncQueryableExecuter.FirstOrDefaultAsync(_entityConfigRepository.GetAll().Where(x => x.Id == input.SourceId.ToGuid()));
             if (source == null)
-                new EntityNotFoundException("Source configuration not found");
+                throw new EntityNotFoundException("Source configuration not found");
             var destination = await AsyncQueryableExecuter.FirstOrDefaultAsync(_entityConfigRepository.GetAll().Where(x => x.Id == input.DestinationId.ToGuid()));
-            if (source == null)
-                new EntityNotFoundException("Destination configuration not found");
+            if (destination == null)
+                throw new EntityNotFoundException("Destination configuration not found");
 
             using (var uow = UnitOfWorkManager.Begin())
             {

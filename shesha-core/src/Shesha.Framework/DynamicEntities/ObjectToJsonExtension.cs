@@ -1,6 +1,5 @@
 ﻿using Abp.Json;
 using AutoMapper.Internal;
-using Castle.Core.Internal;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
@@ -31,12 +30,12 @@ namespace Shesha.DynamicEntities
                 || name == nameof(IJsonEntityProxy._references).ToCamelCase();
         }
 
-        public static void ObjectToJObject(object obj, JObject jobj, bool addMissedProperties = true)
+        public static void ObjectToJObject(object? obj, JObject jobj, bool addMissedProperties = true)
         {
             GetJObjectFromObject(obj, jobj, addMissedProperties);
         }
 
-        public static JObject GetJObjectFromObject(object obj, JObject jobj = null, bool addMissedProperties = true)
+        public static JObject GetJObjectFromObject(object? obj, JObject? jobj = null, bool addMissedProperties = true)
         {
             jobj ??= new JObject();
 
@@ -85,12 +84,12 @@ namespace Shesha.DynamicEntities
             return jobj;
         }
 
-        public static JToken ValueToJson(Type propType, object val, JToken jval, bool addMissedProperties = true)
+        public static JToken ValueToJson(Type propType, object? val, JToken? jval, bool addMissedProperties = true)
         {
             if (val == null || !val.GetType().IsAssignableTo(propType)) return null;
 
-            if (Extensions.ObjectExtensions.IsListType(propType)
-                || Extensions.ObjectExtensions.IsDictionaryType(propType))
+            if (ObjectExtensions.IsListType(propType)
+                || ObjectExtensions.IsDictionaryType(propType))
             {
                 jval = jval.IsNullOrEmpty() ? new JArray() : jval;
                 if (val is IEnumerable<object> list && list.Any() && jval is JArray jlist)
@@ -128,13 +127,12 @@ namespace Shesha.DynamicEntities
             {
                 var jref = new JObject();
                 jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName()));
-                jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.FullName));
-                jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId()));
+                jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.GetRequiredFullName()));
+                jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId().NotNull()));
                 return jref;
             }
 
             if (val != null && jval.IsNullOrEmpty()
-                || val == null && !jval.IsNullOrEmpty()
                 || !val.Equals(jval?.ToObject(propType)))
                 return JProperty.FromObject(val);
 

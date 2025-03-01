@@ -41,7 +41,8 @@ namespace Shesha.Permissions
                 { "UpdateGql", "Update" },
                 { "Delete", "Delete" },
             };
-
+        public static string GetCrudMethod(string method, string? defaultValue = null) =>
+            CrudMethods.ContainsKey(method.RemovePostfix("Async")) ? CrudMethods[method.RemovePostfix("Async")] : defaultValue;
 
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -324,18 +325,10 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null)
         {
-            PermissionedObjectDto obj = null;
             var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
-            if (dbObj != null)
-            {
-                obj = await GetDtoAsync(dbObj);
-            }
-            else
-            {
-                obj = await CreateAsync(objectName, objectType, inheritedFromName);
-            }
-
-            return obj;
+            return dbObj != null
+                ? await GetDtoAsync(dbObj)
+                : await CreateAsync(objectName, objectType, inheritedFromName);
         }
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
@@ -351,7 +344,7 @@ namespace Shesha.Permissions
             if (cacheObj.HasValue)
                 return cacheObj.Value;
 
-            CacheItemWrapper<PermissionedObjectDto> item = null;
+            CacheItemWrapper<PermissionedObjectDto>? item = null;
             using (var uow = _unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
             {
                 var dbObj = await _permissionedObjectRepository.GetAll()
@@ -452,9 +445,7 @@ namespace Shesha.Permissions
             {
                 var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
                 // remove disabled endpoints
-                var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
-                    ? PermissionedObjectManager.CrudMethods[methodName]
-                    : null;
+                var method = GetCrudMethod(methodName);
 
                 var obj = "";
                 if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !method.IsNullOrEmpty())

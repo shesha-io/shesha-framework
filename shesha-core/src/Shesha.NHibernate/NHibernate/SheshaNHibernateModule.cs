@@ -324,7 +324,7 @@ namespace Shesha.NHibernate
                                 {
                                     Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
-                                    var method = bootstrapperType.GetMethod(nameof(IBootstrapper.ProcessAsync));
+                                    var method = bootstrapperType.GetRequiredMethod(nameof(IBootstrapper.ProcessAsync));
                                     var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
                                     var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
 

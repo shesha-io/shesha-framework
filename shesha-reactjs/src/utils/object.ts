@@ -47,7 +47,7 @@ export const getValueByPropertyName = (data: any, propertyName: string): any => 
             let value = data[path[0]];
             path.forEach((item, index) => {
                 if (index > 0)
-                    value = typeof value === 'object' ? value[item] : undefined;
+                    value = value && typeof value === 'object' ? value[item] : undefined;
             });
             return value;
         }

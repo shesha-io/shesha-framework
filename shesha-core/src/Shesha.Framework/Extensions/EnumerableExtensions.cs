@@ -108,10 +108,11 @@ namespace Shesha.Extensions
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
         /// <returns></returns>
-        public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object oldValue, object newValue)
+        public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object? oldValue, object? newValue)
         {
+            // TODO: Alex, please review and simplify
             if (newValue == null)
-                return (new List<Tt>(), ((IEnumerable<object>)oldValue).Cast<Tt>());
+                return (new List<Tt>(), oldValue != null ? ((IEnumerable<object>)oldValue).Cast<Tt>() : new List<Tt>());
             if (oldValue == null)
                 return (((IEnumerable<object>)newValue).Cast<Tt>(), new List<Tt>());
 

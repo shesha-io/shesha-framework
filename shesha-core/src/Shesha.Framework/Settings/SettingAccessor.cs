@@ -34,7 +34,7 @@ namespace Shesha.Settings
                 ? settingAttribute.Name
                 : property.Name;
 
-            Module = property.DeclaringType.GetConfigurableModuleName();
+            Module = property.DeclaringType.NotNull().GetConfigurableModuleName();
         }
 
         /// inheritedDoc
