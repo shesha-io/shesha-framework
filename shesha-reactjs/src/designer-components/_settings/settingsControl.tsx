@@ -96,7 +96,8 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     label: ' ',
     className: `${styles.jsSwitch}`,
     ghost: true,
-    exposedVariables: defaultExposedVariables
+    exposedVariables: defaultExposedVariables,
+    hidden: !!setting._code && props.readOnly,
   };
 
   const editor = constantsEvaluator
@@ -106,7 +107,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
-      {!!setting._code && editor}
+      {editor}
       {!code && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
       </div>}
