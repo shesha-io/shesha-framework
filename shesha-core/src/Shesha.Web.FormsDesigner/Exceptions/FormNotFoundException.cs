@@ -1,5 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Exceptions;
-using Shesha.Web.FormsDesigner.Domain;
+using Shesha.Domain;
 
 namespace Shesha.Web.FormsDesigner.Exceptions
 {

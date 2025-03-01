@@ -1,6 +1,4 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Abp.Runtime.Caching;
 using Moq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -9,7 +7,6 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
-using Shesha.NHibernate.UoW;
 using Shesha.Services;
 using Shouldly;
 using System;
@@ -22,12 +19,8 @@ namespace Shesha.Tests.DynamicEntities
 {
     public class DynamicPropertyManager_Tests : SheshaNhTestBase
     {
-
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
-
         public DynamicPropertyManager_Tests()
         {
-            _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
         }
 
         [Fact]
@@ -86,8 +79,9 @@ namespace Shesha.Tests.DynamicEntities
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
             var baseDtoType = typeof(DynamicDto<Person, Guid>);
             var context = new DynamicDtoTypeBuildingContext() { ModelType = baseDtoType };
             var dtoType = await builder.BuildDtoFullProxyTypeAsync(baseDtoType, context);
@@ -109,16 +103,16 @@ namespace Shesha.Tests.DynamicEntities
                 p?.SetValue(dto, val);
             }
 
-            using (var uow = _unitOfWorkManager.Begin())
+            using (var uow = NewNhUnitOfWork())
             {
-                var nhuow = uow as NhUnitOfWork;
-                var session = nhuow?.GetSession();
+#pragma warning disable IDISP001 // Dispose created
+                var session = uow.GetSession();
+#pragma warning restore IDISP001 // Dispose created
 
                 // Create temporary Entity Properties configs
                 var entityConfigRepo = Resolve<IRepository<EntityConfig, Guid>>();
                 var entityPropRepo = Resolve<IRepository<EntityProperty, Guid>>();
-                var config = entityConfigRepo.GetAll().FirstOrDefault(x =>
-                    x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
+                var config = entityConfigRepo.GetAll().First(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
                 foreach (var prop in props)
                 {
                     var propConf = new EntityProperty()

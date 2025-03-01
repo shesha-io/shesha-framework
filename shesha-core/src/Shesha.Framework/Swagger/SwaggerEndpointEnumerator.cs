@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Uow;
-using Microsoft.Extensions.DependencyInjection;
 using Shesha.Application.Services;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
@@ -9,7 +8,6 @@ using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;

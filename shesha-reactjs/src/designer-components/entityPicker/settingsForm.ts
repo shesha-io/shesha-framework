@@ -1,8 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
 import { repeatOptions } from '../_settings/utils/background/utils';
 
@@ -39,7 +38,7 @@ export const getSettings = (data) => {
               .addLabelConfigurator({
                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                 propertyName: 'hideLabel',
-                label: 'label',
+                label: 'Label',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 hideLabel: true,
               })
@@ -48,7 +47,7 @@ export const getSettings = (data) => {
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 inputs: [
                   {
-                    type: 'text',
+                    type: 'textField',
                     id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
                     propertyName: 'placeholder',
                     label: 'Placeholder',
@@ -91,9 +90,8 @@ export const getSettings = (data) => {
                   {
                     type: 'autocomplete',
                     id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'initialValue',
-                    label: 'Default Value',
-                    tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
+                    propertyName: 'entityType',
+                    label: 'Entity Type',
                     jsSetting: true,
                     dataSourceType: 'url',
                     validate: {},
@@ -125,62 +123,42 @@ export const getSettings = (data) => {
                   },
                 ],
               })
+              .addSettingsInput({
+                inputType: "autocomplete",
+                id: '6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018',
+                propertyName: 'entityType',
+                label: 'Entity Type',
+                labelAlign: 'right',
+                parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+                hidden: false,
+                dataSourceType: 'url',
+                validate: {},
+                dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                settingsValidationErrors: []
+              })
+
               .addSettingsInputRow({
-                id: 'display-property-s4gmBg31azZC0UjZjpfTm',
+                id: 'default-value-s4gmBg31azZC0UjZjpfTm',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                readOnly: false,
+                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                 inputs: [
-                  {
-                    type: "autocomplete",
-                    id: '6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018',
-                    propertyName: 'entityType',
-                    label: 'Entity Type',
-                    labelAlign: 'right',
-                    parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-                    hidden: false,
-                    dataSourceType: 'url',
-                    validate: {},
-                    dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                    settingsValidationErrors: []
-                  },
                   {
                     type: 'propertyAutocomplete',
-                    id: 'display-s4gmBg31azZC0UjZjpfTm',
+                    id: 'hpm6rN_aj-L_KaG5MLIZt',
                     propertyName: 'displayEntityKey',
                     label: 'Display Property',
+                    labelAlign: 'right',
+                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
+                    hidden: false,
+                    isDynamic: false,
+                    description: 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
+                    validate: {},
                     modelType: '{{data.entityType}}',
-                    jsSetting: true,
+                    autoFillProps: false,
+                    settingsValidationErrors: [],
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
-              .addSettingsInputRow({
-                id: 'customJs-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                inputs: [
-                  {
-                    type: 'codeEditor',
-                    id: '405b0599-914d-4d2d-875c-765a495472f8',
-                    propertyName: 'incomeCustomJs',
-                    label: 'Id value',
-                    parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-                    validate: {},
-                    settingsValidationErrors: [],
-                    description: "Return string value of Id",
-                    hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
-                  },
-                  {
-                    type: 'codeEditor',
-                    id: '81fb0599-914d-4d2d-875c-765a495472f8',
-                    propertyName: 'outcomeCustomJs',
-                    label: 'Custom value',
-                    parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-                    validate: {},
-                    settingsValidationErrors: [],
-                    description: "Return value that will be stored as field value",
-                    hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
-                  },
-                ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -190,29 +168,28 @@ export const getSettings = (data) => {
             title: 'Data',
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [...new DesignerToolbarSettings()
-              .addSettingsInput(
-                {
-                  inputType: 'queryBuilder',
-                  id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
-                  propertyName: 'filters',
-                  label: 'Entity Filter',
-                  jsSetting: true,
-                  modelType: '{{data.entityType}}',
-                  fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.'
-                }
-              )
-              .addSettingsInputRow({
-                id: 'data-source-s4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'dropdown',
+              .addContainer({
+                id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                components: [...new DesignerToolbarSettings()
+                  .addSettingsInput(
+                    {
+                      inputType: 'queryBuilder',
+                      id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'filters',
+                      label: 'Entity Filter',
+                      jsSetting: true,
+                      modelType: '{{data.entityType}}',
+                      fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.'
+                    }
+
+                  ).addSettingsInput({
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    inputType: 'dropdown',
                     id: 'acb2d566-fe48-43bd-84e0-28b7103354c1',
                     propertyName: 'valueFormat',
                     parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-                    label: 'Value format',
-                    hidden: false,
-                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    label: 'Value Format',
                     dropdownOptions: [
                       {
                         label: 'Simple Id',
@@ -228,7 +205,46 @@ export const getSettings = (data) => {
                       },
                     ],
                     defaultValue: ['simple'],
-                  }],
+                  })
+                  .addSettingsInputRow({
+                    id: 'customJs-s4gmBg31azZC0UjZjpfTm',
+                    parentId: 's4gmBg31azZC0UjZjpfTm',
+                    hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
+                    inputs: [
+                      {
+                        type: 'codeEditor',
+                        id: '405b0599-914d-4d2d-875c-765a495472f8',
+                        propertyName: 'incomeCustomJs',
+                        label: 'Id value',
+                        parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "Return string value of Id",
+                      },
+                      {
+                        type: 'codeEditor',
+                        id: '81fb0599-914d-4d2d-875c-765a495472f8',
+                        propertyName: 'outcomeCustomJs',
+                        label: 'Custom value',
+                        parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "Return value that will be stored as field value",
+                      },
+                    ],
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  })
+                  .addSettingsInput({
+                    id: 'columns-s4gmBg31azZC0UjZjpfTm',
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    inputType: 'columnsConfig',
+                    propertyName: 'items',
+                    parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
+                    label: 'Columns',
+                    items: [],
+                    modelType: '{{data.entityType}}',
+                    parentComponentType: 'entityPicker',
+                  }).toJson()]
               })
               .addSettingsInput({
                 inputType: 'switch',
@@ -237,154 +253,135 @@ export const getSettings = (data) => {
                 parentId: 'root',
                 label: 'Allow New Record',
               })
-              .addSettingsInput({
-                id: 'columns-s4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputType: 'columnsConfig',
-                propertyName: 'items',
-                parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
-                label: 'Columns',
-                items: [],
-                modelType: '{{data.entityType}}'
-              })
-              .addSettingsInputRow({
-                id: 'data-source-s4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [{
-                  type: 'text',
-                  id: '4b3b0da0-f126-4e37-b5f5-568367dc008f',
-                  propertyName: 'modalTitle',
-                  label: 'Title',
-                  labelAlign: 'right',
-                  parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                  hidden: false,
-                  validate: {
-                    required: true,
-                  }
-                },
-                {
-                  type: 'formAutocomplete',
-                  id: 'fd3d4ef4-be06-40e9-9815-118754707d0e',
-                  propertyName: 'modalFormId',
-                  label: 'Modal form',
-                  labelAlign: 'right',
-                  parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                  hidden: false,
-                  validate: {
-                    required: true,
-                  }
+              .addCollapsiblePanel({
+                id: 'modalSettingsCollapsiblePanel',
+                propertyName: 'modalSettings',
+                label: 'Dialog Settings',
+                labelAlign: 'right',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                collapsible: 'header',
+                hidden: { _code: 'return !getSettingValue(data?.allowNewRecord);', _mode: 'code', _value: false } as any,
+                content: {
+                  id: 'modalSettingsPnl',
+                  components: [...new DesignerToolbarSettings()
+                    .addSettingsInputRow({
+                      id: 'data-source-s4gmBg31azZC0UjZjpfTm',
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          type: 'textField',
+                          id: '4b3b0da0-f126-4e37-b5f5-568367dc008f',
+                          propertyName: 'modalTitle',
+                          label: 'Title',
+                          labelAlign: 'right',
+                          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+                          hidden: false,
+                          validate: {
+                            required: true,
+                          }
+                        },
+                        {
+                          type: 'formAutocomplete',
+                          id: 'fd3d4ef4-be06-40e9-9815-118754707d0e',
+                          propertyName: 'modalFormId',
+                          label: 'Modal Form',
+                          labelAlign: 'right',
+                          parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+                          hidden: false,
+                          size: 'small',
+                          validate: {
+                            required: true,
+                          }
+                        }
+                      ]
+                    })
+                    .addSettingsInputRow({
+                      id: 'buttons-s4gmBg31azZC0UjZjpfTm',
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [{
+                        id: nanoid(),
+                        propertyName: 'footerButtons',
+                        label: 'Buttons Type',
+                        type: 'dropdown',
+                        dropdownOptions: [
+                          { label: 'Default', value: 'default' },
+                          { label: 'Custom', value: 'custom' },
+                          { label: 'None', value: 'none' },
+                        ],
+                        defaultValue: 'default',
+                      }
+                      ]
+                    })
+                    .addSettingsInputRow({
+                      id: 'submit-http-verb-s4gmBg31azZC0UjZjpfTm',
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
+                      inputs: [{
+                        type: 'dropdown',
+                        id: nanoid(),
+                        propertyName: 'submitHttpVerb',
+                        label: 'Submit Http Verb',
+                        dropdownOptions: [
+                          { label: 'POST', value: 'POST' },
+                          { label: 'PUT', value: 'PUT' },
+                        ],
+                        defaultValue: 'POST',
+                      }
+                      ]
+                    })
+                    .addSettingsInputRow({
+                      id: 'submit-http-verb-s4gmBg31azZC0UjZjpfTm',
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          type: 'textField',
+                          id: nanoid(),
+                          propertyName: 'onSuccessRedirectUrl',
+                          label: 'Success Redirect URL',
+                        }
+                      ]
+                    })
+                    .addSettingsInputRow({
+                      id: 'buttons-s4gmBg31azZC0UjZjpfTm',
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false },
+                      inputs: [{
+                        id: nanoid(),
+                        propertyName: 'buttons',
+                        label: 'Configure Modal Buttons',
+                        type: 'buttonGroupConfigurator',
+                      }
+                      ]
+                    })
+                    .addSettingsInput({
+                      id: '264903ff-b525-4a6e-893f-d560b219df9d',
+                      propertyName: 'modalWidth',
+                      inputType: 'customDropdown',
+                      label: 'Dialog Width (%)',
+                      allowClear: true,
+                      customDropdownMode: 'single',
+                      dropdownOptions: [
+                        {
+                          label: 'Small',
+                          value: '40%',
+                        },
+                        {
+                          label: 'Medium',
+                          value: '60%',
+                        },
+                        {
+                          label: 'Large',
+                          value: '80%',
+                        },
+                        {
+                          label: 'Custom',
+                          value: 'custom',
+                        },
+                      ]
+                    })
+                    .toJson()]
                 }
-                ]
-              })
-              .addSettingsInputRow({
-                id: 'buttons-s4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [{
-                  id: nanoid(),
-                  propertyName: 'footerButtons',
-                  label: 'Buttons type',
-                  type: 'dropdown',
-                  dropdownOptions: [
-                    { label: 'Default', value: 'default' },
-                    { label: 'Custom', value: 'custom' },
-                    { label: 'None', value: 'none' },
-                  ],
-                  defaultValue: 'default',
-                },
-                {
-                  type: 'buttonGroupConfigurator',
-                  id: nanoid(),
-                  propertyName: 'buttons',
-                  hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false } as any,
-                  label: 'Configure Modal Buttons',
-                }
-                ]
-              })
-              .addSettingsInputRow({
-                id: 'submit-http-verb-s4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [{
-                  type: 'dropdown',
-                  id: nanoid(),
-                  propertyName: 'submitHttpVerb',
-                  label: 'Submit Http Verb',
-                  dropdownOptions: [
-                    { label: 'POST', value: 'POST' },
-                    { label: 'PUT', value: 'PUT' },
-                  ],
-                  defaultValue: 'POST',
-                  hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
-                },
-                {
-                  type: 'text',
-                  id: nanoid(),
-                  propertyName: 'onSuccessRedirectUrl',
-                  label: 'Success Redirect URL',
-                  hidden: { _code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false } as any,
-                }
-                ]
-              })
-              .addSettingsInputRow({
-                id: 'modal-width-s4gmBg31azZC0UjZjpfTm',
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [{
-                  id: nanoid(),
-                  type: 'dropdown',
-                  propertyName: 'modalWidth',
-                  label: 'Dialog Width (%)',
-                  allowClear: true,
-                  dropdownOptions: [
-                    {
-                      label: 'Small',
-                      value: '40%',
-                    },
-                    {
-                      label: 'Medium',
-                      value: '60%',
-                    },
-                    {
-                      label: 'Large',
-                      value: '80%',
-                    },
-                    {
-                      label: 'Custom',
-                      value: 'custom',
-                    },
-                  ],
-                },
-                {
-                  type: 'dropdown',
-                  id: nanoid(),
-                  propertyName: 'widthUnits',
-                  label: 'Units',
-                  allowClear: true,
-                  dropdownOptions: [
-                    {
-                      label: 'Percentage (%)',
-                      value: '%',
-                    },
-                    {
-                      label: 'Pixels (px)',
-                      value: 'px',
-                    },
-                  ]
-                },
-                {
-                  type: 'number',
-                  id: nanoid(),
-                  propertyName: 'customWidth',
-                  label: 'Enter Custom Width',
-                  min: 0,
-                  hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false } as any,
-                }
-                ]
-              })
-              .addNumberField({
-                id: nanoid(),
-                propertyName: 'customWidth',
-                label: 'Enter Custom Width',
-                hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom" || !getSettingValue(data?.widthUnits);', _mode: 'code', _value: false } as any,
-                min: 0,
               })
               .toJson()
             ]
@@ -421,26 +418,6 @@ export const getSettings = (data) => {
                 label: 'On Change',
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
-                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-              })
-              .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
-                inputType: 'codeEditor',
-                propertyName: 'onFocusCustom',
-                label: 'On Focus',
-                labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-              })
-              .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
-                inputType: 'codeEditor',
-                propertyName: 'onBlurCustom',
-                label: 'On Blur',
-                labelAlign: 'right',
-                tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
                 parentId: 'Cc47W08MWrKdhoGqFKMI2'
               })
               .toJson()
@@ -493,7 +470,7 @@ export const getSettings = (data) => {
                                 dropdownOptions: fontTypes,
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Size',
                                 propertyName: 'font.size',
@@ -511,7 +488,7 @@ export const getSettings = (data) => {
                                 width: 100,
                               },
                               {
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Color',
                                 hideLabel: true,
@@ -550,7 +527,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                 label: "Width",
                                 width: 85,
@@ -560,7 +537,7 @@ export const getSettings = (data) => {
 
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                 label: "Min Width",
                                 width: 85,
@@ -569,7 +546,7 @@ export const getSettings = (data) => {
                                 icon: "minWidthIcon",
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                 label: "Max Width",
                                 width: 85,
@@ -586,7 +563,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                 label: "Height",
                                 width: 85,
@@ -595,7 +572,7 @@ export const getSettings = (data) => {
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                 label: "Min Height",
                                 width: 85,
@@ -604,7 +581,7 @@ export const getSettings = (data) => {
                                 icon: "minHeightIcon",
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                 label: "Max Height",
                                 width: 85,
@@ -746,7 +723,7 @@ export const getSettings = (data) => {
                               id: "backgroundStyleRow-color",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'backgroundStyleRow-color',
                                 label: "Color",
                                 propertyName: "background.color",
@@ -775,7 +752,7 @@ export const getSettings = (data) => {
                               id: "backgroundStyle-url",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                type: 'text',
+                                type: 'textField',
                                 id: 'backgroundStyle-url',
                                 propertyName: "background.url",
                                 jsSetting: false,
@@ -804,7 +781,7 @@ export const getSettings = (data) => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
+                                  type: 'textField',
                                   id: 'backgroundStyle-storedFile',
                                   jsSetting: false,
                                   propertyName: "background.storedFile.id",
@@ -885,12 +862,12 @@ export const getSettings = (data) => {
                                   ],
                                 },
                                 {
-                                  type: 'dropdown',
+                                  type: 'radio',
                                   id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  dropdownOptions: repeatOptions,
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })
@@ -916,7 +893,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
@@ -925,7 +902,7 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.offsetX',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
@@ -934,7 +911,7 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.offsetY',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-blurRadius',
                                 label: 'Blur',
                                 hideLabel: true,
@@ -943,7 +920,7 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.blurRadius',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-spreadRadius',
                                 label: 'Spread',
                                 hideLabel: true,
@@ -952,7 +929,7 @@ export const getSettings = (data) => {
                                 propertyName: 'shadow.spreadRadius',
                               },
                               {
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'shadowStyleRow-color',
                                 label: 'Color',
                                 hideLabel: true,

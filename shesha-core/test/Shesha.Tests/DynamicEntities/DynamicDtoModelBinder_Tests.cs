@@ -1,5 +1,4 @@
-﻿using Abp.Runtime.Caching;
-using Abp.TestBase;
+﻿using Abp.TestBase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -117,7 +116,7 @@ namespace Shesha.Tests.DynamicEntities
 
         #region private methods
 
-        private (PropertyInfo, object) GetPropertyAndValue(object container, string propertyName, bool requireProperty = true, bool requireValue = true)
+        private (PropertyInfo?, object?) GetPropertyAndValue(object container, string propertyName, bool requireProperty = true, bool requireValue = true)
         {
             var property = container.GetType().GetProperty(propertyName);
             if (requireProperty && property == null)
@@ -240,8 +239,9 @@ namespace Shesha.Tests.DynamicEntities
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
 
             return Task.FromResult<IDynamicDtoTypeBuilder>(builder);
         }

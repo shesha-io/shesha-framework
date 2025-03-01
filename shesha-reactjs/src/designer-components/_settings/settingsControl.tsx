@@ -97,16 +97,16 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     className: `${styles.jsSwitch}`,
     ghost: true,
     exposedVariables: defaultExposedVariables,
+    hidden: mode !== 'code'
   };
 
   const editor = constantsEvaluator
-
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
-      {editor}
+      {mode === 'code' && editor}
       {!code && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
       </div>}

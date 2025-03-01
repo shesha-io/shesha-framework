@@ -1,14 +1,21 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Button, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { IConfigurableActionConfiguration, useDynamicActionsDispatcher } from '@/providers';
+import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useSheshaApplication } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { getActualModel, getStyle } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useDeepCompareMemo } from '@/hooks';
 import { addPx } from '@/designer-components/_settings/utils';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { initialValues } from './utils';
+import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
+import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
+import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
+import { useActualContextData } from '@/hooks/useActualContextData';
 
 const { Text } = Typography;
 
@@ -30,16 +37,18 @@ export interface IButtonGroupItemProps {
   actionConfiguration?: IConfigurableActionConfiguration;
 }
 
-export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelContext, actionConfiguration }) => {
+export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfiguration }) => {
+  const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const { styles } = useStyles();
-  const actualItem = useDeepCompareMemo(() => getActualModel({ ...item, actionConfiguration }, actualModelContext)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [{ ...item }, { ...actionConfiguration }, { ...actualModelContext }]);
+  const actualItem = useActualContextData({ ...item, actionConfiguration });
 
-  const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, style: itemStyle, block, danger } = actualItem;
 
-  const newStyles = {
+  const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, block, danger } = actualItem;
+
+  const model = {
+    ...actualItem,
+    type: 'button',
     width: addPx(width),
     height: addPx(height),
     backgroundColor: backgroundColor,
@@ -50,6 +59,50 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     borderColor: borderColor,
     borderStyle: borderStyle,
     borderRadius: addPx(borderRadius)
+  };
+
+  const jsStyle = getStyle(model.style);
+
+  const prevStyles = migratePrevStyles(model, initialValues());
+  const dimensions = prevStyles?.dimensions;
+  const border = prevStyles?.border;
+  const font = prevStyles?.font;
+  const shadow = prevStyles?.shadow;
+  const background = prevStyles?.background;
+
+  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
+  const fontStyles = useMemo(() => getFontStyle(font), [font]);
+  const [backgroundStyles, setBackgroundStyles] = useState({});
+  const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+
+  useEffect(() => {
+    const fetchStyles = async () => {
+
+      const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+        ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+          { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+          .then((response) => {
+            return response.blob();
+          })
+          .then((blob) => {
+            return URL.createObjectURL(blob);
+          }) : '';
+
+      const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+      setBackgroundStyles(style);
+    };
+
+    fetchStyles();
+  }, [background]);
+
+  const newStyles = {
+    ...dimensionsStyles,
+    ...borderStyles,
+    ...fontStyles,
+    ...backgroundStyles,
+    ...shadowStyles,
+    ...jsStyle
   };
 
   return (
@@ -66,7 +119,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
             size={size}
             block={block}
             disabled={readOnly}
-            style={{ ...getStyle(itemStyle), ...newStyles, pointerEvents: "none" }}
+            style={{ ...newStyles }}
           >
             {label}
           </Button>

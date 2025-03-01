@@ -1,10 +1,6 @@
 ﻿using Shesha.Domain.ConfigurationItems;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Dto.Interfaces
 {
@@ -33,14 +29,14 @@ namespace Shesha.Dto.Interfaces
         /// </summary>
         [StringLength(200)]
         [Display(Name = "Label", Description = "Label of the item, can be used in lists as a user friendly name")]
-        string Label { get; set; }
+        string? Label { get; set; }
 
         /// <summary>
         /// Item description
         /// </summary>
         [StringLength(int.MaxValue)]
         [DataType(DataType.MultilineText)]
-        string Description { get; set; }
+        string? Description { get; set; }
 
         /// <summary>
         /// Version number

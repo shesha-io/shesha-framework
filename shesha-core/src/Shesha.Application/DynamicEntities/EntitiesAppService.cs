@@ -11,6 +11,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
+using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -87,8 +88,8 @@ namespace Shesha.DynamicEntities
                 await CheckPermissionAsync(entityConfig, methodName);
 
                 // invoke query
-                var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType);
-                var convertedInput = Activator.CreateInstance(convertedInputType);
+                var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType) ?? throw new Exception($"Failed to create generic type '{typeof(GetDynamicEntityInput<>).FullName}', id type: '{entityConfig.IdType.FullName}'");
+                var convertedInput = Activator.CreateInstance(convertedInputType) ?? throw new Exception($"Failed to create instance of type '{convertedInputType.FullName}'");
                 AutoMapper.Map(input, convertedInput);
 
                 var task = (Task)method.Invoke(appService, new object[] { convertedInput });
@@ -146,7 +147,7 @@ namespace Shesha.DynamicEntities
         }
 
         [HttpPost]
-        public async Task<FileStreamResult> ExportToExcel(ExportToExcelInput input, CancellationToken cancellationToken)
+        public async Task<FileStreamResult> ExportToExcelAsync(ExportToExcelInput input, CancellationToken cancellationToken)
         {
             try
             {
@@ -186,9 +187,9 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private IEnumerable<Dictionary<string, object>> ExtractGqlListData(IDynamicDataResult dataResult)
+        private IEnumerable<Dictionary<string, object?>> ExtractGqlListData(IDynamicDataResult dataResult)
         {
-            var jsonData = (Microsoft.AspNetCore.Mvc.JsonResult)dataResult;
+            var jsonData = (JsonResult)dataResult;
             if (jsonData.Value is ExecutionResult executionResult && executionResult.Data is ExecutionNode executionNode)
             {
                 var value = executionNode.ToValue();
@@ -203,12 +204,14 @@ namespace Shesha.DynamicEntities
                         if (itemsArray != null)
                         {
                             var rows = itemsArray.Items.OfType<ObjectExecutionNode>();
-                            return rows.Select(row => row.ToValue() as Dictionary<string, object>);
+                            return rows != null
+                                ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
+                                : [];
                         }
                     }
                 }
             }
-            return null;
+            return [];
         }
 
         /// <summary>

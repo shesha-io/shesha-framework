@@ -4,20 +4,26 @@ using Abp.AutoMapper;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Modules;
+using Abp.MultiTenancy;
 using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
-using Abp.Notifications;
 using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Shesha.Authorization;
+using Shesha.ConfigurationItems;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.Email;
 using Shesha.GraphQL;
 using Shesha.Modules;
 using Shesha.Notifications;
-using Shesha.Otp;
+using Shesha.Notifications.Configuration;
+using Shesha.Notifications.Distribution.NotificationChannels;
+using Shesha.Notifications.Distribution.NotificationTypes;
+using Shesha.Notifications.SMS;
 using Shesha.Otp.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
@@ -25,7 +31,6 @@ using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using Shesha.UserManagements.Configurations;
-using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -51,10 +56,6 @@ namespace Shesha
 
             IocManager.Register<IShaApplicationModuleConfiguration, ShaApplicationModuleConfiguration>();
 
-            Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
-            Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
-            Configuration.Notifications.Notifiers.Add<SmsRealTimeNotifier>();
-
             Configuration.Authorization.Providers.Add<SheshaAuthorizationProvider>();
             Configuration.Authorization.Providers.Add<DbAuthorizationProvider>();
 
@@ -65,16 +66,25 @@ namespace Shesha
             //Configuration.Notifications.Distributers.Clear();
             //Configuration.Notifications.Distributers.Add<ShaNotificationDistributer>();
 
-            Configuration.ReplaceService<INotificationPublisher, ShaNotificationPublisher>(DependencyLifeStyle.Transient);
-
             IocManager.IocContainer.Register(
                 Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient(),
                 Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
             );
 
-            #region SMS Gateways
+            IocManager.RegisterSettingAccessor<INotificationSettings>(s =>
+            {
+                s.NotificationSettings.WithDefaultValue(new NotificationSettings
+                {
+                    Low = new (),
+                    Medium = new(),
+                    High = new(),
+                });
 
-            IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
+            });
+
+                #region SMS Gateways
+
+                IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
                 s.SmsSettings.WithDefaultValue(new SmsSettings
                 {
                     SmsGateway = NullSmsGateway.Uid
@@ -139,6 +149,18 @@ namespace Shesha
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);
             IocManager.Register<ISheshaAuthorizationHelper, EntityCrudAuthorizationHelper>(DependencyLifeStyle.Transient);
+
+            IocManager
+                .RegisterConfigurableItemManager<NotificationTypeConfig, INotificationManager, NotificationManager>()
+                .RegisterConfigurableItemExport<NotificationTypeConfig, INotificationTypeExport, NotificationTypeExport>()
+                .RegisterConfigurableItemImport<NotificationTypeConfig, INotificationTypeImport, NotificationTypeImport>()
+
+                .RegisterConfigurableItemExport<NotificationChannelConfig, INotificationChannelExport, NotificationChannelExport>()
+                .RegisterConfigurableItemImport<NotificationChannelConfig, INotificationChannelImport, NotificationChannelImport>();
+
+
+            IocManager.RegisterIfNot<INotificationChannelSender, EmailChannelSender>(DependencyLifeStyle.Transient);
+            IocManager.RegisterIfNot<INotificationChannelSender, SmsChannelSender>(DependencyLifeStyle.Transient);
 
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);

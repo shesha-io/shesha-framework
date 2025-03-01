@@ -3,17 +3,22 @@ import FormItem from "../_settings/components/formItem";
 import { InputComponent } from '../inputComponent';
 import { ISettingsInputProps } from './interfaces';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider } from '@/providers';
+import { MetadataProvider, useFormData } from '@/providers';
+import { evaluateString } from '@/index';
 
 export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, hideLabel, propertyName: property, type,
     buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden, width,
-    size, inline, validate, ...rest }) => {
+    size, inline, validate, modelType: modelTypeExpression, ...rest }) => {
+    const { data: formData } = useFormData();
+
+    const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
+
 
     return hidden ? null :
         <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
             <ConditionalWrap
-                condition={Boolean(rest.modelType)}
-                wrap={children => <MetadataProvider modelType={rest.modelType}>{children}</MetadataProvider>}
+                condition={Boolean(modelType)}
+                wrap={content => <MetadataProvider modelType={modelType}>{content}</MetadataProvider>}
             >
                 <FormItem
                     name={property}
@@ -23,9 +28,9 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                     hidden={hidden}
                     required={validate?.required}
                     layout='vertical'
-                    jsSetting={type === 'codeEditor' ? false : jsSetting ? jsSetting : false}
+                    jsSetting={type === 'codeEditor' ? false : jsSetting}
                     readOnly={readOnly}>
-                    {children || <InputComponent size='small'
+                    {children || <InputComponent size={size ?? 'small'}
                         label={label}
                         type={type}
                         dropdownOptions={dropdownOptions}
@@ -33,6 +38,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                         hasUnits={hasUnits} propertyName={property}
                         tooltip={tooltip}
                         readOnly={readOnly}
+                        modelType={modelType}
                         {...rest} />
                     }
                 </FormItem>

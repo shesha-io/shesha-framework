@@ -22,7 +22,8 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             _zip = zip;
         }
 
-        public void Dispose()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP007:Don't dispose injected")]
+        public virtual void Dispose()
         {
             _zip?.Dispose();
         }
@@ -41,7 +42,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Front-end Application Key
         /// </summary>
-        public string ApplicationKey { get; set; }
+        public string? ApplicationKey { get; set; }
 
         /// <summary>
         /// Item type
@@ -61,6 +62,6 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Corresponding importer
         /// </summary>
-        public IConfigurableItemImport Importer { get; set; }
+        public IConfigurableItemImport? Importer { get; set; }
     }
 }

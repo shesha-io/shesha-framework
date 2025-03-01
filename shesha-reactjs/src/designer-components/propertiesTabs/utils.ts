@@ -45,6 +45,7 @@ export const filterDynamicComponents = (components, query, data) => {
                     ...c.content,
                     components: contentComponents
                 },
+                className: 'y-overflow',
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }

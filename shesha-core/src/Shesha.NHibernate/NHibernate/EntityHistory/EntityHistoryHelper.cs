@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿using Abp.Auditing;
+using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
@@ -8,26 +9,24 @@ using Abp.Events.Bus.Entities;
 using Abp.Extensions;
 using Abp.Json;
 using Abp.Reflection;
+using Abp.Runtime.Session;
+using Abp.Threading;
 using Abp.Timing;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using NHibernate;
 using NHibernate.Engine;
-using NHibernate.Intercept;
 using NHibernate.Proxy;
-using Nito.AsyncEx.Synchronous;
-using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityHistory;
+using Shesha.Extensions;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SessionExtensions = Shesha.NHibernate.Session.SessionExtensions;
@@ -37,7 +36,7 @@ namespace Shesha.NHibernate.EntityHistory
     /// <summary>
     /// Entity history helper. Creates and stores changes of entities
     /// </summary>
-    public class EntityHistoryHelper : EntityHistoryHelperBase, IEntityHistoryHelper, ITransientDependency
+    public class EntityHistoryHelper : EntityHistoryHelperBase, IEntityHistoryHelper
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IReferenceListHelper _refListHelper;
@@ -46,7 +45,8 @@ namespace Shesha.NHibernate.EntityHistory
         private readonly IIocResolver _iocResolver;
         private readonly IModelConfigurationManager _modelConfigurationManager;
 
-        [DebuggerStepThrough]
+
+        //[DebuggerStepThrough]
         public EntityHistoryHelper(
             ITypeFinder typeFinder,
             IEntityHistoryConfiguration configuration,
@@ -55,7 +55,8 @@ namespace Shesha.NHibernate.EntityHistory
             NHibernateEntityHistoryStore historyStore,
             IRepository<EntityHistoryEvent, Guid> historyEventRepository,
             IModelConfigurationManager modelConfigurationManager,
-            IIocResolver iocResolver)
+            IIocResolver iocResolver
+            )
             : base(configuration, unitOfWorkManager)
         {
             EntityChanges = new List<EntityChange>();
@@ -98,23 +99,14 @@ namespace Shesha.NHibernate.EntityHistory
             if (!IsEntityHistoryEnabled) return null;
             if (IsChangesEntity(entity)) return null;
 
-            var typeOfEntity = entity.GetType();
-            if (typeOfEntity.HasInterface(typeof(INHibernateProxy)) ||
-                typeOfEntity.HasInterface(typeof(IFieldInterceptorAccessor)))
-            {
-                if (typeOfEntity.BaseType == null) throw new Exception($"Base type of proxy `{typeOfEntity.Name}`, object `{entity}`");
-                // unproxy
-                typeOfEntity = typeOfEntity.BaseType;
-            }
+            var typeOfEntity = entity.GetType().StripCastleProxyType();
 
             if (!IsTypeOfEntity(typeOfEntity))
             {
                 return null;
             }
 
-            var entityConfig = _modelConfigurationManager
-                .GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name)
-                .WaitAndUnwrapException();
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
 
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
@@ -122,7 +114,7 @@ namespace Shesha.NHibernate.EntityHistory
             var isAudited = IsTypeOfAuditedEntity(typeOfEntity);
             if (isAudited != null && !isAudited.Value) return null;
 
-            if (isAudited == null && isTracked == null)
+            if (entityConfig != null && isAudited == null && isTracked == null)
             {
                 if (!typeOfEntity.GetProperties()
                     .Any(p =>
@@ -169,15 +161,16 @@ namespace Shesha.NHibernate.EntityHistory
                     { Name = persister.PropertyNames[i], OldValue = entityEntry.LoadedState?[i], NewValue = currentState[i] })
                 .ToList();
 
-            var entityChange = new EntityChange
-            {
-                ChangeType = changeType,
-                ChangeTime = Clock.Now,
-                EntityEntry = entity, // [NotMapped]
-                EntityId = id?.ToString(),
-                EntityTypeFullName = entityTypeFullName,
-                TenantId = AbpSession.TenantId,
-            };
+            var entityChange = EntityChanges.FirstOrDefault(x => x.EntityId == id?.ToString() && x.EntityTypeFullName == entityTypeFullName)
+                ?? new EntityChange
+                {
+                    ChangeType = changeType,
+                    ChangeTime = Clock.Now,
+                    EntityEntry = entity, // [NotMapped]
+                    EntityId = id?.ToString(),
+                    EntityTypeFullName = entityTypeFullName,
+                    TenantId = AbpSession.TenantId,
+                };
 
             var propertyChanges = new List<EntityPropertyChange>();
             if (changeType != EntityChangeType.Created)
@@ -270,8 +263,7 @@ namespace Shesha.NHibernate.EntityHistory
 
                         if (!AddAuditedAsEvent(propInfo, property, propchange, entityChange, entity))
                         {
-                            var displayProperty = propType.GetProperties()
-                                .FirstOrDefault(x => x.HasAttribute<EntityDisplayNameAttribute>());
+                            var displayProperty = propType.GetProperties().FirstOrDefault(x => x.HasAttribute<EntityDisplayNameAttribute>());
 
                             var description = $"`{propName}` was changed from `" +
                                               (property.OldValue != null
@@ -331,7 +323,7 @@ namespace Shesha.NHibernate.EntityHistory
                             var attr = propInfo.GetCustomAttribute<AuditedBooleanAttribute>();
                             if (attr != null)
                             {
-                                var description = (bool)newValue ? attr.TrueText : attr.FalseText;
+                                var description = newValue != null && (bool)newValue ? attr.TrueText : attr.FalseText;
                                 // Add extended (friendly) description for Reference types
                                 EntityHistoryEvents.Add(new EntityHistoryEvent()
                                 {
@@ -378,6 +370,9 @@ namespace Shesha.NHibernate.EntityHistory
                         NewValue = property.NewValue
                     });
 
+                    if (enentInfo == null)
+                        return false;
+
                     EntityHistoryEvents.Add(new EntityHistoryEvent()
                     {
                         Description = enentInfo.Description,
@@ -388,6 +383,159 @@ namespace Shesha.NHibernate.EntityHistory
                         EntityPropertyChange = propertyChange,
                         EntityChange = entityChange
                     });
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object oldValue, object newValue)
+        {
+            // resolve here because EntityHistoryHelper can be resolved befeore IAbpSession registered
+            var abpSession = _iocResolver.Resolve<IAbpSession>();
+
+            var entityType = entity.GetType().StripCastleProxyType();
+            var propertyType = propInfo.PropertyType.IsListType() && propInfo.PropertyType.IsGenericType 
+                ? propInfo.PropertyType.GetGenericArguments()[0] 
+                : propInfo.PropertyType;
+
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
+
+            var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
+            var audited = propInfo.GetCustomAttribute<AuditedAttribute>();
+            var auditedAsMany = propInfo.GetCustomAttribute<AuditedAsManyToManyAttribute>();
+            var auditedAsP = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,>)) != null)?.GetType();
+            var auditedAsPC = propInfo.GetCustomAttributes().FirstOrDefault(x => x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,,>))!= null)?.GetType();
+
+            var defaultCreatorType = typeof(EntityHistoryEventCreatorBase<,>).MakeGenericType(entityType, propertyType);
+
+            var parentCreator = configuredAudit || audited != null || auditedAsMany != null
+                ? defaultCreatorType
+                : auditedAsPC?.GetGenericArguments()[0] ?? auditedAsP?.GetGenericArguments()[0];
+
+            var childCreator = auditedAsMany != null ? defaultCreatorType : auditedAsPC?.GetGenericArguments()[1];
+
+            var entityTypeAttr = auditedAsPC?.GetGenericArguments()[2] ?? auditedAsP?.GetGenericArguments()[1];
+            var propertyTypeAttr = auditedAsPC?.GetGenericArguments()[3] ?? auditedAsP?.GetGenericArguments()[2];
+
+
+            var entityChangesInfo = new EntityChangesInfo()
+            {
+                Entity = entity,
+                DateTime = DateTime.Now,
+                OldValue = oldValue,
+                NewValue = newValue,
+                Property = propInfo,
+            };
+
+            if (parentCreator != null)
+            {
+                // Try to start Event creator from the property attribute
+                if (Activator.CreateInstance(parentCreator) is IEntityHistoryEventCreator parentInstance)
+                {
+                    var eventInfo = parentInstance.CreateManyToManyEvent(entityChangesInfo);
+
+                    if (eventInfo == null)
+                        return false;
+
+                    var id = entity.GetId().ToString();
+
+                    var entityChange = new EntityChange
+                    {
+                        ChangeType = EntityChangeType.Updated,
+                        ChangeTime = Clock.Now,
+                        EntityEntry = entity, // [NotMapped]
+                        EntityId = id,
+                        EntityTypeFullName = entityType.StripCastleProxyType().FullName,
+                        TenantId = abpSession?.TenantId,
+                    };
+                    EntityChanges.Add(entityChange);
+
+                    EntityHistoryEvents.Add(new EntityHistoryEvent()
+                    {
+                        Description = eventInfo.Description,
+                        PropertyName =
+                            propInfo.Name.TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength),
+                        EventName = eventInfo.EventName,
+                        EventType = string.IsNullOrEmpty(eventInfo.EventType) ? EntityHistoryCommonEventTypes.ENTITY_EVENT : eventInfo.EventType,
+                        EntityChange = entityChange
+                    });
+                }
+            }
+
+            if (childCreator != null)
+            {
+                // Try to start Event creator from the property attribute
+                if (Activator.CreateInstance(childCreator) is IEntityHistoryEventCreator childInstance)
+                {
+                    var (addItem, removeItem) = childInstance.GetListNewAndRemoved(entityChangesInfo);
+                    
+                    if (addItem.Any() || removeItem.Any())
+                    {
+                        foreach (var add in addItem)
+                        {
+                            var entityChange = new EntityChange
+                            {
+                                ChangeType = EntityChangeType.Updated,
+                                ChangeTime = Clock.Now,
+                                EntityEntry = add, // [NotMapped]
+                                EntityId = add.GetId()?.ToString(),
+                                EntityTypeFullName = propertyType.StripCastleProxyType().FullName,
+                                TenantId = abpSession?.TenantId,
+                            };
+                            EntityChanges.Add(entityChange);
+
+                            var enentInfo = childInstance.CreateManyToManyRelationEvent(new EntityChangesInfo()
+                            {
+                                Entity = entity,
+                                DateTime = DateTime.Now,
+                                OldValue = null,
+                                NewValue = add,
+                                Property = propInfo,
+                            });
+
+                            if (enentInfo != null)
+                                EntityHistoryEvents.Add(new EntityHistoryEvent()
+                                {
+                                    Description = enentInfo.Description,
+                                    EventName = enentInfo.EventName,
+                                    EventType = string.IsNullOrEmpty(enentInfo.EventType) ? EntityHistoryCommonEventTypes.ENTITY_EVENT : enentInfo.EventType,
+                                    EntityChange = entityChange
+                                });
+                        }
+                        foreach (var remove in removeItem)
+                        {
+                            var entityChange = new EntityChange
+                            {
+                                ChangeType = EntityChangeType.Updated,
+                                ChangeTime = Clock.Now,
+                                EntityEntry = remove, // [NotMapped]
+                                EntityId = remove.GetId()?.ToString(),
+                                EntityTypeFullName = propertyType.StripCastleProxyType().FullName,
+                                TenantId = abpSession?.TenantId,
+                            };
+                            EntityChanges.Add(entityChange);
+
+                            var enentInfo = childInstance.CreateManyToManyRelationEvent(new EntityChangesInfo()
+                            {
+                                Entity = entity,
+                                DateTime = DateTime.Now,
+                                OldValue = remove,
+                                NewValue = null,
+                                Property = propInfo,
+                            });
+
+                            if (enentInfo != null)
+                                EntityHistoryEvents.Add(new EntityHistoryEvent()
+                                {
+                                    Description = enentInfo.Description,
+                                    EventName = enentInfo.EventName,
+                                    EventType = string.IsNullOrEmpty(enentInfo.EventType) ? EntityHistoryCommonEventTypes.ENTITY_EVENT : enentInfo.EventType,
+                                    EntityChange = entityChange
+                                });
+                        }
+                    }
                     return true;
                 }
             }
