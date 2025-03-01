@@ -128,8 +128,8 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'notes',
-            title: 'Notes',
+            key: 'data',
+            title: 'Data',
             id: notesTabId,
             components: [
               ...new DesignerToolbarSettings()
