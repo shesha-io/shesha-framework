@@ -53,7 +53,7 @@ namespace Shesha.DynamicEntities
                     if (srcProp.PropertyType.IsClass && !srcProp.PropertyType.IsEntityType() && !srcProp.PropertyType.IsSystemType())
                     {
                         // Nested object
-                        var innerDest = Activator.CreateInstance(JsonEntityProxy.GetUnproxiedType(srcValue.GetType()));
+                        var innerDest = ActivatorHelper.CreateNotNullObject(JsonEntityProxy.GetUnproxiedType(srcValue.GetType()));
                         MapProps(srcValue, innerDest);
                         destProp.SetValue(dest, innerDest, null);
                         continue;
@@ -101,7 +101,7 @@ namespace Shesha.DynamicEntities
                         // Property
                         if (destProp.PropertyType == typeof(Int64?))
                             // workaround to convert int to Nullable<Int64>: Object of type 'System.Int32' cannot be converted to type 'System.Nullable`1[System.Int64]'
-                            destProp.SetValue(dest, Convert.ChangeType(srcValue, Nullable.GetUnderlyingType(typeof(long?))));
+                            destProp.SetValue(dest, Convert.ChangeType(srcValue, typeof(long)));
                         else
                             destProp.SetValue(dest, srcValue);
                     }

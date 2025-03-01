@@ -98,6 +98,9 @@ namespace Shesha.NHibernate.EntityHistory
             if (!IsEntityHistoryEnabled) return null;
             if (IsChangesEntity(entity)) return null;
 
+            if (Session == null)
+                throw new SessionException("Session is not available");
+
             var typeOfEntity = entity.GetType().StripCastleProxyType();
 
             if (!IsTypeOfEntity(typeOfEntity))
@@ -127,7 +130,7 @@ namespace Shesha.NHibernate.EntityHistory
             }
 
             var entityTypeFullName = typeOfEntity.FullName;
-            var entityEntry = Session?.GetEntry(entity, false);
+            var entityEntry = Session.GetEntry(entity, false);
             if (entityEntry == null) 
                 return null;
 
@@ -135,8 +138,11 @@ namespace Shesha.NHibernate.EntityHistory
 
             EntityChangeType changeType;
             if (Session.IsEntityDeleted(entity)) changeType = EntityChangeType.Deleted;
-            else if (entityEntry.LoadedState == null) changeType = EntityChangeType.Created;
-            else changeType = EntityChangeType.Updated;
+            else
+                if (entityEntry.LoadedState == null)
+                changeType = EntityChangeType.Created;
+            else
+                changeType = EntityChangeType.Updated;
 
             var className = NHibernateProxyHelper.GuessClass(entity).FullName;
             var sessionImpl = Session.GetSessionImplementation();
@@ -153,7 +159,7 @@ namespace Shesha.NHibernate.EntityHistory
             {
                 if (_iocResolver.Resolve(creatorType) is IEntityHistoryCreator creator && creator.TypeAllowed(entity.GetType()))
                 {
-                    return creator.GetEntityChange(entity, AbpSession, persister.PropertyNames, entityEntry.LoadedState, currentState, dirtyP);
+                    return creator.GetEntityChange(entity, AbpSession, persister.PropertyNames, entityEntry.LoadedState ?? [], currentState, dirtyP);
                 }
             }
 
@@ -175,8 +181,9 @@ namespace Shesha.NHibernate.EntityHistory
             var propertyChanges = new List<EntityPropertyChange>();
             if (changeType != EntityChangeType.Created)
             {
-                propertyChanges.AddRange(GetPropertyChanges((isAudited ?? false) || (isTracked ?? false), entityChange,
-                    typeOfEntity, entity, entityConfig, dirtyProps));
+                entityConfig.NotNull("EntityConfig must not be null");
+                propertyChanges.AddRange(GetPropertyChanges((isAudited ?? false) || (isTracked ?? false), entityChange, typeOfEntity, entity, entityConfig, dirtyProps));
+
                 if (propertyChanges.Count == 0 && //changeType != EntityChangeType.Created &&
                     EntityHistoryEvents.All(x => x.EntityChange != entityChange))
                 {
@@ -354,7 +361,7 @@ namespace Shesha.NHibernate.EntityHistory
                 : Convert.ToInt64(value);
         }
 
-        private bool AddAuditedAsEvent(PropertyInfo propInfo, SessionExtensions.DirtyPropertyInfo property, EntityPropertyChange propertyChange, EntityChange entityChange, object entity)
+        private bool AddAuditedAsEvent(PropertyInfo propInfo, SessionExtensions.DirtyPropertyInfo property, EntityPropertyChange? propertyChange, EntityChange entityChange, object entity)
         {
             var auditedAsEvent = propInfo.GetCustomAttribute<AuditedAsEventAttribute>();
             if (auditedAsEvent != null)
@@ -390,7 +397,7 @@ namespace Shesha.NHibernate.EntityHistory
             return false;
         }
 
-        public bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object oldValue, object newValue)
+        public bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object? oldValue, object? newValue)
         {
             // resolve here because EntityHistoryHelper can be resolved befeore IAbpSession registered
             var abpSession = _iocResolver.Resolve<IAbpSession>();
@@ -543,7 +550,7 @@ namespace Shesha.NHibernate.EntityHistory
             return false;
         }
 
-        private EntityPropertyChange CreateEntityPropertyChange(object oldValue, object newValue, PropertyInfo propertyInfo)
+        private EntityPropertyChange CreateEntityPropertyChange(object? oldValue, object? newValue, PropertyInfo propertyInfo)
         {
             var proprtyName = propertyInfo.Name.TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength);
             var propertyChange = new EntityPropertyChange()
@@ -577,10 +584,11 @@ namespace Shesha.NHibernate.EntityHistory
             };
 
             // Add description for property change
-            foreach (var entityHistoryEvent in EntityHistoryEvents.Where(x =>
-                !string.IsNullOrEmpty(x.PropertyName)
-                && x.EntityChange != null
-                && x.EventType != EntityHistoryCommonEventTypes.PROPERTY_CHANGE_AS_EVENT))
+            var entityHistoryEvents = EntityHistoryEvents.Where(x => !string.IsNullOrEmpty(x.PropertyName) && 
+                    x.EntityChange != null && 
+                    x.EventType != EntityHistoryCommonEventTypes.PROPERTY_CHANGE_AS_EVENT)
+                .ToList();
+            foreach (var entityHistoryEvent in entityHistoryEvents)
             {
                 var prop = EntityChanges
                     .FirstOrDefault(x =>
@@ -593,7 +601,8 @@ namespace Shesha.NHibernate.EntityHistory
                 {
                     entityHistoryEvent.EntityPropertyChange = prop;
 
-                    EntityChanges.Remove(entityHistoryEvent.EntityChange);
+                    if (entityHistoryEvent.EntityChange != null)
+                        EntityChanges.Remove(entityHistoryEvent.EntityChange);
                     entityHistoryEvent.EntityChange = null;
                 }
             }

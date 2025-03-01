@@ -17,6 +17,7 @@ using Shesha.Authorization.Roles;
 using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Settings;
 using System;
 using System.Collections.Generic;
@@ -206,7 +207,17 @@ namespace Shesha.Authorization.Users
         /// <param name="supportedPasswordResetMethods"></param>
         /// <returns>Returns the User object representing the newly created User Account. If parameters were incorrect will through 
         /// a AbpValidationException exception that can be allowed through to the calling web app.</returns>
-        public async Task<User> CreateUserAsync(string username, bool createLocalPassword, string password, string passwordConfirmation, string firstname, string lastname, string mobileNumber, string emailAddress, long? supportedPasswordResetMethods = null)
+        public async Task<User> CreateUserAsync(
+            string username, 
+            bool createLocalPassword, 
+            string? password, 
+            string? passwordConfirmation, 
+            string? firstname, 
+            string? lastname, 
+            string? mobileNumber, 
+            string? emailAddress, 
+            long? supportedPasswordResetMethods = null
+        )
         {
             var validationResults = new List<ValidationResult>();
 
@@ -253,7 +264,7 @@ namespace Shesha.Authorization.Users
             await this.InitializeOptionsAsync(AbpSession.TenantId);
 
             var newPassword = createLocalPassword
-                ? password 
+                ? password.NotNullOrWhiteSpace() 
                 : Guid.NewGuid().ToString();
             CheckErrors(await CreateAsync(user, newPassword));
 

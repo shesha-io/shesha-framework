@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Extensions;
 using Castle.Core.Logging;
 using Shesha.Domain;
 using Shesha.Email.Dtos;
@@ -51,22 +50,22 @@ namespace Shesha.Notifications.SMS
             if (!settings.IsSmsEnabled)
             {
                 Logger.Warn("SMSs are disabled");
-                return await Task.FromResult(new SendStatus(){
-                    IsSuccess= false,
-                    Message = "SMSs are disabled"
-                });
+                return SendStatus.Failed("SMSs are disabled");
             }
 
-            return await _smsGateway.SendSmsAsync(!settings.RedirectAllMessagesTo.IsNullOrWhiteSpace() ? settings.RedirectAllMessagesTo : reciever.GetAddress(this), message.Message);
+            var mobileNo = !string.IsNullOrWhiteSpace(settings.RedirectAllMessagesTo)
+                ? settings.RedirectAllMessagesTo 
+                : reciever.GetAddress(this);
+            
+            if (string.IsNullOrWhiteSpace(mobileNo))
+                return SendStatus.Failed("Recipient mobileNo is empty");
+
+            return await _smsGateway.SendSmsAsync(mobileNo, message.Message);
         }
 
-        public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
+        public Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
         {
-            return await Task.FromResult(new SendStatus()
-            {
-                IsSuccess = false,
-                Message = "Broadcast Implementation not yet implemented!"
-            });
+            return Task.FromResult(SendStatus.Failed("Broadcast Implementation not yet implemented!"));
         }
     }
 }

@@ -34,6 +34,16 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
 
     const { _mode: mode } = getPropertySettingsFromData(model, props.name?.toString());
 
+    const formProps: FormItemProps = {
+      name: getFieldNameFromExpression(props.name),
+      label: props.label,
+      style: props.style,
+      required: props.required,
+      tooltip: props.tooltip,
+      hidden: props.hidden,
+      valuePropName: props.valuePropName,
+    };
+
     if (typeof props.children === 'function') {
         const children = props.children as SettingsControlChildrenType;
         if (!props.jsSetting) {
@@ -62,7 +72,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     }
 
     if (!props.jsSetting) {
-        return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
+        return <Form.Item {...formProps}>{props.children}</Form.Item>;
     }
 
     const valuePropName = props.valuePropName ?? 'value';

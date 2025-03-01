@@ -19,7 +19,7 @@ namespace Shesha.Models.TokenAuth
         public AuthenticateResultType ResultType { get; set; }
         
         public string RedirectUrl { get; set; }
-        public string RedirectModule { get; set; }
+        public string? RedirectModule { get; set; }
         public string RedirectForm { get; set; }
     }
 }

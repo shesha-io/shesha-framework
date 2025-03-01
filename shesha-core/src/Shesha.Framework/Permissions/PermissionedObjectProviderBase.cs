@@ -36,7 +36,7 @@ namespace Shesha.Permissions
 
         protected string GetMd5(PermissionedObjectDto dto)
         {
-            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{string.Join(',', dto.Permissions)}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
+            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{dto.PermissionsDelimited}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
                 .ToMd5Fingerprint();
         }
 
@@ -44,11 +44,9 @@ namespace Shesha.Permissions
 
         protected async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
         {
-            Module? module = null;
-            if (_modules.TryGetValue(assembly, out module))
-            {
+            if (_modules.TryGetValue(assembly, out var module))
                 return module;
-            }
+
             module = await _moduleManager.GetOrCreateModuleAsync(assembly);
             _modules.Add(assembly, module);
             return module;

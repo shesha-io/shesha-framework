@@ -39,9 +39,9 @@ namespace Shesha.Reflection
 
             //AL: 15.04.2008 ==> BUG-FIX remove “()” if parametersString is empty
             if (parametersString.Length > 0)
-                return XMLFromName(methodInfo.DeclaringType, 'M', methodInfo.Name + "(" + parametersString + ")");
+                return XMLFromName(methodInfo.DeclaringType.NotNull(), 'M', methodInfo.Name + "(" + parametersString + ")");
             else
-                return XMLFromName(methodInfo.DeclaringType, 'M', methodInfo.Name);
+                return XMLFromName(methodInfo.DeclaringType.NotNull(), 'M', methodInfo.Name);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Shesha.Reflection
         public static XmlElement XMLFromMember(MemberInfo memberInfo)
         {
             // First character [0] of member type is prefix character in the name in the XML
-            return XMLFromName(memberInfo.DeclaringType, memberInfo.MemberType.ToString()[0], memberInfo.Name);
+            return XMLFromName(memberInfo.DeclaringType.NotNull(), memberInfo.MemberType.ToString()[0], memberInfo.Name);
         }
 
         /// <summary>

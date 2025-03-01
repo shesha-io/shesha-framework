@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
 
@@ -71,7 +72,7 @@ namespace Shesha.StoredFiles
             if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
                 return StatusCode(304);
 
-#pragma warning disable IDISP001 // Dispose created
+#pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
 #pragma warning restore IDISP001 // Dispose created
             await _fileService.MarkDownloadedAsync(fileVersion);
@@ -393,18 +394,17 @@ namespace Shesha.StoredFiles
             if (ownerSpecified && ownerType == null)
                 validationResults.Add($"Owner type not found (type = '{input.OwnerType}')", [nameof(input.OwnerId)]);
 
-            var owner = ownerSpecified
-                ? await _dynamicRepository.GetAsync(ownerType?.FullName, input.OwnerId)
+            var owner = ownerSpecified && ownerType != null
+                ? await _dynamicRepository.GetAsync(ownerType.GetRequiredFullName(), input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
                 validationResults.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
 
-            var processAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
-            var property = processAsProperty
-                ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
-                : null;
-            if (processAsProperty)
+            PropertyInfo? property = null;
+            if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName)) 
             {
+                property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
+
                 if (property == null)
                     validationResults.Add($"Property '{owner.GetType().Name}.{input.PropertyName}' not found", [nameof(input.PropertyName)]);
 
@@ -429,7 +429,7 @@ namespace Shesha.StoredFiles
                 if (property != null)
                 {
                     property.SetValue(owner, null, null);
-                    await _dynamicRepository.SaveOrUpdateAsync(owner);
+                    await _dynamicRepository.SaveOrUpdateAsync(owner.NotNull());
                 }
 
                 await _fileService.DeleteAsync(storedFile);
@@ -471,7 +471,7 @@ namespace Shesha.StoredFiles
                     if (owner == null)
                         throw new AbpValidationException($"Owner '{input.OwnerName}' is empty");
                     ownerId = owner.GetType().GetProperty("Id")?.GetValue(owner, null).ToString();
-                    ownerType = owner.GetType().StripCastleProxyType().FullName;
+                    ownerType = owner.GetType().StripCastleProxyType().GetRequiredFullName();
                 }
 
                 files = input.FilesCategory.IsNullOrEmpty()
@@ -484,11 +484,10 @@ namespace Shesha.StoredFiles
                 // todo: move zip support to the FileService, current implementation doesn't support Azure
                 var list = _fileService.MakeUniqueFileNames(files);
 
-#pragma warning disable IDISP001 // Dispose created
+#pragma warning disable IDISP001 // Dispose created. Note: compressedStream will be disposed automatically in the FileStreamResult
                 var compressedStream = await CompressionService.CompressFilesAsync(list);
 #pragma warning restore IDISP001 // Dispose created
 
-                // note: compressedStream will be disposed automatically in the FileStreamResult
                 return File(compressedStream, "multipart/x-zip", "files.zip");
             }
 
@@ -520,7 +519,7 @@ namespace Shesha.StoredFiles
             }
 
             var id = owner.GetId();
-            var type = owner.GetType().StripCastleProxyType().FullName;
+            var type = owner.GetType().StripCastleProxyType().GetRequiredFullName();
             var fileVersions = input.FilesCategory.IsNullOrEmpty()
                 ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
                 : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
@@ -559,19 +558,17 @@ namespace Shesha.StoredFiles
             if (ownerSpecified && ownerType == null)
                 validations.Add($"Owner type not found (type = '{input.OwnerType}')", [nameof(input.OwnerId)]);
 
-            var owner = ownerSpecified
-                ? await _dynamicRepository.GetAsync(ownerType?.FullName, input.OwnerId)
+            var owner = ownerType != null && !string.IsNullOrWhiteSpace(input.OwnerId)
+                ? await _dynamicRepository.GetAsync(ownerType.GetRequiredFullName(), input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
                 validations.Add($"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')", [nameof(input.OwnerId)]);
 
-            var uploadAsProperty = owner != null && hasProperty;
-            var property = uploadAsProperty
-                ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
-                : null;
-
-            if (uploadAsProperty)
+            PropertyInfo? property = null;
+            if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName))
             {
+                property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
+
                 if (property == null)
                     validations.Add($"Property '{owner.GetType().Name}.{input.PropertyName}' not found", [nameof(input.PropertyName)]);
 
@@ -623,7 +620,7 @@ namespace Shesha.StoredFiles
                         storedFile.Temporary = true;
                     }
 
-                    if (ownerSpecified)
+                    if (!string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
                     {
                         storedFile.SetOwner(input.OwnerType, input.OwnerId);
                     }
@@ -791,7 +788,7 @@ namespace Shesha.StoredFiles
             using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
 
             // Save to result stream
-#pragma warning disable IDISP001 // Dispose created
+#pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
             var resultStream = new MemoryStream();
 #pragma warning restore IDISP001 // Dispose created
             data.SaveTo(resultStream);

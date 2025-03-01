@@ -93,18 +93,8 @@ namespace Shesha.Permission
                             await _versionedFieldManager.SetVersionedFieldValueAsync<PermissionedObject, Guid>(dbItem, parameter.Key, parameter.Value, false);
                         }
                     }
-
-                    // TODO: AS - think how to inactivate deleted items take into account skipped Assembly
-                    // Inactivate deleted items
-                    /*var toDelete = dbItems.Where(dbi => items.All(i => dbi.Object != i.Object)).ToList();
-                    foreach (var item in toDelete)
-                    {
-                        await _permissionedObjectRepository.DeleteAsync(item);
-                    }*/
                 }
             }
-            
-            // todo: write changelog
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Shesha.DynamicEntities.Cache
             return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
         }
 
-        private string GetCacheKey(string @namespace, string name)
+        private string GetCacheKey(string? @namespace, string name)
         {
             return $"{@namespace}.{name}";
         }
