@@ -85,7 +85,7 @@ namespace Shesha.ConfigurationItems.Cache
         }
 
         /// inhertiedDoc
-        public async Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode, string md5)
+        public async Task SetCachedMd5Async(string itemType, string? applicationKey, string? module, string name, ConfigurationItemViewMode mode, string? md5)
         {
             var key = GetCacheKey(applicationKey, module, name, mode);
             await UsingCacheAsync(itemType, async (cache) => {

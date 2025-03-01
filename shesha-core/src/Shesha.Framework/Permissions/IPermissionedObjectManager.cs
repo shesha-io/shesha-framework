@@ -22,7 +22,7 @@ namespace Shesha.Permissions
         /// <param name="withNested"></param>
         /// <param name="withHidden">Show hidden protected objects</param>
         /// <returns></returns>
-        Task<List<PermissionedObjectDto>> GetAllFlatAsync(string type = null, bool withNested = true, bool withHidden = false);
+        Task<List<PermissionedObjectDto>> GetAllFlatAsync(string? type = null, bool withNested = true, bool withHidden = false);
 
         /// <summary>
         /// Get hierarchical list of protected objects
@@ -30,12 +30,12 @@ namespace Shesha.Permissions
         /// <param name="type"></param>
         /// <param name="withHidden">Show hidden protected objects</param>
         /// <returns></returns>
-        Task<List<PermissionedObjectDto>> GetAllTreeAsync(string type = null, bool withHidden = false);
+        Task<List<PermissionedObjectDto>> GetAllTreeAsync(string? type = null, bool withHidden = false);
 
         /// <summary>
         /// Get Protected Object by object name with children
         /// </summary>
-        Task<PermissionedObjectDto> GetObjectWithChildAsync(string objectName, string type = null, bool withHidden = false);
+        Task<PermissionedObjectDto> GetObjectWithChildAsync(string objectName, string? type = null, bool withHidden = false);
 
         /// <summary>
         /// Get Protected Object by object name
@@ -44,7 +44,7 @@ namespace Shesha.Permissions
         /// <param name="objectType"></param>
         /// <param name="inheritedFromName">Name of parent object </param>
         /// <returns></returns>
-        Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null);
+        Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string? inheritedFromName = null);
 
 
         Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType);
@@ -59,7 +59,7 @@ namespace Shesha.Permissions
 
         Task<PermissionedObjectDto> GetAsync(Guid id);
 
-        Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string dstObjectType = null);
+        Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string? dstObjectType = null);
 
         /// <summary>
         /// Get Protected Object by object name
@@ -69,7 +69,7 @@ namespace Shesha.Permissions
         /// <returns></returns>
         PermissionedObjectDto Get(string objectName, string objectType);
 
-        List<string> GetActualPermissions(string objectName, string objectType = null, bool useInherited = true);
+        List<string> GetActualPermissions(string objectName, string objectType, bool useInherited = true);
 
         /// <summary>
         /// Set Protected Object data (save to DB and cache)

@@ -50,7 +50,7 @@ namespace Shesha.Permissions
 
         private List<string> _hardcoded;
 
-        public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null, bool skipUnchangedAssembly = false)
+        public async Task<List<PermissionedObjectDto>> GetAllAsync(string? objectType = null, bool skipUnchangedAssembly = false)
         {
             var list = new List<PermissionedObjectDto>();
 
@@ -87,7 +87,7 @@ namespace Shesha.Permissions
 
         private PermissionedObjectDto MakeDto(
             string objectName,
-            string parent,
+            string? parent,
             string name,
             string description,
             Module module,

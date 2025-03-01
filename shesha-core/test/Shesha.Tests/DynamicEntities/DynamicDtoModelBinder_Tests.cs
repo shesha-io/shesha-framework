@@ -206,8 +206,8 @@ namespace Shesha.Tests.DynamicEntities
 
         private static DefaultModelBindingContext GetBindingContext(
             Type modelType,
-            HttpContext httpContext = null,
-            IModelMetadataProvider metadataProvider = null)
+            HttpContext? httpContext = null,
+            IModelMetadataProvider? metadataProvider = null)
         {
             if (httpContext == null)
             {

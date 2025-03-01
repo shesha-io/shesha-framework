@@ -289,7 +289,7 @@ namespace Shesha
 		/// <param name="entity">entity to map</param>
 		/// <param name="settings">mapping settings</param>
 		/// <returns></returns>
-		protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null) where TEntity : class, IEntity<TPrimaryKey>
+		protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings? settings = null) where TEntity : class, IEntity<TPrimaryKey>
         {
             return await MapToCustomDynamicDtoAsync<DynamicDto<TEntity, TPrimaryKey>, TEntity, TPrimaryKey>(entity, settings);
         }
@@ -314,7 +314,7 @@ namespace Shesha
         /// <param name="entity">entity to map</param>
         /// <param name="settings">mapping settings</param>
         /// <returns></returns>
-        protected async Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null)
+        protected async Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings? settings = null)
             where TEntity : class, IEntity<TPrimaryKey>
             where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
@@ -374,7 +374,7 @@ namespace Shesha
         protected async Task<DynamicDtoMapingResult> MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(
             TDynamicDto dto, 
             TEntity entity, 
-            Func<TEntity, List<ValidationResult>, Task> validateAndSaveEntityAction = null
+            Func<TEntity, List<ValidationResult>, Task>? validateAndSaveEntityAction = null
         )
             where TEntity : class, IEntity<TPrimaryKey> where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {

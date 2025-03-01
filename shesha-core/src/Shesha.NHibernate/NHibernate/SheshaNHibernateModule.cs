@@ -64,7 +64,7 @@ namespace Shesha.NHibernate
         /// <summary>
         /// NHibernate session factory object.
         /// </summary>
-        private ISessionFactory _sessionFactory;
+        private ISessionFactory? _sessionFactory;
         private global::NHibernate.Cfg.Configuration _nhConfig;
 
         public override void PreInitialize()

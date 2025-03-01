@@ -12,7 +12,7 @@ namespace Shesha.Domain.Attributes
         #region Properties
         
         [Obsolete("Is used for backward compatibility only")]
-        protected string Namespace { get; set; }
+        protected string? Namespace { get; set; }
 
         protected string ReferenceListName { get; set; }
 
@@ -29,7 +29,7 @@ namespace Shesha.Domain.Attributes
         #endregion
 
         [Obsolete("Use constructor that accepts single parameter instead")]
-        public ReferenceListAttributeBase(string @namespace, string name)
+        public ReferenceListAttributeBase(string? @namespace, string name)
         {
             Namespace = @namespace;
             ReferenceListName = name;

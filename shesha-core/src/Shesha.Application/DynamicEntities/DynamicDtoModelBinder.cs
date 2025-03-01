@@ -31,7 +31,7 @@ namespace Shesha.DynamicEntities
         private readonly IList<IInputFormatter> _formatters;
         private readonly Func<Stream, Encoding, TextReader> _readerFactory;
         private readonly ILogger _logger;
-        private readonly MvcOptions _options;
+        private readonly MvcOptions? _options;
         private readonly IDynamicDtoTypeBuilder _dtoBuilder;
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Shesha.DynamicEntities
             IList<IInputFormatter> formatters,
             IHttpRequestStreamReaderFactory readerFactory,
             ILoggerFactory loggerFactory,
-            MvcOptions options,
+            MvcOptions? options,
             IDynamicDtoTypeBuilder dynamicDtoTypeBuilder)
         {
             if (formatters == null)

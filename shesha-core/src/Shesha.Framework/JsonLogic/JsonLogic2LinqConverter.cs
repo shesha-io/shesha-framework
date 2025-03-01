@@ -11,6 +11,7 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -672,7 +673,7 @@ namespace Shesha.JsonLogic
                 throw new NotSupportedException();
         }
 
-        private bool TryCompareMemberAndDateTime(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, out Expression expression)
+        private bool TryCompareMemberAndDateTime(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, [NotNullWhen(true)]out Expression? expression)
         {
             expression = null;
             if (IsDateTimeMember(left) &&
@@ -686,7 +687,7 @@ namespace Shesha.JsonLogic
             return false;
         }
 
-        private bool TryCompareMemberAndDate(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, out Expression expression)
+        private bool TryCompareMemberAndDate(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, [NotNullWhen(true)] out Expression? expression)
         {
             expression = null;
             if (IsDateMember(left) &&
@@ -700,7 +701,7 @@ namespace Shesha.JsonLogic
             return false;
         }
 
-        private bool TryCompareMemberAndTime(Expression left, Expression right, Func<TimeSpan, TimeSpan> timeConverter, Binder binder, out Expression expression)
+        private bool TryCompareMemberAndTime(Expression left, Expression right, Func<TimeSpan, TimeSpan> timeConverter, Binder binder, [NotNullWhen(true)] out Expression? expression)
         {
             expression = null;
             if (IsTimeMember(left) && right.NodeType == ExpressionType.Constant)
@@ -1056,7 +1057,7 @@ namespace Shesha.JsonLogic
             return TryGetOperator(rule, out var _);
         }
 
-        public bool TryGetOperator(JToken rule, out OperationProps @operator) 
+        public bool TryGetOperator(JToken rule, [NotNullWhen(true)] out OperationProps? @operator) 
         {
             if (!(rule is JObject ruleObj) || ruleObj.Properties().Count() != 1) 
             {
@@ -1068,7 +1069,7 @@ namespace Shesha.JsonLogic
             var operationName = p.Name;
             var operationArguments = (p.Value is JArray jArrayArgs)
                 ? jArrayArgs.ToArray()
-                : new JToken[] { p.Value };
+                : [p.Value];
 
             @operator = new OperationProps { 
                 Name = operationName,

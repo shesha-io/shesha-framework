@@ -93,7 +93,7 @@ namespace Shesha.NHibernate.Configuration
         }
 
         /// inheritedDoc
-        public void UsePostgreSql(Func<IConfigurationRoot, string> connectionStringGetter = null)
+        public void UsePostgreSql(Func<IConfigurationRoot, string>? connectionStringGetter = null)
         {
             var connectionString = GetConnectionStringFromEnvironment(connectionStringGetter);
             UsePostgreSql(connectionString);
@@ -107,7 +107,7 @@ namespace Shesha.NHibernate.Configuration
 
         #endregion
 
-        private string GetConnectionStringFromEnvironment(Func<IConfigurationRoot, string> connectionStringGetter)
+        private string GetConnectionStringFromEnvironment(Func<IConfigurationRoot, string>? connectionStringGetter)
         {
             var configuration = AppConfigurations.Get(_env.ContentRootPath, _env.EnvironmentName, _env.IsDevelopment());
             return connectionStringGetter(configuration);

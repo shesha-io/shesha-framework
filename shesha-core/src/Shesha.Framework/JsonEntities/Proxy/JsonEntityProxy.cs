@@ -101,10 +101,10 @@ namespace Shesha.JsonEntities.Proxy
         public virtual bool _isInitialized { get; internal set; } = false;
 
         [JsonIgnore]
-        public virtual JObject _json { get; internal set; } = null;
+        public virtual JObject _json { get; internal set; }
 
         [JsonIgnore]
-        public virtual Dictionary<string, JsonReference> _references { get; } = new Dictionary<string, JsonReference>();
+        public virtual Dictionary<string, JsonReference> _references { get; } = new ();
 
         [JsonIgnore]
         public virtual bool _isThisChanged { get; internal set; } = false;

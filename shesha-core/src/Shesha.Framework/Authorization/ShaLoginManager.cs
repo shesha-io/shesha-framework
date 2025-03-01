@@ -91,7 +91,7 @@ namespace Shesha.Authorization
             return null;
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
+        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string? imei = null, string? tenancyName = null)
         {
             var result = await LoginInternalAsync(login, tenancyName);
 
@@ -100,7 +100,7 @@ namespace Shesha.Authorization
             return result;
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string tenancyName)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string? tenancyName)
         {
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
@@ -122,7 +122,7 @@ namespace Shesha.Authorization
             }
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> AnonymousLoginViaDeviceIdAsync(Guid deviceId, string imei = null, string tenancyName = null)
+        public virtual async Task<ShaLoginResult<TUser>> AnonymousLoginViaDeviceIdAsync(Guid deviceId, string? imei = null, string? tenancyName = null)
         {
             var user = await UserManager.FindByNameAsync(deviceId.ToString());
             if (user == null)
@@ -169,7 +169,7 @@ namespace Shesha.Authorization
             return response;
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string? imei = null, string? tenancyName = null, bool shouldLockout = true)
         {
             CheckOtpAuthAvailability();
 
@@ -207,7 +207,7 @@ namespace Shesha.Authorization
                     }
 
                     // authenticated using internal account, check IMEI
-                    if (!(await CheckImeiAsync(imei)))
+                    if (!await CheckImeiAsync(imei))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     // clear reset code
@@ -223,7 +223,7 @@ namespace Shesha.Authorization
             return result;
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string? imei = null, string? tenancyName = null, bool shouldLockout = true)
         {
             var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () => {
                 return await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
@@ -233,7 +233,7 @@ namespace Shesha.Authorization
             return result;
         }
 
-        private async Task<ShaLoginResult<TUser>> ProcessTenancyLoginActionAsync(string imei, string tenancyName, bool shouldLockout, Func<TTenant?, Task<ShaLoginResult<TUser>>> action)
+        private async Task<ShaLoginResult<TUser>> ProcessTenancyLoginActionAsync(string? imei, string? tenancyName, bool shouldLockout, Func<TTenant?, Task<ShaLoginResult<TUser>>> action)
         {
             // Get and check tenant
             TTenant? tenant = null;
@@ -267,7 +267,7 @@ namespace Shesha.Authorization
             }
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string? imei, string? tenancyName, bool shouldLockout)
         {
             if (userNameOrEmailAddress.IsNullOrEmpty())
                 throw new ArgumentNullException(nameof(userNameOrEmailAddress));
@@ -332,7 +332,7 @@ namespace Shesha.Authorization
             });
         }
 
-        private async Task<bool> CheckImeiAsync(string imei)
+        private async Task<bool> CheckImeiAsync(string? imei)
         {
             if (string.IsNullOrWhiteSpace(imei))
                 return true; // skip if the IMEI is null
@@ -356,8 +356,8 @@ namespace Shesha.Authorization
             );
         }
 
-        public virtual async Task SaveLoginAttemptAsync(ShaLoginResult<TUser> loginResult, string imei,
-            string tenancyName, string userNameOrEmailAddress)
+        public virtual async Task SaveLoginAttemptAsync(ShaLoginResult<TUser> loginResult, string? imei,
+            string? tenancyName, string userNameOrEmailAddress)
         {
             if (UnitOfWorkManager.Current != null)
                 await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -394,7 +394,7 @@ namespace Shesha.Authorization
             }
         }
 
-        private async Task<string> GetDeviceNameAsync(string imei)
+        private async Task<string?> GetDeviceNameAsync(string? imei)
         {
             return string.IsNullOrWhiteSpace(imei)
                 ? null

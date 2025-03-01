@@ -1,5 +1,4 @@
-﻿using Abp.Json;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -20,7 +19,7 @@ namespace Shesha.NHibernate.UserTypes
 
         public bool IsMutable => true;
 
-        public object Assemble(object cached, object owner)
+        public object Assemble(object cached, object? owner)
         {
             var str = cached as string;
 

@@ -24,7 +24,7 @@ namespace Shesha.Validations
             return await ValidateAsync((v) => v.ValidatePropertyAsync(obj, propertyName, value, validationResult));
         }
 
-        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult = null, List<string> propertiesToValidate = null)
+        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult>? validationResult = null, List<string>? propertiesToValidate = null)
         {
             validationResult ??= new List<ValidationResult>();
             return await ValidateAsync((v) => v.ValidateObjectAsync(obj, validationResult, propertiesToValidate));

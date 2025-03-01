@@ -37,7 +37,7 @@ namespace Shesha.Metadata
         }
 
         /// inheritedDoc
-        public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext context = null)
+        public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext? context = null)
         {
             context ??= new MetadataContext(containerType);
 

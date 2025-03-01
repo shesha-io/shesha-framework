@@ -333,7 +333,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="cacheKey">Cache key. Live null to skip caching</param>
         /// <returns></returns>
-        private List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch<TEntity>(List<string> properties, string cacheKey)
+        private List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch<TEntity>(List<string> properties, string? cacheKey)
         {
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return DoGetPropertiesForSqlQuickSearch<TEntity>(properties);

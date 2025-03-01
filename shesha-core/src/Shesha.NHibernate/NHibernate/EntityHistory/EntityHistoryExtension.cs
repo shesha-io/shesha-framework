@@ -148,7 +148,7 @@ namespace Shesha.NHibernate.EntityHistory
             }
         }
 
-        public static void AddHistoryEvent(this object entity, string eventType, string eventName, string description, string propertyName)
+        public static void AddHistoryEvent(this object entity, string? eventType, string? eventName, string description, string? propertyName)
         {
             try
             {

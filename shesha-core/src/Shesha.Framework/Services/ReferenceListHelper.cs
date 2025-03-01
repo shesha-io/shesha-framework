@@ -273,8 +273,7 @@ namespace Shesha.Services
             AsyncHelper.RunSync(async () =>
             {
                 await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refListId.Module, refListId.Name, _cfRuntime.ViewMode, null);
-            }
-            );
+            });
         }
 
         /// <summary>

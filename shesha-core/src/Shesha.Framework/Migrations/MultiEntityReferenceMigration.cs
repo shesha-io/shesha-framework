@@ -1,10 +1,5 @@
-﻿using Abp.Dependency;
-using Abp.Modules;
-using Abp.Reflection;
+﻿using Abp.Reflection;
 using Castle.Core.Internal;
-using FluentMigrator.Builders.Create.Table;
-using FluentMigrator.Runner.Extensions;
-using Shesha.Bootstrappers;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
@@ -12,12 +7,7 @@ using Shesha.FluentMigrator;
 using Shesha.Generators;
 using Shesha.Reflection;
 using Shesha.Startup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Migrations
 {
