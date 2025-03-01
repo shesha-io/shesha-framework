@@ -26,11 +26,12 @@ interface IconPickerWrapperProps {
     stylingBox?: string;
     defaultValue?: ShaIconTypes;
     textAlign?: string;
+    additionalStyles?: CSSProperties;
 }
 
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, textAlign
-        , selectBtnSize, iconSize
+        , selectBtnSize, iconSize, additionalStyles
     } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
@@ -42,6 +43,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
 
     const style: CSSProperties = {
+        ...additionalStyles,
         fontSize: fontSize || 24,
         color: color,
         marginLeft: (defaultValue) ? '12px' : 'none' //this allows us to correct the icon layout when an icon is selected
@@ -59,6 +61,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         ...pickStyleFromModel(stylingBoxJSON),
         ...(executeFunction("{}", { data, globalState }) || {})
     };
+
 
     return (
         <div style={(defaultValue) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
