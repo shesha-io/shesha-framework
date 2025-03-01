@@ -21,8 +21,8 @@ export const getSettings = (data: any) => {
         size: 'small',
         tabs: [
           {
-            key: 'display',
-            title: 'Display',
+            key: 'common',
+            title: 'Common',
             id: displayTabId,
             components: [
               ...new DesignerToolbarSettings()
@@ -87,8 +87,8 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'styling',
-            title: 'Styling',
+            key: 'appearance',
+            title: 'Appearance',
             id: stylingTabId,
             components: [
               ...new DesignerToolbarSettings()
@@ -128,8 +128,8 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'notes',
-            title: 'Notes',
+            key: 'data',
+            title: 'Data',
             id: notesTabId,
             components: [
               ...new DesignerToolbarSettings()
