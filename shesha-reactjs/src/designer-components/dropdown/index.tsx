@@ -91,6 +91,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     });
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
+
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
         {(value, onChange) => {
