@@ -1,7 +1,6 @@
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
-import settingsFormJson from './settingsForm.json';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components';
 import { useFormData } from '@/providers';
@@ -21,8 +20,6 @@ export interface INotesProps extends IConfigurableFormComponent {
   autoSize?: boolean;
   allowDelete?: boolean;
 }
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
   type: 'notes',
