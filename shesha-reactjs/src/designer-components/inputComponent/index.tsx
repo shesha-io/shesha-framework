@@ -179,7 +179,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
-            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue ?? 'inherited'} value={value} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}

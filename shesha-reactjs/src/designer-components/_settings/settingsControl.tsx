@@ -101,12 +101,13 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const editor = constantsEvaluator
+
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
-      {mode === 'code' && editor}
+      {editor}
       {!code && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
       </div>}
