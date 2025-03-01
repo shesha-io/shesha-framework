@@ -126,7 +126,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
             {
                 label: `Color ${side}`,
                 propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
-                type: "colorPicker",
+                type: "color",
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 hideLabel: true,
             }
@@ -134,7 +134,7 @@ export const getBorderInputs = (isResponsive: boolean = true, path = '') => bord
     };
 });
 
-export const getCornerInputs = (isResponsive: boolean = true, path = '') => radiusCorners.map(value => {
+export const getCornerInputs = (isResponsive: boolean = true, path = '', disabledItemsExpression?: string) => radiusCorners.map(value => {
     const corner = value.value;
     const code = generateCode('radius', isResponsive, path, corner);
 
@@ -151,8 +151,9 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
                 propertyName: path ? `${path}.border.selectedCorner` : "border.selectedCorner",
                 type: "radio",
                 defaultValue: "all",
+                disabledItemsExpression: disabledItemsExpression,
                 tooltip: "Select a corner to which the radius will be applied",
-                buttonGroupOptions: borderCorners,
+                buttonGroupOptions: borderCorners
             },
             {
                 id: `borderRadiusStyleRow-${corner}`,
@@ -161,7 +162,7 @@ export const getCornerInputs = (isResponsive: boolean = true, path = '') => radi
                 hideLabel: true,
                 width: 65,
                 defaultValue: 0,
-                inputType: 'number',
+                inputType: 'numberField',
                 propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
             }]
     };

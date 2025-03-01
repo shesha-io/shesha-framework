@@ -100,6 +100,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const editor = constantsEvaluator
+
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
 

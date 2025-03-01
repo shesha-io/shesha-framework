@@ -1,18 +1,19 @@
-import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { backgroundTypeOptions, repeatOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
-import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
-export const getSettings = (data) => {
+export const getSettings = () => {
+
+
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
-                id: nanoid(),
+                id: 'W_m7doMyCpCYwAYDfRh6I',
                 propertyName: 'settingsTabs',
                 parentId: 'root',
                 label: 'Settings',
@@ -23,95 +24,79 @@ export const getSettings = (data) => {
                     {
                         key: '1',
                         title: 'Common',
-                        id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'componentName',
-                                label: 'Component Name',
-                                parentId: 'root',
-                                size: 'small',
-                                validate: {
-                                    required: true,
-                                },
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'wizardType',
-                                label: 'Wizard Type',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'default', label: 'Default' },
-                                    { value: 'navigation', label: 'Navigation' }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'steps',
-                                label: 'Configure Steps',
-                                parentId: 'root',
-                                inputType: 'itemListConfiguratorModal',
-                                onAddNewItem: onAddNewItem,
-                                listItemSettingsMarkup: getItemSettings(),
-                                modalProps: {
-                                    title: 'Configure Wizard Steps',
-                                    header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
-                                },
-                                buttonText: 'Configure Wizard Steps',
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'direction',
-                                label: 'Direction',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'To specify the direction of the step bar',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'labelPlacement',
-                                label: 'Label Placement',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'To specify the label placement',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'defaultActiveStep',
-                                label: 'Default Active Step',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'This will be the default step that is active',
-                                jsSetting: true,
-                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                dropdownOptions: data?.steps,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'hidden',
-                                label: 'Hidden',
-                                parentId: 'root',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
-                            .toJson()
+                        id: 's4gmBg31azZC0UjZjpfTm',
+                        type: '',
+                        components: [
+                            ...new DesignerToolbarSettings()
+                                .addSettingsInput({
+                                    id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
+                                    inputType: 'textField',
+                                    propertyName: 'componentName',
+                                    label: 'Component Name',
+                                    labelAlign: 'right',
+                                    jsSetting: false,
+                                    validate: { required: true },
+                                    parentId: 'root'
+                                })
+                                .addSettingsInput({
+                                    id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
+                                    inputType: 'textField',
+                                    propertyName: 'defaultActiveKey',
+                                    label: 'Default Active Tab',
+                                    labelAlign: 'right',
+                                    parentId: 'root'
+                                })
+                                .addSettingsInput({
+                                    id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
+                                    inputType: 'dropdown',
+                                    propertyName: 'tabType',
+                                    label: 'Tab Type',
+                                    defaultValue: 'card',
+                                    dropdownOptions: [
+                                        { value: 'line', label: 'Label' },
+                                        { value: 'card', label: 'Card' }
+                                    ],
+                                    jsSetting: false,
+                                    labelAlign: 'right',
+                                    parentId: 'root'
+
+                                })
+                                .addSettingsInput({
+                                    id: '4595a895-5078-4986-934b-c5013bf315ad',
+                                    inputType: 'itemListConfiguratorModal',
+                                    propertyName: 'tabs',
+                                    label: 'Tabs',
+                                    labelAlign: 'right',
+                                    parentId: 'root',
+                                    listItemSettingsMarkup: getItemSettings(),
+                                    onAddNewItem: onAddNewItem,
+                                    hidden: false
+                                })
+                                .addSettingsInput({
+                                    id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
+                                    inputType: 'switch',
+                                    propertyName: 'hidden',
+                                    label: 'Hidden',
+                                    labelAlign: 'right',
+                                    parentId: 'root',
+                                    hidden: false,
+                                    validate: {}
+                                })
+                                .addSettingsInput({
+                                    id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
+                                    inputType: 'editModeSelector',
+                                    propertyName: 'editMode',
+                                    parentId: 'root',
+                                    defaultValue: 'inherited',
+                                    label: 'Edit mode'
+                                })
+                                .toJson()
                         ]
                     },
                     {
-                        key: '2',
+                        key: '4',
                         title: 'Appearance',
+                        type: '',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [...new DesignerToolbarSettings()
                             .addPropertyRouter({
@@ -129,6 +114,22 @@ export const getSettings = (data) => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: '29be3a6a-129a-4004-a627-2b257ecb78b4',
+                                            inputType: 'dropdown',
+                                            propertyName: 'tabPosition',
+                                            tooltip: "This will set the position for all buttons",
+                                            defaultValue: 'top',
+                                            label: 'Position',
+                                            dropdownOptions: [
+                                                { value: 'top', label: 'Top' },
+                                                { value: 'bottom', label: 'Bottom' },
+                                                { value: 'left', label: 'Left' },
+                                                { value: 'right', label: 'Right' }
+                                            ],
+                                            labelAlign: 'right',
+                                            parentId: 'root'
+                                        })
                                         .addCollapsiblePanel({
                                             id: 'fontStyleCollapsiblePanel',
                                             propertyName: 'pnlFontStyle',
@@ -179,7 +180,16 @@ export const getSettings = (data) => {
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
-                                                            }
+                                                            },
+                                                            {
+                                                                type: 'dropdown',
+                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                                                label: 'Align',
+                                                                propertyName: 'font.align',
+                                                                hideLabel: true,
+                                                                width: 60,
+                                                                dropdownOptions: textAlign,
+                                                            },
                                                         ],
                                                     })
                                                     .toJson()
@@ -269,17 +279,14 @@ export const getSettings = (data) => {
                                                         ]
                                                     })
                                                     .addSettingsInput({
-                                                        id: 'predefinedSizes',
+                                                        id: 'overflow-s4gmBg31azZC0UjZjpfTm',
+                                                        parentId: 'displayCollapsiblePanel',
+                                                        inline: true,
                                                         inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
-                                                        ]
+                                                        label: 'Overflow',
+                                                        defaultValue: 'auto',
+                                                        propertyName: 'dimensions.overflow',
+                                                        dropdownOptions: overflowOptions
                                                     })
                                                     .toJson()
                                                 ]
@@ -367,33 +374,7 @@ export const getSettings = (data) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -664,75 +645,311 @@ export const getSettings = (data) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
-                                            id: 'additionalStylesCollapsiblePanel',
-                                            propertyName: 'additionalStyles',
-                                            label: 'Additional Styles',
+                                            id: 'tabCardStyleCollapsiblePanel',
+                                            propertyName: 'cardStyle',
+                                            label: 'Card Styles',
                                             labelAlign: 'right',
-                                            ghost: true,
-                                            parentId: 'styleRouter',
+                                            collapsedByDefault: true,
+                                            parentId: 'cardStyleRouter',
                                             collapsible: 'header',
                                             content: {
-                                                id: 'additionalStylesPnl',
+                                                id: 'tab-card-stylePnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        propertyName: 'buttonsLayout',
-                                                        label: 'Buttons Layout',
-                                                        parentId: 'root',
-                                                        inputType: 'dropdown',
-                                                        tooltip: 'How you want the steps buttons to be aligned',
-                                                        jsSetting: true,
-                                                        dropdownOptions: [
-                                                            { value: 'left', label: 'Left' },
-                                                            { value: 'right', label: 'Right' },
-                                                            { value: 'spaceBetween', label: 'Space Between' }
-                                                        ]
+                                                    .addCollapsiblePanel({
+                                                        id: 'fontStyleCollapsiblePanel',
+                                                        propertyName: 'tabCardFontStyle',
+                                                        label: 'Font',
+                                                        labelAlign: 'right',
+                                                        parentId: 'styleRouter',
+                                                        ghost: true,
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'cardfontStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInputRow({
+                                                                    id: 'try26voxhs-HxJ5k5ngYE',
+                                                                    parentId: 'cardfontStylePnl',
+                                                                    inline: true,
+                                                                    propertyName: 'card.font',
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: 'fontFamily-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Family',
+                                                                            propertyName: 'card.font.type',
+                                                                            hideLabel: true,
+                                                                            dropdownOptions: fontTypes,
+                                                                        },
+                                                                        {
+                                                                            type: 'numberField',
+                                                                            id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Size',
+                                                                            propertyName: 'card.font.size',
+                                                                            hideLabel: true,
+                                                                            width: 50,
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Weight',
+                                                                            propertyName: 'card.font.weight',
+                                                                            hideLabel: true,
+                                                                            tooltip: "Controls text thickness (light, normal, bold, etc.)",
+                                                                            dropdownOptions: fontWeights,
+                                                                            width: 100,
+                                                                        },
+                                                                        {
+                                                                            type: 'colorPicker',
+                                                                            id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Color',
+                                                                            hideLabel: true,
+                                                                            propertyName: 'card.font.color',
+                                                                        },
+                                                                        {
+                                                                            type: 'dropdown',
+                                                                            id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: 'Align',
+                                                                            propertyName: 'card.font.align',
+                                                                            hideLabel: true,
+                                                                            width: 60,
+                                                                            dropdownOptions: textAlign,
+                                                                        },
+                                                                    ],
+                                                                })
+                                                                .toJson()
+                                                            ]
+                                                        }
                                                     })
-                                                    .addSettingsInputRow({
-                                                        id: 'primary-additionalStylesRow',
-                                                        parentId: 'additionalStylesPnl',
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                id: 'primary-color-412c-8461-4c8d55e5c073',
-                                                                parentId: 'additionalStylesPnl',
-                                                                type: 'colorPicker',
-                                                                propertyName: 'primaryBgColor',
-                                                                hideLabel: false,
-                                                                label: 'Primary Color'
-                                                            },
-                                                            {
-                                                                id: 'primary-text-color-412c-8461-4c8d55e5c073',
-                                                                parentId: 'additionalStylesPnl',
-                                                                type: 'colorPicker',
-                                                                propertyName: 'primaryTextColor',
-                                                                hideLabel: false,
-                                                                label: 'Primary Text Color'
-                                                            }
-                                                        ]
+                                                    .addCollapsiblePanel({
+                                                        id: 'backgroundStyleCollapsiblePanel',
+                                                        propertyName: 'card.pnlBackgroundStyle',
+                                                        label: 'Background',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
+                                                        parentId: 'styleRouter',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'backgroundStylePnl',
+                                                            components: [
+                                                                ...new DesignerToolbarSettings()
+                                                                    .addSettingsInput({
+                                                                        id: "backgroundStyleRow-selectType",
+                                                                        parentId: "backgroundStylePnl",
+                                                                        label: "Type",
+                                                                        jsSetting: false,
+                                                                        propertyName: "card.background.type",
+                                                                        inputType: "radio",
+                                                                        tooltip: "Select a type of background",
+                                                                        buttonGroupOptions: [
+                                                                            {
+                                                                                value: "color",
+                                                                                icon: "FormatPainterOutlined",
+                                                                                title: "Color"
+                                                                            },
+                                                                            {
+                                                                                value: "gradient",
+                                                                                icon: "BgColorsOutlined",
+                                                                                title: "Gradient"
+                                                                            },
+                                                                            {
+                                                                                value: "image",
+                                                                                icon: "PictureOutlined",
+                                                                                title: "Image"
+                                                                            },
+                                                                            {
+                                                                                value: "url",
+                                                                                icon: "LinkOutlined",
+                                                                                title: "URL"
+                                                                            },
+                                                                            {
+                                                                                value: "storedFile",
+                                                                                icon: "DatabaseOutlined",
+                                                                                title: "Stored File"
+                                                                            }
+                                                                        ],
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: "backgroundStyleRow-color",
+                                                                        parentId: "backgroundStylePnl",
+                                                                        inputs: [{
+                                                                            type: 'colorPicker',
+                                                                            id: 'backgroundStyleRow-color',
+                                                                            label: "Color",
+                                                                            propertyName: "card.background.color",
+                                                                            hideLabel: true,
+                                                                            jsSetting: false,
+                                                                        }],
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: "backgroundStyle-gradientColors",
+                                                                        parentId: "backgroundStylePnl",
+                                                                        inputs: [{
+                                                                            type: 'multiColorPicker',
+                                                                            id: 'backgroundStyle-gradientColors',
+                                                                            propertyName: "card.background.gradient.colors",
+                                                                            label: "Colors",
+                                                                            jsSetting: false,
+                                                                        }
+                                                                        ],
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                                        hideLabel: true,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: "backgroundStyle-url",
+                                                                        parentId: "backgroundStylePnl",
+                                                                        inputs: [{
+                                                                            type: 'textField',
+                                                                            id: 'backgroundStyle-url',
+                                                                            propertyName: "card.background.url",
+                                                                            jsSetting: false,
+                                                                            label: "URL",
+                                                                        }],
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: "backgroundStyle-image",
+                                                                        parentId: 'backgroundStylePnl',
+                                                                        inputs: [{
+                                                                            type: 'imageUploader',
+                                                                            id: 'backgroundStyle-image',
+                                                                            propertyName: 'card.background.uploadFile',
+                                                                            label: "Image",
+                                                                            jsSetting: false,
+                                                                        }],
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: "backgroundStyleRow-storedFile",
+                                                                        parentId: 'backgroundStylePnl',
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                        inputs: [
+                                                                            {
+                                                                                type: 'textField',
+                                                                                id: 'backgroundStyle-storedFile',
+                                                                                jsSetting: false,
+                                                                                propertyName: "card.background.storedFile.id",
+                                                                                label: "File ID"
+                                                                            }
+                                                                        ]
+                                                                    })
+                                                                    .addSettingsInputRow({
+                                                                        id: "backgroundStyleRow-controls",
+                                                                        parentId: 'backgroundStyleRow',
+                                                                        inline: true,
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                        inputs: [
+                                                                            {
+                                                                                type: 'customDropdown',
+                                                                                id: 'backgroundStyleRow-size',
+                                                                                label: "Size",
+                                                                                hideLabel: true,
+                                                                                propertyName: "card.background.size",
+                                                                                dropdownOptions: [
+                                                                                    {
+                                                                                        value: "cover",
+                                                                                        label: "Cover"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "contain",
+                                                                                        label: "Contain"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "auto",
+                                                                                        label: "Auto"
+                                                                                    }
+                                                                                ],
+                                                                            },
+                                                                            {
+                                                                                type: 'customDropdown',
+                                                                                id: 'backgroundStyleRow-position',
+                                                                                label: "Position",
+                                                                                hideLabel: true,
+                                                                                propertyName: "card.background.position",
+                                                                                dropdownOptions: [
+                                                                                    {
+                                                                                        value: "center",
+                                                                                        label: "Center"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "top",
+                                                                                        label: "Top"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "left",
+                                                                                        label: "Left"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "right",
+                                                                                        label: "Right"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "bottom",
+                                                                                        label: "Bottom"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "top left",
+                                                                                        label: "Top Left"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "top right",
+                                                                                        label: "Top Right"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "bottom left",
+                                                                                        label: "Bottom Left"
+                                                                                    },
+                                                                                    {
+                                                                                        value: "bottom right",
+                                                                                        label: "Bottom Right"
+                                                                                    }
+                                                                                ],
+                                                                            },
+                                                                            {
+                                                                                type: 'radio',
+                                                                                id: 'backgroundStyleRow-repeat',
+                                                                                label: "Repeat",
+                                                                                hideLabel: true,
+                                                                                propertyName: "card.background.repeat",
+                                                                                buttonGroupOptions: repeatOptions,
+                                                                            }
+                                                                        ]
+                                                                    })
+                                                                    .toJson()
+                                                            ],
+                                                        }
                                                     })
-                                                    .addSettingsInputRow({
-                                                        id: 'additionalStylesRow',
-                                                        parentId: 'additionalStylesPnl',
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                id: 'secondary-color-412c-8461-4c8d55e5c073',
-                                                                parentId: 'additionalStylesPnl',
-                                                                type: 'colorPicker',
-                                                                propertyName: 'secondaryBgColor',
-                                                                hideLabel: false,
-                                                                label: 'Secondary Color'
-                                                            },
-                                                            {
-                                                                id: 'secondary-text-color-412c-8461-4c8d55e5c073',
-                                                                parentId: 'additionalStylesPnl',
-                                                                type: 'colorPicker',
-                                                                propertyName: 'secondaryTextColor',
-                                                                hideLabel: false,
-                                                                label: 'Secondary Text Color'
-                                                            }
-                                                        ]
+                                                    .addCollapsiblePanel({
+                                                        id: 'customStyleCollapsiblePanel',
+                                                        propertyName: 'card.customStyle',
+                                                        label: 'Custom Styles',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
+                                                        parentId: 'styleRouter',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'stylePnl-M500-911MFR',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInput({
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    id: 'custom-css-412c-8461-4c8d55e5c073',
+                                                                    inputType: 'codeEditor',
+                                                                    propertyName: 'card.style',
+                                                                    hideLabel: false,
+                                                                    label: 'Style',
+                                                                    description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                                })
+                                                                .toJson()
+                                                            ]
+                                                        }
                                                     })
                                                     .toJson()
                                                 ]
@@ -742,18 +959,19 @@ export const getSettings = (data) => {
                             }).toJson()]
                     },
                     {
-                        key: '4',
+                        key: '5',
                         title: 'Security',
-                        id: nanoid(),
+                        id: '6Vw9iiDw9d0MD_Rh5cbIn',
+                        type: '',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                id: nanoid(),
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                inputType: 'permissions',
                                 propertyName: 'permissions',
                                 label: 'Permissions',
-                                parentId: 'root',
-                                inputType: 'permissions',
-                                tooltip: 'Enter a list of permissions that should be associated with this component',
-                                jsSetting: true
+                                size: 'small',
+                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
                             })
                             .toJson()
                         ]

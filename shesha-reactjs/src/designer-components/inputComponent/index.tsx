@@ -148,7 +148,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'numberField':
-            return <InputNumber min={props.min} max={props.max} placeholder={placeholder}
+            return <InputNumber min={props.min} max={props.max} placeholder={placeholder} step={props.step}
                 defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
             />;
         case 'customDropdown':
@@ -179,7 +179,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'buttonGroupConfigurator':
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
-            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue ?? 'inherited'} value={value} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}

@@ -110,7 +110,6 @@ export const getSettings = (data) => {
                             label: 'Position',
                             parentId: 'positionCollapsiblePanel',
                             inputType: 'dropdown',
-                            defaultValue: 'relative',
                             description: 'The position CSS property sets how an element is positioned in a document. The top, right, bottom, and left properties determine the final location of positioned elements.',
                             validate: {
                               required: true,
@@ -583,6 +582,7 @@ export const getSettings = (data) => {
                               id: "backgroundStyleRow-controls",
                               parentId: 'backgroundStyleRow',
                               inline: true,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
