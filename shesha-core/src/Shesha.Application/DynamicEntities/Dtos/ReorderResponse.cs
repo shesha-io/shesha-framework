@@ -7,16 +7,10 @@ namespace Shesha.DynamicEntities.Dtos
     /// <summary>
     /// Entities reordering response
     /// </summary>
-    public class ReorderResponse<TId, TOrderIndex>: IReorderResponse
+    public class ReorderResponse<TId, TOrderIndex>: IReorderResponse where TId : notnull
     {
-        /*
-        /// <summary>
-        /// Reordered items
-        /// </summary>
-        public List<ReorderingItem<TId, TOrderIndex>> Items { get; set; } = new List<ReorderingItem<TId, TOrderIndex>>();
-        */
         [JsonIgnore]
-        public Dictionary<TId, TOrderIndex> ReorderedItems { get; } = new Dictionary<TId, TOrderIndex>();
+        public Dictionary<TId, TOrderIndex> ReorderedItems { get; } = [];
 
         public IDictionary Items => ReorderedItems;
     }

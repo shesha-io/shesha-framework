@@ -5,7 +5,6 @@ using Abp.Modules;
 using Abp.MultiTenancy;
 using Abp.Runtime.Session;
 using Abp.TestBase;
-using DocumentFormat.OpenXml.Spreadsheet;
 using NHibernate;
 using NHibernate.Linq;
 using Shesha.Authorization.Users;
@@ -16,7 +15,6 @@ using Shesha.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.Tests
 {

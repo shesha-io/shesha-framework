@@ -7,7 +7,6 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Services.ConfigurationItems;
-using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
 using System.Linq;

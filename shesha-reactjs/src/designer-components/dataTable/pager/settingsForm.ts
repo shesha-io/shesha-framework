@@ -25,7 +25,7 @@ export const getSettings = (data: any) => {
                   inputs: [
                     {
                       id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                      type: 'text',
+                      type: 'textField',
                       propertyName: 'componentName',
                       label: 'Component Name',
                       size: 'large',
@@ -126,7 +126,7 @@ export const getSettings = (data: any) => {
                                     dropdownOptions: fontTypes,
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Size',
                                     propertyName: 'font.size',
@@ -144,7 +144,7 @@ export const getSettings = (data: any) => {
                                     width: 100,
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Color',
                                     hideLabel: true,

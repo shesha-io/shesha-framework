@@ -2,7 +2,6 @@
 using Abp.Reflection;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
 
         private readonly IIocManager _iocManager;
 
-        private readonly Dictionary<string, IConfigurableItemImport> _importers = new Dictionary<string, IConfigurableItemImport>();
+        private readonly Dictionary<string, IConfigurableItemImport?> _importers = new Dictionary<string, IConfigurableItemImport?>();
         private readonly Dictionary<string, Type> _itemTypes = new Dictionary<string, Type>();
 
         public IConfigurableItemImport GetImporter(string itemType) 

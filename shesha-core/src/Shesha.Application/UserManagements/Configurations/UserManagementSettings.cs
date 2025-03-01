@@ -1,10 +1,4 @@
-﻿using Shesha.Domain.Attributes;
-using Shesha.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shesha.Domain.Enums;
 
 namespace Shesha.UserManagements.Configurations
 {
@@ -21,7 +15,7 @@ namespace Shesha.UserManagements.Configurations
         /// <summary>
         /// 
         /// </summary>
-        public string GoToUrlAfterRegistration { get; set; }
+        public string? GoToUrlAfterRegistration { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -33,10 +27,10 @@ namespace Shesha.UserManagements.Configurations
         /// <summary>
         /// Form Module Name
         /// </summary>
-        public string AdditionalRegistrationInfoFormModule { get; set; }
+        public string? AdditionalRegistrationInfoFormModule { get; set; }
         /// <summary>
         /// Form Name
         /// </summary>
-        public string AdditionalRegistrationInfoFormName { get; set; }
+        public string? AdditionalRegistrationInfoFormName { get; set; }
     }
 }

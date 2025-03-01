@@ -1,64 +1,79 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { nanoid } from '@/utils/uuid';
+import { DesignerToolbarSettings } from "@/index";
+import { nanoid } from "@/utils/uuid";
+import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: any) =>
-  new DesignerToolbarSettings(data)
-    .addCollapsiblePanel({
-      id: nanoid(),
-      parentId: 'root',
-      propertyName: 'pnlDisplay',
-      label: 'Display',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addContextPropertyAutocomplete({
-              id: nanoid(),
-              propertyName: 'propertyName',
-              label: 'Property name',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-              validate: {
-                required: true,
-              },
-            })
-            .addCheckbox({
-              id: nanoid(),
-              propertyName: 'hidden',
-              label: 'Hidden',
-              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .addCollapsiblePanel({
-      id: nanoid(),
-      propertyName: 'pnlSecurity',
-      parentId: 'root',
-      label: 'Security',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'fccb6b17-656d-43c0-8144-0b91c454da1d',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addPermissionAutocomplete({
-              id: nanoid(),
-              propertyName: 'permissions',
-              label: 'Permissions',
-              labelAlign: 'right',
-              parentId: 'fccb6b17-656d-43c0-8144-0b91c454da1d',
-              hidden: false,
-              validate: {},
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .toJson();
+export const getSettings = (data: any) => {
+  const searchableTabsId = nanoid();
+  const commonTabId = nanoid();
+  const securityId = nanoid();
+
+  const propertyNameId = nanoid();
+  const hiddenId = nanoid();
+
+  return {
+    components: new DesignerToolbarSettings(data)
+      .addSearchableTabs({
+        id: searchableTabsId,
+        propertyName: 'settingsTabs',
+        parentId: 'root',
+        label: 'Settings',
+        hideLabel: true,
+        labelAlign: 'right',
+        size: 'small',
+        tabs: [
+          {
+            key: 'common',
+            title: 'Common',
+            id: commonTabId,
+            components: [...new DesignerToolbarSettings()
+              .addContextPropertyAutocomplete({
+                id: propertyNameId,
+                propertyName: "propertyName",
+                parentId: commonTabId,
+                label: "Property Name",
+                size: "small",
+                validate: {
+                  "required": true
+                },
+                styledLabel: true,
+                jsSetting: true,
+              })
+              .addSettingsInput({
+                id: hiddenId,
+                propertyName: 'hidden',
+                label: 'Hide',
+                parentId: commonTabId,
+                inputType: 'switch',
+                jsSetting: true,
+              })
+              .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
+              })
+              .toJson()
+            ]
+          }
+        ]
+      })
+      .toJson(),
+    formSettings: {
+      colon: false,
+      layout: 'vertical' as FormLayout,
+      labelCol: { span: 24 },
+      wrapperCol: { span: 24 }
+    }
+  };
+};

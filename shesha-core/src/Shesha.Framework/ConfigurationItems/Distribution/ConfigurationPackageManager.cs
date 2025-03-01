@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -133,8 +134,10 @@ namespace Shesha.ConfigurationItems.Distribution
                     var dependencies = await depsProvider.GetReferencedItemsAsync(item);
                     foreach (var dependency in dependencies)
                     {
-                        var dependencyItem = await _itemsRepository.GetItemByFullNameAsync(dependency.Module, dependency.Name, context.VersionSelectionMode);
-                            
+                        var query = _itemsRepository.GetAll().OfType(dependency.ItemType).Cast<ConfigurationItemBase>();                        
+
+                        var dependencyItem = await query.GetItemByIdAsync(dependency, context.VersionSelectionMode);
+
                         // todo: write log and include all missing items
                         if (dependencyItem != null)
                             await ProcessItemExportAsync(dependencyItem, exportResult, context);

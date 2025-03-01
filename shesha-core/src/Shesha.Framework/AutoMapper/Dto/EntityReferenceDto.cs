@@ -30,18 +30,18 @@ namespace Shesha.AutoMapper.Dto
             {
                 Id = entity.GetId<TPrimaryKey>();
                 _displayName = entity.GetDisplayName();
-                _className = entity.GetType().FullName;
+                _className = entity.GetType().GetRequiredFullName();
             }
         }
 
         /// <summary>
         /// Entity display name
         /// </summary>
-        public string _displayName { get; internal set; }
+        public string? _displayName { get; internal set; }
 
         /// <summary>
         /// Entity class name
         /// </summary>
-        public string _className { get; internal set; }
+        public string? _className { get; internal set; }
     }
 }

@@ -1,5 +1,3 @@
-using System;
-using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using AutoMapper;
@@ -8,6 +6,7 @@ using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Services;
+using System;
 
 namespace Shesha.Areas.Dto
 {

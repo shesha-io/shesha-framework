@@ -66,15 +66,18 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
+export type OverflowType = 'hidden' | 'visible' | 'scroll' | 'auto';
 export interface IStyleType {
   border?: IBorderValue;
   background?: IBackgroundValue;
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
+  overflow?: OverflowType;
   position?: { value: PositionType; offset: string; top: number; right: number; bottom: number; left: number };
   size?: SizeType;
   style?: string;
+  stylingBox?: string;
 }
 
 export interface IInputStyles extends IStyleType {
@@ -88,8 +91,9 @@ export interface IInputStyles extends IStyleType {
   stylingBox?: string;
   height?: string | number;
   width?: string | number;
-  backgroundColor?: string;
   hideBorder?: boolean;
+  backgroundColor?: string;
+  backgroundPosition?: string;
   backgroundCover?: 'contain' | 'cover';
   backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round';
   className?: string;
@@ -345,7 +349,7 @@ export type FormMarkup =
   | FormMarkupWithSettings | ((data: any) => FormRawMarkup
     | FormMarkupWithSettings);
 
-export type FormFullName  = ConfigurableItemFullName;
+export type FormFullName = ConfigurableItemFullName;
 export type FormUid = ConfigurableItemUid;
 export type FormIdentifier = ConfigurableItemIdentifier;
 

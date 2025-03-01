@@ -9,7 +9,7 @@ namespace Shesha.Configuration.MappingMetadata
     {
         EntityMappingMetadata GetEntityMappingMetadata(Type entityType);
 
-        PropertyMappingMetadata GetPropertyMappingMetadata(Type entityType, string propertyName);
+        PropertyMappingMetadata? GetPropertyMappingMetadata(Type entityType, string propertyName);
 
         Task UpdateClassNamesAsync(Type entityType, List<PropertyInfo> properties, string oldValue, string newValue, bool replace);
     }

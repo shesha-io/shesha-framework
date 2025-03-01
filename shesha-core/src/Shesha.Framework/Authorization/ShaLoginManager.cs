@@ -495,7 +495,8 @@ namespace Shesha.Authorization
                                 if (user.Roles == null)
                                 {
                                     user.Roles = new List<UserRole>();
-                                    foreach (var defaultRole in RoleManager.Roles.Where(r => r.TenantId == tenantId && r.IsDefault).ToList())
+                                    var defaultRoles = await RoleManager.Roles.Where(r => r.TenantId == tenantId && r.IsDefault).ToListAsync();
+                                    foreach (var defaultRole in defaultRoles)
                                     {
                                         user.Roles.Add(new UserRole(tenantId, user.Id, defaultRole.Id));
                                     }

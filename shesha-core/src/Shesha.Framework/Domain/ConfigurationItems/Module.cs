@@ -1,10 +1,7 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Linq;
-using Abp.Runtime.Validation;
 using FluentValidation;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
-using Shesha.Services;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,19 +26,19 @@ namespace Shesha.Domain.ConfigurationItems
         /// Friendly name
         /// </summary>
         [StringLength(200)]
-        public virtual string FriendlyName { get; set; }
+        public virtual string? FriendlyName { get; set; }
 
         /// <summary>
         /// Module description
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
 
         /// <summary>
         /// Publisher
         /// </summary>
         [StringLength(200)]
-        public virtual string Publisher { get; set; }
+        public virtual string? Publisher { get; set; }
 
         /// <summary>
         /// Is editable
@@ -57,7 +54,7 @@ namespace Shesha.Domain.ConfigurationItems
         /// Current version no
         /// </summary>
         [StringLength(50)]
-        public virtual string CurrentVersionNo { get; set; }
+        public virtual string? CurrentVersionNo { get; set; }
 
         /// <summary>
         /// First initialization date
@@ -78,7 +75,7 @@ namespace Shesha.Domain.ConfigurationItems
         /// Code identifier that can be used in the client-side code to reference current module
         /// </summary>
         [StringLength(200)]
-        public virtual string Accessor { get; set; }
+        public virtual string? Accessor { get; set; }
 
         public override string ToString()
         {
