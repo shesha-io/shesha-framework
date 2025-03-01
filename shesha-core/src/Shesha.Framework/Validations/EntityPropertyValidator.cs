@@ -29,7 +29,7 @@ namespace Shesha.Validations
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult)
         {
             if (obj is TEntity entity)
             {
@@ -37,7 +37,7 @@ namespace Shesha.Validations
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object value, List<ValidationResult> validationResult)
+        public virtual async Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object? value, List<ValidationResult> validationResult)
         {
             return await Task.FromResult(true);
         }
@@ -47,12 +47,10 @@ namespace Shesha.Validations
     public class EntityPropertyValidator : IPropertyValidator, ITransientDependency
     {
         private IEntityConfigCache _entityConfigCache;
-        private IEntityConfigurationStore _entityConfigurationStore;
 
-        public EntityPropertyValidator(IEntityConfigCache entityConfigCache, IEntityConfigurationStore entityConfigurationStore)
+        public EntityPropertyValidator(IEntityConfigCache entityConfigCache)
         {
             _entityConfigCache = entityConfigCache;
-            _entityConfigurationStore = entityConfigurationStore;
         }
 
         public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult)
@@ -188,7 +186,7 @@ namespace Shesha.Validations
                             : $"Property '{friendlyName}' should have value length less then {propConfig.MaxLength + 1} symbols"));
                         return false;
                     }
-                    if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(value?.ToString()))
+                    if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(value?.ToString() ?? string.Empty))
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage

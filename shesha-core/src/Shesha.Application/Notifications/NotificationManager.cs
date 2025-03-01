@@ -14,6 +14,7 @@ using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -151,7 +152,7 @@ namespace Shesha.Notifications
             newCopy.Origin = newCopy;
 
             // notification specific props
-            newCopy.CopyNotificationSpecificPropsFrom(src);
+            newCopy.CopyNotificationSpecificPropsFrom(src.NotNull());
 
             newCopy.Normalize();
 

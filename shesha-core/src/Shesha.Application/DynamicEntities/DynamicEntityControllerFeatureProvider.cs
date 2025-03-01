@@ -37,7 +37,7 @@ namespace Shesha.DynamicEntities
             {
                 var genericInterface = controller.AsType().GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
 
-                var entityType = genericInterface.GenericTypeArguments.FirstOrDefault();
+                var entityType = genericInterface.GenericTypeArguments.First();
 
                 entityConfigurationStore.SetDefaultAppService(entityType, controller);
             }

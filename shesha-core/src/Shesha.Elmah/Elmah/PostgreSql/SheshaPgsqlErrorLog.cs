@@ -36,8 +36,6 @@ namespace Shesha.Elmah.PostgreSql
                 throw new ArgumentNullException("connectionString");
 
             ConnectionString = connectionString;
-
-            //PrepareDatabase();
         }
 
         /// <summary>
@@ -275,7 +273,7 @@ CREATE INDEX ix_{tableName}_type_id ON {schemaName}.{tableName} USING BTREE
                 int statusCode,
                 DateTime time,
                 string xml,
-                string location)
+                string? location)
             {
                 var command = new NpgsqlCommand();
                 command.CommandText =

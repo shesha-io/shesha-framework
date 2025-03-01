@@ -13,9 +13,9 @@
         /// <summary>
         /// Accessor of the module
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
-        public EntityTypeIndentifier(string module, string name)
+        public EntityTypeIndentifier(string? module, string name)
         {
             Module = module;
             Name = name;

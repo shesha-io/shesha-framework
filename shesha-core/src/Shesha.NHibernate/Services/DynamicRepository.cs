@@ -4,6 +4,7 @@ using Abp.Domain.Uow;
 using NHibernate;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Session;
 using Shesha.Reflection;
@@ -145,9 +146,9 @@ namespace Shesha.Services
         {
             var where = new Func<IQueryable<int>, Expression<Func<int, bool>>, IQueryable<int>>(Queryable.Where).Method;
             var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
-            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.FullName);
-            
-            return whereForMyType.Invoke(query, [query, lambda]).ForceCastAs<object, IQueryable>();
+            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.GetRequiredFullName());
+
+            return whereForMyType.Invoke(query, [query, lambda]).ForceCastAs<IQueryable>();
         }
     }
 }

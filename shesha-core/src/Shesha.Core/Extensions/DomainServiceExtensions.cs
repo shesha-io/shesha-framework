@@ -50,9 +50,12 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static async Task<T> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
         {
+            var stringId = id.ToString();
+            ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
+
             var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();
 
-            var item = await dynamicRepo.GetAsync(typeof(T), id.ToString());
+            var item = await dynamicRepo.GetAsync(typeof(T), stringId);
 
             if (item != null)
                 return (T)item;
