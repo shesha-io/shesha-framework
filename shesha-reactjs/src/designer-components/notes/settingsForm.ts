@@ -32,7 +32,7 @@ export const getSettings = (data: any) => {
                   readOnly: false,
                   inputs: [
                     {
-                      type: 'text',
+                      type: 'textField',
                       id: nanoid(),
                       propertyName: 'componentName',
                       label: 'Component name',
@@ -50,7 +50,7 @@ export const getSettings = (data: any) => {
                   readOnly: false,
                   inputs: [
                     {
-                      type: 'text',
+                      type: 'textField',
                       id: nanoid(),
                       propertyName: 'label',
                       label: 'Label'
@@ -139,7 +139,7 @@ export const getSettings = (data: any) => {
                   readOnly: false,
                   inputs: [
                     {
-                      type: 'text',
+                      type: 'textField',
                       id: nanoid(),
                       propertyName: 'ownerId',
                       label: 'Owner Id'
