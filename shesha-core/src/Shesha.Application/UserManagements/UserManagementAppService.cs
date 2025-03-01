@@ -1,17 +1,11 @@
-﻿using Abp.Auditing;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Repositories;
+using Abp.Linq.Extensions;
 using Abp.Runtime.Validation;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Shesha.Authorization;
 using Shesha.Authorization.Users;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
-using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
-using Shesha.Models.TokenAuth;
 using Shesha.Persons;
 using Shesha.UserManagements.Configurations;
 using System;
@@ -28,7 +22,6 @@ namespace Shesha.UserManagements
     public class UserManagementAppService: SheshaAppServiceBase
     {
         private readonly UserManager _userManager;
-        private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
         private readonly IRepository<Person, Guid> _repository;
         private readonly IRepository<ShaUserRegistration, Guid> _userRegistration;
         private readonly ISecuritySettings _securitySettings;
@@ -37,26 +30,15 @@ namespace Shesha.UserManagements
         public UserManagementAppService(
             IRepository<Person, Guid> repository, 
             UserManager userManager, 
-            IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository,
             ISecuritySettings securitySettings,
             IUserManagementSettings userManagementSettings,
             IRepository<ShaUserRegistration, Guid> userRegistration)
         {
             _userManager = userManager;
-            _rolePersonRepository = rolePersonRepository;
             _repository = repository;
             _securitySettings = securitySettings;
             _userManagementSettings = userManagementSettings;
             _userRegistration = userRegistration;
-        }
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <param name="repository"></param>
-        public UserManagementAppService(IRepository<Person, Guid> repository)
-        {
-
         }
 
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
@@ -76,10 +58,14 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(input.LastName))
                 validationResults.Add(new ValidationResult("Last Name is mandatory"));
 
+            // trim email and mobile
+            input.EmailAddress = input.EmailAddress?.Trim();
+            input.MobileNumber = input.MobileNumber?.Trim();
+
             // email and mobile number must be unique
-            if (await MobileNoAlreadyInUse(input.MobileNumber, null))
+            if (await MobileNoAlreadyInUseAsync(input.MobileNumber, null))
                 validationResults.Add(new ValidationResult("Specified mobile number already used by another person"));
-            if (await EmailAlreadyInUse(input.EmailAddress, null))
+            if (await EmailAlreadyInUseAsync(input.EmailAddress, null))
                 validationResults.Add(new ValidationResult("Specified email already used by another person"));
 
             if (validationResults.Any())
@@ -136,13 +122,14 @@ namespace Shesha.UserManagements
                 UserNameOrEmailAddress = user.UserName,
                 GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration,
                 AdditionalRegistrationInfoForm = !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormModule) && !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormName)
-                ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) : null,
+                    ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) 
+                    : null,
                 IsComplete = registrationSettings.AdditionalRegistrationInfo ? false : true
             };
           
             await _userRegistration.InsertAsync(userRegistration);
 
-            CurrentUnitOfWork.SaveChanges();
+            await CurrentUnitOfWork.SaveChangesAsync();
 
             return personAccount;
         }
@@ -153,7 +140,7 @@ namespace Shesha.UserManagements
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> CompleteRegistration (long userId)
+        public async Task<string> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)
@@ -173,27 +160,30 @@ namespace Shesha.UserManagements
         /// Checks is specified mobile number already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> MobileNoAlreadyInUse(string mobileNo, Guid? id)
+        private async Task<bool> MobileNoAlreadyInUseAsync(string? mobileNo, Guid? id)
         {
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return false;
 
-            return await _repository.GetAll().AnyAsync(e =>
-                e.MobileNumber1.Trim().ToLower() == mobileNo.Trim().ToLower() && (id == null || e.Id != id));
+            return await _repository.GetAll()
+                .Where(e => e.MobileNumber1 == mobileNo)
+                .WhereIf(id.HasValue, e => e.Id != id)
+                .AnyAsync();
         }
 
         /// <summary>
         /// Checks is specified email already used by another person
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> EmailAlreadyInUse(string email, Guid? id)
+        private async Task<bool> EmailAlreadyInUseAsync(string? email, Guid? id)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return false;
 
-            return await _repository.GetAll().AnyAsync(e =>
-                e.EmailAddress1.Trim().ToLower() == email.Trim().ToLower() && (id == null || e.Id != id));
+            return await _repository.GetAll()
+                .Where(e => e.EmailAddress1 == email)
+                .WhereIf(id.HasValue, e => e.Id != id)
+                .AnyAsync();
         }
-
     }
 }

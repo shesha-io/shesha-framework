@@ -1,6 +1,6 @@
 import React from "react";
-import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
+import { customIcons } from "@/designer-components/inputComponent/icons";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -26,7 +26,7 @@ export const getBackgroundImageUrl = async (propertyName: IBackgroundValue, back
     );
 };
 
-export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): Promise<React.CSSProperties> => {
+export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSProperties, url?: string): React.CSSProperties => {
 
     const style: React.CSSProperties = {};
 
@@ -52,7 +52,7 @@ export const getBackgroundStyle = async (input: IBackgroundValue, jsStyle: React
     } else if (input?.type === 'url') {
         style.backgroundImage = `url(${input?.url})`;
     } else if (input?.type === 'image') {
-        style.backgroundImage = `url(${input?.uploadFile?.url})`;
+        style.backgroundImage = `url(${input?.uploadFile})`;
     } else if (input?.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
     }
@@ -72,22 +72,50 @@ export const gradientDirectionOptions: IDropdownOption[] = [
 ];
 
 export const backgroundTypeOptions: IRadioOption[] = [
-    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
-    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
-    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
-    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
-    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
+    {
+        value: "color",
+        icon: "FormatPainterOutlined",
+        title: "Color"
+    },
+    {
+        value: "gradient",
+        icon: "BgColorsOutlined",
+        title: "Gradient"
+    },
+    {
+        value: "image",
+        icon: "PictureOutlined",
+        title: "Image"
+    },
+    {
+        value: "url",
+        icon: "LinkOutlined",
+        title: "URL"
+    },
+    {
+        value: "storedFile",
+        icon: "DatabaseOutlined",
+        title: "Stored File"
+    },
 ];
 
-export const repeatOptions: IDropdownOption[] = [
-    { value: 'no-repeat', label: 'noRepeatIcon' },
-    { value: 'repeat', label: 'repeatIcon' },
-    { value: 'repeat-x', label: 'repeatXIcon' },
-    { value: 'repeat-y', label: 'repeatYIcon' },
+export const repeatOptions: IRadioOption[] = [
+    { value: 'no-repeat', title: 'No Repeat', icon: customIcons['noRepeatIcon'] },
+    { value: 'repeat', title: 'Repeat', icon: customIcons['repeatIcon'] },
+    { value: 'repeat-x', title: 'Repeat X', icon: customIcons['repeatXIcon'] },
+    { value: 'repeat-y', title: 'Repeat Y', icon: customIcons['repeatYIcon'] },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
 
-export const positionOptions: IDropdownOption[] = [{ value: 'center', label: 'Center' }, { value: 'top', label: 'Top' }, { value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'bottom', label: 'Bottom' },
-{ value: 'top left', label: 'Top Left' }, { value: 'top right', label: 'Top Right' }, { value: 'bottom left', label: 'Bottom Left' }, { value: 'bottom right', label: 'Bottom Right' }];
+export const positionOptions: IDropdownOption[] = [
+    { value: 'center', label: 'Center' },
+    { value: 'top', label: 'Top' },
+    { value: 'left', label: 'Left' },
+    { value: 'right', label: 'Right' },
+    { value: 'bottom', label: 'Bottom' },
+    { value: 'top left', label: 'Top Left' },
+    { value: 'top right', label: 'Top Right' },
+    { value: 'bottom left', label: 'Bottom Left' },
+    { value: 'bottom right', label: 'Bottom Right' }];
 

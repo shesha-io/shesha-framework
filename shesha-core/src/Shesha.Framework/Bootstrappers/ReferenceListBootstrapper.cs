@@ -9,7 +9,6 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -290,11 +289,11 @@ namespace Shesha.Bootstrappers
 
         private class ListItemInfo
         {
-            public string Name { get; set; }
-            public string Description { get; set; }
+            public string? Name { get; set; }
+            public string? Description { get; set; }
             public Int64 Value { get; set; }
             public Int64 OrderIndex { get; set; }
-            public string Color { get; set; }
+            public string? Color { get; set; }
         }
     }
 }

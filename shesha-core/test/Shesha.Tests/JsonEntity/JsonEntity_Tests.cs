@@ -6,7 +6,6 @@ using Castle.DynamicProxy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
-using NHibernate.Proxy;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
@@ -35,10 +34,8 @@ namespace Shesha.Tests.JsonEntity
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
-        private readonly IRepository<Organisation, Guid> _organisationRepository;
         private readonly IRepository<ComplexTest, Guid> _jsonRepository;
         private readonly IRepository<ComplexTestString, Guid> _jsonStringRepository;
-        //private readonly IRepository<ComplexPersonTest, Guid> _jsonPersonRepository;
         private readonly IEntityModelBinder _entityModelBinder;
         private readonly ITypeFinder _typeFinder;
         private readonly IDynamicRepository _dynamicRepository;
@@ -47,10 +44,8 @@ namespace Shesha.Tests.JsonEntity
         {
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _personRepository = Resolve<IRepository<Person, Guid>>();
-            _organisationRepository = Resolve<IRepository<Organisation, Guid>>();
             _jsonRepository = Resolve<IRepository<ComplexTest, Guid>>();
             _jsonStringRepository = Resolve<IRepository<ComplexTestString, Guid>>();
-            //_jsonPersonRepository = Resolve<IRepository<ComplexPersonTest, Guid>>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
             _typeFinder = Resolve<ITypeFinder>();
             _dynamicRepository = Resolve<IDynamicRepository>();
@@ -93,9 +88,7 @@ namespace Shesha.Tests.JsonEntity
         {
             LoginAsHostAdmin();
 
-            using var uow = (NhUnitOfWork)_unitOfWorkManager.Begin();
-
-            var session = uow.GetSession();
+            using var uow = _unitOfWorkManager.Begin();
 
             var myType = typeof(Organisation);
 
@@ -113,30 +106,29 @@ namespace Shesha.Tests.JsonEntity
         {
             LoginAsHostAdmin();
 
-            using var uow = (NhUnitOfWork)_unitOfWorkManager.Begin();
-
-            var session = uow.GetSession();
-
-            var oldValue = "Shesha.Test.JsonPerson1";
-            var newValue = "Shesha.Test.JsonPerson";
-
-            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType()).ToList();
-
-            var mapProvider = Resolve<IMappingMetadataProvider>();
-
-            foreach (var entityType in entityTypes)
+            using (var uow = NewNhUnitOfWork()) 
             {
-                try
+                var oldValue = "Shesha.Test.JsonPerson1";
+                var newValue = "Shesha.Test.JsonPerson";
+
+                var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType()).ToList();
+
+                var mapProvider = Resolve<IMappingMetadataProvider>();
+
+                foreach (var entityType in entityTypes)
                 {
-                    var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
-                    var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
-                    if (jsonProps.Any())
-                        await mapProvider.UpdateClassNamesAsync(entityType, jsonProps, oldValue, newValue, true);
-                    if (genericProps.Any())
-                        await mapProvider.UpdateClassNamesAsync(entityType, genericProps, oldValue, newValue, false);
-                }
-                catch (Exception)
-                {
+                    try
+                    {
+                        var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
+                        var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
+                        if (jsonProps.Any())
+                            await mapProvider.UpdateClassNamesAsync(entityType, jsonProps, oldValue, newValue, true);
+                        if (genericProps.Any())
+                            await mapProvider.UpdateClassNamesAsync(entityType, genericProps, oldValue, newValue, false);
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             }
         }
@@ -269,7 +261,7 @@ namespace Shesha.Tests.JsonEntity
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var o = new ComplexTest()
                 {
@@ -354,7 +346,7 @@ namespace Shesha.Tests.JsonEntity
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var json = @"
 {
@@ -445,37 +437,6 @@ namespace Shesha.Tests.JsonEntity
                 };
                 await _jsonRepository.InsertOrUpdateAsync(o);
             }
-            /*var op = new ComplexPersonTest()
-            {
-                Name = "JsonPerson Person test",
-                Description = "New Person Description",
-                JsonList = new List<JsonEntities.JsonEntity>()
-                {
-                    new JsonAddress() { Town = "Listed Town", Street = "Listed street" },
-                    new JsonPerson() { FirstName = "11", LastName = "qq" },
-                    new JsonPerson() { FirstName = "22", LastName = "ww" },
-                    new JsonPerson() { FirstName = "33", LastName = "ee" },
-                },
-                AnyJson = new JsonPerson()
-                {
-                    FirstName = "JsonPerson",
-                    LastName = "JsonPerson",
-                    Person = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
-                },
-                JsonPerson = new JsonPerson()
-                {
-                    FirstName = "11111",
-                    LastName = "22222",
-                    //Person = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
-                }
-            };
-            try
-            {
-                await _jsonPersonRepository.InsertOrUpdateAsync(op);
-            }
-            catch (Exception e)
-            {
-            }*/
         }
 
         [Fact]
@@ -483,7 +444,7 @@ namespace Shesha.Tests.JsonEntity
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var o = new ComplexTest()
                 {
@@ -525,16 +486,7 @@ namespace Shesha.Tests.JsonEntity
 
                 using (var uow = _unitOfWorkManager.Begin())
                 {
-                    var nhuow = uow as NhUnitOfWork;
-
                     var person = _personRepository.GetAll().FirstOrDefault();
-
-                    /*var person = new Person()
-                    {
-                        Id = Guid.NewGuid(),
-                        FirstName = "Shurik 111",
-                        LastName = "Shurik 222",
-                    };*/
 
                     var pers = new JsonPerson()
                     {

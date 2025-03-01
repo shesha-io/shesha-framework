@@ -99,12 +99,12 @@ export const useGetInternal = <TData = any, TError = any, TQueryParams = IQueryP
           throw error;
         });
     },
-    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams]
+    [props.lazy, props.path, props.base, props.resolve, props.queryParams, props.pathParams, backendUrl, httpHeaders]
   );
 
   useDeepCompareEffect(() => {
     if (!props.lazy) refetch(props);
-  }, [props.lazy, props.path, props.base, props.queryParams, props.pathParams]);
+  }, [props.lazy, props.path, props.base, props.queryParams, props.pathParams, backendUrl, httpHeaders]);
 
   return {
     ...state,

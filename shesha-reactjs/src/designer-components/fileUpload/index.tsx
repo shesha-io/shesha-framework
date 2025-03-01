@@ -97,7 +97,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
         owner: prev['owner'],
       } as IFileUploadProps;
     })
-    .add<IFileUploadProps>(1, (prev, context) => ({...prev, useSync: !Boolean(context.formSettings?.modelType)}))
+    .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: !Boolean(context.formSettings?.modelType) }))
     .add<IFileUploadProps>(2, (prev) => {
       const pn = prev['name'] ?? prev.propertyName;
       const model = migratePropertyName(migrateCustomFunctions(prev));
@@ -106,7 +106,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     })
     .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
     .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
-    .add<IFileUploadProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

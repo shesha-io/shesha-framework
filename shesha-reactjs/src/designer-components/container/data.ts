@@ -1,4 +1,4 @@
-import { IStyleType } from '@/index';
+import { ICommonContainerProps, IContainerComponentProps, IStyleType } from '@/index';
 import { nanoid } from '@/utils/uuid';
 
 export const JUSTIFY_ITEMS = [
@@ -149,21 +149,63 @@ export const ALIGN_SELF = [
 ];
 
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICommonContainerProps => {
+  const {
+    width = 'auto',
+    height = 'auto',
+    maxHeight = 'auto',
+    maxWidth = 'auto',
+    minHeight = 'auto',
+    minWidth = '0px',
+    borderColor = '#d9d9d9',
+    borderRadius = '8',
+    borderStyle = 'solid',
+    borderWidth = '0px',
+    shadowStyle,
+  } = prev || {};
+
+
+  const isBelow = shadowStyle === 'below';
+  const isAbove = shadowStyle === 'above';
 
   return {
-    background: { type: 'color', color: '#fff' },
-    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
-    border: {
-      selectedCorner: 'all', selectedSide: 'all',
-      border: {
-        all: { width: '0', color: '#000', style: 'solid' }, top: { width: '0' }, right: { width: '0' },
-        bottom: { width: '0' }, left: { width: '0' }
-      },
-      radius: { all: 4 }
+    dimensions: {
+      width,
+      height,
+      minHeight,
+      maxHeight,
+      minWidth,
+      maxWidth
     },
-    shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
+    border: {
+      selectedCorner: 'all',
+      selectedSide: 'all',
+      border: {
+        all: { width: borderWidth, color: borderColor, style: borderStyle as any },
+      },
+      radius: { all: borderRadius }
+    },
+    shadow: {
+      blurRadius: isBelow || isAbove ? 4 : 0,
+      color: 'rgba(0, 0, 0, 0.15)',
+      offsetX: 0,
+      offsetY: isAbove ? -2 : isBelow ? 2 : 0,
+      spreadRadius: 0
+    },
     position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
-    display: "block"
+    display: prev?.display,
+    direction: prev?.direction ?? "horizontal",
+    flexWrap: prev?.flexWrap ?? "wrap",
+    flexDirection: prev?.flexDirection ?? "row",
+    justifyContent: prev?.justifyContent ?? "left",
+    alignItems: prev?.alignItems ?? "normal",
+    alignSelf: prev?.alignSelf ?? "normal",
+    justifyItems: prev?.justifyItems ?? "normal",
+    textJustify: prev?.textJustify ?? "auto",
+    justifySelf: prev?.justifySelf ?? "normal",
+    noDefaultStyling: prev?.noDefaultStyling ?? false,
+    gridColumnsCount: prev?.gridColumnsCount ?? null,
+    gap: prev?.gap ?? '8px',
+    overflow: prev?.overflow ?? 'auto'
   };
 };

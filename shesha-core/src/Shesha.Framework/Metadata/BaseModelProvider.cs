@@ -1,4 +1,5 @@
 ﻿using Abp.Runtime.Caching;
+using Shesha.Cache;
 using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
@@ -10,40 +11,19 @@ namespace Shesha.Metadata
     /// <summary>
     ///  Base model provider
     /// </summary>
-    public abstract class BaseModelProvider<TModel> : IModelProvider where TModel : ModelDto
+    public abstract class BaseModelProvider<TModel> : CacheHolder<string, List<TModel>>, IModelProvider where TModel : ModelDto
     {
         protected const string MainListCacheKey = "";
-        private readonly ICacheManager _cacheManager;
 
-        private ITypedCache<string, List<TModel>> _modelsCache;
-
-        /// <summary>
-        /// Cache of the ReferenceListItems
-        /// </summary>
-        protected ITypedCache<string, List<TModel>> ModelsCache
+        protected BaseModelProvider(string cacheName, ICacheManager cacheManager) : base(cacheName, cacheManager)
         {
-            get
-            {
-                if (_modelsCache == null)
-                {
-                    var cache = _cacheManager.GetCache<string, List<TModel>>($"{this.GetType().Name}ModelsCache");
-                    cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
-                    _modelsCache = cache;
-                }
-
-                return _modelsCache;
-            }
-        }
-
-        public BaseModelProvider(ICacheManager cacheManager)
-        {
-            _cacheManager = cacheManager;
+            Cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
         }
 
         /// inheritedDoc
         public async Task<List<TModel>> GetModelsAsync()
         {
-            return await ModelsCache.GetAsync(MainListCacheKey, async (key) =>
+            return await Cache.GetAsync(MainListCacheKey, async (key) =>
             {
                 var result = await FetchModelsAsync();
 
@@ -62,7 +42,7 @@ namespace Shesha.Metadata
 
         public async Task ClearCacheAsync()
         {
-            await ModelsCache.ClearAsync();
+            await Cache.ClearAsync();
         }
 
         async Task<List<ModelDto>> IModelProvider.GetModelsAsync()
@@ -74,7 +54,7 @@ namespace Shesha.Metadata
 
     public abstract class BaseModelProvider : BaseModelProvider<ModelDto>
     {
-        protected BaseModelProvider(ICacheManager cacheManager) : base(cacheManager)
+        protected BaseModelProvider(string cacheName, ICacheManager cacheManager) : base(cacheName, cacheManager)
         {
         }
     }

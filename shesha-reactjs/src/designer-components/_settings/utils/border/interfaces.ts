@@ -1,42 +1,43 @@
 import { IConfigurableFormComponent } from "@/providers";
 
+type IBorderType = "dashed" | "dotted" | "none" | "solid";
 export interface IBorderValue {
     radius?: {
-        all?: number;
-        topLeft?: number;
-        topRight?: number;
-        bottomLeft?: number;
-        bottomRight?: number;
+        all?: string | number;
+        topLeft?: string | number;
+        topRight?: string | number;
+        bottomLeft?: string | number;
+        bottomRight?: string | number;
     };
     border?: {
         all?: {
-            width?: string;
+            width?: string | number;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         top?: {
-            width?: string;
+            width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         right?: {
-            width?: string;
+            width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         bottom?: {
-            width?: string;
+            width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
         left?: {
-            width?: string;
+            width?: string | number;
             unit?: string;
             color?: string;
-            style?: string;
+            style?: IBorderType;
         };
     };
     selectedCorner?: string;

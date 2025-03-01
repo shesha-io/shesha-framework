@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems.Cache;
@@ -57,7 +58,10 @@ namespace Shesha.ConfigurationItems
 
             var pack = await _packageManager.PreparePackageAsync(exportСontext);
 
+#pragma warning disable IDISP001 // Dispose created
             var zipStream = new MemoryStream();
+#pragma warning restore IDISP001 // Dispose created
+
             await _packageManager.PackAsync(pack, zipStream);
 
             var fileName = $"package{DateTime.Now:yyyyMMdd_HHmm}.shaconfig";
@@ -71,12 +75,15 @@ namespace Shesha.ConfigurationItems
         [Consumes("multipart/form-data")]
         public async Task<AnalyzePackageResult> AnalyzePackageAsync([FromForm] AnalyzePackageInput input)
         {
+            if (input.File == null)
+                throw new UserFriendlyException("Please upload a package");
+
             using (var zipStream = input.File.OpenReadStream())
             {
                 var context = new ReadPackageContext { 
                     SkipUnsupportedItems = true
                 };
-                var package = await _packageManager.ReadPackageAsync(zipStream, context);
+                using var package = await _packageManager.ReadPackageAsync(zipStream, context);
 
                 var result = new AnalyzePackageResult();
 
@@ -137,7 +144,7 @@ namespace Shesha.ConfigurationItems
             using (var zipStream = input.File.OpenReadStream()) 
             {
                 var context = new ReadPackageContext();
-                var package = await _packageManager.ReadPackageAsync(zipStream, context);
+                using var package = await _packageManager.ReadPackageAsync(zipStream, context);
 
                 var importContext = new PackageImportContext {
                     CreateModules = true,
@@ -148,14 +155,14 @@ namespace Shesha.ConfigurationItems
                 await _packageManager.ImportAsync(package, importContext);
             }
 
-            UnitOfWorkManager.Current.SaveChanges();
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             // todo: return statistic
             return new PackageImportResult();
         }
 
         /// inheritedDoc
-        public async Task ClearClientSideCache() 
+        public async Task ClearClientSideCacheAsync() 
         {
             await _clientSideCache.ClearAsync();
         }
@@ -166,7 +173,7 @@ namespace Shesha.ConfigurationItems
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPut]
-        public async Task UpdateStatus(UpdateItemStatusInput input)
+        public async Task UpdateStatusAsync(UpdateItemStatusInput input)
         {
             // todo: check rights
 
@@ -218,7 +225,7 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPost]
-        public async Task<IConfigurationItemDto> CancelVersion(CancelItemVersionInput input)
+        public async Task<IConfigurationItemDto> CancelVersionAsync(CancelItemVersionInput input)
         {
             CheckCreatePermission();
 
@@ -266,7 +273,7 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPost]
-        public async Task<IConfigurationItemDto> CreateNewVersion(CreateItemNewVersionInput input)
+        public async Task<IConfigurationItemDto> CreateNewVersionAsync(CreateItemNewVersionInput input)
         {
             //CheckCreatePermission();
 

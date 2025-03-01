@@ -12,6 +12,7 @@ export interface IProps<TModel extends IConfigurableActionArguments> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
+  cacheKey?: string;
 }
 
 function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
@@ -29,35 +30,42 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
 
   const objectMarkup = JSON.parse(JSON.stringify(markup));
 
-  const newMarkUp = Array.isArray(objectMarkup)
-    ? objectMarkup.map((item: any) => ({
+  const styledMarkup = (item) => {
+
+    return item.type === 'collapsiblePanel' ? {
+      ...item,
+      content: {
+        ...item.content,
+        components: item.content.components.map((item: any) => ({
+          ...item,
+          type: "settingsInput",
+          inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
+          dropdownOptions: item?.values?.map((item: any) => ({
+            ...item,
+            label: item?.label,
+            icon: item?.icon
+          })),
+          buttonGroupOptions: item.buttonGroupOptions ?? item.items
+        }))
+      }
+    } : {
       ...item,
       type: "settingsInput",
-      inputType: item.type === 'settingsInput' ? item.inputType : item.type,
+      inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
       dropdownOptions: item?.values?.map((item: any) => ({
         ...item,
         label: item?.label,
         icon: item?.icon
       })),
-      buttonGroupOptions: item.buttonGroupOptions
+      buttonGroupOptions: item.buttonGroupOptions ?? item.items
+    };
+  };
 
-    }))
+  const newMarkUp = Array.isArray(objectMarkup)
+    ? objectMarkup.map((item: any) => styledMarkup(item))
     : {
       ...objectMarkup,
-      components: objectMarkup.components.map((item: any): ISettingsInputProps => ({
-        ...item,
-        type: "settingsInput",
-        inputType: item.type,
-        dropdownOptions: item?.values?.map((item: any) => ({
-          ...item,
-          label: item?.label,
-          icon: item?.icon
-        })),
-        buttonGroupOptions: item?.items?.map((item: any) => ({
-          ...item,
-          icon: item?.icon
-        }))
-      }))
+      components: objectMarkup.components.map((item: any): ISettingsInputProps => styledMarkup(item))
     };
 
   return (

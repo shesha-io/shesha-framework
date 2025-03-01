@@ -36,6 +36,37 @@ namespace Shesha.Domain.Attributes
             : this(null, null, null)
         { }
 
+        public ManyToManyAttribute(string table, string childColumn, string keyColumn, string @where, bool autoGeneration)
+            : this(table, childColumn, keyColumn, @where)
+        {
+            AutoGeneration = autoGeneration;
+        }
+        public ManyToManyAttribute(string table, string childColumn, string keyColumn, bool autoGeneration)
+            : this(table, childColumn, keyColumn)
+        {
+            AutoGeneration = autoGeneration;
+        }
+        public ManyToManyAttribute(string table, string childColumn, bool autoGeneration)
+            : this(table, childColumn, null)
+        {
+            AutoGeneration = autoGeneration;
+        }
+        public ManyToManyAttribute(string table, bool autoGeneration)
+            : this(table, null, null)
+        {
+            AutoGeneration = autoGeneration;
+        }
+        public ManyToManyAttribute(bool autoGeneration)
+            : this(null, null, null)
+        {
+            AutoGeneration = autoGeneration;
+        }
+
+        /// <summary>
+        /// Indicates that the database table will be generated automatically.
+        /// </summary>
+        public bool AutoGeneration { get; set; }
+
         /// <summary>
         /// It can be set either to the table you link to or the intermediate link table (only if it has a mapping)
         /// </summary>

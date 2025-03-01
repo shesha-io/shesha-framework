@@ -12,6 +12,7 @@ import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sources
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
+import FormItem from '../_settings/components/formItem';
 
 const { Panel } = Collapse;
 
@@ -35,7 +36,7 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
   const { formSettings } = useForm();
-  const { value, onChange, readOnly = false, label = <StyledLabel label='Action Name' />, description } = props;
+  const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
 
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
@@ -84,8 +85,6 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     return acc;
   }, {});
 
-  const styledLabel = StyledLabel({ label: label as string });
-
   return (
     <div
       style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
@@ -99,9 +98,9 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <Form.Item name="actionFullName" label={styledLabel} tooltip={description}>
+        <FormItem name="actionFullName" label={label as string} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </Form.Item>
+        </FormItem>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name="actionArguments" label={null}>
@@ -120,7 +119,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             {
               value?.handleSuccess && (
                 <Collapse defaultActiveKey={['1']}>
-                  <Panel header={<StyledLabel label="On Success handler" />} key="1">
+                  <Panel header={<StyledLabel label="On Success Handler" />} key="1">
                     <Form.Item name="onSuccess">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
                     </Form.Item >
@@ -132,7 +131,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             {
               value?.handleFail && (
                 <Collapse defaultActiveKey={['1']}>
-                  <Panel header={<StyledLabel label="On Fail handler" />} key="1">
+                  <Panel header={<StyledLabel label="On Fail Handler" />} key="1">
                     <Form.Item name="onFail">
                       <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
                     </Form.Item>

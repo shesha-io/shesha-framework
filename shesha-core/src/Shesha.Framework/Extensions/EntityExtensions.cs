@@ -1,10 +1,13 @@
-﻿using Abp.Dependency;
+﻿using Abp.Auditing;
+using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
+using FluentMigrator.Infrastructure.Extensions;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityHistory;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -16,7 +19,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security.Cryptography;
 
 namespace Shesha.Extensions
 {
@@ -25,6 +27,17 @@ namespace Shesha.Extensions
     /// </summary>
     public static class EntityExtensions
     {
+        public static bool IsAuditedProperty(this PropertyInfo property) 
+        {
+            return property.HasAttribute<AuditedAttribute>()
+                || property.HasAttribute<AuditedAsEventAttribute>()
+                || property.HasAttribute<AuditedAsManyToManyAttribute>()
+                || property.GetCustomAttributes().Any(x =>
+                    x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,>)) != null
+                    || x.GetType().FindBaseGenericType(typeof(AuditedAsManyToManyAttribute<,,,>)) != null
+                );
+        }
+
         /// <summary>
         /// Check if the property name is a one of special/system property
         /// </summary>
@@ -51,7 +64,7 @@ namespace Shesha.Extensions
         /// Returns the DisplayName of the entity.
         /// </summary>
         /// <returns>Returns the DisplayName of the entity.</returns>
-        public static string GetDisplayName<T>(this IEntity<T> entity)
+        public static string? GetDisplayName<T>(this IEntity<T> entity)
         {
             if (entity == null)
                 return "";
@@ -59,7 +72,7 @@ namespace Shesha.Extensions
             var displayNamePropInfo = entity.GetType().GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
             return displayNamePropInfo == null
-                ? ""
+                ? string.Empty
                 : entity.GetPropertyDisplayText(displayNamePropInfo.Name);
         }
 
@@ -67,50 +80,63 @@ namespace Shesha.Extensions
         /// Returns the DisplayName of the entity.
         /// </summary>
         /// <returns>Returns the DisplayName of the entity.</returns>
-        public static string GetEntityDisplayName(this object entity)
+        public static string? GetEntityDisplayName(this object entity)
         {
             if (entity == null)
-                return "";
+                return string.Empty;
 
             var displayNamePropInfo = entity.GetType().GetEntityConfiguration()?.DisplayNamePropertyInfo;
 
             return displayNamePropInfo == null
-                ? entity.GetType().GetDisplayNamePropertyInfo()?.GetValue(entity)?.ToString() ?? ""
+                ? entity.GetType().GetDisplayNamePropertyInfoOrNull()?.GetValue(entity)?.ToString() ?? string.Empty
                 : entity.GetPropertyDisplayText(displayNamePropInfo.Name);
         }
 
-        public static PropertyInfo GetDisplayNamePropertyInfo(this Type type)
+        private static readonly string[] displayNames = { "displayname", "name", "fullname", "address", "fulladdress" };
+
+        /// <summary>
+        /// Get the most appropriate Display Name property (started from DisplayName attribute)
+        /// </summary>
+        /// <param name="obj">The Object/Entity</param>
+        /// <returns></returns>
+        public static PropertyInfo? GetDisplayNamePropertyInfoOrNull(this object obj)
         {
-            var displayNamePropInfo = ReflectionHelper.FindPropertyWithUniqueAttribute(type, typeof(EntityDisplayNameAttribute));
-
-            if (displayNamePropInfo == null)
+            return GetDisplayNamePropertyInfoOrNull(obj.GetType());
+        }
+        /// <summary>
+        /// Get the most appropriate Display Name property (started from DisplayName attribute)
+        /// </summary>
+        /// <param name="type">The type of Object/Entity</param>
+        /// <returns></returns>
+        public static PropertyInfo? GetDisplayNamePropertyInfoOrNull(this Type type)
+        {
+            var prop = ReflectionHelper.FindPropertyWithUniqueAttribute(type, typeof(EntityDisplayNameAttribute));
+            if (prop == null)
             {
-                // Will automatically look for any properties called 'Name' or 'DisplayName'.
-                displayNamePropInfo = ReflectionHelper.GetProperty(type, "Name");
-
-                if (displayNamePropInfo == null)
-                    displayNamePropInfo = ReflectionHelper.GetProperty(type, "DisplayName");
-            }
-
-            return displayNamePropInfo;
+                foreach (var name in displayNames)
+                {
+                    prop = type.GetProperties().FirstOrDefault(z => z.Name.ToLower() == name);
+                    if (prop != null)
+                        return prop;
+                }
+            };
+            return prop;
         }
 
-        public static string GetTypeShortAlias(this Type entityType)
+        public static string? GetTypeShortAliasOrNull(this Type entityType)
         {
             var att = entityType.GetUniqueAttribute<EntityAttribute>();
-
-            if (att == null
-                || string.IsNullOrEmpty(att.TypeShortAlias))
-            {
-                return null;
-            }
-            else
-            {
-                return att.TypeShortAlias;
-            }
+            return att == null || string.IsNullOrEmpty(att.TypeShortAlias)
+                ? null
+                : att.TypeShortAlias;
         }
 
-        public static string GetReferenceListDisplayText<T, TValue>(this T owner, Expression<Func<T, TValue?>> expression) where TValue : struct, IConvertible
+        public static string GetTypeShortAlias(this Type entityType) 
+        {
+            return entityType.GetTypeShortAliasOrNull() ?? throw new Exception($"Entity type '{entityType.FullName}' has no {nameof(EntityAttribute.TypeShortAlias)}");
+        }
+
+        public static string? GetReferenceListDisplayText<T, TValue>(this T owner, Expression<Func<T, TValue?>> expression) where TValue : struct, IConvertible
         {
             if (owner == null)
                 return null;
@@ -145,7 +171,7 @@ namespace Shesha.Extensions
             return entity.Id;
         }
 
-        public static object GetId(this object entity)
+        public static object? GetId(this object entity)
         {
             if (entity == null)
                 return null;
@@ -164,7 +190,7 @@ namespace Shesha.Extensions
         }
 
         //[Obsolete("To be reviewed")]
-        public static string GetPropertyDisplayText(this object entity, string propertyName, string defaultValue = "")
+        public static string? GetPropertyDisplayText(this object entity, string propertyName, string defaultValue = "")
         {
             try
             {
@@ -237,9 +263,9 @@ namespace Shesha.Extensions
         }
 
         //[Obsolete("Should use native MVC functionality and related DataAnnotations e.g. Display")]
-        public static string GetPrimitiveTypePropertyDisplayText(object val, PropertyInfo propInfo, string defaultValue)
+        public static string? GetPrimitiveTypePropertyDisplayText(object val, PropertyInfo propInfo, string defaultValue)
         {
-            if (val == null || val.ToString().Length == 0)
+            if (val == null || string.IsNullOrWhiteSpace(val.ToString()))
             {
                 if (defaultValue == null)
                     return string.Empty;
@@ -247,17 +273,17 @@ namespace Shesha.Extensions
                     return defaultValue;
             }
 
-            string format = EntityExtensions.GetPropertyDisplayFormat(propInfo);
+            var format = EntityExtensions.GetPropertyDisplayFormat(propInfo);
 
             return FormatValue(val, propInfo, format, false);
         }
 
-        private static string GetPropertyDisplayFormat(PropertyInfo propInfo)
+        private static string? GetPropertyDisplayFormat(PropertyInfo propInfo)
         {
             return propInfo.GetAttribute<DisplayFormatAttribute>(true)?.DataFormatString;
         }
 
-        private static string FormatValue(object val, PropertyInfo propInfo, string format, bool isForEdit)
+        private static string? FormatValue(object val, PropertyInfo propInfo, string? format, bool isForEdit)
         {
             const string defaultFloatFormat = "N";
             const string defaultIntegerFormat = "D";
@@ -326,53 +352,12 @@ namespace Shesha.Extensions
             return propInfo.DeclaringType.GetEntityConfiguration()[propInfo.Name].GeneralType;
         }
 
-        /// <summary>
-        /// Sets the value of the specified property.
-        /// </summary>
-        /// <param name="entity">Entity whose property is to be set.</param>
-        /// <param name="propertyName">Name of the property to be set.</param>
-        /// <param name="value">Value to set the property to as a string.</param>
-        /// <param name="format"></param>
-        /// <returns>Returns true if the property was set successfully, else returns false e.g. in case of unexpected value.</returns>
-        [Obsolete("To be reviewed")]
-        public static bool SetPropertyValue(this object entity, string propertyName, string value, string format = null)
-        {
-            var propInfo = ReflectionHelper.GetProperty(entity, propertyName, out var propertyEntity);
-
-            string lastPropertyNameSegment = propertyName;
-            if (propertyName.Contains('.'))
-            {
-                var lastDotIndex = propertyName.LastIndexOf('.');
-                lastPropertyNameSegment = propertyName.Substring(lastDotIndex + 1, propertyName.Length - lastDotIndex - 1);
-            }
-
-            try
-            {
-                bool hasNewEntityIndicator;
-
-                object parsedValue;
-                var res = Parser.TryParseToTargetPropertyType(value, propInfo, out parsedValue, out hasNewEntityIndicator, format);
-                if (!res)
-                    return false;
-
-                if (!hasNewEntityIndicator) // hasNewEntityIndicator will only be true for Entity properties in which case it should not be set
-                    propInfo.SetValue(propertyEntity, parsedValue, null);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                //Logger.WriteLog(LogLevel.DEBUG, string.Format("Unable to set property '{0}.{1}' to value '{2}'.", propertyEntity.GetType().Name, propInfo.Name, value, ex));
-                return false;
-            }
-        }
-
-        public static List<T> GetFullChain<T>(this T entity, Func<T, T> parentFunc) where T : class
+        public static List<T> GetFullChain<T>(this T entity, Func<T, T?> parentFunc) where T : class
         {
             return entity.GetClosestChain(parentFunc, e => e == null);
         }
 
-        public static List<T> GetClosestChain<T>(this T entity, Func<T, T> parentFunc, Func<T, bool> condition) where T : class
+        public static List<T> GetClosestChain<T>(this T entity, Func<T, T?> parentFunc, Func<T, bool> condition) where T : class
         {
             var chain = new List<T>();
             var currentEntity = entity;
@@ -385,18 +370,18 @@ namespace Shesha.Extensions
 
                 var parent = parentFunc.Invoke(currentEntity);
 
-                currentEntity = !chain.Contains(parent) ? parent : null;
+                currentEntity = parent != null && !chain.Contains(parent) ? parent : null;
             }
             return chain;
         }
 
-        public static T Closest<T>(this T entity, Func<T, T> parentFunc, Func<T, bool> condition) where T : class
+        public static T? Closest<T>(this T? entity, Func<T, T?> parentFunc, Func<T, bool> condition) where T : class
         {
             if (entity == null)
                 return null;
             var item = entity.GetClosestChain(parentFunc, condition).LastOrDefault();
 
-            return condition.Invoke(item) ? item : null;
+            return item != null && condition.Invoke(item) ? item : null;
         }
 
         public static GeneralDataType GetGeneralPropertyType(Type type, string propertyName)
@@ -416,7 +401,7 @@ namespace Shesha.Extensions
         /// <summary>
         /// Loads the specified entity from the DB with cast to the specified class (if needed), is useful when the entity is loaded from the DB using the base class (e.g. Employee is loaded from the DB as a Person)
         /// </summary>
-        public static TChild LoadAs<TChild, TParent>(this TParent entity)
+        public static TChild? LoadAs<TChild, TParent>(this TParent entity)
             where TParent : Entity<Guid>
             where TChild : TParent
         {
@@ -439,7 +424,7 @@ namespace Shesha.Extensions
         public static string FullyQualifiedEntityId<TEntity, TId>(this TEntity entity) where TEntity : IEntity<TId>
         {
             var entityType = entity.GetType().StripCastleProxyType();
-            return entityType.AssemblyQualifiedName + "|" + entity.GetId().ToString();
+            return entityType.AssemblyQualifiedName + "|" + entity.GetId()?.ToString();
         }
 
         #region Multivalue reference list todo: review
@@ -454,7 +439,7 @@ namespace Shesha.Extensions
         /// <returns>If property value is null returns the <paramref name="defaultValue"/>, else
         /// returns a comma separated list of the Rerefence List Items.</returns>
         [Obsolete("Should use native MVC functionality and related DataAnnotations e.g. Display")]
-        public static string GetMultiValueReferenceListItemNames(this object entity, string propertyName, string defaultValue = null, string separator = ", ")
+        public static string GetMultiValueReferenceListItemNames(this object entity, string propertyName, string? defaultValue = null, string separator = ", ")
         {
             var items = GetMultiValueReferenceListItemNamesAr(entity, propertyName);
             if (defaultValue != null && items.Length == 0)
@@ -483,10 +468,14 @@ namespace Shesha.Extensions
 
             var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
 
+            var property = entity.GetType().GetProperty(propertyName);
+            if (property == null)
+                throw new ArgumentException($"Property '{propertyName}' not found in type '{entity.GetType().FullName}'");
+
             for (int i = 0; i < itemsInt.Length; i++)
             {
                 if (refListName == "" && refListModule == "")
-                    result[i] = ReflectionHelper.GetEnumDescription(ReflectionHelper.GetUnderlyingTypeIfNullable(entity.GetType().GetProperty(propertyName).PropertyType), itemsInt[i]);
+                    result[i] = ReflectionHelper.GetEnumDescription(ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType), itemsInt[i]);
                 else
                     result[i] = refListHelper.GetItemDisplayText(new ReferenceListIdentifier(refListModule, refListName), itemsInt[i]);
             }
@@ -494,7 +483,7 @@ namespace Shesha.Extensions
             return result;
         }
 
-        private static Int64[] GetMultiValueReferenceListItemValuesAr(this object entity, string propertyName, out string refListModule, out string refListName)
+        private static Int64[] GetMultiValueReferenceListItemValuesAr(this object entity, string propertyName, out string? refListModule, out string? refListName)
         {
             var propInfo = ReflectionHelper.GetProperty(entity, propertyName, out var propertyEntity);
 

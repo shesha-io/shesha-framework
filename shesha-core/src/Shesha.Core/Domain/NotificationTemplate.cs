@@ -13,28 +13,23 @@ using System.Threading.Tasks;
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate")]
-    public class NotificationTemplate : FullAuditedEntity<Guid>
+    public class NotificationTemplate : FullAuditedEntity<Guid>, INotificationTemplateProps
     {
-        public virtual bool IsEnabled { get; set; }
-
-        [StringLength(300)]
-        public virtual string Name { get; set; }
-        
-        [Required]       
-        
-        public virtual Notification Notification { get; set; }
-
+        public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
+        public virtual NotificationTypeConfig PartOf { get; set; }
+        [StringLength(2000)]
+        public virtual string TitleTemplate { get; set; }
         [StringLength(int.MaxValue)]
-        public virtual string Body { get; set; }
+        public virtual string BodyTemplate { get; set; }
 
-        [StringLength(300)]
-        public virtual string Subject { get; set; }
-        public virtual RefListNotificationType? SendType { get; set; }
-        public virtual RefListNotificationTemplateType? BodyFormat { get; set; }
-
-        public NotificationTemplate()
+        public NotificationTemplate Clone()
         {
-            IsEnabled = true;
+            return new NotificationTemplate {
+                PartOf = PartOf,
+                MessageFormat = MessageFormat,
+                TitleTemplate = TitleTemplate,
+                BodyTemplate = BodyTemplate,
+            };
         }
     }
 
@@ -46,17 +41,24 @@ namespace Shesha.Domain
         {
             _repository = repository;
 
-            RuleFor(x => x.Notification).NotEmpty();
-            RuleFor(x => x.Name).NotEmpty().MustAsync(UniqueNameAsync).WithMessage("Template with name '{PropertyValue}' already exists in this notification.");
+            RuleFor(x => x.MessageFormat).NotEmpty();
+            RuleFor(x => x.PartOf).NotNull();
+            RuleFor(x => x)
+                .MustAsync(UniqueMessageFormatAsync)
+                .WithMessage("A template with the same message format and notification type already exists.");
         }
 
-        private async Task<bool> UniqueNameAsync(NotificationTemplate template, string name, CancellationToken cancellationToken)
+        private async Task<bool> UniqueMessageFormatAsync(NotificationTemplate template, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(name) || template.Notification == null)
+            if (template.MessageFormat == null || template.PartOf == null)
                 return true;
 
-            var alreadyExist = await _repository.GetAll().Where(m => m.Notification == template.Notification && m.Name.ToLower() == name.ToLower() && m.Id != template.Id).AnyAsync();
+            var alreadyExist = await _repository.GetAll()
+                .Where(m => m.PartOf == template.PartOf && m.MessageFormat == template.MessageFormat && m.Id != template.Id)
+                .AnyAsync();
+
             return !alreadyExist;
         }
     }
+
 }

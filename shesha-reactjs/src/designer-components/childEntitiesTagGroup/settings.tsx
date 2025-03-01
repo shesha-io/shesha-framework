@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import React, { FC } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
@@ -87,7 +87,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
   </SettingsFormItem>*/}
 
         <SettingsFormItem name="formId" label="Form Path" jsSetting>
-          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+          <FormAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="labelFormat" label="Label Format" required>

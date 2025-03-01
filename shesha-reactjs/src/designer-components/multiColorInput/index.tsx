@@ -21,6 +21,12 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
         }
     }, [value, onChange, theme.application.primaryColor]);
 
+    const removeLastWord = (inputString) => {
+        const words = inputString.split('.');
+        words.pop();
+        return words.join('.');
+    };
+
     return (
         <>
             <Row>
@@ -38,13 +44,13 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                                 setColors(newColors);
                             }}
                         >
-                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='color' id={nanoid()} />
+                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='colorPicker' id={nanoid()} />
                         </Tag>
                     );
                 })}
             </Row>
 
-            <InputRow inline={true} readOnly={readOnly} inputs={[{ propertyName: 'background.gradient.direction', label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions, id: nanoid() }]} >
+            <InputRow inline={true} readOnly={readOnly} inputs={[{ propertyName: removeLastWord(propertyName) + '.direction', label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions, id: nanoid() }]} >
                 <FormItem>
                     <Button
                         type='primary'

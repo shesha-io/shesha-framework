@@ -386,7 +386,9 @@ export const settingsForm = new DesignerToolbarSettings()
             validate: { required: true },
             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
             settingsValidationErrors: [],
-            useRawValues: true,
+            displayPropName: 'displayText',
+            keyPropName: 'value',
+            mode: 'single',
             queryParams: null,
           })
           .addPropertyAutocomplete({
@@ -415,7 +417,6 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
-            
           })
           .addDropdown({
             id: nanoid(),

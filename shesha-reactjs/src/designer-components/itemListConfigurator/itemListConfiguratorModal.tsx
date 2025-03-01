@@ -6,6 +6,7 @@ import { ItemListConfigurator } from './itemListConfigurator';
 import { useMedia } from 'react-use';
 import { DefaultItemRenderer, ItemSettingsMarkupFactory } from './interfaces';
 import { ListEditorChildrenFn } from '@/components/listEditor';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface ModalSettings {
     title?: string;
@@ -18,11 +19,11 @@ export interface IItemListConfiguratorModalProps<TItem extends ListItemWithId> {
     onChange?: (newValue: TItem[]) => void;
     initNewItem: (items: TItem[]) => TItem;
     settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
+    size?: SizeType;
 
     buttonText?: string;
     modalSettings?: ModalSettings;
     itemRenderer: ListEditorChildrenFn<TItem> | DefaultItemRenderer<TItem>;
-    actualModelContext?: any;
 }
 
 export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: IItemListConfiguratorModalProps<TItem>) => {
@@ -35,7 +36,7 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
         itemRenderer,
         buttonText,
         modalSettings,
-        actualModelContext,
+        size
     } = props;
 
     const { title, header } = modalSettings ?? {};
@@ -61,7 +62,7 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
 
     return (
         <>
-            <Button onClick={openModal}>{buttonText ?? (readOnly ? 'View Configuration' : 'Edit Configuration')}</Button>
+            <Button onClick={openModal} size={size}>{buttonText ?? (readOnly ? 'View Configuration' : 'Edit Configuration')}</Button>
             <Modal
                 width={isSmall ? '90%' : '60%'}
                 styles={{ body: { height: '80vh' } }}
@@ -79,7 +80,6 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
                     settingsMarkupFactory={settingsMarkupFactory}
                     itemRenderer={itemRenderer}
                     header={header}
-                    actualModelContext={actualModelContext}
                 />
             </Modal>
         </>

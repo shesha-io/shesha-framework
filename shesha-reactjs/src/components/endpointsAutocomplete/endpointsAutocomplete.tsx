@@ -43,8 +43,9 @@ export interface VerbSelectorProps {
   verbs?: IHttpVerb[];
   value?: string;
   onChange: (newValue?: string) => void;
+  size?: SizeType;
 }
-export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange }) => {
+export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
   const options: DefaultOptionType[] = useMemo(() => {
     return (verbs ?? []).map<DefaultOptionType>(verb => ({
       value: verb.value,
@@ -57,6 +58,7 @@ export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange }) 
       style={{ width: '120px' }}
       options={options}
       value={value}
+      size={size}
       onChange={onChange}
     >
     </Select>
@@ -146,7 +148,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       dropdownStyle={props?.dropdownStyle}
       popupMatchSelectWidth={false}
     >
-      <Input addonBefore={props.prefix} addonAfter={props.suffix} />
+      <Input addonBefore={props.prefix} addonAfter={props.suffix} size={props.size} />
     </AutoComplete>
   );
 

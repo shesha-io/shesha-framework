@@ -9,9 +9,10 @@ export interface IColumnsConfigProps {
     onChange?: (value: ColumnsItemProps[]) => void;
     readOnly?: boolean;
     size?: SizeType;
+    parentComponentType?: string;
 }
 
-export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOnly = false, size }) => {
+export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOnly = false, size, parentComponentType }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const toggleModalVisibility = () => setModalVisible((prev) => !prev);
@@ -26,6 +27,7 @@ export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readOn
                 value={value}
                 onChange={onChange}
                 readOnly={readOnly}
+                parentComponentType={parentComponentType}
             />
         </Fragment>
     );

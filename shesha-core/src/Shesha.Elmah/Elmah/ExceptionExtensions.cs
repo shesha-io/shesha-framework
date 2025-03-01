@@ -17,8 +17,8 @@ namespace Shesha.Elmah
         /// <returns></returns>
         public static bool IsExceptionLogged(this Exception ex)
         {
-            return ex.Data[ExceptionLoggedKey] != null && 
-                (bool)ex.Data[ExceptionLoggedKey] == true;
+            var loggedFlag = ex.Data[ExceptionLoggedKey];
+            return loggedFlag != null && (bool)loggedFlag == true;
         }
 
         /// <summary>
@@ -41,8 +41,9 @@ namespace Shesha.Elmah
 
         public static Guid? GetExceptionId(this Exception ex)
         {
-            return ex.Data[ExceptionIdKey] != null && ex.Data[ExceptionIdKey] is Guid
-                ? (Guid)ex.Data[ExceptionIdKey]
+            var exceptionIdValue = ex.Data[ExceptionIdKey];
+            return exceptionIdValue != null && exceptionIdValue is Guid
+                ? (Guid)exceptionIdValue
                 : (Guid?)null;
         }
     }

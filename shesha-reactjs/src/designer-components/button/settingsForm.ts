@@ -35,15 +35,14 @@ export const getSettings = (data) => {
                 },
                 jsSetting: true,
               })
-              .addLabelConfigurator({
-                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                propertyName: 'hideLabel',
+              .addSettingsInput({
+                id: 'label-4c18-468c-89e1-60c002ce96c5',
+                propertyName: 'label',
                 label: 'Caption',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                hideLabel: true,
               })
               .addSettingsInput({
-                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
                 inputType: 'textArea',
                 propertyName: 'tooltip',
                 label: 'Tooltip',
@@ -100,10 +99,9 @@ export const getSettings = (data) => {
                 ],
               })
               .addConfigurableActionConfigurator({
-                id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
+                id: 'actionConfiguration-4c18-468c-89e1-60c002ce96c5',
                 propertyName: 'actionConfiguration',
-                label: 'Action configuration',
-                hidden: false,
+                label: 'Action Configuration',
                 validate: {},
                 settingsValidationErrors: [],
               })
@@ -115,6 +113,16 @@ export const getSettings = (data) => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                propertyName: 'buttonType',
+                label: 'Type',
+                validate: {
+                  required: true,
+                },
+                inputType: 'dropdown',
+                dropdownOptions: buttonTypes,
+              })
               .addPropertyRouter({
                 id: 'styleRouter',
                 propertyName: 'propertyRouter1',
@@ -130,16 +138,6 @@ export const getSettings = (data) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
-                    .addSettingsInput({
-                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                      propertyName: 'buttonType',
-                      label: 'Type',
-                      validate: {
-                        required: true,
-                      },
-                      inputType: 'dropdown',
-                      dropdownOptions: buttonTypes,
-                    })
                     .addCollapsiblePanel({
                       id: 'fontStyleCollapsiblePanel',
                       propertyName: 'pnlFontStyle',
@@ -167,7 +165,7 @@ export const getSettings = (data) => {
                                 dropdownOptions: fontTypes,
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Size',
                                 propertyName: 'font.size',
@@ -185,7 +183,7 @@ export const getSettings = (data) => {
                                 width: 100,
                               },
                               {
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                 label: 'Color',
                                 propertyName: 'font.color',
@@ -224,7 +222,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'dimensionsStyleRowWidth',
                                 label: "Width",
                                 width: 85,
@@ -234,7 +232,7 @@ export const getSettings = (data) => {
 
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'dimensionsStyleRowMinWidth',
                                 label: "Min Width",
                                 width: 85,
@@ -243,7 +241,7 @@ export const getSettings = (data) => {
                                 icon: "minWidthIcon",
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'dimensionsStyleRowMaxWidth',
                                 label: "Max Width",
                                 width: 85,
@@ -260,7 +258,7 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'dimensionsStyleRowHeight',
                                 label: "Height",
                                 width: 85,
@@ -269,7 +267,7 @@ export const getSettings = (data) => {
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'dimensionsStyleRowMinHeight',
                                 label: "Min Height",
                                 width: 85,
@@ -278,7 +276,7 @@ export const getSettings = (data) => {
                                 icon: "minHeightIcon",
                               },
                               {
-                                type: 'text',
+                                type: 'textField',
                                 id: 'dimensionsStyleRowMaxHeight',
                                 label: "Max Height",
                                 width: 85,
@@ -376,9 +374,9 @@ export const getSettings = (data) => {
                       label: 'Background',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -398,7 +396,7 @@ export const getSettings = (data) => {
                               id: "backgroundStyleRow-color",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'backgroundStyleRow-color',
                                 label: "Color",
                                 propertyName: "background.color",
@@ -427,7 +425,7 @@ export const getSettings = (data) => {
                               id: "backgroundStyle-url",
                               parentId: "backgroundStylePnl",
                               inputs: [{
-                                type: 'text',
+                                type: 'textField',
                                 id: 'backgroundStyle-url',
                                 propertyName: "background.url",
                                 jsSetting: false,
@@ -456,8 +454,9 @@ export const getSettings = (data) => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'text',
-                                  id: 'backgroundStyleRow-storedFile',
+                                  type: 'textField',
+                                  id: 'backgroundStyle-storedFile',
+                                  jsSetting: false,
                                   propertyName: "background.storedFile.id",
                                   label: "File ID"
                                 }
@@ -467,32 +466,34 @@ export const getSettings = (data) => {
                               id: "backgroundStyleRow-controls",
                               parentId: 'backgroundStyleRow',
                               inline: true,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-size',
                                   label: "Size",
+                                  customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   hideLabel: true,
                                   propertyName: "background.size",
                                   dropdownOptions: sizeOptions,
                                 },
                                 {
-                                  label: "Position",
-                                  hideLabel: true,
                                   type: 'customDropdown',
                                   id: 'backgroundStyleRow-position',
+                                  label: "Position",
+                                  hideLabel: true,
+                                  customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
                                 {
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat',
                                   label: "Repeat",
                                   hideLabel: true,
                                   propertyName: "background.repeat",
-                                  type: 'customDropdown',
-                                  id: 'backgroundStyleRow-repeat',
-                                  width: 70,
-                                  dropdownOptions: repeatOptions,
+                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
                             })
@@ -519,47 +520,47 @@ export const getSettings = (data) => {
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             inputs: [
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
                                 width: 60,
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 icon: "offsetHorizontalIcon",
                                 propertyName: 'shadow.offsetX',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
                                 width: 60,
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 icon: 'offsetVerticalIcon',
                                 propertyName: 'shadow.offsetY',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-blur',
                                 label: 'Blur',
                                 hideLabel: true,
                                 width: 60,
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 icon: 'blurIcon',
                                 propertyName: 'shadow.blurRadius',
                               },
                               {
-                                type: 'number',
+                                type: 'numberField',
                                 id: 'shadowStyleRow-spread',
                                 label: 'Spread',
                                 hideLabel: true,
                                 width: 60,
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 icon: 'spreadIcon',
                                 propertyName: 'shadow.spreadRadius',
                               },
                               {
-                                type: 'color',
+                                type: 'colorPicker',
                                 id: 'shadowStyleRow-color',
                                 label: 'Color',
                                 hideLabel: true,
@@ -594,7 +595,7 @@ export const getSettings = (data) => {
                     .addCollapsiblePanel({
                       id: 'customStyleCollapsiblePanel',
                       propertyName: 'customStyle',
-                      label: 'Custom Style',
+                      label: 'Custom Styles',
                       labelAlign: 'right',
                       ghost: true,
                       parentId: 'styleRouter',
@@ -605,9 +606,9 @@ export const getSettings = (data) => {
                           .addSettingsInput({
                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             id: 'custom-css-412c-8461-4c8d55e5c073',
-                            propertyName: 'style',
-                            hideLabel: true,
                             inputType: 'codeEditor',
+                            propertyName: 'style',
+                            hideLabel: false,
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })

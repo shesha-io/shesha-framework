@@ -109,13 +109,17 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                         var dynamicProps = properties.Where(p => p.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
                         foreach (var dynamicProp in dynamicProps)
                         {
-                            var propType = await _dynamicDtoTypeBuilder.GetDtoPropertyTypeAsync(dynamicProp, new DynamicDtoTypeBuildingContext());
-                            FieldAsync(GraphTypeMapper.GetGraphType(propType, isInput: false), dynamicProp.Name, dynamicProp.Description,
-                                resolve: async context => {
-                                    var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
-                                    return value;
-                                }
-                            );
+                            var alreadyDeclared = properties.Any(p => p.Name.Equals(dynamicProp.Name, StringComparison.InvariantCultureIgnoreCase));
+                            if (!alreadyDeclared) 
+                            {
+                                var propType = await _dynamicDtoTypeBuilder.GetDtoPropertyTypeAsync(dynamicProp, new DynamicDtoTypeBuildingContext());
+                                FieldAsync(GraphTypeMapper.GetGraphType(propType, isInput: false), dynamicProp.Name, dynamicProp.Description,
+                                    resolve: async context => {
+                                        var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
+                                        return value;
+                                    }
+                                );
+                            }                            
                         }
                         await uow.CompleteAsync();
                     }
