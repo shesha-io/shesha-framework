@@ -1,3 +1,4 @@
+import { IConfigurableActionConfiguration } from '@/providers';
 import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
@@ -207,6 +208,45 @@ export interface IReactTableProps extends ITableRowDragProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+
+  striped?: boolean;
+
+  onRowClick?: IConfigurableActionConfiguration;
+  onRowDblClick?: IConfigurableActionConfiguration;
+  onRowSelect?: IConfigurableActionConfiguration;
+
+  shadowObject?: any;
+  renderedShadow?: string;
+
+  tableFontColor?: string;
+
+  overflowX?:  CSSProperties['overflowX'];
+  overflowY?: CSSProperties['overflowY'];
+  borderRadius?: number;
+
+  sortIndicator?: string;
+
+  borderObject?: any;
+  renderedBorder?: string;
+
+  tableFontSize?: number;
+  fontFamily?: string;
+  headerFontSize?: number;
+  headerHeight?: number;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+  headerBorder?: string;
+
+  width?: number;
+  backgroundColor?: string;
+  tableHeight?: number;
+
+  zebraStripeColor?: string;
+  hoverHighlight?: string;
+  rowSelectedColor?: string;
+
+  rowHeight?: number;
+  rowPadding?: number;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

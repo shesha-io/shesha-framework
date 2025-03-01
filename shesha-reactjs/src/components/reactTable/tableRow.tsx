@@ -13,8 +13,8 @@ export type RowEditMode = 'read' | 'edit';
 
 export interface ISortableRowProps {
   prepareRow: (row: Row<any>) => void;
-  onClick: (row: Row<any>) => void;
-  onDoubleClick: (row: Row<any>, index: number) => void;
+  onClick: (row: Row<any>, event?: React.MouseEvent) => void;
+  onDoubleClick: (row: Row<any>, index: number, event?: React.MouseEvent) => void;
   row: Row<any>;
   index: number;
   selectedRowIndex?: number;
@@ -27,6 +27,9 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
+  striped?: boolean;
+  rowHeight?: number;
+  rowPadding?: number;
 }
 
 interface RowDragHandleProps {
@@ -64,6 +67,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineSaveMode,
     inlineEditorComponents,
     inlineDisplayComponents,
+    striped,
   } = props;
 
   const { styles } = useStyles();
@@ -108,13 +112,13 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         className={classNames(
           styles.tr,
           styles.trBody,
-          { [styles.trOdd]: index % 2 === 0 },
+          { [styles.trOdd]: index % 2 === 0 && striped },
           { [styles.trSelected]: selectedRowIndex === row?.index },
         )}
         key={rowId}
       >
         {row.cells.map((cell, cellIndex) => {
-          return <RowCell cell={cell} key={cellIndex} row={row.cells} rowIndex={index} />;
+          return <RowCell rowPadding={props.rowPadding} rowHeight={props.rowHeight} cell={cell} key={cellIndex} row={row.cells} rowIndex={index} />;
         })}
       </div>
     </CrudProvider>
