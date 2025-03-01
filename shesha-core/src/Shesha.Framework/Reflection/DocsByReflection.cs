@@ -91,7 +91,7 @@ namespace Shesha.Reflection
 
             if (xmlDocument == null) return null;
 
-            XmlNode matchedElement = null;
+            XmlNode? matchedElement = null;
 
             var members = xmlDocument["doc"]["members"];
 

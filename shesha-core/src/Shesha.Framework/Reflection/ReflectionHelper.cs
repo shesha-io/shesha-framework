@@ -99,10 +99,8 @@ namespace Shesha.Reflection
         /// <param name="propInfo">Returns the <see cref="PropertyInfo"/> of
         /// the last property in the property hierachy.</param>
         /// <returns></returns>
-        public static object GetPropertyValue(object obj, string propertyName, out object? parent,
-            out PropertyInfo propInfo)
+        public static object GetPropertyValue(object obj, string propertyName, out object? parent, out PropertyInfo propInfo)
         {
-            //Entity propertyEntity;
             propInfo = GetProperty(obj, propertyName, out parent);
             if (parent != null)
                 return propInfo.GetValue(parent, null);
@@ -156,7 +154,7 @@ namespace Shesha.Reflection
 
             for (int i = 0; i < propTokens.Length; i++)
             {
-                PropertyInfo propInfo;
+                PropertyInfo? propInfo;
                 var entityType = StripCastleProxyType(currentType);
                 var properties = entityType.GetProperties();
                 try
@@ -208,50 +206,6 @@ namespace Shesha.Reflection
                 return FindHighestLevelProperty(propertyName, entityType.BaseType);
             else
                 return propInfo;
-        }
-
-        /// <summary>
-        /// Gets the PropertyInfo for the specified property.
-        /// WARNING!!!: This will return the PropertyInfo where the Declaring Type is the base class.
-        /// This may therefore cause problems if you wish to retreive Attribute information (e.g. ReferenceList attribute)
-        /// from sub-classes.
-        /// </summary>
-        public static PropertyInfo GetProperty<TEntity>(Expression<Func<TEntity, object>> property)
-        {
-            return GetProperty<TEntity, object>(property);
-        }
-
-        /// <summary>
-        /// Gets the PropertyInfo for the specified property.
-        /// WARNING!!!: This will return the PropertyInfo where the Declaring Type is the base class.
-        /// This may therefore cause problems if you wish to retreive Attribute information (e.g. ReferenceList attribute)
-        /// from sub-classes.
-        /// </summary>
-        public static PropertyInfo GetProperty<TEntity, TValue>(Expression<Func<TEntity, TValue>> property)
-        {
-            MemberExpression memberExpression = GetMemberExpression<TEntity, TValue>(property);
-            var propInfo = memberExpression.Member as PropertyInfo;
-
-            return propInfo;
-        }
-
-        public static MemberExpression GetMemberExpression<TEntity>(Expression<Func<TEntity, object>> expression)
-        {
-            return GetMemberExpression<TEntity, object>(expression);
-        }
-
-        public static MemberExpression GetMemberExpression<TEntity, TValue>(
-            Expression<Func<TEntity, TValue>> expression)
-        {
-            MemberExpression memberExpression;
-            if (expression.Body.NodeType == ExpressionType.MemberAccess)
-                memberExpression = expression.Body as MemberExpression;
-            else if (expression.Body.NodeType == ExpressionType.Convert)
-                memberExpression = ((UnaryExpression)expression.Body).Operand as MemberExpression;
-            else
-                throw new ArgumentException(
-                    $"Expressions of type '{Enum.GetName(typeof(ExpressionType), expression.NodeType)}' are not supported");
-            return memberExpression;
         }
 
         #endregion
@@ -380,17 +334,7 @@ namespace Shesha.Reflection
         /// <returns></returns>
         public static bool IsEnumType(this Type type)
         {
-            return GetNonNullableType(type).IsEnum;
-        }
-
-        /// <summary>
-        /// Returns underlying type `T` if the type is Nullable{T}
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static Type GetNonNullableType(Type type)
-        {
-            return IsNullableType(type) ? type.GetGenericArguments()[0] : type;
+            return GetUnderlyingTypeIfNullable(type).IsEnum;
         }
 
         /// <summary>
@@ -509,40 +453,6 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
-        /// Returns description of enum item
-        /// </summary>
-        public static string GetEnumDescription(Type enumType, string itemName)
-        {
-            var fi = enumType.GetField(itemName);
-
-            if (fi == null)
-                return null;
-
-            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-            if (attributes.Length > 0)
-                return attributes[0].Description;
-
-            var displayAttributes = (DisplayAttribute[])fi.GetCustomAttributes(typeof(DisplayAttribute), false);
-            if (displayAttributes.Any())
-                return displayAttributes[0].Name;
-
-            return itemName;
-        }
-
-        /// <summary>
-        /// Returns attribute of enum item
-        /// </summary>
-        public static TAttribute GetEnumItemAttribute<TAttribute>(Type enumType, string itemName)
-            where TAttribute : Attribute
-        {
-            var fi = enumType.GetField(itemName);
-            return
-                (TAttribute)fi.GetCustomAttributes(
-                    typeof(TAttribute),
-                    false).FirstOrDefault();
-        }
-
-        /// <summary>
         /// Indicates is the specified property is a multivalue Reference List property
         /// </summary>
         /// <returns></returns>
@@ -657,7 +567,7 @@ namespace Shesha.Reflection
 
             for (int i = 0; i < propTokens.Length; i++)
             {
-                PropertyInfo propInfo;
+                PropertyInfo? propInfo;
                 var containerType = currentType.StripCastleProxyType();
                 try
                 {
@@ -784,6 +694,42 @@ namespace Shesha.Reflection
         {
             var methods = GetExtensionMethods(assembly, extendedType);
             return methods.Select(method => method.DeclaringType).Distinct().OfType<Type>().ToList();
+        }
+
+        /// <summary>
+        /// Cast <paramref name="source"/> to type <typeparamref name="TDestination"/>. An exception will be throws on unsuccessfull casting
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TDestination"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidCastException"></exception>
+        public static TDestination ForceCastAs<TSource, TDestination>(this TSource source) where TDestination : class
+        {
+            return source is TDestination
+                ? source as TDestination
+                : throw new InvalidCastException($"Failed to cast value of type '{typeof(TSource).FullName}' to type '{typeof(TDestination).FullName}'");
+        }
+
+        /// <summary>
+        /// Invoke method <paramref name="method"/> and return typed result. Throws exception when result is of wrong type
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="method"></param>
+        /// <param name="obj"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static TResult? Invoke<TResult>(this MethodBase method, object? obj, object?[]? parameters) where TResult : class
+        { 
+            var result = method.Invoke(obj, parameters);
+            return result != null
+                ? result.ForceCastAs<object, TResult>()
+                : null;
+        }
+
+        public static T NotNull<T>(this T? value, string message = "Value must not be null")
+        {
+            return value ?? throw new Exception(message);
         }
     }
 }

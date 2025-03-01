@@ -18,8 +18,8 @@ namespace Shesha.Permissions.Dtos
                     e.Permissions == null
                         ? new List<string>()
                         : e.Permissions.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList()))
-                .ForMember(e => e.ModuleId, c => c.MapFrom(m => (object)(m.Module == null ? null : m.Module.Id)))
-                .ForMember(e => e.Module, c => c.MapFrom(m => (object)(m.Module == null ? null : m.Module.Name)));
+                .ForMember(e => e.ModuleId, c => c.MapFrom(m => m.Module == null ? (Guid?)null : m.Module.Id))
+                .ForMember(e => e.Module, c => c.MapFrom(m => m.Module == null ? null : m.Module.Name));
             CreateMap<PermissionedObjectFull, PermissionedObjectDto>()
                 .ForMember(e => e.Permissions, c => c.MapFrom(e =>
                     e.Permissions == null

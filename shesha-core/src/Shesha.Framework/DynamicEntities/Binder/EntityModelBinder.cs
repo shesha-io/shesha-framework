@@ -262,7 +262,7 @@ namespace Shesha.DynamicEntities.Binder
                                                     foreach (var item in jList)
                                                     {
                                                         context.ArrayItemIndex = arrayItemIndex++;
-                                                        object newItem = null;
+                                                        object? newItem = null;
                                                         if (!item.IsNullOrEmpty())
                                                         {
                                                             if (paramType.IsEntityType())
@@ -629,16 +629,16 @@ namespace Shesha.DynamicEntities.Binder
                 : null;
 
             if (_className != null)
-                objectType = _typeFinder.Find(t => t.FullName == _className).FirstOrDefault();
+                objectType = _typeFinder.Find(t => t.FullName == _className).First();
 
-            object newItem;
             // use properties binding to validate properties
-            newItem = Activator.CreateInstance(JsonEntityProxy.GetUnproxiedType(objectType));
+            var unproxiedType = JsonEntityProxy.GetUnproxiedType(objectType);
+            var newItem = Activator.CreateInstance(unproxiedType) ?? throw new Exception($"Failed to create instance of type '{unproxiedType.FullName}'");
             var r = await BindPropertiesAsync(jobject, newItem, context, null, formFields);
             return r ? newItem : null;
         }
 
-        private async Task<bool> ValidateAsync(object obj, string propertyName, object value, EntityModelBindingContext context)
+        private async Task<bool> ValidateAsync(object obj, string propertyName, object? value, EntityModelBindingContext context)
         {
             return context.SkipValidation && context.LocalSkipValidation || await _objectValidatorManager.ValidatePropertyAsync(obj, propertyName, value, context.ValidationResult);
         }

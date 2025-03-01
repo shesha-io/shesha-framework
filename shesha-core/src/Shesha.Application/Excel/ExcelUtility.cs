@@ -105,7 +105,7 @@ namespace Shesha.Excel
             Stylesheet styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
             cell.SetAttribute(new OpenXmlAttribute("", "s", "", "1"));
             OpenXmlAttribute cellStyleAttribute = cell.GetAttribute("s", "");
-            CellFormats cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats;
+            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats;
 
             // pick the first cell format.
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
@@ -419,12 +419,12 @@ namespace Shesha.Excel
                 }
             });
 
-            GetValueDelegate result = null;
+            GetValueDelegate? result = null;
             foreach (var part in parts) 
             {
                 result = getterFactory(part, result);
             }
-            return result;
+            return result ?? throw new Exception("Failed to get column valu getter");
         }
 
         private static void FillCellValue(Cell cell, string value, Type type)

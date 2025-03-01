@@ -101,8 +101,9 @@ namespace Shesha.DynamicEntities.Mapper
                 return cacheItem;
             });
 
-            IMapper mapper = null;
+            IMapper? mapper = null;
 
+            // TODO: review cache usage and test
             var mappers = await _internalCache.GetAsync(cacheKey, () => {
                 var cacheItem = itemFactory();
                 mapper = cacheItem.Mapper;

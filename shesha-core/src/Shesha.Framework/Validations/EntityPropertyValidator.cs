@@ -55,7 +55,7 @@ namespace Shesha.Validations
             _entityConfigurationStore = entityConfigurationStore;
         }
 
-        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object? value, List<ValidationResult> validationResult)
         {
             if (!obj.GetType().IsEntityType() 
                 && !obj.GetType().IsJsonEntityType())
@@ -111,7 +111,7 @@ namespace Shesha.Validations
             #endregion
         }
 
-        public bool Validate(object obj, string propertyName, object value, List<ValidationResult> validationResult,
+        public bool Validate(object obj, string propertyName, object? value, List<ValidationResult> validationResult,
             List<EntityPropertyDto> props, bool useNewValue)
         {
             var parts = propertyName.Split('.').Select(x => x.ToCamelCase()).ToArray();

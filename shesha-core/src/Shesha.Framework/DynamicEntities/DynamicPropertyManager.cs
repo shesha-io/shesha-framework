@@ -176,7 +176,7 @@ namespace Shesha.DynamicEntities
             if (serializedValue == null)
                 return null;
 
-            Type simpleType = null;
+            Type? simpleType = null;
             switch (dynamicProperty.DataType) 
             {
                 case DataTypes.EntityReference:

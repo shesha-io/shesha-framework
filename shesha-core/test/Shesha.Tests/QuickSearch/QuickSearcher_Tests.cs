@@ -204,20 +204,17 @@ namespace Shesha.Tests.QuickSearch
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            List<T> data = null;
-
-            await WithUnitOfWorkAsync(async () => {
+            return await WithUnitOfWorkAsync(async () => {
                 var query = repository.GetAll();
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);
 
-                data = await asyncExecuter.ToListAsync(query);
+                var data = await asyncExecuter.ToListAsync(query);
 
                 assertions?.Invoke(data);
+                return data;
             });
-
-            return data;
         }
 
         #endregion

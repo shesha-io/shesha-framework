@@ -265,8 +265,6 @@ namespace Shesha.NHibernate.Maps
                     propertyCustomizer.Lazy(true);
 
                 var columnName = MappingHelper.GetColumnName(member.LocalMember);
-                string sqlType = null;
-                IType columnType = null;
 
                 if (member.LocalMember.DeclaringType == typeof(GenericEntityReference) ||
                     member.LocalMember.GetMemberType() == typeof(GenericEntityReference))
@@ -314,6 +312,9 @@ namespace Shesha.NHibernate.Maps
                     propertyCustomizer.Type(gtype, null);
                     return;
                 }
+
+                string? sqlType = null;
+                IType? columnType = null;
 
                 if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
                 {
@@ -702,7 +703,7 @@ namespace Shesha.NHibernate.Maps
                     if (it.GetGenericTypeDefinition() == typeof(ClassMapping<>) || it.GetGenericTypeDefinition() == typeof(SubclassMapping<>) || it.GetGenericTypeDefinition() == typeof(JoinedSubclassMapping<>))
                         return true;
 
-            Type baseType = type.BaseType;
+            var baseType = type.BaseType;
             if (baseType == null) return false;
 
             return baseType.IsGenericType &&
@@ -712,19 +713,4 @@ namespace Shesha.NHibernate.Maps
                 IsClassMapping(baseType);
         }
     }
-
-    /* AS: Experiments for using one tbale for linking two entities with several list properties with the same entity types
-    public class Persister : BasicCollectionPersister
-    {
-        public Persister(Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) : base(collection, cache, factory)
-        {
-        }
-
-        protected override SqlCommandInfo GenerateInsertRowString()
-        {
-            var res = base.GenerateInsertRowString();
-            return res;
-        }
-    }
-    */
 }
