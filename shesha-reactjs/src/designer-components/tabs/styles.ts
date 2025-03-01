@@ -134,9 +134,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 --ant-color-bg-container: ${backgroundImage || backgroundColor};
                 background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
                 ${cardStyles};
-                font-size: ${fontSize};
-                font-weight: ${fontWeight};
-                font-family: ${fontFamily};
                 ${isLeft && `border-right-width: ${styles.borderLeftWidth} !important` || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
                 ${isLeft ? `margin-right: -${styles.borderLeftWidth} !important` : isRight ? `margin-left: -${styles.borderRightWidth} !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
                 width: ${cardWidth};
@@ -147,8 +144,11 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 max-height: ${cardMaxHeight};
                 z-index: 2;
 
-                .ant-tabs-tab-btn {
-                    color: ${color || token.colorPrimary};
+                * {
+                color: ${color ?? token.colorPrimary} !important;
+                font-size: ${fontSize} !important;
+                font-weight: ${fontWeight} !important;
+                font-family: ${fontFamily} !important;
                 }
             }
 
