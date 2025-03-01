@@ -2,6 +2,6 @@
 {
     public interface IHasClassNameField
     {
-        string _className { get; }
+        string? _className { get; }
     }
 }

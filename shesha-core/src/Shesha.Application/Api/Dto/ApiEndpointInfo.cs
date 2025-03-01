@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Shesha.Api.Dto
+﻿namespace Shesha.Api.Dto
 {
     /// <summary>
     /// API endpoint info

@@ -48,7 +48,7 @@ namespace Shesha.Settings
         /// Edit form
         /// </summary>
         [CanBeNull]
-        public ConfigurationItemIdentifier EditForm { get; set; }
+        public ConfigurationItemIdentifier? EditForm { get; set; }
 
         public abstract object GetDefaultValue();
         public abstract Type GetValueType();

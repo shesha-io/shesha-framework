@@ -1,10 +1,4 @@
-﻿using Abp.Auditing;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Authorization.Users;
-using Shesha.ConfigurationItems;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using Shesha.Authorization.Users;
 
 namespace Shesha.Domain
 {
@@ -13,6 +7,6 @@ namespace Shesha.Domain
     /// </summary>
     public interface IMayHaveUser
     {
-        User User { get; set; }
+        User? User { get; set; }
     }
 }

@@ -18,6 +18,6 @@ namespace Shesha.Excel
         /// <param name="columns"></param>
         /// <param name="sheetName"></param>
         /// <returns></returns>
-        Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object>> list, IList<ExcelColumn> columns, string sheetName);
+        Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object?>> list, IList<ExcelColumn> columns, string sheetName);
     }
 }

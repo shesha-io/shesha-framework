@@ -142,13 +142,14 @@ export const getSettings = (data: ITableComponentProps) => {
                         id: commonTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                                .addSettingsInput({
-                                    id: nanoid(),
-                                    propertyName: 'componentName',
-                                    label: 'Component name',
-                                    inputType: 'text',
-                                    parentId: commonTabId,
-                                })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'componentName',
+                                label: 'Component Name',
+                                inputType: 'textField',
+                                validate: { required: true },
+                                jsSetting: false,
+                              })
                                 .toJson()
                         ]
                     },
@@ -161,7 +162,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                 .addSettingsInput({
                                     id: nanoid(),
                                     propertyName: 'items',
-                                    label: data.readOnly ? 'View Columns' : 'Customize columns',
+                                    label: data.readOnly ? 'View Columns' : 'Customize Columns',
                                     inputType: 'columnsConfig',
                                     jsSetting: true,
                                     parentId: commonTabId,
@@ -240,7 +241,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     id: nanoid(),
                                     propertyName: 'customUpdateUrl',
                                     label: 'Custom update url',
-                                    inputType: 'text',
+                                    inputType: 'textField',
                                     parentId: crudTabId,
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -300,7 +301,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     id: nanoid(),
                                     propertyName: 'customCreateUrl',
                                     label: 'Custom create url',
-                                    inputType: 'text',
+                                    inputType: 'textField',
                                     parentId: crudTabId,
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -329,15 +330,14 @@ export const getSettings = (data: ITableComponentProps) => {
                                     description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                                     exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                 })
-                                .addSettingsInput({
+                                .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',
-                                    label: 'On row save success',
-                                    inputType: 'configurableActionConfig',
+                                    label: 'On Row Save Success',
                                     parentId: crudTabId,
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                                    exposedVariables: ROW_SAVED_SUCCESS_EXPOSED_VARIABLES,
                                     hideLabel: true,
+                                    jsSetting: true,
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
@@ -368,7 +368,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     id: nanoid(),
                                     propertyName: 'customDeleteUrl',
                                     label: 'Custom delete url',
-                                    inputType: 'text',
+                                    inputType: 'textField',
                                     parentId: crudTabId,
                                     hidden: { _code: 'return getSettingValue(data?.canDeleteInline) === "no";', _mode: 'code', _value: false } as any,
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -406,7 +406,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'noDataText',
                                             label: 'Primary Text',
-                                            inputType: 'text',
+                                            inputType: 'textField',
                                             parentId: emptyTableTabId,
                                             jsSetting: true,
                                             defaultValue: 'No Data',
@@ -416,7 +416,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                             id: nanoid(),
                                             propertyName: 'noDataSecondaryText',
                                             label: 'Secondary Text',
-                                            inputType: 'text',
+                                            inputType: 'textField',
                                             parentId: emptyTableTabId,
                                             jsSetting: true,
                                             defaultValue: 'No data is available for this table',
@@ -429,7 +429,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                 id: nanoid(),
                                 propertyName: 'minHeight',
                                 label: 'Min Height',
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 parentId: layoutTabId,
                                 tooltip: 'The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.',
                                 jsSetting: true,
@@ -439,7 +439,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                 id: nanoid(),
                                 propertyName: 'maxHeight',
                                 label: 'Max Height',
-                                inputType: 'number',
+                                inputType: 'numberField',
                                 parentId: layoutTabId,
                                 tooltip: 'The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.',
                                 jsSetting: true,

@@ -61,7 +61,7 @@ namespace Shesha.ShaRoleAppointedPersons
             entity.Role = input.RoleId != Guid.Empty
                 ? await _roleRepository.GetAsync(input.RoleId)
                 : null;
-            entity.Person = (input.Person?.Id ?? Guid.Empty) != Guid.Empty
+            entity.Person = input.Person != null && input.Person.Id != null && input.Person.Id != Guid.Empty
                 ? await _personRepository.GetAsync(input.Person.Id.Value)
                 : null;
 

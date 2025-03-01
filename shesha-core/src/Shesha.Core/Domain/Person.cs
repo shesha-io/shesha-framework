@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Auditing;
+﻿using Abp.Auditing;
 using Abp.Localization;
 using Abp.Timing;
 using JetBrains.Annotations;
@@ -11,7 +7,10 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.EntityHistory;
-using Shesha.Extensions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -115,7 +114,7 @@ namespace Shesha.Domain
         /// </summary>
         [CanBeNull]
         [CascadeUpdateRules(false, true)]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
 
         public override string ToString()
         {

@@ -1,5 +1,4 @@
-﻿using Shesha.Domain.ConfigurationItems;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 

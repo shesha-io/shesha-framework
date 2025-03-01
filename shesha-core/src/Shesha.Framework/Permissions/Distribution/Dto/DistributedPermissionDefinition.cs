@@ -7,6 +7,6 @@ namespace Shesha.Permissions.Distribution.Dto
     /// </summary>
     public class DistributedPermissionDefinition : DistributedConfigurableItemBase
     {
-        public virtual string Parent { get; set; }
+        public virtual string? Parent { get; set; }
     }
 }

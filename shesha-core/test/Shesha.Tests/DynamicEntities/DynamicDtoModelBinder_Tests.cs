@@ -116,7 +116,7 @@ namespace Shesha.Tests.DynamicEntities
 
         #region private methods
 
-        private (PropertyInfo, object) GetPropertyAndValue(object container, string propertyName, bool requireProperty = true, bool requireValue = true)
+        private (PropertyInfo?, object?) GetPropertyAndValue(object container, string propertyName, bool requireProperty = true, bool requireValue = true)
         {
             var property = container.GetType().GetProperty(propertyName);
             if (requireProperty && property == null)

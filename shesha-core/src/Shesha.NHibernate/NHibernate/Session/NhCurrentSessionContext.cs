@@ -5,7 +5,6 @@ using System;
 
 namespace Shesha.NHibernate.Session
 {
-#nullable enable
     /// <summary>
     /// Replacement of <see cref="ICurrentSessionContext"/>, allows to write code that doesn't break nullability and disposable rules
     /// </summary>
@@ -40,5 +39,4 @@ namespace Shesha.NHibernate.Session
             _disposed = true;
         }
     }
-#nullable restore
 }

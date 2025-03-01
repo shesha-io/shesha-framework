@@ -4,10 +4,10 @@ namespace Shesha.Services.Urls
 {
     public class LinkGeneratorState
     {
-        public string Scheme { get; set; }
-        public string Host { get; set; }
+        public string? Scheme { get; set; }
+        public string? Host { get; set; }
         public int Port { get; set; }
-        public string PathBase { get; set; }
+        public string? PathBase { get; set; }
 
         public LinkGeneratorState(HttpRequest request)
         {

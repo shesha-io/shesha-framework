@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shesha.Services
 {
@@ -424,7 +424,7 @@ namespace Shesha.Services
         /// <param name="subpath">A file path</param>
         /// <param name="contentType">The resulting MIME type</param>
         /// <returns>True if MIME type could be determined</returns>
-        public bool TryGetContentType(string subpath, out string contentType)
+        public bool TryGetContentType(string subpath, [NotNullWhen(true)]out string? contentType)
         {
             string extension = GetExtension(subpath);
             if (extension == null)
