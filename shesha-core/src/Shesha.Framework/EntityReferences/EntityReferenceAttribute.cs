@@ -8,9 +8,9 @@ namespace Shesha.EntityReferences
         public string[] AllowableTypes { get; internal set; } = new string[0];
         public bool StoreDisplayName { get; internal set; } = false;
 
-        public string IdColumnName { get; set; } = null;
-        public string ClassNameColumnName { get; set; } = null;
-        public string DisplayNameColumnName { get; set; } = null;
+        public string? IdColumnName { get; set; }
+        public string? ClassNameColumnName { get; set; }
+        public string? DisplayNameColumnName { get; set; }
 
         public EntityReferenceAttribute(string[] allowableTypes, bool storeDisplayName)
         {

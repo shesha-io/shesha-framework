@@ -22,7 +22,7 @@ namespace Shesha.Utilities
         /// <param name="isDateOnly"></param>
         /// <param name="returnNullEvenIfNonNullable"></param>
         /// <returns>Returns true if the value could be converted successfully to the target property's type.</returns>
-        public static bool TryParseToValueType(string? value, Type targetType, out object? parsedValue, string format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
+        public static bool TryParseToValueType(string? value, Type targetType, out object? parsedValue, string? format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace Shesha.Utilities
             return parsedValue;
         }
 
-        public static TimeSpan? ParseTime(string? value, string format = null)
+        public static TimeSpan? ParseTime(string? value, string? format = null)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return null;
@@ -129,7 +129,7 @@ namespace Shesha.Utilities
             if (int.TryParse(value, out var seconds) && seconds < TimeSpan.FromHours(24).TotalSeconds) 
                 return TimeSpan.FromSeconds(seconds);
 
-            var timeFormats = new string[] {
+            var timeFormats = new string?[] {
                 format,
                 /*note: `hh` is always 24-hours for TimeSpan*/
                 @"hh\:mm\:ss", 
@@ -143,7 +143,7 @@ namespace Shesha.Utilities
             return null;
         }
 
-        public static DateTime ParseDate(string value, string format = null, bool isDateOnly = true)
+        public static DateTime ParseDate(string value, string? format = null, bool isDateOnly = true)
         {
             var dateVal = new DateTime();
             bool parseSuccessful = false;

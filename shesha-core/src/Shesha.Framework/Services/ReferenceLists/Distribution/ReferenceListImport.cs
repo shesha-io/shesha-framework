@@ -136,7 +136,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
             await ImportListItemLevelAsync(refList, distributedItems, null);
         }
 
-        private async Task ImportListItemLevelAsync(ReferenceList refList, List<DistributedReferenceListItem> items, ReferenceListItem parent)
+        private async Task ImportListItemLevelAsync(ReferenceList refList, List<DistributedReferenceListItem> items, ReferenceListItem? parent)
         {
             foreach (var distributedItem in items)
             {
@@ -160,8 +160,6 @@ namespace Shesha.Services.ReferenceLists.Distribution
             dst.ItemValue = src.ItemValue;
             dst.Description = src.Description;
             dst.OrderIndex = src.OrderIndex;
-            // todo: decide how to handle hard linked items
-            //dst.HardLinkToApplication = src.HardLinkToApplication;
             dst.Color = src.Color;
             dst.Icon = src.Icon;
             dst.ShortAlias = src.ShortAlias;

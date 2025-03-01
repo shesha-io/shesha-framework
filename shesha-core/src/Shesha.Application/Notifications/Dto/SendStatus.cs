@@ -13,7 +13,7 @@
             };
         }
 
-        public static SendStatus Success(string message = null)
+        public static SendStatus Success(string? message = null)
         {
             return new SendStatus
             {

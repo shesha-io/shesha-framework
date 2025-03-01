@@ -101,7 +101,7 @@ namespace Shesha.DynamicEntities.Distribution
             return properties;
         }
 
-        private async Task<DistributedEntityConfigProperty> MapPropertyAsync(EntityProperty src) 
+        private async Task<DistributedEntityConfigProperty> MapPropertyAsync(EntityProperty? src) 
         {
             if (src == null)
                 return null;

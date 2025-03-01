@@ -18,7 +18,7 @@ namespace Shesha.AutoMapper
         }
 
         // todo: implement automapper convention for reference lists
-        protected static ReferenceListItemValueDto GetRefListItemValueDto(string refListModule, string refListNamespace, string refListName, int? value)
+        protected static ReferenceListItemValueDto GetRefListItemValueDto(string? refListModule, string refListNamespace, string refListName, int? value)
         {
             return value != null
                 ? new ReferenceListItemValueDto
@@ -30,7 +30,7 @@ namespace Shesha.AutoMapper
         }
 
         // todo: implement automapper convention for reference lists
-        protected static string GetRefListItemText(string refListModule, string refListNamespace, string refListName, int? value)
+        protected static string GetRefListItemText(string? refListModule, string refListNamespace, string refListName, int? value)
         {
             if (value == null)
                 return null;

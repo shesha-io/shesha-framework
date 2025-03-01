@@ -126,7 +126,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private async Task CopyPropertiesAsync(EntityConfig destination, List<EntityProperty>? destPs, List<EntityProperty> sourcePs, EntityProperty parent)
+        private async Task CopyPropertiesAsync(EntityConfig destination, List<EntityProperty>? destPs, List<EntityProperty> sourcePs, EntityProperty? parent)
         {
             foreach (var prop in sourcePs)
             {
@@ -422,7 +422,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private async Task BindPropertiesAsync(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty parentProperty)
+        private async Task BindPropertiesAsync(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty? parentProperty)
         {
             if (inputProperties == null) return;
             var sortOrder = 0;
@@ -478,7 +478,7 @@ namespace Shesha.DynamicEntities
             return propertyMapperConfig.CreateMapper();
         }
 
-        public async Task<ModelConfigurationDto> GetModelConfigurationAsync(EntityConfig modelConfig, List<PropertyMetadataDto> hardCodedProps = null)
+        public async Task<ModelConfigurationDto> GetModelConfigurationAsync(EntityConfig modelConfig, List<PropertyMetadataDto>? hardCodedProps = null)
         {
             var dto = ObjectMapper.Map<ModelConfigurationDto>(modelConfig);
 
@@ -554,7 +554,7 @@ namespace Shesha.DynamicEntities
             return dto;
         }
 
-        public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto> hardCodedProps = null)
+        public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null)
         {
             var cacheKey = $"{@namespace}|{name}";
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {

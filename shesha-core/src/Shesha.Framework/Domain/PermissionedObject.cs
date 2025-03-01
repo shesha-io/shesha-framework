@@ -67,7 +67,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Text identifier of the parent object
         /// </summary>
-        public virtual string Parent { get; set; }
+        public virtual string? Parent { get; set; }
 
         public virtual bool Hidden { get; set; }
 

@@ -8,6 +8,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions.Dtos;
+using Shesha.Reflection;
 using Shesha.Roles.Dto;
 using System;
 using System.Collections.Generic;
@@ -149,7 +150,7 @@ namespace Shesha.Permissions
                 VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
-            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id, dbp);
+            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id.NotNull(), dbp);
 
             return ObjectMapper.Map<PermissionDto>(res);
         }

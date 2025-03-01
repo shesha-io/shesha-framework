@@ -35,7 +35,7 @@ namespace Shesha.Notifications
             return await _emailSettings.EmailSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver receiver, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver receiver, NotificationMessage message, string cc = "", List<EmailAttachment>? attachments = null)
         {
             var settings = await GetSettingsAsync();
 

@@ -167,7 +167,7 @@ namespace Shesha.EntityHistory
             return list;
         }
 
-        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type? entityType, string? entityId, string childName = "", string[] fields = null)
+        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type? entityType, string? entityId, string childName = "", string[]? fields = null)
         {
 
             var maxDateTime = DateTime.MaxValue;

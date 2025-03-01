@@ -57,7 +57,7 @@ namespace Shesha.Permissions
             return type.Assembly.GetTypes().FirstOrDefault(t => t.IsPublic && !t.IsAbstract && typeof(AbpModule).IsAssignableFrom(t));
         }
 
-        protected string GetName(Type service, string defaultName = null)
+        protected string GetName(Type service, string? defaultName = null)
         {
             var name = service.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
             return string.IsNullOrEmpty(name) ? defaultName ?? service.Name : name;
@@ -79,7 +79,7 @@ namespace Shesha.Permissions
             return description;
         }
 
-        protected string GetName(MethodInfo method, string defaultName = null)
+        protected string GetName(MethodInfo method, string? defaultName = null)
         {
             var name = method.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
             return string.IsNullOrEmpty(name) ? defaultName ?? method.Name : name;

@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
-using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
@@ -16,7 +15,7 @@ namespace Shesha.Validations
 {
     public abstract class EntityPropertyValidator<TEntity, TId> : IPropertyValidator where TEntity : class, IEntity<TId>
     {
-        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
+        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null)
         {
             if (obj is TEntity entity)
             {
@@ -24,7 +23,7 @@ namespace Shesha.Validations
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntityAsync(TEntity entity, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
+        public virtual async Task<bool> ValidateEntityAsync(TEntity entity, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null)
         {
             return await Task.FromResult(true);
         }
@@ -67,46 +66,9 @@ namespace Shesha.Validations
             return Validate(obj, propertyName, value, validationResult, props, true);
         }
 
-        public Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
+        public Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string>? propertiesToValidate = null)
         {
             return Task.FromResult(true);
-
-            #region Validate all properties. Not needed if use ValidateObject
-            /* if (!EntityHelper.IsEntity(obj.GetType()))
-                return true;
-
-            var props = await _entityConfigCache.GetEntityPropertiesAsync(obj.GetType());
-            var config = await _entityConfigCache.GetEntityConfigAsync(obj.GetType());
-
-            var pList = new List<string>();
-
-            if (propertiesToValidate == null || !propertiesToValidate.Any())
-            {
-                Action<List<EntityPropertyDto>, string> propAdd = null;
-                propAdd = (List<EntityPropertyDto> props, string root) =>
-                {
-                    foreach (var property in props.Where(x => !x.Suppress))
-                    {
-                        pList.Add(root + property.Name);
-                        propAdd(property.Properties, root + property.Name + ".");
-                    }
-                };
-                propAdd(props, "");
-            }
-            else
-            {
-                pList.AddRange(propertiesToValidate);
-            }
-
-            var vr = new List<ValidationResult>();
-            foreach (var prop in pList.OrderBy(x => x))
-            {
-                Validate(obj, prop, null, vr, props, false);
-            }
-
-            validationResult.AddRange(vr);
-            return !vr.Any();*/
-            #endregion
         }
 
         public bool Validate(object obj, string propertyName, object? value, List<ValidationResult> validationResult,

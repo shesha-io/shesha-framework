@@ -49,7 +49,7 @@ namespace Shesha.NHibernate.Maps
         private LazyRelation? _defaultLazyRelation;
         private readonly INameGenerator _nameGenerator;
 
-        public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>> idMapper = null)
+        public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>>? idMapper = null)
         {
             _nameGenerator = nameGenerator;
             _entitiesToMap = new List<Type>();
@@ -572,15 +572,6 @@ namespace Shesha.NHibernate.Maps
                             map.Where(manyToManyAttribute.Where);
                         if (!string.IsNullOrEmpty(manyToManyAttribute.OrderBy))
                             map.OrderBy(manyToManyAttribute.OrderBy);
-
-                        /* AS: Experiments for using one table for linking two entities with several list properties with the same entity types
-                        map.Where($"PropertyName = '{propertyPath.LocalMember.Name}'");
-                        map.SqlInsert($"INSERT INTO {tableName} (Id, {parentColumnName}, {childColumnName}, PropertyName) VALUES (NEWID(), ?, ?, '{propertyPath.LocalMember.Name}')", SqlCheck.None);
-                        map.SqlUpdate("-- skip update MultiEntityReference table", SqlCheck.None);
-                        map.SqlDelete("-- skip update MultiEntityReference table", SqlCheck.None);
-                        map.SqlDeleteAll("-- skip update MultiEntityReference table", SqlCheck.None);
-                        map.Persister(typeof(Persister));
-                        */
                     }
                 }
                 else if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
@@ -589,7 +580,6 @@ namespace Shesha.NHibernate.Maps
                     map.Filter("SoftDelete", m =>
                     {
                     });
-                    // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
                 }
 
             };

@@ -185,7 +185,7 @@ namespace Shesha.Services.ReferenceLists
             await CopyItemsAsync(srcItems, null, null, destination);
         }
 
-        private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceListItem sourceParent, ReferenceListItem destinationParent, ReferenceList destination)
+        private async Task CopyItemsAsync(List<ReferenceListItem> sourceItems, ReferenceListItem? sourceParent, ReferenceListItem? destinationParent, ReferenceList destination)
         {
             var levelItems = sourceItems.Where(i => i.Parent == sourceParent).ToList();
             foreach (var srcItem in levelItems) 

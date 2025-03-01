@@ -167,7 +167,9 @@ namespace Shesha.Scheduler
                 if (attribute == null)
                     throw new Exception($"ScheduledJobAttribute should be applied on the {GetType().Name} class");
 
-                string logFolder = (!attribute.LogFolder.IsNullOrEmpty() && !attribute.LogFolder.IsNullOrWhiteSpace()) ? attribute.LogFolder: Name;
+                string logFolder = !string.IsNullOrWhiteSpace(attribute.LogFolder)
+                    ? attribute.LogFolder
+                    : Name;
 
                 return logFolder;
             }

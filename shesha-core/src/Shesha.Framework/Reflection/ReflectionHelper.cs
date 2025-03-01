@@ -1,6 +1,5 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Reflection;
-using NUglify;
 using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -127,6 +126,11 @@ namespace Shesha.Reflection
 
         #region GetProperty
 
+        public static PropertyInfo GetProperty(object entity, string propertyName)
+        {
+            return GetProperty(entity, propertyName, out var propertyEntity);
+        }
+
         /// <summary>
         /// Returns the PropertyInfo for the specified property on the specified Entity.
         /// </summary>
@@ -141,19 +145,9 @@ namespace Shesha.Reflection
         /// <returns>Return the requested PropertyInfo.</returns>
         public static PropertyInfo GetProperty(object entity, string propertyName, out object? propertyEntity)
         {
-            return GetProperty(entity, null, propertyName, out propertyEntity);
-        }
-
-        public static PropertyInfo GetProperty(object entity, string propertyName)
-        {
-            return GetProperty(entity, null, propertyName, out var propertyEntity);
-        }
-
-        private static PropertyInfo GetProperty(object entity, Type type, string propertyName, out object? propertyEntity)
-        {
             var propTokens = propertyName.Split('.');
             var currentEntity = entity;
-            Type currentType = (entity != null) ? entity.GetType() : type;
+            Type currentType = entity.GetType();
 
             for (int i = 0; i < propTokens.Length; i++)
             {
@@ -263,7 +257,7 @@ namespace Shesha.Reflection
             var openCast = typeof(ReflectionHelper).GetMethod("Cast", BindingFlags.Static | BindingFlags.Public);
             var closeCast = openCast.MakeGenericMethod(to);
 
-            return closeCast.Invoke(entity, new[] { entity });
+            return closeCast.Invoke(entity, [entity]);
         }
 
         public static T Cast<T>(object entity) where T : class
@@ -271,8 +265,7 @@ namespace Shesha.Reflection
             return entity as T;
         }
 
-        public static PropertyInfo FindPropertyWithUniqueAttribute(Type type, Type attributeType,
-            Type expectedPropertyType)
+        public static PropertyInfo FindPropertyWithUniqueAttribute(Type type, Type attributeType, Type? expectedPropertyType)
         {
             type = StripCastleProxyType(type);
 
@@ -294,7 +287,6 @@ namespace Shesha.Reflection
                 if (expectedPropertyType != null
                     && !(markedProperties[0].PropertyType == expectedPropertyType
                          || markedProperties[0].PropertyType.IsSubclassOf(expectedPropertyType)))
-                //Could also try the following additional flexibility: !expectedPropertyType.IsAssignableFrom(markedProperties[0].PropertyType
                 {
                     throw new ConfigurationErrorsException(
                         $"Property '{markedProperties[0].Name}' marked with attribute '{attributeType.FullName}' must be of type '{expectedPropertyType.Name}'.");

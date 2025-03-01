@@ -195,7 +195,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Get column name for the specified entity type
         /// </summary>
-        public static string GetNameForColumn(Type type, string prefix, string name, string suffix)
+        public static string GetNameForColumn(Type type, string prefix, string name, string? suffix)
         {
             var conventions = GetNamingConventions(type);
             return conventions.GetColumnName(prefix, name, suffix);

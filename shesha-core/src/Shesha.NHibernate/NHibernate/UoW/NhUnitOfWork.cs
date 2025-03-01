@@ -8,7 +8,6 @@ using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.NHibernate.UoW
 {
@@ -26,13 +25,13 @@ namespace Shesha.NHibernate.UoW
         /// NH session
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP006:Implement IDisposable", Justification = $"Disposed in {nameof(DisposeUow)}")]
-        private ISession _session;
+        private ISession? _session;
 
         /// <summary>
         /// Active transaction
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP006:Implement IDisposable", Justification = $"Disposed in {nameof(DisposeUow)}")]
-        private ITransaction _transaction;
+        private ITransaction? _transaction;
 
         /// <summary>
         /// Returns current session or starts a new one is missing and <paramref name="startNewIfMissing"/> is true

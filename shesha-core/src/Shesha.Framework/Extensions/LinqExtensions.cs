@@ -75,7 +75,7 @@ namespace Shesha.Extensions
         /// <param name="propertyNames">Names of properties</param>
         /// <param name="filterValue">Filter value</param>
         /// <returns></returns>
-        public static IEnumerable<T> LikeDynamic<T>(this IEnumerable<T> items, string filterValue, string[] propertyNames = null)
+        public static IEnumerable<T> LikeDynamic<T>(this IEnumerable<T> items, string filterValue, string[]? propertyNames = null)
         {
             var result = typeof(LinqExtensions)
                 .GetMethod(nameof(LikeDynamic_Private), BindingFlags.NonPublic | BindingFlags.Static)
@@ -87,7 +87,7 @@ namespace Shesha.Extensions
         }
 
         [UsedImplicitly]
-        private static IEnumerable<T> LikeDynamic_Private<T>(IEnumerable<T> items, string filterValue, string[] propertyNames = null)
+        private static IEnumerable<T> LikeDynamic_Private<T>(IEnumerable<T> items, string filterValue, string[]? propertyNames = null)
         {
             Expression<Func<T, bool>>? fullExpression = null;
 

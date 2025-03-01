@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using NetTopologySuite.Index.HPRtree;
 using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.Permissions.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -47,8 +45,8 @@ namespace Shesha.DynamicEntities.Distribution
 
             var result = new List<DistributedConfigurableItemBase>();
 
-            var addItems = (string parent) => { };
-            addItems = (string parent) =>
+            var addItems = (string? parent) => { };
+            addItems = (string? parent) =>
             {
                 var list = loaclItems.Where(x => x.Parent == parent);
                 result.AddRange(list);

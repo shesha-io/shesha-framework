@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Session;
-using AutoMapper;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -20,7 +19,6 @@ namespace Shesha.Configuration.Runtime
     /// inheritedDoc
     public class EntityConfigManager : ConfigurationItemManager<EntityConfig>, IEntityConfigManager, ITransientDependency
     {
-        private readonly IMapper _mapper;
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -29,15 +27,13 @@ namespace Shesha.Configuration.Runtime
             IRepository<EntityConfig, Guid> repository,
             IRepository<EntityProperty, Guid> propertyConfigRepo,
             IRepository<Module, Guid> moduleRepository,
-            IUnitOfWorkManager unitOfWorkManager,
-            IMapper mapper
+            IUnitOfWorkManager unitOfWorkManager            
         ) : base(repository, moduleRepository, unitOfWorkManager)
         {
             _propertyConfigRepo = propertyConfigRepo;
-            _mapper = mapper;
         }
 
-        public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig> query = null, bool? implemented = null)
+        public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
         {
             // Do not change to Mapper to avoid performance issues
             var result = await (query ?? Repository.GetAll())

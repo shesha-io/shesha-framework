@@ -3,11 +3,8 @@ using Abp.Extensions;
 using Shesha.Domain;
 using Shesha.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Generators
 {
@@ -29,7 +26,7 @@ namespace Shesha.Generators
         }
 
         public virtual (string tableName, string parentTableName, string childTableName, string parentColumnName, string childColumnName)
-            GetManyToManyTableNames(MemberInfo propertyInfo, string prefix = "", string suffix = "")
+            GetManyToManyTableNames(MemberInfo propertyInfo, string? prefix = null, string? suffix = null)
         {
 
             var (parentType, parentIdType, childType, childIdType) = MappingHelper.GetManyToManyTableData(propertyInfo);
@@ -38,7 +35,6 @@ namespace Shesha.Generators
             var propertyName = propertyInfo.Name;
             var suffixLength = suffix.IsNullOrEmpty() ? 0 : suffix.Length + 1;
 
-            //$"{(tablePrefix.IsNullOrEmpty() ? "" : $"{tablePrefix}_").ToSnakeCase()}{parentTypeName.ToSnakeCase()}_{property.Name.ToSnakeCase()}{(suffix.IsNullOrEmpty() ? "" : $"_{suffix}").ToSnakeCase()}";
             var tableName = GetSnakeCaseText(new[] {tablePrefix, parentTypeName, propertyName}, MaxLenght - suffixLength) + (suffixLength == 0 ? "" : $"_{suffix}").ToSnakeCase();
 
             var childTypeName = childType.Name.ToSnakeCase();

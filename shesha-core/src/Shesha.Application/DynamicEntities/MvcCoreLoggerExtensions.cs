@@ -11,20 +11,20 @@ namespace Shesha.DynamicEntities
     /// </summary>
     internal static class MvcCoreLoggerExtensions
     {
-        private static readonly Action<ILogger, string?, Type, string, Exception> _attemptingToBindParameterModel;
-        private static readonly Action<ILogger, Type?, string?, Type, string, Exception> _attemptingToBindPropertyModel;
-        private static readonly Action<ILogger, Type, string, Exception> _attemptingToBindModel;
+        private static readonly Action<ILogger, string?, Type, string, Exception?> _attemptingToBindParameterModel;
+        private static readonly Action<ILogger, Type?, string?, Type, string, Exception?> _attemptingToBindPropertyModel;
+        private static readonly Action<ILogger, Type, string, Exception?> _attemptingToBindModel;
 
-        private static readonly Action<ILogger, string?, Type, Exception> _doneAttemptingToBindParameterModel;
-        private static readonly Action<ILogger, Type?, string?, Type, Exception> _doneAttemptingToBindPropertyModel;
-        private static readonly Action<ILogger, Type, string, Exception> _doneAttemptingToBindModel;
+        private static readonly Action<ILogger, string?, Type, Exception?> _doneAttemptingToBindParameterModel;
+        private static readonly Action<ILogger, Type?, string?, Type, Exception?> _doneAttemptingToBindPropertyModel;
+        private static readonly Action<ILogger, Type, string, Exception?> _doneAttemptingToBindModel;
 
-        private static readonly Action<ILogger, IInputFormatter, string?, Exception> _inputFormatterSelected;
+        private static readonly Action<ILogger, IInputFormatter, string?, Exception?> _inputFormatterSelected;
 
-        private static readonly Action<ILogger, IInputFormatter, string?, Exception> _inputFormatterRejected;
+        private static readonly Action<ILogger, IInputFormatter, string?, Exception?> _inputFormatterRejected;
 
-        private static readonly Action<ILogger, string?, Exception> _noInputFormatterSelected;
-        private static readonly Action<ILogger, string, string?, Exception> _removeFromBodyAttribute;
+        private static readonly Action<ILogger, string?, Exception?> _noInputFormatterSelected;
+        private static readonly Action<ILogger, string, string?, Exception?> _removeFromBodyAttribute;
 
         static MvcCoreLoggerExtensions ()
         {
