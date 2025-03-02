@@ -361,8 +361,8 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 id: 'title-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
-                                propertyName: 'containerStyle',
-                                hideLabel: true,
+                                propertyName: 'titleStyle',
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
@@ -414,7 +414,7 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'containerStyle',
-                                hideLabel: true,
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
