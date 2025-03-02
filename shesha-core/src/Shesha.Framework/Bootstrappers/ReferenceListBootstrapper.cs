@@ -97,6 +97,8 @@ namespace Shesha.Bootstrappers
             Logger.Warn($"Bootstrap assembly {assembly.FullName}");
             
             var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            if (module == null)
+                return;
 
             var listNo = 1;
             foreach (var list in lists)
@@ -131,13 +133,13 @@ namespace Shesha.Bootstrappers
                 var internalName = Enum.GetName(list.Enum, intValue) ?? throw new Exception($"Value '{intValue}' not found in enum '{list.Enum.FullName}'");
                 var memberInfo = list.Enum.GetMember(internalName).Single();
 
-                var displayAttribute = memberInfo.GetAttribute<DisplayAttribute>();
-                var descriptionAttribute = memberInfo.GetAttribute<DescriptionAttribute>();
+                var displayAttribute = memberInfo.GetAttributeOrNull<DisplayAttribute>();
+                var descriptionAttribute = memberInfo.GetAttributeOrNull<DescriptionAttribute>();
 
                 if (displayAttribute != null && displayAttribute.GetAutoGenerateField() == false)
                     continue;
 
-                var refListItemAttribute = memberInfo.GetAttribute<ReferenceListItemAttribute>();
+                var refListItemAttribute = memberInfo.GetAttributeOrNull<ReferenceListItemAttribute>();
 
                 listInCode.Add(new ListItemInfo
                 {

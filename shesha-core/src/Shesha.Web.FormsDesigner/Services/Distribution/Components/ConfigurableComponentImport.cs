@@ -1,14 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Services.ConfigurationItems;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +15,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Configurable component import
     /// </summary>
-    public class ConfigurableComponentImport: ConfigurationItemImportBase, IConfigurableComponentImport, ITransientDependency
+    public class ConfigurableComponentImport: ConfigurationItemImportBase<ConfigurableComponent, DistributedConfigurableComponent>, IConfigurableComponentImport, ITransientDependency
     {
         private readonly IRepository<ConfigurableComponent, Guid> _componentRepo;
         private readonly IConfigurableComponentManager _componentManger;
@@ -46,16 +44,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(DistributedConfigurableComponent)}. Actual type is {item.GetType().FullName}");
 
             return await ImportComponentAsync(formItem, context);
-        }
-
-        /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream) 
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedConfigurableComponent>(json);
-            }
         }
 
         private async Task<ConfigurationItemBase> GetLiveVersionForAsync(DistributedConfigurableComponent item) 

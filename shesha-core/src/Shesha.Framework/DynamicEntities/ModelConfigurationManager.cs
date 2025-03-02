@@ -36,7 +36,7 @@ namespace Shesha.DynamicEntities
         private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
         private readonly IRepository<Domain.ConfigurationItems.Module, Guid> _moduleRepository;
-        private readonly ITypedCache<string, ModelConfigurationDto> _modelConfigsCache;
+        private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
 
         public ModelConfigurationManager(
             IRepository<EntityConfig, Guid> entityConfigRepository,
@@ -554,7 +554,7 @@ namespace Shesha.DynamicEntities
             return dto;
         }
 
-        public async Task<ModelConfigurationDto> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null)
+        public async Task<ModelConfigurationDto?> GetModelConfigurationOrNullAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null)
         {
             var cacheKey = $"{@namespace}|{name}";
             var result = await _modelConfigsCache.GetAsync(cacheKey, async () => {

@@ -78,14 +78,14 @@ namespace Shesha.Configuration.Runtime
         {
             propConfig.PropertyInfo = prop;
             propConfig.GeneralType = GetGeneralDataType(prop);
-            propConfig.Category = prop.GetAttribute<CategoryAttribute>()?.Category;
+            propConfig.Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category;
 
             switch (propConfig.GeneralType)
             {
                 case GeneralDataType.Numeric:
                 case GeneralDataType.ReferenceList:
                     {
-                        var refListAtt = prop.GetAttribute<ReferenceListAttribute>(true);
+                        var refListAtt = prop.GetAttributeOrNull<ReferenceListAttribute>(true);
                         var refListId = refListAtt?.GetReferenceListIdentifier(prop);
                         if (refListId == null)
                         {
@@ -93,7 +93,7 @@ namespace Shesha.Configuration.Runtime
 
                             if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>()) 
                             {
-                                refListAtt = underlyingType.GetAttribute<ReferenceListAttribute>();
+                                refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
                                 refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
                             }
                         }
@@ -113,7 +113,7 @@ namespace Shesha.Configuration.Runtime
                     break;
                 case GeneralDataType.MultiValueReferenceList: 
                     {
-                        var mvRefListAtt = prop.GetAttribute<MultiValueReferenceListAttribute>(true);
+                        var mvRefListAtt = prop.GetAttributeOrNull<MultiValueReferenceListAttribute>(true);
                         var refListId = mvRefListAtt.GetReferenceListIdentifier(prop);
                         propConfig.ReferenceListName = refListId.Name;
                         propConfig.ReferenceListModule = refListId.Module;
@@ -203,7 +203,7 @@ namespace Shesha.Configuration.Runtime
             }
             else if (underlyingPropType == typeof(DateTime))
             {
-                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+                var dataTypeAtt = propInfo.GetAttributeOrNull<DataTypeAttribute>();
 
                 if (dataTypeAtt != null &&
                     dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))

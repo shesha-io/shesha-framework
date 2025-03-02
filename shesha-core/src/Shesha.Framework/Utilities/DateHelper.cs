@@ -297,7 +297,7 @@ namespace Shesha.Utilities
             return GetDateTimeFromUnixTimestamp(value / 1000);
         }
 
-        public static DateRange DatesIntersection(DateRange range1, DateRange range2)
+        public static DateRange? DatesIntersection(DateRange range1, DateRange range2)
         {
             if (range1.From == range1.To || range2.From == range2.To)
                 return null;

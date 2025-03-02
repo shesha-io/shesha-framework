@@ -39,7 +39,7 @@ namespace Shesha.Metadata
         /// <param name="propType"></param>
         /// <param name="propInfo"></param>
         /// <returns></returns>
-        DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo);
+        DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo);
 
         /// <summary>
         /// Returns true if the property is a framework related one

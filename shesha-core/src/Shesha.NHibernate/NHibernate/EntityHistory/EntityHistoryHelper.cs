@@ -75,7 +75,7 @@ namespace Shesha.NHibernate.EntityHistory
         public EntityChangeSet EntityChangeSet { get; set; }
         public List<EntityChange> EntityChanges { get; set; }
         public List<EntityHistoryEvent> EntityHistoryEvents { get; set; }
-        public ISession Session => (UnitOfWorkManager.Current as NhUnitOfWork)?.GetSession();
+        public ISession? Session => (UnitOfWorkManager.Current as NhUnitOfWork)?.GetSessionOrNull();
 
         public virtual void AddEntityChange(object entity)
         {
@@ -565,7 +565,7 @@ namespace Shesha.NHibernate.EntityHistory
             return propertyChange;
         }
 
-        public virtual EntityChangeSet CreateEntityChangeSet()
+        public virtual EntityChangeSet? CreateEntityChangeSet()
         {
             if (!IsEntityHistoryEnabled) return null;
 

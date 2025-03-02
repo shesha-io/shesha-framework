@@ -9,9 +9,9 @@ namespace Shesha.DynamicEntities.Mapper
     /// <summary>
     /// Id to Entity converter
     /// </summary>
-    public class IdToEntityConverter<TEntity, TId> : ITypeConverter<TId, TEntity> where TEntity: class, IEntity<TId>
+    public class IdToEntityConverter<TEntity, TId> : ITypeConverter<TId?, TEntity?> where TEntity: class, IEntity<TId>
     {
-        public TEntity Convert(TId source, TEntity destination, ResolutionContext context)
+        public TEntity? Convert(TId? source, TEntity? destination, ResolutionContext context)
         {
             if (source == null || (source is Guid guid) && guid == Guid.Empty)
                 return null;

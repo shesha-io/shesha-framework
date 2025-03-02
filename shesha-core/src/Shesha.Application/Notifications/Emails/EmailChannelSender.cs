@@ -25,7 +25,7 @@ namespace Shesha.Notifications
             _emailSettings = emailSettings;
         }
 
-        public string GetRecipientId(Person person)
+        public string? GetRecipientId(Person person)
         {
             return person?.EmailAddress1;
         }
@@ -131,7 +131,7 @@ namespace Shesha.Notifications
         /// <returns></returns>
         private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string cc = "")
         {
-            var smtpSettings = _emailSettings.SmtpSettings.GetValue();
+            var smtpSettings = _emailSettings.SmtpSettings.GetValueOrNull();
             var message = new MailMessage
             {
                 Subject = (subject ?? "").Replace("\r", " ").Replace("\n", " ").RemoveDoubleSpaces(),

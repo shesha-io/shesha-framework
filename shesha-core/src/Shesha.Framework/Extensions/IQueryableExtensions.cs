@@ -84,7 +84,9 @@ namespace Shesha.Extensions
             var jsonLogicConverter = StaticContext.IocManager.Resolve<IJsonLogic2LinqConverter>();
             var expression = jsonLogicConverter.ParseExpressionOf<TEntity>(jsonLogic);
 
-            return query.Where(expression);
+            return expression != null
+                ? query.Where(expression)
+                : query;
         }
 
         #region IAsyncQueryableExecuter extensions

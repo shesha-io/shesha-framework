@@ -54,7 +54,7 @@ namespace Shesha.Authorization
             _cfRuntime = cfRuntime;
         }
 
-        protected override ShaLoginResult<User> AdditionalVerification(User user, Tenant? tenant)
+        protected override ShaLoginResult<User>? AdditionalVerification(User user, Tenant? tenant)
         {
             if (user.AllowedFrontEndApps != null
                 && user.AllowedFrontEndApps.Any()

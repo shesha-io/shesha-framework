@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Entities;
-using Abp.Extensions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -82,7 +81,9 @@ namespace Shesha.EntityReferences
 
         public override int GetHashCode()
         {
-            return Id.IsNullOrEmpty() ? 0 : Id.GetHashCode();
+            return string.IsNullOrWhiteSpace(Id)
+                ? 0 
+                : Id.GetHashCode();
         }
     }
 }

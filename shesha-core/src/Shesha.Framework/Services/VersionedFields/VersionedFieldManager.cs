@@ -39,7 +39,7 @@ namespace Shesha.Services.VersionedFields
                 .FirstOrDefaultAsync();
         }
 
-        public VersionedField GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
+        public VersionedField? GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
         {
             var config = _entityConfigurationStore.Get(typeof(TEntity));
 
@@ -111,7 +111,7 @@ namespace Shesha.Services.VersionedFields
             return version;
         }
 
-        public async Task<string> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
+        public async Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
         {
             var field = await GetVersionedFieldAsync<TEntity, TId>(owner, fieldName);
             var version = field != null

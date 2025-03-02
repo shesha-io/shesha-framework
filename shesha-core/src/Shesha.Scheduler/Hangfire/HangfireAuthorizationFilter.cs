@@ -11,8 +11,7 @@ namespace Shesha.Scheduler.Hangfire
     {
         public bool Authorize(DashboardContext context)
         {
-            var username = context.GetHttpContext()
-                                .GetUsernameFromJwtToken();
+            var username = context.GetHttpContext().GetUsernameFromJwtToken();
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(username))
                 return false;

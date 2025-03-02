@@ -67,7 +67,7 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static string GetPropertyAccessor(this PropertyInfo property) 
         {
-            var aliasAttribute = property.GetAttribute<AliasAttribute>();
+            var aliasAttribute = property.GetAttributeOrNull<AliasAttribute>();
             return GetAccessor(property.Name, aliasAttribute?.Alias);
         }
 

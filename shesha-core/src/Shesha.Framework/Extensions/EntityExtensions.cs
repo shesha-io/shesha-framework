@@ -80,7 +80,7 @@ namespace Shesha.Extensions
         /// Returns the DisplayName of the entity.
         /// </summary>
         /// <returns>Returns the DisplayName of the entity.</returns>
-        public static string GetEntityDisplayName(this object entity)
+        public static string? GetEntityDisplayName(this object entity)
         {
             if (entity == null)
                 return string.Empty;
@@ -151,7 +151,7 @@ namespace Shesha.Extensions
                 var value = expression.Compile().Invoke(owner);
                 if (value == null)
                     return null;
-                var refListAttribute = prop.GetAttribute<ReferenceListAttribute>() ?? prop.PropertyType.GetUnderlyingTypeIfNullable().GetAttribute<ReferenceListAttribute>();
+                var refListAttribute = prop.GetAttributeOrNull<ReferenceListAttribute>() ?? prop.PropertyType.GetUnderlyingTypeIfNullable().GetAttributeOrNull<ReferenceListAttribute>();
                 if (refListAttribute != null)
                 {
                     return StaticContext.IocManager.Resolve<IReferenceListHelper>().GetItemDisplayText(refListAttribute.GetReferenceListIdentifier(prop), value.Value.ToInt32(CultureInfo.InvariantCulture));
@@ -249,7 +249,7 @@ namespace Shesha.Extensions
 
         private static string? GetPropertyDisplayFormat(PropertyInfo propInfo)
         {
-            return propInfo.GetAttribute<DisplayFormatAttribute>(true)?.DataFormatString;
+            return propInfo.GetAttributeOrNull<DisplayFormatAttribute>(true)?.DataFormatString;
         }
 
         private static string? FormatValue(object val, PropertyInfo propInfo, string? format, bool isForEdit)
@@ -272,7 +272,7 @@ namespace Shesha.Extensions
                 var typedVal = (DateTime)val;
                 string? finalFormat;
 
-                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+                var dataTypeAtt = propInfo.GetAttributeOrNull<DataTypeAttribute>();
                 if (dataTypeAtt != null && dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))
                 {
                     finalFormat = StringHelper.FirstValue(format, defaultDateFormat);

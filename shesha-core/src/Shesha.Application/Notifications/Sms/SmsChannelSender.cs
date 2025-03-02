@@ -30,7 +30,7 @@ namespace Shesha.Notifications.SMS
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public string GetRecipientId(Person person)
+        public string? GetRecipientId(Person person)
         {
             return person.MobileNumber1;
         }

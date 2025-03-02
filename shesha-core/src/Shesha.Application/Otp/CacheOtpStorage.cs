@@ -1,10 +1,11 @@
 ﻿using Shesha.Otp.Dto;
+using Shesha.Otp.Exceptions;
 using System;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
-    public class CacheOtpStorage: IOtpStorage
+    public class CacheOtpStorage : IOtpStorage
     {
         private readonly IOtpCache _otpCache;
 
@@ -35,9 +36,14 @@ namespace Shesha.Otp
         }
 
         /// inheritedDoc
-        public async Task<OtpDto> GetAsync(Guid operationId)
+        public async Task<OtpDto?> GetOrNullAsync(Guid operationId)
         {
             return await _otpCache.Cache.GetOrDefaultAsync(operationId);
+        }
+
+        public async Task<OtpDto> GetAsync(Guid operationId)
+        {
+            return (await GetOrNullAsync(operationId)) ?? throw new OtpOperationNotFoundException(operationId);
         }
     }
 }

@@ -78,7 +78,8 @@ namespace Shesha.Tests.SolutionGenerator
                     continue;
 
                 var dstRelativePath = relativePath.ReplaceTags(tags);
-                filesDictionary.Add(file, dstRelativePath);
+                if (!string.IsNullOrWhiteSpace(dstRelativePath))
+                    filesDictionary.Add(file, dstRelativePath);
             }
 
             var directories = Directory.GetDirectories(directory);

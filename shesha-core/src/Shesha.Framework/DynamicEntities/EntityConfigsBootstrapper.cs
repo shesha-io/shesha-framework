@@ -165,7 +165,7 @@ namespace Shesha.DynamicEntities
                         {
                             db = ec.db,
                             code = ec.code,
-                            attr = ec.code?.Config.EntityType.GetAttribute<EntityAttribute>()
+                            attr = ec.code?.Config.EntityType.GetAttributeOrNull<EntityAttribute>()
                         }
                 ).ToList();
 
@@ -230,7 +230,7 @@ namespace Shesha.DynamicEntities
 
             foreach (var config in toAdd)
             {
-                var attr = config.Config.EntityType.GetAttribute<EntityAttribute>();
+                var attr = config.Config.EntityType.GetAttributeOrNull<EntityAttribute>();
                 var ec = new EntityConfig()
                 {
                     FriendlyName = config.Config.FriendlyName,

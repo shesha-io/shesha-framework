@@ -43,7 +43,7 @@ namespace Shesha.Scheduler.Logging
 
         protected internal log4net.Core.ILogger Logger { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return Logger.ToString();
         }

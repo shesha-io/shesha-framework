@@ -32,8 +32,8 @@ namespace Shesha.NHibernate.Interceptors
         private readonly Lazy<IEventBus> _eventBus;
         public ILogger Logger { get; set; } = new NullLogger();
 
-        public EntityHistory.IEntityHistoryHelper EntityHistoryHelper => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.EntityHistoryHelper as EntityHistory.IEntityHistoryHelper;
-        public ISession Session => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.GetSession(true);
+        public EntityHistory.IEntityHistoryHelper? EntityHistoryHelper => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.EntityHistoryHelper as EntityHistory.IEntityHistoryHelper;
+        public ISession? Session => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.GetSessionOrNull(true);
 
         public SheshaNHibernateInterceptor(IIocManager iocManager)
         {

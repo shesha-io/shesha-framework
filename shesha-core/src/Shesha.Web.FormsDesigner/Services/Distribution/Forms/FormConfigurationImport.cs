@@ -1,14 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -16,7 +14,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     /// <summary>
     /// Form configuration import
     /// </summary>
-    public class FormConfigurationImport: ConfigurationItemImportBase, IFormConfigurationImport, ITransientDependency
+    public class FormConfigurationImport: ConfigurationItemImportBase<FormConfiguration, DistributedFormConfiguration>, IFormConfigurationImport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
         private readonly IFormManager _formManger;
@@ -49,16 +47,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(DistributedFormConfiguration)}. Actual type is {item.GetType().FullName}");
 
             return await ImportFormAsync(formItem, context);
-        }
-
-        /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream) 
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedFormConfiguration>(json);
-            }
         }
 
         /// inheritedDoc

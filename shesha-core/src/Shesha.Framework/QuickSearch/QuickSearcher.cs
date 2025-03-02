@@ -88,7 +88,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="parameter">Parameter expression</param>
         /// <returns></returns>
-        public Expression GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
+        public Expression? GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
         {
             if (string.IsNullOrWhiteSpace(quickSearch))
                 return null;
@@ -316,6 +316,9 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private Expression CombineExpressions(List<Expression> expressions, Binder binder, ParameterExpression param)
         {
+            if (!expressions.Any())
+                throw new ArgumentException($"expressions list must not be empty", nameof(expressions));
+
             Expression? acc = null;
 
             foreach (var expression in expressions)
@@ -323,7 +326,7 @@ namespace Shesha.QuickSearch
                 acc = Reduce(acc, expression, binder);
             }
 
-            return acc;
+            return acc ?? throw new Exception("Failed to combine linq expressions");
         }
 
         /// <summary>

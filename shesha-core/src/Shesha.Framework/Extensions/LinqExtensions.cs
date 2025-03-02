@@ -27,7 +27,7 @@ namespace Shesha.Extensions
             Expression<Func<TSource, TResult>> selector, TResult defaultValue)
         {
             return await source.AnyAsync()
-                ? source.Max(selector)  // todo: update ABP and use async version or implement Shesha-specific interface
+                ? source.Max(selector) ?? defaultValue
                 : defaultValue;
         }
 

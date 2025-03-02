@@ -32,7 +32,7 @@ namespace Shesha.Sms.Clickatell
         /// <returns>Returns true if message was accepted by the gateway, else returns false.</returns>
         public override async Task<SendStatus> SendSmsAsync(string mobileNumber, string body)
         {
-            var settings = await _settings.ClickatellGateway.GetValueAsync();
+            var settings = await _settings.ClickatellGateway.GetValueOrNullAsync();
 
             // Send SMS API logic here
             using var httpClient = new HttpClient();
@@ -84,7 +84,7 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task<ClickatellSettingDto> GetTypedSettingsAsync()
         {
-            var gatewaySettings = await _settings.ClickatellGateway.GetValueAsync();
+            var gatewaySettings = await _settings.ClickatellGateway.GetValueOrNullAsync();
 
             var settings = new ClickatellSettingDto
             {

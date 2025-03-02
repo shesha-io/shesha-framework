@@ -88,7 +88,7 @@ namespace Shesha.GraphQL.Provider
         public virtual Task<ISchema> GetOrDefaultAsync(string schemaName, string defaultSchemaName = null)
         {
             ISchema schema = null;
-            if (!schemaName.IsNullOrEmpty())
+            if (!string.IsNullOrWhiteSpace(schemaName))
             {
                 schema = CustomSchemas.ContainsKey(schemaName)
                     ? CustomSchemas[schemaName]

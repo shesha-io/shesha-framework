@@ -56,7 +56,7 @@ namespace Shesha.Settings
             }
         }
 
-        private SettingDefinition GetSettingDefinition(ISettingAccessor propertyInstance, PropertyInfo property, SheshaModuleInfo moduleInfo)
+        private SettingDefinition? GetSettingDefinition(ISettingAccessor propertyInstance, PropertyInfo property, SheshaModuleInfo moduleInfo)
         {
             var valueType = property.PropertyType.IsGenericType
                 ? property.PropertyType.GenericTypeArguments[0]
@@ -66,7 +66,7 @@ namespace Shesha.Settings
 
             var definitionType = typeof(SettingDefinition<>).MakeGenericType(valueType);
 
-            var settingAttribute = property.GetAttribute<SettingAttribute>();
+            var settingAttribute = property.GetAttributeOrNull<SettingAttribute>();
             if (settingAttribute == null)
                 return null;
 
@@ -94,7 +94,7 @@ namespace Shesha.Settings
                 : null;            
 
             definition.Category = property.GetCategory() ?? property.DeclaringType?.GetCategory();
-            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.Name), property.DeclaringType?.GetAttribute<AliasAttribute>()?.Alias);
+            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.Name), property.DeclaringType?.GetAttributeOrNull<AliasAttribute>()?.Alias);
 
             return definition;
         }

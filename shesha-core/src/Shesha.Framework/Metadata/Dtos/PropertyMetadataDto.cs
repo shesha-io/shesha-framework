@@ -95,7 +95,7 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Items type (applicable for arrays)
         /// </summary>
-        public PropertyMetadataDto ItemsType { get; set; }
+        public PropertyMetadataDto? ItemsType { get; set; }
 
         public MetadataSourceType Source { get; set; }
 

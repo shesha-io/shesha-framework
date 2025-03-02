@@ -23,7 +23,7 @@ namespace Shesha.DynamicEntities
 
             var entityType = controller.ControllerType.GenericTypeArguments[0];
 
-            var entityAttribute = entityType.GetAttribute<EntityAttribute>();
+            var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
             controller.ControllerName = !string.IsNullOrWhiteSpace(entityAttribute?.ApplicationServiceName)
                 ? entityAttribute.ApplicationServiceName
                 : entityType.Name + "Crud";

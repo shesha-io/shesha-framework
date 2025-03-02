@@ -325,7 +325,7 @@ namespace Shesha.NHibernate
                                     Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
                                     var method = bootstrapperType.GetRequiredMethod(nameof(IBootstrapper.ProcessAsync));
-                                    var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+                                    var unitOfWorkAttribute = method.GetAttributeOrNull<UnitOfWorkAttribute>(true);
                                     var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
 
                                     if (useDefaultUnitOfWork)
@@ -373,7 +373,7 @@ namespace Shesha.NHibernate
             var withDeps = types.Select(t => new
                 {
                     Type = t,
-                    Dependencies = t.GetAttribute<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
+                    Dependencies = t.GetAttributeOrNull<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
                 })
                 .ToList();
             

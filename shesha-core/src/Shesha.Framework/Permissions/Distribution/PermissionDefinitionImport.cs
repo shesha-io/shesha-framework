@@ -1,6 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
@@ -9,14 +8,13 @@ using Shesha.Permissions.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class PermissionDefinitionImport : ConfigurationItemImportBase, IPermissionDefinitionImport, ITransientDependency
+    public class PermissionDefinitionImport : ConfigurationItemImportBase<PermissionDefinition, DistributedPermissionDefinition>, IPermissionDefinitionImport, ITransientDependency
     {
         public string ItemType => PermissionDefinition.ItemTypeName;
 
@@ -123,10 +121,6 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
 
-            //dbItem.Origin = item.OriginId;
-            //dbItem.BaseItem = item.BaseItem;
-            //dbItem.ParentVersion = item.ParentVersionId;
-
             dbItem.Label = item.Label;
             dbItem.Description = item.Description;
             dbItem.VersionNo = item.VersionNo;
@@ -136,15 +130,6 @@ namespace Shesha.DynamicEntities.Distribution
             // entity config specific properties
             dbItem.Parent = item.Parent;
             return dbItem;
-        }
-
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedPermissionDefinition>(json);
-            }
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Shesha.UserManagements
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
             //CheckCreatePermission();
-            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
+            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueOrNullAsync();
 
             // Performing additional validations
             var validationResults = new List<ValidationResult>();
@@ -80,7 +80,7 @@ namespace Shesha.UserManagements
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of
             // creation.
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
             var isEmailLinkSupported = securitySettings.UseResetPasswordViaEmailLink;
             if (isEmailLinkSupported)
@@ -147,7 +147,7 @@ namespace Shesha.UserManagements
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> CompleteRegistrationAsync(long userId)
+        public async Task<string?> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)

@@ -13,6 +13,7 @@ using Abp.MultiTenancy;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
+using NUglify.Helpers;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -86,7 +87,7 @@ namespace Shesha.Authorization
             _mobileDeviceRepository = mobileDeviceRepository;
         }
 
-        protected virtual ShaLoginResult<TUser> AdditionalVerification(TUser user, TTenant? tenant)
+        protected virtual ShaLoginResult<TUser>? AdditionalVerification(TUser user, TTenant? tenant)
         {
             return null;
         }
@@ -104,7 +105,7 @@ namespace Shesha.Authorization
         {
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
+                if (login == null || string.IsNullOrWhiteSpace(login.LoginProvider) || string.IsNullOrWhiteSpace(login.ProviderKey))
                     throw new ArgumentException("login");
 
                 var result = await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) => {
@@ -151,7 +152,7 @@ namespace Shesha.Authorization
         {
             CheckOtpAuthAvailability();
 
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
             var response = await OtpManager.SendPinAsync(new SendPinInput()
             {
@@ -176,7 +177,7 @@ namespace Shesha.Authorization
             var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () => {
                 return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
 
-                    var otp = await OtpManager.GetAsync(operationId);
+                    var otp = await OtpManager.GetOrNullAsync(operationId);
                     if (otp == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
                     var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
@@ -269,11 +270,8 @@ namespace Shesha.Authorization
 
         protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string? imei, string? tenancyName, bool shouldLockout)
         {
-            if (userNameOrEmailAddress.IsNullOrEmpty())
-                throw new ArgumentNullException(nameof(userNameOrEmailAddress));
-
-            if (plainPassword.IsNullOrEmpty())
-                throw new ArgumentNullException(nameof(plainPassword));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(userNameOrEmailAddress, nameof(userNameOrEmailAddress));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plainPassword, nameof(plainPassword));
 
             return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
                 // TryLoginFromExternalAuthenticationSources method may create the user, that's why we are calling it before AbpUserStore.FindByNameOrEmailAsync

@@ -82,7 +82,7 @@ namespace Shesha.Services
         /// <param name="refListId">Referencve list identifier</param>
         /// <param name="value">Value of the <see cref="ReferenceListItem"/></param>
         /// <returns></returns>
-        public string GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value)
+        public string? GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value)
         {
             ValidateRefListId(refListId);
 

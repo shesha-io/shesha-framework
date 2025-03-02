@@ -781,25 +781,28 @@ namespace Shesha.EntityHistory
 
         private string GetEntityName(object? entity, string fieldName)
         {
-            if (entity == null) return "";
+            if (entity == null) return string.Empty;
+
+            if (string.IsNullOrEmpty(fieldName))
+                return entity.ToString() ?? string.Empty;
 
             var type = entity.GetType();
-            return string.IsNullOrEmpty(fieldName)
-                ? entity.ToString()
-                : string.IsNullOrEmpty(type.GetProperty(fieldName)?.GetValue(entity)?.ToString())
-                    ? entity.ToString()
-                    : type.GetProperty(fieldName)?.GetValue(entity)?.ToString();
+
+            var propValue = type.GetProperty(fieldName)?.GetValue(entity);
+            var propText = propValue?.ToString();
+            return !string.IsNullOrEmpty(propText)
+                ? propText
+                : string.Empty;
         }
 
-        private Person GetPersonByUserIdInternal(IList<Person> list, long? userId)
+        private Person? GetPersonByUserIdInternal(IList<Person> list, long? userId)
         {
             return userId != null
                 ? list.FirstOrDefault(x => x.User != null && x.User.Id == userId)
                 : null;
-
         }
 
-        private Person GetPersonByUserId(long? userId)
+        private Person? GetPersonByUserId(long? userId)
         {
             return userId != null
                 ? _personRepository.GetAll().FirstOrDefault(x => x.User != null && x.User.Id == userId)
