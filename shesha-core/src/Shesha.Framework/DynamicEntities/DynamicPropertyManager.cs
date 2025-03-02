@@ -8,6 +8,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Metadata;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace Shesha.DynamicEntities
             _dynamicRepository = dynamicRepository;
         }
 
-        public async Task<string> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property)
+        public async Task<string?> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property)
         {
             var config = entity.GetType().GetEntityConfiguration();
 
@@ -142,7 +143,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        public async Task<object> GetPropertyAsync(object entity, string propertyName) 
+        public async Task<object?> GetPropertyAsync(object entity, string propertyName) 
         {
             try 
             {
@@ -163,7 +164,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        public async Task<object> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
+        public async Task<object?> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
             where TEntity : class, IEntity<TId>
         {
             var dynamicProperty = (await DtoTypeBuilder.GetEntityPropertiesAsync(entity.GetType()))
@@ -182,7 +183,7 @@ namespace Shesha.DynamicEntities
                 case DataTypes.EntityReference:
                     {
                         var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityType);
-                        var id = SerializationManager.DeserializeProperty(entityConfig.IdType, serializedValue);
+                        var id = SerializationManager.DeserializeProperty(entityConfig.IdType.NotNull(), serializedValue);
                         var stringId = id?.ToString();
                         if (string.IsNullOrWhiteSpace(stringId))
                             return null;

@@ -282,17 +282,15 @@ namespace Shesha.Authorization
         }
 
         [DebuggerStepThrough]
-        private string GetTenancyNameOrNull()
+        private string? GetTenancyNameOrNull()
         {
             if (!AbpSession.TenantId.HasValue)
-            {
                 return null;
-            }
 
             return _tenantCache.GetOrNull(AbpSession.TenantId.Value)?.TenancyName;
         }
 
-        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string imei, string tenancyName)
+        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string imei, string? tenancyName)
         {
             var loginResult = await _logInManager.LoginAsync(usernameOrEmailAddress, password, imei, tenancyName);
 

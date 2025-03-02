@@ -22,7 +22,7 @@ namespace Shesha.Permissions
     {
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ILocalizationContext _localizationContext;
-        private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
+        private IShaPermissionManager _shaPermissionManager => PermissionManager.ForceCastAs<IShaPermissionManager>();
         private readonly IShaPermissionChecker _permissionChecker;
 
         private const string emptyId = "_";
@@ -38,8 +38,9 @@ namespace Shesha.Permissions
             _permissionChecker = permissionChecker;
         }
 
-        public async Task<PermissionDto> GetAsync(string id)
+        public async Task<PermissionDto?> GetAsync(string id)
         {
+            /* TODO: Alex, please review. If an entity is requested we must return value or  throw exception. It's abnormal case if we get request with empty id, so there should be an exception*/
             if (string.IsNullOrEmpty(id))
                 return null;
 

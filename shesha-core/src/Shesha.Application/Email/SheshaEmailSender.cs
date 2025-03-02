@@ -11,7 +11,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shesha.Email
@@ -30,7 +29,7 @@ namespace Shesha.Email
 
         private bool EmailsEnabled() 
         {
-            var enabled = _emailSettings.EmailSettings.GetValue().EmailsEnabled;
+            var enabled = _emailSettings.EmailSettings.GetValueOrNull().EmailsEnabled;
             if (!enabled)
                 Logger.Warn("Emails are disabled");
 
@@ -122,7 +121,7 @@ namespace Shesha.Email
                 return false;
             }
 
-            var redirectTo = _emailSettings.EmailSettings.GetValue().RedirectAllMessagesTo;
+            var redirectTo = _emailSettings.EmailSettings.GetValueOrNull().RedirectAllMessagesTo;
             if (!string.IsNullOrWhiteSpace(redirectTo))
             {
                 mail.To.Clear();

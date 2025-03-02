@@ -6,6 +6,7 @@ using Abp.Runtime.Session;
 using Abp.UI;
 using FluentValidation;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace Shesha.Domain
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        public static async Task<T> GetEntityAsync<T>(this DomainService service, Guid id, bool throwException = true) where T : class, IEntity<Guid>
+        public static async Task<T?> GetEntityAsync<T>(this DomainService service, Guid id, bool throwException = true) where T : class, IEntity<Guid>
         {
             return await GetEntityAsync<T, Guid>(service, id, throwException);
         }
@@ -48,7 +49,7 @@ namespace Shesha.Domain
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        public static async Task<T> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
+        public static async Task<T?> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
         {
             var stringId = id.ToString();
             ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
@@ -78,7 +79,7 @@ namespace Shesha.Domain
         public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId: struct
         {
             var item = id != null
-                ? await GetEntityAsync<T, TId>(service, id.Value)
+                ? (await GetEntityAsync<T, TId>(service, id.Value)).NotNull()
                 : ActivatorHelper.CreateNotNullInstance<T>();
 
 			await action.Invoke(item);

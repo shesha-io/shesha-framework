@@ -46,7 +46,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         _propertyRepository = propertyRepository;
     }
 
-    public async Task<FormIdFullNameDto> GetEntityConfigFormAsync(string entityConfigName, string typeName)
+    public async Task<FormIdFullNameDto?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
     {
         var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
         if (entityConfig == null)

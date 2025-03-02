@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
@@ -11,7 +10,6 @@ using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,7 +18,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
     /// <summary>
     /// file template import
     /// </summary>
-    public class NotificationTypeImport : ConfigurationItemImportBase, INotificationTypeImport, ITransientDependency
+    public class NotificationTypeImport : ConfigurationItemImportBase<NotificationTypeConfig, DistributedNotificationType>, INotificationTypeImport, ITransientDependency
     {
         private readonly IRepository<NotificationTypeConfig, Guid> _repository;
         private readonly INotificationManager _manager;
@@ -151,23 +149,6 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             dbItem.CopyNotificationSpecificPropsFrom(item);
 
             return dbItem;
-        }
-
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                
-                var result = !string.IsNullOrWhiteSpace(json)
-                    ? JsonConvert.DeserializeObject<DistributedNotificationType>(json)
-                    : null;
-                
-                if (result == null)
-                    throw new Exception($"Failed to read {nameof(NotificationTypeConfig)} from json");
-
-                return result;
-            }
         }
     }
 }

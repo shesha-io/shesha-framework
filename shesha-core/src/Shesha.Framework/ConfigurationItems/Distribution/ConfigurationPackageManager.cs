@@ -163,7 +163,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return _dependencyProviders[requestedType] = SearchClosestDependenciesProviders(requestedType) ?? new List<IDependenciesProvider>();
         }
 
-        private List<IDependenciesProvider> SearchClosestDependenciesProviders(Type itemType) 
+        private List<IDependenciesProvider>? SearchClosestDependenciesProviders(Type itemType) 
         {
             var type = itemType;
             while (type != null)

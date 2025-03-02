@@ -189,7 +189,7 @@ namespace Shesha
         protected async Task<T> SaveOrUpdateEntityAsync<T, TId>(TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId : struct
         {
             var item = id.HasValue
-                ? await GetEntityAsync<T, TId>(id.Value)
+                ? (await GetEntityAsync<T, TId>(id.Value)).NotNull()
                 : ActivatorHelper.CreateNotNullInstance<T>();
 
             await action.Invoke(item);
@@ -206,7 +206,7 @@ namespace Shesha
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        protected async Task<T> GetEntityAsync<T>(Guid id, bool throwException = true) where T : class, IEntity<Guid>
+        protected async Task<T?> GetEntityAsync<T>(Guid id, bool throwException = true) where T : class, IEntity<Guid>
         {
             return await GetEntityAsync<T, Guid>(id, throwException);
         }
@@ -219,7 +219,7 @@ namespace Shesha
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        protected async Task<T> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId> where TId: notnull
+        protected async Task<T?> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId> where TId: notnull
         {
             var stringId = id.ToString();
             ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));

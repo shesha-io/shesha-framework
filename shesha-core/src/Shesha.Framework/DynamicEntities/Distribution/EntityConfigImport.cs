@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
-using Newtonsoft.Json;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
@@ -14,14 +13,13 @@ using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class EntityConfigImport : ConfigurationItemImportBase, IEntityConfigImport, ITransientDependency
+    public class EntityConfigImport : ConfigurationItemImportBase<EntityConfig, DistributedEntityConfig>, IEntityConfigImport, ITransientDependency
     {
         public string ItemType => EntityConfig.ItemTypeName;
 
@@ -30,7 +28,7 @@ namespace Shesha.DynamicEntities.Distribution
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IEntityConfigManager _entityConfigManager;
-        private readonly ITypedCache<string, ModelConfigurationDto> _modelConfigsCache;
+        private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
 
         public EntityConfigImport(
             IRepository<Module, Guid> moduleRepo,
@@ -206,15 +204,6 @@ namespace Shesha.DynamicEntities.Distribution
                 dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
                 await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
-            }
-        }
-
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedEntityConfig>(json);
             }
         }
     }

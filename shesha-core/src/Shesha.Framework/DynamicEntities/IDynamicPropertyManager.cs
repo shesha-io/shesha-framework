@@ -18,7 +18,7 @@ namespace Shesha.DynamicEntities
         /// <param name="entity">Entity</param>
         /// <param name="property">Property to get value</param>
         /// <returns></returns>
-        Task<string> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property);
+        Task<string?> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property);
 
         // todo: get IsVersioned flag from the EntityPropertyDto
         /// <summary>
@@ -77,7 +77,7 @@ namespace Shesha.DynamicEntities
         /// <param name="entity"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        Task<object> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
+        Task<object?> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
             where TEntity : class, IEntity<TId>;
 
         /// <summary>
@@ -86,6 +86,6 @@ namespace Shesha.DynamicEntities
         /// <param name="entity"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        Task<object> GetPropertyAsync(object entity, string propertyName);
+        Task<object?> GetPropertyAsync(object entity, string propertyName);
     }
 }

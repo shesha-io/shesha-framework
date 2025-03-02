@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
-using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
@@ -25,6 +24,8 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
+    // TODO: Alex, please enable CS8603 and review
+#pragma warning disable CS8603
     public class PermissionedObjectManager : IPermissionedObjectManager, ITransientDependency,
         IEventHandler<EntityChangedEventData<PermissionedObject>>
     {
@@ -348,7 +349,7 @@ namespace Shesha.Permissions
             using (var uow = _unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
             {
                 var dbObj = await _permissionedObjectRepository.GetAll()
-                    .WhereIf(!objectType.IsNullOrEmpty(), x => x.Type == objectType)
+                    .WhereIf(!string.IsNullOrWhiteSpace(objectType), x => x.Type == objectType)
                     .Where(x => x.Object == objectName)
                     .FirstOrDefaultAsync();
                 var dto = dbObj != null
@@ -391,7 +392,7 @@ namespace Shesha.Permissions
                     Type = permissionedObject.Type,
                     Module = permissionedObject.Module != null
                         ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
-                        : !permissionedObject.Module.IsNullOrEmpty()
+                        : !string.IsNullOrWhiteSpace(permissionedObject.Module)
                             ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
                             : null,
                     Parent = permissionedObject.Parent,
@@ -448,7 +449,7 @@ namespace Shesha.Permissions
                 var method = GetCrudMethod(methodName);
 
                 var obj = "";
-                if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !method.IsNullOrEmpty())
+                if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !string.IsNullOrWhiteSpace(method))
                 {
                     // entity service
                     var genericInterface = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
@@ -525,4 +526,5 @@ namespace Shesha.Permissions
             return forms;
         }
     }
+#pragma warning restore CS8603
 }

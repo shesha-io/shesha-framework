@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.QuickSearch
 {
@@ -19,7 +17,7 @@ namespace Shesha.QuickSearch
         /// <param name="quickSearch">Quick search text</param>
         /// <param name="properties">List of properties to search. Supports dot notation (e.g. User.Username)</param>
         /// <returns></returns>
-        Expression<Func<T, bool>> GetQuickSearchExpression<T>(string quickSearch, List<string> properties);
+        Expression<Func<T, bool>>? GetQuickSearchExpression<T>(string quickSearch, List<string> properties);
 
         /// <summary>
         /// Get quick search linq expression. Uses root level properties of the specified entity

@@ -7,7 +7,6 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.Configuration;
 using Shesha.Exceptions;
-using Shesha.FluentMigrator;
 using System;
 
 namespace Shesha.NHibernate.Configuration
@@ -79,7 +78,7 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public void UseMsSql()
         {
-            UseMsSql(c => c.GetConnectionString(SheshaConsts.ConnectionStringName));
+            UseMsSql(c => c.GetRequiredConnectionString(SheshaConsts.ConnectionStringName));
         }
 
         #endregion
@@ -102,7 +101,7 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public void UsePostgreSql()
         {
-            UsePostgreSql(c => c.GetConnectionString(SheshaConsts.ConnectionStringName));
+            UsePostgreSql(c => c.GetRequiredConnectionString(SheshaConsts.ConnectionStringName));
         }
 
         #endregion

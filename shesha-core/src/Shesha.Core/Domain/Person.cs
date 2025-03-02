@@ -116,7 +116,7 @@ namespace Shesha.Domain
         [CascadeUpdateRules(false, true)]
         public virtual User? User { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return FullName;
         }

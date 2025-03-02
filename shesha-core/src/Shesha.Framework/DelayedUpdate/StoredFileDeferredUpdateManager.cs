@@ -23,7 +23,7 @@ namespace Shesha.DelayedUpdate
             _fileService = fileService;
         }
 
-        public override async Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, StoredFileDelayedUpdateData data, List<ValidationResult> validationResult)
+        public override async Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, StoredFileDelayedUpdateData? data, List<ValidationResult> validationResult)
         {
             try
             {
@@ -32,10 +32,10 @@ namespace Shesha.DelayedUpdate
 
                 var file = await _fileService.GetOrNullAsync(Guid.Parse(stringId));
 
-                if (data?.PropertyName?.IsNullOrEmpty() ?? true)
+                if (string.IsNullOrWhiteSpace(data?.PropertyName))
                 {
                     object? owner = entity;
-                    if (!data?.OwnerName?.IsNullOrEmpty() ?? false)
+                    if (!string.IsNullOrWhiteSpace(data?.OwnerName))
                     {
                         var prop = ReflectionHelper.GetProperty(owner, data.OwnerName);
                         owner = prop.GetValue(owner);

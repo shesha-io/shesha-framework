@@ -1,6 +1,6 @@
 ﻿using Abp.Dependency;
-using Abp.Extensions;
 using Shesha.Domain;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Linq;
@@ -33,7 +33,7 @@ namespace Shesha.Generators
             var tablePrefix = (prefix ?? GetTablePrefix(parentType) ?? "").TrimEnd('_');
             var parentTypeName = parentType.Name;
             var propertyName = propertyInfo.Name;
-            var suffixLength = suffix.IsNullOrEmpty() ? 0 : suffix.Length + 1;
+            var suffixLength = string.IsNullOrWhiteSpace(suffix) ? 0 : suffix.Length + 1;
 
             var tableName = GetSnakeCaseText(new[] {tablePrefix, parentTypeName, propertyName}, MaxLenght - suffixLength) + (suffixLength == 0 ? "" : $"_{suffix}").ToSnakeCase();
 
@@ -60,9 +60,9 @@ namespace Shesha.Generators
                     case GeneratorMaxLengthActionEnum.TrimRight:
                         return res.Substring(0, maxLenght);
                     case GeneratorMaxLengthActionEnum.TrimParts:
-                        return parts.SnakeCaseTrim(maxLenght);
+                        return parts.SnakeCaseTrim(maxLenght).NotNullOrWhiteSpace();
                     case GeneratorMaxLengthActionEnum.TrimWords:
-                        return res.SnakeCaseTrim(maxLenght);
+                        return res.SnakeCaseTrim(maxLenght).NotNullOrWhiteSpace();
                 }
             }
             return res;

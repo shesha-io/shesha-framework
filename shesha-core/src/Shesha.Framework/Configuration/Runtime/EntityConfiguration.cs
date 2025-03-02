@@ -45,7 +45,7 @@ namespace Shesha.Configuration.Runtime
 
         public bool HasTypeShortAlias => !string.IsNullOrEmpty(_typeShortAlias);
 
-        public string SafeTypeShortAlias => _typeShortAlias;
+        public string? SafeTypeShortAlias => _typeShortAlias;
 
         /// <summary>
         /// Type short alias of the entity type (see <see cref="EntityAttribute"/>)
@@ -83,8 +83,8 @@ namespace Shesha.Configuration.Runtime
         public string FriendlyName { get; set; }
         public string Accessor { get; set; }
 
-        public string TableName => MappingMetadata?.TableName;
-        public string DiscriminatorValue => MappingMetadata?.DiscriminatorValue;
+        public string? TableName => MappingMetadata?.TableName;
+        public string? DiscriminatorValue => MappingMetadata?.DiscriminatorValue;
 
         private EntityMappingMetadata _mappingMetadata;
         private static object _nhMetadataLock = new object();
@@ -136,8 +136,8 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public Type EntityType { get; set; }
-        public Type IdType => EntityType?.GetEntityIdType();
+        public Type EntityType { get; private set; }
+        public Type IdType => EntityType.GetEntityIdType();
 
         public IList<PropertySetChangeLoggingConfiguration> ChangeLogConfigurations = new List<PropertySetChangeLoggingConfiguration>();
 

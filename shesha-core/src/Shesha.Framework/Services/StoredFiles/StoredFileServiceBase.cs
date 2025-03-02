@@ -125,7 +125,7 @@ namespace Shesha.Services.StoredFiles
 
         public Stream GetStream(StoredFile file)
         {
-            var lastVersion = GetLastVersion(file);
+            var lastVersion = GetLastVersion(file) ?? throw new EntityNotFoundException($"Failed to find last version of stored file '{file.Id}'");
             return GetStream(lastVersion);
         }
 
@@ -352,7 +352,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="fileId">File Id</param>
         /// <returns></returns>
-        protected StoredFileVersion GetLastVersion(Guid fileId)
+        protected StoredFileVersion? GetLastVersion(Guid fileId)
         {
             return QueryLastVersion(fileId).FirstOrDefault();
         }
@@ -372,7 +372,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public StoredFileVersion GetLastVersion(StoredFile file)
+        public StoredFileVersion? GetLastVersion(StoredFile file)
         {
             return GetLastVersion(file.Id);
         }

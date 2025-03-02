@@ -54,7 +54,7 @@ namespace Shesha.EntityHistory
 
         /* Many to many parent event features */
 
-        public virtual EntityHistoryEventInfo CreateManyToManyEvent(EntityChangesInfo change)
+        public virtual EntityHistoryEventInfo? CreateManyToManyEvent(EntityChangesInfo change)
         {
             var changeSet = new EntityChangesInfo<E, IEnumerable<T>>()
             {
@@ -72,7 +72,7 @@ namespace Shesha.EntityHistory
             return CreateManyToManyEvent(changeSet);
         }
 
-        public virtual EntityHistoryEventInfo CreateManyToManyEvent(EntityChangesInfo<E, IEnumerable<T>> change)
+        public virtual EntityHistoryEventInfo? CreateManyToManyEvent(EntityChangesInfo<E, IEnumerable<T>> change)
         {
             var (added, removed) = GetListNewAndRemoved(change);
 
@@ -110,7 +110,7 @@ namespace Shesha.EntityHistory
 
         /* Many to many child event features */
 
-        public virtual EntityHistoryEventInfo CreateManyToManyRelationEvent(EntityChangesInfo change)
+        public virtual EntityHistoryEventInfo? CreateManyToManyRelationEvent(EntityChangesInfo change)
         {
             var changeSet = new EntityChangeRelationInfo<E, T>()
             {

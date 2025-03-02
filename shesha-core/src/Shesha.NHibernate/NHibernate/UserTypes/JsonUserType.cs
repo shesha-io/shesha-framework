@@ -19,7 +19,7 @@ namespace Shesha.NHibernate.UserTypes
 
         public bool IsMutable => true;
 
-        public object Assemble(object cached, object? owner)
+        public object? Assemble(object cached, object? owner)
         {
             var str = cached as string;
 
@@ -29,7 +29,7 @@ namespace Shesha.NHibernate.UserTypes
             return JsonConvert.DeserializeObject<T>(str);
         }
 
-        public object DeepCopy(object value)
+        public object? DeepCopy(object value)
         {
             if (value == null)
                 return null;
@@ -45,7 +45,7 @@ namespace Shesha.NHibernate.UserTypes
             return JsonConvert.DeserializeObject<T>(serialized);
         }
 
-        public object Disassemble(object value)
+        public object? Disassemble(object value)
         {
             if (value == null)
                 return null;
@@ -79,7 +79,7 @@ namespace Shesha.NHibernate.UserTypes
             return x == null ? 0 : x.GetHashCode();
         }
 
-        public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
+        public object? NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
         {
             if (names.Length != 1)
                 throw new InvalidOperationException("Only expecting one column...");

@@ -38,7 +38,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns connection string. Note: for the Azure environment - uses standard environment variable
         /// </summary>
-        private string GetConnectionString() => _configuration.GetConnectionString(ConnectionStringName);
+        private string GetConnectionString() => _configuration.GetRequiredConnectionString(ConnectionStringName);
 
         private BlobContainerClient BlobContainerClient
         {

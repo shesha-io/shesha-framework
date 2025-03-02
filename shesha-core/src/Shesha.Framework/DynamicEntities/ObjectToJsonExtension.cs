@@ -43,7 +43,7 @@ namespace Shesha.DynamicEntities
 
             var props = obj.GetType().GetProperties().Where(p =>
                 p.CanRead && p.IsPublic()
-                && !p.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
+                && !p.HasAttribute<JsonIgnoreAttribute>()
                 && !p.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>()
                 && !IsServiceDtoField(p))
                 .ToList();
@@ -86,7 +86,8 @@ namespace Shesha.DynamicEntities
 
         public static JToken ValueToJson(Type propType, object? val, JToken? jval, bool addMissedProperties = true)
         {
-            if (val == null || !val.GetType().IsAssignableTo(propType)) return null;
+            if (val == null || !val.GetType().IsAssignableTo(propType)) 
+                return JValue.CreateNull();
 
             if (ObjectExtensions.IsListType(propType)
                 || ObjectExtensions.IsDictionaryType(propType))
@@ -126,7 +127,7 @@ namespace Shesha.DynamicEntities
             if (propType.IsEntityType())
             {
                 var jref = new JObject();
-                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName()));
+                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName() ?? string.Empty));
                 jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.GetRequiredFullName()));
                 jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId().NotNull()));
                 return jref;
@@ -136,7 +137,7 @@ namespace Shesha.DynamicEntities
                 || !val.Equals(jval?.ToObject(propType)))
                 return JProperty.FromObject(val);
 
-            return jval;
+            return jval ?? JValue.CreateNull();
         }
 
         private static JToken ConvertGeometry(Geometry geometry) 

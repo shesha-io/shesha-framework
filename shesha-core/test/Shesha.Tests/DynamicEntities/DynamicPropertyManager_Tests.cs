@@ -138,7 +138,7 @@ namespace Shesha.Tests.DynamicEntities
                     }
                 }
 
-                session?.Flush();
+                session.Flush();
 
                 try
                 {
@@ -159,9 +159,9 @@ namespace Shesha.Tests.DynamicEntities
                         // Save dynamic properties to DB
                         await dynamicPropertyManager.MapDtoToEntityAsync<DynamicDto<Person, Guid>, Person, Guid>(dto,
                             entity);
-                        session?.Flush();
+                        session.Flush();
 
-                        session?.Clear();
+                        session.Clear();
 
                         // Get entity from DB
                         var newEntity = await personRepo.GetAsync(id);

@@ -604,7 +604,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName) 
+        private async Task<Module?> GetModuleAsync(string moduleName) 
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))

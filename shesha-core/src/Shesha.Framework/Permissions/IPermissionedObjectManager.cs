@@ -13,7 +13,7 @@ namespace Shesha.Permissions
         /// </summary>
         /// <param name="type">Type</param>
         /// <returns></returns>
-        string GetObjectType(Type type);
+        string? GetObjectType(Type type);
 
         /// <summary>
         /// Get list of protected objects

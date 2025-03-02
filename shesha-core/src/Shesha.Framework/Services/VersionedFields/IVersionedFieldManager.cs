@@ -16,7 +16,7 @@ namespace Shesha.Services.VersionedFields
         /// <param name="owner"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        Task<string> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>;
+        Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>;
 
         /// <summary>
         /// Set versioned field value

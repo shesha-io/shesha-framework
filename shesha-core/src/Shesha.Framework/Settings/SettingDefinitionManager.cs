@@ -119,7 +119,7 @@ namespace Shesha.Settings
             return type;
         }
 
-        public static object ConvertToType(object? value, Type type)
+        public static object? ConvertToType(object? value, Type type)
         {
             if (value == null || type.IsAssignableFrom(value.GetType()))
             {

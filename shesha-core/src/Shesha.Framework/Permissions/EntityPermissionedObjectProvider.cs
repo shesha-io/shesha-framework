@@ -41,7 +41,7 @@ namespace Shesha.Permissions
             return new List<string>() { ShaPermissionedObjectsTypes.Entity };
         }
 
-        public string GetObjectType(Type type)
+        public string? GetObjectType(Type type)
         {
             return type.IsPublic && !type.IsAbstract && type.IsEntityType()
                    ? ShaPermissionedObjectsTypes.Entity
@@ -90,7 +90,7 @@ namespace Shesha.Permissions
             string? parent,
             string name,
             string description,
-            Module module,
+            Module? module,
             RefListPermissionedAccess? access,
             List<string>? permissions,
             bool hardcoded,

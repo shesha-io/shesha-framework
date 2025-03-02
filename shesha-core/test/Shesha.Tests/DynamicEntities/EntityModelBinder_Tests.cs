@@ -312,7 +312,7 @@ namespace Shesha.Tests.DynamicEntities
 
     public class Finder : CascadeEntityCreatorBase<Person, Guid>
     {
-        public override Person FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
+        public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
             var p = info.NewObject;
 
@@ -339,7 +339,7 @@ namespace Shesha.Tests.DynamicEntities
             return info.NewObject;
         }
 
-        public override Person FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
+        public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
             return info.Repository.GetAll().FirstOrDefault(x => x.FirstName == info.NewObject.FirstName);
         }

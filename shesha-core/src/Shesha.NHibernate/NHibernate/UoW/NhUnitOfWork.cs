@@ -38,7 +38,7 @@ namespace Shesha.NHibernate.UoW
         /// </summary>
         /// <param name="startNewIfMissing"></param>
         /// <returns></returns>
-        public ISession GetSession(bool startNewIfMissing = true)
+        public ISession? GetSessionOrNull(bool startNewIfMissing = true)
         {
             if (_session == null && startNewIfMissing)
             {
@@ -51,6 +51,10 @@ namespace Shesha.NHibernate.UoW
             return _session;
         }
 
+        public ISession GetSession()
+        {
+            return GetSessionOrNull() ?? throw new SessionException("Session is not available");
+        }
 
         /// <summary>
         /// <see cref="NhUnitOfWork"/> uses this DbConnection if it's set.

@@ -136,7 +136,7 @@ namespace Shesha.AutoMapper
             return expression;
         }
 
-        private static ReferenceListItemValueDto GetRefListItemValueDto(string? refListModule, string refListName, object? value)
+        private static ReferenceListItemValueDto? GetRefListItemValueDto(string? refListModule, string refListName, object? value)
         {
             var intValue = value != null
                 ? Convert.ToInt64(value)
@@ -151,7 +151,7 @@ namespace Shesha.AutoMapper
                 : null;
         }
 
-        private static string GetRefListItemText(string? refListModule, string refListName, Int64? value)
+        private static string? GetRefListItemText(string? refListModule, string refListName, Int64? value)
         {
             if (value == null)
                 return null;
@@ -251,7 +251,7 @@ namespace Shesha.AutoMapper
             if (intVal == null)
             {
                 var resultType = typeof(List<>).MakeGenericType(itemType);
-                return Activator.CreateInstance(resultType);
+                return ActivatorHelper.CreateNotNullObject(resultType);
             }
 
             return Shesha.Extensions.EntityExtensions.DecomposeIntoBitFlagComponents(intVal);
@@ -298,7 +298,7 @@ namespace Shesha.AutoMapper
             return expression;
         }
 
-        private static object GetMultiValueRefListValue(object owner, PropertyInfo srcProperty, PropertyInfo dstProperty)
+        private static object? GetMultiValueRefListValue(object owner, PropertyInfo srcProperty, PropertyInfo dstProperty)
         {
             var listValue = owner != null
                 ? srcProperty.GetValue(owner)
@@ -322,7 +322,7 @@ namespace Shesha.AutoMapper
             return null;
         }
 
-        private static object GetRefListItemValue(ReferenceListItemValueDto? dto, Type srcPropType, Type dstPropType)
+        private static object? GetRefListItemValue(ReferenceListItemValueDto? dto, Type srcPropType, Type dstPropType)
         {
             if (dto?.ItemValue == null)
                 return null;

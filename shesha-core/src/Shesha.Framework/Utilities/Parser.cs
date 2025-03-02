@@ -209,7 +209,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Parses the Id of the entity of the specified type
         /// </summary>
-        public static object ParseId(string? value, Type entityType)
+        public static object? ParseId(string? value, Type entityType)
         {
             if (string.IsNullOrWhiteSpace(value) || value == "-999")
                 return null;
@@ -220,7 +220,7 @@ namespace Shesha.Utilities
 
             var result = ParseTo(value, idProp.PropertyType);
 
-            return typeof(Int64).IsAssignableFrom(idProp.PropertyType) && ((Int64)result <= 0)
+            return typeof(Int64).IsAssignableFrom(idProp.PropertyType) && result != null && ((Int64)result <= 0)
                 ? null
                 : result;
         }
@@ -237,7 +237,7 @@ namespace Shesha.Utilities
             return CanParseTo(value, idProp.PropertyType);
         }
 
-        public static object ParseTo(string? value, Type type)
+        public static object? ParseTo(string? value, Type type)
         {
             if (string.IsNullOrEmpty(value) || type == null)
                 return null;

@@ -56,7 +56,7 @@ namespace Shesha.Settings
                 : JObject.FromObject(JsonConvert.SerializeObject(setting.GetDefaultValue()));
         }
 
-        public async Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
+        public async Task<object?> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -68,7 +68,7 @@ namespace Shesha.Settings
         }
 
 
-        public async Task<object> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null)
+        public async Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.GetOrNull(module, name);
 
@@ -129,7 +129,7 @@ namespace Shesha.Settings
             await _settingValueRepository.InsertOrUpdateAsync(settingValue);
         }
 
-        public async Task<TValue> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
+        public async Task<TValue?> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -219,7 +219,7 @@ namespace Shesha.Settings
                 return To<TValue>(value);
         }
 
-        private object Deserialize(string value, Type targetType)
+        private object? Deserialize(string value, Type targetType)
         {
             if (targetType.IsClass)
             {
@@ -259,7 +259,7 @@ namespace Shesha.Settings
             return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
 
-        private static object To(object obj, Type targetType)
+        private static object? To(object obj, Type targetType)
         {
             if (targetType == typeof(Guid) || targetType == typeof(TimeSpan))
             {

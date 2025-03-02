@@ -101,7 +101,7 @@ namespace Shesha.DynamicEntities
         /// <summary>
         /// Returns .Net type that is used to store data for the specified DTO property (according to the property settings)
         /// </summary>
-        public async Task<Type> GetDtoPropertyTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
+        public async Task<Type?> GetDtoPropertyTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
         {
             var dataType = propertyDto.DataType;
             var dataFormat = propertyDto.DataFormat;
@@ -154,15 +154,12 @@ namespace Shesha.DynamicEntities
                 case DataTypes.Array:
                     if (propertyDto.ItemsType != null)
                     {
-
                         var nestedType = await GetDtoPropertyTypeAsync(propertyDto.ItemsType, context);
-                        var arrayType = typeof(List<>).MakeGenericType(nestedType);
+                        var arrayType = typeof(List<>).MakeGenericType(nestedType.NotNull());
                         return arrayType;
                     }
                     if (propertyDto.DataFormat == ArrayFormats.ObjectReference)
                     {
-                        //var tt = _typeFinder.Find(x => x.FullName == propertyDto.EntityType);
-                        //Type t = tt.Any() ? tt[0] : typeof(object);
                         var arrayType = typeof(List<>).MakeGenericType(typeof(object));
                         return arrayType;
                     }
@@ -176,7 +173,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private Type GetEntityReferenceType(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
+        private Type? GetEntityReferenceType(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
         {
             if (propertyDto.DataType != DataTypes.EntityReference)
                 throw new NotSupportedException($"DataType {propertyDto.DataType} is not supported. Expected {DataTypes.EntityReference}");
@@ -185,7 +182,7 @@ namespace Shesha.DynamicEntities
                 return null;
 
             var entityConfig = _entityConfigurationStore.Get(propertyDto.EntityType);
-            if (entityConfig == null)
+            if (entityConfig == null || entityConfig.IdType == null)
                 return null;
 
             return context.UseDtoForEntityReferences
@@ -226,9 +223,8 @@ namespace Shesha.DynamicEntities
 
                 foreach (var property in propertyDto.Properties)
                 {
-                    //if (propertyFilter == null || propertyFilter.Invoke(property.PropertyName))
                     var propertyType = await GetDtoPropertyTypeAsync(property, context);
-                    CreateProperty(tb, property.Name, propertyType);
+                    CreateProperty(tb, property.Name, propertyType.NotNull());
                 }
 
                 if (!propertyDto.Properties.Any(p => p.Name == nameof(IHasClassNameField._className)))

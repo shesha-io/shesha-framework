@@ -54,7 +54,7 @@ namespace Shesha.FluentMigrator
 
         public virtual void CreateOrMigrateForTenant(AbpTenantBase tenant, Action? seedAction)
         {
-            if (tenant.ConnectionString.IsNullOrEmpty())
+            if (string.IsNullOrWhiteSpace(tenant.ConnectionString))
                 return;
 
             CreateOrMigrate(tenant, seedAction);
