@@ -64,7 +64,7 @@ namespace Shesha.Metadata
                         Suppress = t.Suppress,
                         ClassName = t.FullClassName,
                         Type = config?.EntityType,
-                        Description = t.Description ?? (config?.EntityType != null ? ReflectionHelper.GetDescription(config?.EntityType) : ""),
+                        Description = t.Description ?? (config != null && config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
                         Alias = string.IsNullOrWhiteSpace(t.TypeShortAlias) ? config?.SafeTypeShortAlias : t.TypeShortAlias,
                         Accessor = t.Accessor,
                         ModuleAccessor = t.Module?.Accessor,

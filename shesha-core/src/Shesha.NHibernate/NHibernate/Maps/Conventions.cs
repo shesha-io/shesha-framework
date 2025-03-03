@@ -106,10 +106,10 @@ namespace Shesha.NHibernate.Maps
             return _assemblies.Contains(assembly);
         }
 
-        public void AddAssembly(Assembly assembly, string databasePrefix = "")
+        public void AddAssembly(Assembly assembly, string? databasePrefix = null)
         {
             _assemblies.Add(assembly);
-            MappingHelper.AddDatabasePrefixForAssembly(assembly, databasePrefix);
+            MappingHelper.AddDatabasePrefixForAssembly(assembly, databasePrefix ?? string.Empty);
         }
 
         public static IModelInspector DefaultModelInspector { get; set; }
@@ -300,7 +300,7 @@ namespace Shesha.NHibernate.Maps
                     if (!propertyType.IsAssignableTo(typeof(IIdentifierFactory)))
                         throw new Exception($"Type '{propertyType.Name}' must implement '{nameof(IIdentifierFactory)}'");
 
-                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType);
+                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType.NotNull());
                     var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(ConfigurationItemIdentifier.Module));
                     var nameColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(ConfigurationItemIdentifier.Name));
 
@@ -451,7 +451,7 @@ namespace Shesha.NHibernate.Maps
                 // IMayHaveTenant support
                 if (typeof(IMustHaveTenant).IsAssignableFrom(type))
                 {
-                    var tenantIdProp = type.GetProperty(nameof(IMustHaveTenant.TenantId));
+                    var tenantIdProp = type.GetRequiredProperty(nameof(IMustHaveTenant.TenantId));
                     var tenantIdColumnName = MappingHelper.GetColumnName(tenantIdProp);
                     classCustomizer.Filter(AbpDataFilters.MustHaveTenant, m =>
                     {
@@ -463,7 +463,7 @@ namespace Shesha.NHibernate.Maps
                 // IMayHaveTenant support
                 if (typeof(IMayHaveTenant).IsAssignableFrom(type))
                 {
-                    var tenantIdProp = type.GetProperty(nameof(IMayHaveTenant.TenantId));
+                    var tenantIdProp = type.GetRequiredProperty(nameof(IMayHaveTenant.TenantId));
                     var tenantIdColumnName = MappingHelper.GetColumnName(tenantIdProp);
                     classCustomizer.Filter(AbpDataFilters.MayHaveTenant, m =>
                     {
@@ -475,7 +475,7 @@ namespace Shesha.NHibernate.Maps
                 // ISoftDelete support
                 if (typeof(ISoftDelete).IsAssignableFrom(type))
                 {
-                    var isDeletedProp = type.GetProperty(nameof(ISoftDelete.IsDeleted));
+                    var isDeletedProp = type.GetRequiredProperty(nameof(ISoftDelete.IsDeleted));
                     var isDeletedColumnName = MappingHelper.GetColumnName(isDeletedProp);
 
                     classCustomizer.Filter(AbpDataFilters.SoftDelete, m =>
@@ -496,7 +496,7 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapManyToOne += (modelInspector, propertyPath, map) =>
            {
-               string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType);
+               string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType.NotNull());
 
                var lazyAttribute = propertyPath.LocalMember.GetAttribute<LazyLoadAttribute>(true);
                var lazyRelation = lazyAttribute != null

@@ -31,7 +31,7 @@ namespace Shesha.Domain
 
         [StringLength(2000)]
         [Audited]
-        public override string Description { get; set; }
+        public override string? Description { get; set; }
 
         [Obsolete]
         public virtual int SortIndex { get; set; }

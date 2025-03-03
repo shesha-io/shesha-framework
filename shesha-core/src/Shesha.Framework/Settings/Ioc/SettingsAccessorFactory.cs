@@ -27,7 +27,7 @@ namespace Shesha.Settings.Ioc
             var interfaceType = typeof(TAccessor);
             var classType = builder.BuildType(interfaceType);
 
-            var instance = ActivatorHelper.CreateNotNullObject(classType).ForceCastAs<object, TAccessor>();
+            var instance = ActivatorHelper.CreateNotNullObject(classType).ForceCastAs<TAccessor>();
 
             // fill all ISettingAccessor properties
             var interfaceProperties = interfaceType.GetProperties().Where(p => typeof(ISettingAccessor).IsAssignableFrom(p.PropertyType)).ToList();

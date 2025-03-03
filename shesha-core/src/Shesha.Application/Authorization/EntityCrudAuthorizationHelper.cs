@@ -35,7 +35,7 @@ namespace Shesha.Authorization
             _objectPermissionChecker = objectPermissionChecker;
         }
 
-        public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
+        public override async Task AuthorizeAsync(MethodInfo methodInfo, Type? type)
         {
             if (!_authConfiguration.IsEnabled)
             {
@@ -56,18 +56,9 @@ namespace Shesha.Authorization
             // It is not an entity Crud Api
             if (entityType == null || !Abp.Domain.Entities.EntityHelper.IsEntity(entityType)) return;
 
-            /*var isDynamic = type.GetInterfaces().Any(x =>
-                x.IsGenericType &&
-                x.GetGenericTypeDefinition() == typeof(IDynamicCrudAppService<,,>));*/
-
             var config = AsyncHelper.RunSync(() => _entityConfigCache.GetEntityConfigAsync(entityType));
 
             if (config == null) return;
-
-            //if (!config.GenerateAppService)
-            //{
-            //    throw new AbpAuthorizationException($"Service for entity type `{config.FullClassName}` is not configured");
-            //}
 
             // ToDo: add RequireAll flag
             await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue);

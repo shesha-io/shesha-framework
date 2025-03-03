@@ -92,7 +92,7 @@ namespace Shesha.Permissions
             string description,
             Module module,
             RefListPermissionedAccess? access,
-            List<string> permissions,
+            List<string>? permissions,
             bool hardcoded,
             string type
             )
@@ -127,6 +127,7 @@ namespace Shesha.Permissions
         private async Task<List<PermissionedObjectDto>> ProcessAssemblyAsync(Assembly assembly)
         {
             var m = await _moduleManager.GetOrCreateModuleAsync(assembly);
+
             var entityTypes = assembly.GetTypes().Where(MappingHelper.IsEntity).ToList();
 
             var list = new List<PermissionedObjectDto>();
@@ -136,7 +137,7 @@ namespace Shesha.Permissions
                 // Get all CrudAccessAttribute
                 var accessAttributes = et.GetAttributes<CrudAccessAttribute>();
                 var disableAttribute = et.GetAttribute<CrudDisableActionsAttribute>();
-                if (disableAttribute == null && !accessAttributes.Any() && !_hardcoded.Contains(et.FullName))
+                if (disableAttribute == null && !accessAttributes.Any() && !_hardcoded.Contains(et.GetRequiredFullName()))
                     continue;
 
                 // But use only one for each type of action
@@ -145,7 +146,7 @@ namespace Shesha.Permissions
                 var r = accessAttributes.FirstOrDefault(x => x.Read != null);
                 var u = accessAttributes.FirstOrDefault(x => x.Update != null);
                 var d = accessAttributes.FirstOrDefault(x => x.Delete != null);
-                var fn = et.FullName;
+                var fn = et.GetRequiredFullName();
                 var e = ShaPermissionedObjectsTypes.Entity;
                 var ea = ShaPermissionedObjectsTypes.EntityAction;
 

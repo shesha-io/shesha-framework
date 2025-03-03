@@ -51,7 +51,7 @@ namespace Shesha.DynamicEntities
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, crudMethod, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
+            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
         [HttpGet]
@@ -183,16 +183,21 @@ namespace Shesha.DynamicEntities
                     if (objectExecutionNode.SubFields != null)
                     {
                         var root = objectExecutionNode.SubFields.FirstOrDefault(); // field itself e.g. '*List'
-                        var listResponse = (root as ObjectExecutionNode).SubFields;
-                        var itemsFieldName = StringHelper.ToCamelCase(nameof(PagedResultDto<EntityDto<Guid>>.Items));
-                        var itemsArray = listResponse.OfType<ArrayExecutionNode>().FirstOrDefault(f => f.Name == itemsFieldName);
-                        if (itemsArray != null)
+                        var listResponse = root is ObjectExecutionNode rootExecutionNode
+                            ? rootExecutionNode.SubFields
+                            : null;
+                        if (listResponse != null) 
                         {
-                            var rows = itemsArray.Items.OfType<ObjectExecutionNode>();
-                            return rows != null
-                                ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
-                                : [];
-                        }
+                            var itemsFieldName = StringHelper.ToCamelCase(nameof(PagedResultDto<EntityDto<Guid>>.Items));
+                            var itemsArray = listResponse.OfType<ArrayExecutionNode>().Single(f => f.Name == itemsFieldName);
+                            if (itemsArray != null && itemsArray.Items != null)
+                            {
+                                var rows = itemsArray.Items.OfType<ObjectExecutionNode>();
+                                return rows != null
+                                    ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
+                                    : [];
+                            }
+                        }                        
                     }
                 }
             }

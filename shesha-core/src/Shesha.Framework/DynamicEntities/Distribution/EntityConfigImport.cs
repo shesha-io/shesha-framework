@@ -88,45 +88,6 @@ namespace Shesha.DynamicEntities.Distribution
                 await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
                 return dbItem;
-
-                /*switch (dbItem.VersionStatus)
-                {
-                    case ConfigurationItemVersionStatus.Draft:
-                    case ConfigurationItemVersionStatus.Ready:
-                        {
-                            // cancel existing version
-                            await _entityConfigManager.CancelVersoinAsync(dbItem);
-                            break;
-                        }
-                }
-                // mark existing live form as retired if we import new form as live
-                if (statusToImport == ConfigurationItemVersionStatus.Live)
-                {
-                    var liveForm = dbItem.VersionStatus == ConfigurationItemVersionStatus.Live
-                        ? dbItem
-                        : await _entityConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    if (liveForm != null)
-                    {
-                        await _entityConfigManager.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
-                        await _unitOfWorkManager.Current.SaveChangesAsync(); // save changes to guarantee sequence of update
-                    }
-                }
-
-                // create new version
-                var newItemVersion = await _entityConfigManager.CreateNewVersionAsync(dbItem);
-                await MapEntityConfigAync(item, newItemVersion, context);
-                await MapPropertiesAsync(dbItem, item.Properties);
-
-                // important: set status according to the context
-                newItemVersion.VersionStatus = statusToImport;
-                newItemVersion.CreatedByImport = context.ImportResult;
-                newItemVersion.Normalize();
-
-                await _entityConfigRepo.UpdateAsync(newItemVersion);
-
-                await ModelConfigsCache.RemoveAsync($"{newItemVersion.Namespace}|{newItemVersion.ClassName}");
-
-                return newItemVersion;*/
             }
             else
             {
@@ -157,10 +118,6 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Module = await GetModuleAsync(item.ModuleName, context);
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
-
-            //dbItem.Origin = item.OriginId;
-            //dbItem.BaseItem = item.BaseItem;
-            //dbItem.ParentVersion = item.ParentVersionId;
 
             dbItem.Label = item.Label;
             dbItem.Description = item.Description;

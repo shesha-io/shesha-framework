@@ -15,7 +15,6 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
-using Shesha.NHibernate.UoW;
 using Shesha.Services;
 using Shesha.Test;
 using System;

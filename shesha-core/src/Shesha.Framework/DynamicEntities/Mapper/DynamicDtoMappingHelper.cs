@@ -38,7 +38,7 @@ namespace Shesha.DynamicEntities.Mapper
             throw new NotSupportedException("This method supports only mapping from/to entity type");
         }
 
-        private string GetCacheKey(string @namespace, string name)
+        private string GetCacheKey(string? @namespace, string name)
         {
             return $"{@namespace}.{name}";
         }

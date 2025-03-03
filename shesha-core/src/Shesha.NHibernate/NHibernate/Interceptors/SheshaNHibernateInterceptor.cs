@@ -407,18 +407,14 @@ namespace Shesha.NHibernate.Interceptors
             }
         }
 
-        private static void NormalizeDateTimePropertiesForComponentType(object componentObject, IType type)
+        private static void NormalizeDateTimePropertiesForComponentType(object? componentObject, IType type)
         {
             if (componentObject == null)
-            {
                 return;
-            }
 
             var componentType = type as ComponentType;
             if (componentType == null)
-            {
                 return;
-            }
 
             for (int i = 0; i < componentType.PropertyNames.Length; i++)
             {

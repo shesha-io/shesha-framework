@@ -71,10 +71,12 @@ namespace Shesha.Authorization
                     var permission = GetPermissionOrNull(dbPermission.Parent);
                     while (permission == null && dbPermissions.Any(x => x.Name == dbPermission?.Parent))
                     {
-                        dbPermission = dbPermissions.FirstOrDefault(x => x.Name == dbPermission?.Parent);
+                        dbPermission = dbPermissions.First(x => x.Name == dbPermission?.Parent);
                         permission = GetPermissionOrNull(dbPermission?.Parent);
                     }
 
+#pragma warning disable CS8604
+                    // TODO: Alex, please review
                     if (permission != null)
                     {
                         await CreateChildPermissionsAsync(dbPermissions, permission);
@@ -85,6 +87,7 @@ namespace Shesha.Authorization
                         await _permissionDefinitionRepository.DeleteAsync(dbPermission);
                     }
                     dbPermissions.Remove(dbPermission);
+#pragma warning restore CS8604
                 }
             }
         }
@@ -138,7 +141,7 @@ namespace Shesha.Authorization
                 var permission = parent.CreateChildPermission(permissionDefinition.Name,
                     (permissionDefinition.Label ?? "").L(),
                     (permissionDefinition.Description ?? "").L(),
-                    properties: new Dictionary<string, object>() 
+                    properties: new Dictionary<string, object?>() 
                     { 
                         { "IsDbPermission", true },
                         { "ModuleId", permissionDefinition.Module?.Id },
@@ -152,7 +155,7 @@ namespace Shesha.Authorization
                     permissionDefinition.Name,
                     (permissionDefinition.Label ?? "").L(),
                     (permissionDefinition.Description ?? "").L(),
-                    properties: new Dictionary<string, object>()
+                    properties: new Dictionary<string, object?>()
                     {
                         { "IsDbPermission", true },
                         { "ModuleId", permissionDefinition.Module?.Id },
@@ -202,7 +205,7 @@ namespace Shesha.Authorization
             return GetPermissionOrNull(oldName);
         }
 
-        public async Task UpdateParentAsync(string name, string parentName, Module module)
+        public async Task UpdateParentAsync(string name, string parentName, Module? module)
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
 

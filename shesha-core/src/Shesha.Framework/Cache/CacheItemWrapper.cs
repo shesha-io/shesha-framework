@@ -7,9 +7,9 @@
     public class CacheItemWrapper<TItem>
     {
         public TItem DefaultValue { get; private set; }
-        public TItem DbValue { get; private set; }
+        public TItem? DbValue { get; private set; }
 
-        public CacheItemWrapper(TItem defaultValue, TItem dBValue)
+        public CacheItemWrapper(TItem defaultValue, TItem? dBValue)
         {
             DefaultValue = defaultValue;
             DbValue = dBValue;

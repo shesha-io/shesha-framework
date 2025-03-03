@@ -58,10 +58,10 @@ namespace Shesha.Metadata
         }
 
         // ToDo: support Dynamic entities
-        public async Task<MetadataDto> GetAsync(Type? containerType, string? containerName = "")
+        public async Task<MetadataDto> GetAsync(Type? containerType, string containerName = "")
         {
-            var isEntity = containerType?.IsEntityType() ?? false;
-            var isJsonEntity = containerType?.IsJsonEntityType() ?? false;
+            var isEntity = containerType != null && containerType.IsEntityType();
+            var isJsonEntity = containerType != null && containerType.IsJsonEntityType();
 
             var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
 
@@ -77,15 +77,14 @@ namespace Shesha.Metadata
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
                 ClassName = containerType?.GetRequiredFullName() ?? containerName,
-
                 ChangeTime = changeTime,
             };
 
             UpdateMd5(dto);
 
-            if (isEntity || isJsonEntity)
+            if (containerType != null && (isEntity || isJsonEntity))
             {
-                var moduleInfo = containerType?.GetConfigurableModuleInfo();
+                var moduleInfo = containerType.GetConfigurableModuleInfo();
 
                 dto.TypeAccessor = containerType.GetTypeAccessor();
                 dto.Module = moduleInfo?.Name;
@@ -102,7 +101,7 @@ namespace Shesha.Metadata
             return dto;
         }
 
-        private async Task<List<MethodMetadataDto>> GetMethodsAsync(Type containerType)
+        private async Task<List<MethodMetadataDto>> GetMethodsAsync(Type? containerType)
         {
             if (containerType == null)
                 return new List<MethodMetadataDto>();
@@ -185,7 +184,7 @@ namespace Shesha.Metadata
             return Task.FromResult(result);
         }
 
-        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType)
+        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type? containerType)
         {
             var result = new Dictionary<string, ApiEndpointDto>();
             if (_actionDescriptorCollectionProvider == null || containerType == null || !containerType.IsEntityType())
@@ -206,9 +205,11 @@ namespace Shesha.Metadata
                 if (entityActionAttribute != null)
                 {
                     var url = actionDescriptor.AttributeRouteInfo?.Template;
-                    var httpVerbs = actionDescriptor.ActionConstraints.OfType<HttpMethodActionConstraint>()
-                        .SelectMany(c => c.HttpMethods)
-                        .ToList();
+                    var httpVerbs = actionDescriptor.ActionConstraints != null 
+                        ? actionDescriptor.ActionConstraints.OfType<HttpMethodActionConstraint>()
+                            .SelectMany(c => c.HttpMethods)
+                            .ToList()
+                        : [];
 
                     if (!string.IsNullOrWhiteSpace(url) && httpVerbs.Count() == 1)
                         result.Add(entityActionAttribute.Action, new ApiEndpointDto
@@ -226,7 +227,7 @@ namespace Shesha.Metadata
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        public Task<List<SpecificationDto>> GetSpecificationsAsync(Type entityType)
+        public Task<List<SpecificationDto>> GetSpecificationsAsync(Type? entityType)
         {
             if (entityType == null || !entityType.IsEntityType())
                 return Task.FromResult(new List<SpecificationDto>());
@@ -247,7 +248,7 @@ namespace Shesha.Metadata
             return Task.FromResult(dtos);
         }
 
-        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type? containerType, string containerName)
+        public async Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName)
         {
             var (date, properties) = await GetPropertiesInternalAsync(containerType, containerName);
             return properties;
@@ -255,7 +256,10 @@ namespace Shesha.Metadata
 
         private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type? containerType, string containerName)
         {
-            var metadataContext = new MetadataContext(containerType);
+            var metadataContext = containerType != null
+                ? new MetadataContext(containerType)
+                : new MetadataContext();
+
             var hardCodedProps = containerType == null
                 ? new List<PropertyMetadataDto>()
                 : containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
