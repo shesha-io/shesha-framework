@@ -80,7 +80,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         {
             var triggerService = IocManager.Resolve<IRepository<ScheduledJobTrigger, Guid>>();
             Guid jobId;
-            string jobType = null;
+            string? jobType = null;
 
             using (var uow = UnitOfWorkManager.Begin())
             {

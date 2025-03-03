@@ -37,7 +37,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
-        public static string GetFormPermissionedObjectName(string module, string name)
+        public static string GetFormPermissionedObjectName(string? module, string name)
         {
             return $"{module}.{name}";
         }

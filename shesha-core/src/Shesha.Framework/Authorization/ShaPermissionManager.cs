@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
-#pragma warning disable CS8619
     public class ShaPermissionManager : PermissionManager, IShaPermissionManager
     {
         private readonly IIocManager _iocManager;
@@ -72,10 +71,12 @@ namespace Shesha.Authorization
                     var permission = GetPermissionOrNull(dbPermission.Parent);
                     while (permission == null && dbPermissions.Any(x => x.Name == dbPermission?.Parent))
                     {
-                        dbPermission = dbPermissions.FirstOrDefault(x => x.Name == dbPermission?.Parent);
+                        dbPermission = dbPermissions.First(x => x.Name == dbPermission?.Parent);
                         permission = GetPermissionOrNull(dbPermission?.Parent);
                     }
 
+#pragma warning disable CS8604
+                    // TODO: Alex, please review
                     if (permission != null)
                     {
                         await CreateChildPermissionsAsync(dbPermissions, permission);
@@ -86,6 +87,7 @@ namespace Shesha.Authorization
                         await _permissionDefinitionRepository.DeleteAsync(dbPermission);
                     }
                     dbPermissions.Remove(dbPermission);
+#pragma warning restore CS8604
                 }
             }
         }
@@ -120,54 +122,50 @@ namespace Shesha.Authorization
             throw new NotImplementedException();
         }
 
-        public async Task<Abp.Authorization.Permission> CreatePermissionAsync(PermissionDefinition permission)
+        public async Task<Abp.Authorization.Permission> CreatePermissionAsync(PermissionDefinition permissionDefinition)
         {
-            var newPermission = await _CreatePermissionAsync(permission);
+            var newPermission = await CreatePermissionInternalAsync(permissionDefinition);
 
-            await _permissionDefinitionRepository.InsertOrUpdateAsync(permission);
+            await _permissionDefinitionRepository.InsertOrUpdateAsync(permissionDefinition);
             Permissions.AddAllPermissions();
 
             return newPermission;
         }
 
-        private Task<Abp.Authorization.Permission> _CreatePermissionAsync(PermissionDefinition permission)
+        private Task<Abp.Authorization.Permission> CreatePermissionInternalAsync(PermissionDefinition permissionDefinition)
         {
-            Abp.Authorization.Permission newPermission = null;
-            if (!string.IsNullOrEmpty(permission.Parent))
+            if (!string.IsNullOrEmpty(permissionDefinition.Parent))
             {
                 // add new permission to parent
-                var parent = GetPermission(permission.Parent);
-                if (parent != null)
-                {
-                    newPermission = parent.CreateChildPermission(permission.Name,
-                        (permission.Label ?? "").L(),
-                        (permission.Description ?? "").L(),
-                        properties: new Dictionary<string, object>() 
-                        { 
-                            { "IsDbPermission", true },
-                            { "ModuleId", permission.Module?.Id },
-                        }
-                    );
-                }
+                var parent = GetPermission(permissionDefinition.Parent);
+                var permission = parent.CreateChildPermission(permissionDefinition.Name,
+                    (permissionDefinition.Label ?? "").L(),
+                    (permissionDefinition.Description ?? "").L(),
+                    properties: new Dictionary<string, object?>() 
+                    { 
+                        { "IsDbPermission", true },
+                        { "ModuleId", permissionDefinition.Module?.Id },
+                    }
+                );
+                return Task.FromResult(permission);
             }
             else
             {
-                newPermission = CreatePermission(
-                    permission.Name,
-                    (permission.Label ?? "").L(),
-                    (permission.Description ?? "").L(),
-                    properties: new Dictionary<string, object>()
+                var permission = CreatePermission(
+                    permissionDefinition.Name,
+                    (permissionDefinition.Label ?? "").L(),
+                    (permissionDefinition.Description ?? "").L(),
+                    properties: new Dictionary<string, object?>()
                     {
                         { "IsDbPermission", true },
-                        { "ModuleId", permission.Module?.Id },
+                        { "ModuleId", permissionDefinition.Module?.Id },
                     }
                 );
+                return Task.FromResult(permission);
             }
-
-            return Task.FromResult(newPermission);
         }
 
-        public async Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permission)
+        public async Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permissionDefinition)
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == oldName);
 
@@ -177,25 +175,25 @@ namespace Shesha.Authorization
                 throw new EntityNotFoundException($"Permission '{oldName}' not found");
             }
 
-            if (dbPermission.Name != permission.Name
-                || dbPermission.Label != permission.Label
-                || dbPermission.Description != permission.Description
-                || dbPermission.Module != permission.Module
+            if (dbPermission.Name != permissionDefinition.Name
+                || dbPermission.Label != permissionDefinition.Label
+                || dbPermission.Description != permissionDefinition.Description
+                || dbPermission.Module != permissionDefinition.Module
             )
             {
-                dbPermission.Name = permission.Name;
-                dbPermission.Description = permission.Description;
-                dbPermission.Label = permission.Label;
-                dbPermission.Parent = permission.Parent;
+                dbPermission.Name = permissionDefinition.Name;
+                dbPermission.Description = permissionDefinition.Description;
+                dbPermission.Label = permissionDefinition.Label;
+                dbPermission.Parent = permissionDefinition.Parent;
 
                 RemovePermission(oldName);
-                var parent = !string.IsNullOrEmpty(permission.Parent)
-                    ? GetPermissionOrNull(permission.Parent)
+                var parent = !string.IsNullOrEmpty(permissionDefinition.Parent)
+                    ? GetPermissionOrNull(permissionDefinition.Parent)
                     : null;
 
                 parent?.RemoveChildPermission(oldName);
 
-                var newPermission = await _CreatePermissionAsync(permission);
+                var newPermission = await CreatePermissionInternalAsync(permissionDefinition);
 
                 await _permissionDefinitionRepository.InsertOrUpdateAsync(dbPermission);
 
@@ -207,7 +205,7 @@ namespace Shesha.Authorization
             return GetPermissionOrNull(oldName);
         }
 
-        public async Task UpdateParentAsync(string name, string parentName, Module module)
+        public async Task UpdateParentAsync(string name, string parentName, Module? module)
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
 
@@ -221,7 +219,7 @@ namespace Shesha.Authorization
 
             dbPermission.Parent = parentName;
             dbPermission.Module = module;
-            await _CreatePermissionAsync(dbPermission);
+            await CreatePermissionInternalAsync(dbPermission);
             Permissions.AddAllPermissions();
 
             await _permissionDefinitionRepository.UpdateAsync(dbPermission);
@@ -276,7 +274,7 @@ namespace Shesha.Authorization
 
         public override void RemovePermission(string name)
         {
-            Abp.Authorization.Permission parent = null;
+            Abp.Authorization.Permission? parent = null;
             var permissions = GetAllPermissions();
             foreach (var permission in permissions)
             {
@@ -297,5 +295,4 @@ namespace Shesha.Authorization
                 base.RemovePermission(name);
         }
     }
-#pragma warning restore CS8619
 }

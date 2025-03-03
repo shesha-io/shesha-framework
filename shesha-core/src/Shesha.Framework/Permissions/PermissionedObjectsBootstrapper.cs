@@ -58,6 +58,8 @@ namespace Shesha.Permission
                         .ToList();
                     foreach (var item in toAdd)
                     {
+                        if (item.Access == null) continue;
+
                         var dbItem = _objectMapper.Map<PermissionedObject>(item);
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         var obj = await _permissionedObjectRepository.InsertAsync(dbItem);
@@ -73,13 +75,14 @@ namespace Shesha.Permission
                     {
                         var item = items.FirstOrDefault(x => x.Object == dbItem.Object);
                         if (item == null) continue;
+
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
                         if (dbItem.Hardcoded.HasValue && (item.Hardcoded == true || item.Hardcoded != dbItem.Hardcoded))
                         {
-                            dbItem.Access = item.Access ?? Domain.Enums.RefListPermissionedAccess.Inherited;
-                            dbItem.Permissions = string.Join(",", item.Permissions);
+                            dbItem.Access = item.Access ?? dbItem.Access;
+                            dbItem.Permissions = item.Permissions != null ? string.Join(",", item.Permissions) : dbItem.Permissions;
                         }
                         dbItem.Hardcoded = item.Hardcoded ?? false;
 
@@ -90,18 +93,8 @@ namespace Shesha.Permission
                             await _versionedFieldManager.SetVersionedFieldValueAsync<PermissionedObject, Guid>(dbItem, parameter.Key, parameter.Value, false);
                         }
                     }
-
-                    // TODO: AS - think how to inactivate deleted items take into account skipped Assembly
-                    // Inactivate deleted items
-                    /*var toDelete = dbItems.Where(dbi => items.All(i => dbi.Object != i.Object)).ToList();
-                    foreach (var item in toDelete)
-                    {
-                        await _permissionedObjectRepository.DeleteAsync(item);
-                    }*/
                 }
             }
-            
-            // todo: write changelog
         }
     }
 }

@@ -1,16 +1,21 @@
 ﻿using Abp.Auditing;
-using Abp.Domain.Entities;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
+    // Allow to set any permission access (Disable, Inherited, AnyAuthenticated, RequiresPermissions, AllowAnonymous)
+    //[CrudAccess(CrudActions.Update, Shesha.Domain.Enums.RefListPermissionedAccess.Disable)]
+    //[CrudAccess(CrudActions.Delete, Shesha.Domain.Enums.RefListPermissionedAccess.Disable)]
+    
+    // Disable specific action
+    //[CrudAccess(CrudActions.Update, false)]
+    //[CrudAccess(CrudActions.Delete, false)]
+    
+    // Disable specific actions
+    //[CrudDisableActions(CrudActions.Update | CrudActions.Delete)]
     public class Bus : Organisation
     { 
         [Audited]

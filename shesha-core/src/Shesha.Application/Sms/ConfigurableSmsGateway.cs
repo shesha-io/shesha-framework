@@ -1,5 +1,6 @@
 ﻿using Abp.Configuration;
 using Shesha.Notifications.Dto;
+using Shesha.Reflection;
 using System;
 using System.Threading.Tasks;
 
@@ -46,7 +47,7 @@ namespace Shesha.Sms
         /// <returns></returns>
         public async Task SetSettingsAsync(object settings)
         {
-            await SetTypedSettingsAsync(settings as TSettings);
+            await SetTypedSettingsAsync(settings.ForceCastAs<TSettings>());
         }
 
         /// <summary>
