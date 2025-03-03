@@ -15,11 +15,11 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
-import { wizardApiCode } from '@/publicJsApis';
 import { getSettings } from './settingsForm';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { wizardApiCode } from '@/publicJsApis';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
