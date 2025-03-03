@@ -291,18 +291,17 @@ namespace Shesha.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="rawValue"></param>
         /// <returns></returns>
-        public static List<ReferenceListItemValueDto> DecomposeMultiReferenceListValue<T>(T rawValue) where T : struct, IConvertible
+        public static List<ReferenceListItemValueDto> DecomposeMultiReferenceListValue<T>(Int64 rawValue) where T : struct, IConvertible
         {
             var result = new List<ReferenceListItemValueDto>();
 
             if (rawValue.ToString() == "0")
                 return result;
 
-            var flag = Enum.Parse(typeof(T), rawValue.ToString()) as Enum;
-
-            foreach (var r in (long[])Enum.GetValues(typeof(T)))
+            var enumValues = Enum.GetValues(typeof(T)).Cast<Int64>();
+            foreach (var r in enumValues)
             {
-                if ((Convert.ToInt64(flag) & r) == r)
+                if ((rawValue & r) == r)
                 {
                     var nameValue = new ReferenceListItemValueDto()
                     {

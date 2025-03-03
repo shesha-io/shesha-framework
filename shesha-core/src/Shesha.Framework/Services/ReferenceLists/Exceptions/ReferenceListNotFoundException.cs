@@ -10,7 +10,7 @@ namespace Shesha.Services.ReferenceLists.Exceptions
     {
         public string Namespace { get; set; }
 
-        public ReferenceListNotFoundException(string module, string name) : base(ReferenceList.ItemTypeName, module, name, null)
+        public ReferenceListNotFoundException(string? module, string name) : base(ReferenceList.ItemTypeName, module, name, null)
         {
         }
 

@@ -6,6 +6,7 @@ import { ConfigurableFormInstance, PageWithLayout } from '@/interfaces';
 import { IDynamicPageProps } from './interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { PageMarkupLoadingError } from './pageMarkupLoadError';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
 const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { message } = App.useApp();
@@ -50,7 +51,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
 export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   return (
-    <DataContextProvider id={'pageContext'} name={'pageContext'} type={'page'}>
+    <DataContextProvider id={SheshaCommonContexts.PageContext} name={SheshaCommonContexts.PageContext} type={'page'}>
       <DynamicPageInternal {...props} />
     </DataContextProvider>
   );

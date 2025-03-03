@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Shesha.Reflection;
+using System;
+using System.Reflection;
 
 namespace Shesha.Extensions
 {
@@ -37,6 +39,16 @@ namespace Shesha.Extensions
             return !string.IsNullOrWhiteSpace(type.FullName)
                 ? type.FullName
                 : throw new Exception($"{nameof(type.FullName)} is empty for type '{type.Name}' in namespace '{type.Namespace}'");
+        }
+
+        /// <summary>
+        /// Return assembly fullname of the specified <paramref name="type"/>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetAssemblyFullName(this Type type) 
+        {
+            return type.Assembly.FullName.NotNull($"Assembly full name is null for type '{type.FullName}'");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Shesha.RestSharp
     /// </summary>
     /// <typeparam name="RT"></typeparam>
     /// <typeparam name="PT"></typeparam>
-    public class ApiHelper<RT, PT> where PT: class
+    public class ApiHelper<RT, PT> where PT : class
     {
         public async Task<RT> PostOrPutMethodAsync(Method httpMethod, PT postObj, List<HttpHeader> headers, string apiMethod)
         {
@@ -26,7 +26,7 @@ namespace Shesha.RestSharp
             request.RequestFormat = DataFormat.Json;
             request.AddJsonBody(postObj);
             var response = await client.ExecuteAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrWhiteSpace(response.Content))
             {
                 return JsonConvert.DeserializeObject<RT>(response.Content);
             }
@@ -45,7 +45,7 @@ namespace Shesha.RestSharp
             request.AddHeader("Cache-Control", "no-cache");
             request.AddHeader("ContentType", "application/json");
             var response = await client.ExecuteAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK && !string.IsNullOrWhiteSpace(response.Content))
             {
                 return JsonConvert.DeserializeObject<RT>(response.Content);
             }

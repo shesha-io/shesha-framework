@@ -13,6 +13,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Json;
 using Shesha.EntityReferences;
 using Shesha.Metadata;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -189,7 +190,7 @@ namespace Shesha.DynamicEntities
 
             return context.UseDtoForEntityReferences
                 ? typeof(EntityReferenceDto<>).MakeGenericType(entityConfig.IdType)
-                : typeof(Nullable<>).MakeGenericType(entityConfig?.IdType);
+                : typeof(Nullable<>).MakeGenericType(entityConfig.IdType);
         }
 
         private async Task<Type> GetNestedTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context)
@@ -328,22 +329,6 @@ namespace Shesha.DynamicEntities
             propertyBuilder.SetSetMethod(setPropMthdBldr);
 
             AddPropertyAttributes(propertyBuilder, propertyType);
-            //propertyBuilder
-
-            // https://stackoverflow.com/questions/1822047/how-to-emit-explicit-interface-implementation-using-reflection-emit
-            // DefineMethodOverride is used to associate the method 
-            // body with the interface method that is being implemented.
-            //
-            /*
-            if (propertyName == "Id") 
-            {
-                var getMethod = typeof(IEntity<Guid>).GetMethod("get_Id");
-                tb.DefineMethodOverride(getPropMthdBldr, getMethod);
-
-                var setMethod = typeof(IEntity<Guid>).GetMethod("set_Id");
-                tb.DefineMethodOverride(setPropMthdBldr, setMethod);
-            }            
-            */
         }
 
         private static void AddPropertyAttributes(PropertyBuilder propertyBuilder, Type propertyType)
@@ -351,8 +336,8 @@ namespace Shesha.DynamicEntities
             if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
             {
                 var attrCtorParams = new Type[] { typeof(Type) };
-                var attrCtorInfo = typeof(JsonConverterAttribute).GetConstructor(attrCtorParams);
-                var attrBuilder = new CustomAttributeBuilder(attrCtorInfo, new object[] { typeof(DateConverter) });
+                var attrCtorInfo = typeof(JsonConverterAttribute).GetConstructor(attrCtorParams).NotNull($"Constructor not found in type '{typeof(JsonConverterAttribute).FullName}'");
+                var attrBuilder = new CustomAttributeBuilder(attrCtorInfo, [typeof(DateConverter)]);
                 propertyBuilder.SetCustomAttribute(attrBuilder);
             }
         }
