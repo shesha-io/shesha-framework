@@ -142,14 +142,14 @@ export const getSettings = (data: ITableComponentProps) => {
                         id: commonTabId,
                         components: [
                             ...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'componentName',
-                                label: 'Component Name',
-                                inputType: 'textField',
-                                validate: { required: true },
-                                jsSetting: false,
-                              })
+                                .addSettingsInput({
+                                    id: nanoid(),
+                                    propertyName: 'componentName',
+                                    label: 'Component Name',
+                                    inputType: 'textField',
+                                    validate: { required: true },
+                                    jsSetting: false,
+                                })
                                 .toJson()
                         ]
                     },
@@ -200,124 +200,201 @@ export const getSettings = (data: ITableComponentProps) => {
                                         { value: 'js', label: 'Expression' },
                                     ],
                                 })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'canEditInlineExpression',
-                                    label: 'Can edit inline expression',
-                                    inputType: 'codeEditor',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) !== "js";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    description: 'Return true to enable inline editing and false to disable.',
-                                    exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'canEditInlineExpression',
+                                            label: 'Can edit inline expression',
+                                            type: 'codeEditor',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'Return true to enable inline editing and false to disable.',
+                                            exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'inlineEditMode',
-                                    label: 'Row edit mode',
-                                    inputType: 'dropdown',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
-                                        { value: 'one-by-one', label: 'One by one' },
-                                        { value: 'all-at-once', label: 'All at once' },
-                                    ],
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'inlineEditMode',
+                                            label: 'Row edit mode',
+                                            type: 'dropdown',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            dropdownOptions: [
+                                                { value: 'one-by-one', label: 'One by one' },
+                                                { value: 'all-at-once', label: 'All at once' },
+                                            ],
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'inlineSaveMode',
-                                    label: 'Save mode',
-                                    inputType: 'dropdown',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
-                                        { value: 'auto', label: 'Auto' },
-                                        { value: 'manual', label: 'Manual' },
-                                    ],
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'inlineSaveMode',
+                                            label: 'Save mode',
+                                            type: 'dropdown',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            dropdownOptions: [
+                                                { value: 'auto', label: 'Auto' },
+                                                { value: 'manual', label: 'Manual' },
+                                            ],
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+
+                                // Custom update URL
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'customUpdateUrl',
-                                    label: 'Custom update url',
-                                    inputType: 'textField',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'customUpdateUrl',
+                                            label: 'Custom update url',
+                                            type: 'textField',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+                                // Can add inline
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'canAddInline',
-                                    label: 'Can add inline',
-                                    inputType: 'dropdown',
-                                    parentId: crudTabId,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
-                                        { value: 'yes', label: 'Yes' },
-                                        { value: 'no', label: 'No' },
-                                        { value: 'inherit', label: 'Inherit' },
-                                        { value: 'js', label: 'Expression' },
-                                    ],
+                                    readOnly: false,
+                                    hidden: false,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'canAddInline',
+                                            label: 'Can add inline',
+                                            type: 'dropdown',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            dropdownOptions: [
+                                                { value: 'yes', label: 'Yes' },
+                                                { value: 'no', label: 'No' },
+                                                { value: 'inherit', label: 'Inherit' },
+                                                { value: 'js', label: 'Expression' },
+                                            ],
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+                                // Can add inline expression
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'canAddInlineExpression',
-                                    label: 'Can add inline expression',
-                                    inputType: 'codeEditor',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) !== "js";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    description: 'Return true to enable inline creation of new rows and false to disable.',
-                                    exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'canAddInlineExpression',
+                                            label: 'Can add inline expression',
+                                            type: 'codeEditor',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'Return true to enable inline creation of new rows and false to disable.',
+                                            exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+                                // New row capture position
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'newRowCapturePosition',
-                                    label: 'New row capture position',
-                                    inputType: 'dropdown',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
-                                        { value: 'top', label: 'Top' },
-                                        { value: 'bottom', label: 'Bottom' },
-                                    ],
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'newRowCapturePosition',
+                                            label: 'New row capture position',
+                                            type: 'dropdown',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            dropdownOptions: [
+                                                { value: 'top', label: 'Top' },
+                                                { value: 'bottom', label: 'Bottom' },
+                                            ],
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'newRowInsertPosition',
-                                    label: 'New row insert position',
-                                    inputType: 'dropdown',
-                                    parentId: crudTabId,
-                                    hidden: { _code: 'return true;', _mode: 'code', _value: true } as any, // note: hidden until review of rows drag&drop
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    dropdownOptions: [
-                                        { value: 'top', label: 'Top' },
-                                        { value: 'bottom', label: 'Bottom' },
-                                    ],
+                                    readOnly: false,
+                                    hidden: { _code: 'return true;', _mode: 'code', _value: true } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'newRowInsertPosition',
+                                            label: 'New row insert position',
+                                            type: 'dropdown',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            dropdownOptions: [
+                                                { value: 'top', label: 'Top' },
+                                                { value: 'bottom', label: 'Bottom' },
+                                            ],
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+                                // Custom create URL
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'customCreateUrl',
-                                    label: 'Custom create url',
-                                    inputType: 'textField',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'customCreateUrl',
+                                            label: 'Custom create url',
+                                            type: 'textField',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'onNewRowInitialize',
-                                    label: 'New row init',
-                                    inputType: 'codeEditor',
-                                    parentId: crudTabId,
-                                    tooltip: 'Allows configurators to specify logic to initialise the object bound to a new row.',
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    description: 'Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>.',
-                                    exposedVariables: NEW_ROW_EXPOSED_VARIABLES,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'onNewRowInitialize',
+                                            label: 'New row init',
+                                            type: 'codeEditor',
+                                            parentId: crudTabId,
+                                            tooltip: 'Allows configurators to specify logic to initialise the object bound to a new row.',
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>.',
+                                            exposedVariables: NEW_ROW_EXPOSED_VARIABLES,
+                                        }
+                                    ]
                                 })
+
+
                                 .addSettingsInput({
                                     id: nanoid(),
                                     propertyName: 'onRowSave',
@@ -337,7 +414,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     parentId: crudTabId,
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                                     hideLabel: true,
-                                    jsSetting: true,
+                                    jsSetting: true
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
@@ -353,26 +430,42 @@ export const getSettings = (data: ITableComponentProps) => {
                                         { value: 'js', label: 'Expression' },
                                     ],
                                 })
-                                .addSettingsInput({
+
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'canDeleteInlineExpression',
-                                    label: 'Can delete inline expression',
-                                    inputType: 'codeEditor',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canDeleteInline) !== "js";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                    description: 'Return true to enable inline deletion and false to disable.',
-                                    exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'canDeleteInlineExpression',
+                                            label: 'Can delete inline expression',
+                                            type: 'codeEditor',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'Return true to enable inline deletion and false to disable.',
+                                            exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
+
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'customDeleteUrl',
-                                    label: 'Custom delete url',
-                                    inputType: 'textField',
-                                    parentId: crudTabId,
+                                    readOnly: false,
                                     hidden: { _code: 'return getSettingValue(data?.canDeleteInline) === "no";', _mode: 'code', _value: false } as any,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'customDeleteUrl',
+                                            label: 'Custom delete url',
+                                            type: 'textField',
+                                            parentId: crudTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        }
+                                    ]
                                 })
+
+
                                 .toJson()
                         ]
                     },
