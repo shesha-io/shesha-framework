@@ -211,7 +211,7 @@ namespace Shesha.Tests
                 : throw new Exception($"Unexpected type of UnitOfWork. Expected '{nameof(NhUnitOfWork)}'");
         }
 
-        protected virtual async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action, UnitOfWorkOptions options = null)
+        protected virtual async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action, UnitOfWorkOptions? options = null)
         {
             using (var uowManager = LocalIocManager.ResolveAsDisposable<IUnitOfWorkManager>())
             {

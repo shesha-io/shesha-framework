@@ -25,6 +25,6 @@ namespace Shesha.Configuration.Runtime
         /// <param name="query"></param>
         /// <param name="implemented"></param>
         /// <returns></returns>
-        Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig> query = null, bool? implemented = null);
+        Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null);
     }
 }

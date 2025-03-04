@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Abp;
+using System;
+using System.Globalization;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Shesha.JsonLogic
 {
@@ -65,6 +64,25 @@ namespace Shesha.JsonLogic
         public static Expression ReplaceParameter(this Expression expression, ParameterExpression parameter, Expression newParameter)
         {
             return new ExpressionParameterReplaceVisitor(parameter, newParameter).Visit(expression);
+        }
+
+        public static string? ToInvariantString(this Expression expression) 
+        {
+            using (UsingCulture(CultureInfo.InvariantCulture)) 
+            {
+                return expression.ToString();
+            }                
+        }
+
+        private static IDisposable UsingCulture(CultureInfo culture) 
+        {
+            var prevCulture = Thread.CurrentThread.CurrentCulture;
+
+            Thread.CurrentThread.CurrentCulture = culture;
+
+            return new DisposeAction(() => {
+                Thread.CurrentThread.CurrentCulture = prevCulture;
+            });            
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Shesha.RestSharp
     /// <typeparam name="PT"></typeparam>
     public class ApiHelper<RT, PT> where PT : class
     {
-        public async Task<RT> PostOrPutMethodAsync(Method httpMethod, PT postObj, List<HttpHeader> headers, string apiMethod)
+        public async Task<RT?> PostOrPutMethodAsync(Method httpMethod, PT postObj, List<HttpHeader> headers, string apiMethod)
         {
             using var client = new RestClient(apiMethod);
             var request = new RestRequest() { Method = httpMethod };
@@ -33,7 +33,7 @@ namespace Shesha.RestSharp
             return default;
         }
 
-        public async Task<RT> GetApiMethodAsync(string apiMethod, List<HttpHeader> headers)
+        public async Task<RT?> GetApiMethodAsync(string apiMethod, List<HttpHeader> headers)
         {
             using var client = new RestClient(apiMethod);
             var request = new RestRequest() { Method = Method.Get };

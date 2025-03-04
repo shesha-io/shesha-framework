@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using ConcurrentCollections;
 using Shesha.Domain;
 using System.Collections.Generic;
 

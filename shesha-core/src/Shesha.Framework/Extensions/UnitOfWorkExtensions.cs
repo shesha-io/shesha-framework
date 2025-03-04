@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Uow;
+using Shesha.Exceptions;
 using System;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -26,6 +27,27 @@ namespace Shesha.Extensions
                 await uow.CompleteAsync();
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Get current unit of work. Throws exception if unit of work is unavailable
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <returns></returns>
+        /// <exception cref="UnitOfWorkUnavailableException"></exception>
+        public static IActiveUnitOfWork GetCurrent(this IUnitOfWorkManager manager) 
+        {
+            return manager.Current ?? throw new UnitOfWorkUnavailableException();
+        }
+
+        /// <summary>
+        /// Get current unit of work or null if unavailable
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <returns></returns>
+        public static IActiveUnitOfWork? GetCurrentOrNull(this IUnitOfWorkManager manager) 
+        {
+            return manager.Current;
         }
     }
 }

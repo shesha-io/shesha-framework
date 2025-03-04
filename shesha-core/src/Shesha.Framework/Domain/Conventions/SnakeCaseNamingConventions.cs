@@ -24,7 +24,7 @@ namespace Shesha.Domain.Conventions
                 : prefix.ToSnakeCase().TrimEnd('_') + "_";
         }
 
-        private string ConvertSuffix(string? suffix)
+        private string? ConvertSuffix(string? suffix)
         {
             return string.IsNullOrWhiteSpace(suffix)
                 ? suffix

@@ -24,7 +24,7 @@ namespace Shesha.Authorization
             foreach (var dbChildPermission in dbChildPermissions)
             {
                 var childPermission =
-                    permission.CreateChildPermission(dbChildPermission.Name, dbChildPermission.Label.L(), dbChildPermission.Description?.L());
+                    permission.CreateChildPermission(dbChildPermission.Name, dbChildPermission.Label?.L(), dbChildPermission.Description?.L());
                 CreateChildPermissions(dbPermissions, childPermission);
                 dbPermissions.Remove(dbChildPermission);
             }

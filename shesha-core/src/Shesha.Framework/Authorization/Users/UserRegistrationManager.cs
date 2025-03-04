@@ -78,28 +78,27 @@ namespace Shesha.Authorization.Users
             }
         }
 
-        private async Task<Tenant> GetActiveTenantAsync()
+        private async Task<Tenant?> GetActiveTenantOrNullAsync()
         {
             if (!AbpSession.TenantId.HasValue)
-            {
                 return null;
-            }
 
             return await GetActiveTenantAsync(AbpSession.TenantId.Value);
+        }
+
+        private async Task<Tenant> GetActiveTenantAsync()
+        {
+            return await GetActiveTenantOrNullAsync() ?? throw new Exception("Tenant is not available");
         }
 
         private async Task<Tenant> GetActiveTenantAsync(int tenantId)
         {
             var tenant = await _tenantManager.FindByIdAsync(tenantId);
             if (tenant == null)
-            {
                 throw new UserFriendlyException(L("UnknownTenantId{0}", tenantId));
-            }
 
             if (!tenant.IsActive)
-            {
                 throw new UserFriendlyException(L("TenantIdIsNotActive{0}", tenantId));
-            }
 
             return tenant;
         }

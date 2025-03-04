@@ -1,5 +1,4 @@
-﻿using EasyNetQ.Events;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Shesha.EntityHistory
 {
@@ -7,9 +6,9 @@ namespace Shesha.EntityHistory
     {
         EntityHistoryEventInfo CreateEvent(EntityChangesInfo change);
 
-        EntityHistoryEventInfo CreateManyToManyEvent(EntityChangesInfo change);
+        EntityHistoryEventInfo? CreateManyToManyEvent(EntityChangesInfo change);
 
-        EntityHistoryEventInfo CreateManyToManyRelationEvent(EntityChangesInfo change);
+        EntityHistoryEventInfo? CreateManyToManyRelationEvent(EntityChangesInfo change);
 
         (IEnumerable<object> addedValues, IEnumerable<object> removedValues) GetListNewAndRemoved(EntityChangesInfo change);
     }

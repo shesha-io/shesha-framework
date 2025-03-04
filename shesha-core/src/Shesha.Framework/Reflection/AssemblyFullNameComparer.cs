@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Shesha.Extensions;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Shesha.Reflection
@@ -12,7 +13,7 @@ namespace Shesha.Reflection
 
         public override int GetHashCode(Assembly obj)
         {
-            return obj.FullName.GetHashCode();
+            return obj.GetRequiredFullName().GetHashCode();
         }
     }
 }

@@ -7,6 +7,7 @@ using Shesha.Bootstrappers;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Modules;
+using Shesha.Reflection;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -63,7 +64,7 @@ namespace Shesha.ConfigurationItems
                         .ToList();
                     foreach (var type in moduleTypes) 
                     {
-                        var instance = _iocManager.Resolve(type) as SheshaModule;
+                        var instance = _iocManager.Resolve(type).ForceCastAs<SheshaModule>();
 
                         var moduleInfo = instance.ModuleInfo;
                         var version = moduleInfo.UseAssemblyVersion
@@ -116,7 +117,7 @@ namespace Shesha.ConfigurationItems
                 .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
                 .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                 .Select(t => {
-                    return _iocManager.Resolve(t) as ISheshaSubmodule;
+                    return _iocManager.Resolve(t).ForceCastAs<ISheshaSubmodule>();
                 })
                 .ToList();
 

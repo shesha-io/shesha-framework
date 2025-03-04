@@ -85,7 +85,7 @@ namespace Shesha.Roles
         {
             CheckDeletePermission();
 
-            var role = await _roleManager.FindByIdAsync(input.Id.ToString());
+            var role = await _roleManager.GetRoleByNameAsync(input.Id.ToString());
             var users = await _userManager.GetUsersInRoleAsync(role.NormalizedName);
 
             foreach (var user in users)

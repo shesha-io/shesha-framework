@@ -54,7 +54,7 @@ namespace Shesha.JsonEntities.Proxy
                 {
                     var propName = invocation.Method.Name.Substring(4, invocation.Method.Name.Length - 4);
                     var eref = proxy._getEntityReference(propName.ToCamelCase());
-                    var stringId = eref?.Id.ToString();
+                    var stringId = eref?.Id?.ToString();
                     if (!string.IsNullOrWhiteSpace(stringId))
                     {
                         var objType = invocation.InvocationTarget.GetType();

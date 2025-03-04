@@ -11,7 +11,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Shesha.Email
@@ -37,7 +36,7 @@ namespace Shesha.Email
             return enabled;
         }
 
-        public bool SendMail(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, List<EmailAttachment> attachments = null,
+        public bool SendMail(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, List<EmailAttachment>? attachments = null,
             string cc = "", bool throwException = false)
         {
             if (!EmailsEnabled())
