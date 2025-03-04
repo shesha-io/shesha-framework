@@ -3,7 +3,6 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ISubFormComponentProps } from '.';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -12,61 +11,6 @@ export const getSettings = (data: any) => {
   const actionsTabId = nanoid();
   const layoutTabId = nanoid();
   const securityTabId = nanoid();
-
-  // Constants for exposed variables in code editors
-  const commonUrlsExposedVariables = [
-    {
-      id: nanoid(),
-      name: 'data',
-      description: 'Form data',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'globalState',
-      description: 'The global state',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'queryParams',
-      description: 'Query parameters',
-      type: 'object',
-    },
-  ];
-
-  const onCreatedOrUpdatedExposedVariables = [
-    {
-      id: nanoid(),
-      name: 'response',
-      description: 'Submitted data',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'data',
-      description: 'Form data',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'globalState',
-      description: 'The global state',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'message',
-      description: 'Toast message',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'publish',
-      description: 'Event publisher',
-      type: 'function',
-    },
-  ];
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -109,15 +53,13 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
-                    .addSettingsInput({
+                    .addLabelConfigurator({
                       id: nanoid(),
-                      inputType: "textField",
-                      propertyName: "label",
-                      parentId: commonTabId,
-                      label: "Label",
-                      jsSetting: true,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    })
+                      propertyName: 'hideLabel',
+                      label: 'Label',
+                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      hideLabel: true,
+                  })
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: "editModeSelector", 
@@ -132,13 +74,6 @@ export const getSettings = (data: any) => {
                       parentId: commonTabId,
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                       inputs: [
-                        {
-                          type: 'switch',
-                          id: nanoid(),
-                          propertyName: 'hideLabel',
-                          label: 'Hide Label',
-                          jsSetting: true,
-                        },
                         {
                           type: 'switch',
                           id: nanoid(),
@@ -249,9 +184,6 @@ export const getSettings = (data: any) => {
                       ],
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
-                    
-                    
-                    
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: dataSourceTabId,

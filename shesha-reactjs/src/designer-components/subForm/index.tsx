@@ -6,7 +6,6 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ISubFormProviderProps } from '@/providers/subForm/interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { SubFormSettingsForm } from './settings';
 import {
   useForm,
   useFormItem,
@@ -62,7 +61,6 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onUpdated: migrateFormApi.withoutFormData(prev?.onUpdated),
     }))
   ,
-  //settingsFormFactory: (props) => <SubFormSettingsForm {...props} />,
   settingsFormMarkup: (props) => getSettings(props),
   initModel: model => {
     const customProps: ISubFormComponentProps = {
