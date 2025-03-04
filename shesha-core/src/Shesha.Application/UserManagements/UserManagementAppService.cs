@@ -7,6 +7,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Persons;
+using Shesha.Reflection;
 using Shesha.UserManagements.Configurations;
 using System;
 using System.Collections.Generic;
@@ -44,11 +45,16 @@ namespace Shesha.UserManagements
         public async Task<PersonAccountDto> CreateAsync(CreatePersonAccountDto input)
         {
             //CheckCreatePermission();
-            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueAsync();
+            var registrationSettings = await _userManagementSettings.UserManagementSettings.GetValueOrNullAsync();
 
             // Performing additional validations
             var validationResults = new List<ValidationResult>();
             var supportedPasswordResetMethods = new List<int>();
+
+            if (!registrationSettings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.UserName))
+                validationResults.Add(new ValidationResult("Username is mandatory"));
+            if (registrationSettings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.EmailAddress))
+                validationResults.Add(new ValidationResult("Email Address is mandatory"));
 
             if (input.TypeOfAccount == null)
                 validationResults.Add(new ValidationResult("Type of account is mandatory"));
@@ -74,7 +80,7 @@ namespace Shesha.UserManagements
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of
             // creation.
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
             var isEmailLinkSupported = securitySettings.UseResetPasswordViaEmailLink;
             if (isEmailLinkSupported)
@@ -91,8 +97,9 @@ namespace Shesha.UserManagements
             var defaultMethods = supportedPasswordResetMethods.Count > 0 ? supportedPasswordResetMethods.Sum() : 0;
 
             // Creating User Account to enable login into the application
+            var userName = registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             User user = await _userManager.CreateUserAsync(
-                registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName,
+                userName.NotNull(),
                 input.TypeOfAccount?.ItemValue == (long)RefListTypeOfAccount.Internal,
                 input.Password,
                 input.PasswordConfirmation,
@@ -140,7 +147,7 @@ namespace Shesha.UserManagements
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> CompleteRegistrationAsync(long userId)
+        public async Task<string?> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)

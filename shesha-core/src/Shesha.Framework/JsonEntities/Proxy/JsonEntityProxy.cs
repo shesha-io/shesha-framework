@@ -30,9 +30,9 @@ namespace Shesha.JsonEntities.Proxy
         [JsonIgnore]
         bool? _innerChanged { get; set; }
 
-        JsonReference _getEntityReference<T>(Expression<Func<T, object>> expr);
+        JsonReference? _getEntityReference<T>(Expression<Func<T, object>> expr);
 
-        JsonReference _getEntityReference(string propName);
+        JsonReference? _getEntityReference(string propName);
 
         void _initialize(object proxy);
         void _changed();
@@ -51,7 +51,7 @@ namespace Shesha.JsonEntities.Proxy
             return ProxyUtil.IsProxy(pobj) ? ProxyUtil.GetUnproxiedInstance(pobj) : pobj;
         }
 
-        public static JObject GetJson(object proxyObj, JObject jObj = null)
+        public static JObject GetJson(object proxyObj, JObject? jObj = null)
         {
             JObject json = jObj ?? new JObject();
             if (proxyObj == null) return json;
@@ -69,7 +69,7 @@ namespace Shesha.JsonEntities.Proxy
             return json;
         }
         
-        public static bool IsChanged(object proxyObj)
+        public static bool IsChanged(object? proxyObj)
         {
             if (proxyObj == null) return false;
 
@@ -101,10 +101,10 @@ namespace Shesha.JsonEntities.Proxy
         public virtual bool _isInitialized { get; internal set; } = false;
 
         [JsonIgnore]
-        public virtual JObject _json { get; internal set; } = null;
+        public virtual JObject _json { get; internal set; }
 
         [JsonIgnore]
-        public virtual Dictionary<string, JsonReference> _references { get; } = new Dictionary<string, JsonReference>();
+        public virtual Dictionary<string, JsonReference> _references { get; } = new ();
 
         [JsonIgnore]
         public virtual bool _isThisChanged { get; internal set; } = false;
@@ -120,7 +120,7 @@ namespace Shesha.JsonEntities.Proxy
             _factory = factory;
         }
 
-        public virtual JsonReference _getEntityReference<T>(Expression<Func<T, object>> expr)
+        public virtual JsonReference? _getEntityReference<T>(Expression<Func<T, object>> expr)
         {
             if (expr is LambdaExpression lambda)
                 if (lambda.Body is MemberExpression member)
@@ -128,7 +128,7 @@ namespace Shesha.JsonEntities.Proxy
             throw new NotSupportedException("Expression is incorrect, please use only properties");
         }
 
-        public virtual JsonReference _getEntityReference(string propName)
+        public virtual JsonReference? _getEntityReference(string propName)
         {
             return _references.ContainsKey(propName) ? _references[propName] : null;
         }
@@ -139,7 +139,7 @@ namespace Shesha.JsonEntities.Proxy
             {
                 GetEntityById = (entityType, id, displayName, propPath, ctx) =>
                 {
-                    _references.Add(propPath.Split(".").LastOrDefault(), new JsonReference() { Id = id, _displayName = displayName });
+                    _references.Add(propPath.Split(".").Last(), new JsonReference() { Id = id, _displayName = displayName });
                     return null;
                 },
                 GetObjectOrObjectReference = (objectType, jobject, ctx, formFields) =>

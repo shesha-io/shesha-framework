@@ -95,7 +95,16 @@ namespace Shesha.Notifications
         /// <param name="triggeringEntity"></param>
         /// <param name="channel"></param>
         /// <returns></returns>
-        public async Task SendNotificationAsync<TData>(NotificationTypeConfig type, IMessageSender sender, IMessageReceiver receiver, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, string cc ="",GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public async Task SendNotificationAsync<TData>(
+            NotificationTypeConfig type, 
+            IMessageSender sender, 
+            IMessageReceiver receiver, 
+            TData data, 
+            RefListNotificationPriority priority, 
+            List<NotificationAttachmentDto>? attachments = null,
+            string cc = "",
+            GenericEntityReference? triggeringEntity = null, 
+            NotificationChannelConfig? channel = null) where TData : NotificationData
         {
             // Check if the notification type is disabled
             if (type.Disable) 
@@ -153,7 +162,16 @@ namespace Shesha.Notifications
         /// <param name="attachments"></param>
         /// <returns></returns>
         /// <exception cref="UserFriendlyException"></exception>
-        private async Task SendNotificationToChannelAsync<TData>(Notification notification, TData data, IMessageSender sender, IMessageReceiver receiver, string cc, NotificationTypeConfig type, RefListNotificationPriority priority, NotificationChannelConfig channelConfig, List<NotificationAttachmentDto> attachments = null) where TData : NotificationData
+        private async Task SendNotificationToChannelAsync<TData>(
+            Notification notification, 
+            TData data, 
+            IMessageSender sender, 
+            IMessageReceiver receiver,
+            string cc = "",
+            NotificationTypeConfig type, 
+            RefListNotificationPriority priority, 
+            NotificationChannelConfig channelConfig, 
+            List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
 
@@ -318,7 +336,16 @@ namespace Shesha.Notifications
             }
         }
 
-        public async Task SendNotificationAsync<TData>(NotificationTypeConfig type, Person senderPerson, Person receiverPerson, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, string cc = "", GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public async Task SendNotificationAsync<TData>(
+            NotificationTypeConfig type, 
+            Person senderPerson, 
+            Person receiverPerson, 
+            TData data, 
+            RefListNotificationPriority priority, 
+            List<NotificationAttachmentDto>? attachments = null,
+            string cc = "",
+            GenericEntityReference? triggeringEntity = null, 
+            NotificationChannelConfig? channel = null) where TData : NotificationData
         {
             var sender = new PersonMessageParticipant(senderPerson);
             var receiver = new PersonMessageParticipant(receiverPerson);            

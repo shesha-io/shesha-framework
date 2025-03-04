@@ -85,7 +85,7 @@ namespace Shesha.Web.FormsDesigner.Services
             return await _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
         }
 
-        private async Task<bool> CheckFormPermissionsAsync(string module, string name)
+        private async Task<bool> CheckFormPermissionsAsync(string? module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name),
@@ -604,7 +604,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName) 
+        private async Task<Module?> GetModuleAsync(string moduleName) 
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
@@ -635,7 +635,7 @@ namespace Shesha.Web.FormsDesigner.Services
                     {
                         var fileName = Path.Combine(input.Path, form.Module, $"{form.Name}.v{form.Version}.json".RemovePathIllegalCharacters());
                         var directory = Path.GetDirectoryName(fileName);
-                        if (!Directory.Exists(directory))
+                        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
                             Directory.CreateDirectory(directory);
 
                         await File.WriteAllTextAsync(fileName, form.Markup);

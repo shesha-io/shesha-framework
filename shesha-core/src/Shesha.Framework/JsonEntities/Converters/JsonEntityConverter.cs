@@ -13,7 +13,7 @@ namespace Shesha.JsonEntities.Converters
 {
     public class JsonEntityConverter : JsonConverter
     {
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
             var jObj = JObject.Load(reader);

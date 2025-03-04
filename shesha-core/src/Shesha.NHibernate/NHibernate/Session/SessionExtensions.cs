@@ -38,7 +38,7 @@ namespace Shesha.NHibernate.Session
                 : new List<DirtyPropertyInfo>();
         }
 
-        public static EntityEntry GetEntry(this ISession session, Object entity, bool assert = true)
+        public static EntityEntry? GetEntry(this ISession session, Object entity, bool assert = true)
         {
             var sessionImpl = session.GetSessionImplementation();
             var oldEntry = sessionImpl.PersistenceContext.GetEntry(entity);
@@ -81,7 +81,7 @@ namespace Shesha.NHibernate.Session
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public static SheshaNHibernateInterceptor LocalInterceptor(this ISession session)
+        public static SheshaNHibernateInterceptor? LocalInterceptor(this ISession session)
         {
             return session.GetSessionImplementation().Interceptor as SheshaNHibernateInterceptor;
         }

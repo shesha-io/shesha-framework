@@ -1,5 +1,4 @@
-﻿using Abp.Extensions;
-using Abp.Localization;
+﻿using Abp.Localization;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace Shesha.Utilities
     public static class StringHelper
     {
 
-        public static string ToNullIsWhiteSpace(this string value)
+        public static string? ToNullIsWhiteSpace(this string value)
         {
             return string.IsNullOrWhiteSpace(value) ? null : value;
         }
@@ -36,7 +35,7 @@ namespace Shesha.Utilities
         /// Returns first not empty string from the specified <paramref name="values"/>
         /// </summary>
         /// <param name="values">List of strings</param>
-        public static string FirstNotEmpty(params string[] values) 
+        public static string? FirstNotEmpty(params string?[] values) 
         {
             return values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
         }
@@ -143,7 +142,7 @@ namespace Shesha.Utilities
             return result.ToString();
         }
 
-        public static string CapitalizeFirstChar(this string s)
+        public static string? CapitalizeFirstChar(this string s)
         {
             if (s == null)
                 return null;
@@ -156,7 +155,7 @@ namespace Shesha.Utilities
             return new string(a);
         }
 
-        public static string DecapitalizeFirstChar(this string s)
+        public static string? DecapitalizeFirstChar(this string s)
         {
             if (s == null)
                 return null;
@@ -187,7 +186,7 @@ namespace Shesha.Utilities
         /// <param name="value">string where we need to replace tags</param>
         /// <param name="tags">dictionary like tag=value</param>
         /// <returns></returns>
-        public static string ReplaceTags(this string value, Dictionary<string, string> tags)
+        public static string? ReplaceTags(this string? value, Dictionary<string, string> tags)
         {
             return string.IsNullOrEmpty(value) ? value : tags.Aggregate(value, (current, tag) => current.Replace(tag.Key, tag.Value));
         }
@@ -236,7 +235,7 @@ namespace Shesha.Utilities
         private static readonly char[] IllegalUrlCharacters = new[] { ';', '/', '\\', '?', ':', '@', '&', '=', '+', '$', ',', '<', '>', '#', '%', '.', '!', '*', '\'', '"', '(', ')', '[', ']', '{', '}', '|', '^', '`', '~', '–', '‘', '’', '“', '”', '»', '«' };
 
         [DebuggerStepThrough]
-        public static bool IsEmail(this string target)
+        public static bool IsEmail(this string? target)
         {
             return !string.IsNullOrEmpty(target) && EmailExpression.IsMatch(target);
         }
@@ -262,7 +261,7 @@ namespace Shesha.Utilities
         }
 
         [DebuggerStepThrough]
-        public static T ToEnum<T>(this string target, T defaultValue) where T : IComparable, IFormattable
+        public static T ToEnum<T>(this string? target, T defaultValue) where T : IComparable, IFormattable
         {
             T convertedValue = defaultValue;
 
@@ -327,7 +326,7 @@ namespace Shesha.Utilities
         /// <param name="args">Strings from which to return the first available string.</param>
         /// <returns>Returns the value of the first element which is not null or empty or white spaces. If all
         /// the strings are null, empty or whitespaces, null is returned.</returns>
-        public static string FirstValue(params string[] args)
+        public static string? FirstValue(params string?[] args)
         {
             for (int i = 0; i < args.Length; i++)
             {
@@ -460,7 +459,7 @@ namespace Shesha.Utilities
             return Double.TryParse(val, NumberStyles.Any, CultureInfo.CurrentCulture, out result);
         }
 
-        public static string ToHtmlParagraphs(this string text)
+        public static string? ToHtmlParagraphs(this string? text)
         {
             return text == null
                 ? null
@@ -471,7 +470,7 @@ namespace Shesha.Utilities
                     .Delimited("");
         }
 
-        public static string ToHtmlWithBreaks(this string text)
+        public static string? ToHtmlWithBreaks(this string? text)
         {
             return text == null
                 ? null
@@ -504,7 +503,7 @@ namespace Shesha.Utilities
                 .ToList();
         }
 
-        public static bool EqualsOrEmpty(this string s1, string s2, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        public static bool EqualsOrEmpty(this string? s1, string? s2, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
         {
             return string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2) ||
                 s1 != null && s2 != null && s1.Equals(s2, comparisonType);
@@ -521,7 +520,7 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="value">comma separated string to be converted to list</param>
         /// <returns></returns>
-        public static List<string> ConvertCommaSeparatedStringToList(string value)
+        public static List<string>? ConvertCommaSeparatedStringToList(string? value)
         {
             if (!string.IsNullOrEmpty(value))
             {
@@ -534,7 +533,6 @@ namespace Shesha.Utilities
             {
                 return null;
             }
-
         }
 
         public static string FormatMobileNo(this string value)
@@ -567,10 +565,8 @@ namespace Shesha.Utilities
         /// </summary>
         public static string ToCamelCase(this string s)
         {
-            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
-            {
+            if (!char.IsUpper(s[0]))
                 return s;
-            }
 
             char[] chars = s.ToCharArray();
 
@@ -597,6 +593,13 @@ namespace Shesha.Utilities
             }
 
             return new string(chars);
+        }
+
+        public static string? ToCamelCaseOrNull(this string? s) 
+        {
+            return string.IsNullOrWhiteSpace(s)
+                ? s
+                : ToCamelCase(s);
         }
 
         /// <summary>
@@ -626,7 +629,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Convert string to int
         /// </summary>
-        public static int ToInt(this string source, int defaultValue)
+        public static int ToInt(this string? source, int defaultValue)
         {
             if (string.IsNullOrEmpty(source) ||
                 !Int32.TryParse(source, out var result))
@@ -637,7 +640,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Convert string to int
         /// </summary>
-        public static int? ToIntOrNull(this string source, int? defaultValue = null)
+        public static int? ToIntOrNull(this string? source, int? defaultValue = null)
         {
             if (string.IsNullOrEmpty(source) || !Int32.TryParse(source, out var result))
                 return defaultValue;
@@ -671,7 +674,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Convert string to long
         /// </summary>
-        public static long ToLong(this string source, long defaultValue)
+        public static long ToLong(this string? source, long defaultValue)
         {
             if (string.IsNullOrEmpty(source) ||
                 !long.TryParse(source, out var result))
@@ -682,7 +685,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Convert string to decimal
         /// </summary>
-        public static decimal ToDecimal(this string source, decimal defaultValue)
+        public static decimal ToDecimal(this string? source, decimal defaultValue)
         {
             if (string.IsNullOrEmpty(source) ||
                 !decimal.TryParse(source, out var result))
@@ -693,9 +696,9 @@ namespace Shesha.Utilities
         /// <summary>
         /// Returns a string formatted into a proper telephone number.
         /// </summary>
-        public static string FormatAsTelephoneNumber(this string telNumber)
+        public static string? FormatAsTelephoneNumber(this string? telNumber)
         {
-            if (telNumber == null)
+            if (string.IsNullOrWhiteSpace(telNumber))
                 return null;
 
             var cleanNo = telNumber.Trim().Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "");
@@ -877,7 +880,7 @@ namespace Shesha.Utilities
         }
 
         [DebuggerStepThrough]
-        public static string StripHtml(this string target)
+        public static string StripHtml(this string? target)
         {
             if (string.IsNullOrEmpty(target))
                 return "";
@@ -902,9 +905,9 @@ namespace Shesha.Utilities
         /// </summary>
         /// <param name="html"></param>
         /// <returns></returns>
-        public static string WrapAsHtmlDocument(this string html)
+        public static string? WrapAsHtmlDocument(this string? html)
         {
-            if (html == null)
+            if (string.IsNullOrWhiteSpace(html))
                 return html;
 
             if (!Regex.IsMatch(html, @"\</body\>"))
@@ -976,8 +979,6 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static string ToSnakeCase(this string input)
         {
-            if (string.IsNullOrEmpty(input)) { return input; }
-
             return Regex.Replace(Regex.Replace(input, "(.)([A-Z][a-z]+)", "$1_$2"), "([a-z0-9])([A-Z])", "$1_$2").ToLower().RemoveDoubleUndescores();
         }
 
@@ -996,9 +997,9 @@ namespace Shesha.Utilities
         /// <param name="text">snake_case text</param>
         /// <param name="length">Max length</param>
         /// <returns></returns>
-        public static string SnakeCaseTrim(this string text, int length)
+        public static string? SnakeCaseTrim(this string? text, int length)
         {
-            if (text.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(text))
                 return text;
             var delta = text?.Length - length;
             if (delta < 1)
@@ -1024,11 +1025,11 @@ namespace Shesha.Utilities
         /// <param name="parts">parts to compile snake_case text</param>
         /// <param name="length">Max length</param>
         /// <returns></returns>
-        public static string SnakeCaseTrim(this string[] parts, int length)
+        public static string? SnakeCaseTrim(this string[] parts, int length)
         {
-            var text = string.Join("_", parts).ToSnakeCase();
+            var text = string.Join("_", parts)?.ToSnakeCase();
 
-            if (text.IsNullOrEmpty())
+            if (string.IsNullOrWhiteSpace(text))
                 return text;
             var delta = text?.Length - length;
             if (delta < 1)

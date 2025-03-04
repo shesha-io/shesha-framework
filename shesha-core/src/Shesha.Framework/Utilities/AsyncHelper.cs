@@ -75,7 +75,9 @@ namespace Shesha.Utilities
 #pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
             SynchronizationContext.SetSynchronizationContext(oldContext);
+#pragma warning disable CS8603 // Possible null reference return.
             return ret;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         private sealed class ExclusiveSynchronizationContext : SynchronizationContext, IDisposable

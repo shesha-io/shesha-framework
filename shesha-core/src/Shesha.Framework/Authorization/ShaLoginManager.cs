@@ -13,12 +13,14 @@ using Abp.MultiTenancy;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
+using NUglify.Helpers;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -85,12 +87,12 @@ namespace Shesha.Authorization
             _mobileDeviceRepository = mobileDeviceRepository;
         }
 
-        protected virtual ShaLoginResult<TUser> AdditionalVerification(TUser user, TTenant tenant)
+        protected virtual ShaLoginResult<TUser>? AdditionalVerification(TUser user, TTenant? tenant)
         {
             return null;
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
+        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string? imei = null, string? tenancyName = null)
         {
             var result = await LoginInternalAsync(login, tenancyName);
 
@@ -99,11 +101,11 @@ namespace Shesha.Authorization
             return result;
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string tenancyName)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string? tenancyName)
         {
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
+                if (login == null || string.IsNullOrWhiteSpace(login.LoginProvider) || string.IsNullOrWhiteSpace(login.ProviderKey))
                     throw new ArgumentException("login");
 
                 var result = await ProcessTenancyLoginActionAsync(null, tenancyName, true, async (tenant) => {
@@ -121,7 +123,7 @@ namespace Shesha.Authorization
             }
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> AnonymousLoginViaDeviceIdAsync(Guid deviceId, string imei = null, string tenancyName = null)
+        public virtual async Task<ShaLoginResult<TUser>> AnonymousLoginViaDeviceIdAsync(Guid deviceId, string? imei = null, string? tenancyName = null)
         {
             var user = await UserManager.FindByNameAsync(deviceId.ToString());
             if (user == null)
@@ -140,7 +142,7 @@ namespace Shesha.Authorization
             return result;
         }
 
-        private void CheckOtpAuthAvailability() 
+        private void CheckOtpAuthAvailability()
         {
             if (OtpManager == null)
                 throw new NotSupportedException("OTP authentication is not supported");
@@ -150,7 +152,7 @@ namespace Shesha.Authorization
         {
             CheckOtpAuthAvailability();
 
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
             var response = await OtpManager.SendPinAsync(new SendPinInput()
             {
@@ -168,14 +170,14 @@ namespace Shesha.Authorization
             return response;
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        public virtual async Task<ShaLoginResult<TUser>> LoginViaOtpAsync(string mobileNo, Guid operationId, string code, string? imei = null, string? tenancyName = null, bool shouldLockout = true)
         {
             CheckOtpAuthAvailability();
-            
-            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async() => { 
+
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () => {
                 return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
 
-                    var otp = await OtpManager.GetAsync(operationId);
+                    var otp = await OtpManager.GetOrNullAsync(operationId);
                     if (otp == null)
                         return new ShaLoginResult<TUser>(ShaLoginResultType.InvalidOTP, tenant);
                     var verificationResult = await OtpManager.VerifyPinAsync(new VerifyPinInput
@@ -206,7 +208,7 @@ namespace Shesha.Authorization
                     }
 
                     // authenticated using internal account, check IMEI
-                    if (!(await CheckImeiAsync(imei)))
+                    if (!await CheckImeiAsync(imei))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     // clear reset code
@@ -222,17 +224,17 @@ namespace Shesha.Authorization
             return result;
         }
 
-        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
+        public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string? imei = null, string? tenancyName = null, bool shouldLockout = true)
         {
-            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async() => { 
+            var result = await UnitOfWorkManager.WithUnitOfWorkAsync(async () => {
                 return await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
             }, TransactionScopeOption.RequiresNew);
-            
+
             await SaveLoginAttemptAsync(result, imei, tenancyName, userNameOrEmailAddress);
             return result;
         }
 
-        private async Task<ShaLoginResult<TUser>> ProcessTenancyLoginActionAsync(string imei, string tenancyName, bool shouldLockout, Func<TTenant, Task<ShaLoginResult<TUser>>> action) 
+        private async Task<ShaLoginResult<TUser>> ProcessTenancyLoginActionAsync(string? imei, string? tenancyName, bool shouldLockout, Func<TTenant?, Task<ShaLoginResult<TUser>>> action)
         {
             // Get and check tenant
             TTenant? tenant = null;
@@ -266,20 +268,13 @@ namespace Shesha.Authorization
             }
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string? imei, string? tenancyName, bool shouldLockout)
         {
-            if (userNameOrEmailAddress.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(userNameOrEmailAddress));
-            }
-
-            if (plainPassword.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(plainPassword));
-            }
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(userNameOrEmailAddress, nameof(userNameOrEmailAddress));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(plainPassword, nameof(plainPassword));
 
             return await ProcessTenancyLoginActionAsync(imei, tenancyName, shouldLockout, async (tenant) => {
-                //TryLoginFromExternalAuthenticationSources method may create the user, that's why we are calling it before AbpUserStore.FindByNameOrEmailAsync
+                // TryLoginFromExternalAuthenticationSources method may create the user, that's why we are calling it before AbpUserStore.FindByNameOrEmailAsync
                 var loggedInFromExternalSource = await TryLoginFromExternalAuthenticationSourcesAsync(userNameOrEmailAddress, plainPassword, tenant);
 
                 var user = await UserManager.FindByNameOrEmailAsync(tenant?.Id, userNameOrEmailAddress);
@@ -315,7 +310,7 @@ namespace Shesha.Authorization
                     }
 
                     // authenticated using internal account, check IMEI
-                    if (!(await CheckImeiAsync(imei)))
+                    if (!await CheckImeiAsync(imei))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
 
                     await UserManager.ResetAccessFailedCountAsync(user);
@@ -335,7 +330,7 @@ namespace Shesha.Authorization
             });
         }
 
-        private async Task<bool> CheckImeiAsync(string imei)
+        private async Task<bool> CheckImeiAsync(string? imei)
         {
             if (string.IsNullOrWhiteSpace(imei))
                 return true; // skip if the IMEI is null
@@ -343,24 +338,24 @@ namespace Shesha.Authorization
             return await _mobileDeviceRepository.GetAll().Where(d => d.IMEI == imei.Trim() && !d.IsLocked).AnyAsync();
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> CreateLoginResultAsync(TUser user, TTenant tenant = null)
+        protected virtual async Task<ShaLoginResult<TUser>> CreateLoginResultAsync(TUser user, TTenant? tenant = null)
         {
             if (!user.IsActive)
-            {
                 return new ShaLoginResult<TUser>(ShaLoginResultType.UserIsNotActive);
-            }
 
             var principal = await _claimsPrincipalFactory.CreateAsync(user);
+            if (principal.Identity is not ClaimsIdentity claimsIdentity)
+                throw new AbpAuthorizationException($"Failed to create claims identity for user '{user.UserName}'");
 
             return new ShaLoginResult<TUser>(
                 tenant,
                 user,
-                principal.Identity as ClaimsIdentity
+                claimsIdentity
             );
         }
 
-        public virtual async Task SaveLoginAttemptAsync(ShaLoginResult<TUser> loginResult, string imei,
-            string tenancyName, string userNameOrEmailAddress)
+        public virtual async Task SaveLoginAttemptAsync(ShaLoginResult<TUser> loginResult, string? imei,
+            string? tenancyName, string userNameOrEmailAddress)
         {
             if (UnitOfWorkManager.Current != null)
                 await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -391,13 +386,13 @@ namespace Shesha.Authorization
                     };
 
                     await ShaLoginAttemptRepository.InsertAsync(loginAttempt);
-                    
+
                     await uow.CompleteAsync();
                 }
             }
         }
 
-        private async Task<string> GetDeviceNameAsync(string imei)
+        private async Task<string?> GetDeviceNameAsync(string? imei)
         {
             return string.IsNullOrWhiteSpace(imei)
                 ? null
@@ -441,7 +436,7 @@ namespace Shesha.Authorization
             {
                 using (UnitOfWorkManager.Current.SetTenantId(tenantId))
                 {
-                    var user = await UserManager.FindByIdAsync(userId.ToString());
+                    var user = (await UserManager.FindByIdAsync(userId.ToString())).NotNull($"User with id = '{userId}' not found");
 
                     (await UserManager.AccessFailedAsync(user)).CheckErrors();
 
@@ -456,7 +451,7 @@ namespace Shesha.Authorization
             }
         }
 
-        protected virtual async Task<bool> TryLoginFromExternalAuthenticationSourcesAsync(string userNameOrEmailAddress, string plainPassword, TTenant tenant)
+        protected virtual async Task<bool> TryLoginFromExternalAuthenticationSourcesAsync(string userNameOrEmailAddress, string plainPassword, TTenant? tenant)
         {
             if (!UserManagementConfig.ExternalAuthenticationSources.Any())
             {
@@ -467,6 +462,7 @@ namespace Shesha.Authorization
             {
                 using (var source = IocResolver.ResolveAsDisposable<IExternalAuthenticationSource<TTenant, TUser>>(sourceType))
                 {
+#pragma warning disable CS8604 // ABP doesn't support nullability
                     if (await source.Object.TryAuthenticateAsync(userNameOrEmailAddress, plainPassword, tenant))
                     {
                         var tenantId = tenant == null ? (int?)null : tenant.Id;
@@ -508,6 +504,7 @@ namespace Shesha.Authorization
                             return true;
                         }
                     }
+#pragma warning restore CS8604 // ABP doesn't support nullability
                 }
             }
 

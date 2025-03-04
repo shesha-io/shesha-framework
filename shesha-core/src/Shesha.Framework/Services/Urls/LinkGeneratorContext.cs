@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime;
 using Microsoft.AspNetCore.Http;
-using Shesha.ConfigurationItems;
 using System;
 
 namespace Shesha.Services.Urls
@@ -18,9 +17,9 @@ namespace Shesha.Services.Urls
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private LinkGeneratorState _defaultState;
+        private LinkGeneratorState? _defaultState;
 
-        private LinkGeneratorState GetDefaultState() 
+        private LinkGeneratorState? GetDefaultState() 
         {
             var request = _httpContextAccessor.HttpContext?.Request;
             return request != null
@@ -28,7 +27,7 @@ namespace Shesha.Services.Urls
                 : null;
         }
 
-        public LinkGeneratorState State
+        public LinkGeneratorState? State
         {
             get
             {

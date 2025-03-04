@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
@@ -10,7 +9,6 @@ using Shesha.Extensions;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting import
     /// </summary>
-    public class SettingImport: ConfigurationItemImportBase, ISettingImport, ITransientDependency
+    public class SettingImport: ConfigurationItemImportBase<SettingConfiguration, DistributedSettingConfiguration>, ISettingImport, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigRepo;
         private readonly IRepository<SettingValue, Guid> _settingValueRepo;
@@ -51,16 +49,6 @@ namespace Shesha.Services.Settings.Distribution
                 throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(DistributedSettingConfiguration)}. Actual type is {item.GetType().FullName}");
 
             return await ImportSettingAsync(setting, context);
-        }
-
-        /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream) 
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedSettingConfiguration>(json);
-            }
         }
 
         /// inheritedDoc

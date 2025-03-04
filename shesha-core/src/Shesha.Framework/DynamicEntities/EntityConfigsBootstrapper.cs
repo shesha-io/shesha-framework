@@ -165,7 +165,7 @@ namespace Shesha.DynamicEntities
                         {
                             db = ec.db,
                             code = ec.code,
-                            attr = ec.code?.Config.EntityType.GetAttribute<EntityAttribute>()
+                            attr = ec.code?.Config.EntityType.GetAttributeOrNull<EntityAttribute>()
                         }
                 ).ToList();
 
@@ -230,7 +230,7 @@ namespace Shesha.DynamicEntities
 
             foreach (var config in toAdd)
             {
-                var attr = config.Config.EntityType.GetAttribute<EntityAttribute>();
+                var attr = config.Config.EntityType.GetAttributeOrNull<EntityAttribute>();
                 var ec = new EntityConfig()
                 {
                     FriendlyName = config.Config.FriendlyName,
@@ -247,7 +247,7 @@ namespace Shesha.DynamicEntities
                         ? EntityConfigTypes.Interface
                         : EntityConfigTypes.Class,
 
-                    Source = Domain.Enums.MetadataSourceType.ApplicationCode
+                    Source = MetadataSourceType.ApplicationCode
                 };
 
                 // ToDo: AS - Get Module, Description and Suppress
@@ -270,7 +270,7 @@ namespace Shesha.DynamicEntities
         }
 
         private async Task UpdatePropertiesAsync(
-            EntityConfig entityConfig, List<PropertyMetadataDto> codeProperties, List<EntityProperty> dbProperties, EntityProperty parentProp = null)
+            EntityConfig entityConfig, List<PropertyMetadataDto> codeProperties, List<EntityProperty> dbProperties, EntityProperty? parentProp = null)
         {
             try
             {
@@ -288,7 +288,7 @@ namespace Shesha.DynamicEntities
                         dbp = new EntityProperty
                         {
                             EntityConfig = entityConfig,
-                            Source = Domain.Enums.MetadataSourceType.ApplicationCode,
+                            Source = MetadataSourceType.ApplicationCode,
                             SortOrder = nextSortOrder++,
                             ParentProperty = parentProp,
                             Label = cp.Label,
@@ -302,7 +302,7 @@ namespace Shesha.DynamicEntities
                     {
                         MapProperty(cp, dbp);
                         // update hardcoded part
-                        dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                        dbp.Source = MetadataSourceType.ApplicationCode;
 
                         // restore property
                         dbp.IsDeleted = false;
@@ -327,7 +327,7 @@ namespace Shesha.DynamicEntities
                 // todo: inactivate missing properties
                 var deletedProperties = dbProperties
                     .Where(p =>
-                        p.Source == Domain.Enums.MetadataSourceType.ApplicationCode
+                        p.Source == MetadataSourceType.ApplicationCode
                         && !codeProperties.Any(cp => cp.Path.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
                         && p.ParentProperty?.Id == parentProp?.Id
                         )
@@ -392,7 +392,7 @@ namespace Shesha.DynamicEntities
 
                 MapProperty(cp.ItemsType, itemsTypeProp);
 
-                itemsTypeProp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                itemsTypeProp.Source = MetadataSourceType.ApplicationCode;
                 itemsTypeProp.SortOrder = 0;
                 itemsTypeProp.ParentProperty = dbp;
 

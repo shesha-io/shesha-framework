@@ -29,10 +29,10 @@ namespace Shesha.Elmah.Domain
         public virtual string Location { get; set; }
 
         [NotMapped]
-        public virtual string DetailsUrl { 
+        public virtual string? DetailsUrl { 
             get {
                 var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
-                if (linkGeneratorContext?.State == null)
+                if (linkGeneratorContext?.State == null || string.IsNullOrWhiteSpace(linkGeneratorContext.State.Host))
                     return null;
 
                 var hostString = linkGeneratorContext.State.Port > 0

@@ -39,7 +39,7 @@ namespace Shesha.Services.VersionedFields
                 .FirstOrDefaultAsync();
         }
 
-        public VersionedField GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
+        public VersionedField? GetVersionedField<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
         {
             var config = _entityConfigurationStore.Get(typeof(TEntity));
 
@@ -50,7 +50,7 @@ namespace Shesha.Services.VersionedFields
         /// <summary>
         /// Creates versioned field is missing
         /// </summary>
-        public async Task<VersionedField> GetOrCreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField> initAction = null) where TEntity : IEntity<TId>
+        public async Task<VersionedField> GetOrCreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null) where TEntity : IEntity<TId>
         {
             var field = await GetVersionedFieldAsync<TEntity, TId>(owner, fieldName);
             if (field != null)
@@ -77,7 +77,7 @@ namespace Shesha.Services.VersionedFields
             return field;
         }
 
-        public async Task<VersionedField> CreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField> initAction = null) where TEntity : IEntity<TId>
+        public async Task<VersionedField> CreateFieldAsync<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null) where TEntity : IEntity<TId>
         {
             var field = new VersionedField
             {
@@ -91,7 +91,7 @@ namespace Shesha.Services.VersionedFields
             return field;
         }
 
-        public VersionedField CreateField<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField> initAction = null) where TEntity : IEntity<TId>
+        public VersionedField CreateField<TEntity, TId>(TEntity owner, string fieldName, Action<VersionedField>? initAction = null) where TEntity : IEntity<TId>
         {
             var field = new VersionedField
             {
@@ -111,7 +111,7 @@ namespace Shesha.Services.VersionedFields
             return version;
         }
 
-        public async Task<string> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
+        public async Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>
         {
             var field = await GetVersionedFieldAsync<TEntity, TId>(owner, fieldName);
             var version = field != null

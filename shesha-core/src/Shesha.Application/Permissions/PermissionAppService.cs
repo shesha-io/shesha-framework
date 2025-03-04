@@ -8,6 +8,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions.Dtos;
+using Shesha.Reflection;
 using Shesha.Roles.Dto;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Shesha.Permissions
     {
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ILocalizationContext _localizationContext;
-        private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
+        private IShaPermissionManager _shaPermissionManager => PermissionManager.ForceCastAs<IShaPermissionManager>();
         private readonly IShaPermissionChecker _permissionChecker;
 
         private const string emptyId = "_";
@@ -37,8 +38,9 @@ namespace Shesha.Permissions
             _permissionChecker = permissionChecker;
         }
 
-        public async Task<PermissionDto> GetAsync(string id)
+        public async Task<PermissionDto?> GetAsync(string id)
         {
+            /* TODO: Alex, please review. If an entity is requested we must return value or  throw exception. It's abnormal case if we get request with empty id, so there should be an exception*/
             if (string.IsNullOrEmpty(id))
                 return null;
 
@@ -149,7 +151,7 @@ namespace Shesha.Permissions
                 VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
-            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id, dbp);
+            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id.NotNull(), dbp);
 
             return ObjectMapper.Map<PermissionDto>(res);
         }

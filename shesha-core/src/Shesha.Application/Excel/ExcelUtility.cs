@@ -91,7 +91,7 @@ namespace Shesha.Excel
 
         private static readonly Dictionary<int, string> LettersCache = new Dictionary<int, string>();
 
-        private static string ReplaceSpecialCharacters(string value)
+        private static string ReplaceSpecialCharacters(string? value)
         {
             return (value ?? "").Replace("’", "'")
                 .Replace("“", "\"")
@@ -105,7 +105,7 @@ namespace Shesha.Excel
             Stylesheet styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
             cell.SetAttribute(new OpenXmlAttribute("", "s", "", "1"));
             OpenXmlAttribute cellStyleAttribute = cell.GetAttribute("s", "");
-            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats;
+            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats.NotNull();
 
             // pick the first cell format.
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
@@ -123,7 +123,7 @@ namespace Shesha.Excel
 
         #endregion
 
-        public static async Task<MemoryStream> DataToExcelStreamAsync(WriteRowsDelegate writeRows, IList<String> headers, string sheetName, List<int> columnWidths = null)
+        public static async Task<MemoryStream> DataToExcelStreamAsync(WriteRowsDelegate writeRows, IList<String> headers, string sheetName, List<int>? columnWidths = null)
         {
             var xmlStream = ReportingHelper.GetResourceStream("Shesha.Excel.template.xlsx", typeof(ExcelUtility).Assembly);
 
@@ -287,7 +287,7 @@ namespace Shesha.Excel
             return result;
         }
 
-        private Func<object, string> CreateGetAsString(Type rowType, ExcelColumn c)
+        private Func<object?, string?> CreateGetAsString(Type rowType, ExcelColumn c)
         {
             var property = ReflectionHelper.GetProperty(rowType, c.PropertyName, useCamelCase: true);
 
@@ -297,8 +297,8 @@ namespace Shesha.Excel
 
             var underlyingType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
             
-            var dataTypeAttr = property.GetAttribute<DataTypeAttribute>();
-            var formatAttr = property.GetAttribute<DisplayFormatAttribute>();
+            var dataTypeAttr = property.GetAttributeOrNull<DataTypeAttribute>();
+            var formatAttr = property.GetAttributeOrNull<DisplayFormatAttribute>();
 
             if (underlyingType == typeof(DateTime))
             {
@@ -307,7 +307,7 @@ namespace Shesha.Excel
                     : dataTypeAttr != null && dataTypeAttr.DataType == DataType.Date
                         ? "dd/MM/yyyy"
                         : "dd/MM/yyyy HH:mm";
-                return new Func<object, string>(val =>
+                return new Func<object?, string?>(val =>
                 {
                     if (val == null)
                         return null;
@@ -325,7 +325,7 @@ namespace Shesha.Excel
                 var format = !string.IsNullOrWhiteSpace(formatAttr?.DataFormatString)
                     ? formatAttr.DataFormatString
                     : @"hh\:mm";
-                return new Func<object, string>(val =>
+                return new Func<object?, string?>(val =>
                 {
                     if (val == null)
                         return null;
@@ -340,13 +340,13 @@ namespace Shesha.Excel
             else
             if (ReflectionHelper.IsReferenceListProperty(property))
             {
-                var refListIdentifier = ReflectionHelper.GetReferenceListIdentifierOrNull(property);
+                var refListIdentifier = ReflectionHelper.GetReferenceListIdentifierOrNull(property).NotNull();
                 var list = _refListHelper.GetItems(refListIdentifier);
                 var isMultiValue = ReflectionHelper.IsMultiValueReferenceListProperty(property);
 
                 if (isMultiValue)
                 {
-                    return new Func<object, string>(val =>
+                    return new Func<object?, string?>(val =>
                     {
                         if (val == null)
                             return null;
@@ -369,7 +369,7 @@ namespace Shesha.Excel
                     });
                 }
                 else
-                    return new Func<object, string>(val =>
+                    return new Func<object?, string?>(val =>
                     {
                         if (val == null)
                             return null;
@@ -379,7 +379,7 @@ namespace Shesha.Excel
             }
             else
             if (property.PropertyType.IsEntityType()) {
-                return new Func<object, string>(val => {
+                return new Func<object?, string?>(val => {
                     if (val == null)
                         return null;
 
@@ -388,14 +388,14 @@ namespace Shesha.Excel
                     return dict[EntityConstants.DisplayNameField]?.ToString();
                 });
             } else
-                return new Func<object, string>(val => val?.ToString());
+                return new Func<object?, string?>(val => val?.ToString());
         }
 
         private static GetValueDelegate CalculateColumnValueGetter(ExcelColumn column)
         {
             var parts = column.PropertyName.Split(".").Select(p => p.ToCamelCase()).Reverse().ToList();
 
-            var getterFactory = new Func<string, GetValueDelegate, GetValueDelegate>((name, getter) => {
+            var getterFactory = new Func<string, GetValueDelegate?, GetValueDelegate>((name, getter) => {
                 if (getter == null)
                 {
                     return new GetValueDelegate(row => row == null
@@ -457,14 +457,14 @@ namespace Shesha.Excel
         }
 
         public delegate Task WriteRowsDelegate(OpenXmlWriter xmlWriter);
-        public delegate object GetValueDelegate(Dictionary<string, object?> container);
+        public delegate object? GetValueDelegate(Dictionary<string, object?> container);
 
         public class ExcelColumnProcessing
         {
             public string PropertyName { get; set; }
             public string Label { get; set; }
             public GetValueDelegate Getter { get; set; }
-            public Func<object, string> GetAsString { get; set; }
+            public Func<object?, string?> GetAsString { get; set; }
         }
     }
 }

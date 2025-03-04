@@ -14,7 +14,7 @@ namespace Shesha.Scheduler.Logging
     {
         private static readonly Type DeclaringType = typeof(ScheduledJobLogger);
 
-        public ScheduledJobLogger(log4net.Core.ILogger logger, ScheduledJobLoggerFactory factory)
+        public ScheduledJobLogger(log4net.Core.ILogger logger, ScheduledJobLoggerFactory? factory)
         {
             Logger = logger;
             Factory = factory;
@@ -24,7 +24,7 @@ namespace Shesha.Scheduler.Logging
         {
         }
 
-        internal ScheduledJobLogger(ILog log, ScheduledJobLoggerFactory factory)
+        internal ScheduledJobLogger(ILog log, ScheduledJobLoggerFactory? factory)
             : this(log.Logger, factory)
         {
         }
@@ -39,11 +39,11 @@ namespace Shesha.Scheduler.Logging
 
         public bool IsWarnEnabled => Logger.IsEnabledFor(Level.Warn);
 
-        protected internal ScheduledJobLoggerFactory Factory { get; set; }
+        protected internal ScheduledJobLoggerFactory? Factory { get; set; }
 
         protected internal log4net.Core.ILogger Logger { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return Logger.ToString();
         }

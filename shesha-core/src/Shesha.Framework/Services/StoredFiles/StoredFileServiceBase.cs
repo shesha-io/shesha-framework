@@ -72,12 +72,12 @@ namespace Shesha.Services.StoredFiles
             return await GetAttachmentsInternalAsync(id, typeShortAlias);
         }
 
-        private async Task<IList<StoredFile>> GetAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
+        private async Task<IList<StoredFile>> GetAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
             return await GetAttachmentsQuery(id, typeShortAlias, filterPredicate).OrderBy(e => e.SortOrder).ToListAsync();
         }
 
-        private async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>> filterPredicate = null)
+        private async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsInternalAsync<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>>? filterPredicate = null)
         {
             return await GetAttachmentsLastVersionsQuery(id, typeShortAlias, filterPredicate).OrderBy(e => e.File.SortOrder).ToListAsync();
         }
@@ -125,7 +125,7 @@ namespace Shesha.Services.StoredFiles
 
         public Stream GetStream(StoredFile file)
         {
-            var lastVersion = GetLastVersion(file);
+            var lastVersion = GetLastVersion(file) ?? throw new EntityNotFoundException($"Failed to find last version of stored file '{file.Id}'");
             return GetStream(lastVersion);
         }
 
@@ -205,7 +205,7 @@ namespace Shesha.Services.StoredFiles
 
         #endregion
 
-        private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
+        private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>>? filterPredicate = null)
         {
             IQueryable<StoredFile>? query = null;
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
@@ -232,7 +232,7 @@ namespace Shesha.Services.StoredFiles
             return query;
         }
 
-        private IQueryable<StoredFileVersion> GetAttachmentsLastVersionsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>> filterPredicate = null)
+        private IQueryable<StoredFileVersion> GetAttachmentsLastVersionsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFileVersion, bool>>? filterPredicate = null)
         {
             IQueryable<StoredFileVersion> query = VersionRepository.GetAll().Where(e => e.IsLast);
 
@@ -352,7 +352,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="fileId">File Id</param>
         /// <returns></returns>
-        protected StoredFileVersion GetLastVersion(Guid fileId)
+        protected StoredFileVersion? GetLastVersion(Guid fileId)
         {
             return QueryLastVersion(fileId).FirstOrDefault();
         }
@@ -372,7 +372,7 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public StoredFileVersion GetLastVersion(StoredFile file)
+        public StoredFileVersion? GetLastVersion(StoredFile file)
         {
             return GetLastVersion(file.Id);
         }
@@ -463,7 +463,7 @@ namespace Shesha.Services.StoredFiles
         public abstract Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream);
 
         /// inheritedDoc
-        public async Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null) 
+        public async Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null) 
         {
             if (stream == null)
                 throw new Exception($"{nameof(stream)} must not be null");
@@ -495,7 +495,7 @@ namespace Shesha.Services.StoredFiles
         }
 
         /// inheritedDoc
-        public async Task<StoredFile> SaveFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null)
+        public async Task<StoredFile> SaveFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null)
         {
             var fileVersion = await CreateFileAsync(stream, fileName, prepareFileAction);
 

@@ -17,6 +17,6 @@ namespace Shesha.Sms
         Task<object> GetSettingsAsync();
         Task SetSettingsAsync(object settings);
 
-        Type SettingsType { get; }
+        Type? SettingsType { get; }
     }
 }

@@ -78,7 +78,7 @@ namespace Shesha.EntityHistory
             return _models = models.Where(x => !x.Suppress).ToList();
         }
 
-        private async Task<Type> GetContainerTypeAsync(string container)
+        private async Task<Type?> GetContainerTypeAsync(string container)
         {
             var allModels = await GetAllModelsAsync();
             var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
@@ -133,7 +133,7 @@ namespace Shesha.EntityHistory
         {
             var list = new List<EntityHistoryItemDto>();
             // Check if child audited properties should be displayed
-            var childAuditedProperties = itemType?.GetProperties()
+            var childAuditedProperties = itemType.GetProperties()
                 .Where(p => p.GetCustomAttribute<DisplayChildAuditTrailAttribute>() != null).ToList();
 
             if (childAuditedProperties?.Any() ?? false)
@@ -167,13 +167,7 @@ namespace Shesha.EntityHistory
             return list;
         }
 
-        /*private async Task<List<EntityHistoryItemDto>> GetEntityAuditAsync(Type entityType, string entityId, string childName = "", string[] fields = null)
-        {
-            var fakeDate = DateTime.MaxValue;
-            return await GetEntityAuditAsync(entityType, entityId, out fakeDate, childName, fields);
-        }*/
-
-        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type entityType, string entityId, string childName = "", string[] fields = null)
+        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type? entityType, string? entityId, string childName = "", string[]? fields = null)
         {
 
             var maxDateTime = DateTime.MaxValue;
@@ -255,13 +249,13 @@ namespace Shesha.EntityHistory
                         || x.EventType == EntityHistoryCommonEventTypes.PROPERTY_CHANGE_USER_TEXT);
                     if (propAsDescription != null)
                     {
-                        propsDescr.Add(propAsDescription.Description);
+                        propsDescr.Add(propAsDescription.Description ?? string.Empty);
                         continue;
                     }
 
-                    var prop_ = entityType?.GetProperty(propertyChange.PropertyName);
-                    var propName = prop_ != null
-                        ? ReflectionHelper.GetDisplayName(entityType.GetProperty(propertyChange.PropertyName)) ?? propertyChange.PropertyName
+                    var property = entityType?.GetProperty(propertyChange.PropertyName);
+                    var propName = property != null
+                        ? ReflectionHelper.GetDisplayName(property) ?? propertyChange.PropertyName
                         : propertyChange.PropertyName;
 
                     propDescription =
@@ -727,7 +721,10 @@ namespace Shesha.EntityHistory
                 var memberExpression1 = Expression.PropertyOrField(parameterExpression, ownerIdField);
                 var action1 = Expression.Equal(memberExpression1, Expression.Constant(Guid.Parse(entityId)));
                 var memberExpression2 = Expression.PropertyOrField(parameterExpression, ownerTypeField);
+#pragma warning disable CS8604
+                // TODO: Alex, please review. typeShortAlias may be null and it may breake the logic
                 var action2 = Expression.Equal(memberExpression2, Expression.Constant(Guid.Parse(typeShortAlias)));
+#pragma warning restore CS8604
                 var andExpression = Expression.And(action1, action2);
                 var lambda = Expression.Lambda(andExpression, parameterExpression);
 
@@ -782,27 +779,30 @@ namespace Shesha.EntityHistory
             return history;
         }
 
-        private string GetEntityName(object entity, string fieldName)
+        private string GetEntityName(object? entity, string fieldName)
         {
-            if (entity == null) return "";
+            if (entity == null) return string.Empty;
+
+            if (string.IsNullOrEmpty(fieldName))
+                return entity.ToString() ?? string.Empty;
 
             var type = entity.GetType();
-            return string.IsNullOrEmpty(fieldName)
-                ? entity.ToString()
-                : string.IsNullOrEmpty(type.GetProperty(fieldName)?.GetValue(entity)?.ToString())
-                    ? entity.ToString()
-                    : type.GetProperty(fieldName)?.GetValue(entity)?.ToString();
+
+            var propValue = type.GetProperty(fieldName)?.GetValue(entity);
+            var propText = propValue?.ToString();
+            return !string.IsNullOrEmpty(propText)
+                ? propText
+                : string.Empty;
         }
 
-        private Person GetPersonByUserIdInternal(IList<Person> list, long? userId)
+        private Person? GetPersonByUserIdInternal(IList<Person> list, long? userId)
         {
             return userId != null
                 ? list.FirstOrDefault(x => x.User != null && x.User.Id == userId)
                 : null;
-
         }
 
-        private Person GetPersonByUserId(long? userId)
+        private Person? GetPersonByUserId(long? userId)
         {
             return userId != null
                 ? _personRepository.GetAll().FirstOrDefault(x => x.User != null && x.User.Id == userId)

@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Xml;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.Reflection;
 using Shesha.ConfigurationItems;
 using Shesha.Reflection;
 using Shesha.Utilities;
-
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 
 namespace Shesha.Permissions
@@ -36,30 +34,28 @@ namespace Shesha.Permissions
 
         protected string GetMd5(PermissionedObjectDto dto)
         {
-            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{string.Join(',', dto.Permissions)}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
+            return $"{dto.Hardcoded}|{dto.Access?.ToString() ?? "null"}|{dto.PermissionsDelimited}|{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
                 .ToMd5Fingerprint();
         }
 
-        private Dictionary<Assembly, Module> _modules = new Dictionary<Assembly, Module>();
+        private Dictionary<Assembly, Module?> _modules = new Dictionary<Assembly, Module?>();
 
-        protected async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
+        protected async Task<Module?> GetModuleOfAssemblyAsync(Assembly assembly)
         {
-            Module? module = null;
-            if (_modules.TryGetValue(assembly, out module))
-            {
+            if (_modules.TryGetValue(assembly, out var module))
                 return module;
-            }
+
             module = await _moduleManager.GetOrCreateModuleAsync(assembly);
             _modules.Add(assembly, module);
             return module;
         }
 
-        protected Type GetModuleOfType(Type type)
+        protected Type? GetModuleOfType(Type type)
         {
             return type.Assembly.GetTypes().FirstOrDefault(t => t.IsPublic && !t.IsAbstract && typeof(AbpModule).IsAssignableFrom(t));
         }
 
-        protected string GetName(Type service, string defaultName = null)
+        protected string GetName(Type service, string? defaultName = null)
         {
             var name = service.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
             return string.IsNullOrEmpty(name) ? defaultName ?? service.Name : name;
@@ -70,7 +66,7 @@ namespace Shesha.Permissions
             var description = service.GetCustomAttribute<DescriptionAttribute>()?.Description;
             if (string.IsNullOrEmpty(description))
             {
-                XmlElement documentation = DocsByReflection.XMLFromType(service);
+                var documentation = DocsByReflection.XMLFromType(service);
                 description = documentation?["summary"]?.InnerText.Trim();
                 if (string.IsNullOrEmpty(description))
                 {
@@ -81,7 +77,7 @@ namespace Shesha.Permissions
             return description;
         }
 
-        protected string GetName(MethodInfo method, string defaultName = null)
+        protected string GetName(MethodInfo method, string? defaultName = null)
         {
             var name = method.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
             return string.IsNullOrEmpty(name) ? defaultName ?? method.Name : name;
@@ -92,7 +88,7 @@ namespace Shesha.Permissions
             var description = method.GetCustomAttribute<DescriptionAttribute>()?.Description;
             if (string.IsNullOrEmpty(description))
             {
-                XmlElement documentation = DocsByReflection.XMLFromMember(method);
+                var documentation = DocsByReflection.XMLFromMember(method);
                 description = documentation?["summary"]?.InnerText.Trim();
                 if (string.IsNullOrEmpty(description))
                 {

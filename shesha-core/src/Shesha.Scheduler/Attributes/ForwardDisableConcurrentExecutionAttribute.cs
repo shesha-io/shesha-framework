@@ -30,11 +30,11 @@ namespace Shesha.Scheduler.Attributes
 
             var jobType = jobManager.GetJobType(triggerId);
 
-            var jobAttribute = jobType.GetAttribute<ScheduledJobAttribute>();
+            var jobAttribute = jobType.GetAttributeOrNull<ScheduledJobAttribute>();
             if (jobAttribute == null)
                 throw new NotSupportedException($"Job '{jobType.FullName}' must be decorated with '{nameof(ScheduledJobAttribute)}'");
 
-            var disableConcurrentAttribute = jobType.GetAttribute<DisableConcurrentExecutionAttribute>();
+            var disableConcurrentAttribute = jobType.GetAttributeOrNull<DisableConcurrentExecutionAttribute>();
             if (disableConcurrentAttribute == null)
                 return;
 

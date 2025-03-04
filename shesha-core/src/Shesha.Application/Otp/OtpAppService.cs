@@ -66,7 +66,7 @@ namespace Shesha.Otp
         [HttpGet]
         public async Task<OtpSettingsDto> GetSettingsAsync()
         {
-            var emailSettings = await _otpSettings.OneTimePins.GetValueAsync();
+            var emailSettings = await _otpSettings.OneTimePins.GetValueOrNullAsync();
 
             var settings = new OtpSettingsDto
             {

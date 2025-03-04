@@ -56,7 +56,7 @@ namespace Shesha.Scheduler
     {
         public IRepository<User, Int64> UserRepository { get; set; }
 
-        private IStoredFileService _storedFileService => IocManager?.Resolve<IStoredFileService>();
+        private IStoredFileService _storedFileService => IocManager.Resolve<IStoredFileService>();
 
         public string Name => GetType().StripCastleProxyType().Name;
         public string TriggerName => $"{Name}_Trigger";
@@ -73,7 +73,7 @@ namespace Shesha.Scheduler
             {
                 if (!_id.HasValue)
                 {
-                    var attribute = GetType().GetAttribute<ScheduledJobAttribute>(true);
+                    var attribute = GetType().GetAttributeOrNull<ScheduledJobAttribute>(true);
                     if (attribute == null)
                         throw new Exception($"ScheduledJobAttribute should be applied on the {GetType().Name} class");
 
@@ -88,7 +88,7 @@ namespace Shesha.Scheduler
         {
             get
             {
-                var attribute = GetType().GetAttribute<ScheduledJobAttribute>(true);
+                var attribute = GetType().GetAttributeOrNull<ScheduledJobAttribute>(true);
                 if (attribute == null)
                     throw new Exception($"ScheduledJobAttribute should be applied on the {GetType().Name} class");
                 return attribute.LogMode;
@@ -143,14 +143,14 @@ namespace Shesha.Scheduler
         public Guid JobExecutionId { get; set; }
         public string LogFileName { get; set; }
         public string LogFilePath { get; set; }
-        public string LogFolderPath
+        public string? LogFolderPath
         {
             get
             {
-                var config = IocManager?.Resolve<IConfiguration>();
+                var config = IocManager.Resolve<IConfiguration>();
                 var logFolderPath = config.GetValue<string>("DefaultLogFolder");
 
-                if (logFolderPath.IsNullOrEmpty() || logFolderPath.IsNullOrWhiteSpace())
+                if (string.IsNullOrWhiteSpace(logFolderPath) || logFolderPath.IsNullOrWhiteSpace())
                 {
                     logFolderPath = "~/App_Data/logs/jobs";
                 }
@@ -163,11 +163,13 @@ namespace Shesha.Scheduler
         {
             get
             {
-                var attribute = GetType().GetAttribute<ScheduledJobAttribute>(true);
+                var attribute = GetType().GetAttributeOrNull<ScheduledJobAttribute>(true);
                 if (attribute == null)
                     throw new Exception($"ScheduledJobAttribute should be applied on the {GetType().Name} class");
 
-                string logFolder = (!attribute.LogFolder.IsNullOrEmpty() && !attribute.LogFolder.IsNullOrWhiteSpace()) ? attribute.LogFolder: Name;
+                string logFolder = !string.IsNullOrWhiteSpace(attribute.LogFolder)
+                    ? attribute.LogFolder
+                    : Name;
 
                 return logFolder;
             }
@@ -189,10 +191,8 @@ namespace Shesha.Scheduler
             {
                 try
                 {
-                    //SaveJobExecutionIdForLogging();
-
-                    var method = this.GetType().GetMethod(nameof(DoExecuteAsync));
-                    var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+                    var method = this.GetType().GetRequiredMethod(nameof(DoExecuteAsync));
+                    var unitOfWorkAttribute = method.GetAttributeOrNull<UnitOfWorkAttribute>(true);
 
                     if (unitOfWorkAttribute != null && unitOfWorkAttribute.IsDisabled)
                     {
@@ -236,38 +236,15 @@ namespace Shesha.Scheduler
             await task;
         }
 
-        /*
-        protected Tp GetParamsOrDefault<Tp>(IJobExecutionContext context, Tp defaultValue = null) where Tp : class, new()
-        {
-            return GetParams<Tp>(context, false) ?? new Tp();
-        }
-
-        protected Tp GetParams<Tp>(IJobExecutionContext context, bool throwIfEmpty = true) where Tp : class
-        {
-            var explicitParams = context.MergedJobDataMap.Get("explicitParams") as Tp;
-            if (explicitParams != null)
-                return explicitParams;
-
-            var trigger = GetTrigger(context);
-            var parametersJson = trigger.GetJsonParameters() as Tp;
-            if (parametersJson == null && throwIfEmpty)
-                throw new Exception("Settings are empty");
-            return parametersJson;
-        }
-        */
-
-
         public virtual async Task OnSuccessAsync()
         {
             try
             {
                 using (var uow = UnitOfWorkManager.Begin())
                 {
-                    var trigger = GetTrigger();
+                    var trigger = GetTriggerOrNull();
                     if (trigger == null)
                         return;
-
-                    // todo: implement notifications
 
                     await uow.CompleteAsync();
                 }
@@ -284,11 +261,9 @@ namespace Shesha.Scheduler
             {
                 using (var uow = UnitOfWorkManager.Begin())
                 {
-                    var trigger = GetTrigger();
+                    var trigger = GetTriggerOrNull();
                     if (trigger == null)
                         return;
-
-                    // todo: implement notifications
 
                     await uow.CompleteAsync();
                 }
@@ -304,7 +279,7 @@ namespace Shesha.Scheduler
             return JobExecutionRepository.Get(JobExecutionId);
         }
 
-        protected ScheduledJobTrigger GetTrigger()
+        protected ScheduledJobTrigger? GetTriggerOrNull()
         {
             return TriggerId.HasValue
                 ? TriggerRepository.Get(TriggerId.Value)
@@ -400,7 +375,7 @@ namespace Shesha.Scheduler
                     else
                     {
                         var job = await JobRepository.GetAsync(Id);
-                        var trigger = GetTrigger();
+                        var trigger = GetTriggerOrNull();
                         jobExecution = new ScheduledJobExecution()
                         {
                             Id = existingExecution != null

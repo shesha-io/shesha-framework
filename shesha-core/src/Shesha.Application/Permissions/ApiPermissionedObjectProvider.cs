@@ -66,7 +66,7 @@ namespace Shesha.Permissions
                         : ShaPermissionedObjectsTypes.WebApi;
         }
 
-        public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null, bool skipUnchangedAssembly = false)
+        public async Task<List<PermissionedObjectDto>> GetAllAsync(string? objectType = null, bool skipUnchangedAssembly = false)
         {
             if (objectType != null && !GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
@@ -227,8 +227,11 @@ namespace Shesha.Permissions
                             Hardcoded = methodHardcoded,
                         };
 
-                        child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);
-                        child.AdditionalParameters.Add("Endpoint", methodInfo.Endpoint);
+                        if (!string.IsNullOrWhiteSpace(methodInfo.HttpMethod))
+                            child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);
+
+                        if (!string.IsNullOrWhiteSpace(methodInfo.Endpoint))
+                            child.AdditionalParameters.Add("Endpoint", methodInfo.Endpoint);
 
                         //parent.Child.Add(child);
                         child.Md5 = GetMd5(child);

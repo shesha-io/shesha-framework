@@ -86,21 +86,22 @@ namespace Shesha.Tests.DynamicEntities
             var context = new DynamicDtoTypeBuildingContext() { ModelType = baseDtoType };
             var dtoType = await builder.BuildDtoFullProxyTypeAsync(baseDtoType, context);
             var dto = Activator.CreateInstance(dtoType) as DynamicDto<Person, Guid>;
+            dto.ShouldNotBeNull();
 
-            var properties = dto?.GetType().GetProperties();
+            var properties = dto.GetType().GetProperties();
 
             var serializationManager = Resolve<ISerializationManager>();
 
             // Update DTO properties values with test data
             foreach (var prop in props)
             {
-                var p = properties?.FirstOrDefault(x => prop.Key.Name.ToLower() == x.Name.ToLower());
+                var p = properties.Single(x => prop.Key.Name.ToLower() == x.Name.ToLower());
                 var val = prop.Value;
                 if (prop.Key.DataType == DataTypes.Object)
                 {
-                    val = serializationManager.DeserializeProperty(p?.PropertyType, serializationManager.SerializeProperty(prop.Key, val));
+                    val = serializationManager.DeserializeProperty(p.PropertyType, serializationManager.SerializeProperty(prop.Key, val));
                 }
-                p?.SetValue(dto, val);
+                p.SetValue(dto, val);
             }
 
             using (var uow = NewNhUnitOfWork())
@@ -137,7 +138,7 @@ namespace Shesha.Tests.DynamicEntities
                     }
                 }
 
-                session?.Flush();
+                session.Flush();
 
                 try
                 {
@@ -158,17 +159,17 @@ namespace Shesha.Tests.DynamicEntities
                         // Save dynamic properties to DB
                         await dynamicPropertyManager.MapDtoToEntityAsync<DynamicDto<Person, Guid>, Person, Guid>(dto,
                             entity);
-                        session?.Flush();
+                        session.Flush();
 
-                        session?.Clear();
+                        session.Clear();
 
                         // Get entity from DB
                         var newEntity = await personRepo.GetAsync(id);
 
                         // Create new DTO and map values from entity to DTO
                         var newDto = Activator.CreateInstance(dtoType) as DynamicDto<Person, Guid>;
-                        await dynamicPropertyManager.MapEntityToDtoAsync<DynamicDto<Person, Guid>, Person, Guid>(newEntity,
-                            newDto);
+                        newDto.ShouldNotBeNull();
+                        await dynamicPropertyManager.MapEntityToDtoAsync<DynamicDto<Person, Guid>, Person, Guid>(newEntity, newDto);
 
                         // Check values. Values from the DB should be the same as from the test list
                         var newProperties = newDto?.GetType().GetProperties();

@@ -88,7 +88,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="parameter">Parameter expression</param>
         /// <returns></returns>
-        public Expression GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
+        public Expression? GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
         {
             if (string.IsNullOrWhiteSpace(quickSearch))
                 return null;
@@ -263,7 +263,7 @@ namespace Shesha.QuickSearch
         /// <param name="entityExpression">Entity parameter expression (i.e. `e` part in the `e => foo`)</param>
         /// <param name="comparer">Comparison rule</param>
         /// <returns></returns>
-        private Expression GetCommonRefListExpression(string module, string name, string propName, string quickSearch, ParameterExpression entityExpression, RefListItemComparer comparer)
+        private Expression GetCommonRefListExpression(string? module, string name, string propName, string quickSearch, ParameterExpression entityExpression, RefListItemComparer comparer)
         {
             var refList = _refListHelper.GetReferenceList(new ReferenceListIdentifier(module, name));
 
@@ -300,7 +300,7 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private delegate Expression Binder(Expression left, Expression right);
 
-        private Expression Reduce(Expression acc, Expression right, Binder binder)
+        private Expression Reduce(Expression? acc, Expression right, Binder binder)
         {
             return acc == null
                 ? right
@@ -316,6 +316,9 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private Expression CombineExpressions(List<Expression> expressions, Binder binder, ParameterExpression param)
         {
+            if (!expressions.Any())
+                throw new ArgumentException($"expressions list must not be empty", nameof(expressions));
+
             Expression? acc = null;
 
             foreach (var expression in expressions)
@@ -323,7 +326,7 @@ namespace Shesha.QuickSearch
                 acc = Reduce(acc, expression, binder);
             }
 
-            return acc;
+            return acc ?? throw new Exception("Failed to combine linq expressions");
         }
 
         /// <summary>
@@ -333,7 +336,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="cacheKey">Cache key. Live null to skip caching</param>
         /// <returns></returns>
-        private List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch<TEntity>(List<string> properties, string cacheKey)
+        private List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch<TEntity>(List<string> properties, string? cacheKey)
         {
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return DoGetPropertiesForSqlQuickSearch<TEntity>(properties);

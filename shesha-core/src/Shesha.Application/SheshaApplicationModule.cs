@@ -4,13 +4,11 @@ using Abp.AutoMapper;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Modules;
-using Abp.MultiTenancy;
 using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
 using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Castle.MicroKernel.Registration;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
@@ -62,10 +60,6 @@ namespace Shesha
             // replace email sender
             Configuration.ReplaceService<ISmtpEmailSenderConfiguration, SmtpEmailSenderSettings>(DependencyLifeStyle.Transient);
 
-            // ToDo: migrate Notification to ABP 6.6.2
-            //Configuration.Notifications.Distributers.Clear();
-            //Configuration.Notifications.Distributers.Add<ShaNotificationDistributer>();
-
             IocManager.IocContainer.Register(
                 Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient(),
                 Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
@@ -97,7 +91,7 @@ namespace Shesha
                 Component.For<ISmsGateway>().UsingFactoryMethod(f =>
                 {
                     var settings = f.Resolve<ISmsSettings>();
-                    var gatewayUid = settings.SmsSettings.GetValue().SmsGateway;
+                    var gatewayUid = settings.SmsSettings.GetValueOrNull().SmsGateway;
 
                     var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
                         ? f.Resolve<ITypeFinder>().Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()
@@ -164,12 +158,6 @@ namespace Shesha
 
             var thisAssembly = Assembly.GetExecutingAssembly();
             IocManager.RegisterAssemblyByConvention(thisAssembly);
-
-            /* api not used now, this registration causes problems in the IoC. Need to solve IoC problem before uncommenting
-            var schemaContainer = IocManager.Resolve<ISchemaContainer>();
-            var serviceProvider = IocManager.Resolve<IServiceProvider>();
-            schemaContainer.RegisterCustomSchema("api", new ApiSchema(serviceProvider));
-            */
 
             Configuration.Modules.AbpAutoMapper().Configurators.Add(
                 // Scan the assembly for classes which inherit from AutoMapper.Profile

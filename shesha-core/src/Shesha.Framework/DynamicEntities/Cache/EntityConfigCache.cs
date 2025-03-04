@@ -28,7 +28,7 @@ namespace Shesha.DynamicEntities.Cache
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IObjectMapper _mapper;
         private readonly ITypeFinder _typeFinder;
-        private readonly ITypedCache<string, EntityConfigCacheItem> _propertyCache;
+        private readonly ITypedCache<string, EntityConfigCacheItem?> _propertyCache;
 
         public EntityConfigCache(
             IRepository<EntityProperty, Guid> propertyRepository,
@@ -57,7 +57,7 @@ namespace Shesha.DynamicEntities.Cache
             return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
         }
 
-        private string GetCacheKey(string @namespace, string name)
+        private string GetCacheKey(string? @namespace, string name)
         {
             return $"{@namespace}.{name}";
         }
@@ -84,14 +84,16 @@ namespace Shesha.DynamicEntities.Cache
             }
         }
 
-        public async Task<EntityConfigDto> GetEntityConfigAsync(string entityType, bool raiseException = false)
+        public async Task<EntityConfigDto?> GetEntityConfigAsync(string entityType, bool raiseException = false)
         {
             var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
             {
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
                 if (eType == null && raiseException)
                     throw new EntityNotFoundException($"Entity {entityType} not found");
-                return eType == null ? null : await FetchConfigAsync(eType);
+                return eType == null 
+                    ? null 
+                    : await FetchConfigAsync(eType);
             });
 
             return item.EntityConfig;
@@ -109,7 +111,7 @@ namespace Shesha.DynamicEntities.Cache
             return item.EntityConfig;
         }
 
-        public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(string entityType, bool raiseException = false)
+        public async Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(string entityType, bool raiseException = false)
         {
             var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
             {

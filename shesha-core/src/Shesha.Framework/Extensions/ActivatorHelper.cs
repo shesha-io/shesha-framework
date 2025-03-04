@@ -19,6 +19,15 @@ namespace Shesha.Extensions
         }
 
         /// <summary>
+        /// Create new instance of type <paramref name="type"/>
+        /// </summary>
+        /// <exception cref="ActivatorException"></exception>
+        public static object CreateNotNullObject(Type type, params object?[]? args)
+        {
+            return Activator.CreateInstance(type, args) ?? throw new ActivatorException(type);
+        }
+
+        /// <summary>
         /// Create new instance of type <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T"></typeparam>

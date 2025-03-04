@@ -5,6 +5,7 @@ using Abp.Linq;
 using Abp.Timing;
 using Newtonsoft.Json.Linq;
 using Shesha.JsonLogic;
+using Shesha.Reflection;
 using Shesha.Tests.TestingUtils;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Shesha.Tests.JsonLogic
     /// </summary>
     public abstract class JsonLogic2LinqConverterBaseTests: SheshaNhTestBase
     {
-        protected Expression<Func<T, bool>> ConvertToExpression<T>(string jsonLogicExpression)
+        protected Expression<Func<T, bool>>? ConvertToExpression<T>(string jsonLogicExpression)
         {
             var converter = Resolve<IJsonLogic2LinqConverter>();
 
@@ -30,9 +31,9 @@ namespace Shesha.Tests.JsonLogic
             return expression;
         }
 
-        protected async Task<List<T>> TryFetchDataAsync<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
+        protected async Task<List<T>> TryFetchDataAsync<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>>? prepareQueryable = null, Action<List<T>>? assertions = null) where T : class, IEntity<TId>
         {
-            var expression = ConvertToExpression<T>(jsonLogicExpression);
+            var expression = ConvertToExpression<T>(jsonLogicExpression).NotNull();
 
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();

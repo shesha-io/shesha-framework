@@ -72,7 +72,7 @@ namespace Shesha.Swagger
             var unwrappedReturnType = context.MethodInfo.ReturnType == typeof(Task)
                 ? typeof(AjaxResponseBase)
                 : context.MethodInfo.ReturnType.IsSubtypeOfGeneric(typeof(Task<>))
-                    ? context.MethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault()
+                    ? context.MethodInfo.ReturnType.GenericTypeArguments.First()
                     : context.MethodInfo.ReturnType;
 
             var okResponse = ((int)HttpStatusCode.OK).ToString();
@@ -141,7 +141,7 @@ namespace Shesha.Swagger
         /// <param name="memberInfo">MemberInfo</param>
         /// <param name="defaultValue">Default value (null as default)</param>
         /// <param name="inherit">Inherit attribute from base classes</param>
-        public static TAttribute GetSingleAttributeOfMemberOrDeclaringTypeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue = default, bool inherit = true)
+        public static TAttribute GetSingleAttributeOfMemberOrDeclaringTypeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue, bool inherit = true)
             where TAttribute : class
         {
             return memberInfo.GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault()

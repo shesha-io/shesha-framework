@@ -124,7 +124,7 @@ namespace Shesha.Scheduler
                 uow.Complete();
             }
 
-            var jobType = _typeFinder.Find(t => t.GetAttribute<ScheduledJobAttribute>()?.Uid == jobId).FirstOrDefault();
+            var jobType = _typeFinder.Find(t => t.GetAttributeOrNull<ScheduledJobAttribute>()?.Uid == jobId).FirstOrDefault();
             if (jobType == null)
                 throw new Exception($"Job with Id = '{jobId}' not found");
 
@@ -196,7 +196,7 @@ namespace Shesha.Scheduler
             {
                 var jobInstanceType = GetJobTypeById(jobId);
                 var jobInstance = _serviceProvider.GetService(jobInstanceType);
-                var methodInfo = recordedType.GetMethod(methodName);
+                var methodInfo = recordedType.GetRequiredMethod(methodName);
 
                 Task task = methodInfo.Invoke<Task>(jobInstance, methodArgs).NotNull();
                 await task;
@@ -205,19 +205,22 @@ namespace Shesha.Scheduler
         }
 
         /// inheritedDoc
-        public Type GetJobTypeById(Guid id)
+        public Type? GetJobTypeByIdOrNull(Guid id)
         {
-            return _typeFinder.Find(t => t.GetAttribute<ScheduledJobAttribute>()?.Uid == id).FirstOrDefault();
+            return _typeFinder.Find(t => t.GetAttributeOrNull<ScheduledJobAttribute>()?.Uid == id).FirstOrDefault();
+        }
+
+        // inheritedDoc
+        public Type GetJobTypeById(Guid id) 
+        {
+            return GetJobTypeByIdOrNull(id) ?? throw new Exception($"Type of job with id = '{id}' is unavailable");
         }
 
         /// inheritedDoc
         public ScheduledJobBase GetJobInstanceById(Guid id)
         {
             var jobType = GetJobTypeById(id);
-            if (jobType == null)
-                throw new Exception($"Job with Id = '{id}' not found");
-
-            var jobInstance = _iocManager.Resolve(jobType) as ScheduledJobBase;
+            var jobInstance = _iocManager.Resolve(jobType).ForceCastAs<ScheduledJobBase>();
             return jobInstance;
         }
 
@@ -232,7 +235,7 @@ namespace Shesha.Scheduler
             }
         }
 
-        private void ConfigureLogger(string name, out Logger? logger, out ILog log)
+        private void ConfigureLogger(string name, out Logger logger, out ILog log)
         {
             //Get the logger repository hierarchy.  
             var repository = LogManager.GetRepository(Assembly.GetCallingAssembly()) as Hierarchy;
@@ -242,8 +245,8 @@ namespace Shesha.Scheduler
 
             repository.Root.Level = log4net.Core.Level.Info;
 
-            logger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
-            if (logger == null)
+            var existingLogger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
+            if (existingLogger == null)
             {
                 // Configure default logger for scheduled job
                 logger = repository.LoggerFactory.CreateLogger(repository, name);
@@ -259,7 +262,8 @@ namespace Shesha.Scheduler
                 // Mark repository as configured and notify that is has changed.  
                 repository.Configured = true;
                 repository.RaiseConfigurationChanged(EventArgs.Empty);
-            }
+            } else
+                logger = existingLogger;
 
             log = LogManager.GetLogger(Assembly.GetCallingAssembly(), name);
         }

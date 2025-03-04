@@ -56,8 +56,8 @@ namespace Shesha.Email
         [HttpGet]
         public async Task<SmtpSettingsDto> GetSmtpSettingsAsync()
         {
-            var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
-            var emailSettings = await _emailSettings.EmailSettings.GetValueAsync();
+            var smtpSettings = await _emailSettings.SmtpSettings.GetValueOrNullAsync();
+            var emailSettings = await _emailSettings.EmailSettings.GetValueOrNullAsync();
 
             var settings = new SmtpSettingsDto
             {

@@ -6,16 +6,6 @@ using System.Collections.Generic;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {
-    // Allow to set any permission access (Disable, Inherited, AnyAuthenticated, RequiresPermissions, AllowAnonymous)
-    //[CrudAccess(CrudActions.Update, Shesha.Domain.Enums.RefListPermissionedAccess.Disable)]
-    //[CrudAccess(CrudActions.Delete, Shesha.Domain.Enums.RefListPermissionedAccess.Disable)]
-    
-    // Disable specific action
-    //[CrudAccess(CrudActions.Update, false)]
-    //[CrudAccess(CrudActions.Delete, false)]
-    
-    // Disable specific actions
-    //[CrudDisableActions(CrudActions.Update | CrudActions.Delete)]
     public class Bus : Organisation
     { 
         [Audited]

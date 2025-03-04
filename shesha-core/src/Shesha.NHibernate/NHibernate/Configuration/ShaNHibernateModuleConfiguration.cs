@@ -7,7 +7,6 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.Configuration;
 using Shesha.Exceptions;
-using Shesha.FluentMigrator;
 using System;
 
 namespace Shesha.NHibernate.Configuration
@@ -79,7 +78,7 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public void UseMsSql()
         {
-            UseMsSql(c => c.GetConnectionString(SheshaConsts.ConnectionStringName));
+            UseMsSql(c => c.GetRequiredConnectionString(SheshaConsts.ConnectionStringName));
         }
 
         #endregion
@@ -93,7 +92,7 @@ namespace Shesha.NHibernate.Configuration
         }
 
         /// inheritedDoc
-        public void UsePostgreSql(Func<IConfigurationRoot, string> connectionStringGetter = null)
+        public void UsePostgreSql(Func<IConfigurationRoot, string>? connectionStringGetter = null)
         {
             var connectionString = GetConnectionStringFromEnvironment(connectionStringGetter);
             UsePostgreSql(connectionString);
@@ -102,12 +101,12 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public void UsePostgreSql()
         {
-            UsePostgreSql(c => c.GetConnectionString(SheshaConsts.ConnectionStringName));
+            UsePostgreSql(c => c.GetRequiredConnectionString(SheshaConsts.ConnectionStringName));
         }
 
         #endregion
 
-        private string GetConnectionStringFromEnvironment(Func<IConfigurationRoot, string> connectionStringGetter)
+        private string GetConnectionStringFromEnvironment(Func<IConfigurationRoot, string>? connectionStringGetter)
         {
             var configuration = AppConfigurations.Get(_env.ContentRootPath, _env.EnvironmentName, _env.IsDevelopment());
             return connectionStringGetter(configuration);

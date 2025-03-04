@@ -38,8 +38,6 @@ namespace Shesha.Elmah.SqlServer
                 throw new ArgumentNullException(nameof(connectionString));
 
             ConnectionString = connectionString;
-
-            //PrepareDatabase();
         }
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace Shesha.Elmah.SqlServer
         // ReSharper disable once MemberCanBeProtected.Global
         public virtual string ConnectionString { get; }
 
-        public override string Log(Error error)
+        public override string? Log(Error error)
         {
             var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
@@ -110,7 +108,7 @@ namespace Shesha.Elmah.SqlServer
             command.ExecuteNonQuery();
         }
 
-        public override ErrorLogEntry GetError(string id)
+        public override ErrorLogEntry? GetError(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (id.Length == 0) throw new ArgumentException(null, nameof(id));
@@ -171,7 +169,7 @@ namespace Shesha.Elmah.SqlServer
                 using (var command = Commands.GetErrorsXmlTotal(ApplicationName))
                 {
                     command.Connection = connection;
-                    return int.Parse(command.ExecuteScalar().ToString());
+                    return Convert.ToInt32(command.ExecuteScalar());
                 }
             }
         }
@@ -324,7 +322,7 @@ ON [PRIMARY]");
                 int statusCode,
                 DateTime time,
                 string xml,
-                string location)
+                string? location)
             {
                 var command = new SqlCommand
                 {

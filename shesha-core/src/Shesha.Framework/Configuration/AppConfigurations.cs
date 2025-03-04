@@ -13,7 +13,7 @@ namespace Shesha.Configuration
             _configurationCache = new ConcurrentDictionary<string, IConfigurationRoot>();
         }
 
-        public static IConfigurationRoot Get(string path, string environmentName = null, bool addUserSecrets = false)
+        public static IConfigurationRoot Get(string path, string? environmentName = null, bool addUserSecrets = false)
         {
             var cacheKey = path + "#" + environmentName + "#" + addUserSecrets;
             return _configurationCache.GetOrAdd(
@@ -22,7 +22,7 @@ namespace Shesha.Configuration
             );
         }
 
-        private static IConfigurationRoot BuildConfiguration(string path, string environmentName = null, bool addUserSecrets = false)
+        private static IConfigurationRoot BuildConfiguration(string path, string? environmentName = null, bool addUserSecrets = false)
         {
              var builder = new ConfigurationBuilder()
                 .SetBasePath(path)

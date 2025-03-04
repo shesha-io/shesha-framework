@@ -10,7 +10,7 @@ namespace Shesha.Elmah
     /// </summary>
     public static class WatchDogExtensions
     {
-        public static IDisposable MakeWatchDog<T>(this IEntity<T> entity)
+        public static IDisposable MakeWatchDog<TId>(this IEntity<TId> entity) where TId : notnull
         {
             var errorRef = GetEntityErrorRef(entity);
 
@@ -18,10 +18,12 @@ namespace Shesha.Elmah
             return collector.MakeWatchDog(errorRef.Type, errorRef.Id);
         }
 
-        public static ErrorReference GetEntityErrorRef<T>(this IEntity<T> entity) 
+        public static ErrorReference GetEntityErrorRef<TId>(this IEntity<TId> entity) where TId : notnull
         {
-            var id = entity.Id?.ToString();
-            var type = entity.GetRealEntityType().FullName;
+            var id = entity.Id.ToString();
+            ArgumentException.ThrowIfNullOrWhiteSpace(id, nameof(id));
+
+            var type = entity.GetRealEntityType().GetRequiredFullName();
             return new ErrorReference(type, id);
         }
     }

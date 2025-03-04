@@ -80,7 +80,7 @@ namespace Shesha.Settings
         }
 
         // Generic method to create a SettingDefinition
-        public virtual SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object value = default)
+        public virtual SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object? value = default)
         {
             var type = GetTypeFromName(dataType);
 
@@ -119,7 +119,7 @@ namespace Shesha.Settings
             return type;
         }
 
-        public static object ConvertToType(object value, Type type)
+        public static object? ConvertToType(object? value, Type type)
         {
             if (value == null || type.IsAssignableFrom(value.GetType()))
             {

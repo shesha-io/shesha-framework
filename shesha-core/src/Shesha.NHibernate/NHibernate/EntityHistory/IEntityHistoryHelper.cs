@@ -31,7 +31,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="propInfo">Changed collection property</param>
         /// <param name="oldValue">Old collection</param>
         /// <param name="newValue">New collection</param>
-        bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object oldValue, object newValue);
+        bool AddAuditedAsManyToMany(object entity, PropertyInfo propInfo, object? oldValue, object? newValue);
 
         /// <summary>
         /// Create EntityChange item for the Entity
@@ -44,7 +44,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// Create entity changes set
         /// </summary>
         /// <returns></returns>
-        EntityChangeSet CreateEntityChangeSet();
+        EntityChangeSet? CreateEntityChangeSet();
 
         //Task SaveAsync(DbContext context, EntityChangeSet changeSet);
 

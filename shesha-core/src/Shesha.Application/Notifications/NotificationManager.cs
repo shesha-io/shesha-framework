@@ -14,6 +14,7 @@ using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -79,7 +80,7 @@ namespace Shesha.Notifications
             }
 
             // Step 3: Fallback to default channels based on priority
-            var notificationSettings = await _notificationSettings.NotificationSettings.GetValueAsync();
+            var notificationSettings = await _notificationSettings.NotificationSettings.GetValueOrNullAsync();
 
             var selectedNotifications = priority switch
             {
@@ -151,7 +152,7 @@ namespace Shesha.Notifications
             newCopy.Origin = newCopy;
 
             // notification specific props
-            newCopy.CopyNotificationSpecificPropsFrom(src);
+            newCopy.CopyNotificationSpecificPropsFrom(src.NotNull());
 
             newCopy.Normalize();
 

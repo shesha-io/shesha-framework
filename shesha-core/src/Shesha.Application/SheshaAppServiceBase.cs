@@ -21,6 +21,7 @@ using Shesha.DynamicEntities.Mapper;
 using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Validations;
 using System;
@@ -96,6 +97,9 @@ namespace Shesha
                 {
                     var actionContextAccessor = IocManager.Resolve<IActionContextAccessor>();
                     var urlHelperFactory = IocManager.Resolve<IUrlHelperFactory>();
+                    if (actionContextAccessor.ActionContext == null)
+                        throw new Exception("ActionContext is not available");
+
                     _url = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
                 }
 
@@ -185,7 +189,7 @@ namespace Shesha
         protected async Task<T> SaveOrUpdateEntityAsync<T, TId>(TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId : struct
         {
             var item = id.HasValue
-                ? await GetEntityAsync<T, TId>(id.Value)
+                ? (await GetEntityAsync<T, TId>(id.Value)).NotNull()
                 : ActivatorHelper.CreateNotNullInstance<T>();
 
             await action.Invoke(item);
@@ -202,7 +206,7 @@ namespace Shesha
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        protected async Task<T> GetEntityAsync<T>(Guid id, bool throwException = true) where T : class, IEntity<Guid>
+        protected async Task<T?> GetEntityAsync<T>(Guid id, bool throwException = true) where T : class, IEntity<Guid>
         {
             return await GetEntityAsync<T, Guid>(id, throwException);
         }
@@ -215,9 +219,12 @@ namespace Shesha
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        protected async Task<T> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId>
+        protected async Task<T?> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId> where TId: notnull
         {
-            var item = await DynamicRepo.GetAsync(typeof(T), id.ToString());
+            var stringId = id.ToString();
+            ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
+
+            var item = await DynamicRepo.GetAsync(typeof(T), stringId);
 
             if (item != null)
                 return (T)item;
@@ -234,7 +241,7 @@ namespace Shesha
         /// <param name="entity"></param>
         /// <param name="validationResults"></param>
         /// <returns></returns>
-        protected async Task<bool> ValidateEntityAsync<TEntity>(TEntity entity, List<ValidationResult> validationResults)
+        protected async Task<bool> ValidateEntityAsync<TEntity>(TEntity entity, List<ValidationResult> validationResults) where TEntity: notnull
         {
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
@@ -282,7 +289,7 @@ namespace Shesha
 		/// <param name="entity">entity to map</param>
 		/// <param name="settings">mapping settings</param>
 		/// <returns></returns>
-		protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null) where TEntity : class, IEntity<TPrimaryKey>
+		protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings? settings = null) where TEntity : class, IEntity<TPrimaryKey>
         {
             return await MapToCustomDynamicDtoAsync<DynamicDto<TEntity, TPrimaryKey>, TEntity, TPrimaryKey>(entity, settings);
         }
@@ -307,7 +314,7 @@ namespace Shesha
         /// <param name="entity">entity to map</param>
         /// <param name="settings">mapping settings</param>
         /// <returns></returns>
-        protected async Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null)
+        protected async Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings? settings = null)
             where TEntity : class, IEntity<TPrimaryKey>
             where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
@@ -352,25 +359,6 @@ namespace Shesha
             await DynamicPropertyManager.MapDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
         }
 
-        /*/// <summary>
-        /// Map all properties (dynamic and static) of dynamic DTO to a specified entity
-        /// The Dto object must be inherited from DynamicDto(CreateDynamicDto, UpdateDynamicDto) 
-        /// or proxied by the DynamicBinder parameter attribute
-        /// </summary>
-        /// <typeparam name="TDynamicDto">Type of Dynamic DTO</typeparam>
-        /// <typeparam name="TEntity">Type of entity</typeparam>
-        /// <typeparam name="TPrimaryKey">Type of primary key</typeparam>
-        /// <param name="dto">Source DTO</param>
-        /// <param name="entity">Destination entity</param>
-        /// <returns></returns>
-        protected async Task MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(TDynamicDto dto, TEntity entity)
-            where TEntity : class, IEntity<TPrimaryKey>
-            where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
-        {
-            await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
-            await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
-        }*/
-
         /// <summary>
         /// Map all properties (dynamic and static) of dynamic DTO to a specified entity
         /// The Dto object must be inherited from DynamicDto(CreateDynamicDto, UpdateDynamicDto) 
@@ -386,7 +374,7 @@ namespace Shesha
         protected async Task<DynamicDtoMapingResult> MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(
             TDynamicDto dto, 
             TEntity entity, 
-            Func<TEntity, List<ValidationResult>, Task> validateAndSaveEntityAction = null
+            Func<TEntity, List<ValidationResult>, Task>? validateAndSaveEntityAction = null
         )
             where TEntity : class, IEntity<TPrimaryKey> where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
@@ -418,6 +406,8 @@ namespace Shesha
                 return result;
 
             await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
+            // TODO: Alex, please review. jObject may be null and the code above shows it but call of MapJObjectToDynamicPropertiesEntityAsyn will lead to exception in this case
+            jObject.NotNull("jObject must not be null");
             await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
             
             return result;
@@ -498,7 +488,7 @@ namespace Shesha
                 ? jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>()
                 : (dto as IHasDelayedUpdateField)?._delayedUpdate;
 
-            if (delayedUpdates?.Any() ?? false)
+            if (delayedUpdates != null)
                 await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdates, entity, result.ValidationResults);
             
             return result;
@@ -511,7 +501,8 @@ namespace Shesha
             where TEntity : class, IEntity<TPrimaryKey>
         {
             var delayedUpdate = jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>();
-            await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdate, entity, validationResult);
+            if (delayedUpdate != null)
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdate, entity, validationResult);
         }
 
         protected async Task DelayedUpdateAsync<TEntity, TPrimaryKey>(
@@ -520,7 +511,7 @@ namespace Shesha
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
         {
-            if (delayedUpdateGroups?.Any() ?? false)
+            if (delayedUpdateGroups.Any())
             {
                 var managers = StaticContext.IocManager.ResolveAll<IDelayedUpdateManager>();
                 foreach (var group in delayedUpdateGroups)
@@ -536,7 +527,7 @@ namespace Shesha
             }
         }
 
-        protected async Task<bool> DeleteCascadeAsync<TEntity>(TEntity entity)
+        protected async Task<bool> DeleteCascadeAsync<TEntity>(TEntity entity) where TEntity: notnull
         {
             await EntityModelBinder.DeleteCascadeAsync(entity);
             return true;
