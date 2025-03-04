@@ -63,39 +63,6 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
     }
 ].map(item => JSON.stringify(item));
 
-const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
-    {
-        id: nanoid(),
-        name: 'data',
-        description: 'Current row data',
-        type: 'object',
-    },
-    {
-        id: nanoid(),
-        name: 'formData',
-        description: 'Form values',
-        type: 'object',
-    },
-    {
-        id: nanoid(),
-        name: 'globalState',
-        description: 'The global state of the application',
-        type: 'object',
-    },
-    {
-        id: nanoid(),
-        name: 'http',
-        description: 'axios instance used to make http requests',
-        type: 'object',
-    },
-    {
-        id: nanoid(),
-        name: 'moment',
-        description: 'The moment.js object',
-        type: 'object',
-    }
-].map(item => JSON.stringify(item));
-
 const ENABLE_CRUD_EXPOSED_VARIABLES = [
     {
         id: nanoid(),
@@ -407,14 +374,15 @@ export const getSettings = (data: ITableComponentProps) => {
                                     description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                                     exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                 })
-                                .addConfigurableActionConfigurator({
+                                .addSettingsInput({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',
                                     label: 'On Row Save Success',
                                     parentId: crudTabId,
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                                     hideLabel: true,
-                                    jsSetting: true
+                                    jsSetting: true,
+                                    inputType: "configurableActionConfigurator",
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
