@@ -38,8 +38,6 @@ namespace Shesha.Elmah.SqlServer
                 throw new ArgumentNullException(nameof(connectionString));
 
             ConnectionString = connectionString;
-
-            //PrepareDatabase();
         }
 
         /// <summary>
@@ -171,7 +169,7 @@ namespace Shesha.Elmah.SqlServer
                 using (var command = Commands.GetErrorsXmlTotal(ApplicationName))
                 {
                     command.Connection = connection;
-                    return int.Parse(command.ExecuteScalar().ToString());
+                    return Convert.ToInt32(command.ExecuteScalar());
                 }
             }
         }
@@ -324,7 +322,7 @@ ON [PRIMARY]");
                 int statusCode,
                 DateTime time,
                 string xml,
-                string location)
+                string? location)
             {
                 var command = new SqlCommand
                 {

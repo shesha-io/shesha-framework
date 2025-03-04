@@ -147,7 +147,7 @@ namespace Shesha.Scheduler
         {
             get
             {
-                var config = IocManager?.Resolve<IConfiguration>();
+                var config = IocManager.Resolve<IConfiguration>();
                 var logFolderPath = config.GetValue<string>("DefaultLogFolder");
 
                 if (logFolderPath.IsNullOrEmpty() || logFolderPath.IsNullOrWhiteSpace())
@@ -189,9 +189,7 @@ namespace Shesha.Scheduler
             {
                 try
                 {
-                    //SaveJobExecutionIdForLogging();
-
-                    var method = this.GetType().GetMethod(nameof(DoExecuteAsync));
+                    var method = this.GetType().GetRequiredMethod(nameof(DoExecuteAsync));
                     var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
 
                     if (unitOfWorkAttribute != null && unitOfWorkAttribute.IsDisabled)
@@ -236,27 +234,6 @@ namespace Shesha.Scheduler
             await task;
         }
 
-        /*
-        protected Tp GetParamsOrDefault<Tp>(IJobExecutionContext context, Tp defaultValue = null) where Tp : class, new()
-        {
-            return GetParams<Tp>(context, false) ?? new Tp();
-        }
-
-        protected Tp GetParams<Tp>(IJobExecutionContext context, bool throwIfEmpty = true) where Tp : class
-        {
-            var explicitParams = context.MergedJobDataMap.Get("explicitParams") as Tp;
-            if (explicitParams != null)
-                return explicitParams;
-
-            var trigger = GetTrigger(context);
-            var parametersJson = trigger.GetJsonParameters() as Tp;
-            if (parametersJson == null && throwIfEmpty)
-                throw new Exception("Settings are empty");
-            return parametersJson;
-        }
-        */
-
-
         public virtual async Task OnSuccessAsync()
         {
             try
@@ -266,8 +243,6 @@ namespace Shesha.Scheduler
                     var trigger = GetTrigger();
                     if (trigger == null)
                         return;
-
-                    // todo: implement notifications
 
                     await uow.CompleteAsync();
                 }
@@ -287,8 +262,6 @@ namespace Shesha.Scheduler
                     var trigger = GetTrigger();
                     if (trigger == null)
                         return;
-
-                    // todo: implement notifications
 
                     await uow.CompleteAsync();
                 }
@@ -390,7 +363,7 @@ namespace Shesha.Scheduler
                 using (var unitOfWork = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
                 {
                     var existingExecution = await JobExecutionRepository.GetAll().Where(ex => ex.Id == executionId).FirstOrDefaultAsync();
-                    ScheduledJobExecution jobExecution = null;
+                    ScheduledJobExecution? jobExecution = null;
 
                     if (existingExecution != null && existingExecution.Status == ExecutionStatus.Enqueued)
                     {

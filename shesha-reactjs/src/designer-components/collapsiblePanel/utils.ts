@@ -35,7 +35,7 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
                     : { all: { width: '1px', color: '#d9d9d9', style: 'solid' } },
             },
-            radius: { all: borderRadius || 8, bottomLeft: '0', bottomRight: '0', topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
+            radius: { all: borderRadius || 8, topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
         }
     };
 };

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Abp.Specifications;
+using JetBrains.Annotations;
+using Shesha.Reflection;
+using Shesha.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using Abp.Specifications;
-using Shesha.Utilities;
 
 namespace Shesha.Extensions
 {
@@ -42,13 +43,15 @@ namespace Shesha.Extensions
             var property = typeof(T).GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == propertyName.ToCamelCase());
 
             var result = typeof(LinqExtensions)
-                .GetMethod("OrderByDynamic_Private", BindingFlags.NonPublic | BindingFlags.Static)
+                .GetMethod(nameof(OrderByDynamic_Private), BindingFlags.NonPublic | BindingFlags.Static)
                 .MakeGenericMethod(typeof(T), property.PropertyType)
-                .Invoke(null, new object[] { items, propertyName, direction });
+                .Invoke<IOrderedEnumerable<T>>(null, [items, propertyName, direction])
+                .NotNull();
 
-            return (IOrderedEnumerable<T>)result;
+            return result;
         }
 
+        [UsedImplicitly]
         private static IOrderedEnumerable<T> OrderByDynamic_Private<T, TKey>(IEnumerable<T> items, string propertyName, string direction)
         {
             var parameter = Expression.Parameter(typeof(T), "x");
@@ -75,16 +78,18 @@ namespace Shesha.Extensions
         public static IEnumerable<T> LikeDynamic<T>(this IEnumerable<T> items, string filterValue, string[] propertyNames = null)
         {
             var result = typeof(LinqExtensions)
-                .GetMethod("LikeDynamic_Private", BindingFlags.NonPublic | BindingFlags.Static)
+                .GetMethod(nameof(LikeDynamic_Private), BindingFlags.NonPublic | BindingFlags.Static)
                 .MakeGenericMethod(typeof(T))
-                .Invoke(null, new object[] { items, filterValue, propertyNames });
+                .Invoke<IEnumerable<T>>(null, [items, filterValue, propertyNames])
+                .NotNull();
 
-            return (IEnumerable<T>)result;
+            return result;
         }
 
+        [UsedImplicitly]
         private static IEnumerable<T> LikeDynamic_Private<T>(IEnumerable<T> items, string filterValue, string[] propertyNames = null)
         {
-            Expression<Func<T, bool>> fullExpression = null;
+            Expression<Func<T, bool>>? fullExpression = null;
 
             if (!propertyNames?.Any() ?? true)
             {

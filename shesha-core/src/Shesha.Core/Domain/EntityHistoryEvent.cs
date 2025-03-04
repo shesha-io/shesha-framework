@@ -11,7 +11,7 @@ namespace Shesha.Domain
 
         public virtual EntityChange EntityChange { get; set; }
 
-        public virtual EntityPropertyChange EntityPropertyChange { get; set; }
+        public virtual EntityPropertyChange? EntityPropertyChange { get; set; }
 
         public virtual string EventType { get; set; }
 
