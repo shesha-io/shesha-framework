@@ -171,12 +171,6 @@ export const getSettings = (data: any) => {
                       ],
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
-
-
-
-
-
-
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: commonTabId,
@@ -217,11 +211,6 @@ export const getSettings = (data: any) => {
                       ],
                       hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
                     })
-
-
-
-
-
                     .toJson()
                   ]
                 }
