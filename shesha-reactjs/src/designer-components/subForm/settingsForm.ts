@@ -171,36 +171,57 @@ export const getSettings = (data: any) => {
                       ],
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
-                    .addSettingsInput({
+
+
+
+
+
+
+                    .addSettingsInputRow({
                       id: nanoid(),
-                      inputType: "autocomplete",
-                      propertyName: "formType",
                       parentId: commonTabId,
-                      label: "Form type",
-                      jsSetting: true,
-                      dataSourceType: "entitiesList",
-                      dropdownOptions: [
-                        { label: "Table", value: "Table" },
-                        { label: "Create", value: "Create" },
-                        { label: "Edit", value: "Edit" },
-                        { label: "Details", value: "Details" },
-                        { label: "Quickview", value: "Quickview" },
-                        { label: "ListItem", value: "ListItem" },
-                        { label: "Picker", value: "Picker" }
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "autocomplete",
+                          propertyName: "formType",
+                          label: "Form type",
+                          jsSetting: true,
+                          dataSourceType: "entitiesList",
+                          dropdownOptions: [
+                            { label: "Table", value: "Table" },
+                            { label: "Create", value: "Create" },
+                            { label: "Edit", value: "Edit" },
+                            { label: "Details", value: "Details" },
+                            { label: "Quickview", value: "Quickview" },
+                            { label: "ListItem", value: "ListItem" },
+                            { label: "Picker", value: "Picker" }
+                          ]
+                        }
                       ],
                       hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
-                    .addSettingsInput({
+                    .addSettingsInputRow({
                       id: nanoid(),
-                      inputType: "formAutocomplete",
-                      propertyName: "formId",
                       parentId: commonTabId,
-                      label: "Form",
-                      jsSetting: true,
-                      hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "formAutocomplete",
+                          propertyName: "formId",
+                          label: "Form",
+                          jsSetting: true
+                        }
+                      ],
+                      hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
                     })
+
+
+
+
+
                     .toJson()
                   ]
                 }
@@ -239,100 +260,138 @@ export const getSettings = (data: any) => {
                       ],
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
-                    .addSettingsInput({
+                    
+                    
+                    
+                    .addSettingsInputRow({
                       id: nanoid(),
-                      inputType: "dropdown",
-                      propertyName: "apiMode",
                       parentId: dataSourceTabId,
-                      label: "API Mode",
-                      tooltip: "The API mode to use to fetch data",
-                      defaultValue: 'entityType',
-                      dropdownOptions: [
-                        { label: "entityName", value: "entityName" },
-                        { label: "url", value: "url" }
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "dropdown",
+                          propertyName: "apiMode",
+                          label: "API Mode",
+                          defaultValue: "entityType",
+                          tooltip: "The API mode to use to fetch data",
+                          dropdownOptions: [
+                            { label: "Entity Name", value: "entityName" },
+                            { label: "URL", value: "url" }
+                          ],
+                          jsSetting: true,
+                        }
                       ],
                       hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
-                      onChange: { 
-                        _code: `return (val) => {
-                          if (val === 'entityName') {
-                            onValuesChange({ apiMode: val, getUrl: null });
-                          } else {
-                            onValuesChange({ apiMode: val, entityType: null });
-                          }
-                        }`, 
-                        _mode: 'code', 
-                        _value: null 
-                      } as any,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      jsSetting: true,
                     })
-                    .addSettingsInput({
+                    .addSettingsInputRow({
                       id: nanoid(),
-                      inputType: "autocomplete",
-                      propertyName: "entityType",
                       parentId: dataSourceTabId,
-                      label: "Entity type",
-                      dataSourceType: "url",
-                      dataSourceUrl: "/api/services/app/Metadata/TypeAutocomplete",
-                      useRawValues: true,
-                      hidden: { _code: 'return !(getSettingValue(data?.dataSource) === "api" && getSettingValue(data?.apiMode) === "entityName");', _mode: 'code', _value: false } as any,
-                      onChange: { 
-                        _code: `return (val) => {
-                          onValuesChange({ entityType: val, properties: null });
-                        }`, 
-                        _mode: 'code', 
-                        _value: null 
-                      } as any,
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      jsSetting: true,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "autocomplete",
+                          propertyName: "entityType",
+                          label: "Entity type",
+                          dataSourceType: "url",
+                          dataSourceUrl: "/api/services/app/Metadata/TypeAutocomplete",
+                          jsSetting: true,
+                        }
+                      ],
+                      hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api" || getSettingValue(data?.apiMode) !== "entityName";', _mode: 'code', _value: false } as any,
                     })
-                    .addSettingsInput({
+                    .addSettingsInputRow({
                       id: nanoid(),
-                      inputType: "codeEditor",
-                      propertyName: "properties",
                       parentId: dataSourceTabId,
-                      label: "Properties",
-                      mode: "inline",
-                      language: "graphql",
-                      description: "Properties in GraphQL-like syntax",
-                      value: { 
-                        _code: `return (value) => {
-                          return typeof value === 'string' ? value : value?.join(' ');
-                        }`, 
-                        _mode: 'code', 
-                        _value: null 
-                      } as any,
-                      onChange: { 
-                        _code: `return (val) => {
-                          onValuesChange({ properties: val });
-                        }`, 
-                        _mode: 'code', 
-                        _value: null 
-                      } as any,
-                      hidden: { _code: 'return !Boolean(getSettingValue(data?.entityType));', _mode: 'code', _value: false } as any,
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      jsSetting: true,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "codeEditor",
+                          propertyName: "properties",
+                          label: "Properties",
+                          language: "graphql",
+                          description: "Properties in GraphQL-like syntax",
+                          jsSetting: true,
+                        }
+                      ],
+                      hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
                     })
-                    .addSettingsInput({
+                    .addSettingsInputRow({
                       id: nanoid(),
-                      inputType: "codeEditor",
-                      propertyName: "queryParams",
                       parentId: dataSourceTabId,
-                      label: "Query Params",
-                      tooltip: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
-                      mode: "dialog",
-                      description: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
-                      hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    })
-                    .addSectionSeparator({
-                      id: nanoid(),
-                      propertyName: "urlsSeparator",
-                      parentId: dataSourceTabId,
-                      label: "URLs",
-                      description: "These settings are not mandatory except if you do not want to use the default URL, which is dependent on the Entity",
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "codeEditor",
+                          propertyName: "queryParams",
+                          label: "Query Params",
+                          tooltip: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
+                          description: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
+                          //exposedVariables: QUERY_PARAMS_EXPOSED_VARIABLES.map(setting => setting.toString()),
+                        }
+                      ],
                       hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
                     })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: dataSourceTabId,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "codeEditor",
+                          propertyName: "getUrl",
+                          label: "GET Url",
+                          tooltip: "The API url that will be used to fetch the data. Write the code that returns the string",
+                          description: "The API url that will be used to fetch the data. Write the code that returns the string",
+                          //exposedVariables: URL_EXPOSED_VARIABLES.map(setting => setting.toString()),
+                        }
+                      ],
+                      hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api" || getSettingValue(data?.apiMode) !== "url";', _mode: 'code', _value: false } as any,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: dataSourceTabId,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "codeEditor",
+                          propertyName: "postUrl",
+                          label: "POST Url",
+                          tooltip: "The API url that will be used to update data. Write the code that returns the string",
+                          description: "The API url that will be used to update data. Write the code that returns the string",
+                          //exposedVariables: URL_EXPOSED_VARIABLES.map(setting => setting.toString()),
+                        }
+                      ],
+                      hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: dataSourceTabId,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: "codeEditor",
+                          propertyName: "putUrl",
+                          label: "PUT Url",
+                          tooltip: "The API url that will be used to update data. Write the code that returns the string",
+                          description: "The API url that will be used to update data. Write the code that returns the string",
+                          //exposedVariables: URL_EXPOSED_VARIABLES.map(setting => setting.toString()),
+                        }
+                      ],
+                      hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
+                    })
+
+
+
+
+
+
                     .toJson()
                   ]
                 }
