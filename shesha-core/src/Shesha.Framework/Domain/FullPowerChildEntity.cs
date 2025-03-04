@@ -29,7 +29,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Sets owner with an entity object
         /// </summary>
-        public virtual void SetOwner<TId>(IEntity<TId> entity)
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
             if (string.IsNullOrEmpty(config.TypeShortAlias))

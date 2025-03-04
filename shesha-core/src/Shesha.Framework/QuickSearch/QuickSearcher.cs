@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Caching;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.JsonLogic;
 using Shesha.QuickSearch.Cache;
 using Shesha.Reflection;
@@ -58,7 +59,7 @@ namespace Shesha.QuickSearch
         public Expression<Func<T, bool>> GetQuickSearchExpression<T>(string quickSearch, List<string> properties) 
         {
             var itemExpression = Expression.Parameter(typeof(T), "ent");
-            var conditions = GetQuickSearchExpression<T>(quickSearch, properties, itemExpression);
+            var conditions = GetQuickSearchExpression<T>(quickSearch, properties, itemExpression).NotNull();
             if (conditions.CanReduce)
             {
                 conditions = conditions.ReduceAndCheck();
@@ -165,7 +166,7 @@ namespace Shesha.QuickSearch
 
                                 var query = _refListItemRepository.GetAll();
 
-                                var anyMethod = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2);
+                                var anyMethod = typeof(Queryable).GetMethods().First(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2);
                                 var anyGeneric = anyMethod.MakeGenericMethod(typeof(ReferenceListItem));
 
                                 var call = Expression.Call(
@@ -413,13 +414,6 @@ namespace Shesha.QuickSearch
                     if (property == null)
                         return null;
 
-                    /*
-                    if (property.PropertyInfo.Name == currentEntityConfig.CreatedUserPropertyInfo?.Name ||
-                        property.PropertyInfo.Name == currentEntityConfig.LastUpdatedUserPropertyInfo?.Name ||
-                        property.PropertyInfo.Name == currentEntityConfig.InactivateUserPropertyInfo?.Name)
-                        return null;
-                    */
-
                     if (!property.IsMapped)
                         return null;
                     
@@ -431,7 +425,7 @@ namespace Shesha.QuickSearch
                         ReferenceListName = property.ReferenceListName
                     };
                 })
-                .Where(i => i != null)
+                .WhereNotNull()
                 .Select(i => new QuickSearchPropertyInfo()
                 {
                     Name = i.Path,

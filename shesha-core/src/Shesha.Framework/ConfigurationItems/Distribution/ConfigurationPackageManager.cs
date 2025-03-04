@@ -220,7 +220,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 foreach (var group in groups)
                 {
-                    var importer = group.FirstOrDefault().Importer;
+                    var importer = group.First().Importer.NotNull();
                     var items = new List<DistributedConfigurableItemBase>();
                     foreach (var item in group)
                     {

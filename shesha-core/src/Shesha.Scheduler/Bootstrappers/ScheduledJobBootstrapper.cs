@@ -62,8 +62,8 @@ namespace Shesha.Scheduler.Bootstrappers
                 .Select(e => new
                 {
                     Class = e,
-                    Attribute = e.GetAttributeOrNull<ScheduledJobAttribute>()
-                })
+                    Attribute = e.GetAttribute<ScheduledJobAttribute>()
+                })                
                 .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Class.Assembly))
                 .ToList();
 

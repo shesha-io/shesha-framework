@@ -117,7 +117,7 @@ namespace Shesha.Domain
         
         public static (Type parentType, Type parentIdType, Type childType, Type childIdType) GetManyToManyTableData(MemberInfo property)
         {
-            var parentType = property.DeclaringType;
+            var parentType = property.DeclaringType.NotNull();
             var parentIdType = parentType.GetProperty("Id")?.PropertyType;
             if (parentIdType == null)
                 throw new NullReferenceException($"'Id' property not found for '{parentType.FullName}'");

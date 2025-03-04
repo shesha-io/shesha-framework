@@ -131,7 +131,7 @@ namespace Shesha.Notifications
         /// <returns></returns>
         private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string cc = "")
         {
-            var smtpSettings = _emailSettings.SmtpSettings.GetValueOrNull();
+            var smtpSettings = _emailSettings.SmtpSettings.GetValue();
             var message = new MailMessage
             {
                 Subject = (subject ?? "").Replace("\r", " ").Replace("\n", " ").RemoveDoubleSpaces(),

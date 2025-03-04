@@ -7,6 +7,7 @@ using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services.Settings;
 using Shesha.Services.Settings.Dto;
 using Shesha.Settings.Exceptions;
@@ -101,7 +102,7 @@ namespace Shesha.Settings
                 var toUpdate = consolidated.Where(i => i.Db != null).ToList();
                 foreach (var itemToUpdate in toUpdate)
                 {
-                    var config = itemToUpdate.Db;
+                    var config = itemToUpdate.Db.NotNull();
                     var definition = itemToUpdate.Code;
 
                     var module = !string.IsNullOrWhiteSpace(definition.ModuleName)

@@ -37,7 +37,7 @@ namespace Shesha.Configuration.Runtime
         {
             // Do not change to Mapper to avoid performance issues
             var result = await (query ?? Repository.GetAll())
-                .Where(x => !x.IsDeleted)
+                .Where(x => !x.IsDeleted && x.Module != null)
                 .Select(x => new EntityConfigDto()
                 {
                     Id = x.Id,
@@ -50,12 +50,13 @@ namespace Shesha.Configuration.Runtime
                     Source = x.Source,
                     EntityConfigType = x.EntityConfigType,
                     Suppress = x.Suppress,
-                    Module = x.Module.Name,
+                    Module = x.Module!.Name,
                     Name = x.Name,
                     Label = x.Label,
 
                     VersionStatus = x.VersionStatus,
                 }).ToListAsync();
+
             return implemented ?? false
                 ? result.Where(x => !x.NotImplemented).ToList()
                 : result;
@@ -111,19 +112,6 @@ namespace Shesha.Configuration.Runtime
 
             dest.ViewConfigurations = src.ViewConfigurations.ToList();
 
-            // ToDo: make permissioned objects versioned
-            /*
-            if (src.Permission != null)
-                await _permissionedObjectManager.SetAsync(src.Permission);
-            if (src.PermissionGet != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionGet);
-            if (src.PermissionCreate != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionCreate);
-            if (src.PermissionUpdate != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionUpdate);
-            if (src.PermissionDelete != null)
-                await _permissionedObjectManager.SetAsync(src.PermissionDelete);
-            */
             return dest;
         }
 

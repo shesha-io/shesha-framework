@@ -13,7 +13,6 @@ using Abp.MultiTenancy;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
-using NUglify.Helpers;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -152,7 +151,7 @@ namespace Shesha.Authorization
         {
             CheckOtpAuthAvailability();
 
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
             var response = await OtpManager.SendPinAsync(new SendPinInput()
             {
@@ -363,7 +362,7 @@ namespace Shesha.Authorization
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.Suppress))
             {
                 var tenantId = loginResult.TenantId;
-                using (UnitOfWorkManager.Current.SetTenantId(tenantId))
+                using (UnitOfWorkManager.GetCurrent().SetTenantId(tenantId))
                 {
                     var loginAttempt = new ShaUserLoginAttempt
                     {
@@ -406,7 +405,7 @@ namespace Shesha.Authorization
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.Suppress))
             {
                 var tenantId = loginResult.TenantId;
-                using (UnitOfWorkManager.Current.SetTenantId(tenantId))
+                using (UnitOfWorkManager.GetCurrent().SetTenantId(tenantId))
                 {
                     var loginAttempt = new ShaUserLoginAttempt
                     {

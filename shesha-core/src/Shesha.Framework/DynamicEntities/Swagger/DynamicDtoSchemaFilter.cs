@@ -35,7 +35,9 @@ namespace Shesha.DynamicEntities.Swagger
             if (!context.Type.IsDynamicDto() || isProxy)
                 return;
 
-            var modelType = isGeneric ? context.Type : context.Type.FindBaseGenericType(typeof(DynamicDto<,>));
+            var modelType = isGeneric 
+                ? context.Type 
+                : context.Type.FindBaseGenericType(typeof(DynamicDto<,>)).NotNull();
 
             var isCreateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(CreateDynamicDto<,>));
             var isUpdateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(UpdateDynamicDto<,>));
@@ -113,7 +115,7 @@ namespace Shesha.DynamicEntities.Swagger
             }
 
             // add `_formFields` with comment
-            var formFieldsProp = typeof(IHasFormFieldsList).GetProperty(nameof(IHasFormFieldsList._formFields));
+            var formFieldsProp = typeof(IHasFormFieldsList).GetRequiredProperty(nameof(IHasFormFieldsList._formFields));
             if (!propNames.Contains(formFieldsProp.Name.ToLower()))
             {
                 var formFieldsSchema = context.SchemaGenerator.GenerateSchema(formFieldsProp.PropertyType, context.SchemaRepository, memberInfo: formFieldsProp);

@@ -668,7 +668,7 @@ namespace Shesha.JsonLogic
         {
             if (token is JValue value)
             {
-                return value.Value.ToString();
+                return value.Value?.ToString();
             }
             else
                 throw new NotSupportedException();
@@ -1136,7 +1136,7 @@ namespace Shesha.JsonLogic
             if (rule.IsNullOrEmpty())
                 return null;
 
-            var query = ParseExpressionOf<T>(rule);
+            var query = ParseExpressionOf<T>(rule).NotNull();
             return query.Compile();
         }
 
@@ -1149,13 +1149,13 @@ namespace Shesha.JsonLogic
 
         public bool EvaluatePredicateInternal<T>(T model, string predicate)
         {
-            var expression = ParsePredicateOf<T>(predicate);
+            var expression = ParsePredicateOf<T>(predicate).NotNull();
             return expression.Invoke(model);
         }
 
         public bool EvaluatePredicate(object model, string predicate)
         {
-            var method = this.GetType().GetMethod(nameof(EvaluatePredicateInternal));
+            var method = this.GetType().GetRequiredMethod(nameof(EvaluatePredicateInternal));
             var modelType = model.GetType();
             var genericMethod = method.MakeGenericMethod(modelType);
 

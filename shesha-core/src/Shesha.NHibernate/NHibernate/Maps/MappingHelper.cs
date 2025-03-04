@@ -16,7 +16,7 @@ namespace Shesha.NHibernate.Maps
             if (!MappingHelper.IsPersistentProperty(prop))
                 return false;
 
-            if (!MappingHelper.IsRootEntity(prop.DeclaringType) && prop.DeclaringType.BaseType != null && !prop.DeclaringType.BaseType.IsAbstract)
+            if (prop.DeclaringType != null && !MappingHelper.IsRootEntity(prop.DeclaringType) && prop.DeclaringType.BaseType != null && !prop.DeclaringType.BaseType.IsAbstract)
             {
                 var upperLevelProperty = prop.DeclaringType.BaseType.GetProperty(prop.Name);
                 if (upperLevelProperty != null)

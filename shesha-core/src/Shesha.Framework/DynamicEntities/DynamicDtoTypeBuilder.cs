@@ -60,7 +60,7 @@ namespace Shesha.DynamicEntities
 
         public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
         {
-            return await _entityConfigCache.GetEntityPropertiesAsync(entityType);
+            return await _entityConfigCache.GetEntityPropertiesAsync(entityType) ?? new();
         }
 
         public async Task<List<DynamicProperty>> GetDynamicPropertiesAsync(Type type, DynamicDtoTypeBuildingContext context)
@@ -342,7 +342,7 @@ namespace Shesha.DynamicEntities
         {
             if (type.IsDynamicDto())
             {
-                var entityType = type.GetDynamicDtoEntityType();
+                var entityType = type.GetDynamicDtoEntityType().NotNull();
                 return $"DynamicDto_{entityType.Name}{suffix}";
             }
             else

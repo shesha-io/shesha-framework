@@ -452,8 +452,8 @@ namespace Shesha.Permissions
                 if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !string.IsNullOrWhiteSpace(method))
                 {
                     // entity service
-                    var genericInterface = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
-                    var entityType = genericInterface.GenericTypeArguments.FirstOrDefault();
+                    var genericInterface = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
+                    var entityType = genericInterface.GenericTypeArguments.First();
                     obj = $"{entityType.FullName}@{method}";
                 }
                 else
