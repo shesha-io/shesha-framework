@@ -133,7 +133,7 @@ namespace Shesha.Notifications
             if (channel != null)
             {
                 // Send notification to a specific channel
-                await SendNotificationToChannelAsync(notification, data, sender, receiver, cc, type, priority, channel, attachments);
+                await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channel, cc, attachments);
             }
             else
             {
@@ -142,7 +142,7 @@ namespace Shesha.Notifications
 
                 foreach (var channelConfig in channels)
                 {
-                    await SendNotificationToChannelAsync(notification, data, sender, receiver, cc, type, priority, channelConfig, attachments);
+                    await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channelConfig, cc, attachments);
                 }
             }
         }
@@ -167,10 +167,10 @@ namespace Shesha.Notifications
             TData data, 
             IMessageSender sender, 
             IMessageReceiver receiver,
-            string cc = "",
-            NotificationTypeConfig type, 
+            NotificationTypeConfig type,
             RefListNotificationPriority priority, 
-            NotificationChannelConfig channelConfig, 
+            NotificationChannelConfig channelConfig,
+            string cc = "",
             List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
