@@ -9,8 +9,10 @@ using Shesha.Reflection;
 using Shesha.Tests.TestingUtils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Tests.JsonLogic
@@ -64,6 +66,18 @@ namespace Shesha.Tests.JsonLogic
             return new DisposeAction(() => {
                 Clock.Provider = prevProvider;
             });
+        }
+
+        protected override void PreInitialize()
+        {
+            base.PreInitialize();
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        }
+
+        public override void Dispose()
+        {
+
+            base.Dispose();
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         protected async Task<ConfigurationItemBase> ImportFormAsync(DistributedFormConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var existingForm = await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -74,7 +74,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     var liveForm = existingForm.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingForm
-                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _formConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveForm != null)
                     {
                         await _formManger.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
@@ -131,8 +131,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                     Name = $"{form.Module?.Name}.{form.Name}",
-                    Module = form.Module.Name,
-                    ModuleId = form.Module.Id,
+                    Module = form.Module?.Name,
+                    ModuleId = form.Module?.Id,
                     Type = ShaPermissionedObjectsTypes.Form,
                     Access = item.Access,
                     Permissions = item.Permissions,

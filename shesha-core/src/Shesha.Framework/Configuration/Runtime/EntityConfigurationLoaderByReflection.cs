@@ -86,24 +86,28 @@ namespace Shesha.Configuration.Runtime
                 case GeneralDataType.ReferenceList:
                     {
                         var refListAtt = prop.GetAttributeOrNull<ReferenceListAttribute>(true);
-                        var refListId = refListAtt?.GetReferenceListIdentifier(prop);
-                        if (refListId == null)
+                        if (refListAtt != null) 
                         {
-                            var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
-
-                            if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>()) 
+                            var refListId = refListAtt.GetReferenceListIdentifier(prop);
+                            if (refListId == null)
                             {
-                                refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
-                                refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
+                                var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
+
+                                if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
+                                {
+                                    refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
+                                    refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
+                                }
                             }
-                        }
 
-                        if (refListId != null)
-                        {
-                            propConfig.ReferenceListName = refListId.Name;
-                            propConfig.ReferenceListModule = refListId.Module;
+                            if (refListId != null)
+                            {
+                                propConfig.ReferenceListName = refListId.Name;
+                                propConfig.ReferenceListModule = refListId.Module;
 
-                            propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                                if (refListAtt != null)
+                                    propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                            }
                         }
                         break;
                     }
@@ -113,7 +117,7 @@ namespace Shesha.Configuration.Runtime
                     break;
                 case GeneralDataType.MultiValueReferenceList: 
                     {
-                        var mvRefListAtt = prop.GetAttributeOrNull<MultiValueReferenceListAttribute>(true);
+                        var mvRefListAtt = prop.GetAttribute<MultiValueReferenceListAttribute>(true);
                         var refListId = mvRefListAtt.GetReferenceListIdentifier(prop);
                         propConfig.ReferenceListName = refListId.Name;
                         propConfig.ReferenceListModule = refListId.Module;

@@ -139,8 +139,12 @@ namespace Shesha.Metadata
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
-                result.EntityType = result.DataFormat == DataTypes.EntityReference ? result.ItemsType.EntityType : null;
-                result.EntityModule = result.DataFormat == DataTypes.EntityReference ? result.ItemsType.EntityModule : null;
+
+                var entityType = result.DataFormat == DataTypes.EntityReference
+                    ? result.ItemsType
+                    : null;
+                result.EntityType = entityType?.EntityType;
+                result.EntityModule = entityType?.EntityModule;
             }
             else
                 if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
@@ -266,10 +270,10 @@ namespace Shesha.Metadata
                 return false;
 
             return @interface.IsGenericType
-                ? property.DeclaringType.GetInterfaces().Any(x =>
+                ? property.DeclaringType.NotNull().GetInterfaces().Any(x =>
                         x.IsGenericType &&
                         x.GetGenericTypeDefinition() == @interface)
-                : property.DeclaringType.GetInterfaces().Contains(@interface);
+                : property.DeclaringType.NotNull().GetInterfaces().Contains(@interface);
         }
 
         private string? GetStringFormat([CanBeNull]MemberInfo? propInfo) 

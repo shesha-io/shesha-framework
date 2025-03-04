@@ -29,7 +29,7 @@ namespace Shesha.Extensions
         /// </summary>
         public static bool IsSystemType(this Type type)
         {
-            return type.FullName.StartsWith("System.");
+            return !string.IsNullOrWhiteSpace(type.FullName) && type.FullName.StartsWith("System.");
         }
 
         /// <summary>

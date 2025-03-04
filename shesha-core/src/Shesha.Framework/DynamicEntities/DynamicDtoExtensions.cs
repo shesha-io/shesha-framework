@@ -34,6 +34,8 @@ namespace Shesha.DynamicEntities
                 return null;
 
             var interfaceType = GetGenericDtoInterface(type);
+            if (interfaceType == null)
+                return null;
 
             var arguments = interfaceType.GetGenericArguments();
             return arguments.FirstOrDefault();

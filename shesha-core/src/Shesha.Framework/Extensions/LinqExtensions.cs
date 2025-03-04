@@ -1,5 +1,4 @@
-﻿using Abp.Specifications;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
@@ -40,10 +39,10 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static IOrderedEnumerable<T> OrderByDynamic<T>(this IEnumerable<T> items, string propertyName, string direction = "asc")
         {
-            var property = typeof(T).GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == propertyName.ToCamelCase());
+            var property = typeof(T).GetProperties().First(x => x.Name.ToCamelCase() == propertyName.ToCamelCase());
 
             var result = typeof(LinqExtensions)
-                .GetMethod(nameof(OrderByDynamic_Private), BindingFlags.NonPublic | BindingFlags.Static)
+                .GetRequiredMethod(nameof(OrderByDynamic_Private), BindingFlags.NonPublic | BindingFlags.Static)
                 .MakeGenericMethod(typeof(T), property.PropertyType)
                 .Invoke<IOrderedEnumerable<T>>(null, [items, propertyName, direction])
                 .NotNull();
@@ -66,53 +65,6 @@ namespace Shesha.Extensions
                 return items.OrderByDescending(property_access_expression.Compile());
 
             throw new Exception("Invalid Sort Direction");
-        }
-
-        /// <summary>
-        /// Like by properties and filter value
-        /// </summary>
-        /// <param name="items">A sequence of values to order</param>
-        /// <param name="propertyNames">Names of properties</param>
-        /// <param name="filterValue">Filter value</param>
-        /// <returns></returns>
-        public static IEnumerable<T> LikeDynamic<T>(this IEnumerable<T> items, string filterValue, string[]? propertyNames = null)
-        {
-            var result = typeof(LinqExtensions)
-                .GetMethod(nameof(LikeDynamic_Private), BindingFlags.NonPublic | BindingFlags.Static)
-                .MakeGenericMethod(typeof(T))
-                .Invoke<IEnumerable<T>>(null, [items, filterValue, propertyNames])
-                .NotNull();
-
-            return result;
-        }
-
-        [UsedImplicitly]
-        private static IEnumerable<T> LikeDynamic_Private<T>(IEnumerable<T> items, string filterValue, string[]? propertyNames = null)
-        {
-            Expression<Func<T, bool>>? fullExpression = null;
-
-            if (!propertyNames?.Any() ?? true)
-            {
-                propertyNames = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanRead).Select(x => x.Name).ToArray();
-            }
-
-            foreach (var propertyName in propertyNames)
-            {
-                // Necessarily create a new string variable to use in different expressions
-                var tPropName = propertyName;
-                Expression<Func<T, bool>> expr = x =>
-                    (x.GetType().InvokeMember(
-                         tPropName,
-                         BindingFlags.GetProperty,
-                         null,
-                         x, null)
-                     ?? string.Empty).ToString().IndexOf(filterValue, StringComparison.InvariantCultureIgnoreCase) >= 0;
-
-                // add expressions to OR condition
-                fullExpression = fullExpression == null ? expr : fullExpression.Or(expr);
-            }
-
-            return fullExpression == null ? items : items.Where(fullExpression.Compile());
         }
     }
 }

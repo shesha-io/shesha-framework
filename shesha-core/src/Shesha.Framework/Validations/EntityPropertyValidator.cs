@@ -80,7 +80,7 @@ namespace Shesha.Validations
             if (propConfig == null)
                 return true;
 
-            var propInfo = obj.GetType().GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == parts[0]);
+            var propInfo = obj.GetType().GetProperties().First(x => x.Name.ToCamelCase() == parts[0]);
             var innerObj = propInfo.GetValue(obj, null);
 
             var friendlyNameList = new List<string>() { propConfig.Label };
@@ -88,7 +88,7 @@ namespace Shesha.Validations
             var i = 1;
             while (i < parts.Length && propInfo != null && propConfig != null)
             {
-                propConfig = propConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == parts[i]);
+                propConfig = propConfig.Properties.First(x => x.Name.ToCamelCase() == parts[i]);
                 propInfo = innerObj?.GetType().GetProperties().FirstOrDefault(x => x.Name.ToCamelCase() == parts[i]);
                 innerObj = propInfo?.GetValue(innerObj, null);
                 friendlyNameList.Add(propConfig.Label);
@@ -134,21 +134,22 @@ namespace Shesha.Validations
             switch (propConfig.DataType)
             {
                 case DataTypes.String:
-                    if (propConfig.MinLength.HasValue && (value == null || value.ToString().Length < propConfig.MinLength))
+                    var stringValueOrEmpty = value?.ToString() ?? string.Empty;
+                    if (propConfig.MinLength.HasValue && (value == null || stringValueOrEmpty.Length < propConfig.MinLength))
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
                             : $"Property '{friendlyName}' should have value length more then {propConfig.MinLength - 1} symbols"));
                         return false;
                     }
-                    if (propConfig.MaxLength.HasValue && value?.ToString().Length > propConfig.MaxLength)
+                    if (propConfig.MaxLength.HasValue && stringValueOrEmpty.Length > propConfig.MaxLength)
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage
                             : $"Property '{friendlyName}' should have value length less then {propConfig.MaxLength + 1} symbols"));
                         return false;
                     }
-                    if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(value?.ToString() ?? string.Empty))
+                    if (!string.IsNullOrWhiteSpace(propConfig.RegExp) && !(new Regex(propConfig.RegExp)).IsMatch(stringValueOrEmpty))
                     {
                         validationResult.Add(new ValidationResult(hasMessage
                             ? propConfig.ValidationMessage

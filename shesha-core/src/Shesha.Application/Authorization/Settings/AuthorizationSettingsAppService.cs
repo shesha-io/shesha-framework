@@ -50,7 +50,7 @@ namespace Shesha.Authorization.Settings
 
         public async Task<AuthorizationSettingsDto> GetSettingsAsync()
         {
-            var settings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+            var settings = await _securitySettings.SecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();
             
             //Lockout

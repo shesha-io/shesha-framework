@@ -114,7 +114,7 @@ namespace Shesha
         protected virtual async Task<Domain.Person> GetCurrentPersonAsync()
         {
             var personRepository = IocManager.Resolve<IRepository<Domain.Person, Guid>>();
-            var person = await personRepository.GetAll().FirstOrDefaultAsync(p => p.User.Id == AbpSession.GetUserId());
+            var person = await personRepository.GetAll().FirstOrDefaultAsync(p => p.User != null && p.User.Id == AbpSession.GetUserId());
             return person;
         }
 
@@ -355,6 +355,7 @@ namespace Shesha
         protected async Task MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(TDynamicDto dto, TEntity entity)
             where TEntity : class, IEntity<TPrimaryKey>
             where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+            where TPrimaryKey : notnull
         {
             await DynamicPropertyManager.MapDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
         }
@@ -376,7 +377,9 @@ namespace Shesha
             TEntity entity, 
             Func<TEntity, List<ValidationResult>, Task>? validateAndSaveEntityAction = null
         )
-            where TEntity : class, IEntity<TPrimaryKey> where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+            where TEntity : class, IEntity<TPrimaryKey> 
+            where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+            where TPrimaryKey : notnull
         {
 
             var jObject = (dto as IHasJObjectField)._jObject;
@@ -427,6 +430,7 @@ namespace Shesha
             TEntity entity,
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
+            where TPrimaryKey : notnull
         {
             var result = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
             result = result && await ValidateEntityAsync<TEntity>(entity, validationResult);
@@ -468,6 +472,7 @@ namespace Shesha
             TEntity entity,
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
+            where TPrimaryKey : notnull
         {
             await DynamicPropertyManager.MapJObjectToEntityAsync<TEntity, TPrimaryKey>(jObject, entity);
 

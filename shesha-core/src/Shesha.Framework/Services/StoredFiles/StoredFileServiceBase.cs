@@ -5,6 +5,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -210,11 +211,12 @@ namespace Shesha.Services.StoredFiles
             IQueryable<StoredFile>? query = null;
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
+            var stringId = id?.ToString().NotNullOrWhiteSpace();
             if (config != null)
             {
                 var className = config.EntityType.FullName;
 
-                query = FileRepository.GetAll().Where(e => e.Owner.Id == id.ToString());
+                query = FileRepository.GetAll().Where(e => e.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.Owner._className == className || e.Owner._className == config.TypeShortAlias)
                     : query.Where(e => e.Owner._className == className);
@@ -224,7 +226,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = FileRepository.GetAll().Where(e => e.Owner.Id == id.ToString() && e.Owner._className == typeShortAlias);
+                query = FileRepository.GetAll().Where(e => e.Owner.Id == stringId && e.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
@@ -238,11 +240,13 @@ namespace Shesha.Services.StoredFiles
 
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
+            var stringId = id?.ToString().NotNullOrWhiteSpace();
+
             if (config != null)
             {
                 var className = config.EntityType.FullName;
 
-                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == id.ToString());
+                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias)
                     : query.Where(e => e.File.Owner._className == className);
@@ -252,7 +256,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == id.ToString() && e.File.Owner._className == typeShortAlias);
+                query = VersionRepository.GetAll().Where(e => e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }

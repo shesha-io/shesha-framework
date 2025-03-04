@@ -47,7 +47,7 @@ namespace Shesha.DynamicEntities.Distribution
             // get DB config
             var dbItem = await _roleRepo.FirstOrDefaultAsync(x =>
                 x.Name == item.Name && x.NameSpace == item.NameSpace
-                && (x.Module == null && item.ModuleName == null || x.Module.Name == item.ModuleName)
+                && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
                 && x.IsLast);
 
             if (dbItem != null)

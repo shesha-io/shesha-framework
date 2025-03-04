@@ -35,7 +35,7 @@ namespace Shesha.ConfigurationItems.Distribution
             context.Logger.Warn($"Seed packages for assembly '{context.Assembly.FullName}'");
 
             var resources = context.Assembly.GetManifestResourceNames();
-            var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).Where(p => p != null).OrderBy(p => p.Date).ToList();
+            var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).WhereNotNull().OrderBy(p => p.Date).ToList();
 
             if (!embeddedPackages.Any()) 
             {

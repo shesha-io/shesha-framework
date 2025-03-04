@@ -108,8 +108,8 @@ namespace Shesha.Metadata.Dtos
         {
             var propertyProps = typeof(PropertyMetadataDto).GetProperties().OrderBy(p => p.Name).ToList();
 
-            Action<List<PropertyMetadataDto>, List<PropertyMetadataDto>>? expr = null;
-            expr = (List<PropertyMetadataDto> l, List<PropertyMetadataDto> props) =>
+            
+            void expr(List<PropertyMetadataDto> l, List<PropertyMetadataDto> props)
             {
                 foreach (var prop in props)
                 {

@@ -96,10 +96,10 @@ namespace Shesha.DynamicEntities.Cache
                     : await FetchConfigAsync(eType);
             });
 
-            return item.EntityConfig;
+            return item?.EntityConfig;
         }
 
-        public async Task<EntityConfigDto> GetEntityConfigAsync(Type entityType)
+        public async Task<EntityConfigDto?> GetEntityConfigAsync(Type entityType)
         {
             var key = GetPropertiesCacheKey(entityType);
             var item = await _propertyCache.GetAsync(key, async (key) =>
@@ -108,7 +108,7 @@ namespace Shesha.DynamicEntities.Cache
                 return item;
             });
 
-            return item.EntityConfig;
+            return item?.EntityConfig;
         }
 
         public async Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(string entityType, bool raiseException = false)
@@ -123,7 +123,7 @@ namespace Shesha.DynamicEntities.Cache
             return item?.Properties;
         }
 
-        public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
+        public async Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(Type entityType)
         {
             var key = GetPropertiesCacheKey(entityType);
             var item = await _propertyCache.GetAsync(key, async (key) =>
@@ -131,7 +131,7 @@ namespace Shesha.DynamicEntities.Cache
                 var item = await FetchConfigAsync(entityType);
                 return item;
             });
-            return item.Properties;
+            return item?.Properties;
         }
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)

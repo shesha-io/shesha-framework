@@ -249,12 +249,17 @@ namespace Shesha.Bootstrappers
                 await _listItemRepo.DeleteAsync(item);
             }
 
-            var toUpdate = itemsInDb.Select(idb => new
-            {
-                ItemInDB = idb,
-                UpdatedItemInCode = listInCode.FirstOrDefault(i => i.Value == idb.ItemValue && (i.Name != idb.Item || !idb.HardLinkToApplication))
+            var toUpdate = itemsInDb.Select(idb => {
+                var updatedItemInCode = listInCode.FirstOrDefault(i => i.Value == idb.ItemValue && (i.Name != idb.Item || !idb.HardLinkToApplication));
+                return updatedItemInCode != null
+                ? new
+                {
+                    ItemInDB = idb,
+                    UpdatedItemInCode = updatedItemInCode
+                }
+                : null;
             })
-                .Where(i => i.UpdatedItemInCode != null)
+                .WhereNotNull()
                 .ToList();
             Logger.Info($"  items to update: {toUpdate.Count()}");
 

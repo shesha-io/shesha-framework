@@ -1001,7 +1001,7 @@ namespace Shesha.Utilities
         {
             if (string.IsNullOrEmpty(text))
                 return text;
-            var delta = text?.Length - length;
+            var delta = text.Length - length;
             if (delta < 1)
                 return text;
             var parts = text.Split('_');
@@ -1031,7 +1031,7 @@ namespace Shesha.Utilities
 
             if (string.IsNullOrWhiteSpace(text))
                 return text;
-            var delta = text?.Length - length;
+            var delta = text.Length - length;
             if (delta < 1)
                 return text;
             if (parts.Length < 2)

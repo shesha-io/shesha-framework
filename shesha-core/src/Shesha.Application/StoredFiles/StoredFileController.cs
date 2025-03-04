@@ -155,10 +155,6 @@ namespace Shesha.StoredFiles
                 // single file upload (stored as a property of an entity)
                 var property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
 
-                if (property == null)
-                    throw new AbpValidationException(
-                        $"Property '{input.PropertyName}' not found in class '{owner.GetType().FullName}'");
-
                 if (!typeof(StoredFile).IsAssignableFrom(property.PropertyType))
                     throw new AbpValidationException(
                         $"Wrong type of '{owner.GetType().Name}.{input.PropertyName}' property (actual: '{property.PropertyType.FullName}', expected: '{nameof(StoredFile)}')");
@@ -233,12 +229,6 @@ namespace Shesha.StoredFiles
                     MapStoredFile(fileVersion, uploadedFile);
                 }
             }
-
-            /*
-             * 1. property of entity (ownerid+type+property)
-             * 2. attachments list (ownerid+type+category)
-             * 3. direct upload using id (id)
-             */
 
             return uploadedFile;
         }
@@ -403,13 +393,15 @@ namespace Shesha.StoredFiles
             PropertyInfo? property = null;
             if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName)) 
             {
-                property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
-
-                if (property == null)
+                var accessor = ReflectionHelper.GetPropertyValueAccessor(owner, input.PropertyName);
+                if (accessor.PropInfo == null)
                     validationResults.Add($"Property '{owner.GetType().Name}.{input.PropertyName}' not found", [nameof(input.PropertyName)]);
 
                 if (property != null && !typeof(StoredFile).IsAssignableFrom(property.PropertyType))
                     validationResults.Add($"Wrong type of '{owner.GetType().Name}.{input.PropertyName}' property (actual: '{property.PropertyType.FullName}', expected: '{nameof(StoredFile)}')", [nameof(input.PropertyName)]);
+                
+                owner = accessor.Parent;
+                property = accessor.PropInfo;
             }
 
             if (validationResults.Any())
@@ -459,12 +451,14 @@ namespace Shesha.StoredFiles
             }
             else
             {
+                // TODO: Alex, please review this code
+#pragma warning disable CS8602
                 var ownerId = input.OwnerId;
                 var ownerType = input.OwnerType;
                 if (!string.IsNullOrWhiteSpace(input.OwnerName))
                 {
                     var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-                    var prop = ReflectionHelper.GetProperty(owner, input.OwnerName, out owner);
+                    var prop = ReflectionHelper.GetPropertyOrNull(owner, input.OwnerName, out owner);
                     if (prop == null)
                         throw new AbpValidationException($"Property '{input.OwnerName}' not found in class '{owner.GetType().FullName}'");
                     owner = prop.GetValue(owner);
@@ -477,6 +471,7 @@ namespace Shesha.StoredFiles
                 files = string.IsNullOrWhiteSpace(input.FilesCategory)
                     ? await _fileService.GetAttachmentsAsync(ownerId, ownerType)
                     : await _fileService.GetAttachmentsOfCategoryAsync(ownerId, ownerType, input.FilesCategory.ToCamelCase());
+#pragma warning disable CS8602
             }
 
             if (files?.Count > 0)
@@ -512,7 +507,7 @@ namespace Shesha.StoredFiles
 
             if (!string.IsNullOrWhiteSpace(input.OwnerName))
             {
-                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName, out owner);
+                var prop = ReflectionHelper.GetPropertyOrNull(owner, input.OwnerName, out owner);
                 owner = prop.GetValue(owner);
                 if (owner == null)
                     return new List<StoredFileDto>();
@@ -567,7 +562,7 @@ namespace Shesha.StoredFiles
             PropertyInfo? property = null;
             if (owner != null && !string.IsNullOrWhiteSpace(input.PropertyName))
             {
-                property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
+                property = ReflectionHelper.GetPropertyOrNull(owner, input.PropertyName, out owner);
 
                 if (property == null)
                     validations.Add($"Property '{owner.GetType().Name}.{input.PropertyName}' not found", [nameof(input.PropertyName)]);
@@ -689,7 +684,7 @@ namespace Shesha.StoredFiles
                 if (entity == null)
                     return null;
 
-                var property = ReflectionHelper.GetProperty(entity, input.PropertyName, out var owner);
+                var property = ReflectionHelper.GetPropertyOrNull(entity, input.PropertyName, out var owner);
                 if (property == null)
                     throw new Exception($"Property '{input.PropertyName}' not found in the class {owner.GetType().Name}");
 

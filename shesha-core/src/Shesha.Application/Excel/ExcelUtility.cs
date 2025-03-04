@@ -37,9 +37,28 @@ namespace Shesha.Excel
         /// </summary>
         private static void SetSheetName(string excelSpreadSheetName, SpreadsheetDocument spreadSheet)
         {
-            var ss = spreadSheet.WorkbookPart.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name == DefaultSheetName);
+            var ss = spreadSheet.WorkbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name == DefaultSheetName);
             if (ss != null)
                 ss.Name = excelSpreadSheetName;
+        }
+
+
+        private static WorkbookPart GetWorkbookPart(SpreadsheetDocument spreadSheet) 
+        {
+            if (spreadSheet.WorkbookPart == null) 
+            {
+                return spreadSheet.AddWorkbookPart();
+            } else
+                return spreadSheet.WorkbookPart;
+        }
+
+        private static Stylesheet GetStyleSheet(SpreadsheetDocument spreadSheet) 
+        {
+            var workbookPart = GetWorkbookPart(spreadSheet);
+
+            var stylePart = workbookPart.WorkbookStylesPart ?? workbookPart.AddNewPart<WorkbookStylesPart>();
+            var styleSheet = stylePart.Stylesheet ?? (stylePart.Stylesheet = new Stylesheet());
+            return styleSheet;
         }
 
         /// <summary>
@@ -47,13 +66,16 @@ namespace Shesha.Excel
         /// </summary>
         private static void SetStyleSheet(SpreadsheetDocument spreadSheet)
         {
-            var styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
+            var styleSheet = GetStyleSheet(spreadSheet);
+
+            styleSheet.Fonts ??= new();
             styleSheet.Fonts.Append(new Font(
                 new FontSize { Val = 11 },
                 new Color { Rgb = "FFFFFF" },
                 new Bold(),
                 new FontName { Val = "Calibri" }));
 
+            styleSheet.Fills ??= new();
             styleSheet.Fills.AppendChild(new Fill
             {
                 PatternFill = new PatternFill
@@ -72,7 +94,7 @@ namespace Shesha.Excel
             styleSheet.CellFormats.AppendChild(new CellFormat { FormatId = 1, FontId = 0, BorderId = 0, FillId = 0, ApplyFill = false, ApplyBorder = false, ApplyFont = false }).AppendChild(new Alignment { Vertical = VerticalAlignmentValues.Top, WrapText = true });
             styleSheet.CellFormats.Count = 2;
 
-            spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.Save();
+            styleSheet.Save();
         }
 
         /// <summary>
@@ -102,15 +124,19 @@ namespace Shesha.Excel
 
         private static void SetHeaderStyle(SpreadsheetDocument spreadSheet, Cell cell)
         {
-            Stylesheet styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
+            var styleSheet = GetStyleSheet(spreadSheet);
             cell.SetAttribute(new OpenXmlAttribute("", "s", "", "1"));
             OpenXmlAttribute cellStyleAttribute = cell.GetAttribute("s", "");
-            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats.NotNull();
+            var cellFormats = styleSheet.CellFormats.NotNull();
 
             // pick the first cell format.
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
 
             CellFormat cf = new CellFormat(cellFormat.OuterXml);
+            
+            styleSheet.Fonts ??= new();
+            styleSheet.Fills ??= new();
+
             cf.FontId = styleSheet.Fonts.Count;
             cf.FillId = styleSheet.Fills.Count;
 
@@ -129,7 +155,7 @@ namespace Shesha.Excel
 
             using (var document = SpreadsheetDocument.Open(xmlStream, true))
             {
-                var workbookPart = document.WorkbookPart;
+                var workbookPart = GetWorkbookPart(document);
                 var worksheetPart = workbookPart.WorksheetParts.First();
                 var originalSheetId = workbookPart.GetIdOfPart(worksheetPart);
 
@@ -147,6 +173,8 @@ namespace Shesha.Excel
                 ws.SheetProperties = sp;
 
                 // Set the FitToPage property to true
+                ws.SheetProperties ??= new();
+                ws.SheetProperties.PageSetupProperties ??= new();
                 ws.SheetProperties.PageSetupProperties.FitToPage = BooleanValue.FromBoolean(true);
 
                 var pgOr = new PageSetup
@@ -187,7 +215,7 @@ namespace Shesha.Excel
                 }
 
                 worksheetPart.Worksheet.Save();
-                document.WorkbookPart.Workbook.Save();
+                workbookPart.Workbook.Save();
 
                 using (var xmlReader = OpenXmlReader.Create(worksheetPart))
                 {
@@ -209,7 +237,7 @@ namespace Shesha.Excel
                                 SetHeaderStyle(document, headerCell);
                                 foreach (var header in headers)
                                 {
-                                    headerCell.CellValue.Text = header;
+                                    headerCell.CellValue.NotNull().Text = header;
                                     xmlWriter.WriteElement(headerCell);
                                 }
                                 xmlWriter.WriteEndElement();
@@ -233,9 +261,9 @@ namespace Shesha.Excel
                     }
                 }
 
-                var sheet = workbookPart.Workbook.Descendants<Sheet>().First(s => s.Id.Value.Equals(originalSheetId));
+                var sheet = workbookPart.Workbook.Descendants<Sheet>().First(s => s.Id != null && s.Id.Value != null && s.Id.Value.Equals(originalSheetId));
 
-                sheet.Id.Value = replacementPartId;
+                sheet.Id.NotNull().Value = replacementPartId;
                 workbookPart.DeletePart(worksheetPart);
             }
 
@@ -429,6 +457,7 @@ namespace Shesha.Excel
 
         private static void FillCellValue(Cell cell, string value, Type type)
         {
+            cell.CellValue ??= new();
             cell.CellValue.Text = ReplaceSpecialCharacters(ReplaceSpecialCharacters(value ?? ""));
 
             switch (Type.GetTypeCode(type))

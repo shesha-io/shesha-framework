@@ -88,7 +88,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
             : models
             .Where(e => string.IsNullOrWhiteSpace(term)
                 || e.FullClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase)
-                || e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+                || e.Label != null && e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
             .OrderBy(e => e.FullClassName)
             .Take(10)
             .ToList();

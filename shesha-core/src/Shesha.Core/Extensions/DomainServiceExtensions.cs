@@ -23,7 +23,7 @@ namespace Shesha.Domain
         {
             var personRepository = IocManager.Instance.Resolve<IRepository<Person, Guid>>();
             var _session = StaticContext.IocManager.Resolve<IAbpSession>();
-            var person = await personRepository.FirstOrDefaultAsync(p => p.User.Id == _session.GetUserId());
+            var person = await personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == _session.GetUserId());
             return person;
         }
 
@@ -51,7 +51,7 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static async Task<T?> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
         {
-            var stringId = id.ToString();
+            var stringId = id?.ToString();
             ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
 
             var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();

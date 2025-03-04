@@ -6,7 +6,6 @@ using Shesha.Modules;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
 using Shesha.Utilities;
-using System;
 using System.Linq;
 using System.Reflection;
 
@@ -77,7 +76,7 @@ namespace Shesha.Settings
 
             var defaultValue = propertyInstance.GetDefaultValue();
 
-            var definition = Activator.CreateInstance(definitionType, name, defaultValue, displayName) as SettingDefinition;
+            var definition = ActivatorHelper.CreateNotNullObject(definitionType, name, defaultValue, displayName).ForceCastAs<SettingDefinition>();
 
             definition.Accessor = property.GetPropertyAccessor();
 
@@ -94,7 +93,7 @@ namespace Shesha.Settings
                 : null;            
 
             definition.Category = property.GetCategory() ?? property.DeclaringType?.GetCategory();
-            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.Name), property.DeclaringType?.GetAttributeOrNull<AliasAttribute>()?.Alias);
+            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.NotNull().Name), property.DeclaringType?.GetAttributeOrNull<AliasAttribute>()?.Alias);
 
             return definition;
         }

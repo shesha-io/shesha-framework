@@ -44,6 +44,9 @@ namespace Shesha.Swagger
 
         private void AddPropertiesToCrudCreateUpdate(OpenApiOperation operation, OperationFilterContext context)
         {
+            if (string.IsNullOrWhiteSpace(context.ApiDescription.RelativePath))
+                return;
+
             if (context.ApiDescription.RelativePath.ToLower().EndsWith("crud/create")
                 || context.ApiDescription.RelativePath.ToLower().EndsWith("crud/update"))
             {
@@ -167,10 +170,7 @@ namespace Shesha.Swagger
                 {
                     parameter.Description ??= description?.ModelMetadata?.Description;
 
-                    parameter.Required |= description.IsRequired;
-                }
-                else
-                {
+                    parameter.Required |= description != null && description.IsRequired;
                 }
             }
         }

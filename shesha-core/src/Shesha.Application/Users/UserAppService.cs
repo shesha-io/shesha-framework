@@ -286,7 +286,7 @@ namespace Shesha.Users
         [AbpAllowAnonymous]
         public async Task<List<ResetPasswordOptionDto>> GetUserPasswordResetOptionsAsync(string username)
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
             var person = await _userRepository.GetAll().Where(p => p.UserName == username).FirstOrDefaultAsync();
 
@@ -355,7 +355,7 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendSmsOtpAsync(string username)
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.SmsOtp);
@@ -501,7 +501,7 @@ namespace Shesha.Users
         [HttpPost]
         public async Task<bool> SendEmailLinkAsync(string username)
         {
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
@@ -592,7 +592,7 @@ namespace Shesha.Users
         /// <exception cref="UserFriendlyException"></exception>
         private void ValidateUserPasswordResetMethod(User user, long resetMethod)
         {
-            var securitySettings = _securitySettings.SecuritySettings.GetValueOrNull();
+            var securitySettings = _securitySettings.SecuritySettings.GetValue();
 
             var isEmailLinkEnabled = securitySettings.UseResetPasswordViaEmailLink;
             var isSmsOtpEnabled = securitySettings.UseResetPasswordViaSmsOtp;

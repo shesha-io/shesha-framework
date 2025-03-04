@@ -176,8 +176,10 @@ namespace Shesha.AutoMapper
                 .Select(p =>
                     {
                         var destination = destinationType.GetProperty(p.Name);
+                        if (destination == null)
+                            return null;
 
-                        var propType = destination?.PropertyType.GetUnderlyingTypeIfNullable();
+                        var propType = destination.PropertyType.GetUnderlyingTypeIfNullable();
                         if (propType == null || propType != typeof(int) && !propType.IsEnum)
                             return null;
 
@@ -189,7 +191,7 @@ namespace Shesha.AutoMapper
                         };
                     }
                 )
-                .Where(i => i != null)
+                .WhereNotNull()
                 .ToList();
             
             foreach (var item in refListProperties)
@@ -210,8 +212,10 @@ namespace Shesha.AutoMapper
                 .Select(p =>
                 {
                     var destinationProperty = destinationType.GetProperty(p.Name);
+                    if (destinationProperty == null)
+                        return null;
 
-                    var propType = destinationProperty?.PropertyType.GetUnderlyingTypeIfNullable();
+                    var propType = destinationProperty.PropertyType.GetUnderlyingTypeIfNullable();
                     if (propType == null || !propType.IsSubtypeOfGeneric(typeof(List<>)))
                         return null;
 
@@ -227,7 +231,7 @@ namespace Shesha.AutoMapper
                     };
                 }
                 )
-                .Where(i => i != null)
+                .WhereNotNull()
                 .ToList();
 
             foreach (var item in multiValueRefListProperties)

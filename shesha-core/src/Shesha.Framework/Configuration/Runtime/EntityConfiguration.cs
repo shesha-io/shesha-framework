@@ -150,7 +150,7 @@ namespace Shesha.Configuration.Runtime
                 if (propertyName.IndexOf('.') > -1)
                 {
                     // Requesting a child property
-                    var propInfo = ReflectionHelper.GetProperty(EntityType, propertyName);
+                    var propInfo = ReflectionHelper.GetRequiredProperty(EntityType, propertyName);
                     return propInfo.DeclaringType.NotNull().GetEntityConfiguration()[propInfo.Name];
                 }
                 else

@@ -193,35 +193,37 @@ namespace Shesha.Extensions
         {
             try
             {
-                var val = ReflectionHelper.GetPropertyValue(entity, propertyName, out var parentEntity, out var propInfo);
-                if (val == null)
+                var propValue = ReflectionHelper.GetPropertyValueAccessor(entity, propertyName);
+                if (!propValue.IsValueAvailable || propValue.Value == null)
                     return defaultValue;
 
-                var propConfig = parentEntity.GetType().GetEntityConfiguration()[propInfo.Name];
-                var generalDataType = propConfig.GeneralType;
+                entity = propValue.Parent;
+                propertyName = propValue.PropInfo.Name;
+                var value = propValue.Value;
 
-                entity = parentEntity;
-                propertyName = propInfo.Name;
+                var propConfig = entity.GetType().GetEntityConfiguration()[propertyName];
+                var generalDataType = propConfig.GeneralType;               
+                
 
                 switch (generalDataType)
                 {
                     case GeneralDataType.Enum:
-                        var itemValue = Convert.ToInt32(val);
+                        var itemValue = Convert.ToInt32(value);
                         return ReflectionHelper.GetEnumDescription(propConfig.EnumType.NotNull($"{nameof(propConfig.EnumType)} must not be null"), itemValue);
                     case GeneralDataType.ReferenceList:
                         {
                             var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
-                            return refListHelper.GetItemDisplayText(propConfig.GetRefListIdentifier(), (int)val);
+                            return refListHelper.GetItemDisplayText(propConfig.GetRefListIdentifier(), (int)value);
                         }
                     case GeneralDataType.EntityReference:
                         {
-                            var displayProperty = val.GetType().GetEntityConfiguration().DisplayNamePropertyInfo;
+                            var displayProperty = value.GetType().GetEntityConfiguration().DisplayNamePropertyInfo;
                             return displayProperty != null
-                                ? displayProperty.GetValue(val)?.ToString()
-                                : val.ToString();
+                                ? displayProperty.GetValue(value)?.ToString()
+                                : value.ToString();
                         }
                     default:
-                        return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
+                        return GetPrimitiveTypePropertyDisplayText(value, propValue.PropInfo, defaultValue);
                 }
             }
             catch (Exception ex)
