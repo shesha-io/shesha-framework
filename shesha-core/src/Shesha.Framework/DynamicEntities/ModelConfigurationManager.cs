@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Reflection;
@@ -11,6 +10,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.DynamicEntities.Exceptions;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Metadata;
@@ -99,7 +99,7 @@ namespace Shesha.DynamicEntities
 
                 foreach (var configuration in source.ViewConfigurations)
                 {
-                    var vconfig = destination.ViewConfigurations?.FirstOrDefault(x => x.Type == configuration.Type);
+                    var vconfig = destination.ViewConfigurations.FirstOrDefault(x => x.Type == configuration.Type);
                     if (vconfig == null)
                     {
                         destination.ViewConfigurations.Add(
@@ -192,6 +192,8 @@ namespace Shesha.DynamicEntities
                 destinationPermission.Type = type;
                 if (sourcePermission.Permissions != null) 
                 {
+                    destinationPermission.Permissions ??= new();
+
                     sourcePermission.Permissions.ToList().ForEach(x =>
                     {
                         if (!destinationPermission.Permissions.Contains(x))
@@ -258,7 +260,7 @@ namespace Shesha.DynamicEntities
         {
             var modelConfig = await _entityConfigRepository.GetAll().Where(m => m.Id == input.Id).FirstOrDefaultAsync();
             if (modelConfig == null)
-                new EntityNotFoundException("Model configuration not found");
+                throw new ModelConfigurationNotFoundException(input.Namespace, input.Name);
 
             if (modelConfig.Source == MetadataSourceType.UserDefined)
             {
@@ -352,40 +354,50 @@ namespace Shesha.DynamicEntities
 
             var dto = await GetModelConfigurationAsync(modelConfig);
             // update permissions from the input because data is not saved to DB yet
-            dto.Permission = input.Permission;
-            if (input.Permission != null) 
+            if (input.Permission != null)
             {
+                dto.Permission = input.Permission;
                 dto.Permission.ActualAccess = input.Permission.Access;
                 dto.Permission.ActualPermissions = input.Permission.Permissions;
             }
-            
-            dto.PermissionGet = input.PermissionGet;
-            if (input.PermissionGet != null) 
+            else
+                dto.Permission = null;
+
+            if (input.PermissionGet != null)
             {
+                dto.PermissionGet = input.PermissionGet;
                 dto.PermissionGet.ActualAccess = input.PermissionGet.Access;
                 dto.PermissionGet.ActualPermissions = input.PermissionGet.Permissions;
             }
-            
-            dto.PermissionUpdate = input.PermissionUpdate;
-            if (input.PermissionUpdate != null) 
+            else
+                dto.PermissionGet = null;
+
+            if (input.PermissionUpdate != null)
             {
+                dto.PermissionUpdate = input.PermissionUpdate;
                 dto.PermissionUpdate.ActualAccess = input.PermissionUpdate.Access;
                 dto.PermissionUpdate.ActualPermissions = input.PermissionUpdate.Permissions;
             }
-            
-            dto.PermissionDelete = input.PermissionDelete;
-            if (input.PermissionDelete != null) 
+            else
+                dto.PermissionUpdate = null;
+
+            if (input.PermissionDelete != null)
             {
+                dto.PermissionDelete = input.PermissionDelete;
                 dto.PermissionDelete.ActualAccess = input.PermissionDelete.Access;
                 dto.PermissionDelete.ActualPermissions = input.PermissionDelete.Permissions;
             }
-            
-            dto.PermissionCreate = input.PermissionCreate;
-            if (input.PermissionCreate != null) 
+            else
+                dto.PermissionDelete = null;
+
+            if (input.PermissionCreate != null)
             {
+                dto.PermissionCreate = input.PermissionCreate;
                 dto.PermissionCreate.ActualAccess = input.PermissionCreate.Access;
                 dto.PermissionCreate.ActualPermissions = input.PermissionCreate.Permissions;
             }
+            else
+                dto.PermissionCreate = null;
 
             return dto;
         }
@@ -566,6 +578,12 @@ namespace Shesha.DynamicEntities
             });
 
             return result;
+        }
+
+        public async Task<ModelConfigurationDto> GetModelConfigurationAsync(string? @namespace, string name, List<PropertyMetadataDto>? hardCodedProps = null) 
+        {
+            var result = await GetModelConfigurationOrNullAsync(@namespace, name, hardCodedProps);
+            return result ?? throw new ModelConfigurationNotFoundException(@namespace, name);
         }
     }
 }

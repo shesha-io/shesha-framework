@@ -134,7 +134,7 @@ namespace Shesha.Permissions
         [HttpPut, HttpPost] // ToDo: temporary - Allow HttpPost because permission can be created from edit mode
         public async Task<PermissionDto> UpdateAsync(PermissionDto permission)
         {
-            if (permission?.Id == emptyId)
+            if (permission.Id == emptyId)
             {
                 permission.Id = null;
                 return await CreateAsync(permission);

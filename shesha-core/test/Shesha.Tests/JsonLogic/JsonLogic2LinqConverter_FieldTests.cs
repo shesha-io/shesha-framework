@@ -64,7 +64,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -220,7 +220,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -387,7 +387,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -452,7 +452,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -510,7 +510,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -569,7 +569,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]

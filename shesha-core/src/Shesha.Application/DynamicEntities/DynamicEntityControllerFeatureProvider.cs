@@ -35,7 +35,7 @@ namespace Shesha.DynamicEntities
             var entityControllers = feature.Controllers.Where(c => c.AsType().ImplementsGenericInterface(typeof(IEntityAppService<,>))).ToList();
             foreach (var controller in entityControllers)
             {
-                var genericInterface = controller.AsType().GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
+                var genericInterface = controller.AsType().GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
 
                 var entityType = genericInterface.GenericTypeArguments.First();
 

@@ -8,6 +8,7 @@ using Shesha.Extensions;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Distribution
@@ -50,11 +51,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         {
             var query = _componentRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
             query = query.Where(!string.IsNullOrWhiteSpace(item.ModuleName) 
-                ? f => f.Module.Name == item.ModuleName
+                ? f => f.Module != null && f.Module.Name == item.ModuleName
                 : f => f.Module == null
             );
             query = query.Where(!string.IsNullOrWhiteSpace(item.FrontEndApplication)
-                ? f => f.Application.AppKey == item.FrontEndApplication
+                ? f => f.Application != null && f.Application.AppKey == item.FrontEndApplication
                 : f => f.Application == null
             );
 
@@ -66,8 +67,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         {
             // check if form exists
             var existingComponent = await _componentRepo.FirstOrDefaultAsync(f => f.Name == item.Name && 
-                (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) &&
-                (f.Application == null && item.FrontEndApplication == null || f.Application.AppKey == item.FrontEndApplication) &&
+                (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) &&
+                (f.Application == null && item.FrontEndApplication == null || f.Application != null && f.Application.AppKey == item.FrontEndApplication) &&
                 f.IsLast
             );
 

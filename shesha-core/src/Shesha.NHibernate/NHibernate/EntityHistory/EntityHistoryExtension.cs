@@ -163,7 +163,7 @@ namespace Shesha.NHibernate.EntityHistory
 
                 var id = "";
 
-                var entry = session.GetEntry(entity);
+                var entry = session.GetEntryOrNull(entity);
                 id = entry != null
                     ? entry.Id.ToString()
                     : entity.ToString();

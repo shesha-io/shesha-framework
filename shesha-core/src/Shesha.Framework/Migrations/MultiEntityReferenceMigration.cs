@@ -31,7 +31,7 @@ namespace Shesha.Migrations
             var mtmProperties = entityTypes
                 .SelectMany(x => x.GetProperties().Where(p => p.HasAttribute<ManyToManyAttribute>()))
                 .Where(x => x.GetAttribute<ManyToManyAttribute>().AutoGeneration)
-                .DistinctBy(x => $"{x.DeclaringType.Name}_{x.Name}")
+                .DistinctBy(x => $"{x.DeclaringType.NotNull().Name}_{x.Name}")
                 .ToList();
 
             if (!Schema.Schema(MappingHelper.AutoGeneratorSchema).Exists())

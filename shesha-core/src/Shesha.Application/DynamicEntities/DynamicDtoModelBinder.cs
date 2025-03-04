@@ -226,8 +226,8 @@ namespace Shesha.DynamicEntities
                             AddFormFieldsProperty = true,
                         };
                         var effectiveModelType = await _dtoBuilder.BuildDtoProxyTypeAsync(buildContext);
-                        var mapper = GetMapper(result.Model.GetType(), effectiveModelType, fullDtoBuildContext.Classes);
-                        model = mapper.Map(result.Model, result.Model.GetType(), effectiveModelType);
+                        var mapper = GetMapper(modelWithFormFields.GetType(), effectiveModelType, fullDtoBuildContext.Classes);
+                        model = mapper.Map(result.Model, modelWithFormFields.GetType(), effectiveModelType);
                     }
 
                     if (model is IHasJObjectField modelDynamicDto)
@@ -236,16 +236,6 @@ namespace Shesha.DynamicEntities
                         modelDynamicDto._jObject = !bindingSettings.UseDynamicDtoProxy
                             ? JObject.Parse(body)
                             : null;
-
-                        // Attempt to proxy DTo to determine changed properties
-                        /*if (!modelType.IsGenericType)
-                        {
-                            var interceptor = new DynamicDtoInterceptor();
-                            MakeProxy(model, interceptor);
-                            model = new ProxyGenerator().CreateClassProxyWithTarget(
-                                modelDynamicDto.GetType(), new[] { typeof(IDynamicDtoInputProxy) }, modelDynamicDto, interceptor);
-                            (model as IDynamicDtoInputProxy).ResetState();
-                        }*/
                     }
 
                     bindingContext.Result = ModelBindingResult.Success(model);

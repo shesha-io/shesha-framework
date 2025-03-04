@@ -307,7 +307,7 @@ namespace Shesha.NHibernate
                     }                    
 
                     // Log application start if DB was not ready for logging before the migrations
-                    if (!dbIsReadyForLogging)
+                    if (startupDto == null)
                         startupDto = await appStartup.LogApplicationStartAsync(appStartLogArgs);
 
                     if (!skipBootstrappers) 

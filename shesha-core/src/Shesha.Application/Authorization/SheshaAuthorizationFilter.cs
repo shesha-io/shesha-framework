@@ -37,7 +37,7 @@ namespace Shesha.Authorization
 
         public virtual async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var endpoint = context?.HttpContext?.GetEndpoint();
+            var endpoint = context.HttpContext?.GetEndpoint();
             // Allow Anonymous skips all authorization
             if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
             {
@@ -69,9 +69,10 @@ namespace Shesha.Authorization
 
                 if (ActionResultHelper.IsObjectResult(context.ActionDescriptor.GetMethodInfo().ReturnType))
                 {
+                    var identity = context.HttpContext?.User.Identity;
                     context.Result = new ObjectResult(new AjaxResponse(_errorInfoBuilder.BuildForException(ex), true))
                     {
-                        StatusCode = context.HttpContext.User.Identity.IsAuthenticated
+                        StatusCode = identity != null && identity.IsAuthenticated
                             ? (int)System.Net.HttpStatusCode.Forbidden
                             : (int)System.Net.HttpStatusCode.Unauthorized
                     };

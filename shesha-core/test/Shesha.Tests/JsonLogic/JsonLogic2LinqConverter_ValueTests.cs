@@ -38,7 +38,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_Equals_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_Equals_expression);
-            Assert.Equal(@"ent => (ent.FirstName == ""Bob"")", expression.ToString());
+            Assert.Equal(@"ent => (ent.FirstName == ""Bob"")", expression?.ToString());
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_NotEquals_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_NotEquals_expression);
-            Assert.Equal(@"ent => Not((ent.FirstName == ""Bob""))", expression.ToString());
+            Assert.Equal(@"ent => Not((ent.FirstName == ""Bob""))", expression?.ToString());
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_Like_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_Like_expression);
-            Assert.Equal(@"ent => ent.FirstName.Contains(""trick"")", expression.ToString());
+            Assert.Equal(@"ent => ent.FirstName.Contains(""trick"")", expression?.ToString());
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_NotLike_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_NotLike_expression);
-            Assert.Equal(@"ent => Not(ent.FirstName.Contains(""trick""))", expression.ToString());
+            Assert.Equal(@"ent => Not(ent.FirstName.Contains(""trick""))", expression?.ToString());
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_IsEmpty_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_IsEmpty_expression);
-            Assert.Equal(@"ent => (ent.FirstName == null)", expression.ToString());
+            Assert.Equal(@"ent => (ent.FirstName == null)", expression?.ToString());
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_IsNotEmpty_Test()
         {
             var expression = ConvertToExpression<Person>(_stringField_IsNotEmpty_expression);
-            Assert.Equal(@"ent => ((ent.FirstName != null) AndAlso (ent.FirstName.Trim() != """"))", expression.ToString());
+            Assert.Equal(@"ent => ((ent.FirstName != null) AndAlso (ent.FirstName.Trim() != """"))", expression?.ToString());
         }
 
         [Fact]
@@ -194,7 +194,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_StartsWith_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_StartsWith_expression);
-            Assert.Equal(@"ent => ent.FirstName.StartsWith(""bo"")", expression.ToString());
+            Assert.Equal(@"ent => ent.FirstName.StartsWith(""bo"")", expression?.ToString());
         }
 
         [Fact]
@@ -221,7 +221,7 @@ namespace Shesha.Tests.JsonLogic
         public void StringField_EndsWith_Convert()
         {
             var expression = ConvertToExpression<Person>(_stringField_EndsWith_expression);
-            Assert.Equal(@"ent => ent.FirstName.EndsWith(""ck"")", expression.ToString());
+            Assert.Equal(@"ent => ent.FirstName.EndsWith(""ck"")", expression?.ToString());
         }
 
         [Fact]
@@ -250,7 +250,7 @@ namespace Shesha.Tests.JsonLogic
     }
   ]
 }");
-            Assert.Equal($@"ent => (ent.IntProp == 100)", expression.ToString());
+            Assert.Equal($@"ent => (ent.IntProp == 100)", expression?.ToString());
         }
 
         [Fact]
@@ -268,7 +268,7 @@ namespace Shesha.Tests.JsonLogic
     }
   ]
 }");
-            Assert.Equal($@"ent => (ent.NullableIntProp == Convert(100, Nullable`1))", expression.ToString());
+            Assert.Equal($@"ent => (ent.NullableIntProp == Convert(100, Nullable`1))", expression?.ToString());
         }
 
         #endregion
@@ -293,7 +293,7 @@ namespace Shesha.Tests.JsonLogic
         public void Int64Field_Equals_Convert()
         {
             var expression = ConvertToExpression<Person>(_int64Field_Equals_expression);
-            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} == Convert(100, Nullable`1))", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} == Convert(100, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -323,7 +323,7 @@ namespace Shesha.Tests.JsonLogic
         public void Int64Field_LessThan_Convert()
         {
             var expression = ConvertToExpression<Person>(_int64Field_LessThan_expression);
-            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} < Convert(100, Nullable`1))", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} < Convert(100, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -354,7 +354,7 @@ namespace Shesha.Tests.JsonLogic
         public void Int64Field_LessThanOrEqual_Convert()
         {
             var expression = ConvertToExpression<Person>(_int64Field_LessThanOrEqual_expression);
-            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} <= Convert(100, Nullable`1))", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} <= Convert(100, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -386,7 +386,7 @@ namespace Shesha.Tests.JsonLogic
         public void Int64Field_GreaterThan_Convert()
         {
             var expression = ConvertToExpression<Person>(_int64Field_GreaterThan_expression);
-            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} > Convert(100, Nullable`1))", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} > Convert(100, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -417,7 +417,7 @@ namespace Shesha.Tests.JsonLogic
         public void Int64Field_GreaterThanOrEqual_Convert()
         {
             var expression = ConvertToExpression<Person>(_int64Field_GreaterThanOrEqual_expression);
-            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} >= Convert(100, Nullable`1))", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(Person.CreatorUserId)} >= Convert(100, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -450,7 +450,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<User>(_booleanField_Equals_expression);
 
-            Assert.Equal($@"ent => (ent.{nameof(User.OtpEnabled)} == True)", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(User.OtpEnabled)} == True)", expression?.ToString());
         }
 
         [Fact]
@@ -477,7 +477,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<User>(_booleanField_NotEquals_expression);
 
-            Assert.Equal($@"ent => Not((ent.{nameof(User.OtpEnabled)} == True))", expression.ToString());
+            Assert.Equal($@"ent => Not((ent.{nameof(User.OtpEnabled)} == True))", expression?.ToString());
             
         }
 
@@ -522,10 +522,10 @@ namespace Shesha.Tests.JsonLogic
         public void NestedColumnResolver_Convert()
         {
             var expression = ConvertToExpression<Person>(_nestedColumnResolver_expression);
-            Assert.Equal(@"ent => (ent.User.UserName == ""admin"")", expression.ToString());
+            Assert.Equal(@"ent => (ent.User.UserName == ""admin"")", expression?.ToString());
 
             var expression2 = ConvertToExpression<Person>(_nestedColumnResolver_expression2);
-            Assert.Equal(@"ent => (ent.PrimaryOrganisation.PrimaryAddress.Id == ""D80526AB-BB64-41FA-BFB8-F74A9332C0CA"".ToGuid())", expression2.ToString());
+            Assert.Equal(@"ent => (ent.PrimaryOrganisation.PrimaryAddress.Id == ""D80526AB-BB64-41FA-BFB8-F74A9332C0CA"".ToGuid())", expression2?.ToString());
         }
 
         [Fact]
@@ -555,7 +555,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.NullableDateTimeProp < Convert(25/04/2021 6:13:00 AM, Nullable`1))", expression.ToString());
+            Assert.Equal(@"ent => (ent.NullableDateTimeProp < Convert(25/04/2021 6:13:00 AM, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -574,7 +574,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.NullableDateTimeProp <= Convert(25/04/2021 6:13:59 AM, Nullable`1))", expression.ToString());
+            Assert.Equal(@"ent => (ent.NullableDateTimeProp <= Convert(25/04/2021 6:13:59 AM, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -593,7 +593,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.NullableDateTimeProp > Convert(25/04/2021 6:13:59 AM, Nullable`1))", expression.ToString());
+            Assert.Equal(@"ent => (ent.NullableDateTimeProp > Convert(25/04/2021 6:13:59 AM, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -612,7 +612,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.NullableDateTimeProp >= Convert(25/04/2021 6:13:00 AM, Nullable`1))", expression.ToString());
+            Assert.Equal(@"ent => (ent.NullableDateTimeProp >= Convert(25/04/2021 6:13:00 AM, Nullable`1))", expression?.ToString());
         }
 
         [Fact]
@@ -631,7 +631,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => ((Convert(25/04/2021 6:13:00 AM, Nullable`1) <= ent.NullableDateTimeProp) AndAlso (ent.NullableDateTimeProp <= Convert(25/04/2021 6:13:59 AM, Nullable`1)))", expression.ToString());
+            Assert.Equal(@"ent => ((Convert(25/04/2021 6:13:00 AM, Nullable`1) <= ent.NullableDateTimeProp) AndAlso (ent.NullableDateTimeProp <= Convert(25/04/2021 6:13:59 AM, Nullable`1)))", expression?.ToString());
         }
 
         [Fact]
@@ -650,7 +650,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => Not(((Convert(25/04/2021 6:13:00 AM, Nullable`1) <= ent.NullableDateTimeProp) AndAlso (ent.NullableDateTimeProp <= Convert(25/04/2021 6:13:59 AM, Nullable`1))))", expression.ToString());
+            Assert.Equal(@"ent => Not(((Convert(25/04/2021 6:13:00 AM, Nullable`1) <= ent.NullableDateTimeProp) AndAlso (ent.NullableDateTimeProp <= Convert(25/04/2021 6:13:59 AM, Nullable`1))))", expression?.ToString());
         }
 
         [Fact]
@@ -658,7 +658,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<Person>(@"{""<="":[""2022-08-01T16:46:00Z"",{""var"":""CreationTime""},""2022-08-04T16:47:00Z""]}");
 
-            Assert.Equal(@"ent => ((ent.CreationTime >= 01/08/2022 4:46:00 PM) AndAlso (ent.CreationTime <= 04/08/2022 4:47:59 PM))", expression.ToString());
+            Assert.Equal(@"ent => ((ent.CreationTime >= 01/08/2022 4:46:00 PM) AndAlso (ent.CreationTime <= 04/08/2022 4:47:59 PM))", expression?.ToString());
         }
 
         #endregion
@@ -681,7 +681,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.DateProp < 25/04/2021 12:00:00 AM)", expression.ToString());
+            Assert.Equal(@"ent => (ent.DateProp < 25/04/2021 12:00:00 AM)", expression?.ToString());
         }
 
         [Fact]
@@ -700,7 +700,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.DateProp <= 25/04/2021 11:59:59 PM)", expression.ToString());
+            Assert.Equal(@"ent => (ent.DateProp <= 25/04/2021 11:59:59 PM)", expression?.ToString());
         }
 
         [Fact]
@@ -719,7 +719,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.DateProp > 25/04/2021 11:59:59 PM)", expression.ToString());
+            Assert.Equal(@"ent => (ent.DateProp > 25/04/2021 11:59:59 PM)", expression?.ToString());
         }
 
         [Fact]
@@ -738,7 +738,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.DateProp >= 25/04/2021 12:00:00 AM)", expression.ToString());
+            Assert.Equal(@"ent => (ent.DateProp >= 25/04/2021 12:00:00 AM)", expression?.ToString());
         }
 
         [Fact]
@@ -757,7 +757,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => ((25/04/2021 12:00:00 AM <= ent.DateProp) AndAlso (ent.DateProp <= 25/04/2021 11:59:59 PM))", expression.ToString());
+            Assert.Equal(@"ent => ((25/04/2021 12:00:00 AM <= ent.DateProp) AndAlso (ent.DateProp <= 25/04/2021 11:59:59 PM))", expression?.ToString());
         }
 
         [Fact]
@@ -776,7 +776,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => Not(((25/04/2021 12:00:00 AM <= ent.DateProp) AndAlso (ent.DateProp <= 25/04/2021 11:59:59 PM)))", expression.ToString());
+            Assert.Equal(@"ent => Not(((25/04/2021 12:00:00 AM <= ent.DateProp) AndAlso (ent.DateProp <= 25/04/2021 11:59:59 PM)))", expression?.ToString());
         }
 
         [Fact]
@@ -784,7 +784,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<EntityWithDateProps>(@"{""<="":[""2022-08-01T16:46:00Z"",{""var"":""DateProp""},""2022-08-04T16:47:00Z""]}");
 
-            Assert.Equal(@"ent => ((ent.DateProp >= 01/08/2022 12:00:00 AM) AndAlso (ent.DateProp <= 04/08/2022 11:59:59 PM))", expression.ToString());
+            Assert.Equal(@"ent => ((ent.DateProp >= 01/08/2022 12:00:00 AM) AndAlso (ent.DateProp <= 04/08/2022 11:59:59 PM))", expression?.ToString());
         }
 
         #endregion
@@ -807,7 +807,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.TimeProp < 02:34:00)", expression.ToString());
+            Assert.Equal(@"ent => (ent.TimeProp < 02:34:00)", expression?.ToString());
         }
 
         [Fact]
@@ -826,7 +826,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.TimeProp <= 02:34:59.9990000)", expression.ToString());
+            Assert.Equal(@"ent => (ent.TimeProp <= 02:34:59.9990000)", expression?.ToString());
         }
 
         [Fact]
@@ -845,7 +845,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.TimeProp > 02:34:59.9990000)", expression.ToString());
+            Assert.Equal(@"ent => (ent.TimeProp > 02:34:59.9990000)", expression?.ToString());
         }
 
         [Fact]
@@ -864,7 +864,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.TimeProp >= 02:34:00)", expression.ToString());
+            Assert.Equal(@"ent => (ent.TimeProp >= 02:34:00)", expression?.ToString());
         }
 
         [Fact]
@@ -883,7 +883,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => ((02:34:00 <= ent.TimeProp) AndAlso (ent.TimeProp <= 02:34:59.9990000))", expression.ToString());
+            Assert.Equal(@"ent => ((02:34:00 <= ent.TimeProp) AndAlso (ent.TimeProp <= 02:34:59.9990000))", expression?.ToString());
         }
 
         [Fact]
@@ -902,7 +902,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => Not(((02:34:00 <= ent.TimeProp) AndAlso (ent.TimeProp <= 02:34:59.9990000)))", expression.ToString());
+            Assert.Equal(@"ent => Not(((02:34:00 <= ent.TimeProp) AndAlso (ent.TimeProp <= 02:34:59.9990000)))", expression?.ToString());
         }
 
         [Fact]
@@ -910,7 +910,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<EntityWithDateProps>(@"{""<="":[3600,{""var"":""TimeProp""},7200]}");
 
-            Assert.Equal(@"ent => ((ent.TimeProp >= 01:00:00) AndAlso (ent.TimeProp <= 02:00:59.9990000))", expression.ToString());
+            Assert.Equal(@"ent => ((ent.TimeProp >= 01:00:00) AndAlso (ent.TimeProp <= 02:00:59.9990000))", expression?.ToString());
         }
 
         #endregion
@@ -935,7 +935,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<ShaRolePermission>(_entityReference_Equals_expression);
 
-            Assert.Equal($@"ent => (ent.{nameof(ShaRolePermission.ShaRole)}.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid())", expression.ToString());            
+            Assert.Equal($@"ent => (ent.{nameof(ShaRolePermission.ShaRole)}.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid())", expression?.ToString());            
         }
 
         [Fact]
@@ -964,7 +964,7 @@ namespace Shesha.Tests.JsonLogic
 
             var expression = ConvertToExpression<EntityWithIntId>(gqlExpression);
 
-            Assert.Equal($@"ent => (ent.{nameof(EntityWithIntId.Child)}.Id == 500)", expression.ToString());
+            Assert.Equal($@"ent => (ent.{nameof(EntityWithIntId.Child)}.Id == 500)", expression?.ToString());
         }
 
         [Fact]
@@ -980,7 +980,7 @@ namespace Shesha.Tests.JsonLogic
   ]
 }");
 
-            Assert.Equal(@"ent => (ent.ShaRole == null)", expression.ToString());
+            Assert.Equal(@"ent => (ent.ShaRole == null)", expression?.ToString());
         }
 
 
@@ -1001,7 +1001,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<ShaRolePermission>(_entityReference_IsNull_expression);
 
-            Assert.Equal($@"ent => (ent.ShaRole == null)", expression.ToString());
+            Assert.Equal($@"ent => (ent.ShaRole == null)", expression?.ToString());
         }
 
         [Fact]
@@ -1029,7 +1029,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<ShaRolePermission>(_entityReference_IsNotNull_expression);
 
-            Assert.Equal($@"ent => Not((ent.ShaRole == null))", expression.ToString());
+            Assert.Equal($@"ent => Not((ent.ShaRole == null))", expression?.ToString());
         }
 
         [Fact]
@@ -1081,7 +1081,7 @@ namespace Shesha.Tests.JsonLogic
         {
             var expression = ConvertToExpression<ShaRolePermission>(_complex_expression);
 
-            Assert.Equal(@"ent => ((ent.ShaRole.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid()) OrElse ((ent.ShaRole.LastModificationTime > Convert(25/04/2021 8:13:59 AM, Nullable`1)) AndAlso (ent.IsGranted == False)))", expression.ToString());
+            Assert.Equal(@"ent => ((ent.ShaRole.Id == ""852c4011-4e94-463a-9e0d-b0054ab88f7d"".ToGuid()) OrElse ((ent.ShaRole.LastModificationTime > Convert(25/04/2021 8:13:59 AM, Nullable`1)) AndAlso (ent.IsGranted == False)))", expression?.ToString());
         }
 
         [Fact]
@@ -1171,14 +1171,14 @@ namespace Shesha.Tests.JsonLogic
         public void ReflistField_Equals_Convert()
         {
             var expression = ConvertToExpression<EntityWithRefListrops>(@"{""and"":[{""=="":[{""var"":""title""},1]}]}");
-            Assert.Equal(@"ent => (Convert(ent.Title, Int64) == 1)", expression.ToString());
+            Assert.Equal(@"ent => (Convert(ent.Title, Int64) == 1)", expression?.ToString());
         }
 
         [Fact]
         public void NullableReflistField_Equals_Convert()
         {
             var expression = ConvertToExpression<EntityWithRefListrops>(@"{""and"":[{""=="":[{""var"":""nullableTitle""},1]}]}");
-            Assert.Equal(@"ent => (Convert(ent.NullableTitle, Nullable`1) == Convert(1, Nullable`1))", expression.ToString());
+            Assert.Equal(@"ent => (Convert(ent.NullableTitle, Nullable`1) == Convert(1, Nullable`1))", expression?.ToString());
         }
 
         #endregion
@@ -1201,7 +1201,7 @@ namespace Shesha.Tests.JsonLogic
         public void NullableReflistField_Contains_Convert()
         {
             var expression = ConvertToExpression<Person>(_nullable_reflistField_Contains_expression);
-            Assert.Equal(@"ent => (((Convert(ent.Title, Nullable`1) == Convert(1, Nullable`1)) OrElse (Convert(ent.Title, Nullable`1) == Convert(2, Nullable`1))) OrElse (Convert(ent.Title, Nullable`1) == Convert(3, Nullable`1)))", expression.ToString());
+            Assert.Equal(@"ent => (((Convert(ent.Title, Nullable`1) == Convert(1, Nullable`1)) OrElse (Convert(ent.Title, Nullable`1) == Convert(2, Nullable`1))) OrElse (Convert(ent.Title, Nullable`1) == Convert(3, Nullable`1)))", expression?.ToString());
         }
 
         [Fact]
@@ -1232,7 +1232,7 @@ namespace Shesha.Tests.JsonLogic
         public void EntityReference_In_Convert()
         {
             var expression = ConvertToExpression<Person>(_entityReference_In_Convert_expression);
-            Assert.Equal(@"ent => ((ent.Id == ""24007BA5-697B-417C-91BA-ED92F3F31F3A"".ToGuid()) OrElse (ent.Id == ""D197A7B3-5505-430C-9D98-CD64F1A638FA"".ToGuid()))", expression.ToString());
+            Assert.Equal(@"ent => ((ent.Id == ""24007BA5-697B-417C-91BA-ED92F3F31F3A"".ToGuid()) OrElse (ent.Id == ""D197A7B3-5505-430C-9D98-CD64F1A638FA"".ToGuid()))", expression?.ToString());
         }
 
         [Fact]
@@ -1263,7 +1263,7 @@ namespace Shesha.Tests.JsonLogic
                 var nowEom = Expression.Constant(Clock.Now.EndOfTheMinute()).ToString();
                 
                 var expected = $@"ent => ((Convert({now}.Add(-5.00:00:00), Nullable`1) <= ent.User.LastLoginDate) AndAlso (ent.User.LastLoginDate <= Convert({nowEom}, Nullable`1)))";
-                Assert.Equal(expected, expression.ToString());
+                Assert.Equal(expected, expression?.ToString());
             }
         }
 
@@ -1327,7 +1327,7 @@ namespace Shesha.Tests.JsonLogic
             var expression = ConvertToExpression<Person>(_custom_string_funcs_Convert_expression);
 
             var expected = $@"ent => (((ent.FirstName == ""TeSt"".ToLower()) AndAlso (ent.LastName == ""VaLuE"".ToUpper())) AndAlso (ent.EmailAddress1 == ent.EmailAddress2.ToLower()))";
-            Assert.Equal(expected, expression.ToString());
+            Assert.Equal(expected, expression?.ToString());
         }
 
         [Fact]
@@ -1479,7 +1479,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<EntityWithNumericProp<decimal>>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -1496,7 +1496,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<EntityWithNumericProp<float>>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -1513,7 +1513,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<EntityWithNumericProp<double>>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         [Theory]
@@ -1530,7 +1530,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<EntityWithNumericProp<byte>>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToString());
         }
 
         #endregion

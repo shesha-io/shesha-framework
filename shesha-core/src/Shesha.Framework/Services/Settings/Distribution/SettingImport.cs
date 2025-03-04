@@ -55,7 +55,7 @@ namespace Shesha.Services.Settings.Distribution
         protected async Task<ConfigurationItemBase> ImportSettingAsync(DistributedSettingConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingSetting = await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var existingSetting = await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -76,7 +76,7 @@ namespace Shesha.Services.Settings.Distribution
                 {
                     var liveVersion = existingSetting.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingSetting
-                        : await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveVersion != null)
                     {
                         await _settingStore.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);

@@ -37,9 +37,10 @@ namespace Shesha.Swagger
                     if (service.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
                     {
                         // entity service
-                        var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
+                        var genericInterface = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).First();
                         var entityType = genericInterface.GenericTypeArguments.First();
                         var model = AsyncHelper.RunSync(() => entityConfigs.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
+                        model.NotNull();
                         var entityAttribute = entityType.GetAttributeOrNull<EntityAttribute>();
                         var crudAttribute = entityType.GetAttributeOrNull<CrudAccessAttribute>();
                         var permission = pmo.Get($"{entityType.FullName}", ShaPermissionedObjectsTypes.Entity);

@@ -70,17 +70,21 @@ namespace Shesha.Notifications
             // Step 2: Check for Parsed Override Channels
             if (type.ParsedOverrideChannels.Any())
             {
-                var overrideChannels = await _notificationChannelRepository
-                    .GetAll()
-                    .Where(channel => type.ParsedOverrideChannels.Contains(
-                        new NotificationChannelIdentifier(channel.Module.Name, channel.Name)))
-                    .ToListAsync();
+                var overrideChannels = new List<NotificationChannelConfig>();
+                foreach (var channel in type.ParsedOverrideChannels) 
+                {
+                    // TODO: check versioned query
+                    var dbChannel = await _notificationChannelRepository.GetAll().Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression())
+                        .FirstOrDefaultAsync();
+                    if (dbChannel != null)
+                        overrideChannels.Add(dbChannel);
+                }
 
                 return overrideChannels;
             }
 
             // Step 3: Fallback to default channels based on priority
-            var notificationSettings = await _notificationSettings.NotificationSettings.GetValueOrNullAsync();
+            var notificationSettings = await _notificationSettings.NotificationSettings.GetValueAsync();
 
             var selectedNotifications = priority switch
             {
@@ -92,6 +96,7 @@ namespace Shesha.Notifications
             if (selectedNotifications == null)
                 return new();
 
+            // TODO: check versioned query
             var liveChannels = _notificationChannelRepository
                 .GetAll()
                 .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);

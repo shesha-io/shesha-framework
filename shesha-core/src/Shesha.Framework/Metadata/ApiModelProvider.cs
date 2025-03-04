@@ -46,9 +46,8 @@ namespace Shesha.Metadata
                     return types;
                 })
                 .ToList();
-            Func<IEnumerable<Type>, List<Type>>? getTypes = null;
 
-            getTypes = (IEnumerable<Type> types) =>
+            List<Type> getTypes(IEnumerable<Type> types)
             {
                 // Paremeters types
                 var parameterTypes = types

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace Shesha.ConfigurationItems.Dtos
             {
                 var model = bindingContext.Model as ICollection<Guid>;
                 if (model == null)
-                    model = Activator.CreateInstance(targetType) as ICollection<Guid>;
+                    model = ActivatorHelper.CreateNotNullObject(targetType).ForceCastAs<ICollection<Guid>>();
 
                 var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
@@ -25,7 +27,7 @@ namespace Shesha.ConfigurationItems.Dtos
                     {
                         if (!string.IsNullOrWhiteSpace(value)) 
                         {
-                            var items = JsonConvert.DeserializeObject<List<Guid>>(value);
+                            var items = JsonConvert.DeserializeObject<List<Guid>>(value).NotNull();
                             foreach (var item in items)
                                 model.Add(item);
                         }                        

@@ -3,6 +3,7 @@ using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Reflection;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -37,7 +38,10 @@ namespace Shesha.Settings
                     _iocManager.IsRegistered(t)
                 ).ToList();
 
-            var definitionProviders = definitionProvidersTypes.Select(t => _iocManager.Resolve(t) as ISettingDefinitionProvider).OrderBy(p => (p as IOrderedSettingDefinitionProvider)?.OrderIndex ?? int.MaxValue).ToList();
+            var definitionProviders = definitionProvidersTypes
+                .Select(t => _iocManager.Resolve(t).ForceCastAs<ISettingDefinitionProvider>())
+                .OrderBy(p => (p as IOrderedSettingDefinitionProvider)?.OrderIndex ?? int.MaxValue)
+                .ToList();
 
             var settings = new Dictionary<SettingIdentifier, SettingDefinition>();
 

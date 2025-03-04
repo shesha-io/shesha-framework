@@ -91,7 +91,11 @@ namespace Shesha
                 Component.For<ISmsGateway>().UsingFactoryMethod(f =>
                 {
                     var settings = f.Resolve<ISmsSettings>();
-                    var gatewayUid = settings.SmsSettings.GetValueOrNull().SmsGateway;
+                    var smsSettings = settings.SmsSettings.GetValueOrNull();
+                    if (smsSettings == null)
+                        return new NullSmsGateway();
+
+                    var gatewayUid = smsSettings.SmsGateway;
 
                     var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
                         ? f.Resolve<ITypeFinder>().Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()

@@ -15,10 +15,10 @@ namespace Shesha.DynamicEntities.Cache
         /// </summary>
         /// <param name="entityType"></param>
         /// <returns></returns>
-        Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType);
+        Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(Type entityType);
         Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(string entityType, bool raiseException = false);
 
-        Task<EntityConfigDto> GetEntityConfigAsync(Type entityType);
+        Task<EntityConfigDto?> GetEntityConfigAsync(Type entityType);
         Task<EntityConfigDto?> GetEntityConfigAsync(string entityType, bool raiseException = false);
     }
 }

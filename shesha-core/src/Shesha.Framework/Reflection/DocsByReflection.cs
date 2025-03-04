@@ -93,7 +93,9 @@ namespace Shesha.Reflection
 
             XmlNode? matchedElement = null;
 
-            var members = xmlDocument["doc"]["members"];
+            var members = xmlDocument["doc"]?["members"];
+            if (members == null)
+                return null;
 
             foreach (XmlNode xmlElement in members)
             {

@@ -3,6 +3,7 @@ using System.Globalization;
 using log4net;
 using log4net.Core;
 using log4net.Util;
+using Shesha.Reflection;
 using ILogger = Castle.Core.Logging.ILogger;
 
 namespace Shesha.Scheduler.Logging
@@ -50,7 +51,7 @@ namespace Shesha.Scheduler.Logging
 
         public virtual global::Castle.Core.Logging.ILogger CreateChildLogger(string name)
         {
-            return Factory.Create(Logger.Name + "." + name);
+            return Factory.NotNull().Create(Logger.Name + "." + name);
         }
 
         public void Trace(string message)

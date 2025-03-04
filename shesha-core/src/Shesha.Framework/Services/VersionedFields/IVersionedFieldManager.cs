@@ -16,7 +16,7 @@ namespace Shesha.Services.VersionedFields
         /// <param name="owner"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId>;
+        Task<string?> GetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName) where TEntity : IEntity<TId> where TId : notnull;
 
         /// <summary>
         /// Set versioned field value
@@ -28,6 +28,6 @@ namespace Shesha.Services.VersionedFields
         /// <param name="value"></param>
         /// <param name="createNewVersion"></param>
         /// <returns></returns>
-        Task SetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName, string value, bool createNewVersion) where TEntity : IEntity<TId>;
+        Task SetVersionedFieldValueAsync<TEntity, TId>(TEntity owner, string fieldName, string value, bool createNewVersion) where TEntity : IEntity<TId> where TId : notnull;
     }
 }

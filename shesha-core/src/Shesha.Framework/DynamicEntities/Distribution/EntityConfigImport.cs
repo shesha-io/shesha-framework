@@ -69,7 +69,7 @@ namespace Shesha.DynamicEntities.Distribution
             var dbItem = await _entityConfigRepo.FirstOrDefaultAsync(x =>
                 x.Namespace == item.Namespace && x.ClassName == item.ClassName
                 //x.Name == item.Name 
-                && (x.Module == null && item.ModuleName == null || x.Module.Name == item.ModuleName)
+                && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
                 && x.IsLast);
 
             if (dbItem != null)

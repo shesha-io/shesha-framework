@@ -108,7 +108,7 @@ namespace Shesha.Notifications
             if (type.Disable) 
                 return;
 
-            if (receiver != null && type.CanOptOut)
+            if (type.CanOptOut)
             {
                 var optedOut = await receiver.IsNotificationOptedOutAsync(type);
                 if (optedOut)

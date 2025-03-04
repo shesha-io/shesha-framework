@@ -102,7 +102,7 @@ namespace Shesha.Authorization
 
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
 
-            var personId = loginResult?.User != null
+            var personId = loginResult.User != null
                 ? await _personRepository.GetAll()
                     .Where(p => p.User == loginResult.User)
                     .OrderBy(p => p.CreationTime)
@@ -119,7 +119,7 @@ namespace Shesha.Authorization
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = expireInSeconds,
                 ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
-                UserId = loginResult.User.Id,
+                UserId = loginResult.User?.Id,
                 PersonId = personId,
                 DeviceName = device?.Name,
                 ResultType = AuthenticateResultType.Success
@@ -141,7 +141,7 @@ namespace Shesha.Authorization
         [HttpPost]
         public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
-            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User.UserName == userNameOrMobileNo).ToListAsync();
+            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User != null && u.User.UserName == userNameOrMobileNo).ToListAsync();
             if (!persons.Any())
                 throw new UserFriendlyException("User with the specified mobile number not found");
             if (persons.Count() > 1)

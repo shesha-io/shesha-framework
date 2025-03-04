@@ -56,7 +56,7 @@ namespace Shesha.DynamicEntities
                         if (!addMissedProperties) continue;
                         else jobj.Add(prop.Name.ToCamelCase(), null);
 
-                    var jprop = jobj.Property(prop.Name.ToCamelCase());
+                    var jprop = jobj.Property(prop.Name.ToCamelCase()).NotNull();
 
                     var val = prop.GetValue(obj);
 
@@ -133,9 +133,12 @@ namespace Shesha.DynamicEntities
                 return jref;
             }
 
+            // TODO: Alex, please review
+#pragma warning disable CS8602
             if (val != null && jval.IsNullOrEmpty()
                 || !val.Equals(jval?.ToObject(propType)))
                 return JProperty.FromObject(val);
+#pragma warning restore CS8602
 
             return jval ?? JValue.CreateNull();
         }

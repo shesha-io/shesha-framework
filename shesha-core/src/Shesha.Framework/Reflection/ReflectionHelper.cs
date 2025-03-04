@@ -22,7 +22,7 @@ using System.Runtime.CompilerServices;
 
 namespace Shesha.Reflection
 {
-    public static class ReflectionHelper
+    public static partial class ReflectionHelper
     {
         /// <summary>
         /// Returns true if the <paramref name="instanceType"/> is a closed generic of the <paramref name="genericType"/> type
@@ -100,24 +100,14 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
-        /// Returns the value of the property specified. 
+        /// Returns extended info about specified property.
         /// </summary>
         /// <param name="obj">Object whose property value is to be retreived.</param>
-        /// <param name="propertyName">Name of the property or property hierarchy 
-        /// e.g. 'Property1.SubProperty2.SubSubProperty3' </param>
-        /// <param name="parent">Returns the parent object the last property in the hierarchy. 
-        /// Returns null if did not manage to reach the end of the hierarchy because of null values
-        /// along the way.</param>
-        /// <param name="propInfo">Returns the <see cref="PropertyInfo"/> of
-        /// the last property in the property hierachy.</param>
-        /// <returns></returns>
-        public static object? GetPropertyValue(object obj, string propertyName, out object? parent, out PropertyInfo? propInfo)
+        /// <param name="propertyName">Name of the property or property hierarchy </param>
+        public static PropertyValueAccessor GetPropertyValueAccessor(object obj, string propertyName) 
         {
-            propInfo = GetProperty(obj, propertyName, out parent);
-            if (propInfo != null && parent != null)
-                return propInfo.GetValue(parent, null);
-            else
-                return null;
+            var propInfo = GetPropertyOrNull(obj, propertyName, out var parent);
+            return new PropertyValueAccessor(propInfo, parent);
         }
 
         public static object? GetPropertyValue(object obj, string propertyName, object defaultValue)
@@ -129,16 +119,21 @@ namespace Shesha.Reflection
             return propInfo == null ? defaultValue : propInfo.GetValue(obj, null) ?? defaultValue;
         }
 
-        public static object? GetPropertyValue(IEntity obj, string propertyName)
-        {
-            return GetPropertyValue(obj, propertyName, out var parent, out var propInfo);
-        }
-
         #region GetProperty
 
         public static PropertyInfo? GetProperty(object entity, string propertyName)
         {
-            return GetProperty(entity, propertyName, out var propertyEntity);
+            return GetPropertyOrNull(entity, propertyName, out var propertyEntity);
+        }
+
+        public static PropertyInfo GetProperty(object entity, string propertyName, out object propertyEntity) 
+        {
+            var property = GetPropertyOrNull(entity, propertyName, out var owner);
+            if (property == null)
+                throw new PropertyNotFoundException(entity.GetType(), propertyName);
+            
+            propertyEntity = owner.NotNull();
+            return property;
         }
 
         /// <summary>
@@ -153,7 +148,7 @@ namespace Shesha.Reflection
         /// child object e.g. 'Parent.ReferencedChildEntity.ChildEntityPropertyName', then will return the
         /// child entity the property belongs to i.e. 'ReferencedChildEntity' from the example.</param>
         /// <returns>Return the requested PropertyInfo.</returns>
-        public static PropertyInfo? GetProperty(object entity, string propertyName, out object? propertyEntity)
+        public static PropertyInfo? GetPropertyOrNull(object entity, string propertyName, out object? propertyEntity)
         {
             var propTokens = propertyName.Split('.');
             var currentEntity = entity;
@@ -442,7 +437,7 @@ namespace Shesha.Reflection
             var itemName = Enum.GetName(enumType, itemValue);
             if (string.IsNullOrEmpty(itemName))
                 return "";
-            var fi = enumType.GetField(itemName);
+            var fi = enumType.GetRequiredField(itemName);
 
             var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (attributes.Length > 0)
@@ -627,7 +622,7 @@ namespace Shesha.Reflection
         {
             var propertiesWithoutHiddenOnes = containerType.GetProperties(bindingAttr)
                 .GroupBy(prop => prop.Name)
-                .Select(group => group.Aggregate((mostSpecificProp, other) => mostSpecificProp.DeclaringType.IsSubclassOf(other.DeclaringType.NotNull()) ? mostSpecificProp : other))
+                .Select(group => group.Aggregate((mostSpecificProp, other) => mostSpecificProp.DeclaringType.NotNull().IsSubclassOf(other.DeclaringType.NotNull()) ? mostSpecificProp : other))
                 .ToList();
             return propertiesWithoutHiddenOnes;
         }
@@ -681,7 +676,10 @@ namespace Shesha.Reflection
         {
             return source is TDestination dest
                 ? dest
-                : throw new InvalidCastException($"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'");
+                : throw new InvalidCastException(source != null 
+                    ? $"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'" 
+                    : "Failed to cast null to type '{typeof(TDestination).FullName}'"
+                );
         }
 
         /// <summary>
@@ -737,6 +735,19 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="type">Type to search method in</param>
         /// <param name="name">Method name</param>
+        /// <param name="bindingAttr">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
+        /// <returns></returns>
+        /// <exception cref="MethodNotFoundException"></exception>
+        public static MethodInfo GetRequiredMethod(this Type type, string name, BindingFlags bindingAttr)
+        {
+            return type.GetMethod(name, bindingAttr) ?? throw new MethodNotFoundException(type, name);
+        }
+
+        /// <summary>
+        /// Get method by name. Throws <see cref="MethodNotFoundException"/> if method not found
+        /// </summary>
+        /// <param name="type">Type to search method in</param>
+        /// <param name="name">Method name</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
         public static MethodInfo GetRequiredMethod(this Type type, string name)
@@ -754,6 +765,11 @@ namespace Shesha.Reflection
         public static PropertyInfo GetRequiredProperty(this Type type, string propertyName) 
         {
             return type.GetProperty(propertyName) ?? throw new PropertyNotFoundException(type, propertyName);
-        }        
+        }
+
+        public static FieldInfo GetRequiredField(this Type type, string fieldName)
+        {
+            return type.GetField(fieldName) ?? throw new FieldNotFoundException(type, fieldName);
+        }
     }
 }
