@@ -30,11 +30,6 @@ namespace Shesha.DynamicEntities.Mapper
 
                 Converters.Add(new ConverterDefinition(reflistType, numericType, typeof(EnumToNumericTypeConverter<,>).MakeGenericType(reflistType, numericType)));
                 Converters.Add(new ConverterDefinition(numericType, reflistType, typeof(NumericToEnumTypeConverter<,>).MakeGenericType(numericType, reflistType)));
-
-                /*
-                var listType = typeof(List<Int64?>);
-                Converters.Add(new ConverterDefinition(listType, reflistType, typeof(NumericToEnumTypeConverter<,>).MakeGenericType(numericType, reflistType)));
-                */
             }
         }
 

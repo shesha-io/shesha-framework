@@ -1,4 +1,5 @@
-﻿using Shesha.Services;
+﻿using Shesha.Domain;
+using Shesha.Services;
 using System;
 using System.Reflection;
 
@@ -94,6 +95,14 @@ namespace Shesha.Configuration.Runtime
         public PropertyConfiguration(Type entityType)
         {
             EntityType = entityType;
+        }
+
+        public ReferenceListIdentifier GetRefListIdentifier() 
+        {
+            if (string.IsNullOrWhiteSpace(ReferenceListName))
+                throw new Exception($"{nameof(ReferenceListName)} must be specified");
+
+            return new ReferenceListIdentifier(ReferenceListModule, ReferenceListName);
         }
     }
 }

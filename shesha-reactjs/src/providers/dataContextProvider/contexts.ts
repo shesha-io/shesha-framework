@@ -39,7 +39,7 @@ export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderSt
 export const DataContextProviderStateContext = createNamedContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE, "DataContextProviderStateContext");
 export const DataContextProviderActionsContext = createNamedContext<IDataContextProviderActionsContext>(undefined, "DataContextProviderActionsContext");
 
-export type DataContextType = 'root' | 'page' | 'form' | 'control' | 'settings' | 'appLayer';
+export type DataContextType = 'root' | 'storage' | 'page' | 'form' | 'control' | 'settings' | 'appLayer';
 
 
 export type ContextGetFieldValue = (name: string) => any;

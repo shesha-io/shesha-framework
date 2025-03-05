@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using NSubstitute;
+using Shesha.Reflection;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Shesha.Tests
             hostingEnvironment.Setup(x => x.ApplicationName).Returns("test");
             hostingEnvironment.Setup(x => x.EnvironmentName).Returns("test");
 
-            var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).NotNullOrWhiteSpace();
             hostingEnvironment.Setup(x => x.ContentRootPath).Returns(rootPath);
             var hh = hostingEnvironment.As<IWebHostEnvironment>().Object;
 

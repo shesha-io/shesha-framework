@@ -151,7 +151,7 @@ namespace Shesha.Configuration.Runtime
                 {
                     // Requesting a child property
                     var propInfo = ReflectionHelper.GetProperty(EntityType, propertyName);
-                    return propInfo.DeclaringType.GetEntityConfiguration()[propInfo.Name];
+                    return propInfo.DeclaringType.NotNull().GetEntityConfiguration()[propInfo.Name];
                 }
                 else
                 {

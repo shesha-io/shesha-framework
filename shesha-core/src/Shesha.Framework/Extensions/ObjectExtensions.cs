@@ -51,9 +51,9 @@ namespace Shesha.Extensions
         /// <summary>
         /// Indicates is the specified type a type of entity
         /// </summary>
-        public static bool IsEntityType(this Type type)
+        public static bool IsEntityType(this Type? type)
         {
-            return MappingHelper.IsEntity(type);
+            return type != null && MappingHelper.IsEntity(type);
         }
 
         /// <summary>
