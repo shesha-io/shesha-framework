@@ -29,7 +29,7 @@ namespace Shesha.Startup
         /// </summary>
         public ILogger Logger { get; set; }
 
-        public ApplicationStartupDto PreviousStartup { get; private set; }
+        public ApplicationStartupDto? PreviousStartup { get; private set; }
         public ApplicationStartupDto CurrentStartup { get; private set; }
         public bool AllAssembliesStayUnchanged { get; private set; }
 
@@ -233,9 +233,9 @@ namespace Shesha.Startup
             }
         }
 
-        private async Task<ApplicationStartupDto> GetPreviousStartupDetailsAsync()
+        private async Task<ApplicationStartupDto?> GetPreviousStartupDetailsAsync()
         {
-            ApplicationStartupDto result = null;
+            ApplicationStartupDto? result = null;
             using (var uow = _uowManager.Begin()) 
             {
                 var prevStartup = await _startupRepository.GetAll().OrderByDescending(s => s.StartedOn).FirstOrDefaultAsync();

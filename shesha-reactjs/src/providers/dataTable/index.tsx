@@ -92,6 +92,8 @@ import {
   IConfigurableColumnsProps, IDataColumnsProps,
 } from '../datatableColumnsConfigurator/models';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
+import { dataTableContextCode } from '@/publicJsApis';
+import { DataTypes, IObjectMetadata } from '@/index';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -705,6 +707,17 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   //#endregion
 
+  const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
+    typeDefinitionLoader: () => {
+      return Promise.resolve({
+        typeName: 'IDataTableContexApi',
+        files: [{ content: dataTableContextCode, fileName: 'apis/dataTableContextApi.ts' }]
+      });
+    },
+    properties: [],
+    dataType: DataTypes.object
+  }), []);
+
   // TODO: pass row index
   const setRowData = (rowIndex: number, rowData: any) => {
     dispatch(setRowDataAction({ rowIndex, rowData: rowData }));
@@ -796,6 +809,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       data={state}
       api={actions}
       onChangeData={contextOnChangeData}
+      metadata={contextMetadata}
     >
       <DataTableStateContext.Provider value={state}>
         <DataTableActionsContext.Provider value={actions}>

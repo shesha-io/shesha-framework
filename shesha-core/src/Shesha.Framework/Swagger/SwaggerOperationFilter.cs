@@ -72,7 +72,7 @@ namespace Shesha.Swagger
             var unwrappedReturnType = context.MethodInfo.ReturnType == typeof(Task)
                 ? typeof(AjaxResponseBase)
                 : context.MethodInfo.ReturnType.IsSubtypeOfGeneric(typeof(Task<>))
-                    ? context.MethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault()
+                    ? context.MethodInfo.ReturnType.GenericTypeArguments.First()
                     : context.MethodInfo.ReturnType;
 
             var okResponse = ((int)HttpStatusCode.OK).ToString();

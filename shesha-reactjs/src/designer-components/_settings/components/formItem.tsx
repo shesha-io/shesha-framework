@@ -12,7 +12,6 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
     const childElement = children as ReactElement;
     const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
 
-
     const handleChange = (onChange) => (...args: any[]) => {
         const event = args[0];
         const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target

@@ -716,6 +716,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                         .addSettingsInputRow({
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                             inline: true,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [

@@ -1,5 +1,6 @@
 ﻿using Abp;
 using Abp.Authorization.Users;
+using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Modules;
 using Abp.MultiTenancy;
@@ -208,6 +209,19 @@ namespace Shesha.Tests
             return unitOfWorkManager.Begin() is NhUnitOfWork nhuow
                 ? nhuow
                 : throw new Exception($"Unexpected type of UnitOfWork. Expected '{nameof(NhUnitOfWork)}'");
+        }
+
+        protected virtual async Task<TResult> WithUnitOfWorkAsync<TResult>(Func<Task<TResult>> action, UnitOfWorkOptions options = null)
+        {
+            using (var uowManager = LocalIocManager.ResolveAsDisposable<IUnitOfWorkManager>())
+            {
+                using (var uow = uowManager.Object.Begin(options ?? new UnitOfWorkOptions()))
+                {
+                    var result = await action();
+                    await uow.CompleteAsync();
+                    return result;
+                }
+            }
         }
     }
 

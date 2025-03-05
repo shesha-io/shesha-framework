@@ -9,7 +9,6 @@ import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/
 export const getSettings = (data: ITextFieldComponentProps) => {
 
     return {
-
         components: new DesignerToolbarSettings(data)
             .addSearchableTabs({
                 id: 'W_m7doMyCpCYwAYDfRh6I',
@@ -646,6 +645,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {

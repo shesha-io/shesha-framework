@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Abp.Dependency;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Shesha.AutoMapper
 {
@@ -30,7 +29,7 @@ namespace Shesha.AutoMapper
             var repository = StaticContext.IocManager.Resolve<IRepository<TDest, TPk>>();
 
             // Update values (key is owner type + id), there rest is values. Id should be ignored
-            TDest destinationItem = null;
+            TDest? destinationItem = null;
             foreach(var sourceItem in sourceItems.Where(source => 
                 (destinationItem = destinationCollection.FirstOrDefault(c => c.OwnerType == source.EntityType && c.OwnerId == source.EntityId)) != null))
             {

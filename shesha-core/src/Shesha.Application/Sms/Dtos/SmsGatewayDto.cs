@@ -13,7 +13,7 @@
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Unique identifier of the Sms Gateway
