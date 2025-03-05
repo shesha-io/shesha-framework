@@ -1,10 +1,7 @@
-﻿using System.Reflection;
-using Abp.Localization.Dictionaries.Xml;
-using Abp.Localization.Sources;
-using Abp.Modules;
+﻿using Abp.Modules;
 using Abp.Zero;
-using Abp.AspNetCore.Configuration;
 using Castle.MicroKernel.Registration;
+using System.Reflection;
 
 namespace Shesha.MongoRepository.Mongo
 {

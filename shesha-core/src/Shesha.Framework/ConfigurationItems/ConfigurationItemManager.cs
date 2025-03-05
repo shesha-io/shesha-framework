@@ -7,6 +7,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -120,6 +121,8 @@ namespace Shesha.ConfigurationItems
 
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+            item.NotNull();
 
             var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == item.Origin);
             var allVersions = await allVersionsQuery.ToListAsync();

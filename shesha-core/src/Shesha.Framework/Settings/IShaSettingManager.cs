@@ -25,7 +25,7 @@ namespace Shesha.Settings
         /// <param name="name">Setting name</param>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null);
+        Task<object?> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null);
 
         /// <summary>
         /// 
@@ -36,7 +36,7 @@ namespace Shesha.Settings
         /// <param name="defaultValue"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<object> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null);
+        Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null);
 
         /// <summary>
         /// Get setting value or null
@@ -45,7 +45,7 @@ namespace Shesha.Settings
         /// <param name="name">Setting name</param>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<TValue> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null);
+        Task<TValue?> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null);
 
         /// <summary>
         /// Set setting value

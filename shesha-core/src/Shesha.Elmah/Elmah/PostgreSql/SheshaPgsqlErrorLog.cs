@@ -48,7 +48,7 @@ namespace Shesha.Elmah.PostgreSql
         /// </summary>
         public virtual string ConnectionString { get; }
 
-        public override string Log(Error error)
+        public override string? Log(Error error)
         {
             var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
@@ -101,7 +101,7 @@ namespace Shesha.Elmah.PostgreSql
             command.ExecuteNonQuery();
         }
 
-        public override ErrorLogEntry GetError(string id)
+        public override ErrorLogEntry? GetError(string id)
         {
             if (id == null) throw new ArgumentNullException("id");
             if (id.Length == 0) throw new ArgumentException(null, "id");
@@ -180,7 +180,7 @@ namespace Shesha.Elmah.PostgreSql
                 }
             }
 
-            public static object ExecuteScalar(NpgsqlConnection connection, string sql)
+            public static object? ExecuteScalar(NpgsqlConnection connection, string sql)
             {
                 using (var command = new NpgsqlCommand(sql))
                 {

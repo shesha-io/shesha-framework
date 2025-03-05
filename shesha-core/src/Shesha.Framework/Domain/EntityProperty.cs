@@ -80,7 +80,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Parent property
         /// </summary>
-        public virtual EntityProperty ParentProperty { get; set; }
+        public virtual EntityProperty? ParentProperty { get; set; }
 
         /// <summary>
         /// Child properties (applicable for objects)
@@ -91,7 +91,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Items type (applicable for arrays)
         /// </summary>
-        public virtual EntityProperty ItemsType { get; set; }
+        public virtual EntityProperty? ItemsType { get; set; }
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)

@@ -9,21 +9,22 @@ namespace Shesha.DynamicEntities.Middleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            var path = context.Request.Path.Value;
             if (context.Request.Query.ContainsKey("properties")
-                && context.Request.Path.Value != null)
+                && path != null)
             {
-                if (context.Request.Path.Value.ToLower().Contains("crud/get"))
+                if (path.ToLower().Contains("crud/get"))
                     context.Request.Path =
-                        new PathString(Regex.Replace(context.Request.Path.Value, "/Get", "/Query", RegexOptions.IgnoreCase));
+                        new PathString(Regex.Replace(path, "/Get", "/Query", RegexOptions.IgnoreCase));
 
-                if (context.Request.Path.Value.ToLower().EndsWith("crud/create"))
+                if (path.ToLower().EndsWith("crud/create"))
                     context.Request.Path =
-                        new PathString(Regex.Replace(context.Request.Path.Value, "/Create", "/Creategql", RegexOptions.IgnoreCase));
+                        new PathString(Regex.Replace(path, "/Create", "/Creategql", RegexOptions.IgnoreCase));
 
-                if (context.Request.Path.Value.ToLower().EndsWith("crud/update")
-                    && !context.Request.Path.Value.ToLower().Contains("crud/updategql"))
+                if (path.ToLower().EndsWith("crud/update")
+                    && !path.ToLower().Contains("crud/updategql"))
                     context.Request.Path =
-                        new PathString(Regex.Replace(context.Request.Path.Value, "/Update", "/Updategql", RegexOptions.IgnoreCase));
+                        new PathString(Regex.Replace(path, "/Update", "/Updategql", RegexOptions.IgnoreCase));
             }
 
             await next(context);

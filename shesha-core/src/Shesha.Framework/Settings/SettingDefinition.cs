@@ -50,7 +50,7 @@ namespace Shesha.Settings
         [CanBeNull]
         public ConfigurationItemIdentifier? EditForm { get; set; }
 
-        public abstract object GetDefaultValue();
+        public abstract object? GetDefaultValue();
         public abstract Type GetValueType();
         
         /// <summary>
@@ -86,7 +86,7 @@ namespace Shesha.Settings
             DefaultValue = defaultValue;
         }
 
-        public override object GetDefaultValue()
+        public override object? GetDefaultValue()
         {
             return DefaultValue;
         }

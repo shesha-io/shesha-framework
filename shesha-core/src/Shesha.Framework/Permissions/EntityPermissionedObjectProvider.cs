@@ -41,7 +41,7 @@ namespace Shesha.Permissions
             return new List<string>() { ShaPermissionedObjectsTypes.Entity };
         }
 
-        public string GetObjectType(Type type)
+        public string? GetObjectType(Type type)
         {
             return type.IsPublic && !type.IsAbstract && type.IsEntityType()
                    ? ShaPermissionedObjectsTypes.Entity
@@ -50,7 +50,7 @@ namespace Shesha.Permissions
 
         private List<string> _hardcoded;
 
-        public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null, bool skipUnchangedAssembly = false)
+        public async Task<List<PermissionedObjectDto>> GetAllAsync(string? objectType = null, bool skipUnchangedAssembly = false)
         {
             var list = new List<PermissionedObjectDto>();
 
@@ -87,10 +87,10 @@ namespace Shesha.Permissions
 
         private PermissionedObjectDto MakeDto(
             string objectName,
-            string parent,
+            string? parent,
             string name,
             string description,
-            Module module,
+            Module? module,
             RefListPermissionedAccess? access,
             List<string>? permissions,
             bool hardcoded,

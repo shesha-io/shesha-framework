@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
@@ -10,7 +9,6 @@ using Shesha.Extensions;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace Shesha.Services.Settings.Distribution
     /// <summary>
     /// Setting import
     /// </summary>
-    public class SettingImport: ConfigurationItemImportBase, ISettingImport, ITransientDependency
+    public class SettingImport: ConfigurationItemImportBase<SettingConfiguration, DistributedSettingConfiguration>, ISettingImport, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigRepo;
         private readonly IRepository<SettingValue, Guid> _settingValueRepo;
@@ -54,20 +52,10 @@ namespace Shesha.Services.Settings.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream) 
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedSettingConfiguration>(json);
-            }
-        }
-
-        /// inheritedDoc
         protected async Task<ConfigurationItemBase> ImportSettingAsync(DistributedSettingConfiguration item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingSetting = await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var existingSetting = await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -88,7 +76,7 @@ namespace Shesha.Services.Settings.Distribution
                 {
                     var liveVersion = existingSetting.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingSetting
-                        : await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _settingConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module != null && f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveVersion != null)
                     {
                         await _settingStore.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);

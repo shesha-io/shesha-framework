@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using Abp.Extensions;
 
 namespace Shesha.Validation
 {
@@ -9,10 +8,8 @@ namespace Shesha.Validation
 
         public static bool IsEmail(string value)
         {
-            if (value.IsNullOrEmpty())
-            {
+            if (string.IsNullOrWhiteSpace(value))
                 return false;
-            }
 
             var regex = new Regex(EmailRegex);
             return regex.IsMatch(value);

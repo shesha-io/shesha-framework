@@ -51,7 +51,7 @@ namespace Shesha.Areas
             else
             {
                 var areas = await Repository.GetAll()
-                    .Where(p => (p.Name ?? "").ToLower().Contains(term) && (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.ParentArea.Id == parentAreaId))
+                    .Where(p => (p.Name ?? "").ToLower().Contains(term) && (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.ParentArea != null && p.ParentArea.Id == parentAreaId))
                     .OrderBy(p => p.Name)
                     .Take(10)
                     .Select(p => new AutocompleteItemDto
@@ -88,7 +88,7 @@ namespace Shesha.Areas
             else
             {
                 var areas = await Repository.GetAll()
-                    .Where(p => (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.ParentArea.Id == parentAreaId))
+                    .Where(p => (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.ParentArea != null && p.ParentArea.Id == parentAreaId))
                     .OrderBy(p => p.Name)
                     .Select(p => new AutocompleteItemDto
                     {

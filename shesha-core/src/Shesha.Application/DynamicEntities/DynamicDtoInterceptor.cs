@@ -1,13 +1,9 @@
 ﻿using Castle.DynamicProxy;
-using System;
+using Shesha.Reflection;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shesha.DynamicEntities
 {
-
-    // ToDo AS: Don't use. Is not completed!
-    //[Obsolete("Don't use. Is not completed!")]
     public class DynamicDtoInterceptor : IInterceptor
     {
         private string _name;
@@ -59,11 +55,6 @@ namespace Shesha.DynamicEntities
                 invocation.ReturnValue = _isChanged;
                 return;
             }
-            /*if (invocation.Method.Name == $"set_{nameof(IDynamicDtoInputProxy.IsChanged)}")
-            {
-                _isChanged = (bool)invocation.Arguments[0];
-                return;
-            }*/
 
             if (invocation.Method.Name.StartsWith("set_"))
             {
@@ -72,10 +63,13 @@ namespace Shesha.DynamicEntities
                 if (prop != null)
                 {
                     var val = prop.GetValue(invocation.InvocationTarget, null);
+                    // TODO: Alex, please review
+#pragma warning disable CS8602
                     if (!val.Equals(invocation.Arguments[0]))
                     {
                         Change(prop.Name, val);
                     }
+#pragma warning restore CS8602
                 }
 
             }

@@ -78,32 +78,36 @@ namespace Shesha.Configuration.Runtime
         {
             propConfig.PropertyInfo = prop;
             propConfig.GeneralType = GetGeneralDataType(prop);
-            propConfig.Category = prop.GetAttribute<CategoryAttribute>()?.Category;
+            propConfig.Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category;
 
             switch (propConfig.GeneralType)
             {
                 case GeneralDataType.Numeric:
                 case GeneralDataType.ReferenceList:
                     {
-                        var refListAtt = prop.GetAttribute<ReferenceListAttribute>(true);
-                        var refListId = refListAtt?.GetReferenceListIdentifier(prop);
-                        if (refListId == null)
+                        var refListAtt = prop.GetAttributeOrNull<ReferenceListAttribute>(true);
+                        if (refListAtt != null) 
                         {
-                            var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
-
-                            if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>()) 
+                            var refListId = refListAtt.GetReferenceListIdentifier(prop);
+                            if (refListId == null)
                             {
-                                refListAtt = underlyingType.GetAttribute<ReferenceListAttribute>();
-                                refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
+                                var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
+
+                                if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
+                                {
+                                    refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
+                                    refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
+                                }
                             }
-                        }
 
-                        if (refListId != null)
-                        {
-                            propConfig.ReferenceListName = refListId.Name;
-                            propConfig.ReferenceListModule = refListId.Module;
+                            if (refListId != null)
+                            {
+                                propConfig.ReferenceListName = refListId.Name;
+                                propConfig.ReferenceListModule = refListId.Module;
 
-                            propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                                if (refListAtt != null)
+                                    propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                            }
                         }
                         break;
                     }
@@ -203,7 +207,7 @@ namespace Shesha.Configuration.Runtime
             }
             else if (underlyingPropType == typeof(DateTime))
             {
-                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+                var dataTypeAtt = propInfo.GetAttributeOrNull<DataTypeAttribute>();
 
                 if (dataTypeAtt != null &&
                     dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))

@@ -34,7 +34,7 @@ namespace Shesha.Domain.Attributes
             Init(action, access, permissions);
         }
 
-        public void Init(CrudActions action, RefListPermissionedAccess access, string[] permissions)
+        public void Init(CrudActions action, RefListPermissionedAccess access, string[]? permissions)
         {
             switch (action)
             {

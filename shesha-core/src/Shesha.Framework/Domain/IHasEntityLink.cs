@@ -22,7 +22,7 @@ namespace Shesha.Domain
         /// Sets the owners of the entity.
         /// </summary>
         /// <param name="entity">The entity which can be used as a Entity for the entity implementing this interface.</param>
-        void SetEntity<TId>(IEntity<TId> entity);
+        void SetEntity<TId>(IEntity<TId> entity) where TId : notnull;
 
         /// <summary>
         /// Sets the Entity of the entity.

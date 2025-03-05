@@ -27,14 +27,11 @@ namespace Shesha.Services.StoredFiles
         /// </summary>
         public string PhysicalFilePath(StoredFileVersion fileVersion)
         {
-            if (fileVersion == null)
-                return null;
-
             var folder = fileVersion.File.Folder;
             var path = _pathHelper.Combine(
                 !string.IsNullOrWhiteSpace(folder) && (Path.IsPathRooted(folder) || folder.StartsWith("~"))
                     ? ""
-                    : _sheshaSettings.UploadFolder.GetValue(),
+                    : _sheshaSettings.UploadFolder.GetValueOrNull() ?? string.Empty,
                 folder ?? "",
                 fileVersion.Id + fileVersion.FileType);
 
@@ -43,9 +40,6 @@ namespace Shesha.Services.StoredFiles
 
         public override async Task<Stream> GetStreamAsync(StoredFileVersion fileVersion)
         {
-            if (fileVersion == null)
-                return null;
-
             await using(var fileStream = new FileStream(PhysicalFilePath(fileVersion), FileMode.Open, FileAccess.Read))
             {
                 // copy to MemoryStream to prevent sharing violations
@@ -60,9 +54,6 @@ namespace Shesha.Services.StoredFiles
 
         public override Stream GetStream(StoredFileVersion fileVersion)
         {
-            if (fileVersion == null)
-                return null;
-
             using (var fileStream = new FileStream(PhysicalFilePath(fileVersion), FileMode.Open, FileAccess.Read))
             {
                 // copy to MemoryStream to prevent sharing violations
@@ -76,9 +67,6 @@ namespace Shesha.Services.StoredFiles
         }
         public async Task<Stream> GetStreamAsync(string filePath)
         {
-            if (string.IsNullOrEmpty(filePath))
-                return null;
-
             await using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 // copy to MemoryStream to prevent sharing violations
@@ -150,7 +138,7 @@ namespace Shesha.Services.StoredFiles
                 return false;
 
             var path = PhysicalFilePath(lastVersion);
-            return File.Exists(path);                
+            return File.Exists(path);
         }
     }
 }

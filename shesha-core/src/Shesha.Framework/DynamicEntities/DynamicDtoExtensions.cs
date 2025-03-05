@@ -1,9 +1,6 @@
 ﻿using Shesha.DynamicEntities.Dtos;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
@@ -19,7 +16,7 @@ namespace Shesha.DynamicEntities
             return GetGenericDtoInterface(type) != null;
         }
 
-        private static Type GetGenericDtoInterface(Type type)
+        private static Type? GetGenericDtoInterface(Type type)
         {
             return type.GetInterfaces().FirstOrDefault(x =>
                 x.IsGenericType &&
@@ -31,12 +28,14 @@ namespace Shesha.DynamicEntities
         /// </summary>
         /// <param name="type">Type of the dynamic DTO, <see cref="IDynamicDto{TEntity, TId}"/></param>
         /// <returns></returns>
-        public static Type GetDynamicDtoEntityType(this Type type)
+        public static Type? GetDynamicDtoEntityType(this Type type)
         {
             if (!type.IsDynamicDto())
                 return null;
 
             var interfaceType = GetGenericDtoInterface(type);
+            if (interfaceType == null)
+                return null;
 
             var arguments = interfaceType.GetGenericArguments();
             return arguments.FirstOrDefault();

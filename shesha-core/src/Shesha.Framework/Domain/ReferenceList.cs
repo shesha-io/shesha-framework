@@ -22,7 +22,7 @@ namespace Shesha.Domain
         [StringLength(300)]
         [Display(Name = "Namespace")]
         [Obsolete("Is used for backward compatibility only")]
-        public virtual string Namespace { get; set; }
+        public virtual string? Namespace { get; set; }
 
         /// <summary>
         /// If true indicates that the application logic references

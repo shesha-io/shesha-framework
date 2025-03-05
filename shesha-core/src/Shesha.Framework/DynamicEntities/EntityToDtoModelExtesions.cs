@@ -5,6 +5,7 @@ using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Shesha.DynamicEntities
 {
     public static class EntityToDtoModelExtesions
     {
-        public static Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null)
+        public static Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings? settings = null)
             where TEntity : class, IEntity<TPrimaryKey>
             where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
@@ -69,10 +70,10 @@ namespace Shesha.DynamicEntities
                         var id = srcValue.GetId();
                         if (destProp.PropertyType.GetGenericTypeDefinition() == typeof(EntityReferenceDto<>))
                         {
-                            var idType = typeof(EntityReferenceDto<>).MakeGenericType(srcValue.GetType().GetProperty("Id").PropertyType);
+                            var idType = typeof(EntityReferenceDto<>).MakeGenericType(srcValue.GetType().GetRequiredProperty("Id").PropertyType);
                             var idWithName = Activator.CreateInstance(idType);
-                            idType.GetProperty(nameof(EntityReferenceDto<int>.Id)).SetValue(idWithName, id);
-                            idType.GetProperty(nameof(EntityReferenceDto<int>._displayName)).SetValue(idWithName, srcValue.GetEntityDisplayName());
+                            idType.GetRequiredProperty(nameof(EntityReferenceDto<int>.Id)).SetValue(idWithName, id);
+                            idType.GetRequiredProperty(nameof(EntityReferenceDto<int>._displayName)).SetValue(idWithName, srcValue.GetEntityDisplayName());
 
                             destProp.SetValue(dest, idWithName);
                         }

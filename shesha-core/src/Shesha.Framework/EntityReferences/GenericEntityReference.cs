@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Entities;
-using Abp.Extensions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -68,12 +67,13 @@ namespace Shesha.EntityReferences
 
         public static bool operator ==(GenericEntityReference? l, GenericEntityReference? r)
         {
-            if (l is null && r is null)
-                return true;
-
-            if ((l is null) != (r is null))
+            if (l is null)
+            {
+                if (r is null)
+                    return true;
+                // Only the left side is null.
                 return false;
-
+            }
             // Equals handles case of null on right side.
             return l.Equals(r);
         }
@@ -82,7 +82,9 @@ namespace Shesha.EntityReferences
 
         public override int GetHashCode()
         {
-            return Id.IsNullOrEmpty() ? 0 : Id.GetHashCode();
+            return string.IsNullOrWhiteSpace(Id)
+                ? 0 
+                : Id.GetHashCode();
         }
     }
 }

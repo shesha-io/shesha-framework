@@ -12,7 +12,7 @@ public class MobileDeviceAppService : DynamicCrudAppService<MobileDevice, Dynami
     {
     }
 
-    public async Task<MobileDeviceDto> GetDeviceByEmeiAsync(string imei)
+    public async Task<MobileDeviceDto?> GetDeviceByEmeiAsync(string imei)
     {
         var device = await Repository.FirstOrDefaultAsync(r => r.IMEI == imei);
         return device != null

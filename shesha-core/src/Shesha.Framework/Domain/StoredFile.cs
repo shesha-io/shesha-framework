@@ -85,7 +85,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <typeparam name="TId">Id type of the owner</typeparam>
         /// <param name="entity">Owner entity</param>
-        public virtual void SetOwner<TId>(IEntity<TId> entity)
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
         {
             Owner = new GenericEntityReference(entity.Id.ToString().NotNull(), entity.GetType().StripCastleProxyType().GetRequiredFullName());
         }

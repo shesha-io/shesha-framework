@@ -68,7 +68,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
             }
 
             
-            var logItems = JsonConvert.DeserializeObject<List<EventLogItem>>("[" + logFileContent + "]");
+            var logItems = JsonConvert.DeserializeObject<List<EventLogItem>>("[" + logFileContent + "]") ?? [];
 
             return logItems;
         }
@@ -78,7 +78,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ScheduledJobStatistic> GetExecutionStatisticsAsync(Guid id)
+        public async Task<ScheduledJobStatistic?> GetExecutionStatisticsAsync(Guid id)
         {
             if (id == Guid.Empty)
                 return null;

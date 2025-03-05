@@ -75,7 +75,7 @@ namespace Shesha.NHibernate.EntityHistory
         public EntityChangeSet EntityChangeSet { get; set; }
         public List<EntityChange> EntityChanges { get; set; }
         public List<EntityHistoryEvent> EntityHistoryEvents { get; set; }
-        public ISession Session => (UnitOfWorkManager.Current as NhUnitOfWork)?.GetSession();
+        public ISession? Session => (UnitOfWorkManager.Current as NhUnitOfWork)?.GetSessionOrNull();
 
         public virtual void AddEntityChange(object entity)
         {
@@ -130,7 +130,7 @@ namespace Shesha.NHibernate.EntityHistory
             }
 
             var entityTypeFullName = typeOfEntity.FullName;
-            var entityEntry = Session.GetEntry(entity, false);
+            var entityEntry = Session.GetEntryOrNull(entity);
             if (entityEntry == null) 
                 return null;
 
@@ -256,11 +256,11 @@ namespace Shesha.NHibernate.EntityHistory
                         {
                             propchange = CreateEntityPropertyChange(
                                 property.OldValue != null
-                                    ? propType.GetProperty("Id")?.GetValue(property.OldValue).ToString() ??
+                                    ? propType.GetProperty("Id")?.GetValue(property.OldValue)?.ToString() ??
                                       property.OldValue.ToString()
                                     : "",
                                 property.NewValue != null
-                                    ? propType.GetProperty("Id")?.GetValue(property.NewValue).ToString() ??
+                                    ? propType.GetProperty("Id")?.GetValue(property.NewValue)?.ToString() ??
                                       property.NewValue.ToString()
                                     : "",
                                 propInfo
@@ -407,7 +407,7 @@ namespace Shesha.NHibernate.EntityHistory
                 ? propInfo.PropertyType.GetGenericArguments()[0] 
                 : propInfo.PropertyType;
 
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name));
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name));
 
             var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
             var audited = propInfo.GetCustomAttribute<AuditedAttribute>();
@@ -446,7 +446,7 @@ namespace Shesha.NHibernate.EntityHistory
                     if (eventInfo == null)
                         return false;
 
-                    var id = entity.GetId().ToString();
+                    var id = entity.GetId().NotNull().ToString();
 
                     var entityChange = new EntityChange
                     {
@@ -565,7 +565,7 @@ namespace Shesha.NHibernate.EntityHistory
             return propertyChange;
         }
 
-        public virtual EntityChangeSet CreateEntityChangeSet()
+        public virtual EntityChangeSet? CreateEntityChangeSet()
         {
             if (!IsEntityHistoryEnabled) return null;
 
@@ -592,7 +592,7 @@ namespace Shesha.NHibernate.EntityHistory
             {
                 var prop = EntityChanges
                     .FirstOrDefault(x =>
-                        x.EntityId == entityHistoryEvent.EntityChange.EntityId
+                        x.EntityId == entityHistoryEvent.EntityChange.NotNull().EntityId
                         && x.EntityTypeFullName == entityHistoryEvent.EntityChange.EntityTypeFullName
                         && x.PropertyChanges != null)
                     ?.PropertyChanges.FirstOrDefault(x => x.PropertyName == entityHistoryEvent.PropertyName);

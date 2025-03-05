@@ -21,7 +21,7 @@ namespace Shesha.Tests.DomainModel
         {
             var typeFinder = StaticContext.IocManager.Resolve<ITypeFinder>();
             
-            var types = typeFinder.FindAll().Where(t => t.IsEntityType() && !t.Assembly.FullName.StartsWith("Abp")).ToList();
+            var types = typeFinder.FindAll().Where(t => t.IsEntityType() && t.Assembly.FullName != null && !t.Assembly.FullName.StartsWith("Abp")).ToList();
 
             var errors = new Dictionary<Type, Exception>();
 
