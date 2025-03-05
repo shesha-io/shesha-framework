@@ -364,13 +364,24 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
  */
 export const RawAutocomplete = (props: IAutocompleteProps) => {
   return (
-    <Autocomplete {...props} displayPropName={props.displayPropName || 'displayText'} keyPropName={props.keyPropName || 'value'} mode='single'/>
+    <Autocomplete 
+      {...props}
+      displayPropName={props.displayPropName || (props.dataSourceType === 'url' ? 'displayText' : '_displayName')}
+      keyPropName={props.keyPropName || (props.dataSourceType === 'url' ? 'value' : 'id')}
+      mode='single'
+    />
   );
 };
 
 type InternalAutocompleteType = typeof Autocomplete;
 interface IInternalAutocompleteInterface extends InternalAutocompleteType {
+  /** 
+  * @deprecated The method should not be used, please use Autocomplete
+  */
   Raw: typeof RawAutocomplete;
+  /** 
+  * @deprecated The method should not be used, please use Autocomplete
+  */
   EntityDto: typeof EntityDtoAutocomplete;
 }
 
