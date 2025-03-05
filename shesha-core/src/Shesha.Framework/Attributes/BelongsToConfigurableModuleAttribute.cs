@@ -11,7 +11,7 @@ namespace Shesha.Attributes
     [AttributeUsage(AttributeTargets.Assembly)]
     public class BelongsToConfigurableModuleAttribute : Attribute
     {
-        protected Type ModuleType { get; set; }
+        protected Type? ModuleType { get; set; }
         public string ModuleName { get; set; }
 
         public BelongsToConfigurableModuleAttribute(string moduleName)

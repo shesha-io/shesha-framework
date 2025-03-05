@@ -214,7 +214,7 @@ namespace Shesha.Users
         protected override IQueryable<User> CreateFilteredQuery(PagedUserResultRequestDto input)
         {
             return Repository.GetAllIncluding(x => x.Roles)
-                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress != null && x.EmailAddress.Contains(input.Keyword))
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
         }
 
@@ -326,10 +326,13 @@ namespace Shesha.Users
                     }
                     else if (reflistItem == RefListPasswordResetMethods.EmailLink && isEmailLinkEnabled && hasEmail)
                     {
-                        var maskedEmail = person.EmailAddress.MaskEmail();
-                        methodOption.Prompt = $"Email a link to {maskedEmail}";
-                        methodOption.MaskedIdentifier = maskedEmail;
-                        isAllowed = true;
+                        if (!string.IsNullOrWhiteSpace(person.EmailAddress)) 
+                        {
+                            var maskedEmail = person.EmailAddress.MaskEmail();
+                            methodOption.Prompt = $"Email a link to {maskedEmail}";
+                            methodOption.MaskedIdentifier = maskedEmail;
+                            isAllowed = true;
+                        }                        
                     }
                     else if (reflistItem == RefListPasswordResetMethods.SecurityQuestions && isSecurityQuestionsEnabled && hasQuestions)
                     {
@@ -506,6 +509,9 @@ namespace Shesha.Users
             var user = await _userRepository.GetAll().Where(u => u.UserName == username).FirstOrDefaultAsync();
 
             ValidateUserPasswordResetMethod(user, (long)RefListPasswordResetMethods.EmailLink);
+
+            if (string.IsNullOrWhiteSpace(user.EmailAddress))
+                throw new UserFriendlyException("User has no email address");
 
             var lifetime = securitySettings.ResetPasswordEmailLinkLifetime;
 
