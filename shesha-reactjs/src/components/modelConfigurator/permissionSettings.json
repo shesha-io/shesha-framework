@@ -273,8 +273,6 @@
       "props": {}
     },
     "formKeysToPersist": [],
-    "access": 4,
-    "permissions": [ "testPermission" ],
     "version": 6,
     "dataLoaderType": "gql",
     "dataSubmitterType": "gql",

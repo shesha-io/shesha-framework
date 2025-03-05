@@ -57,13 +57,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // update local store of values details
   useEffect(() => {
-    if (!props.value && props.readOnly)
+    if (!keys.length && props.readOnly)
       return;
     if (props.dataSourceType === 'entitiesList' && props.entityType
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
       // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
-      if (props.value) {
+      if (keys.length) {
         const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
         if (props.dataSourceType === 'entitiesList' && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
@@ -121,7 +121,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         : outcomeValueFunc((option as ISelectOption).data, allData)
       : undefined;
 
-    const selectedFilter = selectedValue ? filterNotKeysFunc(selectedValue) : null;
+    const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length) 
+      ? filterNotKeysFunc(selectedValue) 
+      : null;
     source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
     debouncedSearch('');
     
@@ -364,13 +366,24 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
  */
 export const RawAutocomplete = (props: IAutocompleteProps) => {
   return (
-    <Autocomplete {...props} displayPropName={props.displayPropName || 'displayText'} keyPropName={props.keyPropName || 'value'} mode='single'/>
+    <Autocomplete 
+      {...props}
+      displayPropName={props.displayPropName || (props.dataSourceType === 'url' ? 'displayText' : '_displayName')}
+      keyPropName={props.keyPropName || (props.dataSourceType === 'url' ? 'value' : 'id')}
+      mode='single'
+    />
   );
 };
 
 type InternalAutocompleteType = typeof Autocomplete;
 interface IInternalAutocompleteInterface extends InternalAutocompleteType {
+  /** 
+   * @deprecated The method should not be used, please use Autocomplete
+   */
   Raw: typeof RawAutocomplete;
+  /** 
+   * @deprecated The method should not be used, please use Autocomplete
+   */
   EntityDto: typeof EntityDtoAutocomplete;
 }
 
