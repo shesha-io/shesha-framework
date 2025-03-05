@@ -96,12 +96,12 @@ namespace Shesha.Services.StoredFiles
 
         #region HasAttachments
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string? fileCategory)
         {
             return await HasAttachmentsOfCategoryAsync(owner.Id, owner.GetTypeShortAlias(), fileCategory);
         }
 
-        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
+        public async Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory)
         {
             return await GetAttachmentsQuery(id, typeShortAlias, f => f.Category == fileCategory).AnyAsync();
         }

@@ -204,11 +204,65 @@ namespace Shesha
         /// </summary>
         /// <typeparam name="T">Type of entity</typeparam>
         /// <param name="id">Id of the entity</param>
+        /// <returns></returns>
+        protected async Task<T?> GetEntityOrNullAsync<T>(Guid id) where T : class, IEntity<Guid>
+        {
+            return await GetEntityOrNullAsync<T, Guid>(id);
+        }
+
+        /// <summary>
+        /// Returns entity of the specified type with the specified <paramref name="id"/>
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
+        /// <typeparam name="TId">Id type</typeparam>
+        /// <param name="id">Id of the entity</param>
+        /// <returns></returns>
+        protected async Task<T?> GetEntityOrNullAsync<T, TId>(TId id) where T : class, IEntity<TId> where TId: notnull
+        {
+            var stringId = id.ToString();
+            ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
+
+            var item = await DynamicRepo.GetAsync(typeof(T), stringId);
+
+            return item != null ? (T)item : null;
+        }
+        
+        /// <summary>
+        /// Returns entity of the specified type with the specified <paramref name="id"/>
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
+        /// <param name="id">Id of the entity</param>
+        /// <returns></returns>
+        protected async Task<T> GetEntityAsync<T>(Guid id) where T : class, IEntity<Guid> 
+        {
+            return await GetEntityAsync<T, Guid>(id);
+        }
+
+        /// <summary>
+        /// Returns entity of the specified type with the specified <paramref name="id"/>
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
+        /// <typeparam name="TId">Id type</typeparam>
+        /// <param name="id">Id of the entity</param>
+       /// <returns></returns>
+        protected async Task<T> GetEntityAsync<T, TId>(TId id) where T : class, IEntity<TId> where TId : notnull
+        { 
+            return await GetEntityOrNullAsync<T, TId>(id) ?? throw new UserFriendlyException($"{typeof(T).Name} with the specified id `{id}` not found");
+        }
+
+        /// <summary>
+        /// Returns entity of the specified type with the specified <paramref name="id"/>
+        /// </summary>
+        /// <typeparam name="T">Type of entity</typeparam>
+        /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
+        [Obsolete("Use GetEntityOrNullAsync or GetEntityAsync without `throwException` argument")]
         protected async Task<T?> GetEntityAsync<T>(Guid id, bool throwException = true) where T : class, IEntity<Guid>
         {
-            return await GetEntityAsync<T, Guid>(id, throwException);
+            return throwException
+                ? await GetEntityAsync<T>(id)
+                : await GetEntityOrNullAsync<T>(id);
         }
 
         /// <summary>
@@ -219,20 +273,12 @@ namespace Shesha
         /// <param name="id">Id of the entity</param>
         /// <param name="throwException">Throw exception if entity not found</param>
         /// <returns></returns>
-        protected async Task<T?> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId> where TId: notnull
+        [Obsolete("Use GetEntityOrNullAsync or GetEntityAsync without `throwException` argument")]
+        protected async Task<T?> GetEntityAsync<T, TId>(TId id, bool throwException = true) where T : class, IEntity<TId> where TId : notnull
         {
-            var stringId = id.ToString();
-            ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
-
-            var item = await DynamicRepo.GetAsync(typeof(T), stringId);
-
-            if (item != null)
-                return (T)item;
-
-            if (throwException)
-                throw new UserFriendlyException($"{typeof(T).Name} with the specified id `{id}` not found");
-
-            return null;
+            return throwException
+                ? await GetEntityAsync<T, TId>(id)
+                : await GetEntityOrNullAsync<T, TId>(id);
         }
 
         /// <summary>
@@ -296,11 +342,7 @@ namespace Shesha
 
         protected async Task<List<DynamicDto<TEntity, TPrimaryKey>>> MapToDynamicDtoListAsync<TEntity, TPrimaryKey>(IEnumerable<TEntity> entities) where TEntity : class, IEntity<TPrimaryKey>
         {
-            var dtoList = await Task.WhenAll(
-                entities.Select(async entity =>
-                {
-                    return await MapToDynamicDtoAsync<TEntity, TPrimaryKey>(entity);
-                }));
+            var dtoList = await entities.SelectAsync(async entity => await MapToDynamicDtoAsync<TEntity, TPrimaryKey>(entity));
 
             return dtoList.ToList();
         }
