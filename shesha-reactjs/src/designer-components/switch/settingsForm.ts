@@ -34,7 +34,8 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   styledLabel: true,
                   parentId: commonTabId,
                   validate: { required: true },
-                  jsSetting: true
+                  jsSetting: true,
+                  size: 'small',
                 })
                 .addLabelConfigurator({
                   id: nanoid(),
