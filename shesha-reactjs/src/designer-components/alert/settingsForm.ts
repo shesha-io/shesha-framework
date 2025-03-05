@@ -200,7 +200,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                         id: nanoid(),
                         inputType: 'codeEditor',
                         propertyName: 'style',
-                        hideLabel: true,
+                        hideLabel: false,
                         label: 'Style',
                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                       })
