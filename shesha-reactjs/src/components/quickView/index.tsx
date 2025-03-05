@@ -43,6 +43,7 @@ export interface IQuickViewProps extends PropsWithChildren {
   displayType?: 'textTitle' | 'icon' | 'displayProperty';
   iconName?: ShaIconTypes;
   textTitle?: string;
+  emptyText?: string;
 }
 
 const formItemLayout = {
@@ -75,7 +76,9 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   displayType,
   iconName,
   textTitle,
+  emptyText = 'No Display Name',
 }) => {
+  const [loadingState, setLoadingState] = useState<'loading' | 'error' | 'success'>('loading');
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
   const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
@@ -89,7 +92,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   useEffect(() => {
     if (formIdentifier) {
       fetchForm().then((response) => {
-        setFormMarkup(response);
+        if (response)
+          setFormMarkup(response);
+        else
+          setLoadingState('error');
+      }).catch((error) => {
+        setLoadingState('error');
+        console.error(error)
       });
     }
   }, [formIdentifier]);
@@ -103,9 +112,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       fetcher
         .then((resp) => {
           setFormData(resp.result);
+          setLoadingState('success');
           if (resp.result[displayProperty]) setFormTitle(resp.result[displayProperty]);
         })
         .catch((reason) => {
+          setLoadingState('error');
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
     }
@@ -160,11 +171,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
     return (
       <Button className={styles.entityReferenceBtn} style={formTitle ? cssStyle : null} type="link">
-        {formTitle ?? (
-          <span>
-            <Spin size="small" /> Loading...
-          </span>
-        )}
+        {loadingState === 'loading'
+          ? <span><Spin size="small" /> Loading...</span>
+          : loadingState === 'success'
+            ? formTitle ?? emptyText
+            : 'Quickview not configured properly'
+        }
       </Button>
     );
   };
@@ -172,14 +184,15 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   if (disabled)
     return (
       <Button className={styles.entityReferenceBtn} disabled type="link">
-        {formTitle}
+        {formTitle ?? emptyText}
       </Button>
     );
 
+  const title = loadingState === 'error' ? 'Quickview not configured properly' : formTitle;
   return (
     <Popover
       content={<div style={{ width }}>{formContent}</div>}
-      title={formTitle ?? 'Quickview not configured properly'}
+      title={title}
       {...popoverProps}
     >
       {render()}
@@ -189,24 +202,22 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormId } = useConfigurationItemsLoader();
-  const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier);
+  const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier ?? undefined);
 
   useEffect(() => {
     if (props.className && !formConfig)
       getEntityFormId(props.className, props.formType ?? 'Quickview').then((f) => {
         setFormConfig(f);
+      }).catch((e) => {
+        console.log(e);
+        setFormConfig(null);
       });
   }, [props.className, props.formType, formConfig]);
 
-  return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig} />
-  ) : (
-    <Button type="link">
-      <span>
-        <Spin size="small" /> Loading...
-      </span>
-    </Button>
-  );
+  return formConfig === undefined 
+    ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
+    : <Popover content={''} title='Quickview not configured properly'></Popover>
+  ;
 };
 
 export default QuickView;
