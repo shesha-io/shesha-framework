@@ -101,7 +101,7 @@ export const getSettings = (data) => {
                             .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'hidden',
-                                label: 'Hidden',
+                                label: 'hide',
                                 parentId: 'root',
                                 inputType: 'switch',
                                 jsSetting: true

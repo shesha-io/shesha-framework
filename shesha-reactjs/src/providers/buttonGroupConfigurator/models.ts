@@ -58,6 +58,7 @@ export interface IButtonGroupItemBase extends IStyleType {
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
+  styles?: React.CSSProperties;
 }
 
 export interface IButtonItem extends Omit<IButtonGroupItem, 'type'> {

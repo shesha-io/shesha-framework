@@ -46,7 +46,7 @@ export const getSettings = (data: any) => {
                   id: '46d07439-4c18-468c-89e1-60c002ce96c55',
                   inputType: 'switch',
                   propertyName: 'hidden',
-                  label: 'Hidden',
+                  label: 'hide',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: false,
                 })

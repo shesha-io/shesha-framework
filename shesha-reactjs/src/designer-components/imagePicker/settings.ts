@@ -13,7 +13,7 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'abc54bf6-f76d-4139-a850-c99bf06c8b69',
+        id: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...new DesignerToolbarSettings()
           .addContextPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
@@ -60,12 +60,13 @@ export const getSettings = () =>
             propertyName: 'isDragger',
             label: 'Is dragger',
             parentId: 'root',
-            description: 'Whether the uploader should show a dragger instead of button',          })          
+            description: 'Whether the uploader should show a dragger instead of button',
+          })
           .addCheckbox({
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
             propertyName: 'hidden',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Hidden',
+            label: 'hide',
           })
           .addCheckbox({
             id: 'c6885251-96a6-40ce-99b2-4b5209a9e01c',
@@ -84,7 +85,7 @@ export const getSettings = () =>
             propertyName: 'allowUpload',
             label: 'Allow Upload',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
             validate: {},
           })
           .addCheckbox({
@@ -92,7 +93,7 @@ export const getSettings = () =>
             propertyName: 'allowReplace',
             label: 'Allow Replace',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
             validate: {},
           })
           .addCheckbox({
@@ -100,7 +101,7 @@ export const getSettings = () =>
             propertyName: 'allowDelete',
             label: 'Allow Delete',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
             validate: {},
           }).toJson()
         ]
@@ -117,7 +118,7 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
+        id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
         components: [...new DesignerToolbarSettings()
           .addCheckbox({
             id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
@@ -139,7 +140,7 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
+        id: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
         components: [...new DesignerToolbarSettings()
           .addCheckbox({
             id: 'af3d9a3f-f47e-48ae-b4c3-f5cc36e534d9',
@@ -164,7 +165,7 @@ export const getSettings = () =>
             displayPropName: 'displayText',
             keyPropName: 'value',
             mode: 'single',
-          })          
+          })
           .addEditableTagGroupProps({
             id: nanoid(),
             propertyName: 'allowedFileTypes',
@@ -185,8 +186,8 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings() 
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -197,6 +198,6 @@ export const getSettings = () =>
             validate: {},
           }).toJson()
         ]
-  }
-  })
+      }
+    })
     .toJson();

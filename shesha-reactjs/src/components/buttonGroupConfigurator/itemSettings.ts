@@ -176,6 +176,7 @@ export const getItemSettings = (data) => {
                                     propertyName: "dynamicItemsConfiguration",
                                     componentName: "configurableActionConfigurator1",
                                     label: "",
+                                    hideLabel: true,
                                     labelAlign: "right",
                                     parentId: "P4lhbrJsly_2yCjgicaql",
                                     hidden: false,
