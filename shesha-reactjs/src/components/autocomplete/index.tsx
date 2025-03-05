@@ -378,12 +378,12 @@ export const RawAutocomplete = (props: IAutocompleteProps) => {
 type InternalAutocompleteType = typeof Autocomplete;
 interface IInternalAutocompleteInterface extends InternalAutocompleteType {
   /** 
-  * @deprecated The method should not be used, please use Autocomplete
-  */
+   * @deprecated The method should not be used, please use Autocomplete
+   */
   Raw: typeof RawAutocomplete;
   /** 
-  * @deprecated The method should not be used, please use Autocomplete
-  */
+   * @deprecated The method should not be used, please use Autocomplete
+   */
   EntityDto: typeof EntityDtoAutocomplete;
 }
 
