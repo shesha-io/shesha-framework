@@ -27,7 +27,7 @@ namespace Shesha.NHibernate
 
         public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties)
         {
-            IQueryable<T> fetcher = null;
+            IQueryable<T>? fetcher = null;
 
             foreach (var propName in properties)
             {
@@ -43,7 +43,7 @@ namespace Shesha.NHibernate
                 : _asyncExecuter.ToListAsync(queryable); // fallback to IAsyncQueryableExecuter
         }
 
-        private IQueryable<T> FetchNested<T>(IQueryable<T> queryable, string propName)
+        private IQueryable<T>? FetchNested<T>(IQueryable<T> queryable, string propName)
         {
             var parts = propName.Split('.');
             var firstPart = parts.First();
@@ -66,7 +66,7 @@ namespace Shesha.NHibernate
                         {
                             var nestMethod = typeof(NHibernateEntityFetcher).GetMethod(nameof(MakeFetchNested), BindingFlags.Static | BindingFlags.Public);
                             var nestInvoker = nestMethod.MakeGenericMethod(typeof(T), currentType, nestedProperty.PropertyType);
-                            fetcher = nestInvoker.Invoke(null, new object[] { fetcher, nestedPart }) as IQueryable<T>;
+                            fetcher = nestInvoker.Invoke(null, new object?[] { fetcher, nestedPart }) as IQueryable<T>;
 
                             currentType = nestedProperty.PropertyType;
                         }

@@ -140,7 +140,7 @@ namespace Shesha.Services.StoredFiles
         {
             // todo: move to the base class and reuse in the AzureFileService
 
-            var newFile = new StoredFile(EntityConfigurationStore)
+            var newFile = new StoredFile
             {
                 Description = file.Description,
                 FileName = file.FileName,
@@ -207,7 +207,7 @@ namespace Shesha.Services.StoredFiles
 
         private IQueryable<StoredFile> GetAttachmentsQuery<TId>(TId id, string typeShortAlias, Expression<Func<StoredFile, bool>> filterPredicate = null)
         {
-            IQueryable<StoredFile> query = null;
+            IQueryable<StoredFile>? query = null;
             var ecs = StaticContext.IocManager.Resolve<IEntityConfigurationStore>();
             var config = ecs.Get(typeShortAlias);
             if (config != null)
@@ -275,8 +275,8 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<IList<string>> GetAttachmentsCategoriesAsync<TId>(IEntity<TId> owner)
         {
-            return await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct()
-                .ToListAsync();
+            var categories = await GetAttachmentsQuery(owner.Id, owner.GetTypeShortAlias()).Select(f => f.Category).Distinct().ToListAsync();
+            return categories.WhereNotNullOrWhiteSpace().ToList();
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ namespace Shesha.Services.StoredFiles
                 throw new Exception($"{nameof(fileName)} must not be null or empty");
 
             // create new file
-            var storedFile = new StoredFile(EntityConfigurationStore)
+            var storedFile = new StoredFile
             {
                 FileName = Path.GetFileName(fileName),
                 FileType = Path.GetExtension(fileName),

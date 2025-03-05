@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
+using Shesha.Domain;
 using Shesha.Domain.Attributes;
-using Shesha.Web.FormsDesigner.Domain;
 using System;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain

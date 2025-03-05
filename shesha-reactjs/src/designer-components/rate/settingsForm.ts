@@ -31,6 +31,7 @@ export const getSettings = (data: IRateProps) => {
                   propertyName: 'propertyName',
                   label: 'Property name',
                   parentId: commonTabId,
+                  styledLabel: true,
                   validate: { required: true },
                   jsSetting: true
                 })
@@ -45,12 +46,13 @@ export const getSettings = (data: IRateProps) => {
                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
-                  {
-                    type: 'number',
-                    id: nanoid(),
-                    propertyName: 'count',
-                    label: 'Max Rating',
-                  },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'count',
+                      label: 'Max Rating',
+                      jsSetting: true,
+                    },
                     {
                       type: 'iconPicker',
                       id: nanoid(),
@@ -84,16 +86,18 @@ export const getSettings = (data: IRateProps) => {
                       type: 'editModeSelector',
                       id: nanoid(),
                       propertyName: 'editMode',
-                      label: 'Edit mode',
+                      label: 'Edit Mode',
                       size: 'small',
+                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'hidden',
-                      label: 'Hidden',
+                      label: 'Hide',
                       size: 'small',
+                      defaultValue: 'inherit',
                       jsSetting: true,
                     }
                   ]

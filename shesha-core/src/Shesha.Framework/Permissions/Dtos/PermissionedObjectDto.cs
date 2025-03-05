@@ -26,7 +26,7 @@ namespace Shesha.Permissions
 
         public string Category { get; set; }
 
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public Guid? ModuleId { get; set; }
 
         public string Type { get; set; }
@@ -35,10 +35,10 @@ namespace Shesha.Permissions
 
         public string Description { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
 
-        public List<string> ActualPermissions { get; set; }
-        public List<string> InheritedPermissions { get; set; }
+        public List<string>? ActualPermissions { get; set; }
+        public List<string>? InheritedPermissions { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }
 
@@ -59,10 +59,14 @@ namespace Shesha.Permissions
             var permissions = Hidden 
                 ? "Hidden" 
                 : Access == RefListPermissionedAccess.RequiresPermissions
-                    ? string.Join(", ", Permissions)
-                : Access.ToString();
+                    ? PermissionsDelimited
+                    : Access.ToString();
             return $"{Object} -> ({permissions})";
         }
+
+        public string PermissionsDelimited => Permissions != null
+                        ? string.Join(", ", Permissions)
+                        : string.Empty;
 
         public string Md5 { get; set; } 
     }

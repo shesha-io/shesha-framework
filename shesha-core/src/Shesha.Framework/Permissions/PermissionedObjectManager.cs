@@ -10,12 +10,12 @@ using Abp.Runtime.Caching;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Application.Services;
-using Shesha.Authorization;
 using Shesha.Cache;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.Permissions.Cache;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
@@ -28,8 +28,6 @@ namespace Shesha.Permissions
     public class PermissionedObjectManager : IPermissionedObjectManager, ITransientDependency,
         IEventHandler<EntityChangedEventData<PermissionedObject>>
     {
-        private const string PermissionedObjectsCacheName = "PermissionedObjectsCache";
-
         public static readonly Dictionary<string, string> CrudMethods =
             new Dictionary<string, string>()
             {
@@ -43,41 +41,36 @@ namespace Shesha.Permissions
                 { "UpdateGql", "Update" },
                 { "Delete", "Delete" },
             };
-
+        public static string GetCrudMethod(string method, string? defaultValue = null) =>
+            CrudMethods.ContainsKey(method.RemovePostfix("Async")) ? CrudMethods[method.RemovePostfix("Async")] : defaultValue;
 
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IObjectMapper _objectMapper;
         private readonly IRepository<Module, Guid> _moduleReporsitory;
-        private readonly ICacheManager _cacheManager;
         private readonly IIocResolver _iocResolver;
 
-        private readonly ITypedCache<string, PermissionedObjectRelations> RelationsCache;
-        private readonly ITypedCache<string, CacheItemWrapper<PermissionedObjectDto>> PermissionedObjectsCache;
+        private readonly ITypedCache<string, PermissionedObjectRelations> _relationsCache;
+        private readonly ITypedCache<string, CacheItemWrapper<PermissionedObjectDto>> _permissionedObjectsCache;
 
         public PermissionedObjectManager(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IObjectMapper objectMapper,
-            ICacheManager cacheManager,
             IRepository<Module, Guid> moduleReporsitory,
-            IIocResolver iocResolver
+            IIocResolver iocResolver,
+            IRelationsCacheHolder relationsCacheHolder,
+            IPermissionedObjectsCacheHolder permissionedObjectsCacheHolder            
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
             _unitOfWorkManager = unitOfWorkManager;
             _objectMapper = objectMapper;
-            _cacheManager = cacheManager;
             _moduleReporsitory = moduleReporsitory;
             _iocResolver = iocResolver;
 
-            var cache = _cacheManager.GetPermissionedObjectCache();
-            cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
-            PermissionedObjectsCache = cache;
-
-            var relationCache = cacheManager.GetCache<string, PermissionedObjectRelations>($"Relations-{PermissionedObjectDto.CacheStoreName}");
-            relationCache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
-            RelationsCache = relationCache;
+            _relationsCache = relationsCacheHolder.Cache;
+            _permissionedObjectsCache = permissionedObjectsCacheHolder.Cache;
         }
 
         private string GetCacheKey(string objectName, string objectType)
@@ -102,11 +95,11 @@ namespace Shesha.Permissions
         {
             var parentKey = GetCacheKey(dto.Parent, dto.Type);
             var childKey = GetCacheKey(dto.Object, dto.Type);
-            await PermissionedObjectsCache.SetAsync(childKey, item ?? new CacheItemWrapper<PermissionedObjectDto>(dto, dto));
-            var cache = await RelationsCache.TryGetValueAsync(parentKey);
+            await _permissionedObjectsCache.SetAsync(childKey, item ?? new CacheItemWrapper<PermissionedObjectDto>(dto, dto));
+            var cache = await _relationsCache.TryGetValueAsync(parentKey);
             var relation = cache.HasValue ? cache.Value : new PermissionedObjectRelations();
             relation.AddChildren(childKey);
-            await RelationsCache.SetAsync(parentKey, relation);
+            await _relationsCache.SetAsync(parentKey, relation);
         }
 
         [UnitOfWork]
@@ -309,7 +302,7 @@ namespace Shesha.Permissions
         private async Task<PermissionedObjectDto> GetCacheOrDtoAsync(PermissionedObject dbObj)
         {
             var key = GetCacheKey(dbObj.Object, dbObj.Type);
-            var cacheObj = await PermissionedObjectsCache.TryGetValueAsync(key);
+            var cacheObj = await _permissionedObjectsCache.TryGetValueAsync(key);
             if (cacheObj.HasValue)
                 return cacheObj.Value.DbValue ?? cacheObj.Value.DefaultValue;
 
@@ -332,18 +325,10 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null)
         {
-            PermissionedObjectDto obj = null;
             var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
-            if (dbObj != null)
-            {
-                obj = await GetDtoAsync(dbObj);
-            }
-            else
-            {
-                obj = await CreateAsync(objectName, objectType, inheritedFromName);
-            }
-
-            return obj;
+            return dbObj != null
+                ? await GetDtoAsync(dbObj)
+                : await CreateAsync(objectName, objectType, inheritedFromName);
         }
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
@@ -355,11 +340,11 @@ namespace Shesha.Permissions
         public virtual async Task<CacheItemWrapper<PermissionedObjectDto>> GetInternalAsync(string objectName, string objectType)
         {
             var key = GetCacheKey(objectName, objectType);
-            var cacheObj = await PermissionedObjectsCache.TryGetValueAsync(key);
+            var cacheObj = await _permissionedObjectsCache.TryGetValueAsync(key);
             if (cacheObj.HasValue)
                 return cacheObj.Value;
 
-            CacheItemWrapper<PermissionedObjectDto> item = null;
+            CacheItemWrapper<PermissionedObjectDto>? item = null;
             using (var uow = _unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
             {
                 var dbObj = await _permissionedObjectRepository.GetAll()
@@ -396,7 +381,7 @@ namespace Shesha.Permissions
         public virtual async Task<PermissionedObjectDto> SetAsync(PermissionedObjectDto permissionedObject)
         {
             // ToDo: AS - check if permission names exist
-            var obj = 
+            var obj =
                 await _permissionedObjectRepository.GetAll()
                     .Where(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type).FirstOrDefaultAsync()
                 ??
@@ -405,10 +390,10 @@ namespace Shesha.Permissions
                     Object = permissionedObject.Object,
                     Type = permissionedObject.Type,
                     Module = permissionedObject.Module != null
-                    ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
-                    : !permissionedObject.Module.IsNullOrEmpty()
-                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
-                        : null,
+                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
+                        : !permissionedObject.Module.IsNullOrEmpty()
+                            ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
+                            : null,
                     Parent = permissionedObject.Parent,
                     Name = permissionedObject.Name ?? permissionedObject.Object,
                 };
@@ -460,9 +445,7 @@ namespace Shesha.Permissions
             {
                 var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
                 // remove disabled endpoints
-                var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
-                    ? PermissionedObjectManager.CrudMethods[methodName]
-                    : null;
+                var method = GetCrudMethod(methodName);
 
                 var obj = "";
                 if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !method.IsNullOrEmpty())
@@ -484,9 +467,9 @@ namespace Shesha.Permissions
 
         private void RemoveCache(string key)
         {
-            PermissionedObjectsCache.Remove(key);
+            _permissionedObjectsCache.Remove(key);
             PermissionedObjectRelations relation;
-            if (RelationsCache.TryGetValue(key, out relation))
+            if (_relationsCache.TryGetValue(key, out relation))
             {
                 foreach(var childKey in relation.Children)
                 {
@@ -499,20 +482,20 @@ namespace Shesha.Permissions
         {
             var key = "";
             var pkey = GetCacheKey(objectName, objectType);
-            var parent = PermissionedObjectsCache.GetOrDefault(pkey);
+            var parent = _permissionedObjectsCache.GetOrDefault(pkey);
             while (parent != null)
             {
                 key = pkey;
                 if (parent != null)
                 {
                     pkey = GetCacheKey(parent.DefaultValue.Parent, objectType);
-                    parent = PermissionedObjectsCache.GetOrDefault(pkey);
+                    parent = _permissionedObjectsCache.GetOrDefault(pkey);
                 }
             }
 
-            PermissionedObjectsCache.Remove(key);
+            _permissionedObjectsCache.Remove(key);
             PermissionedObjectRelations relation;
-            if (RelationsCache.TryGetValue(key, out relation))
+            if (_relationsCache.TryGetValue(key, out relation))
             {
                 foreach (var childKey in relation.Children)
                 {
@@ -540,22 +523,6 @@ namespace Shesha.Permissions
                 .Where(x => x.ActualAccess == access)
                 .ToList();
             return forms;
-        }
-
-        private class PermissionedObjectRelations
-        {
-            public PermissionedObjectRelations()
-            {
-                Children = new List<string>();
-            }
-
-            public List<string> Children { get; set; }
-
-            public void AddChildren(string key)
-            {
-                if (!Children.Contains(key))
-                    Children.Add(key);
-            }
         }
     }
 }

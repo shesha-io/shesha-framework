@@ -5,17 +5,15 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.NotificationTemplate")]
-    public class NotificationTemplate : FullAuditedEntity<Guid>
+    public class NotificationTemplate : FullAuditedEntity<Guid>, INotificationTemplateProps
     {
         public virtual RefListNotificationMessageFormat? MessageFormat { get; set; }
         public virtual NotificationTypeConfig PartOf { get; set; }
@@ -23,6 +21,16 @@ namespace Shesha.Domain
         public virtual string TitleTemplate { get; set; }
         [StringLength(int.MaxValue)]
         public virtual string BodyTemplate { get; set; }
+
+        public NotificationTemplate Clone()
+        {
+            return new NotificationTemplate {
+                PartOf = PartOf,
+                MessageFormat = MessageFormat,
+                TitleTemplate = TitleTemplate,
+                BodyTemplate = BodyTemplate,
+            };
+        }
     }
 
     public class NotificationTemplateValidator : AbstractValidator<NotificationTemplate>

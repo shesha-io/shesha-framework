@@ -15,7 +15,6 @@ namespace Shesha.Notifications.SMS
     public class SmsChannelSender : INotificationChannelSender
     {
         private readonly ISmsSettings _smsSettings;
-        private readonly IRepository<NotificationChannelConfig, Guid> _notificationChannelRepository;
         private readonly ISmsGateway _smsGateway;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
@@ -23,7 +22,6 @@ namespace Shesha.Notifications.SMS
         public SmsChannelSender(ISmsSettings smsSettings,IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, ISmsGateway smsGateway)
         {
             _smsSettings = smsSettings;
-            _notificationChannelRepository = notificationChannelRepository;
             _smsGateway = smsGateway;
         }
 
@@ -40,34 +38,34 @@ namespace Shesha.Notifications.SMS
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task<SmsSettings> GetSettings()
+        private async Task<SmsSettings> GetSettingsAsync()
         {
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
         public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver reciever, NotificationMessage message, string cc = "", List<EmailAttachment> attachments = null)
         {
-            var settings = await GetSettings();
+            var settings = await GetSettingsAsync();
 
             if (!settings.IsSmsEnabled)
             {
                 Logger.Warn("SMSs are disabled");
-                return await Task.FromResult(new SendStatus(){
-                    IsSuccess= false,
-                    Message = "SMSs are disabled"
-                });
+                return SendStatus.Failed("SMSs are disabled");
             }
 
-            return await _smsGateway.SendSmsAsync(reciever.GetAddress(this), message.Message);
+            var mobileNo = !string.IsNullOrWhiteSpace(settings.RedirectAllMessagesTo)
+                ? settings.RedirectAllMessagesTo 
+                : reciever.GetAddress(this);
+            
+            if (string.IsNullOrWhiteSpace(mobileNo))
+                return SendStatus.Failed("Recipient mobileNo is empty");
+
+            return await _smsGateway.SendSmsAsync(mobileNo, message.Message);
         }
 
-        public async Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
+        public Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment> attachments = null)
         {
-            return await Task.FromResult(new SendStatus()
-            {
-                IsSuccess = false,
-                Message = "Broadcast Implementation not yet implemented!"
-            });
+            return Task.FromResult(SendStatus.Failed("Broadcast Implementation not yet implemented!"));
         }
     }
 }

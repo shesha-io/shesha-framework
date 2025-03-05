@@ -20,10 +20,7 @@ namespace Shesha.Configuration.Runtime
     {
         private const int _typeShortAliasMaxLength = 100;
 
-        private static IDictionary<Type, EntityConfiguration> _entityConfigurations =
-            new Dictionary<Type, EntityConfiguration>();
-
-        private string _typeShortAlias;
+        private string? _typeShortAlias;
 
         #region Constructors and Initialisation
 
@@ -44,7 +41,7 @@ namespace Shesha.Configuration.Runtime
         /// <summary>
         /// The name of the property that will be used to display the entity to the user.
         /// </summary>
-        public PropertyInfo DisplayNamePropertyInfo { get; set; }
+        public PropertyInfo? DisplayNamePropertyInfo { get; set; }
 
         public bool HasTypeShortAlias => !string.IsNullOrEmpty(_typeShortAlias);
 
@@ -68,8 +65,12 @@ namespace Shesha.Configuration.Runtime
 
                 return _typeShortAlias;
             }
-            set => _typeShortAlias = value;
         }
+
+        public void SetTypeShortAlias(string? value) 
+        {
+            _typeShortAlias = value;
+        }        
 
         public bool TypeShortAliasIsValid
         {
@@ -150,7 +151,7 @@ namespace Shesha.Configuration.Runtime
                 {
                     // Requesting a child property
                     var propInfo = ReflectionHelper.GetProperty(EntityType, propertyName);
-                    return propInfo.DeclaringType.GetEntityConfiguration()[propInfo.Name];
+                    return propInfo.DeclaringType.NotNull().GetEntityConfiguration()[propInfo.Name];
                 }
                 else
                 {

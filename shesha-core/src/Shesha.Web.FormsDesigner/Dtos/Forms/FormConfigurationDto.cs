@@ -35,12 +35,12 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Label
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Markup in JSON format
@@ -71,7 +71,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
 
         public RefListPermissionedAccess? Access { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
 
         /// <summary>
         /// Cache MD5, is used for client-side caching

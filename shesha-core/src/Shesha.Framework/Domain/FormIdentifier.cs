@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using Shesha.EntityReferences;
-using System;
-using System.ComponentModel;
+﻿using System;
 
 namespace Shesha.Domain
 {
@@ -9,13 +6,15 @@ namespace Shesha.Domain
     /// Form identifier
     /// </summary>
     [Serializable]
-    public class FormIdentifier : ConfigurationItemIdentifier
+    public class FormIdentifier : ConfigurationItemIdentifier<FormConfiguration>, IIdentifierFactory<FormIdentifier>
     {
-        public FormIdentifier(string module, string name) : base(module, name)
+        public FormIdentifier(string? module, string name) : base(module, name)
         {
         }
 
-        [JsonIgnore]
-        public override string ItemType => "form";
+        public static FormIdentifier New(string? module, string name)
+        {
+            return new FormIdentifier(module, name);
+        }
     }
 }

@@ -1,12 +1,11 @@
-﻿using AutoMapper.Internal;
+﻿using Abp.Threading;
+using AutoMapper.Internal;
 using Castle.DynamicProxy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Nito.AsyncEx.Synchronous;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.Services;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +51,7 @@ namespace Shesha.JsonEntities.Proxy
             return ProxyUtil.IsProxy(pobj) ? ProxyUtil.GetUnproxiedInstance(pobj) : pobj;
         }
 
-        public static JObject GetJson(object proxyObj, JObject jObj = null)
+        public static JObject GetJson(object proxyObj, JObject? jObj = null)
         {
             JObject json = jObj ?? new JObject();
             if (proxyObj == null) return json;
@@ -70,7 +69,7 @@ namespace Shesha.JsonEntities.Proxy
             return json;
         }
         
-        public static bool IsChanged(object proxyObj)
+        public static bool IsChanged(object? proxyObj)
         {
             if (proxyObj == null) return false;
 
@@ -136,13 +135,11 @@ namespace Shesha.JsonEntities.Proxy
 
         public void _initialize(object proxy)
         {
-            _isInitialized = true;
-
             var context = new EntityModelBindingContext()
             {
                 GetEntityById = (entityType, id, displayName, propPath, ctx) =>
                 {
-                    _references.Add(propPath.Split(".").LastOrDefault(), new JsonReference() { Id = id, _displayName = displayName });
+                    _references.Add(propPath.Split(".").Last(), new JsonReference() { Id = id, _displayName = displayName });
                     return null;
                 },
                 GetObjectOrObjectReference = (objectType, jobject, ctx, formFields) =>
@@ -150,7 +147,10 @@ namespace Shesha.JsonEntities.Proxy
                     return _factory.GetNewProxiedJsonEntity(objectType, jobject);
                 }
             };
-            StaticContext.IocManager.Resolve<IEntityModelBinder>().BindPropertiesAsync(_json, proxy, context).WaitAndUnwrapException();
+            var modelBinder = StaticContext.IocManager.Resolve<IEntityModelBinder>();
+            AsyncHelper.RunSync(async () => await modelBinder.BindPropertiesAsync(_json, proxy, context));
+
+            _isInitialized = true;
         }
 
         public void _changed()

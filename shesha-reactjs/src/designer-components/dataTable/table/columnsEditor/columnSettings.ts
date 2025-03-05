@@ -1,0 +1,358 @@
+export const getColumnSettings = (data?: any) => ({
+    "components": [
+        {
+            "id": "searchableTabs1",
+            "type": "searchableTabs",
+            "propertyName": "settingsTabs",
+            "parentId": "root",
+            "label": "Settings",
+            "hideLabel": true,
+            "labelAlign": "right",
+            "size": "small",
+            "tabs": [
+                {
+                    "key": "common",
+                    "title": "Common",
+                    "id": "commonTab1",
+                    "components": [
+                        {
+                            "id": "columnType1",
+                            "type": "settingsInput",
+                            "inputType": "dropdown",
+                            "propertyName": "columnType",
+                            "label": "Type",
+                            "labelAlign": "right",
+                            "dropdownOptions": [
+                                {
+                                    "label": "Action",
+                                    "value": "action"
+                                },
+                                {
+                                    "label": "CRUD Operations",
+                                    "value": "crud-operations"
+                                },
+                                {
+                                    "label": "Data",
+                                    "value": "data"
+                                },
+                                {
+                                    "label": "Form",
+                                    "value": "form"
+                                }
+                            ],
+                            "validate": {
+                                "required": true
+                            }
+                        },
+                        {
+                            "id": "dataContainer1",
+                            "type": "container",
+                            "propertyName": "dataContainer",
+                            "label": "Data Settings",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "components": [
+                                {
+                                    "id": "propertyName1",
+                                    "type": "settingsInput",
+                                    "inputType": "propertyAutocomplete",
+                                    "propertyName": "propertyName",
+                                    "label": "Property Name",
+                                    "labelAlign": "right"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "formContainer1",
+                            "type": "container",
+                            "propertyName": "formContainer",
+                            "label": "Form Settings",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "components": [
+                                {
+                                    "id": "propertiesNames1",
+                                    "type": "settingsInput",
+                                    "inputType": "propertyAutocomplete",
+                                    "propertyName": "propertiesNames",
+                                    "label": "Properties to fetch",
+                                    "labelAlign": "right",
+                                    "mode": "multiple"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "caption1",
+                            "type": "settingsInput",
+                            "inputType": "textField",
+                            "propertyName": "caption",
+                            "label": "Caption",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "description1",
+                            "type": "settingsInput",
+                            "inputType": "textArea",
+                            "propertyName": "description",
+                            "label": "Tooltip Description",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "actionContainer1",
+                            "type": "container",
+                            "propertyName": "actionContainer",
+                            "label": "Action Settings",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'action';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "components": [
+                                {
+                                    "id": "icon1",
+                                    "type": "settingsInput",
+                                    "inputType": "iconPicker",
+                                    "propertyName": "icon",
+                                    "label": "Icon",
+                                    "labelAlign": "right"
+                                },
+                                {
+                                    "id": "actionConfig1",
+                                    "type": "settingsInput",
+                                    "inputType": "configurableActionConfigurator",
+                                    "propertyName": "actionConfiguration",
+                                    "label": "Action Configuration"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "minWidth1",
+                            "type": "settingsInput",
+                            "inputType": "numberField",
+                            "propertyName": "minWidth",
+                            "label": "Min Width",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "maxWidth1",
+                            "type": "settingsInput",
+                            "inputType": "numberField",
+                            "propertyName": "maxWidth",
+                            "label": "Max Width",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "minHeight1",
+                            "type": "settingsInputRow",
+                            "propertyName": "minHeight",
+                            "label": "Min Height",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "inputs": [
+                                {
+                                    "type": "numberField",
+                                    "propertyName": "minHeight",
+                                    "label": "Min Height",
+                                    "labelAlign": "right"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "isVisible1",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "isVisible",
+                            "label": "Is Visible",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "anchored1",
+                            "type": "settingsInput",
+                            "inputType": "dropdown",
+                            "propertyName": "anchored",
+                            "label": "Anchored",
+                            "dropdownOptions": [
+                                {
+                                    "label": "Left",
+                                    "value": "left"
+                                },
+                                {
+                                    "label": "Right",
+                                    "value": "right"
+                                }
+                            ],
+                            "allowClear": true
+                        },
+                        {
+                            "id": "displayContainer1",
+                            "type": "container",
+                            "propertyName": "displayContainer",
+                            "label": "Display Settings",
+                            "hidden": {
+                                "_code": "console.log(getSettingValue(data)); return getSettingValue(data?.columnType) !== 'data';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "components": [
+                                {
+                                    "id": "displayComponent1",
+                                    "type": "settingsInput",
+                                    "inputType": "componentSelector",
+                                    "propertyName": "displayComponent",
+                                    "label": "Display component",
+                                    "componentType": "output",
+                                    "noSelectionItemText": "Default",
+                                    "noSelectionItemValue": "[default]",
+                                    "hidden": data?.type === 'entityPicker'
+                                },
+                                {
+                                    "id": "editComponent1",
+                                    "type": "settingsInput",
+                                    "inputType": "componentSelector",
+                                    "propertyName": "editComponent",
+                                    "label": "Edit component",
+                                    "componentType": "input",
+                                    "noSelectionItemText": "Not editable",
+                                    "noSelectionItemValue": "[not-editable]",
+                                    "hidden": data?.type === 'entityPicker'
+                                },
+                                {
+                                    "id": "createComponent1",
+                                    "type": "settingsInput",
+                                    "inputType": "componentSelector",
+                                    "propertyName": "createComponent",
+                                    "label": "Create component",
+                                    "componentType": "input",
+                                    "noSelectionItemText": "Not editable",
+                                    "noSelectionItemValue": "[not-editable]",
+                                    "hidden": data?.type === 'entityPicker'
+                                }
+                            ]
+                        },
+                        {
+                            "id": "formDisplayContainer1",
+                            "type": "container",
+                            "propertyName": "formDisplayContainer",
+                            "label": "Form Display Settings",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "components": [
+                                {
+                                    "id": "displayFormId1",
+                                    "type": "settingsInput",
+                                    "inputType": "formAutocomplete",
+                                    "propertyName": "displayFormId",
+                                    "label": "Display form"
+                                },
+                                {
+                                    "id": "createFormId1",
+                                    "type": "settingsInput",
+                                    "inputType": "formAutocomplete",
+                                    "propertyName": "createFormId",
+                                    "label": "Create form"
+                                },
+                                {
+                                    "id": "editFormId1",
+                                    "type": "settingsInput",
+                                    "inputType": "formAutocomplete",
+                                    "propertyName": "editFormId",
+                                    "label": "Edit form"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "allowSorting1",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "allowSorting",
+                            "label": "Allow sorting",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'data';",
+                                "_mode": "code",
+                                "_value": false
+                            }
+                        },
+                        {
+                            "id": "backgroundColor1",
+                            "type": "settingsInput",
+                            "inputType": "colorPicker",
+                            "propertyName": "backgroundColor",
+                            "label": "Background Color",
+                            "allowClear": true,
+                            "showText": true
+                        }
+                    ]
+                },
+                {
+                    "key": "visibility",
+                    "title": "Visibility",
+                    "id": "visibilityTab1",
+                    "components": [
+                        {
+                            "id": "customVisibility1",
+                            "type": "settingsInput",
+                            "inputType": "codeEditor",
+                            "propertyName": "customVisibility",
+                            "label": "Custom Visibility",
+                            "description": "Enter custom visibility code. You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+                            "exposedVariables": [
+                                {
+                                    "name": "globalState",
+                                    "description": "The global state of the application",
+                                    "type": "object"
+                                },
+                                {
+                                    "name": "data",
+                                    "description": "Selected form values",
+                                    "type": "object"
+                                }
+                            ],
+                            "language": "typescript",
+                            "wrapInTemplate": true,
+                            "templateSettings": {
+                                "functionName": "customVisibility"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "key": "security",
+                    "title": "Security",
+                    "id": "securityTab1",
+                    "components": [
+                        {
+                            "id": "permissions1",
+                            "type": "settingsInput",
+                            "inputType": "permissions",
+                            "propertyName": "permissions",
+                            "label": "Permissions"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "formSettings": {
+        "isSettingsForm": true,
+        "layout": "vertical",
+        "colon": false,
+        "labelCol": {
+            "span": 8
+        },
+        "wrapperCol": {
+            "span": 16
+        }
+    }
+});

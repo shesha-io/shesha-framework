@@ -24,7 +24,7 @@ namespace Shesha.EntityHistory
             _entityHistoryProvider = entityHistoryProvider;
         }
 
-        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
+        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrailAsync(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
             var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName, includeEventsOnChildEntities);
 

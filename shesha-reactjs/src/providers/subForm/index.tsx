@@ -121,28 +121,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, [value, propertyName]);
 
-  const [internalEntityType, setInternalEntityType] = useState(entityType);
-
-  useEffect(() => {
-    if (!Boolean(internalEntityType)) {
-      if (Boolean(entityType)) {
-        setInternalEntityType(entityType);
-      } else if (value && typeof value === 'object' && value['_className']) {
-        setInternalEntityType(value['_className']);
-      }
-    } else {
-      if (Boolean(entityType) && internalEntityType !== entityType) {
-        setInternalEntityType(entityType);
-      } else if (
-        value &&
-        typeof value === 'object' &&
-        value['_className'] &&
-        internalEntityType !== value['_className']
-      ) {
-        setInternalEntityType(value['_className']);
-      }
-    }
-  }, [entityType, value]);
+  const internalEntityType = entityType || value?.['_className'];
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -174,7 +153,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // show form based on the entity type
   useEffect(() => {
     if (value && formSelectionMode === 'dynamic') {
-      if (value && typeof value === 'object' && value['_className'] && !formConfig?.formId)
+      if (value && typeof value === 'object' && value?.['_className'] && !formConfig?.formId)
         getEntityFormId(value['_className'], formType).then((formid) => {
           setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
         });
@@ -207,7 +186,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
     }
     
-    if (!params.id && !!value && !!value['id'])
+    if (!params.id && Boolean(value) && value['id'] != null && value['id'] !== undefined)
       params.id = value['id'];
 
     return params;
@@ -216,7 +195,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const finalQueryParams = useDeepCompareMemo(() => {
     const result = getFinalQueryParams();
     return result;
-  }, [actualQueryParams, properties,internalEntityType]);
+  }, [actualQueryParams, properties, internalEntityType]);
 
   // abort controller, is used to cancel out of date data requests
   const dataRequestAbortController = useRef<AbortController>(null);

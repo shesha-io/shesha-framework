@@ -66,12 +66,12 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
+        public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
             var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
 
-            if (registration != null && !registration.IsComplete)
+            if (registration != null && !registration.IsComplete && registration.AdditionalRegistrationInfoForm != null)
             {
                 // Return a result indicating a client-side redirect
                 return new AuthenticateResultModel
@@ -103,10 +103,11 @@ namespace Shesha.Authorization
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
 
             var personId = loginResult?.User != null
-                ? _personRepository.GetAll()
+                ? await _personRepository.GetAll()
                     .Where(p => p.User == loginResult.User)
                     .OrderBy(p => p.CreationTime)
-                    .Select(p => p.Id).FirstOrDefault()
+                    .Select(p => p.Id)
+                    .FirstOrDefaultAsync()
                 : (Guid?)null;
             var device = !string.IsNullOrWhiteSpace(imei)
                 ? await _mobileDeviceRepository.FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
@@ -138,7 +139,7 @@ namespace Shesha.Authorization
         /// </summary>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPin(string userNameOrMobileNo)
+        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
             var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User.UserName == userNameOrMobileNo).ToListAsync();
             if (!persons.Any())
@@ -151,6 +152,9 @@ namespace Shesha.Authorization
             if (person.User == null)
                 throw new UserFriendlyException("User with the specified mobile has no internal account");
 
+            if (string.IsNullOrWhiteSpace(person.MobileNumber1))
+                throw new UserFriendlyException("User has no mobile no");
+
             var sendPinResponse = await _logInManager.SendLoginOtpAsync(person.User, person.MobileNumber1);
 
             return new OtpAuthenticateSendPinResponse
@@ -160,7 +164,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> OtpAuthenticate([FromBody] OtpAuthenticateModel model)
+        public async Task<AuthenticateResultModel> OtpAuthenticateAsync([FromBody] OtpAuthenticateModel model)
         {
             var tenancyName = GetTenancyNameOrNull();
             var loginResult = await _logInManager.LoginViaOtpAsync(model.MobileNo, model.OperationId, model.Code, model.IMEI, tenancyName);
@@ -183,9 +187,9 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticate([FromBody] ExternalAuthenticateModel model)
+        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticateAsync([FromBody] ExternalAuthenticateModel model)
         {
-            var externalUser = await GetExternalUserInfo(model);
+            var externalUser = await GetExternalUserInfoAsync(model);
 
             var loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
 
@@ -266,7 +270,7 @@ namespace Shesha.Authorization
             return user;
         }
 
-        private async Task<ExternalAuthUserInfo> GetExternalUserInfo(ExternalAuthenticateModel model)
+        private async Task<ExternalAuthUserInfo> GetExternalUserInfoAsync(ExternalAuthenticateModel model)
         {
             var userInfo = await _externalAuthManager.GetUserInfoAsync(model.AuthProvider, model.ProviderAccessCode);
             if (userInfo.ProviderKey != model.ProviderKey)

@@ -46,7 +46,7 @@ namespace Shesha.Scheduler
         private readonly IIocManager _iocManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public Castle.Core.Logging.ILogger Logger { get; set; }
+        public ILogger Logger { get; set; }
 
         public ScheduledJobManager(IRepository<ScheduledJobTrigger, Guid> triggerRepository, IUnitOfWorkManager unitOfWorkManager, ITypeFinder typeFinder, IIocManager iocManager, IServiceProvider serviceProvider)
         {
@@ -61,7 +61,7 @@ namespace Shesha.Scheduler
         private const string JobExecutionIdKey = "JobExecutionId";
 
         private IHubContext<SignalrAppenderHub> _signalrHub;
-        internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager?.Resolve<IHubContext<SignalrAppenderHub>>();
+        internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager.Resolve<IHubContext<SignalrAppenderHub>>();
 
         /// inheritedDoc
         public async Task EnqueueAllAsync()
@@ -73,13 +73,16 @@ namespace Shesha.Scheduler
                     .ToListAsync();
 
                 // remove all unused triggers
-                var allRecurringJobs = JobStorage.Current.GetConnection().GetRecurringJobs();
-                var jobsToRemove = allRecurringJobs.Where(j => activeTriggers.All(t => t.Id.ToString() != j.Id)).ToList();
-
-                foreach (var jobDto in jobsToRemove)
+                using (var storageConnection = JobStorage.Current.GetConnection()) 
                 {
-                    RecurringJob.RemoveIfExists(jobDto.Id);
-                }
+                    var allRecurringJobs = storageConnection.GetRecurringJobs();
+                    var jobsToRemove = allRecurringJobs.Where(j => activeTriggers.All(t => t.Id.ToString() != j.Id)).ToList();
+
+                    foreach (var jobDto in jobsToRemove)
+                    {
+                        RecurringJob.RemoveIfExists(jobDto.Id);
+                    }
+                }                
 
                 // update existing triggers
                 foreach (var trigger in activeTriggers)
@@ -182,10 +185,10 @@ namespace Shesha.Scheduler
         [ForwardDisableConcurrentExecution]
         public async Task RunJobAsync(Guid jobId, string jobType, Guid executionId, Int64? startedById, CancellationToken cancellationToken)
         {
-            await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", new object[] { executionId, startedById, cancellationToken });
+            await ExecuteJobMethodAsync(jobId, jobType, "ExecuteAsync", [executionId, startedById, cancellationToken]);
         }
 
-        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object[] methodArgs)
+        public async Task ExecuteJobMethodAsync(Guid jobId, string jobType, string methodName, object?[] methodArgs)
         {
             var recordedType = !string.IsNullOrEmpty(jobType) ? Type.GetType(jobType) : GetJobTypeById(jobId).BaseType;
 
@@ -193,9 +196,9 @@ namespace Shesha.Scheduler
             {
                 var jobInstanceType = GetJobTypeById(jobId);
                 var jobInstance = _serviceProvider.GetService(jobInstanceType);
-                var methodInfo = recordedType.GetMethod(methodName);
+                var methodInfo = recordedType.GetRequiredMethod(methodName);
 
-                Task task = (Task)methodInfo.Invoke(jobInstance, methodArgs);
+                Task task = methodInfo.Invoke<Task>(jobInstance, methodArgs).NotNull();
                 await task;
             }
             
@@ -239,8 +242,8 @@ namespace Shesha.Scheduler
 
             repository.Root.Level = log4net.Core.Level.Info;
 
-            logger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
-            if (logger == null)
+            var existingLogger = repository.GetCurrentLoggers().FirstOrDefault(l => l.Name == name) as Logger;
+            if (existingLogger == null)
             {
                 // Configure default logger for scheduled job
                 logger = repository.LoggerFactory.CreateLogger(repository, name);
@@ -256,7 +259,8 @@ namespace Shesha.Scheduler
                 // Mark repository as configured and notify that is has changed.  
                 repository.Configured = true;
                 repository.RaiseConfigurationChanged(EventArgs.Empty);
-            }
+            } else
+                logger = existingLogger;
 
             log = LogManager.GetLogger(Assembly.GetCallingAssembly(), name);
         }
@@ -317,7 +321,7 @@ namespace Shesha.Scheduler
 
             #region Configure file appender
 
-            FileAppender fileAppender = null;
+            FileAppender? fileAppender = null;
 
             if (!string.IsNullOrWhiteSpace(job.LogFilePath))
             {

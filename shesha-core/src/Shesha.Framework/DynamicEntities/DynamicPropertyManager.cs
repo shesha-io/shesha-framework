@@ -57,10 +57,12 @@ namespace Shesha.DynamicEntities
         {
             var config = entity.GetType().GetEntityConfiguration();
 
-            var prop = _entityPropertyValueRepository.GetAll()
+            var prop = await _entityPropertyValueRepository
+                .GetAll()
                 .Where(x => x.EntityProperty.Id == property.Id && x.OwnerId == entity.Id.ToString() &&
                             x.OwnerType == config.TypeShortAlias)
-                .OrderByDescending(x => x.CreationTime).FirstOrDefault();
+                .OrderByDescending(x => x.CreationTime)
+                .FirstOrDefaultAsync();
 
             if (prop?.Value == value) return;
 
@@ -174,17 +176,18 @@ namespace Shesha.DynamicEntities
             if (serializedValue == null)
                 return null;
 
-            Type simpleType = null;
+            Type? simpleType = null;
             switch (dynamicProperty.DataType) 
             {
                 case DataTypes.EntityReference:
                     {
                         var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityType);
                         var id = SerializationManager.DeserializeProperty(entityConfig.IdType, serializedValue);
-                        if (id == null)
+                        var stringId = id?.ToString();
+                        if (string.IsNullOrWhiteSpace(stringId))
                             return null;
 
-                        return await _dynamicRepository.GetAsync(entityConfig.EntityType, id.ToString());
+                        return await _dynamicRepository.GetAsync(entityConfig.EntityType, stringId);
                     }
                 case DataTypes.Boolean:
                     simpleType = typeof(bool?);

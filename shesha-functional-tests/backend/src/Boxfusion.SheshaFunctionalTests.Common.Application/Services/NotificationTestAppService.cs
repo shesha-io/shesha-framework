@@ -71,7 +71,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                     ? new RawAddressMessageParticipant(notification.RecipientText)
                     : throw new ArgumentException($"{nameof(notification.RecipientText)} must not be null");
 
-            await _notificationService.SendNotification(
+            await _notificationService.SendNotificationAsync(
                 type,
                 sender,
                 recipient,                
@@ -109,7 +109,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 foreach (var recipient in notification.RecipientTexts)
                 {
                     var receiver = new RawAddressMessageParticipant(recipient);
-                    await _notificationService.SendNotification(
+                    await _notificationService.SendNotificationAsync(
                         type,
                         sender,
                         receiver,
@@ -129,7 +129,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 {
                     var receiver = await _personRepository.GetAsync(recipient.Id);
 
-                    await _notificationService.SendNotification(
+                    await _notificationService.SendNotificationAsync(
                         type,
                         senderPerson,
                         receiver,

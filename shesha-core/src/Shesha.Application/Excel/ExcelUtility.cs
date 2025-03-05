@@ -105,7 +105,7 @@ namespace Shesha.Excel
             Stylesheet styleSheet = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet;
             cell.SetAttribute(new OpenXmlAttribute("", "s", "", "1"));
             OpenXmlAttribute cellStyleAttribute = cell.GetAttribute("s", "");
-            CellFormats cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats;
+            var cellFormats = spreadSheet.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats.NotNull();
 
             // pick the first cell format.
             CellFormat cellFormat = (CellFormat)cellFormats.ElementAt(0);
@@ -242,7 +242,7 @@ namespace Shesha.Excel
             return xmlStream;
         }
 
-        public async Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object>> list, IList<ExcelColumn> columns, string sheetName)
+        public async Task<MemoryStream> ReadToExcelStreamAsync(Type rowType, IEnumerable<Dictionary<string, object?>> list, IList<ExcelColumn> columns, string sheetName)
         {
             var headers = columns
                 .Select(t => ReplaceSpecialCharacters(t.Label))
@@ -395,7 +395,7 @@ namespace Shesha.Excel
         {
             var parts = column.PropertyName.Split(".").Select(p => p.ToCamelCase()).Reverse().ToList();
 
-            var getterFactory = new Func<string, GetValueDelegate, GetValueDelegate>((name, getter) => {
+            var getterFactory = new Func<string, GetValueDelegate?, GetValueDelegate>((name, getter) => {
                 if (getter == null)
                 {
                     return new GetValueDelegate(row => row == null
@@ -412,19 +412,19 @@ namespace Shesha.Excel
                             : row.TryGetValue(name, out var partValue)
                                 ? partValue
                                 : null;
-                        return container != null && container is Dictionary<string, object> dict
+                        return container != null && container is Dictionary<string, object?> dict
                             ? getter.Invoke(dict)
                             : null;
                     });
                 }
             });
 
-            GetValueDelegate result = null;
+            GetValueDelegate? result = null;
             foreach (var part in parts) 
             {
                 result = getterFactory(part, result);
             }
-            return result;
+            return result ?? throw new Exception("Failed to get column valu getter");
         }
 
         private static void FillCellValue(Cell cell, string value, Type type)
@@ -457,7 +457,7 @@ namespace Shesha.Excel
         }
 
         public delegate Task WriteRowsDelegate(OpenXmlWriter xmlWriter);
-        public delegate object GetValueDelegate(Dictionary<string, object> container);
+        public delegate object GetValueDelegate(Dictionary<string, object?> container);
 
         public class ExcelColumnProcessing
         {

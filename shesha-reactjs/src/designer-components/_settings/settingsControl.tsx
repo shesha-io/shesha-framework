@@ -97,6 +97,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     className: `${styles.jsSwitch}`,
     ghost: true,
     exposedVariables: defaultExposedVariables,
+    hidden: !setting._code && props.readOnly,
   };
 
   const editor = constantsEvaluator

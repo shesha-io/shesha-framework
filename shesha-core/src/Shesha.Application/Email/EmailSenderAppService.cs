@@ -81,7 +81,7 @@ namespace Shesha.Email
         /// inheritDoc
         [HttpPost]
         [EnableValidation]
-        public async Task<SendTestEmailDto> SendEmail(SendTestEmailInput input)
+        public async Task<SendTestEmailDto> SendEmailAsync(SendTestEmailInput input)
         {
             /*
             // note: validation doesn't work for ControllerBase (looks like not supported by Abp)

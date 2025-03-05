@@ -9,7 +9,7 @@ namespace Shesha.DynamicEntities.Dtos
     [JsonConverter(typeof(DynamicDtoConverter))]
     public class DynamicDto<TEntity, TId> : EntityDto<TId>, IDynamicDto<TEntity, TId> where TEntity : IEntity<TId>
     {
-        public virtual JObject _jObject { get; set; }
+        public virtual JObject? _jObject { get; set; }
     }
 
     [JsonConverter(typeof(DynamicDtoConverter))]

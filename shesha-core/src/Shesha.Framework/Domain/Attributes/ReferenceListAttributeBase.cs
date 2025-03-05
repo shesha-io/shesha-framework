@@ -76,7 +76,7 @@ namespace Shesha.Domain.Attributes
             ? $"{Namespace}.{ReferenceListName}"
             : ReferenceListName;
 
-        protected string GetModuleName(Assembly assembly)
+        protected string GetModuleName(Assembly? assembly)
         {
             return !string.IsNullOrWhiteSpace(_module)
                 ? _module 

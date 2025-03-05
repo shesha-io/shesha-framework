@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Shesha.Email.Dtos;
+using System.Threading.Tasks;
 
 namespace Shesha.Email
 {
@@ -22,6 +22,6 @@ namespace Shesha.Email
         /// <summary>
         /// Sends email with a specified parameters
         /// </summary>
-        Task<SendTestEmailDto> SendEmail(SendTestEmailInput input);
+        Task<SendTestEmailDto> SendEmailAsync(SendTestEmailInput input);
     }
 }

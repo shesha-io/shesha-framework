@@ -218,6 +218,7 @@ export enum StandardEntityActions {
   read = 'read',
   update = 'update',
   delete = 'delete',
+  list = 'list',
 }
 
 export interface IContainerWithNestedProperties {
@@ -253,7 +254,7 @@ export interface IEntityMetadata extends IObjectMetadata, IHasEntityType {
   apiEndpoints: IDictionary<IApiEndpoint>;
 }
 
-export interface IContextMetadata extends IMetadata, IContainerWithNestedProperties {
+export interface IContextMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
 
 }
 

@@ -6,7 +6,7 @@ namespace Shesha.Elmah
     /// <summary>
     /// Exception watchdog
     /// </summary>
-    public class ExceptionWatchDog : IDisposable
+    public sealed class ExceptionWatchDog : IDisposable
     {
         private Action<Exception> _onError;
         public Action CleanupAction { get; set; }
@@ -21,7 +21,7 @@ namespace Shesha.Elmah
             AppDomain.CurrentDomain.FirstChanceException += OnException;
         }
 
-        private void OnException(object sender, FirstChanceExceptionEventArgs e)
+        private void OnException(object? sender, FirstChanceExceptionEventArgs e)
         {
             if (_disposed)
                 return;

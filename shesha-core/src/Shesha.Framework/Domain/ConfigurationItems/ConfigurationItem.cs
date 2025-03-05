@@ -41,12 +41,12 @@ namespace Shesha.Domain.ConfigurationItems
         /// </summary>
         [StringLength(int.MaxValue)]
         [DataType(DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
         
         /// <summary>
         /// Module
         /// </summary>
-        public virtual Module Module { get; set; }
+        public virtual Module? Module { get; set; }
 
         /// <summary>
         /// Base item. Is used if the current item is inherited from another one
@@ -106,6 +106,6 @@ namespace Shesha.Domain.ConfigurationItems
         /// <summary>
         /// Application the item belongs to
         /// </summary>
-        public virtual FrontEndApp Application { get; set; }
+        public virtual FrontEndApp? Application { get; set; }
     }
 }

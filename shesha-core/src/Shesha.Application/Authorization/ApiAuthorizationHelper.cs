@@ -12,7 +12,6 @@ using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -38,30 +37,30 @@ namespace Shesha.Authorization
             _securitySettings = securitySettings;
         }
 
-        public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
+        public override async Task AuthorizeAsync(MethodInfo methodInfo, Type? type)
         {
             if (!_authConfiguration.IsEnabled)
-            {
                 return;
-            }
 
-            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
-                || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
+            if (type == null ||
+                type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>() || 
+                type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
                 return;
 
             var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
-            if (type == null || !shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
+            if (!shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
                 return;
 
-            var typeName = type.FullName;
+            var typeName = type.GetRequiredFullName();
             var methodName = methodInfo.Name.RemovePostfix("Async");
 
             var isCrud = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>)) != null;
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
-            var settings = _securitySettings?.SecuritySettings?.GetValue()?.DefaultEndpointAccess;
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+            var settings = securitySettings?.DefaultEndpointAccess;
 
             if (settings == null)
                 throw new NullReferenceException("Cannot get DefaultEndpointAccess");

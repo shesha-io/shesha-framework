@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using Shesha.Exceptions;
+using System;
+using System.IO;
 using System.Reflection;
 
 namespace Shesha.Utilities
 {
-    public class ReportingHelper
+    public static class ReportingHelper
     {
         public static MemoryStream GetResourceStream(string resourceName)
         {
@@ -18,18 +20,19 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static MemoryStream GetResourceStream(string resourceName, Assembly assembly)
         {
-            var resourceStream = assembly.GetManifestResourceStream(resourceName);
-
             var result = new MemoryStream();
 
-            var buffer = new byte[8 * 1024];
-            int len;
-            while ((len = resourceStream.Read(buffer, 0, buffer.Length)) > 0)
+            using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) 
             {
-                result.Write(buffer, 0, len);
-            }
+                var buffer = new byte[8 * 1024];
+                int len;
+                while ((len = resourceStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    result.Write(buffer, 0, len);
+                }
 
-            result.Position = 0;
+                result.Position = 0;
+            }
 
             return result;
         }
@@ -47,6 +50,22 @@ namespace Shesha.Utilities
             {
                 return sr.ReadToEnd();
             }
+        }
+
+        /// <summary>
+        /// Get embedded resource stream. Throws exception if stream not found
+        /// </summary>
+        /// <param name="assembly">Assembly containing embeddeed resource</param>
+        /// <param name="resourceName">Resource name</param>
+        /// <returns></returns>
+        /// <exception cref="ManifestResourceStreamNotFoundException"></exception>
+        public static Stream GetEmbeddedResourceStream(this Assembly assembly, string resourceName) 
+        {
+            var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+                throw new ManifestResourceStreamNotFoundException(assembly, resourceName);
+
+            return stream;            
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Shesha.Reflection;
+using System;
+using System.Reflection;
 
 namespace Shesha.Extensions
 {
@@ -26,5 +28,27 @@ namespace Shesha.Extensions
             return btype;
         }
 
+
+        /// <summary>
+        /// Return <see cref="Type.FullName"/> of the specified <paramref name="type"/>. Throws exception if it's null or empty
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetRequiredFullName(this Type type) 
+        {
+            return !string.IsNullOrWhiteSpace(type.FullName)
+                ? type.FullName
+                : throw new Exception($"{nameof(type.FullName)} is empty for type '{type.Name}' in namespace '{type.Namespace}'");
+        }
+
+        /// <summary>
+        /// Return assembly fullname of the specified <paramref name="type"/>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetAssemblyFullName(this Type type) 
+        {
+            return type.Assembly.FullName.NotNull($"Assembly full name is null for type '{type.FullName}'");
+        }
     }
 }

@@ -18,6 +18,7 @@ using Shesha.NHibernate.UoW;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Shesha.NHibernate.Interceptors
 {
@@ -220,6 +221,31 @@ namespace Shesha.NHibernate.Interceptors
 
         public override void OnCollectionRecreate(object collection, object key)
         {
+            try
+            {
+                if (collection is IPersistentCollection map)
+                {
+                    // find exact property by loop because map.Role is empty here
+                    PropertyInfo? property = null;
+                    var props = map.Owner.GetType().GetProperties();
+                    foreach (var prop in props)
+                    {
+                        if (prop.GetValue(map.Owner) == collection)
+                        {
+                            property = prop;
+                            break;
+                        }
+                    }
+                    if (property != null)
+                    {
+                        EntityHistoryHelper?.AddAuditedAsManyToMany(map.Owner, property, null, collection);
+                    }
+                }
+            }
+            catch (HibernateException e)
+            {
+                Logger.Error(e.Message, e);
+            }
             base.OnCollectionRecreate(collection, key);
         }
 
@@ -381,18 +407,14 @@ namespace Shesha.NHibernate.Interceptors
             }
         }
 
-        private static void NormalizeDateTimePropertiesForComponentType(object componentObject, IType type)
+        private static void NormalizeDateTimePropertiesForComponentType(object? componentObject, IType type)
         {
             if (componentObject == null)
-            {
                 return;
-            }
 
             var componentType = type as ComponentType;
             if (componentType == null)
-            {
                 return;
-            }
 
             for (int i = 0; i < componentType.PropertyNames.Length; i++)
             {

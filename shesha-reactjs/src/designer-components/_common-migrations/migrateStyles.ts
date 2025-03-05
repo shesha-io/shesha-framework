@@ -5,16 +5,16 @@ import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyle
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
-export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style'>) => {
+export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
         const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
 
         const border = (side) => ({
             ...prev?.border?.border?.[side],
-            width: prevStyles?.borderSize as string || prev?.border?.border?.[side]?.width || defaults?.border?.border?.[side]?.width || '1px',
-            style: prevStyles?.borderType || prev?.border?.border?.[side]?.style || defaults?.border?.border?.[side]?.style || 'solid',
-            color: prevStyles?.borderColor || prev?.border?.border?.[side]?.color || defaults?.border?.border?.[side]?.color || '#d9d9d9'
+            width: prevStyles?.borderSize as string || prev?.border?.border?.[side]?.width || defaults?.border?.border?.[side]?.width,
+            style: prevStyles?.borderType || prev?.border?.border?.[side]?.style || defaults?.border?.border?.[side]?.style,
+            color: prevStyles?.borderColor || prev?.border?.border?.[side]?.color || defaults?.border?.border?.[side]?.color
         });
 
         const heightFromSize = prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
@@ -35,7 +35,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
         return {
             size: prevStyles?.size,
             border: {
-                hideBorder: prevStyles?.hideBorder || false,
+                hideBorder: prevStyles?.hideBorder || defaults?.hideBorder || false,
                 selectedCorner: 'all',
                 selectedSide: 'all',
                 border: {
@@ -45,7 +45,13 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                     left: border('left'),
                     right: border('right'),
                 },
-                radius: { all: prevStyles?.borderRadius || defaults?.border?.radius?.all || 8 },
+                radius: {
+                    all: defaults?.border?.radius?.all || 8,
+                    topLeft: defaults?.border?.radius?.topLeft || 8,
+                    topRight: defaults?.border?.radius?.topRight || 8,
+                    bottomLeft: defaults?.border?.radius?.bottomLeft || 8,
+                    bottomRight: defaults?.border?.radius?.bottomRight || 8
+                },
             },
             background: {
                 type: backgroundType,
@@ -81,14 +87,15 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 spreadRadius: defaults?.shadow?.spreadRadius || 0
             },
             ...(defaults?.display && { display: defaults?.display || 'block' }),
+            stylingBox: defaults?.stylingBox || '{}',
         };
     };
 
     const result: T = {
         ...prev,
-        desktop: { ...migrateStyles('desktop') },
-        tablet: { ...migrateStyles('tablet') },
-        mobile: { ...migrateStyles('mobile') },
+        desktop: { ...prev.desktop, ...migrateStyles('desktop') },
+        tablet: { ...prev.tablet, ...migrateStyles('tablet') },
+        mobile: { ...prev.mobile, ...migrateStyles('mobile') },
     };
 
     return result;

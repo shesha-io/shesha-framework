@@ -5,11 +5,11 @@ using Abp.Domain.Services;
 using Abp.Runtime.Session;
 using Abp.UI;
 using FluentValidation;
+using Shesha.Extensions;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FluentValidationResult = FluentValidation.Results.ValidationResult;
 
@@ -18,7 +18,7 @@ namespace Shesha.Domain
     public static class DomainServiceExtensions
     {
 
-        public static async Task<Person> GetCurrentPerson(this DomainService service)
+        public static async Task<Person> GetCurrentPersonAsync(this DomainService service)
         {
             var personRepository = IocManager.Instance.Resolve<IRepository<Person, Guid>>();
             var _session = StaticContext.IocManager.Resolve<IAbpSession>();
@@ -50,9 +50,12 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static async Task<T> GetEntityAsync<T, TId>(this DomainService service, TId id, bool throwException = true) where T : class, IEntity<TId>
         {
+            var stringId = id.ToString();
+            ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
+
             var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();
 
-            var item = await dynamicRepo.GetAsync(typeof(T), id.ToString());
+            var item = await dynamicRepo.GetAsync(typeof(T), stringId);
 
             if (item != null)
                 return (T)item;
@@ -74,10 +77,9 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId: struct
         {
-			var isNew = id == null;
-			var item = !isNew
-				? await GetEntityAsync<T, TId>(service, id.Value)
-				: (T)Activator.CreateInstance(typeof(T));
+            var item = id != null
+                ? await GetEntityAsync<T, TId>(service, id.Value)
+                : ActivatorHelper.CreateNotNullInstance<T>();
 
 			await action.Invoke(item);
 

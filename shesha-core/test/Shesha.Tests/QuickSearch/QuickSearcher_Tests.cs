@@ -9,6 +9,7 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.QuickSearch;
+using Shesha.QuickSearch.Cache;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -177,7 +178,8 @@ namespace Shesha.Tests.QuickSearch
                 return refList;
             });
 
-            var quickSearcher = new QuickSearcher(Resolve<IEntityConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object);
+            var quickSearchPropertiesCacheHolder = Resolve<IQuickSearchPropertiesCacheHolder>();
+            var quickSearcher = new QuickSearcher(Resolve<IEntityConfigurationStore>(), rliRepoMock.Object, Resolve<ICacheManager>(), refListHelperRepoMock.Object, quickSearchPropertiesCacheHolder);
 
             var expression = quickSearcher.GetQuickSearchExpression<TestOrganisation>("Email", new List<string> {
                 nameof(TestOrganisation.ContactMethods)
@@ -202,20 +204,17 @@ namespace Shesha.Tests.QuickSearch
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            List<T> data = null;
-
-            await WithUnitOfWorkAsync(async () => {
+            return await WithUnitOfWorkAsync(async () => {
                 var query = repository.GetAll();
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);
 
-                data = await asyncExecuter.ToListAsync(query);
+                var data = await asyncExecuter.ToListAsync(query);
 
                 assertions?.Invoke(data);
+                return data;
             });
-
-            return data;
         }
 
         #endregion

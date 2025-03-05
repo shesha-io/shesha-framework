@@ -1,11 +1,8 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems
 {
@@ -24,7 +21,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Module
         /// </summary>
-        Module Module { get; set; }
+        Module? Module { get; set; }
 
         /// <summary>
         /// Version number

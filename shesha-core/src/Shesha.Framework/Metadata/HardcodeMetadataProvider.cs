@@ -1,5 +1,4 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
@@ -273,7 +272,7 @@ namespace Shesha.Metadata
                 : property.DeclaringType.GetInterfaces().Contains(@interface);
         }
 
-        private string GetStringFormat([CanBeNull]MemberInfo propInfo) 
+        private string GetStringFormat([CanBeNull]MemberInfo? propInfo) 
         {
             if (propInfo == null)
                 return null;
@@ -311,7 +310,7 @@ namespace Shesha.Metadata
             return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
         }
 
-        public DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo propInfo)
+        public DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo)
         {
             if (propType == typeof(Guid))
                 return new DataTypeInfo(DataTypes.Guid);

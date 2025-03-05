@@ -2,10 +2,12 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using NHibernate;
-using NHibernate.Context;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using Shesha.NHibernate.Repositories;
+using Shesha.NHibernate.Session;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -22,13 +24,12 @@ namespace Shesha.Services
     public class DynamicRepository : IDynamicRepository, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-        private readonly ICurrentSessionContext _currentSessionContext;
-
+        private readonly INhCurrentSessionContext _currentSessionContext;
 
         // note: current session doesn't work in unit tests because of static context usage
-        private ISession CurrentSession => _currentSessionContext.CurrentSession();
+        private ISession CurrentSession => _currentSessionContext.Session;
 
-        public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, ICurrentSessionContext currentSessionContext)
+        public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, INhCurrentSessionContext currentSessionContext)
         {
             _entityConfigurationStore = entityConfigurationStore;
             _currentSessionContext = currentSessionContext;
@@ -145,9 +146,9 @@ namespace Shesha.Services
         {
             var where = new Func<IQueryable<int>, Expression<Func<int, bool>>, IQueryable<int>>(Queryable.Where).Method;
             var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
-            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.FullName);
-            return (IQueryable)whereForMyType.Invoke(query, new object[] { query, lambda });
-        }
+            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.GetRequiredFullName());
 
+            return whereForMyType.Invoke(query, [query, lambda]).ForceCastAs<IQueryable>();
+        }
     }
 }

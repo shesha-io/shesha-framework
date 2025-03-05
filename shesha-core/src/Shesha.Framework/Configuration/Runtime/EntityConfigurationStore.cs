@@ -3,7 +3,6 @@ using Abp.Reflection;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
-using Shesha.JsonEntities;
 using Shesha.Reflection;
 using System;
 using System.Collections;
@@ -32,7 +31,7 @@ namespace Shesha.Configuration.Runtime
 
         protected void Initialise()
         {
-            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType() && t != typeof(JsonEntity))
+            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType()) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 .Select(t => new { Type = t, TypeShortAlias = t.GetAttribute<EntityAttribute>()?.TypeShortAlias })
                 .ToList();
 
@@ -42,11 +41,11 @@ namespace Shesha.Configuration.Runtime
                 .GroupBy(i => i.TypeShortAlias, (t, items) => new {TypeShortAlias = t, Types = items.Select(i => i.Type)})
                 .Where(g => g.Types.Count() > 1).ToList();
             if (duplicates.Any())
-                throw new DuplicatedTypeShortAliasesException(duplicates.ToDictionary(i => i.TypeShortAlias, i => i.Types));
+                throw new DuplicatedTypeShortAliasesException(duplicates.ToDictionary(i => i.TypeShortAlias ?? "empty", i => i.Types));
 
             foreach (var entityType in entityTypes)
             {
-                _entityByClassName.Add(entityType.Type.FullName, entityType.Type);
+                _entityByClassName.Add(entityType.Type.GetRequiredFullName(), entityType.Type);
                 if (!string.IsNullOrWhiteSpace(entityType.TypeShortAlias))
                     _entityByTypeShortAlias.Add(entityType.TypeShortAlias, entityType.Type);
             }

@@ -9,7 +9,6 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -129,16 +128,11 @@ namespace Shesha.Bootstrappers
             foreach (var value in values)
             {
                 var intValue = Convert.ToInt64(value);
-                var internalName = Enum.GetName(list.Enum, intValue);
-                var memberInfo = list.Enum.GetMember(internalName).FirstOrDefault();
+                var internalName = Enum.GetName(list.Enum, intValue) ?? throw new Exception($"Value '{intValue}' not found in enum '{list.Enum.FullName}'");
+                var memberInfo = list.Enum.GetMember(internalName).Single();
 
-                var displayAttribute = memberInfo != null
-                    ? memberInfo.GetAttribute<DisplayAttribute>()
-                    : null;
-
-                var descriptionAttribute = memberInfo != null
-                    ? memberInfo.GetAttribute<DescriptionAttribute>()
-                    : null;
+                var displayAttribute = memberInfo.GetAttribute<DisplayAttribute>();
+                var descriptionAttribute = memberInfo.GetAttribute<DescriptionAttribute>();
 
                 if (displayAttribute != null && displayAttribute.GetAutoGenerateField() == false)
                     continue;
@@ -290,11 +284,11 @@ namespace Shesha.Bootstrappers
 
         private class ListItemInfo
         {
-            public string Name { get; set; }
-            public string Description { get; set; }
+            public string? Name { get; set; }
+            public string? Description { get; set; }
             public Int64 Value { get; set; }
             public Int64 OrderIndex { get; set; }
-            public string Color { get; set; }
+            public string? Color { get; set; }
         }
     }
 }

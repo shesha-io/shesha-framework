@@ -40,7 +40,7 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// User who started the job (if it was done manually)
         /// </summary>
-        public virtual User StartedBy { get; set; }
+        public virtual User? StartedBy { get; set; }
 
         /// <summary>
         /// Executed scheduled job
@@ -67,7 +67,7 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// Parent execution of the current one. Is used for execution retries
         /// </summary>
-        public virtual ScheduledJobExecution ParentExecution { get; set; }
+        public virtual ScheduledJobExecution? ParentExecution { get; set; }
 
         /// <summary>
         /// This is a JSON string containing the job stats.

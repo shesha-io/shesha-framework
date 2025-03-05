@@ -22,11 +22,12 @@ export const getSettings = (data) => {
                         title: 'Common',
                         id: 's4gmBg31azZC0UjZjpfTm',
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
+                            .addContextPropertyAutocomplete({
                                 id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 propertyName: 'propertyName',
                                 label: 'Property Name',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                                styledLabel: true,
                                 size: 'small',
                                 validate: {
                                     required: true,
@@ -49,7 +50,7 @@ export const getSettings = (data) => {
                             .addSettingsInput({
                                 id: 'img-desc-4f4f4f4f-4f4f4f4f-4f4f4f4f',
                                 propertyName: 'description',
-                                label: 'Description',
+                                label: 'Tooltip',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                             })
                             .addSettingsInputRow({
@@ -88,6 +89,7 @@ export const getSettings = (data) => {
                                 label: 'Allowed File Types',
                                 inputType: 'editableTagGroupProps',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                                tooltip: 'Enter the file types that are allowed to be uploaded e.g .jpg, .png, .gif',
                             })
                             .addSettingsInput({
                                 id: "image-source-type",
@@ -120,7 +122,7 @@ export const getSettings = (data) => {
                                 id: "image-url",
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [{
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'data-source-url',
                                     propertyName: "url",
                                     jsSetting: false,
@@ -161,7 +163,7 @@ export const getSettings = (data) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
-                                        type: 'text',
+                                        type: 'textField',
                                         id: 'image-storedFile-id',
                                         jsSetting: false,
                                         propertyName: "storedFileId",
@@ -229,25 +231,68 @@ export const getSettings = (data) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
-                                                                propertyName: "width",
+                                                                propertyName: "dimensions.width",
                                                                 icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                             },
                                                             {
-                                                                type: 'text',
+                                                                type: 'textField',
+                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Width",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.minWidth",
+                                                                icon: "minWidthIcon",
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Width",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.maxWidth",
+                                                                icon: "maxWidthIcon",
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: 'dimensionsStyleRowHeight',
+                                                        parentId: 'dimensionsStylePnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
-                                                                propertyName: "height",
+                                                                propertyName: "dimensions.height",
                                                                 icon: "heightIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
-
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.minHeight",
+                                                                icon: "minHeightIcon",
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.maxHeight",
+                                                                icon: "maxHeightIcon",
+                                                            }
                                                         ]
                                                     })
                                                     .toJson()
@@ -359,7 +404,7 @@ export const getSettings = (data) => {
                                                                     id: 'filter-intensity',
                                                                     label: 'Filter Intensity',
                                                                     propertyName: 'filterIntensity',
-                                                                    type: 'number',
+                                                                    type: 'numberField',
                                                                 }
                                                             ]
                                                         })
@@ -369,7 +414,7 @@ export const getSettings = (data) => {
                                                             id: 'opacity-filter',
                                                             label: 'Opacity',
                                                             propertyName: 'opacity',
-                                                            inputType: 'number',
+                                                            inputType: 'numberField',
                                                         })
                                                         .toJson()
                                                 ],
@@ -455,7 +500,7 @@ export const getSettings = (data) => {
                                                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         inputs: [
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
@@ -464,7 +509,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
@@ -473,7 +518,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
@@ -482,7 +527,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
-                                                                type: 'number',
+                                                                type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
@@ -491,7 +536,7 @@ export const getSettings = (data) => {
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
-                                                                type: 'color',
+                                                                type: 'colorPicker',
                                                                 id: 'shadowStyleRow-color',
                                                                 label: 'Color',
                                                                 hideLabel: true,

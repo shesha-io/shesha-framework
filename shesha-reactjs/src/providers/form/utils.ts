@@ -1232,9 +1232,9 @@ export const validateForm = (rules: Rules, values: ValidateSource): Promise<void
 
 export const getFormValidationRules = (markup: FormMarkup): Rules => {
   const components = getComponentsFromMarkup(markup);
-
+  
   const rules: Rules = {};
-  components.forEach((component) => {
+  components?.forEach((component) => {
     rules[component.propertyName] = getValidationRules(component) as [];
   });
 
@@ -1288,7 +1288,7 @@ export const processRecursive = (
 ) => {
   func(component, parentId);
 
-  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
+  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c?.type === component?.type);
   if (!toolboxComponent) return;
   const containers = getContainerNames(toolboxComponent);
 

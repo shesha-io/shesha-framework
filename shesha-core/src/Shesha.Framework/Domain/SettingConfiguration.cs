@@ -1,9 +1,7 @@
 ﻿using Abp.Auditing;
 using Shesha.Domain.Attributes;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -24,11 +22,11 @@ namespace Shesha.Domain
 
         [StringLength(200)]
         [Audited]
-        public virtual string EditorFormName { get; set; }
+        public virtual string? EditorFormName { get; set; }
         
         [StringLength(200)]
         [Audited]
-        public virtual string EditorFormModule { get; set; }
+        public virtual string? EditorFormModule { get; set; }
 
         /// <summary>
         /// Allows ordering the setting in a logical manner within its category
@@ -40,7 +38,7 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(200)]
         [Audited]
-        public virtual string Category { get; set; }
+        public virtual string? Category { get; set; }
 
         /// <summary>
         /// If true, indicates that this setting should be specific to each of the application's clients

@@ -1,9 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Timing;
-using Castle.Core;
 using Newtonsoft.Json.Linq;
-using NUglify;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
@@ -16,9 +14,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Shesha.JsonLogic
 {
@@ -50,16 +45,20 @@ namespace Shesha.JsonLogic
 
         private delegate Expression Binder(Expression left, Expression right);
 
+        private Expression Reduce(Expression? acc, Expression right, Binder binder)
+        {
+            return acc == null 
+                ? right 
+                : binder(acc, right);
+        }
+
         private Expression CombineExpressions<T>(JToken[] tokens, Binder binder, ParameterExpression param) 
         {
-            Expression acc = null;
-
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
-
+            Expression? acc = null;
             foreach (var argument in tokens)
             {
                 var parsedArgument = ParseTree<T>(argument, param);
-                acc = bind(acc, parsedArgument);
+                acc = Reduce(acc, parsedArgument, binder);
             }
 
             return acc;
@@ -67,13 +66,10 @@ namespace Shesha.JsonLogic
 
         private Expression CombineExpressions<T>(Expression[] expressions, Binder binder, ParameterExpression param)
         {
-            Expression acc = null;
-
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
-
+            Expression? acc = null;
             foreach (var expression in expressions)
             {
-                acc = bind(acc, expression);
+                acc = Reduce(acc, expression, binder);
             }
 
             return acc;
@@ -123,7 +119,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair, 
                                 pair => 
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -193,7 +189,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair, 
                                 pair => 
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -263,7 +259,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair,
                                 pair =>
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -333,7 +329,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair,
                                 pair =>
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -466,7 +462,7 @@ namespace Shesha.JsonLogic
                                 return CombineExpressions<T>(arrExpressions, Expression.OrElse, param);
                             }
                             else {
-                                var containsMethod = typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) });
+                                var containsMethod = typeof(string).GetRequiredMethod(nameof(string.Contains), [typeof(string)]);
 
                                 var arg1 = ParseTree<T>(@operator.Arguments[0], param);
                                 var arg2 = ParseTree<T>(@operator.Arguments[1], param);
@@ -481,7 +477,7 @@ namespace Shesha.JsonLogic
 
                     case JsOperators.EndsWith:
                         {
-                            var endsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) });
+                            var endsWithMethod = typeof(string).GetRequiredMethod(nameof(string.EndsWith), [typeof(string)]);
 
                             if (@operator.Arguments.Count() != 2)
                                 throw new Exception($"{JsOperators.EndsWith} operator require two arguments");
@@ -499,7 +495,7 @@ namespace Shesha.JsonLogic
                         {
                             // note: now it supports only strings
                             // todo: add check
-                            var startsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) });
+                            var startsWithMethod = typeof(string).GetRequiredMethod(nameof(string.StartsWith), [typeof(string)]);
 
                             if (@operator.Arguments.Count() != 2)
                                 throw new Exception($"{JsOperators.StartsWith} operator require two arguments");
@@ -588,7 +584,7 @@ namespace Shesha.JsonLogic
                             {
                                 case "day": 
                                     {
-                                        var addMethod = typeof(DateTime).GetMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
+                                        var addMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
                                         var timeSpan = TimeSpan.FromDays(number.Value);
                                         return Expression.Call(
                                             date,
@@ -598,7 +594,7 @@ namespace Shesha.JsonLogic
                                     }
                                 case "week": 
                                     {
-                                        var addMethod = typeof(DateTime).GetMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
+                                        var addMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
                                         var timeSpan = TimeSpan.FromDays(number.Value * 7);
                                         return Expression.Call(
                                             date,
@@ -608,7 +604,7 @@ namespace Shesha.JsonLogic
                                     }
                                 case "month": 
                                     {
-                                        var addMonthsMethod = typeof(DateTime).GetMethod(nameof(DateTime.AddMonths), new Type[] { typeof(int) });
+                                        var addMonthsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddMonths), new Type[] { typeof(int) });
                                         return Expression.Call(
                                             date,
                                             addMonthsMethod,
@@ -617,7 +613,7 @@ namespace Shesha.JsonLogic
                                     }
                                 case "year":
                                     {
-                                        var addYearsMethod = typeof(DateTime).GetMethod(nameof(DateTime.AddYears), new Type[] { typeof(int) });
+                                        var addYearsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddYears), new Type[] { typeof(int) });
                                         return Expression.Call(
                                             date,
                                             addYearsMethod,
@@ -634,7 +630,7 @@ namespace Shesha.JsonLogic
                                 throw new Exception($"{JsOperators.Upper} operator require 1 argument");
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
-                            var toUpperMethod = typeof(string).GetMethod(nameof(string.ToUpper), new Type[] { });
+                            var toUpperMethod = typeof(string).GetRequiredMethod(nameof(string.ToUpper), new Type[] { });
                             return Expression.Call(arg, toUpperMethod);
                         }
                     case JsOperators.Lower:
@@ -643,7 +639,7 @@ namespace Shesha.JsonLogic
                                 throw new Exception($"{JsOperators.Lower} operator require 1 argument");
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
-                            var toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), new Type[] { });
+                            var toLowerMethod = typeof(string).GetRequiredMethod(nameof(string.ToLower), new Type[] { });
                             return Expression.Call(arg, toLowerMethod);
                         }
                     default:
@@ -682,7 +678,7 @@ namespace Shesha.JsonLogic
             if (IsDateTimeMember(left) &&
                 right is ConstantExpression constExpr && constExpr.Type == typeof(DateTime))
             {
-                var dateExpr = Expression.Constant(dateConverter.Invoke((DateTime)constExpr.Value));
+                var dateExpr = Expression.Constant(dateConverter.Invoke(EnsureDateTime(constExpr.Value)));
                 expression = SafeNullable(left, dateExpr, binder);
                 return true;
             }
@@ -696,7 +692,7 @@ namespace Shesha.JsonLogic
             if (IsDateMember(left) &&
                 right is ConstantExpression constExpr && constExpr.Type == typeof(DateTime))
             {
-                var dateExpr = Expression.Constant(dateConverter.Invoke((DateTime)constExpr.Value));
+                var dateExpr = Expression.Constant(dateConverter.Invoke(EnsureDateTime(constExpr.Value)));
                 expression = SafeNullable(left, dateExpr, binder);
                 return true;
             }
@@ -797,7 +793,7 @@ namespace Shesha.JsonLogic
         {
             if (expression is ConstantExpression constExpr && constExpr.Type == typeof(DateTime))
             {
-                return Expression.Constant(convertor.Invoke((DateTime)constExpr.Value));
+                return Expression.Constant(convertor.Invoke(EnsureDateTime(constExpr.Value)));
             }
             return expression;
         }
@@ -808,8 +804,8 @@ namespace Shesha.JsonLogic
                 return expression;
 
             TimeSpan? value = constExpr.Type == typeof(TimeSpan)
-                ? (TimeSpan)constExpr.Value
-                : constExpr.Type == typeof(Int64)
+                ? (TimeSpan?)constExpr.Value
+                : constExpr.Type == typeof(Int64) && constExpr.Value != null
                     ? TimeSpan.FromSeconds((Int64)constExpr.Value)
                     : null;
             
@@ -836,7 +832,7 @@ namespace Shesha.JsonLogic
         {
             if (a.Type.GetUnderlyingTypeIfNullable() == typeof(Guid) && b.Type == typeof(string))
             {
-                var toGuidMethod = typeof(StringHelper).GetMethod(nameof(StringHelper.ToGuid), new Type[] { typeof(string) });
+                var toGuidMethod = typeof(StringHelper).GetRequiredMethod(nameof(StringHelper.ToGuid), [typeof(string)]);
 
                 b = Expression.Call(
                     null,
@@ -852,7 +848,7 @@ namespace Shesha.JsonLogic
 
             if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(int)) 
             {
-                if (constExpr.Type == typeof(Int64))
+                if (constExpr.Type == typeof(Int64) && constExpr.Value != null)
                 {
                     var constValue = (Int64)constExpr.Value;
                     if (constValue <= int.MaxValue)
@@ -861,10 +857,10 @@ namespace Shesha.JsonLogic
                         throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
                 }
                 else
-                    if (constExpr.Type == typeof(string) && int.TryParse((string)constExpr.Value, out var intValue)) 
+                    if (constExpr.Type == typeof(string) && int.TryParse((string?)constExpr.Value, out var intValue)) 
                         numericConstToConvert = Expression.Constant(intValue);
             }
-            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64))
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64) && constExpr.Value != null)
             {
                 if (constExpr.Type == typeof(int))
                     numericConstToConvert = Expression.Constant((Int64)constExpr.Value);
@@ -875,7 +871,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string)) 
                 {
-                    if (double.TryParse((string)constExpr.Value, out var doubleValue))
+                    if (double.TryParse((string?)constExpr.Value, out var doubleValue))
                         numericConstToConvert = Expression.Constant(doubleValue);
                 } else
                     numericConstToConvert = Expression.Constant(Convert.ToDouble(constExpr.Value));
@@ -884,7 +880,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (decimal.TryParse((string)constExpr.Value, out var decimalValue))
+                    if (decimal.TryParse((string?)constExpr.Value, out var decimalValue))
                         numericConstToConvert = Expression.Constant(decimalValue);
                 }
                 else
@@ -894,7 +890,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (Single.TryParse((string)constExpr.Value, out var singleValue))
+                    if (Single.TryParse((string?)constExpr.Value, out var singleValue))
                         numericConstToConvert = Expression.Constant(singleValue);
                 }
                 else
@@ -904,7 +900,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (byte.TryParse((string)constExpr.Value, out var byteValue))
+                    if (byte.TryParse((string?)constExpr.Value, out var byteValue))
                         numericConstToConvert = Expression.Constant(byteValue);
                 }
                 else
@@ -916,7 +912,7 @@ namespace Shesha.JsonLogic
         {
             if (a.Type == typeof(TimeSpan) && b.Type == typeof(Int64))
             {
-                var fromSecondsMethod = typeof(TimeSpan).GetMethod(nameof(TimeSpan.FromSeconds), new Type[] { typeof(double) });
+                var fromSecondsMethod = typeof(TimeSpan).GetRequiredMethod(nameof(TimeSpan.FromSeconds), new Type[] { typeof(double) });
                 
                 b = Expression.Call(
                     null,
@@ -1132,7 +1128,7 @@ namespace Shesha.JsonLogic
 
         private Expression TrimStringMember(MemberExpression member) 
         {
-            var trimMethod = typeof(string).GetMethod(nameof(string.Trim), new Type[] { });
+            var trimMethod = typeof(string).GetRequiredMethod(nameof(string.Trim), new Type[] { });
 
             return Expression.Call(member, trimMethod);
         }
@@ -1148,8 +1144,38 @@ namespace Shesha.JsonLogic
             var method = this.GetType().GetMethod(nameof(EvaluatePredicateInternal));
             var modelType = model.GetType();
             var genericMethod = method.MakeGenericMethod(modelType);
-            return (bool)genericMethod.Invoke(this, new object[] { model, predicate });
+
+            var result = genericMethod.Invoke(this, [model, predicate]);
+            return EnsureBool(result);
         }
+
+        #region Type guards
+
+        private DateTime EnsureDateTime(object? value)
+        {
+            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(DateTime))
+                throw new ArgumentException($"Value must be of type {typeof(DateTime).FullName}");
+
+            return (DateTime)value;
+        }
+
+        private TimeSpan EnsureTimeSpan(object? value)
+        {
+            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(TimeSpan))
+                throw new ArgumentException($"Value must be of type {typeof(TimeSpan).FullName}");
+
+            return (TimeSpan)value;
+        }
+
+        private bool EnsureBool(object? value)
+        {
+            if (value == null || value.GetType().GetUnderlyingTypeIfNullable() != typeof(bool))
+                throw new ArgumentException($"Value must be of type {typeof(bool).FullName}");
+
+            return (bool)value;
+        }
+
+        #endregion
     }
 
     public static class JsOperators

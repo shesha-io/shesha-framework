@@ -13,6 +13,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
+using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
@@ -21,7 +22,6 @@ using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Utilities;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Exceptions;
 using System;
@@ -85,7 +85,7 @@ namespace Shesha.Web.FormsDesigner.Services
             return await _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
         }
 
-        private async Task<bool> CheckFormPermissionsAsync(string module, string name)
+        private async Task<bool> CheckFormPermissionsAsync(string? module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name),
@@ -184,10 +184,10 @@ namespace Shesha.Web.FormsDesigner.Services
             else {
                 switch (mode)
                 {
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
+                    case ConfigurationItemViewMode.Live:
                         query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                         break;
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                    case ConfigurationItemViewMode.Ready:
                         {
                             var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -197,7 +197,7 @@ namespace Shesha.Web.FormsDesigner.Services
                             query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                             break;
                         }
-                    case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                    case ConfigurationItemViewMode.Latest:
                         {
                             var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
@@ -308,7 +308,7 @@ namespace Shesha.Web.FormsDesigner.Services
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-            var forms = await GetAllFiltered(input.Filter);
+            var forms = await GetAllFilteredAsync(input.Filter);
 
             foreach (var form in forms)
             {
@@ -569,12 +569,12 @@ namespace Shesha.Web.FormsDesigner.Services
             var configs = (await _entityConfigManager.GetMainDataListAsync()).Where(x => x.NotImplemented).ToList();
             var list = new List<object>();
 
-            var forms = Repository.GetAll().Where(x =>
+            var forms = await Repository.GetAll().Where(x =>
                     (int)x.VersionStatus < 4
                     && !x.Name.Contains(".json")
                     && x.Markup != null)
                 .Select(x => new { x.FullName, x.VersionNo, x.VersionStatus, x.Markup })
-                .ToList();
+                .ToListAsync();
 
             foreach (var config in configs)
             {
@@ -635,7 +635,7 @@ namespace Shesha.Web.FormsDesigner.Services
                     {
                         var fileName = Path.Combine(input.Path, form.Module, $"{form.Name}.v{form.Version}.json".RemovePathIllegalCharacters());
                         var directory = Path.GetDirectoryName(fileName);
-                        if (!Directory.Exists(directory))
+                        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
                             Directory.CreateDirectory(directory);
 
                         await File.WriteAllTextAsync(fileName, form.Markup);

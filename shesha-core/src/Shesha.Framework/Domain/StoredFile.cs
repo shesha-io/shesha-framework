@@ -1,9 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
-using Abp.Dependency;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Configuration.Runtime;
@@ -11,7 +6,8 @@ using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Services;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
@@ -28,23 +24,13 @@ namespace Shesha.Domain
         {
         }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public StoredFile(IEntityConfigurationStore entityConfigurationStore)
-        {
-            _entityConfigurationStore = entityConfigurationStore;
-        }
-
-        private IEntityConfigurationStore _entityConfigurationStore;
-
 
         [EntityDisplayName]
         public virtual string FileName { get; set; }
 
         public virtual string FileType { get; set; }
 
-        public virtual string Category { get; set; }
+        public virtual string? Category { get; set; }
 
         [DataType(DataType.MultilineText)]
         public virtual string Description { get; set; }
@@ -86,7 +72,7 @@ namespace Shesha.Domain
             if (owner.IsTransient())
                 throw new Exception("Owner is not persisted to the DB");
 
-            var file = new StoredFile(entityConfigurationStore)
+            var file = new StoredFile
             {
                 Owner = new GenericEntityReference(owner)
             };
@@ -101,7 +87,7 @@ namespace Shesha.Domain
         /// <param name="entity">Owner entity</param>
         public virtual void SetOwner<TId>(IEntity<TId> entity)
         {
-            Owner = new GenericEntityReference(entity.Id.ToString(), entity.GetType().StripCastleProxyType().FullName);
+            Owner = new GenericEntityReference(entity.Id.ToString().NotNull(), entity.GetType().StripCastleProxyType().GetRequiredFullName());
         }
 
         /// <summary>
@@ -125,38 +111,5 @@ namespace Shesha.Domain
         public virtual bool Temporary { get; set; }
 
         #endregion
-
-        /*
-         potentially unneeded properties/methods
-
-        /// <summary>
-        /// Returns the metadata on the last version available.
-        /// </summary>
-        public virtual StoredFileVersion LastVersion
-        {
-            get { return Versions.OrderByDescending(o => o.VersionNo).FirstOrDefault(); }
-        }
-
-        /// <summary>
-        /// Returns file version by version number. A latest version will be returner if versionNo = null
-        /// </summary>
-        /// <param name="versionNo">Number of the version to search</param>
-        /// <returns></returns>
-        public virtual StoredFileVersion GetVersion(int? versionNo)
-        {
-            return versionNo.HasValue
-                ? Versions.FirstOrDefault(v => v.VersionNo == versionNo.Value)
-                : LastVersion;
-        }
-
-        /// <summary>
-        /// The setters are private as they should be set through the methods on the service.
-        /// </summary>
-        public virtual bool Locked { get; protected set; }
-
-        public virtual string LockedBy { get; protected set; }
-        public virtual string LockedDate { get; protected set; }
-         
-         */
     }
 }

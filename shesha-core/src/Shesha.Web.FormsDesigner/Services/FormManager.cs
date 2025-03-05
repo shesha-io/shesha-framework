@@ -5,11 +5,11 @@ using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
+using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Permissions;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
-        public static string GetFormPermissionedObjectName(string module, string name)
+        public static string GetFormPermissionedObjectName(string? module, string name)
         {
             return $"{module}.{name}";
         }
