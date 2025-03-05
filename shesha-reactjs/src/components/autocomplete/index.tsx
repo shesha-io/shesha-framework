@@ -57,13 +57,13 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // update local store of values details
   useEffect(() => {
-    if (!props.value && props.readOnly)
+    if (!keys.length && props.readOnly)
       return;
     if (props.dataSourceType === 'entitiesList' && props.entityType
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
       // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
-      if (props.value) {
+      if (keys.length) {
         const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
         if (props.dataSourceType === 'entitiesList' && !props.displayPropName && hasDisplayName) {
           setLoadingValues(false);
@@ -121,7 +121,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         : outcomeValueFunc((option as ISelectOption).data, allData)
       : undefined;
 
-    const selectedFilter = selectedValue ? filterNotKeysFunc(selectedValue) : null;
+    const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length) 
+      ? filterNotKeysFunc(selectedValue) 
+      : null;
     source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
     debouncedSearch('');
     
