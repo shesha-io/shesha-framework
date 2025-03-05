@@ -2,11 +2,8 @@
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Linq;
-using System;
-using System.Collections.Generic;
+using Shesha.Application.Services.Dto;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -29,7 +26,7 @@ namespace Shesha
     }
 
     public abstract class AbpAsyncCrudAppService<TEntity, TEntityDto, TPrimaryKey>
-        : AbpAsyncCrudAppService<TEntity, TEntityDto, TPrimaryKey, PagedAndSortedResultRequestDto>
+        : AbpAsyncCrudAppService<TEntity, TEntityDto, TPrimaryKey, ShaFilteredPagedAndSortedResultRequestDto>
         where TEntity : class, IEntity<TPrimaryKey>
         where TEntityDto : IEntityDto<TPrimaryKey>
     {

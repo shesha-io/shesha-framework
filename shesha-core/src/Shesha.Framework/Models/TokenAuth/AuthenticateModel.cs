@@ -18,6 +18,6 @@ namespace Shesha.Models.TokenAuth
         /// <summary>
         /// Optional IMEI number. Is used for mobile applications
         /// </summary>
-        public string IMEI { get; set; }
+        public string? IMEI { get; set; }
     }
 }
