@@ -119,7 +119,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       ? Array.isArray(option)
         ? (option as ISelectOption[]).map((o) => outcomeValueFunc(o.data, allData))
         : outcomeValueFunc((option as ISelectOption).data, allData)
-      : undefined;
+      : null;
 
     const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length) 
       ? filterNotKeysFunc(selectedValue) 
