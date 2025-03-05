@@ -33,7 +33,7 @@ export const getSettings = (data: any) =>
             id: '12345e70-99a0-4825-ae6c-8b933004e119',
             propertyName: 'hidden',
             parentId: 'root',
-            label: 'Hidden',
+            label: 'hide',
           })
           .addTextField({
             id: '46d07439-4c18-468c-89e1-60c002ce96c5',

@@ -76,7 +76,7 @@ export const getSettings = () => {
                                     id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
                                     inputType: 'switch',
                                     propertyName: 'hidden',
-                                    label: 'Hidden',
+                                    label: 'hide',
                                     labelAlign: 'right',
                                     parentId: 'root',
                                     hidden: false,

@@ -37,7 +37,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'componentName',
                       label: 'Component name',
                       jsSetting: false,
-                      
+
                       validate: {
                         required: true
                       }
@@ -66,7 +66,7 @@ export const getSettings = (data: any) => {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'hidden',
-                      label: 'Hidden'
+                      label: 'hide'
                     },
                     {
                       type: 'switch',
@@ -154,7 +154,7 @@ export const getSettings = (data: any) => {
                       dataSourceType: 'url',
                       dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                       mode: 'single',
-                    } 
+                    }
                   ]
                 })
                 .toJson()

@@ -129,7 +129,7 @@ export const getSettings = () => {
                                 id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
                                 propertyName: 'hidden',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Hidden',
+                                label: 'hide',
                                 inputType: 'switch',
                                 jsSetting: true
                             })
