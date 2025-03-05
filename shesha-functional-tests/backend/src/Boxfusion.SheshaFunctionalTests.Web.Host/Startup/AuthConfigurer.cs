@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Abp.Runtime.Security;
 using Shesha;
+using Shesha.Configuration;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -15,7 +16,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
     {
         public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
-            if (bool.Parse(configuration["Authentication:JwtBearer:IsEnabled"]))
+            if (bool.TryParse(configuration["Authentication:JwtBearer:IsEnabled"], out var isEnabled) && isEnabled)
             {
                 services.AddAuthentication(options => {
                     options.DefaultAuthenticateScheme = "JwtBearer";
@@ -28,15 +29,15 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                     {
                         // The signing key must match!
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["Authentication:JwtBearer:SecurityKey"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetRequired("Authentication:JwtBearer:SecurityKey"))),
 
                         // Validate the JWT Issuer (iss) claim
                         ValidateIssuer = true,
-                        ValidIssuer = configuration["Authentication:JwtBearer:Issuer"],
+                        ValidIssuer = configuration.GetRequired("Authentication:JwtBearer:Issuer"),
 
                         // Validate the JWT Audience (aud) claim
                         ValidateAudience = true,
-                        ValidAudience = configuration["Authentication:JwtBearer:Audience"],
+                        ValidAudience = configuration.GetRequired("Authentication:JwtBearer:Audience"),
 
                         // Validate the token expiry
                         ValidateLifetime = true,

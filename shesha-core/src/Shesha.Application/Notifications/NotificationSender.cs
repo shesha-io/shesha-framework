@@ -102,7 +102,7 @@ namespace Shesha.Notifications
             TData data, 
             RefListNotificationPriority priority, 
             List<NotificationAttachmentDto>? attachments = null,
-            string cc = "",
+            string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {
@@ -170,7 +170,7 @@ namespace Shesha.Notifications
             NotificationTypeConfig type,
             RefListNotificationPriority priority, 
             NotificationChannelConfig channelConfig,
-            string cc = "",
+            string? cc = null,
             List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
@@ -343,7 +343,7 @@ namespace Shesha.Notifications
             TData data, 
             RefListNotificationPriority priority, 
             List<NotificationAttachmentDto>? attachments = null,
-            string cc = "",
+            string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {

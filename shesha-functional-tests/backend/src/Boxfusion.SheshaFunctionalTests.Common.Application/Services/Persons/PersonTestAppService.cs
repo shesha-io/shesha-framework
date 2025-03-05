@@ -6,6 +6,7 @@ using Shesha;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Reflection;
 using Shesha.Specifications;
 using System.ComponentModel.DataAnnotations;
 
@@ -45,7 +46,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
             await MapDynamicDtoToEntityAsync<PersonTestDto, Person, Guid>(input, p);
             var pp = new Person();
             var v = new List<ValidationResult>();
-            await MapJObjectToEntityAsync<Person, Guid>(input._jObject, pp, v);
+            await MapJObjectToEntityAsync<Person, Guid>(input._jObject.NotNull(), pp, v);
         }
 
         public override async Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
