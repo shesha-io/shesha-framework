@@ -77,7 +77,7 @@ namespace Shesha.Domain.ConfigurationItems
         [StringLength(200)]
         public virtual string? Accessor { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return FriendlyName;
         }

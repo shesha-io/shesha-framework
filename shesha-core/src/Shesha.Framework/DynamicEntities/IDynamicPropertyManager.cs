@@ -18,7 +18,7 @@ namespace Shesha.DynamicEntities
         /// <param name="entity">Entity</param>
         /// <param name="property">Property to get value</param>
         /// <returns></returns>
-        Task<string> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property);
+        Task<string?> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property) where TId : notnull;
 
         // todo: get IsVersioned flag from the EntityPropertyDto
         /// <summary>
@@ -30,7 +30,7 @@ namespace Shesha.DynamicEntities
         /// <param name="value">Value</param>
         /// <param name="createNewVersion">True if need to create a new version of value</param>
         /// <returns></returns>
-        Task SetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property, string value, bool createNewVersion);
+        Task SetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property, string value, bool createNewVersion) where TId : notnull;
 
         /// <summary>
         /// Map values of dynamic properties from Dto to Entity
@@ -43,7 +43,8 @@ namespace Shesha.DynamicEntities
         /// <returns></returns>
         Task MapDtoToEntityAsync<TDynamicDto, TEntity, TId>(TDynamicDto dynamicDto, TEntity entity)
             where TEntity : class, IEntity<TId>
-            where TDynamicDto : class, IDynamicDto<TEntity, TId>;
+            where TDynamicDto : class, IDynamicDto<TEntity, TId>
+            where TId : notnull;
 
         /// <summary>
         /// Map values of dynamic properties from JObject to Entity
@@ -54,7 +55,8 @@ namespace Shesha.DynamicEntities
         /// <param name="entity">Entity</param>
         /// <returns></returns>
         Task MapJObjectToEntityAsync<TEntity, TId>(JObject jObject, TEntity entity)
-            where TEntity : class, IEntity<TId>;
+            where TEntity : class, IEntity<TId>
+            where TId : notnull;
 
         /// <summary>
         /// Map values of dynamic properties from Entity to Dto
@@ -67,7 +69,8 @@ namespace Shesha.DynamicEntities
         /// <returns></returns>
         Task MapEntityToDtoAsync<TDynamicDto, TEntity, TId>(TEntity entity, TDynamicDto dynamicDto)
             where TEntity : class, IEntity<TId>
-            where TDynamicDto : class, IDynamicDto<TEntity, TId>;
+            where TDynamicDto : class, IDynamicDto<TEntity, TId>
+            where TId : notnull;
 
         /// <summary>
         /// 
@@ -77,8 +80,9 @@ namespace Shesha.DynamicEntities
         /// <param name="entity"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        Task<object> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
-            where TEntity : class, IEntity<TId>;
+        Task<object?> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
+            where TEntity : class, IEntity<TId>
+            where TId : notnull;
 
         /// <summary>
         /// Get entity property value
@@ -86,6 +90,6 @@ namespace Shesha.DynamicEntities
         /// <param name="entity"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        Task<object> GetPropertyAsync(object entity, string propertyName);
+        Task<object?> GetPropertyAsync(object entity, string propertyName);
     }
 }

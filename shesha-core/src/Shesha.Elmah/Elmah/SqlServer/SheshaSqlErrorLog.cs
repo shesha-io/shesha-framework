@@ -51,7 +51,7 @@ namespace Shesha.Elmah.SqlServer
         // ReSharper disable once MemberCanBeProtected.Global
         public virtual string ConnectionString { get; }
 
-        public override string Log(Error error)
+        public override string? Log(Error error)
         {
             var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
@@ -108,7 +108,7 @@ namespace Shesha.Elmah.SqlServer
             command.ExecuteNonQuery();
         }
 
-        public override ErrorLogEntry GetError(string id)
+        public override ErrorLogEntry? GetError(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (id.Length == 0) throw new ArgumentException(null, nameof(id));

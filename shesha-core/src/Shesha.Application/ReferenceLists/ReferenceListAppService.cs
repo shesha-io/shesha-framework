@@ -141,18 +141,6 @@ namespace Shesha.ReferenceLists
             return json.ToMd5Fingerprint();
         }
 
-        /// <summary>
-        /// Ger module by name
-        /// </summary>
-        /// <param name="moduleName"></param>
-        /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName)
-        {
-            return !string.IsNullOrWhiteSpace(moduleName)
-                ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
-                : null;
-        }
-
         #endregion
     }
 }

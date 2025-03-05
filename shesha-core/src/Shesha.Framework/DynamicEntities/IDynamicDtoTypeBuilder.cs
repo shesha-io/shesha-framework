@@ -40,6 +40,6 @@ namespace Shesha.DynamicEntities
         /// <summary>
         /// Returns .Net type that is used to store data for the specified DTO property (according to the property settings)
         /// </summary>
-        Task<Type> GetDtoPropertyTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context);
+        Task<Type?> GetDtoPropertyTypeAsync(EntityPropertyDto propertyDto, DynamicDtoTypeBuildingContext context);
     }
 }

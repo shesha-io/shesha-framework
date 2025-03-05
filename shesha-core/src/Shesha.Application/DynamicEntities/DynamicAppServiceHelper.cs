@@ -8,7 +8,7 @@ namespace Shesha.DynamicEntities
     /// </summary>
     public static class DynamicAppServiceHelper
     {
-        public static Type MakeApplicationServiceType(Type entityType)
+        public static Type? MakeApplicationServiceType(Type entityType)
         {
             var idType = entityType.GetProperty("Id")?.PropertyType;
             if (idType == null)

@@ -58,7 +58,7 @@ namespace Shesha.Settings
         /// </summary>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<object> GetValueAsync(GetSettingValueInput input)
+        public async Task<object?> GetValueAsync(GetSettingValueInput input)
         {
             var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, GetContext(input.AppKey));
 
@@ -69,7 +69,7 @@ namespace Shesha.Settings
         /// Get user setting value
         /// </summary>
         [HttpPost]
-        public async Task<object> GetUserValueAsync(GetDynamicSettingValueInput input)
+        public async Task<object?> GetUserValueAsync(GetDynamicSettingValueInput input)
         {
             var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name, input.Datatype, input.DefaultValue, GetContext(input.AppKey));
 

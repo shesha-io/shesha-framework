@@ -80,7 +80,7 @@ namespace Shesha.Extensions
         /// Returns the DisplayName of the entity.
         /// </summary>
         /// <returns>Returns the DisplayName of the entity.</returns>
-        public static string GetEntityDisplayName(this object entity)
+        public static string? GetEntityDisplayName(this object entity)
         {
             if (entity == null)
                 return string.Empty;
@@ -151,7 +151,7 @@ namespace Shesha.Extensions
                 var value = expression.Compile().Invoke(owner);
                 if (value == null)
                     return null;
-                var refListAttribute = prop.GetAttribute<ReferenceListAttribute>() ?? prop.PropertyType.GetUnderlyingTypeIfNullable().GetAttribute<ReferenceListAttribute>();
+                var refListAttribute = prop.GetAttributeOrNull<ReferenceListAttribute>() ?? prop.PropertyType.GetUnderlyingTypeIfNullable().GetAttributeOrNull<ReferenceListAttribute>();
                 if (refListAttribute != null)
                 {
                     return StaticContext.IocManager.Resolve<IReferenceListHelper>().GetItemDisplayText(refListAttribute.GetReferenceListIdentifier(prop), value.Value.ToInt32(CultureInfo.InvariantCulture));
@@ -193,35 +193,37 @@ namespace Shesha.Extensions
         {
             try
             {
-                var val = ReflectionHelper.GetPropertyValue(entity, propertyName, out var parentEntity, out var propInfo);
-                if (val == null)
+                var propValue = ReflectionHelper.GetPropertyValueAccessor(entity, propertyName);
+                if (!propValue.IsValueAvailable || propValue.Value == null)
                     return defaultValue;
 
-                var propConfig = parentEntity.GetType().GetEntityConfiguration()[propInfo.Name];
-                var generalDataType = propConfig.GeneralType;
+                entity = propValue.Parent;
+                propertyName = propValue.PropInfo.Name;
+                var value = propValue.Value;
 
-                entity = parentEntity;
-                propertyName = propInfo.Name;
+                var propConfig = entity.GetType().GetEntityConfiguration()[propertyName];
+                var generalDataType = propConfig.GeneralType;               
+                
 
                 switch (generalDataType)
                 {
                     case GeneralDataType.Enum:
-                        var itemValue = Convert.ToInt32(val);
+                        var itemValue = Convert.ToInt32(value);
                         return ReflectionHelper.GetEnumDescription(propConfig.EnumType.NotNull($"{nameof(propConfig.EnumType)} must not be null"), itemValue);
                     case GeneralDataType.ReferenceList:
                         {
                             var refListHelper = StaticContext.IocManager.Resolve<IReferenceListHelper>();
-                            return refListHelper.GetItemDisplayText(propConfig.GetRefListIdentifier(), (int)val);
+                            return refListHelper.GetItemDisplayText(propConfig.GetRefListIdentifier(), (int)value);
                         }
                     case GeneralDataType.EntityReference:
                         {
-                            var displayProperty = val.GetType().GetEntityConfiguration().DisplayNamePropertyInfo;
+                            var displayProperty = value.GetType().GetEntityConfiguration().DisplayNamePropertyInfo;
                             return displayProperty != null
-                                ? displayProperty.GetValue(val)?.ToString()
-                                : val.ToString();
+                                ? displayProperty.GetValue(value)?.ToString()
+                                : value.ToString();
                         }
                     default:
-                        return GetPrimitiveTypePropertyDisplayText(val, propInfo, defaultValue);
+                        return GetPrimitiveTypePropertyDisplayText(value, propValue.PropInfo, defaultValue);
                 }
             }
             catch (Exception ex)
@@ -249,7 +251,7 @@ namespace Shesha.Extensions
 
         private static string? GetPropertyDisplayFormat(PropertyInfo propInfo)
         {
-            return propInfo.GetAttribute<DisplayFormatAttribute>(true)?.DataFormatString;
+            return propInfo.GetAttributeOrNull<DisplayFormatAttribute>(true)?.DataFormatString;
         }
 
         private static string? FormatValue(object val, PropertyInfo propInfo, string? format, bool isForEdit)
@@ -272,7 +274,7 @@ namespace Shesha.Extensions
                 var typedVal = (DateTime)val;
                 string? finalFormat;
 
-                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+                var dataTypeAtt = propInfo.GetAttributeOrNull<DataTypeAttribute>();
                 if (dataTypeAtt != null && dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))
                 {
                     finalFormat = StringHelper.FirstValue(format, defaultDateFormat);

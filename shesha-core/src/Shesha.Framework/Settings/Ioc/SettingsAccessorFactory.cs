@@ -33,7 +33,7 @@ namespace Shesha.Settings.Ioc
             var interfaceProperties = interfaceType.GetProperties().Where(p => typeof(ISettingAccessor).IsAssignableFrom(p.PropertyType)).ToList();
             foreach (var interfaceProperty in interfaceProperties)
             {
-                var classProperty = classType.GetProperty(interfaceProperty.Name);
+                var classProperty = classType.GetRequiredProperty(interfaceProperty.Name);
 
                 var settingAccessor = _iocManager.IocContainer.Resolve(interfaceProperty.PropertyType,
                     new Arguments { { "property", interfaceProperty } });

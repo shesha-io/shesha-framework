@@ -37,7 +37,7 @@ namespace Shesha.AutoMapper.Dto
         /// <summary>
         /// Entity display name
         /// </summary>
-        public string? _displayName { get; internal set; }
+        public string? _displayName { get; init; }
 
         /// <summary>
         /// Entity class name

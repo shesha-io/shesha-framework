@@ -12,7 +12,7 @@ namespace Shesha.DynamicEntities
     public class SerializationManager : ISerializationManager, ITransientDependency
     {
         /// inheritedDoc
-        public object DeserializeProperty(Type propertyType, string value)
+        public object? DeserializeProperty(Type propertyType, string value)
         {
             return JsonConvert.DeserializeObject(value, propertyType);
         }

@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain;
+using Shesha.JsonLogic;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -64,7 +65,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -220,7 +221,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -387,7 +388,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -452,7 +453,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -510,7 +511,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]
@@ -569,7 +570,7 @@ namespace Shesha.Tests.JsonLogic
             Console.WriteLine($"Test: '{name}'");
 
             var linqExpression = ConvertToExpression<Person>(jsonLogicExpression);
-            Assert.Equal(expectation, linqExpression.ToString());
+            Assert.Equal(expectation, linqExpression?.ToInvariantString());
         }
 
         [Theory]

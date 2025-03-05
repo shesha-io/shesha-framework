@@ -22,6 +22,6 @@ namespace Shesha.DynamicEntities
         /// <param name="propertyType"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        object DeserializeProperty(Type propertyType, string value);
+        object? DeserializeProperty(Type propertyType, string value);
     }
 }

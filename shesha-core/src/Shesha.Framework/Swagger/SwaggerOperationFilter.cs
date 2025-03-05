@@ -44,6 +44,9 @@ namespace Shesha.Swagger
 
         private void AddPropertiesToCrudCreateUpdate(OpenApiOperation operation, OperationFilterContext context)
         {
+            if (string.IsNullOrWhiteSpace(context.ApiDescription.RelativePath))
+                return;
+
             if (context.ApiDescription.RelativePath.ToLower().EndsWith("crud/create")
                 || context.ApiDescription.RelativePath.ToLower().EndsWith("crud/update"))
             {
@@ -141,7 +144,7 @@ namespace Shesha.Swagger
         /// <param name="memberInfo">MemberInfo</param>
         /// <param name="defaultValue">Default value (null as default)</param>
         /// <param name="inherit">Inherit attribute from base classes</param>
-        public static TAttribute GetSingleAttributeOfMemberOrDeclaringTypeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue = default, bool inherit = true)
+        public static TAttribute GetSingleAttributeOfMemberOrDeclaringTypeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue, bool inherit = true)
             where TAttribute : class
         {
             return memberInfo.GetCustomAttributes(true).OfType<TAttribute>().FirstOrDefault()
@@ -167,10 +170,7 @@ namespace Shesha.Swagger
                 {
                     parameter.Description ??= description?.ModelMetadata?.Description;
 
-                    parameter.Required |= description.IsRequired;
-                }
-                else
-                {
+                    parameter.Required |= description != null && description.IsRequired;
                 }
             }
         }

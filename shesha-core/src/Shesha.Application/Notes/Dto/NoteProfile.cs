@@ -1,8 +1,7 @@
-﻿using System;
-using Shesha.AutoMapper;
+﻿using Shesha.AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.Extensions;
+using System;
 
 namespace Shesha.Notes.Dto
 {
@@ -15,7 +14,7 @@ namespace Shesha.Notes.Dto
             CreateMap<Note, NoteDto>()
                 .ForMember(u => u.Author, options => 
                     options.MapFrom(e => e.Author != null 
-                        ? new EntityReferenceDto<Guid>(e.Author.Id, e.Author.FullName, e.Author.GetClassName()) 
+                        ? new EntityReferenceDto<Guid>(e.Author) 
                         : null));
             CreateMap<NoteDto, Note>();
 

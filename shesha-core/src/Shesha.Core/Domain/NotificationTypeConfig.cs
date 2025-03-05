@@ -58,7 +58,7 @@ namespace Shesha.Domain
         /// Serialized JSON string representing override channels.
         /// </summary>
         [StringLength(int.MaxValue)]
-        public string OverrideChannels { get; set; }
+        public string? OverrideChannels { get; set; }
 
         private List<NotificationChannelIdentifier> _parsedOverrideChannels;
 

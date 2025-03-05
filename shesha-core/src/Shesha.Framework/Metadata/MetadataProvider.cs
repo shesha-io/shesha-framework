@@ -160,7 +160,7 @@ namespace Shesha.Metadata
             return true;
         }
 
-        private Task<DataTypeInfo> GetMethodReturnTypeAsync(MethodInfo method)
+        private Task<DataTypeInfo?> GetMethodReturnTypeAsync(MethodInfo method)
         {
             var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null);
             return Task.FromResult(result);
@@ -177,7 +177,7 @@ namespace Shesha.Metadata
                     result.Add(new VariableDef 
                     { 
                          Name = parameter.Name,
-                         DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null),
+                         DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null).NotNull(),
                     });
             }
             
@@ -201,7 +201,7 @@ namespace Shesha.Metadata
                     .ToList();
             foreach (var actionDescriptor in actionDescriptors)
             {
-                var entityActionAttribute = actionDescriptor.MethodInfo.GetAttribute<EntityActionAttribute>(true);
+                var entityActionAttribute = actionDescriptor.MethodInfo.GetAttributeOrNull<EntityActionAttribute>(true);
                 if (entityActionAttribute != null)
                 {
                     var url = actionDescriptor.AttributeRouteInfo?.Template;
@@ -290,7 +290,7 @@ namespace Shesha.Metadata
                     })
                     .OrderBy(p => p.OrderIndex)
                     .ToList();
-                result = props.Select(p => RemoveSuppressed(p)).Where(p => p != null).ToList();
+                result = props.Select(p => RemoveSuppressed(p)).WhereNotNull().ToList();
             }
             else
                 result = hardCodedProps;
@@ -298,11 +298,11 @@ namespace Shesha.Metadata
             return (modelConfig?.ChangeTime, result);
         }
 
-        private PropertyMetadataDto RemoveSuppressed(PropertyMetadataDto prop)
+        private PropertyMetadataDto? RemoveSuppressed(PropertyMetadataDto prop)
         {
             if (prop.IsVisible)
             {
-                prop.Properties = prop.Properties.Select(pp => RemoveSuppressed(pp)).Where(p => p != null).ToList();
+                prop.Properties = prop.Properties.Select(pp => RemoveSuppressed(pp)).WhereNotNull().ToList();
                 return prop;
             }
             return null;

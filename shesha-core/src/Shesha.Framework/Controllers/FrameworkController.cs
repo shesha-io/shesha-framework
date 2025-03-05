@@ -61,7 +61,7 @@ namespace Shesha.Controllers
                 }
             })
                 .Distinct<Assembly>(new AssemblyFullNameComparer())
-                .Where(a => string.IsNullOrWhiteSpace(searchString) || a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                .Where(a => string.IsNullOrWhiteSpace(searchString) || !string.IsNullOrWhiteSpace(a.FullName) && a.FullName.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
                 .OrderBy(a => a.FullName);
 
             var result = assemblies.Select(a => {
@@ -79,7 +79,7 @@ namespace Shesha.Controllers
                 {
                     FullName = a.GetName().Name,
                     Location = a.Location,
-                    Version = a.GetName().Version.ToString(),
+                    Version = a.GetName()?.Version?.ToString() ?? "unknown",
                     Architecture = architecture,
                     Description = descriptionAttribute?.Description,
                 };

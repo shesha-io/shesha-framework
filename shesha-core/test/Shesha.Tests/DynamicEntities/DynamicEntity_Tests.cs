@@ -8,6 +8,7 @@ using Shesha.Migrations;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
+using Shesha.Reflection;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace Shesha.Tests.DynamicEntities
                 dynamicPerson.ShouldNotBeNull();
 
                 var firstNameTestValue = "John";
-                var propInfo = dynamicPerson.GetType().GetProperty(firstNamePropName);
+                var propInfo = dynamicPerson.GetType().GetRequiredProperty(firstNamePropName);
                 propInfo.SetValue(dynamicPerson, firstNameTestValue);
 
                 var firstNameValue = propInfo.GetValue(dynamicPerson);

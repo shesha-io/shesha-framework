@@ -49,14 +49,14 @@ namespace Shesha.Extensions
             _cacheItems.AddRange(subModuleItems);
         }
 
-        private static SheshaModule GetModuleInstance(Type moduleType)
+        private static SheshaModule? GetModuleInstance(Type moduleType)
         {
             return StaticContext.IocManager.IsRegistered(moduleType)
                 ? StaticContext.IocManager.Resolve(moduleType) as SheshaModule
                 : null;
         }
 
-        private static ModuleCacheItem GetCacheItem(Assembly assembly)
+        private static ModuleCacheItem? GetCacheItem(Assembly assembly)
         {
             return _cacheItems.FirstOrDefault(i => i.Assembly == assembly);
         }
@@ -65,7 +65,7 @@ namespace Shesha.Extensions
         /// Get type of the configurable module to which the specified assembly belongs to
         /// </summary>
         /// <returns></returns>
-        public static Type GetConfigurableModuleType(this Assembly assembly)
+        public static Type? GetConfigurableModuleType(this Assembly assembly)
         {
             return GetCacheItem(assembly)?.ModuleType;
         }
@@ -74,7 +74,7 @@ namespace Shesha.Extensions
         /// Get info of the configurable module to which the specified assembly belongs to
         /// </summary>
         /// <returns></returns>
-        public static SheshaModuleInfo GetConfigurableModuleInfo(this Assembly assembly)
+        public static SheshaModuleInfo? GetConfigurableModuleInfo(this Assembly assembly)
         {
             return GetCacheItem(assembly)?.ModuleInfo;
         }
@@ -83,7 +83,7 @@ namespace Shesha.Extensions
         /// Get name of the configurable module to which the specified assembly belongs to
         /// </summary>
         /// <returns></returns>
-        public static string GetConfigurableModuleName(this Assembly assembly) 
+        public static string? GetConfigurableModuleName(this Assembly assembly) 
         {
             return GetCacheItem(assembly)?.ModuleInfo.Name;
         }

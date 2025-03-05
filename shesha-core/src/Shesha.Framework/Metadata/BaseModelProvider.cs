@@ -34,7 +34,7 @@ namespace Shesha.Metadata
         protected abstract Task<List<TModel>> FetchModelsAsync();
 
         /// inheritedDoc
-        public async Task<Type> GetModelTypeAsync(string nameOrAlias)
+        public async Task<Type?> GetModelTypeAsync(string nameOrAlias)
         {
             var models = await GetModelsAsync();
             return models.FirstOrDefault(m => m.Alias == nameOrAlias || m.ClassName == nameOrAlias)?.Type;

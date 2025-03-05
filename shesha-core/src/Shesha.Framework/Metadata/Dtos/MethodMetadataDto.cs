@@ -10,7 +10,7 @@ namespace Shesha.Metadata.Dtos
         public string Name { get; set; }
         public string? Description { get; set; }
         public List<VariableDef> Arguments { get; set; }
-        public DataTypeInfo ReturnType { get; set; }
+        public DataTypeInfo? ReturnType { get; set; }
         public bool IsAsync { get; set; }
     }
 }

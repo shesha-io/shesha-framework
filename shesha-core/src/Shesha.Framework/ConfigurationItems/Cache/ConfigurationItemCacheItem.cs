@@ -5,6 +5,6 @@
     /// </summary>
     public class ConfigurationItemCacheItem
     {
-        public string Md5 { get; set; }
+        public string? Md5 { get; set; }
     }
 }
