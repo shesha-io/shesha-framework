@@ -74,7 +74,7 @@ namespace Shesha.Extensions
         /// <param name="query">Queryable to be filtered</param>
         /// <param name="filter">String representation of JsonLogic filter</param>
         /// <returns></returns>
-        public static IQueryable<TEntity> ApplyFilter<TEntity, TId>(this IQueryable<TEntity> query, string filter) where TEntity : class, IEntity<TId>
+        public static IQueryable<TEntity> ApplyFilter<TEntity, TId>(this IQueryable<TEntity> query, string? filter) where TEntity : class, IEntity<TId>
         {
             if (string.IsNullOrWhiteSpace(filter))
                 return query;
