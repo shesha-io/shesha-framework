@@ -263,7 +263,6 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addLabelConfigurator(props: LabelStyleType | ((data: T) => LabelStyleType)) {
-    console.log('props', props)
     return this.addProperty(props, 'labelConfigurator');
   }
 
