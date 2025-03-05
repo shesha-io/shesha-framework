@@ -86,29 +86,27 @@ namespace Shesha.Configuration.Runtime
                 case GeneralDataType.ReferenceList:
                     {
                         var refListAtt = prop.GetAttributeOrNull<ReferenceListAttribute>(true);
-                        if (refListAtt != null) 
+                        var refListId = refListAtt?.GetReferenceListIdentifier(prop);
+                        if (refListId == null)
                         {
-                            var refListId = refListAtt.GetReferenceListIdentifier(prop);
-                            if (refListId == null)
+                            var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
+
+                            if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
                             {
-                                var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
-
-                                if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
-                                {
-                                    refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
-                                    refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
-                                }
-                            }
-
-                            if (refListId != null)
-                            {
-                                propConfig.ReferenceListName = refListId.Name;
-                                propConfig.ReferenceListModule = refListId.Module;
-
-                                if (refListAtt != null)
-                                    propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                                refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
+                                refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
                             }
                         }
+
+                        if (refListId != null)
+                        {
+                            propConfig.ReferenceListName = refListId.Name;
+                            propConfig.ReferenceListModule = refListId.Module;
+
+                            if (refListAtt != null)
+                                propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                        }
+
                         break;
                     }
                 case GeneralDataType.Enum:
