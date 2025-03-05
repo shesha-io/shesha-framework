@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Linq.Expressions;
-using System.Text.Json;
 
 namespace Shesha.JsonLogic
 {
@@ -16,7 +15,7 @@ namespace Shesha.JsonLogic
         /// <typeparam name="T"></typeparam>
         /// <param name="rule"></param>
         /// <returns></returns>
-        Expression<Func<T, bool>> ParseExpressionOf<T>(JObject rule);
+        Expression<Func<T, bool>>? ParseExpressionOf<T>(JObject rule);
 
         /// <summary>
         /// Parse JsonLogic expression
@@ -24,7 +23,7 @@ namespace Shesha.JsonLogic
         /// <typeparam name="T"></typeparam>
         /// <param name="rule"></param>
         /// <returns></returns>
-        Expression<Func<T, bool>> ParseExpressionOf<T>(string rule);
+        Expression<Func<T, bool>>? ParseExpressionOf<T>(string rule);
 
         /// <summary>
         /// Parse predicate
@@ -32,7 +31,7 @@ namespace Shesha.JsonLogic
         /// <typeparam name="T"></typeparam>
         /// <param name="rule"></param>
         /// <returns></returns>
-        Func<T, bool> ParsePredicateOf<T>(JObject rule);
+        Func<T, bool>? ParsePredicateOf<T>(JObject rule);
 
         /// <summary>
         /// Parse predicate
@@ -40,7 +39,7 @@ namespace Shesha.JsonLogic
         /// <typeparam name="T"></typeparam>
         /// <param name="rule"></param>
         /// <returns></returns>
-        Func<T, bool> ParsePredicateOf<T>(string rule);
+        Func<T, bool>? ParsePredicateOf<T>(string rule);
 
         /// <summary>
         /// Evaluate JsonLogic predicate for the specified <paramref name="model"/>

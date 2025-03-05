@@ -78,6 +78,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 data,
                 notification.Priority,
                 attachments,
+                notification.Cc,
                 null,
                 channel
             );

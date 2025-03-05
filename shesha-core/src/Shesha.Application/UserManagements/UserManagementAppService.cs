@@ -147,7 +147,7 @@ namespace Shesha.UserManagements
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> CompleteRegistrationAsync(long userId)
+        public async Task<string?> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)

@@ -26,6 +26,6 @@ namespace Shesha.Otp
         /// </summary>
         /// <param name="operationId"></param>
         /// <returns></returns>
-        Task<IOtpDto> GetAsync(Guid operationId);
+        Task<IOtpDto?> GetOrNullAsync(Guid operationId);
     }
 }

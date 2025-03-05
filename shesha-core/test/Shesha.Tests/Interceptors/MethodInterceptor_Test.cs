@@ -2,6 +2,7 @@
 using Abp.TestBase;
 using Castle.DynamicProxy;
 using Castle.MicroKernel;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shouldly;
 using System;
@@ -61,7 +62,7 @@ namespace Shesha.Tests.Interceptors
             }
             if (expr is MemberExpression member)
             {
-                var tName = member.Expression.ToString().Replace(".", "_");
+                var tName = member.Expression.NotNull().ToString().Replace(".", "_");
                 if (!tables.ContainsKey(tName))
                 {
                     tables.Add(tName, member.Expression);

@@ -124,7 +124,7 @@ namespace Shesha.Scheduler
                 uow.Complete();
             }
 
-            var jobType = _typeFinder.Find(t => t.GetAttribute<ScheduledJobAttribute>()?.Uid == jobId).FirstOrDefault();
+            var jobType = _typeFinder.Find(t => t.GetAttributeOrNull<ScheduledJobAttribute>()?.Uid == jobId).FirstOrDefault();
             if (jobType == null)
                 throw new Exception($"Job with Id = '{jobId}' not found");
 
@@ -205,19 +205,22 @@ namespace Shesha.Scheduler
         }
 
         /// inheritedDoc
-        public Type GetJobTypeById(Guid id)
+        public Type? GetJobTypeByIdOrNull(Guid id)
         {
-            return _typeFinder.Find(t => t.GetAttribute<ScheduledJobAttribute>()?.Uid == id).FirstOrDefault();
+            return _typeFinder.Find(t => t.GetAttributeOrNull<ScheduledJobAttribute>()?.Uid == id).FirstOrDefault();
+        }
+
+        // inheritedDoc
+        public Type GetJobTypeById(Guid id) 
+        {
+            return GetJobTypeByIdOrNull(id) ?? throw new Exception($"Type of job with id = '{id}' is unavailable");
         }
 
         /// inheritedDoc
         public ScheduledJobBase GetJobInstanceById(Guid id)
         {
             var jobType = GetJobTypeById(id);
-            if (jobType == null)
-                throw new Exception($"Job with Id = '{id}' not found");
-
-            var jobInstance = _iocManager.Resolve(jobType) as ScheduledJobBase;
+            var jobInstance = _iocManager.Resolve(jobType).ForceCastAs<ScheduledJobBase>();
             return jobInstance;
         }
 

@@ -21,6 +21,6 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        Task<Module> GetOrCreateModuleAsync(Assembly assembly);
+        Task<Module?> GetOrCreateModuleAsync(Assembly assembly);
     }
 }

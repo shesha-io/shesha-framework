@@ -50,7 +50,7 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// Trigger by which the job was executed. May be null for manual jobs
         /// </summary>
-        public virtual ScheduledJobTrigger Trigger { get; set; }
+        public virtual ScheduledJobTrigger? Trigger { get; set; }
 
         /// <summary>
         /// Error message

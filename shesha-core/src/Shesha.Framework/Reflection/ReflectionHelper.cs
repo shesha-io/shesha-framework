@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Reflection;
-using NUglify;
 using Shesha.Attributes;
+using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Exceptions;
@@ -22,7 +22,7 @@ using System.Runtime.CompilerServices;
 
 namespace Shesha.Reflection
 {
-    public static class ReflectionHelper
+    public static partial class ReflectionHelper
     {
         /// <summary>
         /// Returns true if the <paramref name="instanceType"/> is a closed generic of the <paramref name="genericType"/> type
@@ -71,47 +71,46 @@ namespace Shesha.Reflection
         /// <returns></returns>
         public static bool HasAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute
         {
-            return memberInfo.GetAttribute<T>() != null;
+            return memberInfo.GetAttributeOrNull<T>() != null;
         }
 
-        // todo: added unique check
-        public static T GetUniqueAttribute<T>(this MemberInfo memberInfo) where T : Attribute
+        public static T? GetUniqueAttribute<T>(this MemberInfo memberInfo) where T : Attribute
         {
-            return GetAttribute<T>(memberInfo);
+            return GetAttributeOrNull<T>(memberInfo);
         }
 
-        public static T GetAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute
+        public static T? GetAttributeOrNull<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute
         {
             return memberInfo.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
         }
 
-        public static T GetAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+        public static T GetAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute 
+        {
+            return memberInfo.GetAttributeOrNull<T>(inherit) ?? throw new MemberHasNoAttributeException(memberInfo, typeof(T));
+        }
+
+        public static T? GetAttributeOrNull<T>(this Type type, bool inherit = false) where T : Attribute
         {
             return type.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
         }
 
-        /// <summary>
-        /// Returns the value of the property specified. 
-        /// </summary>
-        /// <param name="obj">Object whose property value is to be retreived.</param>
-        /// <param name="propertyName">Name of the property or property hierarchy 
-        /// e.g. 'Property1.SubProperty2.SubSubProperty3' </param>
-        /// <param name="parent">Returns the parent object the last property in the hierarchy. 
-        /// Returns null if did not manage to reach the end of the hierarchy because of null values
-        /// along the way.</param>
-        /// <param name="propInfo">Returns the <see cref="PropertyInfo"/> of
-        /// the last property in the property hierachy.</param>
-        /// <returns></returns>
-        public static object GetPropertyValue(object obj, string propertyName, out object? parent, out PropertyInfo propInfo)
+        public static T GetAttribute<T>(this Type type, bool inherit = false) where T : Attribute 
         {
-            propInfo = GetProperty(obj, propertyName, out parent);
-            if (parent != null)
-                return propInfo.GetValue(parent, null);
-            else
-                return null;
+            return type.GetAttributeOrNull<T>(inherit) ?? throw new TypeHasNoAttributeException(type, typeof(T));
         }
 
-        public static object GetPropertyValue(object obj, string propertyName, object defaultValue)
+        /// <summary>
+        /// Returns extended info about specified property.
+        /// </summary>
+        /// <param name="obj">Object whose property value is to be retreived.</param>
+        /// <param name="propertyName">Name of the property or property hierarchy </param>
+        public static PropertyValueAccessor GetPropertyValueAccessor(object obj, string propertyName) 
+        {
+            var propInfo = GetPropertyOrNull(obj, propertyName, out var parent);
+            return new PropertyValueAccessor(propInfo, parent);
+        }
+
+        public static object? GetPropertyValue(object obj, string propertyName, object defaultValue)
         {
             if (obj == null)
                 return null;
@@ -120,12 +119,22 @@ namespace Shesha.Reflection
             return propInfo == null ? defaultValue : propInfo.GetValue(obj, null) ?? defaultValue;
         }
 
-        public static object GetPropertyValue(IEntity obj, string propertyName)
+        #region GetProperty
+
+        public static PropertyInfo? GetProperty(object entity, string propertyName)
         {
-            return GetPropertyValue(obj, propertyName, out var parent, out var propInfo);
+            return GetPropertyOrNull(entity, propertyName, out var propertyEntity);
         }
 
-        #region GetProperty
+        public static PropertyInfo GetProperty(object entity, string propertyName, out object propertyEntity) 
+        {
+            var property = GetPropertyOrNull(entity, propertyName, out var owner);
+            if (property == null)
+                throw new PropertyNotFoundException(entity.GetType(), propertyName);
+            
+            propertyEntity = owner.NotNull();
+            return property;
+        }
 
         /// <summary>
         /// Returns the PropertyInfo for the specified property on the specified Entity.
@@ -139,21 +148,11 @@ namespace Shesha.Reflection
         /// child object e.g. 'Parent.ReferencedChildEntity.ChildEntityPropertyName', then will return the
         /// child entity the property belongs to i.e. 'ReferencedChildEntity' from the example.</param>
         /// <returns>Return the requested PropertyInfo.</returns>
-        public static PropertyInfo GetProperty(object entity, string propertyName, out object? propertyEntity)
-        {
-            return GetProperty(entity, null, propertyName, out propertyEntity);
-        }
-
-        public static PropertyInfo GetProperty(object entity, string propertyName)
-        {
-            return GetProperty(entity, null, propertyName, out var propertyEntity);
-        }
-
-        private static PropertyInfo GetProperty(object entity, Type type, string propertyName, out object? propertyEntity)
+        public static PropertyInfo? GetPropertyOrNull(object entity, string propertyName, out object? propertyEntity)
         {
             var propTokens = propertyName.Split('.');
             var currentEntity = entity;
-            Type currentType = (entity != null) ? entity.GetType() : type;
+            Type currentType = entity.GetType();
 
             for (int i = 0; i < propTokens.Length; i++)
             {
@@ -253,26 +252,17 @@ namespace Shesha.Reflection
         /// <returns>Returns the <see cref="PropertyInfo"/> of property marked with the 
         /// specified attribute. Returns Null if no property was marked with the specified attribute.
         /// If more than one property is marked with the attribute a <see cref="ConfigurationException"/> is thrown.</returns>
-        public static PropertyInfo FindPropertyWithUniqueAttribute(Type type, Type attributeType)
+        public static PropertyInfo? FindPropertyWithUniqueAttribute(Type type, Type attributeType)
         {
             return FindPropertyWithUniqueAttribute(type, attributeType, null);
         }
 
-        public static object DynamicCast(object entity, Type to)
-        {
-            var openCast = typeof(ReflectionHelper).GetMethod("Cast", BindingFlags.Static | BindingFlags.Public);
-            var closeCast = openCast.MakeGenericMethod(to);
-
-            return closeCast.Invoke(entity, new[] { entity });
-        }
-
-        public static T Cast<T>(object entity) where T : class
+        public static T? Cast<T>(object entity) where T : class
         {
             return entity as T;
         }
 
-        public static PropertyInfo FindPropertyWithUniqueAttribute(Type type, Type attributeType,
-            Type expectedPropertyType)
+        public static PropertyInfo? FindPropertyWithUniqueAttribute(Type type, Type attributeType, Type? expectedPropertyType)
         {
             type = StripCastleProxyType(type);
 
@@ -294,7 +284,6 @@ namespace Shesha.Reflection
                 if (expectedPropertyType != null
                     && !(markedProperties[0].PropertyType == expectedPropertyType
                          || markedProperties[0].PropertyType.IsSubclassOf(expectedPropertyType)))
-                //Could also try the following additional flexibility: !expectedPropertyType.IsAssignableFrom(markedProperties[0].PropertyType
                 {
                     throw new ConfigurationErrorsException(
                         $"Property '{markedProperties[0].Name}' marked with attribute '{attributeType.FullName}' must be of type '{expectedPropertyType.Name}'.");
@@ -324,8 +313,8 @@ namespace Shesha.Reflection
         public static bool IsNullable(this PropertyInfo property) 
         {
             return property.PropertyType.IsEntityType()
-                ? !property.HasAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>()
-                : property.PropertyType.IsNullableType() || property.HasAttribute<System.Runtime.CompilerServices.NullableAttribute>();
+                ? !property.HasAttribute<RequiredMemberAttribute>()
+                : property.PropertyType.IsNullableType() || property.HasAttribute<NullableAttribute>();
         }
 
         /// <summary>
@@ -334,9 +323,7 @@ namespace Shesha.Reflection
         /// </summary>
         public static Type GetUnderlyingTypeIfNullable(this Type type)
         {
-            return IsNullableType(type)
-                ? Nullable.GetUnderlyingType(type)
-                : type;
+            return Nullable.GetUnderlyingType(type) ?? type;
         }
 
         /// <summary>
@@ -405,13 +392,13 @@ namespace Shesha.Reflection
         /// If the member is decorated with <see cref="CategoryAttribute"/> - returns <see cref="CategoryAttribute.Category"/>
         /// If the member is decorated with <see cref="DisplayAttribute"/> - returns <see cref="DisplayAttribute.GroupName"/>
         /// </summary>
-        public static string GetCategory(this MemberInfo member)
+        public static string? GetCategory(this MemberInfo member)
         {
-            var categoryAttribute = member.GetAttribute<CategoryAttribute>();
+            var categoryAttribute = member.GetAttributeOrNull<CategoryAttribute>();
             if (categoryAttribute != null)
                 return categoryAttribute.Category;
 
-            var displayAttribute = member.GetAttribute<DisplayAttribute>();
+            var displayAttribute = member.GetAttributeOrNull<DisplayAttribute>();
             return displayAttribute?.GetGroupName();
         }
 
@@ -420,7 +407,7 @@ namespace Shesha.Reflection
         /// </summary>
         public static string GetDisplayName(this MemberInfo property)
         {
-            var displayAttribute = property.GetAttribute<DisplayAttribute>();
+            var displayAttribute = property.GetAttributeOrNull<DisplayAttribute>();
 
             return displayAttribute?.GetName() ?? property.Name.ToFriendlyName();
         }
@@ -430,8 +417,8 @@ namespace Shesha.Reflection
         /// </summary>
         public static string? GetDescription(this MemberInfo property)
         {
-            var descriptionAttribute = property.GetAttribute<DescriptionAttribute>();
-            var displayAttribute = property.GetAttribute<DisplayAttribute>();
+            var descriptionAttribute = property.GetAttributeOrNull<DescriptionAttribute>();
+            var displayAttribute = property.GetAttributeOrNull<DisplayAttribute>();
 
             var description = descriptionAttribute?.Description;
             if (string.IsNullOrWhiteSpace(description))
@@ -443,14 +430,14 @@ namespace Shesha.Reflection
         /// <summary>
         /// Returns description of enum item
         /// </summary>
-        public static string GetEnumDescription(Type enumType, Int64? itemValue)
+        public static string? GetEnumDescription(Type enumType, Int64? itemValue)
         {
             if (!itemValue.HasValue)
                 return "";
             var itemName = Enum.GetName(enumType, itemValue);
             if (string.IsNullOrEmpty(itemName))
                 return "";
-            var fi = enumType.GetField(itemName);
+            var fi = enumType.GetRequiredField(itemName);
 
             var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (attributes.Length > 0)
@@ -486,15 +473,15 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="memberInfo"></param>
         /// <returns></returns>
-        public static ReferenceListIdentifier GetReferenceListIdentifierOrNull(this MemberInfo memberInfo)
+        public static ReferenceListIdentifier? GetReferenceListIdentifierOrNull(this MemberInfo memberInfo)
         {
             // 1. check ReferenceListAttribute on the property
-            var refListAttribute = memberInfo.GetAttribute<ReferenceListAttribute>();
+            var refListAttribute = memberInfo.GetAttributeOrNull<ReferenceListAttribute>();
             if (refListAttribute != null)
                 return refListAttribute.GetReferenceListIdentifier(memberInfo);
 
             // 2. check MultiValueReferenceListAttribute on the property
-            var multiValueAttribute = memberInfo.GetAttribute<MultiValueReferenceListAttribute>();
+            var multiValueAttribute = memberInfo.GetAttributeOrNull<MultiValueReferenceListAttribute>();
             if (multiValueAttribute != null)
                 return multiValueAttribute.GetReferenceListIdentifier(memberInfo);
 
@@ -503,7 +490,7 @@ namespace Shesha.Reflection
                 return null;
 
             // 3. check ReferenceListAttribute on the enum type
-            refListAttribute = propertyType.GetAttribute<ReferenceListAttribute>();
+            refListAttribute = propertyType.GetAttributeOrNull<ReferenceListAttribute>();
             return refListAttribute?.GetReferenceListIdentifier(propertyType);
         }
 
@@ -528,9 +515,9 @@ namespace Shesha.Reflection
         /// <summary>
         /// Returns class Uid or null of the specified class. Class Uid can be specified using <see cref="ClassUidAttribute"/>
         /// </summary>
-        public static string GetClassUid(this Type type)
+        public static string? GetClassUid(this Type type)
         {
-            return type.GetAttribute<ClassUidAttribute>()?.Uid;
+            return type.GetAttributeOrNull<ClassUidAttribute>()?.Uid;
         }
 
         #endregion
@@ -542,7 +529,7 @@ namespace Shesha.Reflection
         /// <param name="propertyName">Name of property, supports dot notation</param>
         /// <param name="useCamelCase">Set to true to compare property names in camel case</param>
         /// <returns></returns>
-        public static PropertyInfo GetProperty(this Type type, string propertyName, bool useCamelCase = false)
+        public static PropertyInfo? GetProperty(this Type type, string propertyName, bool useCamelCase = false)
         {
             var propTokens = propertyName.Split('.');
             var currentType = type;
@@ -601,7 +588,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetConfigurableModuleName(this Type type)
+        public static string? GetConfigurableModuleName(this Type type)
         {
             return type.Assembly.GetConfigurableModuleName();
         }
@@ -611,7 +598,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Type GetConfigurableModuleType(this Type type)
+        public static Type? GetConfigurableModuleType(this Type type)
         {
             return type.Assembly.GetConfigurableModuleType();
         }
@@ -620,7 +607,7 @@ namespace Shesha.Reflection
         /// Returns information about the configurable module current <paramref name="type"/> belongs to
         /// </summary>
         /// <returns></returns>
-        public static SheshaModuleInfo GetConfigurableModuleInfo(this Type type)
+        public static SheshaModuleInfo? GetConfigurableModuleInfo(this Type type)
         {
             return type.Assembly.GetConfigurableModuleInfo();
         }
@@ -635,7 +622,7 @@ namespace Shesha.Reflection
         {
             var propertiesWithoutHiddenOnes = containerType.GetProperties(bindingAttr)
                 .GroupBy(prop => prop.Name)
-                .Select(group => group.Aggregate((mostSpecificProp, other) => mostSpecificProp.DeclaringType.IsSubclassOf(other.DeclaringType.NotNull()) ? mostSpecificProp : other))
+                .Select(group => group.Aggregate((mostSpecificProp, other) => mostSpecificProp.DeclaringType.NotNull().IsSubclassOf(other.DeclaringType.NotNull()) ? mostSpecificProp : other))
                 .ToList();
             return propertiesWithoutHiddenOnes;
         }
@@ -687,9 +674,12 @@ namespace Shesha.Reflection
         /// <exception cref="InvalidCastException"></exception>
         public static TDestination ForceCastAs<TDestination>(this object? source) where TDestination : class 
         {
-            return source is TDestination
-                ? source as TDestination
-                : throw new InvalidCastException($"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'");
+            return source is TDestination dest
+                ? dest
+                : throw new InvalidCastException(source != null 
+                    ? $"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'" 
+                    : "Failed to cast null to type '{typeof(TDestination).FullName}'"
+                );
         }
 
         /// <summary>
@@ -745,6 +735,19 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="type">Type to search method in</param>
         /// <param name="name">Method name</param>
+        /// <param name="bindingAttr">A bitwise combination of the enumeration values that specify how the search is conducted.</param>
+        /// <returns></returns>
+        /// <exception cref="MethodNotFoundException"></exception>
+        public static MethodInfo GetRequiredMethod(this Type type, string name, BindingFlags bindingAttr)
+        {
+            return type.GetMethod(name, bindingAttr) ?? throw new MethodNotFoundException(type, name);
+        }
+
+        /// <summary>
+        /// Get method by name. Throws <see cref="MethodNotFoundException"/> if method not found
+        /// </summary>
+        /// <param name="type">Type to search method in</param>
+        /// <param name="name">Method name</param>
         /// <returns></returns>
         /// <exception cref="MethodNotFoundException"></exception>
         public static MethodInfo GetRequiredMethod(this Type type, string name)
@@ -762,6 +765,11 @@ namespace Shesha.Reflection
         public static PropertyInfo GetRequiredProperty(this Type type, string propertyName) 
         {
             return type.GetProperty(propertyName) ?? throw new PropertyNotFoundException(type, propertyName);
-        }        
+        }
+
+        public static FieldInfo GetRequiredField(this Type type, string fieldName)
+        {
+            return type.GetField(fieldName) ?? throw new FieldNotFoundException(type, fieldName);
+        }
     }
 }

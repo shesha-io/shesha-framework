@@ -8,7 +8,6 @@ using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -90,7 +89,7 @@ namespace Shesha.Authorization
 
             var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
             // ToDo: add RequireAll flag
-            await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions.ToArray());
+            await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions?.ToArray());
         }
     }
 }

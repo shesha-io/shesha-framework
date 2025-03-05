@@ -7,6 +7,7 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shouldly;
 using System;
@@ -75,7 +76,7 @@ namespace Shesha.Tests.DynamicEntities
                     {
                         result.Add(prop.Key);
                     }
-                    return Task.FromResult(result);
+                    return Task.FromResult<List<EntityPropertyDto>?>(result);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
@@ -138,7 +139,7 @@ namespace Shesha.Tests.DynamicEntities
                     }
                 }
 
-                session?.Flush();
+                session.Flush();
 
                 try
                 {
@@ -159,9 +160,9 @@ namespace Shesha.Tests.DynamicEntities
                         // Save dynamic properties to DB
                         await dynamicPropertyManager.MapDtoToEntityAsync<DynamicDto<Person, Guid>, Person, Guid>(dto,
                             entity);
-                        session?.Flush();
+                        session.Flush();
 
-                        session?.Clear();
+                        session.Clear();
 
                         // Get entity from DB
                         var newEntity = await personRepo.GetAsync(id);
@@ -179,12 +180,12 @@ namespace Shesha.Tests.DynamicEntities
                             var dtoValue = p?.GetValue(newDto);
                             if (prop.Key.DataType == DataTypes.Object)
                             {
-                                var childProperties = dtoValue.GetType().GetProperties();
+                                var childProperties = dtoValue.NotNull().GetType().GetProperties();
                                 foreach (var childProp in prop.Key.Properties)
                                 {
-                                    var childP = childProperties.FirstOrDefault(x => childProp.Name.ToLower() == x.Name.ToLower());
+                                    var childP = childProperties.First(x => childProp.Name.ToLower() == x.Name.ToLower());
                                     var dtoChildValue = childP.GetValue(dtoValue);
-                                    dtoChildValue.ShouldBe(prop.Value.GetType().GetProperty(childProp.Name).GetValue(prop.Value));
+                                    dtoChildValue.ShouldBe(prop.Value.NotNull().GetType().GetRequiredProperty(childProp.Name).GetValue(prop.Value));
                                 }
                             }
                             else

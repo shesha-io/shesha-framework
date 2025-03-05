@@ -1,5 +1,4 @@
 ﻿using Abp.Dependency;
-using NetTopologySuite.Index.HPRtree;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Reflection;
@@ -31,9 +30,9 @@ namespace Shesha.ConfigurationItems.Distribution.Models
 
         private readonly IIocManager _iocManager;
         
-        private readonly Dictionary<Type, IConfigurableItemExport> _exporters = new Dictionary<Type, IConfigurableItemExport>();
+        private readonly Dictionary<Type, IConfigurableItemExport?> _exporters = new Dictionary<Type, IConfigurableItemExport?>();
 
-        public IConfigurableItemExport GetExporter(ConfigurationItemBase item) 
+        public IConfigurableItemExport? GetExporter(ConfigurationItemBase item) 
         {
             var itemType = item.GetType().StripCastleProxyType();
 

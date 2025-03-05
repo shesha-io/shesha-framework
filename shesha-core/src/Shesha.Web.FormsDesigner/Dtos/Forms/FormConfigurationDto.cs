@@ -45,7 +45,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Markup in JSON format
         /// </summary>
-        public string Markup { get; set; }
+        public string? Markup { get; set; }
 
         /// <summary>
         /// Type of the form model

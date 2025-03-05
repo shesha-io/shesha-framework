@@ -1,4 +1,5 @@
 ﻿using Shesha.Modules;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 
@@ -10,7 +11,7 @@ namespace Shesha.Attributes
     [AttributeUsage(AttributeTargets.Assembly)]
     public class BelongsToConfigurableModuleAttribute : Attribute
     {
-        protected Type ModuleType { get; set; }
+        protected Type? ModuleType { get; set; }
         public string ModuleName { get; set; }
 
         public BelongsToConfigurableModuleAttribute(string moduleName)
@@ -24,7 +25,7 @@ namespace Shesha.Attributes
             if (!typeof(SheshaModule).IsAssignableFrom(moduleType))
                 throw new ArgumentException($"Value of the `{nameof(moduleType)}` must be a subclass of {nameof(SheshaModule)}");
 
-            var instance = StaticContext.IocManager.Resolve(moduleType) as SheshaModule;
+            var instance = StaticContext.IocManager.Resolve(moduleType).ForceCastAs<SheshaModule>();
             ModuleName = instance.ModuleInfo.Name;
         }
     }

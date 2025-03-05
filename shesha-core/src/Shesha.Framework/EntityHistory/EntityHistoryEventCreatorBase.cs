@@ -54,7 +54,7 @@ namespace Shesha.EntityHistory
 
         /* Many to many parent event features */
 
-        public virtual EntityHistoryEventInfo CreateManyToManyEvent(EntityChangesInfo change)
+        public virtual EntityHistoryEventInfo? CreateManyToManyEvent(EntityChangesInfo change)
         {
             var changeSet = new EntityChangesInfo<E, IEnumerable<T>>()
             {
@@ -72,7 +72,7 @@ namespace Shesha.EntityHistory
             return CreateManyToManyEvent(changeSet);
         }
 
-        public virtual EntityHistoryEventInfo CreateManyToManyEvent(EntityChangesInfo<E, IEnumerable<T>> change)
+        public virtual EntityHistoryEventInfo? CreateManyToManyEvent(EntityChangesInfo<E, IEnumerable<T>> change)
         {
             var (added, removed) = GetListNewAndRemoved(change);
 
@@ -86,13 +86,13 @@ namespace Shesha.EntityHistory
             if (added.Any())
             {
                 description += "Added: ";
-                description += String.Join(", ", added.Select(x => displayProperty?.GetValue(x)?.ToString() ?? x.ToString())) + ". ";
+                description += String.Join(", ", added.Select(x => displayProperty?.GetValue(x)?.ToString() ?? x?.ToString())) + ". ";
             }
 
             if (removed.Any())
             {
                 description += "Removed: ";
-                description += String.Join(", ", removed.Select(x => displayProperty?.GetValue(x)?.ToString() ?? x.ToString())) + ". ";
+                description += String.Join(", ", removed.Select(x => displayProperty?.GetValue(x)?.ToString() ?? x?.ToString())) + ". ";
             }
 
             return CreateEvent($"'{propName}' updated", description);
@@ -110,7 +110,7 @@ namespace Shesha.EntityHistory
 
         /* Many to many child event features */
 
-        public virtual EntityHistoryEventInfo CreateManyToManyRelationEvent(EntityChangesInfo change)
+        public virtual EntityHistoryEventInfo? CreateManyToManyRelationEvent(EntityChangesInfo change)
         {
             var changeSet = new EntityChangeRelationInfo<E, T>()
             {
@@ -136,9 +136,9 @@ namespace Shesha.EntityHistory
         {
             var propName = ReflectionHelper.GetDisplayName(change.Property).TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength);
             var childDisplayProperty = typeof(T).GetDisplayNamePropertyInfoOrNull();
-            var childName = childDisplayProperty?.GetValue(change.ChildEntity, null) ?? change.ChildEntity.ToString();
+            var childName = childDisplayProperty?.GetValue(change.ChildEntity, null) ?? change.ChildEntity?.ToString();
             var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfoOrNull();
-            var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity.ToString();
+            var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity?.ToString();
 
             return CreateEvent($"Added to a list...", $"'{childName}' added to '{propName}' of '{parentName}'");
         }
@@ -147,9 +147,9 @@ namespace Shesha.EntityHistory
         {
             var propName = ReflectionHelper.GetDisplayName(change.Property).TruncateWithPostfix(EntityPropertyChange.MaxPropertyNameLength);
             var childDisplayProperty = typeof(T).GetDisplayNamePropertyInfoOrNull();
-            var childName = childDisplayProperty?.GetValue(change.ChildEntity, null) ?? change.ChildEntity.ToString();
+            var childName = childDisplayProperty?.GetValue(change.ChildEntity, null) ?? change.ChildEntity?.ToString();
             var parentDisplayProperty = typeof(E).GetDisplayNamePropertyInfoOrNull();
-            var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity.ToString();
+            var parentName = parentDisplayProperty?.GetValue(change.ParentEntity, null) ?? change.ParentEntity?.ToString();
 
             return CreateEvent($"Removed from a list...", $"'{childName}' removed from '{propName}' of '{parentName}'");
         }

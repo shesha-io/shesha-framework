@@ -15,13 +15,13 @@ namespace Shesha.EntityHistory
         
         public string? EntityTypeFullName { get; set; }
         
-        public string EventType { get; set; }
+        public string? EventType { get; set; }
         
         [Display(Name = "User")]
         public string? UserFullName { get; set; }
 
         [Display(Name = "Type of event")]
-        public string EventText { get; set; }
+        public string? EventText { get; set; }
 
         [Display(Name = "Description")]
         public string? ExtendedDescription { get; set; }

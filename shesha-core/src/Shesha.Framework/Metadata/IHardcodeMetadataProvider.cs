@@ -25,7 +25,7 @@ namespace Shesha.Metadata
         /// <param name="type">Type</param>
         /// <param name="context">Metadata context</param>
         /// <returns></returns>
-        List<PropertyMetadataDto> GetProperties(Type type, MetadataContext context = null);
+        List<PropertyMetadataDto> GetProperties(Type type, MetadataContext? context = null);
 
         /// <summary>
         /// Get data type of the specified property
@@ -39,7 +39,7 @@ namespace Shesha.Metadata
         /// <param name="propType"></param>
         /// <param name="propInfo"></param>
         /// <returns></returns>
-        DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo);
+        DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo);
 
         /// <summary>
         /// Returns true if the property is a framework related one

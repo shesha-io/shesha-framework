@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.DynamicEntities;
 using Shesha.JsonEntities.Proxy;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
@@ -13,13 +14,14 @@ namespace Shesha.JsonEntities.Converters
 {
     public class JsonEntityConverter : JsonConverter
     {
-        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return null;
             var jObj = JObject.Load(reader);
 
-            var _className = jObj.ContainsKey(nameof(IJsonEntity._className).ToCamelCase())
-                ? jObj.GetValue(nameof(IJsonEntity._className).ToCamelCase()).ToString()
+            var classNameProp = nameof(IJsonEntity._className).ToCamelCase().NotNull();
+            var _className = jObj.ContainsKey(classNameProp)
+                ? jObj.GetValue(classNameProp)?.ToString()
                 : null;
             
             var classNameObjectType = _className != null 

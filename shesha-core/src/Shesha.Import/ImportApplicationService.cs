@@ -16,6 +16,7 @@ using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Import.Dto;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 
@@ -50,6 +51,8 @@ namespace Shesha.Import
                     
                 if (validationResults.Any())
                     throw new AbpValidationException("Failed to start import", validationResults);
+
+                input.File.NotNull();
 
                 var fileName = input.File.FileName.CleanupFileName();
                 await using (var fileStream = input.File.OpenReadStream())

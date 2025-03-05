@@ -13,7 +13,7 @@ namespace Shesha.NHibernate
         /// inheritedDoc
         public string GetModuleName(Type migrationType)
         {
-            return migrationType.GetConfigurableModuleName();
+            return migrationType.GetConfigurableModuleName().NotNullOrWhiteSpace();
         }
     }
 }

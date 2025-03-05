@@ -123,7 +123,7 @@ namespace Shesha.Tests.Specifications
             allPersonsCount2.ShouldBe(expectedAllPersonsCount);
         }
 
-        private Person TestPerson(string firstName, string lastName, DateTime? dob, string username)
+        private Person TestPerson(string firstName, string lastName, DateTime? dob, string? username)
         {
             return new Person {
                 Id = Guid.NewGuid(),

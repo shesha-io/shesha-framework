@@ -31,7 +31,7 @@ namespace Shesha.Tests.DynamicEntities
                     
 
                     var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
+                    return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
@@ -66,7 +66,7 @@ namespace Shesha.Tests.DynamicEntities
                 .Returns(() => {
                     var result = new EntityPropertyDtoList();
                     var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
+                    return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
@@ -120,7 +120,7 @@ namespace Shesha.Tests.DynamicEntities
 
 
                     var r = result as List<EntityPropertyDto>;
-                    return Task.FromResult(r);
+                    return Task.FromResult<List<EntityPropertyDto>?>(r);
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();

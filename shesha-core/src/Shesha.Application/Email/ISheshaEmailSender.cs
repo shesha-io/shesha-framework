@@ -12,6 +12,6 @@ namespace Shesha.Email
         /// <summary>
         /// Compose and send email with attachments
         /// </summary>
-        bool SendMail(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, List<EmailAttachment> attachments = null, string cc = "", bool throwException = false);
+        bool SendMail(string fromAddress, string toAddress, string subject, string body, bool isBodyHtml, List<EmailAttachment>? attachments = null, string cc = "", bool throwException = false);
     }
 }

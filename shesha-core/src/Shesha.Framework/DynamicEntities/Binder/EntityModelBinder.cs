@@ -94,7 +94,6 @@ namespace Shesha.DynamicEntities.Binder
         {
             if (formFields != null)
                 return formFields;
-
             
             var _formFields = jobject.Property(nameof(IHasFormFieldsList._formFields));
             var formFieldsArray = _formFields?.Value as JArray;
@@ -109,10 +108,10 @@ namespace Shesha.DynamicEntities.Binder
 
             var properties = entityType.GetProperties().ToList();
             var entityIdValue = entity.GetType().GetProperty("Id")?.GetValue(entity)?.ToString();
-            if (!entityIdValue.IsNullOrEmpty() && entityIdValue != Guid.Empty.ToString())
+            if (!string.IsNullOrWhiteSpace(entityIdValue) && entityIdValue != Guid.Empty.ToString())
                 properties = properties.Where(p => p.Name != "Id").ToList();
 
-            var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
 
             context.LocalValidationResult = new List<ValidationResult>();
 
@@ -277,9 +276,9 @@ namespace Shesha.DynamicEntities.Binder
                                                             else
                                                             {
                                                                 newItem = await GetObjectOrObjectReferenceAsync(paramType, item.ForceCastAs<JObject>(), context, childFormFields);
-                                                                r = await _objectValidatorManager.ValidateObjectAsync(newItem, context.LocalValidationResult) && newItem != null && r;
+                                                                r = newItem != null && await _objectValidatorManager.ValidateObjectAsync(newItem, context.LocalValidationResult) && r;
                                                             }
-                                                            addMethod?.Invoke(newArray, new[] { newItem });
+                                                            addMethod?.Invoke(newArray, [newItem]);
                                                         }
                                                     }
                                                     if (r)
@@ -467,7 +466,7 @@ namespace Shesha.DynamicEntities.Binder
                 var allowedTypes = propertyType == typeof(GenericEntityReference)
                     ? property.GetCustomAttribute<EntityReferenceAttribute>()?.AllowableTypes
                     : null;
-                if (!jchildClassName.IsNullOrEmpty() && allowedTypes != null && allowedTypes.Any() && !allowedTypes.Contains(jchildClassName))
+                if (!string.IsNullOrWhiteSpace(jchildClassName) && allowedTypes != null && allowedTypes.Any() && !allowedTypes.Contains(jchildClassName))
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"`{jchildClassName}` is not allowed for `{property.Name}`."));
                     return;
@@ -475,7 +474,7 @@ namespace Shesha.DynamicEntities.Binder
 
                 var childEntityType = string.IsNullOrEmpty(jchildClassName)
                     ? JsonEntityProxy.GetUnproxiedType(propertyType)
-                    : _entityConfigurationStore.Get(jchildClassName)?.EntityType; //: _typeFinder.Find(x => x.FullName == jchildClassName).FirstOrDefault();
+                    : _entityConfigurationStore.Get(jchildClassName)?.EntityType;
                 if (childEntityType == null)
                 {
                     context.LocalValidationResult.Add(new ValidationResult($"Type `{jchildClassName}` not found."));
@@ -485,7 +484,7 @@ namespace Shesha.DynamicEntities.Binder
                 if (!string.IsNullOrEmpty(jchildId))
                 {
                     var newChildEntity = dbValue;
-                    var childId = dbValue?.GetId().ToString();
+                    var childId = dbValue?.GetId()?.ToString();
 
                     // if child entity is specified
                     if (childId?.ToLower() != jchildId.ToLower()
@@ -614,7 +613,7 @@ namespace Shesha.DynamicEntities.Binder
             }
         }
 
-        private async Task<object> GetEntityByIdAsync(Type entityType, string id, string? displayName, string propertyPath, EntityModelBindingContext context)
+        private async Task<object?> GetEntityByIdAsync(Type entityType, string id, string? displayName, string propertyPath, EntityModelBindingContext context)
         {
             if (context.GetEntityById != null)
                 return context.GetEntityById(entityType, id, displayName, propertyPath, context);
@@ -626,13 +625,14 @@ namespace Shesha.DynamicEntities.Binder
             return newChildEntity;
         }
 
-        private async Task<object> GetObjectOrObjectReferenceAsync(Type objectType, JObject jobject, EntityModelBindingContext context, List<string>? formFields = null)
+        private async Task<object?> GetObjectOrObjectReferenceAsync(Type objectType, JObject jobject, EntityModelBindingContext context, List<string>? formFields = null)
         {
             if (context.GetObjectOrObjectReference != null)
                 return context.GetObjectOrObjectReference(objectType, jobject, context, formFields);
 
-            var _className = jobject.ContainsKey(nameof(IJsonEntity._className).ToCamelCase())
-                ? jobject.GetValue(nameof(IJsonEntity._className).ToCamelCase()).ToString()
+            var classNameKey = nameof(IJsonEntity._className).ToCamelCase();
+            var _className = jobject.ContainsKey(classNameKey)
+                ? jobject.GetValue(classNameKey)?.ToString()
                 : null;
 
             if (_className != null)
@@ -656,7 +656,7 @@ namespace Shesha.DynamicEntities.Binder
             var props = entityType.GetProperties();
             var result = false;
 
-            var config = await _modelConfigurationManager.GetModelConfigurationOrNullAsync(entityType.Namespace, entityType.Name);
+            var config = await _modelConfigurationManager.GetModelConfigurationAsync(entityType.Namespace, entityType.Name);
             foreach (var prop in props)
             {
                 var propConfig = config.Properties.FirstOrDefault(x => x.Name == prop.Name);
@@ -714,7 +714,7 @@ namespace Shesha.DynamicEntities.Binder
                 var repoType = typeof(IRepository<,>).MakeGenericType(refType, idType);
                 var repo = _iocManager.Resolve(repoType);
                 var getAllMethodName = nameof(IRepository<IEntity<Guid>, Guid>.GetAll);
-                var where = (repoType.GetMethod(getAllMethodName).Invoke(repo, null) as IQueryable).NotNull().Where(query);
+                var where = (repoType.GetRequiredMethod(getAllMethodName).Invoke(repo, null) as IQueryable).NotNull().Where(query);
 
                 if (refType.IsAssignableFrom(parentEntity.GetType()))
                 {

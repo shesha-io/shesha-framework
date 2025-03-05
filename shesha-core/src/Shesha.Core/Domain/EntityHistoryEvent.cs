@@ -9,13 +9,13 @@ namespace Shesha.Domain
     {
         public virtual EntityChangeSet EntityChangeSet { get; set; }
 
-        public virtual EntityChange EntityChange { get; set; }
+        public virtual EntityChange? EntityChange { get; set; }
 
         public virtual EntityPropertyChange? EntityPropertyChange { get; set; }
 
-        public virtual string EventType { get; set; }
+        public virtual string? EventType { get; set; }
 
-        public virtual string EventName { get; set; }
+        public virtual string? EventName { get; set; }
 
         public virtual string? Description { get; set; }
 
