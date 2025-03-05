@@ -33,7 +33,7 @@ export const getSettings = (data: any) => {
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
@@ -153,6 +153,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'editModeSelector',
                       label: 'Edit Mode',
                       size: 'small',
+                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -167,7 +168,7 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       id: 'default-s4gmBg31azZC0UjZjpfTm',
                       propertyName: 'defaultValue',
-                      label: 'Default Checked',
+                      label: 'Default Value',
                       jsSetting: true,
                     },
                   ],
@@ -223,6 +224,7 @@ export const getSettings = (data: any) => {
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
                             label: 'Horizontal',
