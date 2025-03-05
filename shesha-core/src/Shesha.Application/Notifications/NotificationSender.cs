@@ -91,6 +91,7 @@ namespace Shesha.Notifications
         /// <param name="data"></param>
         /// <param name="priority"></param>
         /// <param name="attachments"></param>
+        /// <param name="cc"></param>
         /// <param name="triggeringEntity"></param>
         /// <param name="channel"></param>
         /// <returns></returns>
@@ -100,7 +101,8 @@ namespace Shesha.Notifications
             IMessageReceiver receiver, 
             TData data, 
             RefListNotificationPriority priority, 
-            List<NotificationAttachmentDto>? attachments = null, 
+            List<NotificationAttachmentDto>? attachments = null,
+            string cc = "",
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {
@@ -131,7 +133,7 @@ namespace Shesha.Notifications
             if (channel != null)
             {
                 // Send notification to a specific channel
-                await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channel, attachments);
+                await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channel, cc, attachments);
             }
             else
             {
@@ -140,7 +142,7 @@ namespace Shesha.Notifications
 
                 foreach (var channelConfig in channels)
                 {
-                    await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channelConfig, attachments);
+                    await SendNotificationToChannelAsync(notification, data, sender, receiver, type, priority, channelConfig, cc, attachments);
                 }
             }
         }
@@ -153,6 +155,7 @@ namespace Shesha.Notifications
         /// <param name="data"></param>
         /// <param name="sender"></param>
         /// <param name="receiver"></param>
+        /// <param name="cc"></param>
         /// <param name="type"></param>
         /// <param name="priority"></param>
         /// <param name="channelConfig"></param>
@@ -163,10 +166,11 @@ namespace Shesha.Notifications
             Notification notification, 
             TData data, 
             IMessageSender sender, 
-            IMessageReceiver receiver, 
-            NotificationTypeConfig type, 
+            IMessageReceiver receiver,
+            NotificationTypeConfig type,
             RefListNotificationPriority priority, 
-            NotificationChannelConfig channelConfig, 
+            NotificationChannelConfig channelConfig,
+            string cc = "",
             List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
@@ -185,7 +189,8 @@ namespace Shesha.Notifications
                 ReadStatus = RefListNotificationReadStatus.Unread,
                 Direction = RefListNotificationDirection.Outgoing,
                 Status = RefListNotificationStatus.Preparing,
-                RecipientText = receiver.GetAddress(_channelSender)
+                RecipientText = receiver.GetAddress(_channelSender),
+                Cc = cc,
             });
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
@@ -311,7 +316,7 @@ namespace Shesha.Notifications
         {
             try
             {
-                var sendStatus = await notificationChannelSender.SendAsync(sender, receiver, message, "", attachments);
+                var sendStatus = await notificationChannelSender.SendAsync(sender, receiver, message, attachments);
 
                 return new SendStatus
                 {
@@ -337,13 +342,14 @@ namespace Shesha.Notifications
             Person receiverPerson, 
             TData data, 
             RefListNotificationPriority priority, 
-            List<NotificationAttachmentDto>? attachments = null, 
+            List<NotificationAttachmentDto>? attachments = null,
+            string cc = "",
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {
             var sender = new PersonMessageParticipant(senderPerson);
             var receiver = new PersonMessageParticipant(receiverPerson);            
-            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, triggeringEntity, channel);            
+            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel);            
         }
     }
 }
