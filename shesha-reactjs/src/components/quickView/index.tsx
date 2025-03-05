@@ -96,9 +96,8 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           setFormMarkup(response);
         else
           setLoadingState('error');
-      }).catch((error) => {
+      }).catch(() => {
         setLoadingState('error');
-        console.error(error)
       });
     }
   }, [formIdentifier]);
@@ -208,8 +207,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
     if (props.className && !formConfig)
       getEntityFormId(props.className, props.formType ?? 'Quickview').then((f) => {
         setFormConfig(f);
-      }).catch((e) => {
-        console.log(e);
+      }).catch(() => {
         setFormConfig(null);
       });
   }, [props.className, props.formType, formConfig]);
