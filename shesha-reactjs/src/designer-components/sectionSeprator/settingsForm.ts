@@ -51,6 +51,11 @@ export const getSettings = (data: any) => {
                   label: 'label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
+                  labelAlignOptions:[
+                      { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                      { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                      { value: 'right', icon: 'AlignRightOutlined', title: 'Right' }
+                  ]
                 })
                 .addSettingsInput({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
