@@ -565,7 +565,7 @@ namespace Shesha.Utilities
         /// </summary>
         public static string ToCamelCase(this string s)
         {
-            if (!char.IsUpper(s[0]))
+            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
                 return s;
 
             char[] chars = s.ToCharArray();
