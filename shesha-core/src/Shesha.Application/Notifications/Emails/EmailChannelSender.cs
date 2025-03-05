@@ -129,7 +129,7 @@ namespace Shesha.Notifications
         /// <param name="body"></param>
         /// <param name="cc"></param>
         /// <returns></returns>
-        private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string cc = "")
+        private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string? cc = null)
         {
             var smtpSettings = _emailSettings.SmtpSettings.GetValue();
             var message = new MailMessage

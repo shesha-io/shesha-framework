@@ -21,31 +21,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             _testClassRepo = testClassRepo;
         }
 
-        public async Task<string> TestTestClass()
-        {
-            var obj = await _testClassRepo.GetAll().FirstOrDefaultAsync(x => x.Id == Guid.Parse("0ddb7a0f-50a2-42df-afb4-0b6ad5219b5b"));
-            //var name = obj.JsonProp?.SomeName ?? "null";
-            return "OK";// obj.JsonProp?.SomeName ?? "null";
-        }
-
-        public async Task<string> TestAuditAsync()
-        {
-            var repoP = IocManager.Resolve<IRepository<Person, Guid>>();
-            var repoL = IocManager.Resolve<IRepository<Abp.Localization.ApplicationLanguage, int>>();
-
-            var person = repoP.GetAll().FirstOrDefault(x => x.Id == Guid.Parse("D519B92F-86E9-4F0F-8DF4-00AAE8A43158"));
-
-            var ll = repoL.GetAll().ToList();
-            var l = ll.FirstOrDefault(x => !person.PreferredLanguages.Select(z => z.Id).Contains(x.Id));
-
-            person.PreferredLanguages.Add(l);
-
-            await repoP.InsertOrUpdateAsync(person);
-
-            return "Ok";
-        }
-
-        public async Task<string> TestFileVersionUrl(Guid id) 
+        public async Task<string?> TestFileVersionUrlAsync(Guid id) 
         {
             var repo = IocManager.Resolve<IRepository<StoredFileVersion, Guid>>();
             var version = await repo.GetAsync(id);
@@ -65,7 +41,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         }
 
 
-        public async Task<string> TestLinkState() 
+        public Task<string> TestLinkStateAsync() 
         {
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             if (linkGeneratorContext == null)
@@ -73,7 +49,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (linkGeneratorContext.State == null)
                 throw new Exception("linkGeneratorContext.State is null");
 
-            return JsonConvert.SerializeObject(linkGeneratorContext.State);
+            return Task.FromResult(JsonConvert.SerializeObject(linkGeneratorContext.State) ?? string.Empty);
         }        
     }
 }

@@ -17,7 +17,7 @@ namespace Shesha.Notifications
             TData data, 
             RefListNotificationPriority priority, 
             List<NotificationAttachmentDto>? attachments = null,
-            string cc = "",
+            string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData;
 
@@ -27,7 +27,7 @@ namespace Shesha.Notifications
             TData data,
             RefListNotificationPriority priority,
             List<NotificationAttachmentDto>? attachments = null,
-            string cc = "",
+            string? cc = null,
             GenericEntityReference? triggeringEntity = null,
             NotificationChannelConfig? channel = null) where TData : NotificationData;
     }
