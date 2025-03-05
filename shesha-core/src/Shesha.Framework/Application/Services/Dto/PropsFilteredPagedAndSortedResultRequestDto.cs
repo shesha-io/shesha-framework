@@ -1,6 +1,4 @@
-﻿using Abp.Application.Services.Dto;
-
-namespace Shesha.Application.Services.Dto
+﻿namespace Shesha.Application.Services.Dto
 {
     /// <summary>
     /// Filtered, pages and sorted request DTO with properties list
