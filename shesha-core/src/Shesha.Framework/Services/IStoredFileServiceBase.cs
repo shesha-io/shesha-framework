@@ -20,8 +20,8 @@ namespace Shesha.Services
         Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string fileCategory);
         Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias);
 
-        Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory);
-        Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string? fileCategory);
+        Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory);
         Task<Stream> GetStreamAsync(StoredFileVersion fileVersion);
         Task<Stream> GetStreamAsync(StoredFile file);
         Task<Stream> GetStreamAsync(string filePath);
