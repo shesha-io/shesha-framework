@@ -35,13 +35,13 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function')
-              onChange(args);
+              onChange(args[0]);
           };
 
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
           ) : (
-            <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChangeInternal} {...customEvent} />
+            <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} {...customEvent} onChange={onChangeInternal} />
           );
         }}
       </ConfigurableFormItem>
