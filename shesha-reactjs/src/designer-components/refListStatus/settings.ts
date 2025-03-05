@@ -1,10 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { IRefListStatusProps } from './models';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: IRefListStatusProps) => {
 
@@ -394,33 +393,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -453,6 +426,47 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
+                                                            id: "backgroundStyle-url",
+                                                            parentId: "backgroundStylePnl",
+                                                            inputs: [{
+                                                                type: 'textField',
+                                                                id: 'backgroundStyle-url',
+                                                                propertyName: "background.url",
+                                                                jsSetting: false,
+                                                                label: "URL",
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: "backgroundStyle-image",
+                                                            parentId: 'backgroundStylePnl',
+                                                            inputs: [{
+                                                                type: 'imageUploader',
+                                                                id: 'backgroundStyle-image',
+                                                                propertyName: 'background.uploadFile',
+                                                                label: "Image",
+                                                                jsSetting: false,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: "backgroundStyleRow-storedFile",
+                                                            parentId: 'backgroundStylePnl',
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [
+                                                                {
+                                                                    type: 'textField',
+                                                                    id: 'backgroundStyle-storedFile',
+                                                                    jsSetting: false,
+                                                                    propertyName: "background.storedFile.id",
+                                                                    label: "File ID"
+                                                                }
+                                                            ]
+                                                        })
+                                                        .addSettingsInputRow({
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
@@ -463,19 +477,19 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-size',
                                                                     label: "Size",
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
                                                                     dropdownOptions: sizeOptions,
-                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "background.position",
                                                                     dropdownOptions: positionOptions,
-                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                 },
                                                                 {
                                                                     type: 'radio',
