@@ -48,6 +48,20 @@ export const getSettings = (data: IRateProps) => {
                   parentId: commonTabId,
                   inputs: [
                     {
+                      type: 'textArea',
+                      id: nanoid(),
+                      propertyName: 'description',
+                      label: 'Tooltip',
+                      jsSetting: true,
+                    },
+                  ],
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
                       type: 'numberField',
                       id: nanoid(),
                       propertyName: 'count',
@@ -59,20 +73,6 @@ export const getSettings = (data: IRateProps) => {
                       id: nanoid(),
                       propertyName: 'icon',
                       label: 'Icon',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'textArea',
-                      id: nanoid(),
-                      propertyName: 'description',
-                      label: 'Tooltip',
                       jsSetting: true,
                     },
                   ],
