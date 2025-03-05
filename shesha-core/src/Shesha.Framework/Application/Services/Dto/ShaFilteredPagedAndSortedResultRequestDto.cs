@@ -9,6 +9,6 @@ namespace Shesha.Application.Services.Dto
     public class ShaFilteredPagedAndSortedResultRequestDto: PagedAndSortedResultRequestDto
     {
         [Range(-1, int.MaxValue)]
-        public override int MaxResultCount { get; set; }
+        public override int MaxResultCount { get; set; } = 10;
     }
 }
