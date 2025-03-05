@@ -189,9 +189,9 @@ namespace Shesha.Web.FormsDesigner.Services
             form.VersionStatus = ConfigurationItemVersionStatus.Draft;
             form.Origin = form;
 
-            form.Markup = input.Markup;
+            form.Markup = input.Markup ?? "";
             form.ModelType = input.ModelType;
-            form.Type = input.Type;
+            form.Type = input.Type ?? "";
             form.IsTemplate = input.IsTemplate;
             form.Template = template;
             form.Normalize();

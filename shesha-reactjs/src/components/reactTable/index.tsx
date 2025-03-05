@@ -342,7 +342,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   );
 
   const containerStyleFinal = useMemo<CSSProperties>(() => {
-    const result = containerStyle ?? {};
+    const result = {...containerStyle} ?? {};
     if (minHeight) result.minHeight = `${minHeight}px`;
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 
