@@ -98,6 +98,9 @@ namespace Shesha.Authorization
 
         private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 
         {
+            if (!loginResult.IsSuccess)
+                throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));
+
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
 
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
@@ -197,6 +200,9 @@ namespace Shesha.Authorization
             {
                 case ShaLoginResultType.Success:
                     {
+                        if (!loginResult.IsSuccess)
+                            throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));
+
                         var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
                         return new ExternalAuthenticateResultModel
                         {
@@ -218,7 +224,7 @@ namespace Shesha.Authorization
 
                         // Try to login again with newly registered user!
                         loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
-                        if (loginResult.Result != ShaLoginResultType.Success)
+                        if (!loginResult.IsSuccess)
                         {
                             throw _shaLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
                                 loginResult.Result,
