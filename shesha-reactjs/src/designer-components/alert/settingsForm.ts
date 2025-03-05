@@ -208,7 +208,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                     ]
                   }
                 })
-
                 .toJson()
             ]
           },
