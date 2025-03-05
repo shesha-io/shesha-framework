@@ -676,7 +676,7 @@ export const getSettings = () => {
                                                             components: [...new DesignerToolbarSettings()
                                                                 .addSettingsInputRow({
                                                                     id: 'try26voxhs-HxJ5k5ngYE',
-                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    parentId: 'panel-header-s,ktyles-pnl',
                                                                     inline: true,
                                                                     propertyName: 'font',
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -1011,6 +1011,12 @@ export const getSettings = () => {
                                                                     hideLabel: false,
                                                                     label: 'Style',
                                                                     description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                                })
+                                                                .addStyleBox({
+                                                                    id: nanoid(),
+                                                                    label: 'Margin Padding',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'headerStyles.stylingBox',
                                                                 })
                                                                 .toJson()]
                                                         }
