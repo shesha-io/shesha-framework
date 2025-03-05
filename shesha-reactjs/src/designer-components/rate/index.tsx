@@ -59,7 +59,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             //allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
             disabled={readOnly}
-            count={localCount}
+            count={localCount ?? 5}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
             style={getStyle(style, allData.data)} // Temporary. Make it configurable
