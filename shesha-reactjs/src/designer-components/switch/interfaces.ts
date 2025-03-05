@@ -1,6 +1,6 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
 
-export interface ISwitchComponentProps extends IConfigurableFormComponent {
+export interface ISwitchComponentProps extends IConfigurableFormComponent, IStyleType {
   value?: boolean;
   defaultValue?: boolean;
 }
