@@ -33,6 +33,7 @@ export const getSettings = (data: IRateProps) => {
                   parentId: commonTabId,
                   styledLabel: true,
                   validate: { required: true },
+                  size: 'small',
                   jsSetting: true
                 })
                 .addLabelConfigurator({
