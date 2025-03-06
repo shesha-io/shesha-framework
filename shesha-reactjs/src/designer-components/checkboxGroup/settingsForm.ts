@@ -1,5 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
@@ -79,7 +80,7 @@ export const getSettings = (data: any) => {
                       id: 'editMode-s4gmBg31azZC0UjZjpfTm',
                       propertyName: 'editMode',
                       label: 'Edit Mode',
-                      defaultValue: 'inherit',
+                      defaultValue: 'inherited',
                       size: 'small',
                       jsSetting: true,
                     },
