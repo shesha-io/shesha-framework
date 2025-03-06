@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -27,7 +27,7 @@ import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupProps } from './models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useDeepCompareMemo } from '@/hooks';
-import { IStyleType, useSheshaApplication } from '@/providers';
+import { useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
@@ -102,7 +102,7 @@ interface InlineItemProps extends InlineItemBaseProps {
     item: ButtonGroupItemProps;
     prepareItem: PrepareItemFunc;
     form?: FormInstance<any>;
-    styles?: IStyleType;
+    styles?: CSSProperties;
 }
 const InlineItem: FC<InlineItemProps> = (props) => {
     const { item, uuid, getIsVisible, appContext, prepareItem, form } = props;
@@ -224,19 +224,15 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         });
     }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
-    // State to store updated items with background styles
     const [finalItems, setFinalItems] = useState(actualItems);
 
     useEffect(() => {
         const fetchBackgroundStyles = async () => {
             const updatedItems = await Promise.all(
                 actualItems.map(async (item) => {
-                    const background = migratePrevStyles(item, initialValues())?.background;
+                    const storedImageUrl = await getBackgroundImageUrl(item.background, backendUrl, httpHeaders);
 
-                    // Fetch background style asynchronously
-                    const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-
-                    const backgroundStyle = getBackgroundStyle(background, getStyle(item.style), storedImageUrl);
+                    const backgroundStyle = getBackgroundStyle(item.background, getStyle(item.style), storedImageUrl);
 
                     const updatedStyles = {
                         ...item.styles,
@@ -247,7 +243,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
                 })
             );
 
-            // Update state with the fully prepared items
             setFinalItems(updatedItems);
         };
 
@@ -271,7 +266,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
             <Button.Group size={size}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
-                        (<InlineItem item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
+                        (<InlineItem styles={item?.styles} item={item} uuid={item.id} size={item.size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form} />)
                     )}
                 </Space>
             </Button.Group>

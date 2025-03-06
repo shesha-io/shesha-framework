@@ -27,7 +27,7 @@ namespace Shesha.DynamicEntities.Binder
 
         public Func<Type, JObject, EntityModelBindingContext, List<string>?, object> GetObjectOrObjectReference { get; set; }
         
-        public Func<Type, string, string?, string, EntityModelBindingContext, object> GetEntityById { get; set; }
+        public Func<Type, string, string?, string, EntityModelBindingContext, object?> GetEntityById { get; set; }
 
         public int? ArrayItemIndex { get; set; } = null;
     }

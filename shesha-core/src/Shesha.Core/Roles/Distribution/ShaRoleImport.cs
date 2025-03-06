@@ -1,21 +1,17 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Newtonsoft.Json;
-using Shesha.Authorization;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.Permissions.Distribution.Dto;
 using Shesha.Roles.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class ShaRoleImport : ConfigurationItemImportBase, IShaRoleImport, ITransientDependency
+    public class ShaRoleImport : ConfigurationItemImportBase<ShaRole, DistributedShaRole>, IShaRoleImport, ITransientDependency
     {
         private readonly IRepository<ShaRole, Guid> _roleRepo;
         private readonly IRepository<ShaRolePermission, Guid> _rolePermissionRepo;
@@ -51,7 +47,7 @@ namespace Shesha.DynamicEntities.Distribution
             // get DB config
             var dbItem = await _roleRepo.FirstOrDefaultAsync(x =>
                 x.Name == item.Name && x.NameSpace == item.NameSpace
-                && (x.Module == null && item.ModuleName == null || x.Module.Name == item.ModuleName)
+                && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
                 && x.IsLast);
 
             if (dbItem != null)
@@ -126,15 +122,6 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.SetHardLinkToApplication(item.HardLinkToApplication);
 
             return dbItem;
-        }
-
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedShaRole>(json);
-            }
         }
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import TableSettings from './tableComponent-settings';
+import { getSettings } from './tableSettings';
 import { Alert } from 'antd';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps } from './models';
@@ -14,6 +14,7 @@ import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { useDataTableStore } from '@/providers';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -22,6 +23,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
   icon: <TableOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
+
     if (model.hidden)
       return null;
     return store ? (
@@ -40,6 +42,8 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       items: [],
     };
   },
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {
@@ -102,9 +106,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
         ...prev,
         noDataText: prev.noDataText ?? 'No Data',
         noDataSecondaryText: prev.noDataSecondaryText ?? 'No data is available for this table',
-      }))
-  ,
-  settingsFormFactory: (props) => <TableSettings {...props} />,
+      })),
   actualModelPropertyFilter: (name) => name !== 'items',
 };
 

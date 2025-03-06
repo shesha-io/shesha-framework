@@ -1,7 +1,6 @@
-﻿using System;
-using Abp.EntityHistory;
+﻿using Abp.EntityHistory;
 using Abp.Runtime.Session;
-using Microsoft.AspNetCore.Http;
+using System;
 
 namespace Shesha.EntityHistory
 {
@@ -9,7 +8,7 @@ namespace Shesha.EntityHistory
     {
         bool TypeAllowed(Type type);
 
-        EntityChange GetEntityChange(object entity, IAbpSession abpSession, string[] propertyNames, object[] loadedState, object[] currentState, Int32[] dirtyProps);
+        EntityChange? GetEntityChange(object entity, IAbpSession abpSession, string[] propertyNames, object[] loadedState, object[] currentState, Int32[] dirtyProps);
 
     }
 }

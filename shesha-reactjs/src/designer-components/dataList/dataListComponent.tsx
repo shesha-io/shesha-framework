@@ -54,7 +54,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       onListItemSave: migrateFormApi.full(prev.onListItemSave)
     }))
 ,
-  settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
+  settingsFormFactory: DataListSettingsForm,
 };
 
 export default DataListComponent;

@@ -12,7 +12,7 @@ namespace Shesha.Models.TokenAuth
         
         public DateTime ExpireOn { get; set; }
 
-        public long UserId { get; set; }
+        public long? UserId { get; set; }
         public Guid? PersonId { get; set; }
         public string? DeviceName { get; set; }
 

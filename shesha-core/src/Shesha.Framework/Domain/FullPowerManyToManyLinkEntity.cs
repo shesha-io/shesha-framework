@@ -28,7 +28,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Sets Entity from an entity object
         /// </summary>
-        public virtual void SetEntity<TId>(IEntity<TId> entity)
+        public virtual void SetEntity<TId>(IEntity<TId> entity) where TId : notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
             if (string.IsNullOrEmpty(config.TypeShortAlias))

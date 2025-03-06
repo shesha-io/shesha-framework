@@ -13,6 +13,6 @@ namespace Shesha.Application.Services.Dto
         /// <summary>
         /// List of properties to fetch in GraphQL-like syntax. Supports nested properties 
         /// </summary>
-        public string Properties { get; set; }
+        public string? Properties { get; set; }
     }
 }

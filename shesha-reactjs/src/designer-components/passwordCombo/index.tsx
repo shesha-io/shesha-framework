@@ -90,7 +90,8 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
+      ...jsStyle
     });
 
 

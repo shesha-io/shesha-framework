@@ -2,6 +2,7 @@
 using Abp.Reflection;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         private readonly Dictionary<string, IConfigurableItemImport?> _importers = new Dictionary<string, IConfigurableItemImport?>();
         private readonly Dictionary<string, Type> _itemTypes = new Dictionary<string, Type>();
 
-        public IConfigurableItemImport GetImporter(string itemType) 
+        public IConfigurableItemImport? GetImporter(string itemType) 
         {
             if (_importers.TryGetValue(itemType, out var importer))
                 return importer;
@@ -46,7 +47,15 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             var entityConfigStore = iocManager.Resolve<IEntityConfigurationStore>();
 
             var types = typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItemBase)) && !t.IsAbstract).ToList();
-            _itemTypes = types.ToDictionary(t => entityConfigStore.Get(t).DiscriminatorValue, t => t);
+            _itemTypes = types.Select(t => 
+                {
+                    var discriminator = entityConfigStore.Get(t).DiscriminatorValue;
+                    return !string.IsNullOrWhiteSpace(discriminator) 
+                        ? new { Discriminator = discriminator, Type = t }
+                        : null;
+                })
+                .WhereNotNull()
+                .ToDictionary(t => t.Discriminator, t => t.Type);
         }
 
         public ReadPackageContext() : this(StaticContext.IocManager)

@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using PluralizeService.Core;
+using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Conventions;
 using Shesha.Domain.Interfaces;
@@ -79,17 +80,22 @@ namespace Shesha.Domain
             }
         }
 
+        public static string GetTableName(Type entityType) 
+        {
+            return GetTableNameOrNull(entityType) ?? throw new EntityHasNoTableException(entityType);
+        }
+
         /// <summary>
         /// Returns table name for the specified entity type
         /// </summary>
         /// <param name="entityType"></param>
         /// <returns></returns>
-        public static string GetTableName(Type entityType)
+        public static string? GetTableNameOrNull(Type entityType)
         {
             if (IsRootEntity(entityType))
             {
                 // If the `TableAttribute` exists - use it. Note: we search the attribute in base classes too, it allows to use it in the abstract classes
-                var tableAttribute = entityType.Closest(t => t.BaseType, t => t.HasAttribute<TableAttribute>())?.GetAttribute<TableAttribute>();
+                var tableAttribute = entityType.Closest(t => t.BaseType, t => t.HasAttribute<TableAttribute>())?.GetAttributeOrNull<TableAttribute>();
                 if (tableAttribute != null)
                     return tableAttribute.Name;
 
@@ -100,13 +106,18 @@ namespace Shesha.Domain
 
                 return name;
             }
-            else
-                return GetTableName(GetRootEntity(entityType));
+            else 
+            {
+                var root = GetRootEntity(entityType);
+                return root != null
+                    ? GetTableName(root)
+                    : null;
+            }                
         }
         
         public static (Type parentType, Type parentIdType, Type childType, Type childIdType) GetManyToManyTableData(MemberInfo property)
         {
-            var parentType = property.DeclaringType;
+            var parentType = property.DeclaringType.NotNull();
             var parentIdType = parentType.GetProperty("Id")?.PropertyType;
             if (parentIdType == null)
                 throw new NullReferenceException($"'Id' property not found for '{parentType.FullName}'");
@@ -126,16 +137,21 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="entityType"></param>
         /// <returns></returns>
-        public static string GetSchemaName(Type entityType)
+        public static string? GetSchemaName(Type entityType)
         {
             if (IsRootEntity(entityType))
             {
                 // If the `TableAttribute` exists - use it. Note: we search the attribute in base classes too, it allows to use it in the abstract classes
-                var tableAttribute = entityType.Closest(t => t.BaseType, t => t.HasAttribute<TableAttribute>())?.GetAttribute<TableAttribute>();
+                var tableAttribute = entityType.Closest(t => t.BaseType, t => t.HasAttribute<TableAttribute>())?.GetAttributeOrNull<TableAttribute>();
                 return tableAttribute?.Schema;
             }
             else
-                return GetSchemaName(GetRootEntity(entityType));
+            {
+                var root = GetRootEntity(entityType);
+                return root != null
+                    ? GetSchemaName(root)
+                    : null;
+            }
         }
 
         /// <summary>
@@ -143,7 +159,7 @@ namespace Shesha.Domain
         /// </summary>
         public static string GetColumnName(MemberInfo memberInfo)
         {
-            var columnAttribute = memberInfo.GetAttribute<ColumnAttribute>(true);
+            var columnAttribute = memberInfo.GetAttributeOrNull<ColumnAttribute>(true);
 
             if (!string.IsNullOrWhiteSpace(columnAttribute?.Name))
                 return columnAttribute.Name;
@@ -175,7 +191,7 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static string GetIdColumnName(MemberInfo memberInfo)
         {
-            var columnAttribute = memberInfo.GetAttribute<ColumnAttribute>(true);
+            var columnAttribute = memberInfo.GetAttributeOrNull<ColumnAttribute>(true);
 
             if (!string.IsNullOrWhiteSpace(columnAttribute?.Name))
                 return columnAttribute.Name;
@@ -195,7 +211,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Get column name for the specified entity type
         /// </summary>
-        public static string GetNameForColumn(Type type, string prefix, string name, string suffix)
+        public static string GetNameForColumn(Type type, string prefix, string name, string? suffix)
         {
             var conventions = GetNamingConventions(type);
             return conventions.GetColumnName(prefix, name, suffix);
@@ -208,8 +224,8 @@ namespace Shesha.Domain
 
         private static INamingConventions GetNamingConventions(Type type)
         {
-            var conventionsType = type.GetAttribute<NamingConventionsAttribute>(false)?.ConventionsType ?? typeof(DefaultNamingConventions);
-            return Activator.CreateInstance(conventionsType) as INamingConventions;
+            var conventionsType = type.GetAttributeOrNull<NamingConventionsAttribute>(false)?.ConventionsType ?? typeof(DefaultNamingConventions);
+            return ActivatorHelper.CreateNotNullObject(conventionsType).ForceCastAs<INamingConventions>();
         }
 
         public static Type GetPropertyOrFieldType(this MemberInfo propertyOrField)
@@ -245,7 +261,7 @@ namespace Shesha.Domain
 
             if (!IsRootEntity(type))
             {
-                Type rootType = GetRootEntity(type);
+                var rootType = GetRootEntity(type);
                 
                 if (rootType != null)
                 {
@@ -282,7 +298,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static Type GetRootEntity(Type? type)
+        private static Type? GetRootEntity(Type? type)
         {
             if (type == null)
                 return null;
@@ -386,7 +402,7 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static string GetForeignKeyColumn(MemberInfo prop)
         {
-            var foreignKeyAttribute = prop.GetAttribute<ForeignKeyAttribute>(true);
+            var foreignKeyAttribute = prop.GetAttributeOrNull<ForeignKeyAttribute>(true);
             if (foreignKeyAttribute != null)
                 return foreignKeyAttribute.Name;
 
@@ -403,7 +419,7 @@ namespace Shesha.Domain
         /// <returns></returns>
         public static object GetDiscriminatorValue(Type type)
         {
-            var discriminatorValueAttribute = type.GetAttribute<DiscriminatorValueAttribute>();
+            var discriminatorValueAttribute = type.GetAttributeOrNull<DiscriminatorValueAttribute>();
 
             if (discriminatorValueAttribute != null)
                 return discriminatorValueAttribute.Value;
@@ -426,7 +442,7 @@ namespace Shesha.Domain
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static string GetDiscriminatorColumn(Type type)
+        public static string? GetDiscriminatorColumn(Type type)
         {
             var attribute = type.GetCustomAttributes(true)
                 .Where(a => a is DiscriminatorAttribute)

@@ -85,7 +85,7 @@ namespace Shesha.Roles
         {
             CheckDeletePermission();
 
-            var role = await _roleManager.FindByIdAsync(input.Id.ToString());
+            var role = await _roleManager.GetRoleByNameAsync(input.Id.ToString());
             var users = await _userManager.GetUsersInRoleAsync(role.NormalizedName);
 
             foreach (var user in users)
@@ -110,7 +110,7 @@ namespace Shesha.Roles
             return Repository.GetAllIncluding(x => x.Permissions)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword)
                 || x.DisplayName.Contains(input.Keyword)
-                || x.Description.Contains(input.Keyword));
+                || x.Description != null && x.Description.Contains(input.Keyword));
         }
 
         protected override async Task<Role> GetEntityByIdAsync(int id)

@@ -71,11 +71,11 @@ namespace Shesha.Test
         public Task<List<object>> CheckGenericEntityAsync()
         {
             var entities = Repository.GetAll().Where(x => x.AnyEntity != null).ToList();
-            var entity = entities.FirstOrDefault(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
+            var entity = entities.First(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
 
             var person = (Person)entity.AnyEntity;
 
-            var dbEntity = Repository.GetAll().FirstOrDefault(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
+            var dbEntity = Repository.GetAll().First(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
 
             var dbPerson = (Person)dbEntity.AnyEntity;
 

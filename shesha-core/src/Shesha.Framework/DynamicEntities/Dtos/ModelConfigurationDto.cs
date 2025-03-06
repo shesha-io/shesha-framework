@@ -54,7 +54,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         public List<EntityViewConfigurationDto> ViewConfigurations { get; set; } = new List<EntityViewConfigurationDto>();
 
-        public void NormalizeViewConfigurations(EntityConfig model = null)
+        public void NormalizeViewConfigurations(EntityConfig model)
         {
             var list = new List<EntityViewConfigurationDto>();
             if (model.EntityConfigType == EntityConfigTypes.Class)

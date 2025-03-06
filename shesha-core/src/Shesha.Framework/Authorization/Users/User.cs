@@ -34,7 +34,7 @@ namespace Shesha.Authorization.Users
         /// Email address must be unique for it's tenant.
         /// </summary>
         [StringLength(MaxEmailAddressLength)]
-        public override string EmailAddress { get; set; }         
+        public override string? EmailAddress { get; set; }         
 
         public override void SetNormalizedNames()
         {
@@ -44,7 +44,7 @@ namespace Shesha.Authorization.Users
 
         [Display(Name = "Authentication Guid")]
         [StringLength(36)]
-        public virtual string AuthenticationGuid { get; set; }
+        public virtual string? AuthenticationGuid { get; set; }
 
         [Display(Name = "Authentication Guid Expiry Date")]
         public virtual DateTime? AuthenticationGuidExpiresOn { get; set; }
@@ -101,7 +101,7 @@ namespace Shesha.Authorization.Users
 
         [SaveAsJson]
         [Display(Name = "Allow only selected FrontEnd Applications", Description = "Leave empty to allow any FrontEnd Applications")]
-        public virtual List<string> AllowedFrontEndApps { get; set; }
+        public virtual List<string>? AllowedFrontEndApps { get; set; }
 
         public static User CreateUser(int? tenantId, string username, string emailAddress)
         {

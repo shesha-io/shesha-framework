@@ -89,7 +89,7 @@ namespace Shesha.DynamicEntities
                 var convertedInput = Activator.CreateInstance(convertedInputType) ?? throw new Exception($"Failed to create instance of type '{convertedInputType.FullName}'");
                 AutoMapper.Map(input, convertedInput);
 
-                var task = method.Invoke<Task>(appService, [convertedInput]);
+                var task = method.Invoke<Task>(appService, [convertedInput]).NotNull();
                 await task.ConfigureAwait(false);
 
                 var resultProperty = task.GetType().GetProperty("Result");
@@ -244,7 +244,7 @@ namespace Shesha.DynamicEntities
                 throw new ArgumentException($"Property `{input.PropertyName}` not found in the type `{input.EntityType}`");
 
             var reordererType = typeof(IEntityReorderer<,,>).MakeGenericType(entityConfig.EntityType, entityConfig.IdType, property.PropertyType.GetUnderlyingTypeIfNullable());
-            var reorderer = IocManager.Resolve(reordererType) as IEntityReorderer;
+            var reorderer = IocManager.Resolve(reordererType).ForceCastAs<IEntityReorderer>();
 
             return await reorderer.ReorderAsync(input, property);
         }

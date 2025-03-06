@@ -1,5 +1,4 @@
 ﻿using Shesha.Exceptions;
-using System;
 using System.IO;
 using System.Reflection;
 
@@ -22,7 +21,7 @@ namespace Shesha.Utilities
         {
             var result = new MemoryStream();
 
-            using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) 
+            using (var resourceStream = assembly.GetEmbeddedResourceStream(resourceName)) 
             {
                 var buffer = new byte[8 * 1024];
                 int len;

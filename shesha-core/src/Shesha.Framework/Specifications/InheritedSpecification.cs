@@ -30,7 +30,7 @@ namespace Shesha.Specifications
             var baseExpression = _baseSpecs.ToExpression();
 
             // get parameter from the base expression (of type TBase)
-            var parameter = baseExpression.Parameters.FirstOrDefault();
+            var parameter = baseExpression.Parameters.First();
             if (!(parameter is ParameterExpression parameterExpression))
                 throw new NotSupportedException($"Parameter of type `{parameter.GetType().FullName}` is not supported, expected: `{nameof(ParameterExpression)}`");
 

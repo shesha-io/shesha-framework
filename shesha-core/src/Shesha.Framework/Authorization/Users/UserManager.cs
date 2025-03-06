@@ -299,17 +299,17 @@ namespace Shesha.Authorization.Users
             Options = GetOptionsCopy();
 
             //Lockout
-            Options.Lockout.AllowedForNewUsers = _securitySettings.UserLockOutEnabled.GetValue();
-            var lockoutSecs = _securitySettings.DefaultAccountLockoutSeconds.GetValue();
+            Options.Lockout.AllowedForNewUsers = _securitySettings.UserLockOutEnabled.GetValueOrNull();
+            var lockoutSecs = _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNull();
             Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
-            Options.Lockout.MaxFailedAccessAttempts = _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValue();
+            Options.Lockout.MaxFailedAccessAttempts = _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueOrNull();
 
             //Password complexity
-            Options.Password.RequireDigit = _passwordComplexitySettings.RequireDigit.GetValue();
-            Options.Password.RequireLowercase = _passwordComplexitySettings.RequireLowercase.GetValue();
-            Options.Password.RequireNonAlphanumeric = _passwordComplexitySettings.RequireNonAlphanumeric.GetValue();
-            Options.Password.RequireUppercase = _passwordComplexitySettings.RequireUppercase.GetValue();
-            Options.Password.RequiredLength = _passwordComplexitySettings.RequiredLength.GetValue();
+            Options.Password.RequireDigit = _passwordComplexitySettings.RequireDigit.GetValueOrNull();
+            Options.Password.RequireLowercase = _passwordComplexitySettings.RequireLowercase.GetValueOrNull();
+            Options.Password.RequireNonAlphanumeric = _passwordComplexitySettings.RequireNonAlphanumeric.GetValueOrNull();
+            Options.Password.RequireUppercase = _passwordComplexitySettings.RequireUppercase.GetValueOrNull();
+            Options.Password.RequiredLength = _passwordComplexitySettings.RequiredLength.GetValueOrNull();
         }
 
         public override async Task InitializeOptionsAsync(int? tenantId)
@@ -317,17 +317,17 @@ namespace Shesha.Authorization.Users
             Options = GetOptionsCopy();
 
             //Lockout
-            Options.Lockout.AllowedForNewUsers = await _securitySettings.UserLockOutEnabled.GetValueAsync();
-            var lockoutSecs = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
+            Options.Lockout.AllowedForNewUsers = await _securitySettings.UserLockOutEnabled.GetValueOrNullAsync();
+            var lockoutSecs = await _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNullAsync();
             Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
-            Options.Lockout.MaxFailedAccessAttempts = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
+            Options.Lockout.MaxFailedAccessAttempts = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueOrNullAsync();
 
             //Password complexity
-            Options.Password.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();
-            Options.Password.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueAsync();
-            Options.Password.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueAsync();
-            Options.Password.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueAsync();
-            Options.Password.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
+            Options.Password.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueOrNullAsync();
+            Options.Password.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueOrNullAsync();
+            Options.Password.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueOrNullAsync();
+            Options.Password.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueOrNullAsync();
+            Options.Password.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync();
         }
     }
 }
