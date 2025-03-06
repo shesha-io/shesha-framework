@@ -128,21 +128,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                     {
                       type: 'switch',
                       id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      size: 'small',
-                      jsSetting: true,
-                    }
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
                       propertyName: 'marquee',
                       label: 'Marquee',
                       size: 'small',
@@ -165,6 +150,14 @@ export const getSettings = (data: IAlertComponentProps) => {
                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      size: 'small',
+                      jsSetting: true,
+                    },
                     {
                       type: 'switch',
                       id: nanoid(),
