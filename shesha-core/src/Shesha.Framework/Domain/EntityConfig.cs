@@ -19,7 +19,7 @@ namespace Shesha.Domain
 
         [EntityDisplayName]
         [StringLength(255)]
-        public virtual string FriendlyName { get; set; }
+        public virtual string? FriendlyName { get; set; }
         [StringLength(100)]
         public virtual string? TypeShortAlias { get; set; }
         [StringLength(255)]
@@ -69,6 +69,6 @@ namespace Shesha.Domain
         /// Code identifier that can be used in the client-side code to reference current module
         /// </summary>
         [StringLength(200)]
-        public virtual string Accessor { get; set; }
+        public virtual string? Accessor { get; set; }
     }
 }
