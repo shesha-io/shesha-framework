@@ -39,7 +39,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         // From ConfigurationItem
         public bool Suppress { get; set; }
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public string Name { get; set; }
         public string? Label { get; set; }
 

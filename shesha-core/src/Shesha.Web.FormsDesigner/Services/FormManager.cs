@@ -62,7 +62,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
             newVersion.Markup = form.Markup;
             newVersion.ModelType = form.ModelType;
-            newVersion.Type = form.Type;
             newVersion.IsTemplate = form.IsTemplate;
             newVersion.Template = form.Template;
             newVersion.Normalize();
@@ -191,7 +190,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
             form.Markup = input.Markup ?? "";
             form.ModelType = input.ModelType;
-            form.Type = input.Type ?? "";
             form.IsTemplate = input.IsTemplate;
             form.Template = template;
             form.Normalize();
@@ -248,7 +246,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
             form.Markup = srcForm.Markup;
             form.ModelType = srcForm.ModelType;
-            form.Type = srcForm.Type;
             form.IsTemplate = srcForm.IsTemplate;
             form.Template = srcForm.Template;
             form.Normalize();

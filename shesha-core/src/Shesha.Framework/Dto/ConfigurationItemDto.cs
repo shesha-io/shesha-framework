@@ -23,7 +23,7 @@ namespace Shesha.Dto
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Version number

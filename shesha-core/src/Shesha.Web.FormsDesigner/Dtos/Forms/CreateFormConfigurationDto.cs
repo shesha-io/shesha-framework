@@ -16,12 +16,12 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Form name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
