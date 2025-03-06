@@ -123,12 +123,16 @@ export const getColumnSettings = (data?: any) => ({
                                     "labelAlign": "right"
                                 },
                                 {
-                                    "id": "actionConfig1",
-                                    "type": "settingsInput",
-                                    "inputType": "configurableActionConfigurator",
+                                    "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
+                                    "type": "configurableActionConfigurator",
                                     "propertyName": "actionConfiguration",
-                                    "label": "Action Configuration"
-                                }
+                                    "label": "Action Configuration",
+                                    "hidden": false,
+                                    "validate": {},
+                                    "settingsValidationErrors": [],
+                                    "parentId": "root",
+                                    "version": 1
+                                  },
                             ]
                         },
                         {
