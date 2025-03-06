@@ -62,7 +62,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    // const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
     const dimensions = model?.dimensions;
     const border = model?.border;
     const font = model?.font;
@@ -186,7 +185,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
-      autoSize: true,
+      autoSize: false,
       showCount: false,
       allowClear: false,
     };

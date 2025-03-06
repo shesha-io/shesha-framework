@@ -114,7 +114,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'autoSize',
                     parentId: commonTabId,
                     label: 'Auto Size',
-                    defaultValue: true,
+                    defaultValue: false,
                     jsSetting: true,
                   },
                   {
