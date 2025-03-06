@@ -29,7 +29,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         // ConfigurationItem        
         public Guid? ModuleId { get; set; }
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public string Name { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }

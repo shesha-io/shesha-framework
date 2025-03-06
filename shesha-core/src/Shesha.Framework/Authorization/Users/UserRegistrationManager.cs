@@ -16,7 +16,7 @@ namespace Shesha.Authorization.Users
 {
     public class UserRegistrationManager : DomainService
     {
-        public IAbpSession AbpSession { get; set; }
+        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         private readonly TenantManager _tenantManager;
         private readonly UserManager _userManager;

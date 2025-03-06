@@ -23,7 +23,7 @@ namespace Shesha.Dto
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Version number
@@ -40,11 +40,11 @@ namespace Shesha.Dto
         /// </summary>
         public ConfigurationItemVersionStatus VersionStatus { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? Label { get; set; }
         public string? Description { get; set; }
         public bool HardLinkToApplication { get; set; }
-        public string Namespace { get; set; }
+        public string? Namespace { get; set; }
         public int? NoSelectionValue { get; set; }
         public bool Suppress { get; set; }
     }

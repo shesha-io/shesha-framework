@@ -25,12 +25,12 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Form name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label
@@ -50,7 +50,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Type of the form model
         /// </summary>
-        public string ModelType { get; set; }
+        public string? ModelType { get; set; }
 
         /// <summary>
         /// Version number
@@ -76,6 +76,6 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Cache MD5, is used for client-side caching
         /// </summary>
-        public string CacheMd5 { get; set; }
+        public string? CacheMd5 { get; set; }
     }
 }

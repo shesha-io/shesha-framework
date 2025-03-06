@@ -7,11 +7,6 @@ namespace Shesha.NHibernate.EntityHistory
     public interface IEntityHistoryHelper
     {
         /// <summary>
-        /// Set of entity changes
-        /// </summary>
-        EntityChangeSet EntityChangeSet { get; set; }
-
-        /// <summary>
         /// List of entity changes
         /// </summary>
         List<EntityChange> EntityChanges { get; set; }
