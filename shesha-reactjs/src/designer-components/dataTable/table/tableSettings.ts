@@ -374,7 +374,7 @@ export const getSettings = (data: ITableComponentProps) => {
                                     description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                                     exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                                 })
-                                .addSettingsInput({
+                                .addConfigurableActionConfigurator({
                                     id: nanoid(),
                                     propertyName: 'onRowSaveSuccessAction',
                                     label: 'On Row Save Success',
@@ -382,7 +382,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     description: 'Custom business logic to be executed after successfull saving of new/updated row.',
                                     hideLabel: true,
                                     jsSetting: true,
-                                    inputType: "configurableActionConfigurator",
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
