@@ -61,11 +61,6 @@ namespace Shesha.Scheduler
         public string Name => GetType().StripCastleProxyType().Name;
         public string TriggerName => $"{Name}_Trigger";
 
-        /// <summary>
-        /// Type of the parameters class
-        /// </summary>
-        public virtual Type ParametersType { get; }
-
         private Guid? _id;
         public Guid Id
         {

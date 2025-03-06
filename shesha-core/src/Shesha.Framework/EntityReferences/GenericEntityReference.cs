@@ -9,7 +9,7 @@ namespace Shesha.EntityReferences
     [Serializable]
     public class GenericEntityReference : IEquatable<GenericEntityReference>, IGenericEntityReference
     {
-        private object _entity;
+        private object? _entity;
        
         public GenericEntityReference(string id, string typeName, string? dysplayName = null)
         {
