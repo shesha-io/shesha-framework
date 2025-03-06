@@ -43,48 +43,48 @@ namespace Shesha
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
         }
 
-        public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
-        public IObjectValidatorManager ValidatorManager { get; set; }
-        public ILoggingContextCollector LoggingScope { get; set; }
+        public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; } = default!;
+        public IObjectValidatorManager ValidatorManager { get; set; } = default!;
+        public ILoggingContextCollector LoggingScope { get; set; } = default!;
 
         /// <summary>
         /// Reference to the IoC manager.
         /// </summary>
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         /// <summary>
         /// Dynamic repository
         /// </summary>
-        public IDynamicRepository DynamicRepo { protected get; set; }
+        public IDynamicRepository DynamicRepo { protected get; set; } = default!;
 
         /// <summary>
         /// Tenant manager
         /// </summary>
-        public TenantManager TenantManager { get; set; }
+        public TenantManager TenantManager { get; set; } = default!;
 
         /// <summary>
         /// User Manager
         /// </summary>
-        public UserManager UserManager { get; set; }
+        public UserManager UserManager { get; set; } = default!;
 
         /// <summary>
         /// Dynamic DTO builder
         /// </summary>
-        public IDynamicDtoTypeBuilder DtoBuilder { get; set; }
+        public IDynamicDtoTypeBuilder DtoBuilder { get; set; } = default!;
 
         /// <summary>
         /// Dynamic property manager
         /// </summary>
-        public IDynamicPropertyManager DynamicPropertyManager { get; set; }
+        public IDynamicPropertyManager DynamicPropertyManager { get; set; } = default!;
 
         /// <summary>
         /// Dynamic DTO mapping helper
         /// </summary>
-        public IDynamicDtoMappingHelper DynamicDtoMappingHelper { get; set; }
+        public IDynamicDtoMappingHelper DynamicDtoMappingHelper { get; set; } = default!;
 
-        public IEntityModelBinder EntityModelBinder { get; set; }
+        public IEntityModelBinder EntityModelBinder { get; set; } = default!;
 
-        private IUrlHelper _url;
+        private IUrlHelper? _url;
 
         /// <summary>
         /// Url helper

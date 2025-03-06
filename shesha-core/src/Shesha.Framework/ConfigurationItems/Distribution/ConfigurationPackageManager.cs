@@ -29,7 +29,7 @@ namespace Shesha.ConfigurationItems.Distribution
         private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {

@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
+using Castle.Core.Logging;
 using Microsoft.Extensions.Configuration;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
@@ -54,6 +55,21 @@ namespace Shesha.Scheduler
 
     public abstract class ScheduledJobBase
     {
+        protected ScheduledJobBase()
+        {
+            #region optional dependencies, they are initialized by IoC after constructor
+            UserRepository = default!;
+            PathHelper = default!;
+            JobRepository = default!;
+            TriggerRepository = default!;
+            JobExecutionRepository = default!;
+            UnitOfWorkManager = default!;
+            #endregion
+
+            CancellationTokenSource = new CancellationTokenSource();
+            CancellationToken = CancellationTokenSource.Token;
+        }
+
         public IRepository<User, Int64> UserRepository { get; set; }
 
         private IStoredFileService _storedFileService => IocManager.Resolve<IStoredFileService>();
@@ -93,7 +109,7 @@ namespace Shesha.Scheduler
         /// <summary>
         /// IoC manager
         /// </summary>
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         /// <summary>
         /// Path Helper
@@ -131,13 +147,13 @@ namespace Shesha.Scheduler
         /// <summary>
         /// Default logger, it used when instance logger is not set
         /// </summary>
-        private ILogger _defaultLogger;
+        private ILogger? _defaultLogger;
 
-        public ILogger Log { get; set; }
+        public ILogger Log { get; set; } = NullLogger.Instance;
 
         public Guid JobExecutionId { get; set; }
-        public string LogFileName { get; set; }
-        public string LogFilePath { get; set; }
+        public string? LogFileName { get; set; }
+        public string? LogFilePath { get; set; }
         public string? LogFolderPath
         {
             get

@@ -25,7 +25,7 @@ namespace Shesha.Controllers
     public class FrameworkController: ControllerBase, ITransientDependency
     {
         public ILogger Logger { get; set; } = new NullLogger();
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         [HttpPost]
         public async Task<string> BootstrapReferenceListsAsync()
