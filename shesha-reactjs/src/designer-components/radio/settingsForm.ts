@@ -150,7 +150,7 @@ export const getSettings = (data: any) => {
                     {
                       type: 'editModeSelector',
                       id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'editModeSelector',
+                      propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
                       defaultValue: 'inherited',
