@@ -14,7 +14,7 @@ namespace Shesha.Domain.ConfigurationItems
     public class ConfigurationItem : FullAuditedEntity<Guid, User>, IMayHaveTenant, IMayHaveFrontEndApplication
     {
         [ReadonlyProperty]
-        public virtual string? ItemType { get; set; }
+        public virtual string ItemType { get; set; } = string.Empty;
 
         /// <summary>
         /// The Guid for the Config Item.

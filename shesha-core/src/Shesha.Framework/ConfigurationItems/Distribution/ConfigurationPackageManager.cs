@@ -86,10 +86,9 @@ namespace Shesha.ConfigurationItems.Distribution
                         ModuleName = parts[0],
                         ItemType = parts[1],
                         StreamGetter = () => entry.Open(),
-                    };
-
-                    item.FileName = containsAppKey ? parts[3] : parts[2];
-                    item.ApplicationKey = containsAppKey ? parts[2] : null;
+                        FileName = containsAppKey ? parts[3] : parts[2],
+                        ApplicationKey = containsAppKey ? parts[2] : null,
+                    };                    
 
                     var importer = context.GetImporter(item.ItemType);
                     if (importer == null)
