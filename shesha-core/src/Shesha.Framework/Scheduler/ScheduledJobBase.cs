@@ -31,7 +31,7 @@ namespace Shesha.Scheduler
     {
         public virtual T JobStatistics { get; private set; }
 
-        protected ScheduledJobBase()
+        protected ScheduledJobBase(): base()
         {
             JobStatistics = new T();
         }
@@ -45,7 +45,7 @@ namespace Shesha.Scheduler
                     e.Status = ExecutionStatus.Completed;
 
                 if (_logMode == LogMode.StoredFile)
-                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName); });
+                    e.LogFile = AsyncHelper.RunSync(async () => { return await CreateStoredFileLogAsync(); });
 
                 if (JobStatistics != null)
                     e.JobStatistics = JobStatistics;
@@ -65,9 +65,6 @@ namespace Shesha.Scheduler
             JobExecutionRepository = default!;
             UnitOfWorkManager = default!;
             #endregion
-
-            CancellationTokenSource = new CancellationTokenSource();
-            CancellationToken = CancellationTokenSource.Token;
         }
 
         public IRepository<User, Int64> UserRepository { get; set; }
@@ -136,8 +133,7 @@ namespace Shesha.Scheduler
         /// </summary>
         public IRepository<ScheduledJobExecution, Guid> JobExecutionRepository { get; set; }
 
-        protected readonly CancellationTokenSource CancellationTokenSource;
-        protected CancellationToken CancellationToken;
+        protected CancellationToken? CancellationToken;
 
         /// <summary>
         /// Reference to the logger to write logs.
@@ -198,6 +194,7 @@ namespace Shesha.Scheduler
         [UnitOfWork]
         public async Task ExecuteAsync(Guid executionId, Int64? startedById, CancellationToken cancellationToken)
         {
+            CancellationToken = cancellationToken;
             var task = Task.Run(async () =>
             {
                 try
@@ -242,9 +239,10 @@ namespace Shesha.Scheduler
                         await OnFailAsync(e);
                     }
                 }
-            }, CancellationToken);
+            }, cancellationToken);
 
             await task;
+            CancellationToken = null;
         }
 
         public virtual async Task OnSuccessAsync()
@@ -316,7 +314,7 @@ namespace Shesha.Scheduler
                     e.Status = ExecutionStatus.Completed;
 
                 if (_logMode == LogMode.StoredFile)
-                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName); });
+                    e.LogFile = AsyncHelper.RunSync(async () => { return await CreateStoredFileLogAsync(); });
             });
         }
 
@@ -416,22 +414,9 @@ namespace Shesha.Scheduler
             }
         }
 
-        public void Interrupt()
-        {
-            if (!CancellationTokenSource.IsCancellationRequested)
-            {
-                CancellationTokenSource.Cancel(true);
-                Log.InfoFormat("Job {0} interrupt requested", Name);
-            }
-            else
-            {
-                Log.InfoFormat("Job {0} interrupt already in progress", Name);
-            }
-        }
-
         protected void CheckCancellation()
         {
-            CancellationToken.ThrowIfCancellationRequested();
+            CancellationToken?.ThrowIfCancellationRequested();
         }
 
         public virtual Task DoExecuteAsync(CancellationToken cancellationToken)
@@ -439,14 +424,39 @@ namespace Shesha.Scheduler
             throw new Exception($"Method '{nameof(DoExecuteAsync)}' must be overridden in the scheduled job");
         }
 
-        protected async Task<StoredFile> CreateStoredFileLogAsync(string logPath, string filename, string folder = "")
+        protected async Task<StoredFile?> CreateStoredFileLogAsync()
         {
-            using var stream = File.OpenRead(logPath);
-            var storedFile = await _storedFileService.SaveFileAsync(stream, filename, file =>
+            if (string.IsNullOrWhiteSpace(LogFilePath)) {
+                Logger.Warn($"{nameof(LogFilePath)} is empty, creation of log file skipped");
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(LogFileName)) 
             {
-                file.Folder = folder;
-            });
-            return storedFile;
+                Logger.Warn($"{nameof(LogFileName)} is empty, creation of log file skipped");
+                return null;
+            }               
+
+            if (!File.Exists(LogFilePath))
+            {
+                Logger.Error($"Log file `{nameof(LogFilePath)}` is empty, creation of log file skipped");
+                return null;
+            }
+
+            try
+            {
+                using var stream = File.OpenRead(LogFilePath);
+                var storedFile = await _storedFileService.SaveFileAsync(stream, LogFileName, file =>
+                {
+                    file.Folder = LogFolderName;
+                });
+                return storedFile;
+            }
+            catch (Exception e) 
+            {
+                Logger.Error($"Failed to save log file `{LogFilePath}` of the job `{this.GetType().FullName}`", e);
+                return null;
+            }            
         }
     }
 }
