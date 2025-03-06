@@ -67,6 +67,21 @@ export const getSettings = (data: any) => {
                   },
                 ],
               })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                inputs: [
+                  {
+                    type: 'switch',
+                    id: hiddenId,
+                    propertyName: 'hidden',
+                    label: 'Hide',
+                    jsSetting: true,
+                    layout: 'horizontal',
+                  },
+                ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+              })
               .toJson()
             ]
           },
@@ -91,21 +106,6 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        inputs: [
-                          {
-                            type: 'switch',
-                            id: hiddenId,
-                            propertyName: 'hidden',
-                            label: 'Hide',
-                            jsSetting: true,
-                            layout: 'horizontal',
-                          },
-                        ],
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
