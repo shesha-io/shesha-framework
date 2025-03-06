@@ -591,7 +591,7 @@ export const getSettings = (data: any) => {
                               jsSetting: true,
                               propertyName: 'className',
                               hideLabel: false,
-                              label: 'Class Name',
+                              label: 'Custom CSS Class',
                               tooltip: 'A custom class name to apply to the element',
                             })
                             .toJson()
