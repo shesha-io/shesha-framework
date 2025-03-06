@@ -197,6 +197,45 @@ export const getSettings = (data: any) => {
             ],
           },
           {
+            key: '3',
+            title: 'Events',
+            id: 'Cc47W08MWrKdhoGqFKMI2',
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .toJson(),
+            ],
+          },
+          {
             key: '4',
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
