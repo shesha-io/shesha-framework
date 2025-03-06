@@ -78,10 +78,11 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
+      ...localStyle
     });
 
-    const style = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+    const style = removeUndefinedProps({ ...additionalStyles, justifyContent: model?.font?.align, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     if (!model?.hidden && formMode !== 'designer') return null;
 

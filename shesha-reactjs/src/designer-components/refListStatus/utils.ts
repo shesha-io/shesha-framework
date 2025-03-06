@@ -5,7 +5,8 @@ export const defaultStyles = (): any => {
             weight: '400',
             size: 12,
             color: '#000',
-            type: 'Segoe UI'
+            type: 'Segoe UI',
+            align: 'center'
         },
         border: {
             border: {
