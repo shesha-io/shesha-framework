@@ -16,7 +16,7 @@ namespace Shesha.DynamicEntities.Dtos
     public class EntityConfigDto: EntityDto<Guid>, IConfigurationItemDto
     {
         [StringLength(255)]
-        public string FriendlyName { get; set; }
+        public string? FriendlyName { get; set; }
         [StringLength(100)]
         public string? TypeShortAlias { get; set; }
         [StringLength(255)]
