@@ -34,7 +34,8 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   styledLabel: true,
                   parentId: commonTabId,
                   validate: { required: true },
-                  jsSetting: true
+                  jsSetting: true,
+                  size: 'small',
                 })
                 .addLabelConfigurator({
                   id: nanoid(),
@@ -96,7 +97,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   componentName: 'propertyRouter',
                   label: 'Property router1',
                   labelAlign: 'right',
-                  parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                  parentId: appearanceTabId,
                   hidden: false,
                   propertyRouteName: {
                     _mode: "code",
@@ -105,8 +106,9 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+
                       .addCollapsiblePanel({
-                        id: nanoid(),
+                        id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
                         parentId: 'styleRouter',
@@ -114,18 +116,40 @@ export const getSettings = (data: ISwitchComponentProps) => {
                         ghost: true,
                         collapsible: 'header',
                         content: {
-                          id: nanoid(),
+                          id: 'dimensionsStylePnl',
                           components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'dropdown',
-                              propertyName: 'size',
-                              label: 'Size',
-                              width: '100%',
-                              hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                              dropdownOptions: [
-                                { value: 'small', label: 'Small' },
-                                { value: 'large', label: 'Default' },
+                            .addSettingsInputRow({
+                              id: 'dimensionsStyleRowWidth',
+                              parentId: 'dimensionsStylePnl',
+                              inline: true,
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Width",
+                                  width: 85,
+                                  propertyName: "dimensions.width",
+                                  icon: "widthIcon",
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                },
+                              ]
+                            })
+                            .addSettingsInputRow({
+                              id: 'dimensionsStyleRowHeight',
+                              parentId: 'dimensionsStylePnl',
+                              inline: true,
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'textField',
+                                  id: nanoid(),
+                                  label: "Height",
+                                  width: 85,
+                                  propertyName: "dimensions.height",
+                                  icon: "heightIcon",
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                },
                               ]
                             })
                             .toJson()
