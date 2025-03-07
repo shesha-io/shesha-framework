@@ -83,13 +83,6 @@ namespace Shesha.Email
         [EnableValidation]
         public async Task<SendTestEmailDto> SendEmailAsync(SendTestEmailInput input)
         {
-            /*
-            // note: validation doesn't work for ControllerBase (looks like not supported by Abp)
-            // todo: check support by the `Controller` and try it in the `ApplicationService`
-            if (!ModelState.IsValid)
-                throw new ValidationException();
-            */
-            
             await _emailSender.SendAsync(
                 input.To,
                 input.Subject,

@@ -22,7 +22,7 @@ namespace Shesha.DynamicEntities.Dtos
         [StringLength(255)]
         public string? TableName { get; set; }
         [StringLength(500)]
-        public string ClassName { get; set; }
+        public string? ClassName { get; set; }
         [StringLength(500)]
         public string? Namespace { get; set; }
         [StringLength(255)]

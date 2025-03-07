@@ -45,8 +45,7 @@ namespace Shesha.Configuration.Runtime
             {
                 try
                 {
-                    var propConfig = new PropertyConfiguration(config.EntityType);
-                    LoadPropertyConfiguration(prop, propConfig);
+                    var propConfig = LoadPropertyConfiguration(prop, config.EntityType);
                     config.Properties.Add(prop.Name, propConfig);
                 }
                 catch
@@ -74,11 +73,14 @@ namespace Shesha.Configuration.Runtime
             config.DisplayNamePropertyInfo = config.EntityType.GetDisplayNamePropertyInfoOrNull();
         }
 
-        private static void LoadPropertyConfiguration(PropertyInfo prop, PropertyConfiguration propConfig)
+        private static PropertyConfiguration LoadPropertyConfiguration(PropertyInfo prop, Type entityType)
         {
-            propConfig.PropertyInfo = prop;
-            propConfig.GeneralType = GetGeneralDataType(prop);
-            propConfig.Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category;
+            var propConfig = new PropertyConfiguration(entityType) {
+                PropertyInfo = prop,
+                GeneralType = GetGeneralDataType(prop),
+                Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category,
+                Label = prop.GetDisplayName(),
+            };
 
             switch (propConfig.GeneralType)
             {
@@ -128,9 +130,9 @@ namespace Shesha.Configuration.Runtime
                     break;
             }
 
-            propConfig.Label = prop.GetDisplayName();
-
             LoadChangeLoggingPropertyConfiguration(prop, propConfig);
+            
+            return propConfig;
         }
 
         private void LoadChangeLoggingConfiguration(EntityConfiguration config)
