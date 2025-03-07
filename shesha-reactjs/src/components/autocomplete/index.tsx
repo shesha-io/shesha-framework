@@ -187,10 +187,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   }, [selected.current, source?.tableData, props.grouping]);
 
   const title = useMemo(() => {
-    return props.mode === 'single' && selected.current.length
-      ? displayValueFunc(selected.current[0], allData)
-      : null;
-  }, [props.value]);
+    return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
+  }, [selected.current]);
 
   const onDropdownVisibleChange = (open: boolean) => {
     if (!open) {
