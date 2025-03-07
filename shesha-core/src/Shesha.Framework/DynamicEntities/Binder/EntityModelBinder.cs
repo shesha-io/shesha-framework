@@ -699,7 +699,8 @@ namespace Shesha.DynamicEntities.Binder
                 && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
-                if (refType == null || !refType.IsEntityType()) continue;
+                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
+                    continue;
 
                 var refParam = Expression.Parameter(refType);
                 var query = Expression.Lambda(

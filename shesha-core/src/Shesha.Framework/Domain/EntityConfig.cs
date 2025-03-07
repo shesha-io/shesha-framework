@@ -31,7 +31,7 @@ namespace Shesha.Domain
         [StringLength(255)]
         public virtual string? DiscriminatorValue { get; set; }
 
-        public virtual EntityConfig Parent { get; set; }
+        public virtual EntityConfig? Parent { get; set; }
 
         public virtual bool GenerateAppService { get; set; }
 
@@ -47,7 +47,7 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(40)]
         [Column("PropertiesMD5")]
-        public virtual string HardcodedPropertiesMD5 { get; set; }
+        public virtual string? HardcodedPropertiesMD5 { get; set; }
 
         public override string ItemType => ItemTypeName;
 

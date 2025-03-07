@@ -33,7 +33,7 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Data type
         /// </summary>
-        public string DataType { get; set; }
+        public string? DataType { get; set; }
 
         /// <summary>
         /// Data format

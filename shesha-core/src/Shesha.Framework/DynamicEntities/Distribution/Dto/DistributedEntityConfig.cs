@@ -27,7 +27,7 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// MD5 hash of the hardcoded properties, is used for performance optimization of the bootstrapper
         /// </summary>
-        public string PropertiesMD5 { get; set; }
+        public string? PropertiesMD5 { get; set; }
 
         public List<EntityViewConfigurationDto> ViewConfigurations { get; set; } = new List<EntityViewConfigurationDto>();
 

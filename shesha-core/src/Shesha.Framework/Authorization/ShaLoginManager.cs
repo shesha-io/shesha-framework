@@ -84,6 +84,8 @@ namespace Shesha.Authorization
             ClientInfoProvider = NullClientInfoProvider.Instance;
             ShaLoginAttemptRepository = shaLoginAttemptRepository;
             _mobileDeviceRepository = mobileDeviceRepository;
+
+            OtpManager = default!;
         }
 
         protected virtual ShaLoginResult<TUser>? AdditionalVerification(TUser user, TTenant? tenant)

@@ -24,7 +24,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         public List<ModelPropertyDto> Properties { get; set; }
 
-        public string HardcodedPropertiesMD5 { get; set; }
+        public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }
 
         // ConfigurationItem        
