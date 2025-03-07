@@ -61,6 +61,8 @@ const RadioGroup: FC<IRadioProps> = (model) => {
       disabled={model.readOnly}
       defaultValue={defaultVal}
       value={val}
+      onBlur={model.onBlur}
+      onFocus={model.onFocus}
       onChange={onChange}
       style={model?.style}
     >
