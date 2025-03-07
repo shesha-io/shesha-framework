@@ -121,7 +121,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'dataSortingEditor':
             return <SortingEditor {...props} onChange={onChange} modelType={props.modelType} readOnly={readOnly} />;
         case 'colorPicker':
-            return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
+            return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} showText={props.showText} />;
         case 'dropdown':
             return <Select
                 size={size}
@@ -173,7 +173,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'button':
-            return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} />;
+            return <Button disabled={readOnly} defaultValue={defaultValue} type={value ? 'primary' : 'default'} size='small' icon={!value ? iconElement(icon, null, tooltip) : iconElement(iconAlt, null, tooltip)} onClick={() => onChange(!value)} title={tooltip} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':
@@ -184,10 +184,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
                 ))}
             </Radio.Group>;
-        case 'buttonGroupConfigurator':
-            return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'dynamicItemsConfigurator':
-            <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
+            return <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}

@@ -1,3 +1,5 @@
+import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
+
 export const getColumnSettings = (data?: any) => ({
     "components": [
         {
@@ -132,41 +134,6 @@ export const getColumnSettings = (data?: any) => ({
                             ]
                         },
                         {
-                            "id": "minWidth1",
-                            "type": "settingsInput",
-                            "inputType": "numberField",
-                            "propertyName": "minWidth",
-                            "label": "Min Width",
-                            "labelAlign": "right"
-                        },
-                        {
-                            "id": "maxWidth1",
-                            "type": "settingsInput",
-                            "inputType": "numberField",
-                            "propertyName": "maxWidth",
-                            "label": "Max Width",
-                            "labelAlign": "right"
-                        },
-                        {
-                            "id": "minHeight1",
-                            "type": "settingsInputRow",
-                            "propertyName": "minHeight",
-                            "label": "Min Height",
-                            "hidden": {
-                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
-                                "_mode": "code",
-                                "_value": false
-                            },
-                            "inputs": [
-                                {
-                                    "type": "numberField",
-                                    "propertyName": "minHeight",
-                                    "label": "Min Height",
-                                    "labelAlign": "right"
-                                }
-                            ]
-                        },
-                        {
                             "id": "isVisible1",
                             "type": "settingsInput",
                             "inputType": "switch",
@@ -284,15 +251,6 @@ export const getColumnSettings = (data?: any) => ({
                                 "_value": false
                             }
                         },
-                        {
-                            "id": "backgroundColor1",
-                            "type": "settingsInput",
-                            "inputType": "colorPicker",
-                            "propertyName": "backgroundColor",
-                            "label": "Background Color",
-                            "allowClear": true,
-                            "showText": true
-                        }
                     ]
                 },
                 {
@@ -326,6 +284,113 @@ export const getColumnSettings = (data?: any) => ({
                             }
                         }
                     ]
+                },
+                {
+                    key: '2',
+                    title: 'Appearance',
+                    id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                    components: [...new DesignerToolbarSettings()
+                        .addPropertyRouter({
+                            id: 'styleRouter',
+                            propertyName: 'propertyRouter1',
+                            componentName: 'propertyRouter',
+                            label: 'Property router1',
+                            labelAlign: 'right',
+                            parentId: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                            hidden: false,
+                            propertyRouteName: {
+                                _mode: "code",
+                                _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                                _value: ""
+                            },
+                            components: [
+                                ...new DesignerToolbarSettings()
+                                    .addCollapsiblePanel({
+                                        id: 'dimensionsStyleCollapsiblePanel',
+                                        propertyName: 'pnlDimensions',
+                                        label: 'Dimensions',
+                                        parentId: 'styleRouter',
+                                        labelAlign: 'right',
+                                        ghost: true,
+                                        collapsible: 'header',
+                                        content: {
+                                            id: 'dimensionsStylePnl',
+                                            components: [...new DesignerToolbarSettings()
+                                                .addSettingsInputRow({
+                                                    id: 'dimensionsStyleRowWidth',
+                                                    parentId: 'dimensionsStylePnl',
+                                                    inline: true,
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    inputs: [
+                                                        {
+                                                            "id": "minWidth1",
+                                                            "type": "numberField",
+                                                            "propertyName": "minWidth",
+                                                            "label": "Min Width",
+                                                            "defaultValue": "100",
+                                                            "labelAlign": "right"
+                                                        },
+                                                        {
+                                                            "id": "maxWidth1",
+                                                            "type": "numberField",
+                                                            "propertyName": "maxWidth",
+                                                            "label": "Max Width",
+                                                            "labelAlign": "right"
+                                                        },
+                                                    ]
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: 'dimensionsStyleRowHeight',
+                                                    parentId: 'dimensionsStylePnl',
+                                                    inline: true,
+                                                    hidden: {
+                                                        _code: "return getSettingValue(data?.columnType) !== 'form';",
+                                                        _mode: "code",
+                                                        _value: false
+                                                    },
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    inputs: [
+                                                        {
+                                                            "id": "minHeight1",
+                                                            "type": "numberField",
+                                                            "propertyName": "minHeight",
+                                                            "label": "Min Height",
+                                                            "labelAlign": "right"
+                                                        }
+                                                    ]
+                                                })
+                                                .toJson()
+                                            ]
+                                        }
+                                    })
+                                    .addCollapsiblePanel({
+                                        id: 'backgroundStyleCollapsiblePanel',
+                                        propertyName: 'pnlBackgroundStyle',
+                                        label: 'Background',
+                                        labelAlign: 'right',
+                                        ghost: true,
+                                        parentId: 'styleRouter',
+                                        collapsible: 'header',
+                                        hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                                        content: {
+                                            id: 'backgroundStylePnl',
+                                            components: [
+                                                ...new DesignerToolbarSettings()
+                                                    .addSettingsInput(
+                                                        {
+                                                            "id": "backgroundColor1",
+                                                            "inputType": "colorPicker",
+                                                            "propertyName": "backgroundColor",
+                                                            "label": "Background Color",
+                                                            "allowClear": true,
+                                                            "showText": true
+                                                        })
+                                                    .toJson()
+                                            ],
+                                        }
+                                    })
+                                    .toJson()]
+                        }).toJson()]
                 },
                 {
                     "key": "security",

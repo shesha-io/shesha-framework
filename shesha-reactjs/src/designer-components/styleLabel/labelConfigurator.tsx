@@ -22,7 +22,8 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label })
         <>
             <div className={!value ? styles.flexWrapper : ''} >
                 <SettingInput label={`${label} Align`} hideLabel propertyName='labelAlign' readOnly={readOnly} type='radio' hidden={value} buttonGroupOptions={labelAlignOptions} jsSetting={false} id={nanoid()} />
-                <SettingInput id={nanoid()} label={`Hide ${label}`} hideLabel={!value} propertyName='hideLabel' readOnly={readOnly} jsSetting={false} type='button' icon={<Tooltip title='Hide label'><EyeOutlined /></Tooltip>} iconAlt={<Tooltip title='Show Label'><EyeInvisibleOutlined /></Tooltip>} />
+                <SettingInput id={nanoid()} label={`Hide ${label}`} hideLabel={!value} propertyName='hideLabel' readOnly={readOnly} jsSetting={false} type='button'
+                    tooltip={value ? 'Show label' : 'Hide label'} icon={<Tooltip><EyeOutlined /></Tooltip>} iconAlt={<Tooltip><EyeInvisibleOutlined /></Tooltip>} />
             </div>
             <SettingInput id={nanoid()} type='textField' label={label as string} propertyName='label' readOnly={readOnly} jsSetting={!value} hidden={value} />
         </>

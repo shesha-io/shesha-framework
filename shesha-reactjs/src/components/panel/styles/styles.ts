@@ -73,10 +73,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     ...headerRest
   } = headerStyles;
 
-  const borderTopLeftRadius = borderRadius?.split(' ')[0] || 0;
-  const borderTopRightRadius = borderRadius?.split(' ')[1] || 0;
-  const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 0;
-  const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
+  const borderTopLeftRadius = borderRadius?.split(' ')[0] || 8;
+  const borderTopRightRadius = borderRadius?.split(' ')[1] || 8;
+  const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 8;
+  const borderBottomRightRadius = borderRadius?.split(' ')[3] || 8;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {

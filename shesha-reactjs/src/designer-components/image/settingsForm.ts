@@ -22,12 +22,13 @@ export const getSettings = (data) => {
                         title: 'Common',
                         id: 's4gmBg31azZC0UjZjpfTm',
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
+                            .addContextPropertyAutocomplete({
                                 id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 propertyName: 'propertyName',
                                 label: 'Property Name',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 size: 'small',
+                                styledLabel: true,
                                 validate: {
                                     required: true,
                                 },

@@ -54,9 +54,17 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   showArrow,
   collapsible,
   ghost,
-  bodyStyle = { borderRadius: '8px 8px 8px 8px', },
+  bodyStyle = {
+    all: {
+      borderRadius: '8px 8px 8px 8px'
+    },
+  },
   headerStyle = {
-    borderRadius: '8px 8px 8px 8px'
+    border: {
+      all: {
+        borderRadius: '8px 8px 8px 8px'
+      }
+    }
   },
   isSimpleDesign,
   panelHeadType,
