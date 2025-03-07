@@ -451,7 +451,7 @@ namespace Shesha.DynamicEntities.Binder
             var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                 ?? (propConfig == null ? null
-                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate, propConfig.CascadeUpdate, propConfig.CascadeDeleteUnreferenced));
+                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate ?? false, propConfig.CascadeUpdate ?? false, propConfig.CascadeDeleteUnreferenced ?? false));
 
             var propertyType = property.PropertyType.IsGenericType
                 ? property.PropertyType.GetGenericArguments()[0]

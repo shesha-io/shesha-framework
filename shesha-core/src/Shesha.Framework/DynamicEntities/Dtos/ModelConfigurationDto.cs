@@ -22,7 +22,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         public bool AllowConfigureAppService { get; set; }
 
-        public List<ModelPropertyDto> Properties { get; set; }
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
 
         public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }

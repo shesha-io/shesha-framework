@@ -64,7 +64,7 @@ namespace Shesha.Metadata
         
 
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string term, string selectedValue)
+        public Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
         {
             // note: temporary return only entities
             return EntityTypeAutocompleteAsync(term, selectedValue);
@@ -102,7 +102,7 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<List<PropertyMetadataDto>> PropertyAutocompleteAsync(string? term, string container, string selectedValue)
+        public async Task<List<PropertyMetadataDto>> PropertyAutocompleteAsync(string? term, string container, string? selectedValue)
         {
             if (string.IsNullOrWhiteSpace(container))
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");

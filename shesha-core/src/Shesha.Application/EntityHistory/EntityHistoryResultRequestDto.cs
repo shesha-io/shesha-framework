@@ -11,6 +11,6 @@ namespace Shesha.EntityHistory
         /// <summary>
         /// Quick search string. Is used to search entities by text
         /// </summary>
-        public string QuickSearch { get; set; }
+        public string? QuickSearch { get; set; }
     }
 }
