@@ -1,4 +1,4 @@
-import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import {
   confirmModel,
   defaultStyles,
