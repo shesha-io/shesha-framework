@@ -199,6 +199,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(7, (prev) => {
       return { 
         ...prev,
+        mode: prev.mode || 'single',
         entityType: prev.entityType || prev['entityTypeShortAlias'],
         valueFormat: prev.dataSourceType === 'entitiesList'
           ? prev['useRawValues'] ? 'simple' : 'entityReference'
