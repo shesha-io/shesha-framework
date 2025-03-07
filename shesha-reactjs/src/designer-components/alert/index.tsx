@@ -58,7 +58,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
         evaluatedDescription = previewData.description;
       }
     }
-    
+
     const renderContent = (content: string | React.ReactNode) => {
       if (React.isValidElement(content)) {
         return React.cloneElement(content as React.ReactElement, {
@@ -75,12 +75,14 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
       const hasHtmlTags = contentStr.match(/<\/?[a-z][\s\S]*>/i);
 
       if (hasHtmlTags) {
-        const parsedContent = parse(contentStr);
+        const parsedContent: any = parse(contentStr);
         // If parsed content is a React element, apply our styles
         if (React.isValidElement(parsedContent)) {
-          return React.cloneElement(parsedContent, {
+          return React.cloneElement(parsedContent as React.ReactElement, {
+            className: 'sha-alert-content',
+            ...(parsedContent as React.ReactElement).props,
             style: {
-              ...parsedContent.props?.style,
+              ...(parsedContent as React.ReactElement).props?.style,
               padding: 0,
               margin: 0,
               lineHeight: 'normal'
