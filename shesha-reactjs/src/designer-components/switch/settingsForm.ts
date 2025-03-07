@@ -5,7 +5,7 @@ import { nanoid } from '@/utils/uuid';
 
 export const getSettings = (data: ISwitchComponentProps) => {
   const searchableTabsId = nanoid();
-  const commonTabId = nanoid(); 
+  const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
@@ -61,7 +61,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: `return getSettingValue(data.readOnly)`, _mode: 'code', _value: false} as any,
+                  readOnly: { _code: `return getSettingValue(data.readOnly)`, _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'editModeSelector',
@@ -119,36 +119,21 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           id: 'dimensionsStylePnl',
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
-                              id: 'dimensionsStyleRowWidth',
-                              parentId: 'dimensionsStylePnl',
-                              inline: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'textField',
-                                  id: nanoid(),
-                                  label: "Width",
-                                  width: 85,
-                                  propertyName: "dimensions.width",
-                                  icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                },
-                              ]
-                            })
-                            .addSettingsInputRow({
                               id: 'dimensionsStyleRowHeight',
                               parentId: 'dimensionsStylePnl',
                               inline: true,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'textField',
+                                  type: 'dropdown',
                                   id: nanoid(),
-                                  label: "Height",
-                                  width: 85,
-                                  propertyName: "dimensions.height",
-                                  icon: "heightIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  label: "Size",
+                                  propertyName: "size",
+                                  defaultValue: 'default',
+                                  dropdownOptions: [
+                                    { value: 'small', label: 'Small' },
+                                    { value: 'default', label: 'Default' },
+                                  ]
                                 },
                               ]
                             })
@@ -179,7 +164,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           ]
                         }
                       })
-                      .toJson() 
+                      .toJson()
                   ]
                 })
                 .toJson()

@@ -9,34 +9,31 @@ import { getStyle, useAvailableConstantsData, validateConfigurableComponentSetti
 import { SwitcherOutlined } from '@ant-design/icons';
 import { InputProps, Switch } from 'antd';
 import { SwitchSize } from 'antd/lib/switch';
-import React, { CSSProperties, useMemo } from 'react';
+import React, { CSSProperties } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { removeUndefinedProps } from '@/utils/object';
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
   name: 'Switch',
-  icon: <SwitcherOutlined />,
+icon: <SwitcherOutlined />,
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model: passedModel }) => {
     const { size, ...model } = passedModel;
     const { data: formData } = useFormData();
-    const allData = useAvailableConstantsData(); 
-    
-    const dimensions = model?.dimensions; 
+    const allData = useAvailableConstantsData();
+
     const jsStyle = getStyle(model.style, passedModel);
     const style = getStyle(model?.style, formData);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...dimensionsStyles,
       ...style
     });
+
     const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
     const inputProps: InputProps = {
