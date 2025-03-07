@@ -1,6 +1,7 @@
 import React, { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react';
 import {
   confirmModel,
+  defaultStyles,
   getDefaultModel,
   getFormItemProps,
   getInputProps,
@@ -98,31 +99,29 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
     return (
-      <Fragment>
-        <ConfigProvider
-          theme={{
-            components: {
-              Input: {
-                fontFamily: model?.font?.type,
-                fontSize: model?.font?.size,
-                fontWeightStrong: Number(fontStyles.fontWeight)
-              },
+      <ConfigProvider
+        theme={{
+          components: {
+            Input: {
+              fontFamily: model?.font?.type,
+              fontSize: model?.font?.size,
+              fontWeightStrong: Number(fontStyles.fontWeight)
             },
-          }}
-        >
-          <PasswordCombo
-            inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.textField }}
-            placeholder={placeholder}
-            confirmPlaceholder={confirmPlaceholder}
-            formItemProps={getFormItemProps(defaultModel, options)}
-            formItemConfirmProps={getFormItemProps(confirmModel(defaultModel), options)}
-            passwordLength={minLength}
-            errorMessage={message}
-            style={finalStyle}
-            className={styles.textField}
-          />
-        </ConfigProvider>
-      </Fragment>
+          },
+        }}
+      >
+        <PasswordCombo
+          inputProps={{ ...getInputProps(defaultModel, formData), disabled: defaultModel.readOnly, className: styles.textField }}
+          placeholder={placeholder}
+          confirmPlaceholder={confirmPlaceholder}
+          formItemProps={getFormItemProps(defaultModel, options)}
+          formItemConfirmProps={getFormItemProps(confirmModel(defaultModel), options)}
+          passwordLength={minLength}
+          errorMessage={message}
+          style={finalStyle}
+          className={styles.textField}
+        />
+      </ConfigProvider>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
@@ -140,7 +139,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, { dimensions: { width: '100%', height: '32px', minHeight: '0', minWidth: '0', maxHeight: 'auto', maxWidth: 'auto' } }), editMode: 'inherited' })),
+    .add<IPasswordComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()), editMode: 'inherited' })),
 };
 
 export default PasswordComboComponent;
