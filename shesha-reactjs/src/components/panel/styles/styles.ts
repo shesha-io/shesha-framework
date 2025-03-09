@@ -70,10 +70,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
-    paddingBottom: headerPaddingBottom,
-    paddingTop: headerPaddingTop,
-    paddingLeft: headerPaddingLeft,
-    paddingRight: headerPaddingRight,
+    paddingBottom: headerPaddingBottom = 8,
+    paddingTop: headerPaddingTop = 8,
+    paddingLeft: headerPaddingLeft = 8,
+    paddingRight: headerPaddingRight = 8,
     overflow: headerOverflow,
     ...headerRest
   } = headerStyles;
@@ -120,7 +120,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       max-height: ${maxHeight};
       background: ${backgroundImage || backgroundColor};
       position: relative;
-      overflow: ${overflow};
+      overflow: ${overflow ?? 'auto'};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;
@@ -151,7 +151,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
         border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
         border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
-        padding: ${headerPaddingTop} ${headerPaddingRight} ${headerPaddingBottom} ${headerPaddingLeft} !important;
+        padding-top: ${headerPaddingTop} !important;
+        padding-right: ${headerPaddingRight} !important;
+        padding-bottom: ${headerPaddingBottom} !important;
+        padding-left: ${headerPaddingLeft} !important;
         ${headerRest}
 
       .ant-collapse-header-text {
@@ -161,12 +164,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         font-size: ${fontSize};
         font-weight: ${fontWeight};
         align-self: center;
-        margin-left: 10px;
       }
 
       .ant-collapse-extra {
         align-self: center;
-        margin-right: 10px;
       }
 
       .ant-collapse-expand-icon {

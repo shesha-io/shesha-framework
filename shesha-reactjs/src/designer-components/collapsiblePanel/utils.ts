@@ -38,6 +38,6 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
             },
             radius: { all: borderRadius, bottomLeft: '0', bottomRight: '0', topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
         },
-        stylingBox: '{"marginBottom":"5","paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}'
+        stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}'
     };
 };
