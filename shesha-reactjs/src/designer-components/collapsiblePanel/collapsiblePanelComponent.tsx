@@ -230,7 +230,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       .add<ICollapsiblePanelComponentProps>(8, (prev) => ({ ...prev, stylingBox: prev?.stylingBox || '{"marginBottom":"5px","paddingLeft":"16px","paddingBottom":"16px","paddingTop":"16px","paddingRight":"16px"}' }))
       .add<ICollapsiblePanelComponentProps>(9, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
-        const defaultHeaderStyle = defaultHeaderStyles(prev);
+        const defaultHeaderStyle = {...defaultHeaderStyles(prev)};
 
         return {
           ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
