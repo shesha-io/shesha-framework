@@ -839,22 +839,6 @@ export const getSettings = () => {
                                                                 .addSettingsInputRow(
                                                                     { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
                                                                 )
-
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
                                                                 .toJson()]
                                                         }
                                                     })
@@ -1010,6 +994,25 @@ export const getSettings = () => {
                                                                 })
                                                                 .toJson()
                                                             ]
+                                                        }
+                                                    })
+                                                    .addCollapsiblePanel({
+                                                        id: 'panelheader-styling-box',
+                                                        propertyName: 'stylingBox',
+                                                        label: 'Styling Box',
+                                                        labelAlign: 'right',
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheader-styling-box-pnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addStyleBox({
+                                                                    id: 'header-styleBoxPnl',
+                                                                    label: 'Margin Padding',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'headerStyles.stylingBox',
+                                                                })
+                                                                .toJson()]
                                                         }
                                                     })
                                                     .addCollapsiblePanel({

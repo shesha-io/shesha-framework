@@ -70,13 +70,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
+    paddingBottom: headerPaddingBottom,
+    paddingTop: headerPaddingTop,
+    paddingLeft: headerPaddingLeft,
+    paddingRight: headerPaddingRight,
+    overflow: headerOverflow,
     ...headerRest
   } = headerStyles;
 
-  const borderTopLeftRadius = borderRadius?.split(' ')[0] || 8;
-  const borderTopRightRadius = borderRadius?.split(' ')[1] || 8;
-  const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 8;
-  const borderBottomRightRadius = borderRadius?.split(' ')[3] || 8;
+  const borderTopLeftRadius = borderRadius?.split(' ')[0];
+  const borderTopRightRadius = borderRadius?.split(' ')[1];
+  const borderBottomLeftRadius = borderRadius?.split(' ')[2];
+  const borderBottomRightRadius = borderRadius?.split(' ')[3];
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
@@ -146,6 +151,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
         border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
         border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
+        padding: ${headerPaddingTop} ${headerPaddingRight} ${headerPaddingBottom} ${headerPaddingLeft} !important;
         ${headerRest}
 
       .ant-collapse-header-text {

@@ -72,7 +72,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     ), [label, data]);
 
     const styling = useMemo(() => JSON.parse(stylingBox || '{}'), [stylingBox]);
-
+    const headerStyling = useMemo(() => JSON.parse(headerStyles?.stylingBox || '{}'), [headerStyles?.stylingBox]);
     const getBodyStyle = useMemo(() => ({
       ...pickStyleFromModel(styling),
       ...(getStyle(model?.style, { data, globalState }) || {}),
@@ -80,7 +80,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const getHeaderStyle = useMemo(() => ({
       ...(getStyle(model?.headerStyles?.style, { data, globalState }) || {}),
-    }), [model?.headerStyles?.style, data, globalState]);
+      ...(pickStyleFromModel(headerStyling)),
+    }), [model?.headerStyles?.style, data, globalState, headerStyling]);
 
     const style = useMemo(() => ({
       ...getSizeStyle(dimensions),
@@ -225,7 +226,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         ...prev,
         customHeader: { id: nanoid(), components: [] }
       }))
-      .add<ICollapsiblePanelComponentProps>(8, (prev) => ({ ...prev, stylingBox: '{"marginBottom":"5","paddingLeft":"16","paddingBottom":"16","paddingTop":"16","paddingRight":"16"}' }))
+      .add<ICollapsiblePanelComponentProps>(8, (prev) => (prev))
       .add<ICollapsiblePanelComponentProps>(9, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
         const defaultHeaderStyle = defaultHeaderStyles(prev);
