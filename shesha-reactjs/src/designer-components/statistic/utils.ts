@@ -7,8 +7,8 @@ export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
         valueFont: { weight: '500', size: 50, color: '#000', type: 'Segoe UI' },
         border: {
             hideBorder: false,
-            selectedCorner: 'all',
-            selectedSide: 'all',
+            radiusType: 'all',
+            borderType: 'all',
             border: {
                 all: { width: '1px', style: 'solid', color: '#d9d9d9' },
                 top: { width: '1px', style: 'solid', color: '#d9d9d9' },
@@ -18,7 +18,7 @@ export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
             },
             radius: { all: 8 }
         },
-        dimensions: {  },
+        dimensions: {},
         style: { padding: '0px', margin: '0px', verticalAlign: "middle", textAlign: "center" },
     };
 };
