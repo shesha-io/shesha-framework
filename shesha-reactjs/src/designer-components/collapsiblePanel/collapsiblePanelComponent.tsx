@@ -96,7 +96,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ...(!ghost && getBorderStyle(headerStyles?.border, getHeaderStyle)),
       ...getFontStyle(headerStyles?.font),
       ...getShadowStyle(headerStyles?.shadow),
-      ...getHeaderStyle
+      ...getHeaderStyle,
+      ...headerStylingBox
     }), [headerStyles, getHeaderStyle, ghost]);
 
     useEffect(() => {
@@ -226,15 +227,14 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         ...prev,
         customHeader: { id: nanoid(), components: [] }
       }))
-      .add<ICollapsiblePanelComponentProps>(8, (prev) => (prev))
-      .add<ICollapsiblePanelComponentProps>(9, (prev) => {
+      .add<ICollapsiblePanelComponentProps>(8, (prev) => {
         const newModel = migratePrevStyles(prev, defaultStyles(prev));
         const defaultHeaderStyle = defaultHeaderStyles(prev);
 
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: 'auto', headerStyles: defaultHeaderStyle }
+          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
+          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
+          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle }
         };
       }),
   customContainerNames: ['header', 'content', 'customHeader'],

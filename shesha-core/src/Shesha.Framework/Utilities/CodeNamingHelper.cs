@@ -1,14 +1,11 @@
-﻿using Abp.Domain.Entities;
-using Shesha.Attributes;
+﻿using Shesha.Attributes;
 using Shesha.EntityReferences;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Modules;
 using Shesha.Reflection;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Shesha.Utilities
 {
@@ -37,7 +34,7 @@ namespace Shesha.Utilities
         /// <param name="alias">Alias (optional)</param>
         /// <param name="pascalCase">If true, accessor will be in PascalCase otherwise - camelCase</param>
         /// <returns></returns>
-        public static string GetAccessor(string name, string alias = null, bool pascalCase = false)
+        public static string GetAccessor(string name, string? alias = null, bool pascalCase = false)
         {
             if (string.IsNullOrWhiteSpace(alias))
             {
@@ -70,7 +67,7 @@ namespace Shesha.Utilities
         /// <returns></returns>
         public static string GetPropertyAccessor(this PropertyInfo property) 
         {
-            var aliasAttribute = property.GetAttribute<AliasAttribute>();
+            var aliasAttribute = property.GetAttributeOrNull<AliasAttribute>();
             return GetAccessor(property.Name, aliasAttribute?.Alias);
         }
 

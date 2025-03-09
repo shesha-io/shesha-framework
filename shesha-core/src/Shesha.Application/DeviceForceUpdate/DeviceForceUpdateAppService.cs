@@ -27,7 +27,7 @@ namespace Shesha.DeviceForceUpdate
             return input;
         }
 
-        public async Task<DeviceForceUpdateDto> GetForceUpdateByOSTypeAsync(int osType)
+        public async Task<DeviceForceUpdateDto?> GetForceUpdateByOSTypeAsync(int osType)
         {
             var items = await Repository.GetAll().Where(r => r.OSType == osType && !r.IsDeleted).ToListAsync();
             var currentForceUpdate = items.FirstOrDefault();

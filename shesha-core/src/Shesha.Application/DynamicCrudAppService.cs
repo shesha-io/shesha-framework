@@ -6,14 +6,11 @@ using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.DelayedUpdate;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -25,6 +22,7 @@ namespace Shesha
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         where TCreateDynamicDto: class, TDynamicDto
         where TUpdateDynamicDto : class, TDynamicDto
+        where TPrimaryKey : notnull
     {
 
         public DynamicCrudAppService(
@@ -170,8 +168,9 @@ namespace Shesha
 
     [DynamicControllerNameConvention]
     public class DynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey> : DynamicCrudAppService<TEntity, TDynamicDto, TDynamicDto, TDynamicDto, TPrimaryKey>, ITransientDependency
-    where TEntity : class, IEntity<TPrimaryKey>
-    where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+        where TEntity : class, IEntity<TPrimaryKey>
+        where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+        where TPrimaryKey : notnull
     {
         public DynamicCrudAppService(
             IRepository<TEntity, TPrimaryKey> repository

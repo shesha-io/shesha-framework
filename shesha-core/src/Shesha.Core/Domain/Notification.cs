@@ -38,7 +38,7 @@ namespace Shesha.Domain
         /// <summary>
         /// The entity that the notification pertains to
         /// </summary>
-        public virtual GenericEntityReference TriggeringEntity { get; set; }
+        public virtual GenericEntityReference? TriggeringEntity { get; set; }
         /// <summary>
         /// 
         /// </summary>

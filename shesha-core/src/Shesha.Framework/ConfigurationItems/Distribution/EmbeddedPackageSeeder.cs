@@ -35,7 +35,7 @@ namespace Shesha.ConfigurationItems.Distribution
             context.Logger.Warn($"Seed packages for assembly '{context.Assembly.FullName}'");
 
             var resources = context.Assembly.GetManifestResourceNames();
-            var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).Where(p => p != null).OrderBy(p => p.Date).ToList();
+            var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).WhereNotNull().OrderBy(p => p.Date).ToList();
 
             if (!embeddedPackages.Any()) 
             {
@@ -60,7 +60,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 context.Logger.Info($"Check package '{embeddedPackage.ResourceName}'");
 
-                using (var stream = embeddedPackage.Assembly.GetManifestResourceStream(embeddedPackage.ResourceName)) 
+                using (var stream = embeddedPackage.Assembly.GetEmbeddedResourceStream(embeddedPackage.ResourceName)) 
                 {
                     var md5 = FileHelper.GetMD5(stream);
 
@@ -108,7 +108,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return imported;
         }
 
-        protected EmbeddedPackageInfo TryGetPackageInfo(Assembly assembly, string resourceName)
+        protected EmbeddedPackageInfo? TryGetPackageInfo(Assembly assembly, string resourceName)
         {
             var packageRegex = new Regex(@"[.]*package(?'year'\d{4})(?'month'\d{2})(?'day'\d{2})_(?'hour'\d{2})(?'minute'\d{2})\.shaconfig");
             var match = packageRegex.Match(resourceName);

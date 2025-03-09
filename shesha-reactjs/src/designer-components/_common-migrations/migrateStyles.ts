@@ -5,7 +5,7 @@ import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyle
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type'> & { block?: boolean };
 
 
-export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style'>) => {
+export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>) => {
 
     const migrateStyles = (screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
         const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
@@ -46,11 +46,11 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                     right: border('right'),
                 },
                 radius: {
-                    all: defaults?.border?.radius?.all || 8,
-                    topLeft: defaults?.border?.radius?.topLeft || 8,
-                    topRight: defaults?.border?.radius?.topRight || 8,
-                    bottomLeft: defaults?.border?.radius?.bottomLeft || 8,
-                    bottomRight: defaults?.border?.radius?.bottomRight || 8
+                    all: defaults?.border?.radius?.all,
+                    topLeft: defaults?.border?.radius?.topLeft,
+                    topRight: defaults?.border?.radius?.topRight,
+                    bottomLeft: defaults?.border?.radius?.bottomLeft,
+                    bottomRight: defaults?.border?.radius?.bottomRight
                 },
             },
             background: {
@@ -66,9 +66,9 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
             },
             font: {
                 color: prevStyles?.fontColor || defaults?.font?.color,
-                type: prevStyles?.font?.type || defaults?.font?.type || 'Segoe UI',
+                type: prevStyles?.font?.type || defaults?.font?.type,
                 align: prevStyles?.font?.align || defaults?.font?.align || 'left',
-                size: prevStyles?.fontSize as number || fontSizeFromSize || defaults?.font?.size || 14,
+                size: prevStyles?.fontSize as number || fontSizeFromSize || defaults?.font?.size,
                 weight: prevStyles?.fontWeight as string || defaults?.font?.weight || '400',
             },
             dimensions: {

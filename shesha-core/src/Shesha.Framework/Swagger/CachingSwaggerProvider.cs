@@ -34,7 +34,7 @@ namespace Shesha.Swagger
             _cacheHolder = cacheHolder;
         }
 
-        public OpenApiDocument GetSwagger(string documentName, string host = null, string basePath = null)
+        public OpenApiDocument GetSwagger(string documentName, string? host = null, string? basePath = null)
         {
             return _cacheHolder.Cache.Get(documentName, (_) => _swaggerGenerator.GetSwagger(documentName, host, basePath));
         }

@@ -163,7 +163,7 @@ namespace Shesha.ConfigurationItems.Distribution
             return _dependencyProviders[requestedType] = SearchClosestDependenciesProviders(requestedType) ?? new List<IDependenciesProvider>();
         }
 
-        private List<IDependenciesProvider> SearchClosestDependenciesProviders(Type itemType) 
+        private List<IDependenciesProvider>? SearchClosestDependenciesProviders(Type itemType) 
         {
             var type = itemType;
             while (type != null)
@@ -220,7 +220,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
                 foreach (var group in groups)
                 {
-                    var importer = group.FirstOrDefault().Importer;
+                    var importer = group.First().Importer.NotNull();
                     var items = new List<DistributedConfigurableItemBase>();
                     foreach (var item in group)
                     {

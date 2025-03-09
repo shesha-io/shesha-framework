@@ -27,6 +27,7 @@ export const getSettings = (data) => {
                                 propertyName: 'propertyName',
                                 label: 'Property Name',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                                styledLabel: true,
                                 size: 'small',
                                 styledLabel: true,
                                 validate: {
@@ -50,7 +51,7 @@ export const getSettings = (data) => {
                             .addSettingsInput({
                                 id: 'img-desc-4f4f4f4f-4f4f4f4f-4f4f4f4f',
                                 propertyName: 'description',
-                                label: 'Description',
+                                label: 'Tooltip',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                             })
                             .addSettingsInputRow({
@@ -89,6 +90,7 @@ export const getSettings = (data) => {
                                 label: 'Allowed File Types',
                                 inputType: 'editableTagGroupProps',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
+                                tooltip: 'Enter the file types that are allowed to be uploaded e.g .jpg, .png, .gif',
                             })
                             .addSettingsInput({
                                 id: "image-source-type",
@@ -234,21 +236,64 @@ export const getSettings = (data) => {
                                                                 id: 'width-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Width",
                                                                 width: 85,
-                                                                propertyName: "width",
+                                                                propertyName: "dimensions.width",
                                                                 icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                             },
                                                             {
                                                                 type: 'textField',
+                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Width",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.minWidth",
+                                                                icon: "minWidthIcon",
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Width",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.maxWidth",
+                                                                icon: "maxWidthIcon",
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: 'dimensionsStyleRowHeight',
+                                                        parentId: 'dimensionsStylePnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'textField',
                                                                 id: 'height-s4gmBg31azZC0UjZjpfTm',
                                                                 label: "Height",
                                                                 width: 85,
-                                                                propertyName: "height",
+                                                                propertyName: "dimensions.height",
                                                                 icon: "heightIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
-
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.minHeight",
+                                                                icon: "minHeightIcon",
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.maxHeight",
+                                                                icon: "maxHeightIcon",
+                                                            }
                                                         ]
                                                     })
                                                     .toJson()

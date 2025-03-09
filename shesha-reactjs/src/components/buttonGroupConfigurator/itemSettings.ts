@@ -176,6 +176,7 @@ export const getItemSettings = (data) => {
                                     propertyName: "dynamicItemsConfiguration",
                                     componentName: "configurableActionConfigurator1",
                                     label: "",
+                                    hideLabel: true,
                                     labelAlign: "right",
                                     parentId: "P4lhbrJsly_2yCjgicaql",
                                     hidden: false,
@@ -533,7 +534,8 @@ export const getItemSettings = (data) => {
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-controls",
                                                     parentId: 'backgroundStyleRow',
-                                                    inline: true,
+                                                    inline: true, 
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {

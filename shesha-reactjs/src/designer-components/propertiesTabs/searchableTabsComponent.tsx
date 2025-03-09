@@ -79,6 +79,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
                     type={model.tabType || 'card'}
                     tabPosition={model.position || 'top'}
                     items={newFilteredTabs}
+                    className={styles.content}
                 />
             }
         </>

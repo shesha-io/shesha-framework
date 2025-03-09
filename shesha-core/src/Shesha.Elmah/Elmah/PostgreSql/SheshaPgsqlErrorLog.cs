@@ -36,8 +36,6 @@ namespace Shesha.Elmah.PostgreSql
                 throw new ArgumentNullException("connectionString");
 
             ConnectionString = connectionString;
-
-            //PrepareDatabase();
         }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace Shesha.Elmah.PostgreSql
         /// </summary>
         public virtual string ConnectionString { get; }
 
-        public override string Log(Error error)
+        public override string? Log(Error error)
         {
             var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
@@ -103,7 +101,7 @@ namespace Shesha.Elmah.PostgreSql
             command.ExecuteNonQuery();
         }
 
-        public override ErrorLogEntry GetError(string id)
+        public override ErrorLogEntry? GetError(string id)
         {
             if (id == null) throw new ArgumentNullException("id");
             if (id.Length == 0) throw new ArgumentException(null, "id");
@@ -126,7 +124,7 @@ namespace Shesha.Elmah.PostgreSql
             {
                 command.Connection = connection;
                 connection.Open();
-                errorXml = (string)command.ExecuteScalar();
+                errorXml = command.ExecuteScalar()?.ToString() ?? string.Empty;
             }
 
             if (errorXml == null)
@@ -182,7 +180,7 @@ namespace Shesha.Elmah.PostgreSql
                 }
             }
 
-            public static object ExecuteScalar(NpgsqlConnection connection, string sql)
+            public static object? ExecuteScalar(NpgsqlConnection connection, string sql)
             {
                 using (var command = new NpgsqlCommand(sql))
                 {
@@ -275,7 +273,7 @@ CREATE INDEX ix_{tableName}_type_id ON {schemaName}.{tableName} USING BTREE
                 int statusCode,
                 DateTime time,
                 string xml,
-                string location)
+                string? location)
             {
                 var command = new NpgsqlCommand();
                 command.CommandText =

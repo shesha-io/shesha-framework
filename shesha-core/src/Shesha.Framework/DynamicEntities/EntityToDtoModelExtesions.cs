@@ -5,6 +5,7 @@ using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,38 +15,20 @@ namespace Shesha.DynamicEntities
 {
     public static class EntityToDtoModelExtesions
     {
-        public static Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null)
+        public static Task<TDynamicDto> MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings? settings = null)
             where TEntity : class, IEntity<TPrimaryKey>
             where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
         {
             var modelType = typeof(TDynamicDto);
-            TDynamicDto dto = null;
+            var dto = ActivatorHelper.CreateNotNullInstance<TDynamicDto>();
 
             if (modelType.IsGenericType
                 && modelType.GetGenericTypeDefinition() == typeof(DynamicDto<,>))
             {
-                // AS - disabled because DynamicDtoConverter allows to improve performance
-
-                // build dto type
-                //var context = new DynamicDtoTypeBuildingContext()
-                //{
-                //    ModelType = modelType,
-                //    UseDtoForEntityReferences = settings?.UseDtoForEntityReferences ?? false
-                //};
-
-                //var dtoBuilder = StaticContext.IocManager.Resolve<IDynamicDtoTypeBuilder>();
-                //var dtoType = await dtoBuilder.BuildDtoFullProxyTypeAsync(context.ModelType, context);
-
-                //dto = (TDynamicDto)Activator.CreateInstance(dtoType);
-                //MapProps(entity, dto);
-
-                // AS - Should only be used with a DynamicDtoConverter
-                dto = (TDynamicDto)Activator.CreateInstance(modelType);
                 dto._jObject = ObjectToJsonExtension.GetJObjectFromObject(entity);
             }
             else
             {
-                dto = (TDynamicDto)Activator.CreateInstance(modelType);
                 MapProps(entity, dto);
             }
 
@@ -59,13 +42,6 @@ namespace Shesha.DynamicEntities
 
             foreach (var destProp in destProps)
             {
-                //if (destProp.Name == nameof(IHasMetaField._meta))
-                //{
-                //    var meta = src.GetType().IsJsonEntityType() ? ((IJsonEntity)src)._meta : new MetaDto() { ClassName = src.GetType().FullName };
-                //    destProp.SetValue(dest, meta, null);
-                //    continue;
-                //}
-
                 var srcProp = srcProps.FirstOrDefault(x => x.Name == destProp.Name);
                 if (srcProp != null)
                 {
@@ -78,7 +54,7 @@ namespace Shesha.DynamicEntities
                     if (srcProp.PropertyType.IsClass && !srcProp.PropertyType.IsEntityType() && !srcProp.PropertyType.IsSystemType())
                     {
                         // Nested object
-                        var innerDest = Activator.CreateInstance(JsonEntityProxy.GetUnproxiedType(srcValue.GetType()));
+                        var innerDest = ActivatorHelper.CreateNotNullObject(JsonEntityProxy.GetUnproxiedType(srcValue.GetType()));
                         MapProps(srcValue, innerDest);
                         destProp.SetValue(dest, innerDest, null);
                         continue;
@@ -94,10 +70,10 @@ namespace Shesha.DynamicEntities
                         var id = srcValue.GetId();
                         if (destProp.PropertyType.GetGenericTypeDefinition() == typeof(EntityReferenceDto<>))
                         {
-                            var idType = typeof(EntityReferenceDto<>).MakeGenericType(srcValue.GetType().GetProperty("Id").PropertyType);
+                            var idType = typeof(EntityReferenceDto<>).MakeGenericType(srcValue.GetType().GetRequiredProperty("Id").PropertyType);
                             var idWithName = Activator.CreateInstance(idType);
-                            idType.GetProperty(nameof(EntityReferenceDto<int>.Id)).SetValue(idWithName, id);
-                            idType.GetProperty(nameof(EntityReferenceDto<int>._displayName)).SetValue(idWithName, srcValue.GetEntityDisplayName());
+                            idType.GetRequiredProperty(nameof(EntityReferenceDto<int>.Id)).SetValue(idWithName, id);
+                            idType.GetRequiredProperty(nameof(EntityReferenceDto<int>._displayName)).SetValue(idWithName, srcValue.GetEntityDisplayName());
 
                             destProp.SetValue(dest, idWithName);
                         }
@@ -126,7 +102,7 @@ namespace Shesha.DynamicEntities
                         // Property
                         if (destProp.PropertyType == typeof(Int64?))
                             // workaround to convert int to Nullable<Int64>: Object of type 'System.Int32' cannot be converted to type 'System.Nullable`1[System.Int64]'
-                            destProp.SetValue(dest, Convert.ChangeType(srcValue, Nullable.GetUnderlyingType(typeof(long?))));
+                            destProp.SetValue(dest, Convert.ChangeType(srcValue, typeof(long)));
                         else
                             destProp.SetValue(dest, srcValue);
                     }

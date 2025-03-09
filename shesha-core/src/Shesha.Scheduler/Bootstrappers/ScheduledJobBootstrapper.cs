@@ -63,7 +63,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 {
                     Class = e,
                     Attribute = e.GetAttribute<ScheduledJobAttribute>()
-                })
+                })                
                 .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Class.Assembly))
                 .ToList();
 

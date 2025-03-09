@@ -28,7 +28,7 @@ export const getSettings = (data: any) =>
             .addCheckbox({
               id: nanoid(),
               propertyName: 'hidden',
-              label: 'Hidden',
+              label: 'hide',
               parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
             })
             .addTextField({

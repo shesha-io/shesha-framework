@@ -125,11 +125,50 @@ export const getColumnSettings = (data?: any) => ({
                                     "labelAlign": "right"
                                 },
                                 {
-                                    "id": "actionConfig1",
-                                    "type": "settingsInput",
-                                    "inputType": "configurableActionConfigurator",
+                                    "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
+                                    "type": "configurableActionConfigurator",
                                     "propertyName": "actionConfiguration",
-                                    "label": "Action Configuration"
+                                    "label": "Action Configuration",
+                                    "hidden": false,
+                                    "validate": {},
+                                    "settingsValidationErrors": [],
+                                    "parentId": "root",
+                                    "version": 1
+                                  },
+                            ]
+                        },
+                        {
+                            "id": "minWidth1",
+                            "type": "settingsInput",
+                            "inputType": "numberField",
+                            "propertyName": "minWidth",
+                            "label": "Min Width",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "maxWidth1",
+                            "type": "settingsInput",
+                            "inputType": "numberField",
+                            "propertyName": "maxWidth",
+                            "label": "Max Width",
+                            "labelAlign": "right"
+                        },
+                        {
+                            "id": "minHeight1",
+                            "type": "settingsInputRow",
+                            "propertyName": "minHeight",
+                            "label": "Min Height",
+                            "hidden": {
+                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "inputs": [
+                                {
+                                    "type": "numberField",
+                                    "propertyName": "minHeight",
+                                    "label": "Min Height",
+                                    "labelAlign": "right"
                                 }
                             ]
                         },

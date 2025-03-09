@@ -48,7 +48,7 @@ namespace Shesha.MultiTenancy
 
             // Create tenant
             var tenant = ObjectMapper.Map<Tenant>(input);
-            tenant.ConnectionString = input.ConnectionString.IsNullOrEmpty()
+            tenant.ConnectionString = string.IsNullOrEmpty(input.ConnectionString)
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
 

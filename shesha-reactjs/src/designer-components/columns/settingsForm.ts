@@ -80,7 +80,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'hidden',
-                  label: 'Hidden',
+                  label: 'hide',
                   labelAlign: 'right',
                   parentId: appearanceId,
                   inputType: 'switch',

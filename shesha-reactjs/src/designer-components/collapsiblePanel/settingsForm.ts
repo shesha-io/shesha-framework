@@ -4,6 +4,7 @@ import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/util
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
+import { overflowOptions } from '../_settings/utils/dimensions/utils';
 
 export const getSettings = () => {
     return {
@@ -128,7 +129,7 @@ export const getSettings = () => {
                                 id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
                                 propertyName: 'hidden',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Hidden',
+                                label: 'hide',
                                 inputType: 'switch',
                                 jsSetting: true
                             })
@@ -255,37 +256,15 @@ export const getSettings = () => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInputRow({
+                                                    .addSettingsInput({
                                                         id: nanoid(),
                                                         parentId: 'displayCollapsiblePanel',
                                                         inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'overflow-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Overflow',
-                                                                propertyName: 'overflow',
-                                                                dropdownOptions: [
-                                                                    {
-                                                                        label: "Auto",
-                                                                        value: "auto",
-                                                                    },
-                                                                    {
-                                                                        label: "Hidden",
-                                                                        value: "hidden",
-                                                                    },
-                                                                    {
-                                                                        label: "Scroll",
-                                                                        value: "scroll",
-                                                                    },
-                                                                    {
-                                                                        label: "Visible",
-                                                                        value: "visible",
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]
+                                                        inputType: 'dropdown',
+                                                        label: 'Overflow',
+                                                        defaultValue: 'auto',
+                                                        propertyName: 'overflow',
+                                                        dropdownOptions: overflowOptions
                                                     })
                                                     .toJson()
                                                 ]
@@ -478,6 +457,7 @@ export const getSettings = () => {
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
@@ -696,7 +676,7 @@ export const getSettings = () => {
                                                             components: [...new DesignerToolbarSettings()
                                                                 .addSettingsInputRow({
                                                                     id: 'try26voxhs-HxJ5k5ngYE',
-                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    parentId: 'panel-header-s,ktyles-pnl',
                                                                     inline: true,
                                                                     propertyName: 'font',
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -1034,6 +1014,12 @@ export const getSettings = () => {
                                                                     hideLabel: false,
                                                                     label: 'Style',
                                                                     description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                                })
+                                                                .addStyleBox({
+                                                                    id: nanoid(),
+                                                                    label: 'Margin Padding',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'headerStyles.stylingBox',
                                                                 })
                                                                 .toJson()]
                                                         }

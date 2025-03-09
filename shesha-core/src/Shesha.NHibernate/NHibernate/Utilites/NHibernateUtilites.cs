@@ -1,6 +1,4 @@
-﻿using FluentMigrator.Runner.BatchParser.RangeSearchers;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NHibernate.Dialect;
 using Shesha.Configuration;
@@ -22,7 +20,7 @@ namespace Shesha.NHibernate.Utilites
         {
             var env = StaticContext.IocManager.IocContainer.Resolve<IWebHostEnvironment>();
             var configuration = AppConfigurations.Get(env.ContentRootPath, env.EnvironmentName, env.IsDevelopment());
-            return configuration.GetConnectionString(name);
+            return configuration.GetRequiredConnectionString(name);
         }
 
         /// <summary>

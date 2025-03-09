@@ -15,7 +15,7 @@ namespace Shesha.Settings.Ioc
         /// <typeparam name="TAccessor">Interface of the settings group. Must implement the <see cref="ISettingAccessors"/> interface</typeparam>
         /// <param name="iocManager">IoC Manager</param>
         /// <param name="initializer">Initializer of the setting instance. Is used to provide default values of the settings</param>
-        public static void RegisterSettingAccessor<TAccessor>(this IIocManager iocManager, Action<TAccessor> initializer = null) where TAccessor: class, ISettingAccessors
+        public static void RegisterSettingAccessor<TAccessor>(this IIocManager iocManager, Action<TAccessor>? initializer = null) where TAccessor: class, ISettingAccessors
         {
             if (!iocManager.IsRegistered<ISettingsAccessorFactory>())
                 iocManager.IocContainer.Register(

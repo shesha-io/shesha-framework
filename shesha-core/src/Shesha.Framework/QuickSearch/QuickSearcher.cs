@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Caching;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.JsonLogic;
 using Shesha.QuickSearch.Cache;
 using Shesha.Reflection;
@@ -58,7 +59,7 @@ namespace Shesha.QuickSearch
         public Expression<Func<T, bool>> GetQuickSearchExpression<T>(string quickSearch, List<string> properties) 
         {
             var itemExpression = Expression.Parameter(typeof(T), "ent");
-            var conditions = GetQuickSearchExpression<T>(quickSearch, properties, itemExpression);
+            var conditions = GetQuickSearchExpression<T>(quickSearch, properties, itemExpression).NotNull();
             if (conditions.CanReduce)
             {
                 conditions = conditions.ReduceAndCheck();
@@ -88,7 +89,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="parameter">Parameter expression</param>
         /// <returns></returns>
-        public Expression GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
+        public Expression? GetQuickSearchExpression<T>(string quickSearch, List<string> properties, ParameterExpression parameter) 
         {
             if (string.IsNullOrWhiteSpace(quickSearch))
                 return null;
@@ -165,7 +166,7 @@ namespace Shesha.QuickSearch
 
                                 var query = _refListItemRepository.GetAll();
 
-                                var anyMethod = typeof(Queryable).GetMethods().FirstOrDefault(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2);
+                                var anyMethod = typeof(Queryable).GetMethods().First(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Count() == 2);
                                 var anyGeneric = anyMethod.MakeGenericMethod(typeof(ReferenceListItem));
 
                                 var call = Expression.Call(
@@ -263,7 +264,7 @@ namespace Shesha.QuickSearch
         /// <param name="entityExpression">Entity parameter expression (i.e. `e` part in the `e => foo`)</param>
         /// <param name="comparer">Comparison rule</param>
         /// <returns></returns>
-        private Expression GetCommonRefListExpression(string module, string name, string propName, string quickSearch, ParameterExpression entityExpression, RefListItemComparer comparer)
+        private Expression GetCommonRefListExpression(string? module, string name, string propName, string quickSearch, ParameterExpression entityExpression, RefListItemComparer comparer)
         {
             var refList = _refListHelper.GetReferenceList(new ReferenceListIdentifier(module, name));
 
@@ -290,33 +291,6 @@ namespace Shesha.QuickSearch
             var query = Expression.Lambda<Func<ReferenceListItem, bool>>(expr, param);
 
             return query;
-            /*
-            var moduleExpr = string.IsNullOrWhiteSpace(module)
-                ? Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceListItem.ReferenceList.Configuration)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Module)}"), Expression.Constant(null))
-                : Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceListItem.ReferenceList.Configuration)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Module)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Module.Name)}"), Expression.Constant(module));
-
-            var nameExpr = Expression.Equal(ExpressionExtensions.GetMemberExpression(param, $"{nameof(ReferenceListItem.ReferenceList)}.{nameof(ReferenceListItem.ReferenceList.Configuration)}.{nameof(ReferenceListItem.ReferenceList.Configuration.Name)}"), Expression.Constant(name));
-
-            var propExpression = ExpressionExtensions.GetMemberExpression(entityExpression, propName);
-            var valuePredicateExpr = comparer.Invoke(
-                Expression.Convert(propExpression, typeof(Int64?)),
-                Expression.Convert(ExpressionExtensions.GetMemberExpression(param, nameof(ReferenceListItem.ItemValue)), typeof(Int64?))
-            );
-
-            var constExpression = Expression.Constant(quickSearch);
-
-            var itemTextExpr = ExpressionExtensions.GetMemberExpression(param, nameof(ReferenceListItem.Item));
-            var containsExpression = Expression.Call(
-                                    itemTextExpr,
-                                    stringContainsMethod,
-                                    constExpression);
-
-            var expr = CombineExpressions(new List<Expression> { moduleExpr, nameExpr, valuePredicateExpr, containsExpression }, Expression.AndAlso, entityExpression);
-
-            var query = Expression.Lambda<Func<ReferenceListItem, bool>>(expr, param);
-
-            return query;
-            */
         }
 
         /// <summary>
@@ -327,6 +301,13 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private delegate Expression Binder(Expression left, Expression right);
 
+        private Expression Reduce(Expression? acc, Expression right, Binder binder)
+        {
+            return acc == null
+                ? right
+                : binder(acc, right);
+        }
+
         /// <summary>
         /// Combine expressions list using specified <paramref name="binder"/>
         /// </summary>
@@ -336,16 +317,17 @@ namespace Shesha.QuickSearch
         /// <returns></returns>
         private Expression CombineExpressions(List<Expression> expressions, Binder binder, ParameterExpression param)
         {
-            Expression acc = null;
+            if (!expressions.Any())
+                throw new ArgumentException($"expressions list must not be empty", nameof(expressions));
 
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
+            Expression? acc = null;
 
             foreach (var expression in expressions)
             {
-                acc = bind(acc, expression);
+                acc = Reduce(acc, expression, binder);
             }
 
-            return acc;
+            return acc ?? throw new Exception("Failed to combine linq expressions");
         }
 
         /// <summary>
@@ -355,7 +337,7 @@ namespace Shesha.QuickSearch
         /// <param name="properties">List of properties in dot notation (e.g. FirstName, User.Username, AccountType)</param>
         /// <param name="cacheKey">Cache key. Live null to skip caching</param>
         /// <returns></returns>
-        private List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch<TEntity>(List<string> properties, string cacheKey)
+        private List<QuickSearchPropertyInfo> GetPropertiesForSqlQuickSearch<TEntity>(List<string> properties, string? cacheKey)
         {
             if (string.IsNullOrWhiteSpace(cacheKey))
                 return DoGetPropertiesForSqlQuickSearch<TEntity>(properties);
@@ -432,13 +414,6 @@ namespace Shesha.QuickSearch
                     if (property == null)
                         return null;
 
-                    /*
-                    if (property.PropertyInfo.Name == currentEntityConfig.CreatedUserPropertyInfo?.Name ||
-                        property.PropertyInfo.Name == currentEntityConfig.LastUpdatedUserPropertyInfo?.Name ||
-                        property.PropertyInfo.Name == currentEntityConfig.InactivateUserPropertyInfo?.Name)
-                        return null;
-                    */
-
                     if (!property.IsMapped)
                         return null;
                     
@@ -450,7 +425,7 @@ namespace Shesha.QuickSearch
                         ReferenceListName = property.ReferenceListName
                     };
                 })
-                .Where(i => i != null)
+                .WhereNotNull()
                 .Select(i => new QuickSearchPropertyInfo()
                 {
                     Name = i.Path,

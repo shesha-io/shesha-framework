@@ -69,7 +69,7 @@ namespace Shesha.Extensions
         public static TResult MinOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
         {
             return source.Any()
-                ? source.Min(selector)
+                ? source.Min(selector) ?? defaultValue
                 : defaultValue;
         }
 
@@ -86,7 +86,7 @@ namespace Shesha.Extensions
         public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
         {
             return source.Any()
-                ? source.Max(selector)
+                ? source.Max(selector) ?? defaultValue
                 : defaultValue;
         }
 
@@ -96,7 +96,7 @@ namespace Shesha.Extensions
         public static TSource MaxOrDefault<TSource>(this IEnumerable<TSource> source, TSource defaultValue) 
         {
             return source.Any()
-                ? source.Max()
+                ? source.Max() ?? defaultValue
                 : defaultValue;
         }
 
@@ -108,10 +108,11 @@ namespace Shesha.Extensions
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
         /// <returns></returns>
-        public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object oldValue, object newValue)
+        public static (IEnumerable<Tt> addedValues, IEnumerable<Tt> removedValues) GetListNewAndRemoved<Tt>(this object? oldValue, object? newValue)
         {
+            // TODO: Alex, please review and simplify
             if (newValue == null)
-                return (new List<Tt>(), ((IEnumerable<object>)oldValue).Cast<Tt>());
+                return (new List<Tt>(), oldValue != null ? ((IEnumerable<object>)oldValue).Cast<Tt>() : new List<Tt>());
             if (oldValue == null)
                 return (((IEnumerable<object>)newValue).Cast<Tt>(), new List<Tt>());
 

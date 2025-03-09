@@ -7,21 +7,19 @@ namespace Shesha.Scheduler.SignalR
 {
     public class SignalrAppender : AppenderSkeleton
     {
-        //private readonly List<AllEvents>
-
         private readonly IHubContext<SignalrAppenderHub> _hub;
 
         /// <summary>
         /// Name of the signalR group
         /// </summary>
-        public readonly string GroupName;
+        public readonly string? GroupName;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="hub"></param>
         /// <param name="groupName"></param>
-        public SignalrAppender(IHubContext<SignalrAppenderHub> hub, string groupName = null)
+        public SignalrAppender(IHubContext<SignalrAppenderHub> hub, string? groupName = null)
         {
             _hub = hub;
             GroupName = groupName;

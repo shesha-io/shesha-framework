@@ -1,7 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Distribution;
-using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
-using System;
 
 namespace Shesha.Notifications.Distribution.NotificationChannels.Dto
 {

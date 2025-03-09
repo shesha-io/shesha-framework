@@ -101,7 +101,7 @@ export const getSettings = (data) => {
                             .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'hidden',
-                                label: 'Hidden',
+                                label: 'hide',
                                 parentId: 'root',
                                 inputType: 'switch',
                                 jsSetting: true
@@ -470,6 +470,7 @@ export const getSettings = (data) => {
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                             inputs: [
                                                                 {
