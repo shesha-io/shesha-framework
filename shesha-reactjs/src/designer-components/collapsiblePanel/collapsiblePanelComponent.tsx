@@ -72,7 +72,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     ), [label, data]);
 
     const styling = useMemo(() => JSON.parse(stylingBox || '{}'), [stylingBox]);
-    const headerStyling = useMemo(() => JSON.parse(headerStyles?.stylingBox || '{}'), [headerStyles?.stylingBox]);
+    const headerStylingBox = useMemo(() => JSON.parse(headerStyles?.stylingBox || '{}'), [headerStyles?.stylingBox]);
     const getBodyStyle = useMemo(() => ({
       ...pickStyleFromModel(styling),
       ...(getStyle(model?.style, { data, globalState }) || {}),
@@ -80,8 +80,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const getHeaderStyle = useMemo(() => ({
       ...(getStyle(model?.headerStyles?.style, { data, globalState }) || {}),
-      ...(pickStyleFromModel(headerStyling)),
-    }), [model?.headerStyles?.style, data, globalState, headerStyling]);
+      ...(pickStyleFromModel(headerStylingBox)),
+    }), [model?.headerStyles?.style, data, globalState, headerStylingBox]);
 
     const style = useMemo(() => ({
       ...getSizeStyle(dimensions),
@@ -97,7 +97,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ...getFontStyle(headerStyles?.font),
       ...getShadowStyle(headerStyles?.shadow),
       ...getHeaderStyle,
-      ...headerStylingBox
     }), [headerStyles, getHeaderStyle, ghost]);
 
     useEffect(() => {
