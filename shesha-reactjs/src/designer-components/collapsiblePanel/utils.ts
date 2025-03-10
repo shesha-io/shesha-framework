@@ -18,6 +18,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
         },
         shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
         position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
+        stylingBox: '{"marginBottom":"5","paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}'
     };
 };
 
@@ -35,7 +36,8 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
                     : { all: { width: '1px', color: '#d9d9d9', style: 'solid' } },
             },
-            radius: { all: borderRadius || 8, topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
-        }
+            radius: { all: borderRadius, bottomLeft: '0', bottomRight: '0', topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
+        },
+        stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}'
     };
 };

@@ -87,7 +87,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 spreadRadius: defaults?.shadow?.spreadRadius || 0
             },
             ...(defaults?.display && { display: defaults?.display || 'block' }),
-            stylingBox: defaults?.stylingBox || '{}',
+            stylingBox: prev?.stylingBox || defaults?.stylingBox || '{}',
         };
     };
 

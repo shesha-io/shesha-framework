@@ -79,6 +79,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     httpVerb?: string;
     min?: number;
     max?: number;
+    showText?: boolean;
     fieldsUnavailableHint?: string;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];

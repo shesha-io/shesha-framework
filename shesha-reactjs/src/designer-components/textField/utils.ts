@@ -15,7 +15,7 @@ export const defaultStyles = (): any => {
                     color: '#d9d9d9'
                 }
             },
-            borderCorners: { all: 8 },
+            radius: { all: 8 },
             selectedBorder: 'all',
             selectedCorner: 'all'
         },
