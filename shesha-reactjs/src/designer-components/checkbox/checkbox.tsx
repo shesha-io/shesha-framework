@@ -1,7 +1,7 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { CheckSquareOutlined } from '@ant-design/icons';
-import { Checkbox } from 'antd';
+import { Checkbox, CheckboxProps } from 'antd';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -29,6 +29,12 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
   Factory: ({ model }) => {
     const allData = useAvailableConstantsData();
     const { data } = useFormData();
+
+    interface ExtendedCheckboxProps extends CheckboxProps {
+      onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+      onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+    }
+
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
@@ -40,15 +46,16 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem checked={value} type="checkbox" disabled={model.readOnly} />
           ) : (
-            <div tabIndex={0} {...customEvents}>
-              <Checkbox
-                className="sha-checkbox"
-                disabled={model.readOnly}
-                style={getStyle(model?.style, data)}
-                checked={value}
-                onChange={onChangeInternal}
-              />
-            </div>
+            <Checkbox
+              className="sha-checkbox"
+              disabled={model.readOnly}
+              style={getStyle(model?.style, data)}
+              checked={value}
+              onChange={onChangeInternal}
+              onBlur={customEvents.onBlur}
+              onFocus={customEvents.onFocus}
+              {...({} as ExtendedCheckboxProps)}
+            />
           );
         }}
       </ConfigurableFormItem>
