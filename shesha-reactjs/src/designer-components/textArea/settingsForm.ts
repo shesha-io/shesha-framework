@@ -114,7 +114,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'autoSize',
                     parentId: commonTabId,
                     label: 'Auto Size',
-                    defaultValue: true,
+                    defaultValue: false,
                     jsSetting: true,
                   },
                   {
@@ -777,7 +777,7 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
+                              hideLabel: false,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
