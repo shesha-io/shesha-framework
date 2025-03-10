@@ -81,7 +81,8 @@ export const getSettings = (data: any) => {
                                   width: 85,
                                   propertyName: "dimensions.width",
                                   icon: "widthIcon",
-                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                  tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                  defaultValue: '360px'
                                 },
                                 {
                                   type: 'textField',
@@ -91,6 +92,7 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
+                                  defaultValue: '0px',
                                 },
                                 {
                                   type: 'textField',
@@ -100,6 +102,7 @@ export const getSettings = (data: any) => {
                                   hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
+                                  defaultValue: '100%',
                                 }
                               ]
                             })
