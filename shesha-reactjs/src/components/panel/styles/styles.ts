@@ -99,6 +99,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         
       ${borderWidth && '--ant-line-width: 0px !important;'}
       --primary-color: ${token.colorPrimary};
+      --ant-line-width: 0px !important;
       --ant-collapse-content-padding: ${paddingTop || 16}px ${paddingRight || 16}px ${paddingBottom || 16}px ${paddingLeft || 16}px !important;
       width: ${width};
       min-width: ${minWidth};
@@ -111,7 +112,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
-
 
     .ant-collapse-item {
       display: flex;
