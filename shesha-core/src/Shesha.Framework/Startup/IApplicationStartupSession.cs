@@ -1,5 +1,4 @@
-﻿using Shesha.Domain;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -38,12 +37,12 @@ namespace Shesha.Startup
         /// <summary>
         /// Information about previous startup
         /// </summary>
-        ApplicationStartupDto PreviousStartup { get; }
+        ApplicationStartupDto? PreviousStartup { get; }
 
         /// <summary>
         /// Information about current startup
         /// </summary>
-        ApplicationStartupDto CurrentStartup { get; }
+        ApplicationStartupDto? CurrentStartup { get; }
 
         /// <summary>
         /// Checks is assembly was not changed since previous startup session

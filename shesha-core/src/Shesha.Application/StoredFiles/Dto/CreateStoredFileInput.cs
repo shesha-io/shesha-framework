@@ -1,7 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Shesha.StoredFiles.Dto
 {
@@ -21,31 +22,38 @@ namespace Shesha.StoredFiles.Dto
         /// Id of the owner entity
         /// </summary>
         [BindProperty(Name = "ownerId")]
-        public string OwnerId { get; set; }
+        public string? OwnerId { get; set; }
 
         /// <summary>
         /// Type short alias of the owner entity
         /// </summary>
         [BindProperty(Name = "ownerType")]
-        public string OwnerType { get; set; }
+        public string? OwnerType { get; set; }
 
         /// <summary>
         /// Category of the file. Is used to split attachments into groups
         /// </summary>
         [BindProperty(Name = "filesCategory")]
-        public string FilesCategory { get; set; }
+        public string? FilesCategory { get; set; }
 
         /// <summary>
         /// Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
         /// </summary>
         [BindProperty(Name = "propertyName")]
-        public string PropertyName { get; set; }
+        public string? PropertyName { get; set; }
 
         /// <summary>
         /// File content
         /// </summary>
         [Required]
         [BindProperty(Name = "file")]
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
+
+        [MemberNotNull(nameof(File))]
+        public void EnsureFile()
+        {
+            if (File == null)
+                throw new Exception($"{nameof(File)} must not be null");
+        }
     }
 }

@@ -10,9 +10,9 @@ namespace Shesha.ConfigurationItems.Specifications
     /// </summary>
     public class ByApplicationSpecification<TItem> : ISpecification<TItem> where TItem : IMayHaveFrontEndApplication
     {
-        public string AppKey { get; private set; }
+        public string? AppKey { get; private set; }
 
-        public ByApplicationSpecification(string appKey)
+        public ByApplicationSpecification(string? appKey)
         {
             AppKey = appKey;
         }

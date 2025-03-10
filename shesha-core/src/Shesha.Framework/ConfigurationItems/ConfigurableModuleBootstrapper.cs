@@ -1,5 +1,4 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -8,6 +7,7 @@ using Shesha.Bootstrappers;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Modules;
+using Shesha.Reflection;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -64,7 +64,7 @@ namespace Shesha.ConfigurationItems
                         .ToList();
                     foreach (var type in moduleTypes) 
                     {
-                        var instance = _iocManager.Resolve(type) as SheshaModule;
+                        var instance = _iocManager.Resolve(type).ForceCastAs<SheshaModule>();
 
                         var moduleInfo = instance.ModuleInfo;
                         var version = moduleInfo.UseAssemblyVersion
@@ -117,7 +117,7 @@ namespace Shesha.ConfigurationItems
                 .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
                 .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                 .Select(t => {
-                    return _iocManager.Resolve(t) as ISheshaSubmodule;
+                    return _iocManager.Resolve(t).ForceCastAs<ISheshaSubmodule>();
                 })
                 .ToList();
 
@@ -169,11 +169,11 @@ namespace Shesha.ConfigurationItems
         private class ModuleItem
         {
             public Guid Id { get; set; }
-            public Type ModuleType { get; set; }
-            public SheshaModule Instance { get;set; }
-            public SheshaModuleInfo ModuleInfo { get; set; }
-            public string Version { get; set; }
-            public string Accessor { get; set; }
+            public required Type ModuleType { get; set; }
+            public required SheshaModule Instance { get;set; }
+            public required SheshaModuleInfo ModuleInfo { get; set; }
+            public string? Version { get; set; }
+            public string? Accessor { get; set; }
             public bool IsNewModule { get; set; }            
         }
     }

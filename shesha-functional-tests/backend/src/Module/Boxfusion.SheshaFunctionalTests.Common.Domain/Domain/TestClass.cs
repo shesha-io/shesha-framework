@@ -2,6 +2,7 @@
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
+using Shesha.JsonEntities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,12 +21,12 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual JsonCar JsonProp { get; set; }
+        public virtual JsonEntity JsonProp { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [SaveAsJson]
-        public virtual IList<JsonCar> TestListOfJsonEntitiesProp { get; set; }
+        public virtual IList<JsonEntity> TestListOfJsonEntitiesProp { get; set; }
         /// <summary>
         /// 
         /// </summary>

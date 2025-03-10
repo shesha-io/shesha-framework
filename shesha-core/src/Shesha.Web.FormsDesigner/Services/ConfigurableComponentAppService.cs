@@ -5,11 +5,11 @@ using Shesha.Application.Services.Dto;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Exceptions;
+using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
 using Shesha.Utilities;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Exceptions;
 using System;
@@ -147,10 +147,10 @@ namespace Shesha.Web.FormsDesigner.Services
 
             switch (mode)
             {
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
+                case ConfigurationItemViewMode.Live:
                     query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     break;
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
+                case ConfigurationItemViewMode.Ready:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                         ConfigurationItemVersionStatus.Live,
@@ -160,7 +160,7 @@ namespace Shesha.Web.FormsDesigner.Services
                         query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
                         break;
                     }
-                case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
+                case ConfigurationItemViewMode.Latest:
                     {
                         var statuses = new ConfigurationItemVersionStatus[] {
                         ConfigurationItemVersionStatus.Live,
@@ -181,14 +181,14 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName)
+        private async Task<Module?> GetModuleAsync(string? moduleName)
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
                 : null;
         }
 
-        private async Task<FrontEndApp> GetFrontEndAppAsync(string appKey)
+        private async Task<FrontEndApp?> GetFrontEndAppAsync(string appKey)
         {
             return !string.IsNullOrWhiteSpace(appKey)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_frontEndAppRepository.GetAll().Where(m => m.AppKey == appKey))
@@ -208,22 +208,22 @@ namespace Shesha.Web.FormsDesigner.Services
             /// <summary>
             /// Module name
             /// </summary>
-            public string Module { get; set; }
+            public string? Module { get; init; }
 
             /// <summary>
             /// Component name
             /// </summary>
-            public string Name { get; set; }
+            public required string Name { get; init; }
 
             /// <summary>
             /// Application key
             /// </summary>
-            public string FrontEndApplication { get; set; }
+            public required string? FrontEndApplication { get; init; }
 
             /// <summary>
             /// If true, indicates that component is application specific
             /// </summary>
-            public bool IsApplicationSpecific { get; set; }
+            public required bool IsApplicationSpecific { get; init; }            
         }
     }
 }

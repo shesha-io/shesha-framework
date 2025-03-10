@@ -101,6 +101,8 @@ export const getURLChartDataRefetchParams = (url: string) => {
  * @returns the value of the property
  */
 export function getPropertyValue(obj: { [key: string]: string | number | object }, path: string) {
+  if (obj === null) return null;
+  if (obj === undefined) return undefined;
   if (!path || typeof obj !== 'object') return undefined;
 
   const properties = path.split('.');

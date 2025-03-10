@@ -13,7 +13,7 @@ namespace Shesha.Settings.Json
             return defaultValue != null;
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             var token = JToken.Load(reader);
             if (token.Type == JTokenType.Null)
@@ -25,7 +25,7 @@ namespace Shesha.Settings.Json
         // Return false I don't want default values to be written as null
         public override bool CanWrite => false;
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

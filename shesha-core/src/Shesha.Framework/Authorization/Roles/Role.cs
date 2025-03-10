@@ -9,7 +9,7 @@ namespace Shesha.Authorization.Roles
     {
         public const int MaxDescriptionLength = 5000;
 
-        public Role()//: base(null, null)
+        public Role()
         {
             Claims = new List<RoleClaim>();
             Permissions = new List<RolePermissionSetting>();
@@ -26,6 +26,6 @@ namespace Shesha.Authorization.Roles
         }
 
         [StringLength(MaxDescriptionLength)]
-        public virtual string Description {get; set;}
+        public virtual string? Description {get; set;}
     }
 }

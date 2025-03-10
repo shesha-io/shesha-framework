@@ -218,6 +218,7 @@ export enum StandardEntityActions {
   read = 'read',
   update = 'update',
   delete = 'delete',
+  list = 'list',
 }
 
 export interface IContainerWithNestedProperties {
@@ -253,7 +254,7 @@ export interface IEntityMetadata extends IObjectMetadata, IHasEntityType {
   apiEndpoints: IDictionary<IApiEndpoint>;
 }
 
-export interface IContextMetadata extends IMetadata, IContainerWithNestedProperties {
+export interface IContextMetadata extends IMetadata, IContainerWithNestedProperties, IHasMethods {
 
 }
 
@@ -262,6 +263,10 @@ export type IModelMetadata = IEntityMetadata | IObjectMetadata | IContextMetadat
 export const isEntityMetadata = (value: IModelMetadata): value is IEntityMetadata => {
   return value && value.dataType === DataTypes.entityReference;
 };
+export const isObjectReferenceMetadata = (value: IModelMetadata): value is IEntityMetadata => {
+  return value && value.dataType === DataTypes.objectReference;
+};
+
 export const isObjectMetadata = (value: IModelMetadata): value is IObjectMetadata => {
   return value && value.dataType === DataTypes.object;
 };

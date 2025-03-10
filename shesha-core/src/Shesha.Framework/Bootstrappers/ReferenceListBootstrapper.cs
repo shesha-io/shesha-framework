@@ -9,7 +9,6 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Services;
 using Shesha.Startup;
 using Shesha.Utilities;
 using System;
@@ -98,6 +97,8 @@ namespace Shesha.Bootstrappers
             Logger.Warn($"Bootstrap assembly {assembly.FullName}");
             
             var module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            if (module == null)
+                return;
 
             var listNo = 1;
             foreach (var list in lists)
@@ -129,21 +130,16 @@ namespace Shesha.Bootstrappers
             foreach (var value in values)
             {
                 var intValue = Convert.ToInt64(value);
-                var internalName = Enum.GetName(list.Enum, intValue);
-                var memberInfo = list.Enum.GetMember(internalName).FirstOrDefault();
+                var internalName = Enum.GetName(list.Enum, intValue) ?? throw new Exception($"Value '{intValue}' not found in enum '{list.Enum.FullName}'");
+                var memberInfo = list.Enum.GetMember(internalName).Single();
 
-                var displayAttribute = memberInfo != null
-                    ? memberInfo.GetAttribute<DisplayAttribute>()
-                    : null;
-
-                var descriptionAttribute = memberInfo != null
-                    ? memberInfo.GetAttribute<DescriptionAttribute>()
-                    : null;
+                var displayAttribute = memberInfo.GetAttributeOrNull<DisplayAttribute>();
+                var descriptionAttribute = memberInfo.GetAttributeOrNull<DescriptionAttribute>();
 
                 if (displayAttribute != null && displayAttribute.GetAutoGenerateField() == false)
                     continue;
 
-                var refListItemAttribute = memberInfo.GetAttribute<ReferenceListItemAttribute>();
+                var refListItemAttribute = memberInfo.GetAttributeOrNull<ReferenceListItemAttribute>();
 
                 listInCode.Add(new ListItemInfo
                 {
@@ -253,12 +249,17 @@ namespace Shesha.Bootstrappers
                 await _listItemRepo.DeleteAsync(item);
             }
 
-            var toUpdate = itemsInDb.Select(idb => new
-            {
-                ItemInDB = idb,
-                UpdatedItemInCode = listInCode.FirstOrDefault(i => i.Value == idb.ItemValue && (i.Name != idb.Item || !idb.HardLinkToApplication))
+            var toUpdate = itemsInDb.Select(idb => {
+                var updatedItemInCode = listInCode.FirstOrDefault(i => i.Value == idb.ItemValue && (i.Name != idb.Item || !idb.HardLinkToApplication));
+                return updatedItemInCode != null
+                ? new
+                {
+                    ItemInDB = idb,
+                    UpdatedItemInCode = updatedItemInCode
+                }
+                : null;
             })
-                .Where(i => i.UpdatedItemInCode != null)
+                .WhereNotNull()
                 .ToList();
             Logger.Info($"  items to update: {toUpdate.Count()}");
 
@@ -290,11 +291,11 @@ namespace Shesha.Bootstrappers
 
         private class ListItemInfo
         {
-            public string Name { get; set; }
-            public string Description { get; set; }
+            public string? Name { get; set; }
+            public string? Description { get; set; }
             public Int64 Value { get; set; }
             public Int64 OrderIndex { get; set; }
-            public string Color { get; set; }
+            public string? Color { get; set; }
         }
     }
 }

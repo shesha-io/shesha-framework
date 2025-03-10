@@ -1,5 +1,5 @@
 import React, { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, FormMode, IConfigurableFormComponent, IFlatComponentsStructure } from "../index";
+import { ConfigurableActionDispatcherProvider, DataContextManager, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, useShaFormInstance } from "../index";
 import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
 import ValidateProvider from "../validateProvider";
@@ -57,14 +57,14 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     isScope = false,
   } = props;
 
+  const form = useShaFormInstance(false);
   const parent = useParent(false);
   const id = useId();
 
   const childParentProvider = useRef<IParentProviderStateContext[]>([]);
-
   const formModeLocal = formMode ?? parent?.formMode;
-  const formFlatMarkupLocal = formFlatMarkup ?? parent?.formFlatMarkup;
-  const formApiLocal = formApi ?? parent?.formApi;
+  const formFlatMarkupLocal = formFlatMarkup ?? (isScope ? form.flatStructure : parent?.formFlatMarkup);
+  const formApiLocal = formApi ?? (isScope ? form.getPublicFormApi() : parent?.formApi);
   const contextLocal = context ?? parent?.context;
 
   const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {

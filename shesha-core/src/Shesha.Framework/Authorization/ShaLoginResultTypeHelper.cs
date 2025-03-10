@@ -13,7 +13,7 @@ namespace Shesha.Authorization
             LocalizationSourceName = SheshaConsts.LocalizationSourceName;
         }
 
-        public Exception CreateExceptionForFailedLoginAttempt(ShaLoginResultType result, string usernameOrEmailAddress, string tenancyName)
+        public Exception CreateExceptionForFailedLoginAttempt(ShaLoginResultType result, string usernameOrEmailAddress, string? tenancyName)
         {
             switch (result)
             {

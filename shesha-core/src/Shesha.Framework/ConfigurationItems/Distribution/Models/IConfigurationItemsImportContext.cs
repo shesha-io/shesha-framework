@@ -1,5 +1,4 @@
-﻿using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
+﻿using Shesha.Domain.ConfigurationItems;
 using System.Threading;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -27,7 +26,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Import result. If specified, all imported items will be linked to the corresponding import session
         /// </summary>
-        public ConfigurationPackageImportResult ImportResult { get; }
+        public ConfigurationPackageImportResult? ImportResult { get; }
 
         /// <summary>
         /// Cancellation token. Is used for termination of the import process 

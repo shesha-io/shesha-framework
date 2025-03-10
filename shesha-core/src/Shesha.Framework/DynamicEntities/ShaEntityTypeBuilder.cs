@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Shesha.Extensions;
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -10,7 +11,7 @@ namespace Shesha.DynamicEntities
         public static object CreateNewObject(DynamicEntity entityMetadata)
         {
             var dynamicType = CompileResultType(entityMetadata);
-            var dynamicObject = Activator.CreateInstance(dynamicType);
+            var dynamicObject = ActivatorHelper.CreateNotNullObject(dynamicType);
             return dynamicObject;
         }
         public static Type CompileResultType(DynamicEntity entityMetadata)
@@ -26,16 +27,6 @@ namespace Shesha.DynamicEntities
             foreach (var property in entityMetadata.Properties)
                 CreateProperty(tb, property.PropertyName, property.PropertyType);
 
-            /*
-            var isTransientMethodBuilder = tb.DefineMethod(nameof(IEntity<Guid>.IsTransient),
-                        MethodAttributes.Public | MethodAttributes.Virtual,
-                        null,
-                        null);
-            var isTransientMethodIL = isTransientMethodBuilder.GetILGenerator();
-            isTransientMethodIL.Emit(OpCodes.Ret);
-            var isTransientMethod = typeof(IEntity<Guid>).GetMethod(nameof(IEntity<Guid>.IsTransient));
-            tb.DefineMethodOverride(isTransientMethodBuilder, isTransientMethod);
-            */
             var objectType = tb.CreateType();
             return objectType;
         }
@@ -99,21 +90,6 @@ namespace Shesha.DynamicEntities
 
             propertyBuilder.SetGetMethod(getPropMthdBldr);
             propertyBuilder.SetSetMethod(setPropMthdBldr);
-
-            // https://stackoverflow.com/questions/1822047/how-to-emit-explicit-interface-implementation-using-reflection-emit
-            // DefineMethodOverride is used to associate the method 
-            // body with the interface method that is being implemented.
-            //
-            /*
-            if (propertyName == "Id") 
-            {
-                var getMethod = typeof(IEntity<Guid>).GetMethod("get_Id");
-                tb.DefineMethodOverride(getPropMthdBldr, getMethod);
-
-                var setMethod = typeof(IEntity<Guid>).GetMethod("set_Id");
-                tb.DefineMethodOverride(setPropMthdBldr, setMethod);
-            }            
-            */
         }
     }
 }

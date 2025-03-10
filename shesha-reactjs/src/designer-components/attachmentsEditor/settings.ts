@@ -62,6 +62,7 @@ export const getSettings = () =>
             parentId: 'root',
             label: 'Is Dragger',
             description: 'Where the uploader should show a dragger instead of buttom',
+            hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
           })
 
           .addDropdown({
@@ -69,6 +70,7 @@ export const getSettings = () =>
             propertyName: 'listType',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'List Type',
+            hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
             dataSourceType: 'values',
             values: [
               {
@@ -89,7 +91,7 @@ export const getSettings = () =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Layout',
             dataSourceType: 'values',
-            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
             values: [
               {
                 label: 'Vertical',
@@ -102,7 +104,7 @@ export const getSettings = () =>
                 id: 'b920ef96-aeq7-4a01-bfad-b5b7d07218da',
               },
               {
-                label: 'grid',
+                label: 'Grid',
                 value: 'grid',
                 id: 'b920ef96-ae27-4a01-bfad-b5b7x07218da',
               }
@@ -220,7 +222,9 @@ export const getSettings = () =>
             validate: {},
             dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
             settingsValidationErrors: [],
-            useRawValues: true,
+            displayPropName: 'displayText',
+            keyPropName: 'value',
+            mode: 'single',
           })
           .addTextField({
             id: 'db913b1b-3b25-46c9-afef-21854d917ba7',
@@ -277,6 +281,7 @@ export const getSettings = () =>
             propertyName: 'itemStyles',
             parentId: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6s',
             label: 'Item Styles',
+            hideWhenEmpty: true,
             content: {
               id: 'item-styles-content-880d-4308-c3d996619cb',
               components: [...new DesignerToolbarSettings()

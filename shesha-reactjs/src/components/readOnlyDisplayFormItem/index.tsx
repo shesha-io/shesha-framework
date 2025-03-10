@@ -1,32 +1,34 @@
 import { Switch, Tag } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { getMoment } from '@/utils/date';
-import { IDtoType, ISelectOption } from '@/components/autocomplete';
+import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
 
-type AutocompleteType = ISelectOption<IDtoType>;
+type AutocompleteType = ISelectOption;
 
-export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
-  value,
-  type = 'string',
-  dateFormat = 'DD-MM-YYYY',
-  timeFormat = 'hh:mm',
-  dropdownDisplayMode = 'raw',
-  render,
-  checked,
-  defaultChecked,
-  quickviewEnabled,
-  quickviewFormPath,
-  quickviewDisplayPropertyName,
-  quickviewGetEntityUrl,
-  quickviewWidth,
-}) => {
+export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
+  const {
+    value,
+    type = 'string',
+    dateFormat = 'DD-MM-YYYY',
+    timeFormat = 'hh:mm',
+    dropdownDisplayMode = 'raw',
+    render,
+    checked,
+    defaultChecked,
+    quickviewEnabled,
+    quickviewFormPath,
+    quickviewDisplayPropertyName,
+    quickviewGetEntityUrl,
+    quickviewWidth,
+  } = props;
+
   const { styles } = useStyles();
-  const renderValue = () => {
+  const renderValue = useMemo(() => {
     if (render) {
       return typeof render === 'function' ? render() : render;
     }
@@ -39,14 +41,13 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
       return '';
     }
 
-    const entityId = value?.id ?? value?.data?.id ?? value?.data;
+    const entityId = typeof value === 'object' ? value?.id ?? value?.data?.id ?? value?.data : value;
     const className = value?._className ?? value?.data?._className;
-    const displayName = value?._displayName ?? value?.data?._displayName;
+    const displayName = value?.label || value?._displayName || value?.data?._displayName;
 
     switch (type) {
       case 'dropdown':
         if (!Array.isArray(value)) {
-          const displayLabel = (value as AutocompleteType)?.label;
           if (quickviewEnabled && quickviewFormPath) {
             return quickviewFormPath && quickviewGetEntityUrl ? (
               <QuickView
@@ -66,7 +67,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
               />
             );
           } else {
-            return displayLabel;
+            return displayName;
           }
         }
 
@@ -102,12 +103,24 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
         break;
     }
     return Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
-  };
-
+  }, [value,
+    type,
+    dateFormat,
+    timeFormat,
+    dropdownDisplayMode,
+    render,
+    checked,
+    defaultChecked,
+    quickviewEnabled,
+    quickviewFormPath,
+    quickviewDisplayPropertyName,
+    quickviewGetEntityUrl,
+    quickviewWidth
+  ]);
 
   return (
     <span className={styles.readOnlyDisplayFormItem}>
-      {renderValue()}
+      {renderValue}
     </span>
   );
 };

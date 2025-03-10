@@ -54,7 +54,8 @@ namespace Shesha.JsonEntities.Proxy
                 {
                     var propName = invocation.Method.Name.Substring(4, invocation.Method.Name.Length - 4);
                     var eref = proxy._getEntityReference(propName.ToCamelCase());
-                    if (eref?.Id != null)
+                    var stringId = eref?.Id?.ToString();
+                    if (!string.IsNullOrWhiteSpace(stringId))
                     {
                         var objType = invocation.InvocationTarget.GetType();
                         var property = objType.GetProperty(propName);
@@ -63,7 +64,7 @@ namespace Shesha.JsonEntities.Proxy
                             var value = property.GetValue(invocation.InvocationTarget);
                             if (value == null)
                             {
-                                value = _dynamicRepository.Get(property.PropertyType, eref?.Id.ToString());
+                                value = _dynamicRepository.Get(property.PropertyType, stringId);
                                 property.SetValue(invocation.InvocationTarget, value);
                             }
                             invocation.ReturnValue = value;

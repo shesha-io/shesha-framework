@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -10,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Shesha.Configuration;
 using Shesha.Domain;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Shesha.Services.StoredFiles
 {
@@ -20,7 +20,7 @@ namespace Shesha.Services.StoredFiles
         private const string ContainerName = "files";
         private readonly IocManager _iocManager;
         private readonly IConfigurationRoot _configuration;
-        private BlobContainerClient _blobContainerClient;
+        private BlobContainerClient? _blobContainerClient;
 
         public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IocManager iocManager)
             : base(fileService, versionService)
@@ -38,7 +38,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns connection string. Note: for the Azure environment - uses standard environment variable
         /// </summary>
-        private string GetConnectionString() => _configuration.GetConnectionString(ConnectionStringName);
+        private string GetConnectionString() => _configuration.GetRequiredConnectionString(ConnectionStringName);
 
         private BlobContainerClient BlobContainerClient
         {
@@ -77,7 +77,7 @@ namespace Shesha.Services.StoredFiles
             var props = await blob.GetPropertiesAsync();
             if (props.Value.ContentLength > 0)
             {
-                await blob.DownloadToAsync(stream);
+                using var response = await blob.DownloadToAsync(stream);
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
@@ -98,7 +98,7 @@ namespace Shesha.Services.StoredFiles
             var props = blob.GetProperties();
             if (props.Value.ContentLength > 0)
             {
-                blob.DownloadTo(stream);
+                using var response = blob.DownloadTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
@@ -137,14 +137,14 @@ namespace Shesha.Services.StoredFiles
         protected override async Task DeleteFromStorageAsync(StoredFileVersion version)
         {
             var blob = GetBlobClient(GetAzureFileName(version));
-            await blob.DeleteAsync();
+            using var response = await blob.DeleteAsync();
         }
 
         /// inheritedDoc
         protected override void DeleteFromStorage(StoredFileVersion version)
         {
             var blob = GetBlobClient(GetAzureFileName(version));
-            blob.Delete();
+            using var response = blob.Delete();
         }
 
         public override async Task<bool> FileExistsAsync(Guid id)

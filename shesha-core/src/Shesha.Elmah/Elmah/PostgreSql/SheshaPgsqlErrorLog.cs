@@ -36,8 +36,6 @@ namespace Shesha.Elmah.PostgreSql
                 throw new ArgumentNullException("connectionString");
 
             ConnectionString = connectionString;
-
-            //PrepareDatabase();
         }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace Shesha.Elmah.PostgreSql
         /// </summary>
         public virtual string ConnectionString { get; }
 
-        public override string Log(Error error)
+        public override string? Log(Error error)
         {
             var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
@@ -79,7 +77,7 @@ namespace Shesha.Elmah.PostgreSql
                 var exceptionDetails = provider.CurrentState?.AllExceptions?.FirstOrDefault(e => e.Exception == error.Exception);
                 var location = exceptionDetails?.Location;
 
-                ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
+                ExecuteCommand(connection, () => Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
 
                 // gather refs and log them
                 if (error.Exception != null && provider.CurrentState != null)
@@ -89,21 +87,21 @@ namespace Shesha.Elmah.PostgreSql
                     {
                         foreach (var item in allRefs)
                         {
-                            ExecuteCommand(connection, Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                            ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
                         }
                     }
                 }
             }
         }
 
-        private void ExecuteCommand(NpgsqlConnection connection, NpgsqlCommand command)
+        private void ExecuteCommand(NpgsqlConnection connection, Func<NpgsqlCommand> commandFactory)
         {
+            using var command = commandFactory();
             command.Connection = connection;
             command.ExecuteNonQuery();
-            command.Dispose();
         }
 
-        public override ErrorLogEntry GetError(string id)
+        public override ErrorLogEntry? GetError(string id)
         {
             if (id == null) throw new ArgumentNullException("id");
             if (id.Length == 0) throw new ArgumentException(null, "id");
@@ -126,7 +124,7 @@ namespace Shesha.Elmah.PostgreSql
             {
                 command.Connection = connection;
                 connection.Open();
-                errorXml = (string)command.ExecuteScalar();
+                errorXml = command.ExecuteScalar()?.ToString() ?? string.Empty;
             }
 
             if (errorXml == null)
@@ -169,23 +167,6 @@ namespace Shesha.Elmah.PostgreSql
             }
         }
 
-        private void PrepareDatabase()
-        {
-            using (var connection = new NpgsqlConnection(ConnectionString))
-            {
-                connection.Open();
-
-                Commands.CreateSchemaIfMissing(connection, DBConstants.Schema);
-
-                if (!Commands.TableExists(connection, DBConstants.Schema, DBConstants.ErrorsTable))
-                    Commands.CreateErrorsTable(connection, DBConstants.Schema, DBConstants.ErrorsTable);
-
-                if (!Commands.TableExists(connection, DBConstants.Schema, DBConstants.ErrorRefsTable))
-                    Commands.CreateErrorRefsTable(connection, DBConstants.Schema, DBConstants.ErrorRefsTable);
-            }
-        }
-
-
         private static class Commands
         {
             public static void ExecuteNonQuery(NpgsqlConnection connection, string sql)
@@ -199,7 +180,7 @@ namespace Shesha.Elmah.PostgreSql
                 }
             }
 
-            public static object ExecuteScalar(NpgsqlConnection connection, string sql)
+            public static object? ExecuteScalar(NpgsqlConnection connection, string sql)
             {
                 using (var command = new NpgsqlCommand(sql))
                 {
@@ -292,7 +273,7 @@ CREATE INDEX ix_{tableName}_type_id ON {schemaName}.{tableName} USING BTREE
                 int statusCode,
                 DateTime time,
                 string xml,
-                string location)
+                string? location)
             {
                 var command = new NpgsqlCommand();
                 command.CommandText =

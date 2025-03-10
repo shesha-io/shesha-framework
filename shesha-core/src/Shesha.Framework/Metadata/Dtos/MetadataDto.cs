@@ -18,7 +18,7 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Module name current model belongs to
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Type accessor
@@ -28,7 +28,7 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Module accessor
         /// </summary>
-        public string ModuleAccessor { get; set; }
+        public string? ModuleAccessor { get; set; }
 
         /// <summary>
         /// Propeties
@@ -51,7 +51,7 @@ namespace Shesha.Metadata.Dtos
 
         [JsonProperty("md5")]
         [JsonPropertyName("md5")]
-        public string Md5 { get; set; }
+        public string? Md5 { get; set; }
         public DateTime? ChangeTime { get; set; }
 
         /// <summary>

@@ -59,15 +59,6 @@ namespace Shesha
 
             ConfigureTokenAuth();
 
-            /*
-            Configuration.Modules.AbpAutoMapper().Configurators.Add(config =>
-            {
-                config.CreateMap<DataTableColumn, DataTableColumnDto>()
-                    .ForMember(u => u.Password, options => options.Ignore())
-                    .ForMember(u => u.Email, options => options.MapFrom(input => input.EmailAddress));
-            });
-            */
-
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                 this.GetType().Assembly,
                 moduleName: "Shesha",
@@ -80,9 +71,9 @@ namespace Shesha
 
             var tokenAuthConfig = IocManager.Resolve<TokenAuthConfiguration>();
 
-            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appConfiguration["Authentication:JwtBearer:SecurityKey"]));
-            tokenAuthConfig.Issuer = _appConfiguration["Authentication:JwtBearer:Issuer"];
-            tokenAuthConfig.Audience = _appConfiguration["Authentication:JwtBearer:Audience"];
+            tokenAuthConfig.SecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appConfiguration.GetRequired("Authentication:JwtBearer:SecurityKey")));
+            tokenAuthConfig.Issuer = _appConfiguration.GetRequired("Authentication:JwtBearer:Issuer");
+            tokenAuthConfig.Audience = _appConfiguration.GetRequired("Authentication:JwtBearer:Audience");
             tokenAuthConfig.SigningCredentials = new SigningCredentials(tokenAuthConfig.SecurityKey, SecurityAlgorithms.HmacSha256);
             tokenAuthConfig.Expiration = TimeSpan.FromDays(1);
         }

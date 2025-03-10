@@ -7,7 +7,7 @@ using Shesha.AutoMapper.Dto;
 namespace Shesha.Roles.Dto
 {
     [AutoMapFrom(typeof(Abp.Authorization.Permission))]
-    public class PermissionDto : EntityDto<string>
+    public class PermissionDto : EntityDto<string?>
     {
         public PermissionDto()
         {
@@ -15,20 +15,20 @@ namespace Shesha.Roles.Dto
         }
 
         public Guid? ModuleId { get; set; }
-        public EntityReferenceDto<Guid> Module { get; set; }
+        public EntityReferenceDto<Guid>? Module { get; set; }
 
         public string Name { get; set; }
 
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public string ParentName { get; set; }
+        public string? ParentName { get; set; }
         
         public bool IsDbPermission { get; set; }
 
-        public PermissionDto Parent { get; set; }
+        public PermissionDto? Parent { get; set; }
 
-        public List<PermissionDto> Child { get; set; }
+        public List<PermissionDto>? Child { get; set; }
     }
 }

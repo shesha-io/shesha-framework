@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
     public class MetadataContext
     {
+        public Type? MainType { get; private set; }
         public List<Type> ProcessedTypes { get; set; }
 
-        public MetadataContext(Type baseType) 
+        public MetadataContext(Type mainType): this()
         {
-            ProcessedTypes = new List<Type>();
-            ProcessedTypes.Add(baseType);
+            MainType = mainType;
+            ProcessedTypes.Add(mainType);
+        }
+
+        public MetadataContext() 
+        {
+            ProcessedTypes = new();
         }
     }
 }

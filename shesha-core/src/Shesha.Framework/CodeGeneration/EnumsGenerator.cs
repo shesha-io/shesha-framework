@@ -6,7 +6,7 @@ namespace Shesha.CodeGeneration
 {
     public class EnumsGenerator
     {
-        public static string GenerateEnumItems(string source)
+        public static string? GenerateEnumItems(string source)
         {
             if (source == null)
                 return null;

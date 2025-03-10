@@ -2,6 +2,7 @@
 using AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
 using System;
@@ -111,15 +112,18 @@ namespace Shesha.AutoMapper
                 .Select(d =>
                     {
                         var source = sourceType.GetProperty(d.Name);
-                        return new
+                        var reflistId = source?.GetReferenceListIdentifierOrNull();
+                        return source != null && reflistId != null
+                        ? new
                         {
                             DstProperty = d,
                             SrcProperty = source,
-                            RefListIdentifier = source?.GetReferenceListIdentifierOrNull()
-                        };
+                            RefListIdentifier = reflistId
+                        }
+                        : null;
                     }
                 )
-                .Where(i => i.RefListIdentifier != null)
+                .WhereNotNull()
                 .ToList();
 
             foreach (var item in refListProperties)
@@ -132,7 +136,7 @@ namespace Shesha.AutoMapper
             return expression;
         }
 
-        private static ReferenceListItemValueDto GetRefListItemValueDto(string refListModule, string refListName, object value)
+        private static ReferenceListItemValueDto? GetRefListItemValueDto(string? refListModule, string refListName, object? value)
         {
             var intValue = value != null
                 ? Convert.ToInt64(value)
@@ -147,7 +151,7 @@ namespace Shesha.AutoMapper
                 : null;
         }
 
-        private static string GetRefListItemText(string refListModule, string refListName, Int64? value)
+        private static string? GetRefListItemText(string? refListModule, string refListName, Int64? value)
         {
             if (value == null)
                 return null;
@@ -172,8 +176,10 @@ namespace Shesha.AutoMapper
                 .Select(p =>
                     {
                         var destination = destinationType.GetProperty(p.Name);
+                        if (destination == null)
+                            return null;
 
-                        var propType = destination?.PropertyType.GetUnderlyingTypeIfNullable();
+                        var propType = destination.PropertyType.GetUnderlyingTypeIfNullable();
                         if (propType == null || propType != typeof(int) && !propType.IsEnum)
                             return null;
 
@@ -185,7 +191,7 @@ namespace Shesha.AutoMapper
                         };
                     }
                 )
-                .Where(i => i != null)
+                .WhereNotNull()
                 .ToList();
             
             foreach (var item in refListProperties)
@@ -206,8 +212,10 @@ namespace Shesha.AutoMapper
                 .Select(p =>
                 {
                     var destinationProperty = destinationType.GetProperty(p.Name);
+                    if (destinationProperty == null)
+                        return null;
 
-                    var propType = destinationProperty?.PropertyType.GetUnderlyingTypeIfNullable();
+                    var propType = destinationProperty.PropertyType.GetUnderlyingTypeIfNullable();
                     if (propType == null || !propType.IsSubtypeOfGeneric(typeof(List<>)))
                         return null;
 
@@ -223,7 +231,7 @@ namespace Shesha.AutoMapper
                     };
                 }
                 )
-                .Where(i => i != null)
+                .WhereNotNull()
                 .ToList();
 
             foreach (var item in multiValueRefListProperties)
@@ -247,7 +255,7 @@ namespace Shesha.AutoMapper
             if (intVal == null)
             {
                 var resultType = typeof(List<>).MakeGenericType(itemType);
-                return Activator.CreateInstance(resultType);
+                return ActivatorHelper.CreateNotNullObject(resultType);
             }
 
             return Shesha.Extensions.EntityExtensions.DecomposeIntoBitFlagComponents(intVal);
@@ -264,8 +272,10 @@ namespace Shesha.AutoMapper
                 .Select(p =>
                 {
                     var sourceProperty = sourceType.GetProperty(p.Name);
+                    if (sourceProperty == null)
+                        return null;
 
-                    var propType = sourceProperty?.PropertyType.GetUnderlyingTypeIfNullable();
+                    var propType = sourceProperty.PropertyType.GetUnderlyingTypeIfNullable();
                     if (propType == null || !propType.IsSubtypeOfGeneric(typeof(List<>)))
                         return null;
 
@@ -281,7 +291,7 @@ namespace Shesha.AutoMapper
                     };
                 }
                 )
-                .Where(i => i != null)
+                .WhereNotNull()
                 .ToList();
 
             foreach (var item in multiValueRefListProperties)
@@ -292,7 +302,7 @@ namespace Shesha.AutoMapper
             return expression;
         }
 
-        private static object GetMultiValueRefListValue(object owner, PropertyInfo srcProperty, PropertyInfo dstProperty)
+        private static object? GetMultiValueRefListValue(object owner, PropertyInfo srcProperty, PropertyInfo dstProperty)
         {
             var listValue = owner != null
                 ? srcProperty.GetValue(owner)
@@ -316,7 +326,7 @@ namespace Shesha.AutoMapper
             return null;
         }
 
-        private static object GetRefListItemValue(ReferenceListItemValueDto dto, Type srcPropType, Type dstPropType)
+        private static object? GetRefListItemValue(ReferenceListItemValueDto? dto, Type srcPropType, Type dstPropType)
         {
             if (dto?.ItemValue == null)
                 return null;
@@ -328,11 +338,11 @@ namespace Shesha.AutoMapper
 
             if (dstType.IsEnum) {
                 var enumUnderlayingType = dstType.GetEnumUnderlyingType();
-                var numericValue = System.Convert.ChangeType(dto.ItemValue.Value, enumUnderlayingType);
+                var numericValue = System.Convert.ChangeType(dto.ItemValue, enumUnderlayingType);
                 return Enum.ToObject(dstType, numericValue);
             }
                         
-            return System.Convert.ChangeType(dto.ItemValue.Value, dstType);
+            return System.Convert.ChangeType(dto.ItemValue, dstType);
         }
     }
 }

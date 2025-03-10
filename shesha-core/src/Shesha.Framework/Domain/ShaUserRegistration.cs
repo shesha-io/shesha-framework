@@ -1,13 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Authorization.Users;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Abp.MultiTenancy;
 using Abp.Timing;
-using Shesha.Authorization;
 using Shesha.Domain.Attributes;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -28,7 +24,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Module name
         /// </summary>
-        public virtual FormIdentifier AdditionalRegistrationInfoForm { get; set; }
+        public virtual FormIdentifier? AdditionalRegistrationInfoForm { get; set; }
 
         /// <summary>
         /// 
@@ -43,7 +39,7 @@ namespace Shesha.Domain
         /// <summary>
         /// 
         /// </summary>
-        public virtual string GoToUrlAfterRegistration { get; set; }
+        public virtual string? GoToUrlAfterRegistration { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaUserRegistration"/> class.

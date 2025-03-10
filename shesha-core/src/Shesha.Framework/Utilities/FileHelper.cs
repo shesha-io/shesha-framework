@@ -16,10 +16,9 @@ namespace Shesha.Utilities
         public static string CleanupFileName(this string fileName)
         {
             return fileName.Contains('\\')
-                ? fileName.Split(new char[] { '\\' }).LastOrDefault()
+                ? fileName.Split(new char[] { '\\' }).Last()
                 : fileName;
         }
-
 
         /// <summary>
         /// Returns MD5 hash of the specified <paramref name="fileName"/>
