@@ -26,7 +26,7 @@ export const getSettings = (data: any) => {
             title: 'Common',
             id: commonTabId,
             components: [...new DesignerToolbarSettings()
-              .addCheckbox({
+              .addSettingsInput({
                 id: nanoid(),
                 inputType: 'switch',
                 propertyName: 'block',
@@ -103,19 +103,26 @@ export const getSettings = (data: any) => {
                                 }
                               ]
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                               id: nanoid(),
-                              inputType: 'dropdown',
-                              propertyName: 'size',
-                              label: 'Size',
-                              width: '150px',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              dropdownOptions: [
-                                { value: 'small', label: 'Small' },
-                                { value: 'medium', label: 'Medium' },
-                                { value: 'large', label: 'Large' },
+                              parentId: 'dimensionsStylePnl',
+                              inline: true,
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: nanoid(),
+                                  label: "Size",
+                                  propertyName: "size",
+                                  defaultValue: 'default',
+                                  dropdownOptions: [
+                                    { value: 'small', label: 'Small' },
+                                    { value: 'medium', label: 'Medium' },
+                                    { value: 'large', label: 'Large' },
+                                  ],
+                                  tooltip: 'Controls the height of the input field.',
+                                }
                               ],
-                              tooltip: 'Controls the height of the input field.',
                             })
                             .toJson()
                           ]
