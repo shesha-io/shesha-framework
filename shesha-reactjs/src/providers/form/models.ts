@@ -86,6 +86,7 @@ export interface IInputStyles extends IStyleType {
   borderType?: string;
   borderColor?: string;
   fontColor?: string;
+  color?: string;
   fontWeight?: string | number;
   fontSize?: string | number;
   stylingBox?: string;

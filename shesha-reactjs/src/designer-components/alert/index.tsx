@@ -19,7 +19,7 @@ const defaultTextForPreview = {
   },
   info: {
     text: 'Info Alert Preview Text',
-    description: 'This is an info alert preview text. More information here. If no info is provided, the description will not be displayed.'
+    description: 'Info alert preview text. More details here. Description hidden if no info is provided.'
   },
   warning: {
     text: 'Warning Alert Preview Text',
@@ -68,7 +68,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
         type={alertType}
         description={!model.banner && evaluatedDescription}
         showIcon={showIcon}
-        style={getStyle(style, formData)} // Temporary. Make it configurable
+        style={{ ...getStyle(style, formData), padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />

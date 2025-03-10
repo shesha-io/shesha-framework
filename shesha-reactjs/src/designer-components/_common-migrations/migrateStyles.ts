@@ -36,8 +36,8 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
             size: prevStyles?.size,
             border: {
                 hideBorder: prevStyles?.hideBorder || defaults?.hideBorder || false,
-                selectedCorner: 'all',
-                selectedSide: 'all',
+                radiusType: 'all',
+                borderType: 'all',
                 border: {
                     all: border('all'),
                     top: border('top'),
@@ -46,7 +46,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                     right: border('right'),
                 },
                 radius: {
-                    all: defaults?.border?.radius?.all,
+                    all: prevStyles?.borderRadius || defaults?.border?.radius?.all,
                     topLeft: defaults?.border?.radius?.topLeft,
                     topRight: defaults?.border?.radius?.topRight,
                     bottomLeft: defaults?.border?.radius?.bottomLeft,
@@ -65,7 +65,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 uploadFile: backgroundBase64 ? { uid: nanoid(), name: '', url: backgroundBase64 } : null,
             },
             font: {
-                color: prevStyles?.fontColor || defaults?.font?.color,
+                color: prevStyles?.fontColor || prevStyles.color || defaults?.font?.color,
                 type: prevStyles?.font?.type || defaults?.font?.type,
                 align: prevStyles?.font?.align || defaults?.font?.align || 'left',
                 size: prevStyles?.fontSize as number || fontSizeFromSize || defaults?.font?.size,
@@ -87,7 +87,7 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
                 spreadRadius: defaults?.shadow?.spreadRadius || 0
             },
             ...(defaults?.display && { display: defaults?.display || 'block' }),
-            stylingBox: defaults?.stylingBox || '{}',
+            stylingBox: prev?.stylingBox || defaults?.stylingBox || '{}',
         };
     };
 

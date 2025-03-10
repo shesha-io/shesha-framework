@@ -12,8 +12,8 @@ export const defaultStyles: IStyleType = {
             bottom: { width: '1' }, left: { width: '1' }
         },
         radius: { all: 8 },
-        selectedCorner: 'all',
-        selectedSide: 'all'
+        radiusType: 'all',
+        borderType: 'all'
     },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
 };

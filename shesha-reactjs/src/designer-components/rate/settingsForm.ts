@@ -42,6 +42,7 @@ export const getSettings = (data: IRateProps) => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
+                  defaultValue: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -55,6 +56,7 @@ export const getSettings = (data: IRateProps) => {
                       jsSetting: true,
                     },
                   ],
+                  hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({

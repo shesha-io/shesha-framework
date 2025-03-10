@@ -111,6 +111,7 @@ export const getSettings = (data) => {
                     propertyName: 'editMode',
                     label: 'Edit Mode',
                     size: 'small',
+                    defaultValue: 'inherited',
                     jsSetting: true,
                   },
                   {
@@ -123,20 +124,6 @@ export const getSettings = (data) => {
                   },
                 ],
               })
-              .addSettingsInput({
-                inputType: "autocomplete",
-                id: '6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018',
-                propertyName: 'entityType',
-                label: 'Entity Type',
-                labelAlign: 'right',
-                parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-                hidden: false,
-                dataSourceType: 'url',
-                validate: {},
-                dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                settingsValidationErrors: []
-              })
-
               .addSettingsInputRow({
                 id: 'default-value-s4gmBg31azZC0UjZjpfTm',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -374,10 +361,10 @@ export const getSettings = (data) => {
                           label: 'Large',
                           value: '80%',
                         },
-                        {
-                          label: 'Custom',
-                          value: 'custom',
-                        },
+                        // {
+                        //   label: 'Custom',
+                        //   value: 'custom',
+                        // },
                       ]
                     })
                     .toJson()]
@@ -636,36 +623,16 @@ export const getSettings = (data) => {
                               },
                             ]
                           })
-                          .addSettingsInputRow(
-                            getBorderInputs()[0] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[1] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[2] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[3] as any
-                          )
-                          .addSettingsInputRow(
-                            getBorderInputs()[4] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[0] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[1] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[2] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[3] as any
-                          )
-                          .addSettingsInputRow(
-                            getCornerInputs()[4] as any
-                          )
+                          .addContainer({
+                            id: 'borderStyleRow',
+                            parentId: 'borderStylePnl',
+                            components: getBorderInputs() as any
+                          })
+                          .addContainer({
+                            id: 'borderRadiusStyleRow',
+                            parentId: 'borderStylePnl',
+                            components: getCornerInputs() as any
+                          })
                           .toJson()
                         ]
                       }
@@ -977,7 +944,6 @@ export const getSettings = (data) => {
                             id: 'custom-css-412c-8461-4c8d55e5c073',
                             inputType: 'codeEditor',
                             propertyName: 'style',
-                            hideLabel: true,
                             label: 'Style',
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
