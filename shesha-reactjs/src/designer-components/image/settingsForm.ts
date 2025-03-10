@@ -27,8 +27,8 @@ export const getSettings = (data) => {
                                 propertyName: 'propertyName',
                                 label: 'Property Name',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                styledLabel: true,
                                 size: 'small',
+                                styledLabel: true,
                                 validate: {
                                     required: true,
                                 },

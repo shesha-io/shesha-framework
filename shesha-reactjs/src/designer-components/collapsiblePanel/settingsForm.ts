@@ -952,6 +952,25 @@ export const getSettings = () => {
                                                         }
                                                     })
                                                     .addCollapsiblePanel({
+                                                        id: 'panelheader-styling-box',
+                                                        propertyName: 'stylingBox',
+                                                        label: 'Styling Box',
+                                                        labelAlign: 'right',
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheader-styling-box-pnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addStyleBox({
+                                                                    id: 'header-styleBoxPnl',
+                                                                    label: 'Margin Padding',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'headerStyles.stylingBox',
+                                                                })
+                                                                .toJson()]
+                                                        }
+                                                    })
+                                                    .addCollapsiblePanel({
                                                         id: 'panelheaderjsstyle',
                                                         propertyName: 'customStyle',
                                                         label: 'Custom Styles',
