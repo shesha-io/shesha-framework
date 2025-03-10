@@ -1,10 +1,9 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { IRefListStatusProps } from './models';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: IRefListStatusProps) => {
 
@@ -55,6 +54,27 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 },
                                 jsSetting: true,
                             })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
+                                inputType: 'switch',
+                                propertyName: 'showReflistName',
+                                label: 'Show Reflist Item Name',
+                                tooltip: 'When checked the DisplayName/RefList Name will be shown.',
+                                size: 'small',
+                                defaultValue: true,
+                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                            })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
+                                inputType: 'switch',
+                                propertyName: 'showIcon',
+                                label: 'Show Icon',
+                                size: 'small',
+                                tooltip: 'When checked the icon will display on the left side of the DisplayName',
+                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                            })
                             .addSettingsInputRow({
                                 id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -89,46 +109,6 @@ export const getSettings = (data: IRefListStatusProps) => {
                     },
                     {
                         key: '2',
-                        title: 'Customize Status',
-                        id: '6Vw9iiDw9d0MD_Hh5cbIn',
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
-                                inputType: 'switch',
-                                propertyName: 'showReflistName',
-                                label: 'Show Reflist Item Name',
-                                tooltip: 'When checked the DisplayName/RefList Name will be shown.',
-                                size: 'small',
-                                defaultValue: true,
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
-                                inputType: 'switch',
-                                propertyName: 'showIcon',
-                                label: 'Show Icon',
-                                size: 'small',
-                                tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0c-5def-bd41-ee166a5dfcd8',
-                                inputType: 'switch',
-                                propertyName: 'solidBackground',
-                                label: 'Show Solid Background',
-                                size: 'small',
-                                defaultValue: true,
-                                tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: '3',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [...new DesignerToolbarSettings()
@@ -340,36 +320,16 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -387,6 +347,17 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                 components: [
                                                     ...new DesignerToolbarSettings()
                                                         .addSettingsInput({
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            id: '1adea529-1f0c-5def-bd41-ee166a5dfcd8',
+                                                            inputType: 'switch',
+                                                            propertyName: 'solidBackground',
+                                                            label: 'Show Solid Background',
+                                                            size: 'small',
+                                                            defaultValue: true,
+                                                            tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.',
+                                                            parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                                        })
+                                                        .addSettingsInput({
                                                             id: "backgroundStyleRow-selectType",
                                                             parentId: "backgroundStylePnl",
                                                             label: "Type",
@@ -394,33 +365,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -453,6 +398,47 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
+                                                            id: "backgroundStyle-url",
+                                                            parentId: "backgroundStylePnl",
+                                                            inputs: [{
+                                                                type: 'textField',
+                                                                id: 'backgroundStyle-url',
+                                                                propertyName: "background.url",
+                                                                jsSetting: false,
+                                                                label: "URL",
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: "backgroundStyle-image",
+                                                            parentId: 'backgroundStylePnl',
+                                                            inputs: [{
+                                                                type: 'imageUploader',
+                                                                id: 'backgroundStyle-image',
+                                                                propertyName: 'background.uploadFile',
+                                                                label: "Image",
+                                                                jsSetting: false,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: "backgroundStyleRow-storedFile",
+                                                            parentId: 'backgroundStylePnl',
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [
+                                                                {
+                                                                    type: 'textField',
+                                                                    id: 'backgroundStyle-storedFile',
+                                                                    jsSetting: false,
+                                                                    propertyName: "background.storedFile.id",
+                                                                    label: "File ID"
+                                                                }
+                                                            ]
+                                                        })
+                                                        .addSettingsInputRow({
                                                             id: "backgroundStyleRow-controls",
                                                             parentId: 'backgroundStyleRow',
                                                             inline: true,
@@ -463,19 +449,19 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-size',
                                                                     label: "Size",
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
                                                                     dropdownOptions: sizeOptions,
-                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "background.position",
                                                                     dropdownOptions: positionOptions,
-                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                 },
                                                                 {
                                                                     type: 'radio',
@@ -593,7 +579,6 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
-                                                        hideLabel: true,
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })

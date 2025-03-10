@@ -55,17 +55,17 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
-                    type: 'editModeSelector',
-                    id: nanoid(),
-                    propertyName: 'editMode',
-                    label: 'Edit Mode',
-                    size: 'small',
+                    type: 'switch',
+                    id: hiddenId,
+                    propertyName: 'hidden',
+                    label: 'Hide',
                     jsSetting: true,
+                    layout: 'horizontal',
                   },
                 ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -91,21 +91,6 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        inputs: [
-                          {
-                            type: 'switch',
-                            id: hiddenId,
-                            propertyName: 'hidden',
-                            label: 'Hide',
-                            jsSetting: true,
-                            layout: 'horizontal',
-                          },
-                        ],
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -300,36 +285,16 @@ export const getSettings = (data: any) => {
                                 },
                               ]
                             })
-                            .addSettingsInputRow(
-                              getBorderInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[4] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[4] as any
-                            )
+                            .addContainer({
+                              id: 'borderStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getBorderInputs() as any
+                            })
+                            .addContainer({
+                              id: 'borderRadiusStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getCornerInputs() as any
+                            })
                             .toJson()
                           ]
                         }
@@ -606,7 +571,7 @@ export const getSettings = (data: any) => {
                               jsSetting: true,
                               propertyName: 'className',
                               hideLabel: false,
-                              label: 'Class Name',
+                              label: 'Custom CSS Class',
                               tooltip: 'A custom class name to apply to the element',
                             })
                             .toJson()

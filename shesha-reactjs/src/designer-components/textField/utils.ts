@@ -1,4 +1,6 @@
-export const defaultStyles = (): any => {
+import { IStyleType } from "@/index";
+
+export const defaultStyles = (): IStyleType => {
     return {
         background: { type: 'color', color: '#fff' },
         font: {
@@ -15,9 +17,9 @@ export const defaultStyles = (): any => {
                     color: '#d9d9d9'
                 }
             },
-            borderCorners: { all: 8 },
-            selectedBorder: 'all',
-            selectedCorner: 'all'
+            radius: { all: 8 },
+            borderType: 'all',
+            radiusType: 'all'
         },
         dimensions: {
             width: '100%',

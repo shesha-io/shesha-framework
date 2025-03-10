@@ -320,36 +320,16 @@ export const getSettings = () => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -710,6 +690,83 @@ export const getSettings = () => {
                                                                             propertyName: 'card.font.color',
                                                                         }
                                                                     ],
+                                                                })
+                                                                .toJson()
+                                                            ]
+                                                        }
+                                                    })
+                                                    .addCollapsiblePanel({
+                                                        id: 'dimensionCollapsiblePanel',
+                                                        propertyName: 'card.pnlDimension',
+                                                        label: 'Dimension',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
+                                                        parentId: 'styleRouter',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'dimensionPnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addSettingsInputRow({
+                                                                    id: 'card-width-dimensions-style-row-width',
+                                                                    parentId: 'card-width-dimensions-style-pnl',
+                                                                    inline: true,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'textField',
+                                                                            id: 'card-width-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Width",
+                                                                            width: 85,
+                                                                            propertyName: "card.dimensions.width",
+                                                                            icon: "widthIcon",
+                                                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                                        },
+                                                                        {
+                                                                            type: 'textField',
+                                                                            id: 'card-min-width-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Min Width",
+                                                                            width: 85,
+                                                                            propertyName: "card.dimensions.minWidth",
+                                                                        },
+                                                                        {
+                                                                            type: 'textField',
+                                                                            id: 'card-max-width-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Max Width",
+                                                                            width: 85,
+                                                                            propertyName: "card.dimensions.maxWidth",
+                                                                        }
+                                                                    ]
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: 'card-height-dimensions-style-row-height',
+                                                                    parentId: 'card-height-dimensions-style-pnl',
+                                                                    inline: true,
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [
+                                                                        {
+                                                                            type: 'textField',
+                                                                            id: 'card-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Height",
+                                                                            width: 85,
+                                                                            propertyName: "card.dimensions.height",
+                                                                            icon: "heightIcon",
+                                                                            tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                                        },
+                                                                        {
+                                                                            type: 'textField',
+                                                                            id: 'card-min-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Min Height",
+                                                                            width: 85,
+                                                                            propertyName: "card.dimensions.minHeight",
+                                                                        },
+                                                                        {
+                                                                            type: 'textField',
+                                                                            id: 'card-max-height-s4gmBg31azZC0UjZjpfTm',
+                                                                            label: "Max Height",
+                                                                            width: 85,
+                                                                            propertyName: "card.dimensions.maxHeight",
+                                                                        }
+                                                                    ]
                                                                 })
                                                                 .toJson()
                                                             ]
