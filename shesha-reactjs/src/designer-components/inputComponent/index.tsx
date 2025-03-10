@@ -118,6 +118,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
     switch (type) {
+        case 'tooltip':
+            return iconElement(icon, null, tooltip);
         case 'dataSortingEditor':
             return <SortingEditor {...props} onChange={onChange} modelType={props.modelType} readOnly={readOnly} />;
         case 'colorPicker':

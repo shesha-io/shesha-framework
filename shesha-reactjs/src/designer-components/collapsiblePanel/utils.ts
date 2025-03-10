@@ -9,7 +9,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
         background: { type: 'color', color: bodyColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
         border: {
-            selectedCorner: 'all', selectedSide: 'all',
+            radiusType: 'all', borderType: 'all',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
                     : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { style: 'none' } },
@@ -31,7 +31,7 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
         background: { type: 'color', color: headerBgColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0', maxHeight: 'auto', minWidth: '0', maxWidth: 'auto' },
         border: {
-            selectedCorner: 'all', selectedSide: 'all',
+            radiusType: 'all', borderType: 'all',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
                     : { all: { width: '1px', color: '#d9d9d9', style: 'solid' } },
