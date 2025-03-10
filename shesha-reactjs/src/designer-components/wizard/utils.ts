@@ -132,7 +132,7 @@ export const onAddNewItem = (items) => {
 export const defaultStyles = (): IStyleType => {
   return {
     background: { type: 'color', color: '#ffffff00' },
-    font: { weight: '400', size: 16, color: '#000000', type: 'Segoe UI' },
+    font: { weight: '400', size: 16, color: '#fff', type: 'Segoe UI' },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: { hideBorder: true, radiusType: 'all', borderType: 'all', radius: { all: 8 } },
     stylingBox: "{\"marginBottom\":\"5\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingLeft\":\"16\",\"paddingRight\":\"16\"}",

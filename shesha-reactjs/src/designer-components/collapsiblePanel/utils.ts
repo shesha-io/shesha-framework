@@ -34,9 +34,9 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
             radiusType: 'all', borderType: 'all',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
-                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' } },
+                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, bottom: { width: '0px' } },
             },
-            radius: { all: borderRadius, bottomLeft: '0', bottomRight: '0', topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
+            radius: { all: borderRadius, bottomLeft: '0px', bottomRight: '0px', topLeft: isSimpleDesign || ghost ? '0px' : borderRadius || 8, topRight: isSimpleDesign || ghost ? '0px' : borderRadius || 8 }
         },
         stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}'
     };

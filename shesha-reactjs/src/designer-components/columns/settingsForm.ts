@@ -367,6 +367,7 @@ export const getSettings = (data: any) => {
                                 id: `${backgroundStylePnlId}-controls`,
                                 parentId: backgroundStylePnlId,
                                 inline: true,
+                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
