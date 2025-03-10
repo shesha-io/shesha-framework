@@ -55,17 +55,17 @@ export const getSettings = (data: any) => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
-                    type: 'editModeSelector',
-                    id: nanoid(),
-                    propertyName: 'editMode',
-                    label: 'Edit Mode',
-                    size: 'small',
+                    type: 'switch',
+                    id: hiddenId,
+                    propertyName: 'hidden',
+                    label: 'Hide',
                     jsSetting: true,
+                    layout: 'horizontal',
                   },
                 ],
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -91,21 +91,6 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        inputs: [
-                          {
-                            type: 'switch',
-                            id: hiddenId,
-                            propertyName: 'hidden',
-                            label: 'Hide',
-                            jsSetting: true,
-                            layout: 'horizontal',
-                          },
-                        ],
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      })
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -606,7 +591,7 @@ export const getSettings = (data: any) => {
                               jsSetting: true,
                               propertyName: 'className',
                               hideLabel: false,
-                              label: 'Class Name',
+                              label: 'Custom CSS Class',
                               tooltip: 'A custom class name to apply to the element',
                             })
                             .toJson()
