@@ -25,7 +25,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   parentFormValues,
   initialValues,
   beforeSubmit,
-  //shaForm,
   onFinish,
   onFinishFailed,
   onSubmittedFailed,
@@ -44,9 +43,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { isDragging = false } = useFormDesignerState(false) ?? {};
 
-  const onValuesChangeInternal = (changedValues: any, values: any) => {
-    props.onValuesChange?.(changedValues, values);
-
+  const onValuesChangeInternal = (_changedValues: any, values: any) => {
     shaForm.setFormData({ values: values, mergeValues: true });
   };
 
