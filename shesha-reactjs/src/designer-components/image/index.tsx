@@ -173,7 +173,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         editMode: 'inherited',
         url: Boolean(prev.url) ? { _mode: 'code', _code: prev.url } : null,
         storedFileId: Boolean(prev.storedFileId) ? { _mode: 'code', _code: prev.storedFileId } : null,
-        border: { selectedCorner: 'all', selectedSide: 'all', border: { all: { width: 0, style: 'solid', color: '#d9d9d9' } } },
+        border: { radiusType: 'all', borderType: 'all', border: { all: { width: 0, style: 'solid', color: '#d9d9d9' } } },
       } as any;
     })
     .add<IImageProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))

@@ -324,36 +324,16 @@ export const getSettings = () => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -829,21 +809,16 @@ export const getSettings = () => {
                                                                         },
                                                                     ]
                                                                 })
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
+                                                                .addContainer({
+                                                                    id: 'borderStyleRow',
+                                                                    parentId: 'borderStylePnl',
+                                                                    components: getBorderInputs('headerStyles', true) as any
+                                                                })
+                                                                .addContainer({
+                                                                    id: 'borderRadiusStyleRow',
+                                                                    parentId: 'borderStylePnl',
+                                                                    components: getCornerInputs('headerStyles', true) as any
+                                                                })
                                                                 .toJson()]
                                                         }
                                                     })
@@ -969,6 +944,7 @@ export const getSettings = () => {
                                                                     id: "header-backgroundStyleRow-controls",
                                                                     parentId: 'panel-header-styles-pnl',
                                                                     inline: true,
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
