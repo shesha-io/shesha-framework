@@ -1,6 +1,15 @@
+import { addPx } from '@/components/sectionSeparator/utils';
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle, panelHeadType, bodyStyle, hideCollapseContent }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
+  headerStyle = {} as CSSProperties,
+  panelHeadType,
+  bodyStyle = {} as CSSProperties,
+  hideCollapseContent,
+  isSimpleDesign,
+  ghost
+}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -78,10 +87,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     ...headerRest
   } = headerStyle;
 
-  const borderTopLeftRadius = borderRadius?.split(' ')[0];
-  const borderTopRightRadius = borderRadius?.split(' ')[1];
-  const borderBottomLeftRadius = borderRadius?.split(' ')[2];
-  const borderBottomRightRadius = borderRadius?.split(' ')[3];
+  const borderTopLeftRadius = addPx(borderRadius || 8)?.split(' ')[0];
+  const borderTopRightRadius = addPx(borderRadius || 8)?.split(' ')[1];
+  const borderBottomLeftRadius = addPx(borderRadius || 8)?.split(' ')[2];
+  const borderBottomRightRadius = addPx(borderRadius || 8)?.split(' ')[3];
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
@@ -134,7 +143,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   }
 
     .ant-collapse-header[aria-expanded="false"] {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
 
     .ant-collapse-header[aria-expanded="true"] {

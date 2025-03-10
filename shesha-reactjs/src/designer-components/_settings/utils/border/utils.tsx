@@ -21,9 +21,9 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
 
 
     const handleBorderPart = (part, prefix: string) => {
-
+        const hideBorder = input?.border?.[part]?.style === 'none';
         if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
-        if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = part?.hideBorder ? 'none' : part?.style || all?.style;
+        if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
         if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
     };
 
@@ -101,7 +101,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
             id: nanoid(),
             inputType: 'radio',
             label: 'Border Type',
-            propertyName: 'border.borderType',
+            propertyName: `${path ? path + '.' : ''}border.borderType`,
             defaultValue: 'all',
             buttonGroupOptions: borderConfigType,
         })
@@ -214,7 +214,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
             id: nanoid(),
             inputType: 'radio',
             label: 'Radius Type',
-            propertyName: 'border.radiusType',
+            propertyName: `${path ? path + '.' : ''}border.radiusType`,
             defaultValue: 'all',
             buttonGroupOptions: radiusConfigType,
         })
