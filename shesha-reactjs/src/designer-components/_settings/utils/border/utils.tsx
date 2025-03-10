@@ -37,13 +37,13 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     };
 
     if (input?.radius) {
+        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
         if (input?.radiusType === 'all') {
-            style.borderRadius = `${input?.radius?.all ?? 8}px`;
+            style.borderRadius = `${all ?? 8}px ${all ?? 8}px ${all ?? 8}px ${all ?? 8}px`;
         } else {
-            const { all, topLeft, topRight, bottomLeft, bottomRight } = input?.radius;
             style.borderRadius = `${topLeft || all || 8}px ${topRight || all || 8}px ${bottomRight || all || 8}px ${bottomLeft || all || 8}px`;
         }
-    }
+    };
 
     return style;
 };
