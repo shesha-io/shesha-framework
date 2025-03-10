@@ -296,8 +296,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 readOnly={readOnly}
                 size={size}
             />;
-        case 'endpointsAutoComplete':
-            return <EndpointsAutocomplete readOnly={readOnly} size={size} />;
         case 'componentSelector':
             return <FormComponentSelector
                 componentType={componentType}

@@ -132,6 +132,14 @@ export const getSettings = (data: IAlertComponentProps) => {
                       label: 'Hide',
                       size: 'small',
                       jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'closable',
+                      label: 'Closable',
+                      size: 'small',
+                      jsSetting: true,
                     }
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -158,21 +166,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                       tooltip: 'If enabled, the alert will be displayed as a banner.',
                       jsSetting: true,
                     },
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'closable',
-                      label: 'Closable',
-                      size: 'small',
-                      jsSetting: true,
-                    }
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
