@@ -28,6 +28,7 @@ export const getSettings = (data: any) => {
             components: [...new DesignerToolbarSettings()
               .addCheckbox({
                 id: nanoid(),
+                inputType: 'switch',
                 propertyName: 'block',
                 parentId: 'root',
                 label: 'Block',
