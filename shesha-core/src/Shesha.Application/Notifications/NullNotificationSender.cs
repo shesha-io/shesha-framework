@@ -21,7 +21,7 @@ namespace Shesha.Notifications
 
         public Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
-            IMessageSender sender, 
+            IMessageSender? sender, 
             IMessageReceiver receiver, 
             TData data, 
             RefListNotificationPriority priority, 
@@ -35,7 +35,7 @@ namespace Shesha.Notifications
 
         public Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
-            Person sender, 
+            Person? sender, 
             Person receiver, 
             TData data, 
             RefListNotificationPriority priority, 

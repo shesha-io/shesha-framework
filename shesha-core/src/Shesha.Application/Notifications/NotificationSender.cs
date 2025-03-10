@@ -97,7 +97,7 @@ namespace Shesha.Notifications
         /// <returns></returns>
         public async Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
-            IMessageSender sender, 
+            IMessageSender? sender, 
             IMessageReceiver receiver, 
             TData data, 
             RefListNotificationPriority priority, 
@@ -121,7 +121,7 @@ namespace Shesha.Notifications
             {
                 Name = type.Name,
                 NotificationType = type,
-                FromPerson = sender.GetPerson(),
+                FromPerson = sender?.GetPerson(),
                 ToPerson = receiver.GetPerson(),
                 NotificationData = JsonSerializer.Serialize(data),
                 TriggeringEntity = triggeringEntity,
@@ -165,7 +165,7 @@ namespace Shesha.Notifications
         private async Task SendNotificationToChannelAsync<TData>(
             Notification notification, 
             TData data, 
-            IMessageSender sender, 
+            IMessageSender? sender, 
             IMessageReceiver receiver,
             NotificationTypeConfig type,
             RefListNotificationPriority priority, 
@@ -231,7 +231,7 @@ namespace Shesha.Notifications
             return sender;
         }
 
-        private IMessageSender GetMessageSender(NotificationMessage message)
+        private IMessageSender? GetMessageSenderOrNull(NotificationMessage message)
         {
             if (message.PartOf.FromPerson != null)
                 return new PersonMessageParticipant(message.PartOf.FromPerson);
@@ -239,9 +239,11 @@ namespace Shesha.Notifications
             if (!string.IsNullOrWhiteSpace(message.SenderText))
                 return new RawAddressMessageParticipant(message.SenderText);
 
-            throw new Exception($"{nameof(message.PartOf.FromPerson)} or {nameof(message.SenderText)} must not be null");
+            return null;
         }
-        
+
+        private IMessageSender GetMessageSender(NotificationMessage message) => GetMessageSenderOrNull(message) ?? throw new Exception($"{nameof(message.PartOf.FromPerson)} or {nameof(message.SenderText)} must not be null");
+
         private IMessageReceiver GetMessageReceiver(NotificationMessage message)
         {
             if (message.PartOf.ToPerson != null)
@@ -263,7 +265,7 @@ namespace Shesha.Notifications
 
                 var attachments = await GetAttachmentsAsync(message);
 
-                var sender = GetMessageSender(message);
+                var sender = GetMessageSenderOrNull(message);
                 var reciever = GetMessageReceiver(message);
 
                 message.RecipientText = reciever.GetAddress(channelSender);
@@ -308,7 +310,7 @@ namespace Shesha.Notifications
         /// Attempts to send a notification and handles exceptions internally.
         /// </summary>
         private async Task<SendStatus> TrySendAsync(
-            IMessageSender sender,
+            IMessageSender? sender,
             IMessageReceiver receiver,
             NotificationMessage message,
             INotificationChannelSender notificationChannelSender,
@@ -338,7 +340,7 @@ namespace Shesha.Notifications
 
         public async Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
-            Person senderPerson, 
+            Person? senderPerson, 
             Person receiverPerson, 
             TData data, 
             RefListNotificationPriority priority, 
@@ -347,7 +349,9 @@ namespace Shesha.Notifications
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {
-            var sender = new PersonMessageParticipant(senderPerson);
+            var sender = senderPerson != null 
+                ? new PersonMessageParticipant(senderPerson)
+                : null;
             var receiver = new PersonMessageParticipant(receiverPerson);            
             await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel);            
         }

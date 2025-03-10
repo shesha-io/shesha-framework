@@ -43,7 +43,7 @@ namespace Shesha.Notifications.SMS
             return await _smsSettings.SmsSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver reciever, NotificationMessage message,  List<EmailAttachment>? attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender? sender, IMessageReceiver reciever, NotificationMessage message,  List<EmailAttachment>? attachments = null)
         {
             var settings = await GetSettingsAsync();
 
