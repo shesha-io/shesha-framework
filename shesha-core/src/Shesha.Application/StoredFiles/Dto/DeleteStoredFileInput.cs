@@ -12,7 +12,6 @@ namespace Shesha.StoredFiles.Dto
         /// <summary>
         /// File Id
         /// </summary>
-        [Required]
         [BindProperty(Name = "fileId")]
         public Guid? FileId { get; set; }
 
