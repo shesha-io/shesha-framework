@@ -181,14 +181,14 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName)
+        private async Task<Module?> GetModuleAsync(string moduleName)
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
                 : null;
         }
 
-        private async Task<FrontEndApp> GetFrontEndAppAsync(string appKey)
+        private async Task<FrontEndApp?> GetFrontEndAppAsync(string appKey)
         {
             return !string.IsNullOrWhiteSpace(appKey)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_frontEndAppRepository.GetAll().Where(m => m.AppKey == appKey))

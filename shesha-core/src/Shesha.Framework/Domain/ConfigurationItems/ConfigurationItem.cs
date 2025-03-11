@@ -34,14 +34,14 @@ namespace Shesha.Domain.ConfigurationItems
         /// </summary>
         [StringLength(200)]
         [Display(Name = "Label", Description = "Label of the item, can be used in lists as a user friendly name")]
-        public virtual string Label { get; set; }
+        public virtual string? Label { get; set; }
 
         /// <summary>
         /// Item description
         /// </summary>
         [StringLength(int.MaxValue)]
         [DataType(DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
         
         /// <summary>
         /// Module

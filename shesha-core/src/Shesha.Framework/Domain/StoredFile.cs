@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -84,9 +85,9 @@ namespace Shesha.Domain
         /// </summary>
         /// <typeparam name="TId">Id type of the owner</typeparam>
         /// <param name="entity">Owner entity</param>
-        public virtual void SetOwner<TId>(IEntity<TId> entity)
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
         {
-            Owner = new GenericEntityReference(entity.Id.ToString(), entity.GetType().StripCastleProxyType().FullName);
+            Owner = new GenericEntityReference(entity.Id.ToString().NotNull(), entity.GetType().StripCastleProxyType().GetRequiredFullName());
         }
 
         /// <summary>

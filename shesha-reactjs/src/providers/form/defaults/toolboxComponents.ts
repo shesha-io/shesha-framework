@@ -181,7 +181,6 @@ export const getToolboxComponents = (
       name: 'Tables and Lists',
       visible: true,
       components: [
-        TableTemplate,
         TableContext,
         DataTable,
         DataList,
@@ -228,6 +227,7 @@ export const getToolboxComponents = (
         FormAutocompleteComponent,
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,
+        TableTemplate,
       ],
     },
     {

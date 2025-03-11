@@ -52,7 +52,7 @@ namespace Shesha.Utilities
             var oldContext = SynchronizationContext.Current;
             using var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
-            T ret = default(T);
+            var ret = default(T);
 #pragma warning disable VSTHRD101 // Rethrow to preserve stack details
 #pragma warning disable AsyncFixer03 // Avoid unsupported fire-and-forget async-void methods or delegates. Unhandled exceptions will crash the process.
             synch.Post(async _ =>
@@ -75,7 +75,9 @@ namespace Shesha.Utilities
 #pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
             SynchronizationContext.SetSynchronizationContext(oldContext);
+#pragma warning disable CS8603 // Possible null reference return.
             return ret;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         private sealed class ExclusiveSynchronizationContext : SynchronizationContext, IDisposable
@@ -115,7 +117,7 @@ namespace Shesha.Utilities
             {
                 while (!done)
                 {
-                    Tuple<SendOrPostCallback, object?> task = null;
+                    Tuple<SendOrPostCallback, object?>? task = null;
                     lock (items)
                     {
                         if (items.Count > 0)

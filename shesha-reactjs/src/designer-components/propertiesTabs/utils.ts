@@ -46,6 +46,7 @@ export const filterDynamicComponents = (components, query, data) => {
                     components: contentComponents
                 },
                 className: 'y-overflow',
+                stylingBox: '{"marginBottom":"5px"}',
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };
         }

@@ -70,7 +70,7 @@ namespace Shesha.Utilities
                 var env = IocManager.Resolve<IWebHostEnvironment>();
 
                 var basePath = string.IsNullOrEmpty(env.ContentRootPath)
-                    ? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) // Running outside Web Hosting context e.g. unit testing
+                    ? Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty // Running outside Web Hosting context e.g. unit testing
                     : env.ContentRootPath;
                 basePath = basePath.TrimEnd('\\').TrimEnd('/');
 

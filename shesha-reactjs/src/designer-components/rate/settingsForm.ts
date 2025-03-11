@@ -33,6 +33,7 @@ export const getSettings = (data: IRateProps) => {
                   parentId: commonTabId,
                   styledLabel: true,
                   validate: { required: true },
+                  size: 'small',
                   jsSetting: true
                 })
                 .addLabelConfigurator({
@@ -41,6 +42,22 @@ export const getSettings = (data: IRateProps) => {
                   label: 'Label',
                   parentId: commonTabId,
                   hideLabel: true,
+                  defaultValue: true,
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      type: 'textArea',
+                      id: nanoid(),
+                      propertyName: 'description',
+                      label: 'Tooltip',
+                      jsSetting: true,
+                    },
+                  ],
+                  hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -58,20 +75,6 @@ export const getSettings = (data: IRateProps) => {
                       id: nanoid(),
                       propertyName: 'icon',
                       label: 'Icon',
-                      jsSetting: true,
-                    },
-                  ],
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'textArea',
-                      id: nanoid(),
-                      propertyName: 'description',
-                      label: 'Tooltip',
                       jsSetting: true,
                     },
                   ],
@@ -142,7 +145,7 @@ export const getSettings = (data: IRateProps) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
+                              hideLabel: false,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })

@@ -46,7 +46,7 @@ export const getSettings = (data: any) => {
                   id: '46d07439-4c18-468c-89e1-60c002ce96c55',
                   inputType: 'switch',
                   propertyName: 'hidden',
-                  label: 'Hidden',
+                  label: 'hide',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: false,
                 })
@@ -295,16 +295,16 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInputRow(getBorderInputs()[0] as any)
-                              .addSettingsInputRow(getBorderInputs()[1] as any)
-                              .addSettingsInputRow(getBorderInputs()[2] as any)
-                              .addSettingsInputRow(getBorderInputs()[3] as any)
-                              .addSettingsInputRow(getBorderInputs()[4] as any)
-                              .addSettingsInputRow(getCornerInputs()[0] as any)
-                              .addSettingsInputRow(getCornerInputs()[1] as any)
-                              .addSettingsInputRow(getCornerInputs()[2] as any)
-                              .addSettingsInputRow(getCornerInputs()[3] as any)
-                              .addSettingsInputRow(getCornerInputs()[4] as any)
+                              .addContainer({
+                                id: 'borderStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getBorderInputs() as any
+                              })
+                              .addContainer({
+                                id: 'borderRadiusStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getCornerInputs() as any
+                              })
                               .toJson(),
                           ],
                         },

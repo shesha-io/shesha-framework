@@ -11,6 +11,6 @@ namespace Shesha.Web
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public static HttpContext Current => _httpContextAccessor?.HttpContext;
+        public static HttpContext? Current => _httpContextAccessor?.HttpContext;
     }
 }

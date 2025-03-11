@@ -15,7 +15,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
-using Shesha.NHibernate.UoW;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Test;
 using System;
@@ -143,8 +143,8 @@ namespace Shesha.Tests.JsonEntity
 
             i.Ii = i.I;
 
-            var pi = i.GetType().GetProperty("I");
-            var pii = i.GetType().GetProperty("Ii");
+            var pi = i.GetType().GetRequiredProperty("I");
+            var pii = i.GetType().GetRequiredProperty("Ii");
 
             pii.SetValue(i, Convert.ToInt64(pi.GetValue(i)));
             pii.SetValue(i, Convert.ChangeType(pi.GetValue(i), typeof(Int64?)));
@@ -166,7 +166,7 @@ namespace Shesha.Tests.JsonEntity
 
                 var fn = obj.JsonPerson.FirstName;
 
-                var fn1 = (obj.JsonList[0] as JsonAddress).Town;
+                var fn1 = obj.JsonList[0].ForceCastAs<JsonAddress>().Town;
 
                 var slist = await _jsonStringRepository.GetAll().Take(25).ToListAsync();
 
@@ -209,47 +209,47 @@ namespace Shesha.Tests.JsonEntity
     ""any"":{""town"":""My Town"",""street"":""My street"",""postalCode"":12345678,""_meta"":{""className"":""Shesha.Test.JsonAddress""}}
 }
 ";
-                var complex = JsonConvert.DeserializeObject<ComplexTest>(json);
+                var complex = JsonConvert.DeserializeObject<ComplexTest>(json).NotNull();
 
                 var jsonRes = JsonEntityProxy.GetJson(complex.JsonPerson).ToString();
 
                 var b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                var i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                var tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                var i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                var tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 var fn = complex.JsonPerson.FirstName;
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 var ja = complex.JsonPerson.Address;
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 var jat = complex.JsonPerson.Address?.Town;
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 complex.JsonPerson.Person = person;
 
                 jsonRes = JsonEntityProxy.GetJson(complex.JsonPerson).ToString();
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
-                complex.JsonPerson.Address.Town = "Test town";
+                complex.JsonPerson.NotNull().Address.Town = "Test town";
 
                 jsonRes = JsonEntityProxy.GetJson(complex.JsonPerson).ToString();
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 jsonRes = JsonEntityProxy.GetJson(complex).ToString();
 
@@ -300,7 +300,7 @@ namespace Shesha.Tests.JsonEntity
 
                 dto.JsonPerson.FirstName = "Shurik";
                 dto.Description = "+++++++";
-                (dto.JsonList[3] as JsonPerson).FirstName = "Trheeeeeee";
+                dto.JsonList[3].ForceCastAs<JsonPerson>().FirstName = "Trheeeeeee";
 
                 ObjectToJsonExtension.ObjectToJObject(dto, jObj);
             }
@@ -325,7 +325,7 @@ namespace Shesha.Tests.JsonEntity
             var instanceField = proxyType.GetField("__target", flags);
             var unproxy = instanceField?.GetValue(model1);
 
-            var s1 = (model1 as IJsonReference)._displayName;
+            var s1 = model1.ForceCastAs<IJsonReference>()._displayName;
             model1.Test = "===";
             var s2 = model1.Test;
 
@@ -333,10 +333,10 @@ namespace Shesha.Tests.JsonEntity
 
             var model2 = new ProxyGenerator().CreateClassProxyWithTarget(obj.GetType(), /*new[] { typeof(IInner) },*/ obj, p);
 
-            (model1 as IJsonReference)._displayName = "111";
-            (model2 as IJsonReference)._displayName = "222";
+            model1.ForceCastAs<IJsonReference>()._displayName = "111";
+            model2.ForceCastAs<IJsonReference>()._displayName = "222";
 
-            var s = (model1 as IJsonReference)._displayName;
+            var s = model1.ForceCastAs<IJsonReference>()._displayName;
         }
 
         [Fact]
@@ -366,13 +366,13 @@ namespace Shesha.Tests.JsonEntity
     ""any"":{""town"":""My Town"",""street"":""My street"",""postalCode"":12345678,""_meta"":{""className"":""Shesha.Test.JsonAddress""}}
 }
 ";
-                var complex = JsonConvert.DeserializeObject<ComplexTest>(json);
+                var complex = JsonConvert.DeserializeObject<ComplexTest>(json).NotNull();
 
                 var json2 = JsonConvert.SerializeObject(complex);
 
                 var name = complex.JsonPerson?.FirstName;
 
-                var pp = complex.JsonPerson.Person;
+                var pp = complex.JsonPerson?.Person;
 
                 var json3 = JsonConvert.SerializeObject(complex);
 

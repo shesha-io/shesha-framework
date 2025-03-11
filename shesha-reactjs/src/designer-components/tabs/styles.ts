@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, position = 'top' }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType }) => {
     const {
         borderWidth,
         borderStyle,
@@ -30,6 +30,10 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
         paddingLeft = '0px',
         paddingBottom = '0px',
         overflow,
+        fontSize,
+        fontWeight,
+        color,
+        fontFamily,
         rest
     } = styles;
 
@@ -50,7 +54,10 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
     const isBottom = position === 'bottom';
 
     const getBorder = (side) => {
-        return `${styles[`${side}Width`] ?? borderWidth} ${styles[`${side}Style`] ?? borderStyle} ${styles[`${side}Color`] ?? borderColor}`;
+        const width = `${side}Width`;
+        const style = `${side}Style`;
+        const color = `${side}Color`;
+        return `${styles[width] ?? borderWidth} ${styles[style] ?? borderStyle} ${styles[color] ?? borderColor}`;
     };
 
     const borderMap = {
@@ -111,7 +118,7 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
                 styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
-                box-shadow: ${boxShadow} !important;
+                box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px` :
                 isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}` :
@@ -128,10 +135,10 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
                 --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft ?
                 styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 --ant-color-bg-container: ${backgroundImage || backgroundColor};
-                background: ${backgroundImage || backgroundColor} !important;
+                background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
                 ${cardStyles};
                 ${isLeft && `border-right-width: ${styles.borderLeftWidth} !important` || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
-                ${isLeft ? `margin-right: -${styles.borderLeftWidth} !important` : isRight ? `margin-left: -${styles.borderRightWidth} !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
+                ${isLeft ? `margin-right: calc(var(--ant-line-width) * -1) !important` : isRight ? `margin-left: calc(var(--ant-line-width) * -1) !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
                 width: ${cardWidth};
                 height: ${cardHeight};
                 min-width: ${cardMinWidth};
@@ -139,6 +146,13 @@ export const useStyles = createStyles(({ css, cx }, { styles, cardStyles, positi
                 max-width: ${cardMaxWidth};
                 max-height: ${cardMaxHeight};
                 z-index: 2;
+
+                * {
+                color: ${color ?? token.colorPrimary} !important;
+                font-size: ${fontSize} !important;
+                font-weight: ${fontWeight} !important;
+                font-family: ${fontFamily} !important;
+                }
             }
 
             .ant-tabs-nav {

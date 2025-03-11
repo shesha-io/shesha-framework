@@ -29,7 +29,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'hidden',
-            label: 'Hidden',
+            label: 'hide',
           })
           .addCheckbox({
             id: nanoid(),

@@ -46,7 +46,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         _propertyRepository = propertyRepository;
     }
 
-    public async Task<FormIdFullNameDto> GetEntityConfigFormAsync(string entityConfigName, string typeName)
+    public async Task<FormIdFullNameDto?> GetEntityConfigFormAsync(string entityConfigName, string typeName)
     {
         var entityConfig = await AsyncQueryableExecuter.FirstOrDefaultAsync(Repository.GetAll().Where(x => x.Name == entityConfigName || x.TypeShortAlias == entityConfigName));
         if (entityConfig == null)
@@ -88,7 +88,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
             : models
             .Where(e => string.IsNullOrWhiteSpace(term)
                 || e.FullClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase)
-                || e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+                || e.Label != null && e.Label.Contains(term, StringComparison.InvariantCultureIgnoreCase))
             .OrderBy(e => e.FullClassName)
             .Take(10)
             .ToList();

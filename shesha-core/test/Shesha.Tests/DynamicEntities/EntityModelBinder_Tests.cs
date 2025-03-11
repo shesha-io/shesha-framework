@@ -35,7 +35,7 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                Person testPerson = null;
+                Person? testPerson = null;
 
                 try
                 {
@@ -60,7 +60,7 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
 
                 try
                 {
@@ -94,8 +94,8 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                Person newTestPerson1 = null;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
+                Person? newTestPerson1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
 
                 try
                 {
@@ -110,6 +110,8 @@ namespace Shesha.Tests.DynamicEntities
                     await testOrgRepo.InsertAsync(newTestOrg1);
                     await uow.SaveChangesAsync();
                     newTestOrg1 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation");
+                    Assert.True(newTestOrg1 != null);
+
                     newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
                     Assert.True(string.IsNullOrEmpty(newTestOrg1.Description));
@@ -160,16 +162,16 @@ namespace Shesha.Tests.DynamicEntities
 
             using (var uow = NewNhUnitOfWork())
             {
-                Person newTestPerson1 = null;
-                Person newTestPerson2 = null;
-                TestOrganisationAllowContactUpdate newTestOrg1 = null;
-                TestOrganisationAllowContactUpdate newTestOrg2 = null;
-                TestOrganisationAllowContactUpdate newTestOrg3 = null;
-                TestOrganisationAllowContactUpdate newTestOrg4 = null;
-                TestOrganisationAllowContactUpdate newTestOrg5 = null;
-                TestOrganisationAllowContactUpdate newTestOrg6 = null;
-                TestOrganisationAllowContactUpdate newTestOrg7 = null;
-                TestOrganisationAllowContactUpdate newTestOrg8 = null;
+                Person? newTestPerson1 = null;
+                Person? newTestPerson2 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg1 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg2 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg3 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg4 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg5 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg6 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg7 = null;
+                TestOrganisationAllowContactUpdate? newTestOrg8 = null;
 
                 try
                 {
@@ -189,6 +191,7 @@ namespace Shesha.Tests.DynamicEntities
                     await testOrgRepo.InsertAsync(newTestOrg1);
                     await uow.SaveChangesAsync();
                     newTestOrg1 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation");
+                    Assert.NotNull(newTestOrg1);
                     newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
                     // Check for prepared value
@@ -224,6 +227,7 @@ namespace Shesha.Tests.DynamicEntities
                     await testOrgRepo.InsertAsync(newTestOrg4);
                     await uow.SaveChangesAsync();
                     newTestOrg4 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation4");
+                    Assert.NotNull(newTestOrg4);
                     Assert.True(newTestOrg4.PrimaryContact.Id == newTestPerson1?.Id);
                     Assert.True(newTestOrg4.PrimaryContact.LastName == "TestLastName");
                     Assert.True(newTestOrg4.PrimaryContact.LastName != lastName);
@@ -235,6 +239,7 @@ namespace Shesha.Tests.DynamicEntities
                     await _personRepo.InsertAsync(newTestPerson2);
                     await uow.SaveChangesAsync();
                     newTestPerson2 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson2");
+                    Assert.NotNull(newTestPerson2);
 
                     // Change child by Id and check if TestPerson1 is not deleted by DeleteUnreferenced because is referenced to TestOrganisation3 and TestOrganisation4
                     var testErrors5 = new List<ValidationResult>();
@@ -288,6 +293,7 @@ namespace Shesha.Tests.DynamicEntities
                     newTestOrg8 = await testOrgRepo.GetAsync(newTestOrg4.Id);
                     newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson1");
                     newTestPerson2 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson22");
+                    Assert.NotNull(newTestPerson2);
                     Assert.True(newTestPerson1 == null);
                     Assert.True(newTestOrg8.Name == "TestOrganisation4");
                     Assert.True(newTestOrg8.PrimaryContact?.Id == newTestPerson2.Id && newTestPerson2.FirstName == "TestPerson22" && newTestPerson2.LastName == "TestLastName22");
@@ -312,7 +318,7 @@ namespace Shesha.Tests.DynamicEntities
 
     public class Finder : CascadeEntityCreatorBase<Person, Guid>
     {
-        public override Person FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
+        public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
             var p = info.NewObject;
 
@@ -339,7 +345,7 @@ namespace Shesha.Tests.DynamicEntities
             return info.NewObject;
         }
 
-        public override Person FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
+        public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
             return info.Repository.GetAll().FirstOrDefault(x => x.FirstName == info.NewObject.FirstName);
         }

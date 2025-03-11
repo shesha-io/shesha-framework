@@ -51,6 +51,11 @@ export const getSettings = (data: any) => {
                   label: 'label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
+                  labelAlignOptions:[
+                      { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                      { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                      { value: 'right', icon: 'AlignRightOutlined', title: 'Right' }
+                  ]
                 })
                 .addSettingsInput({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
@@ -361,8 +366,8 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 id: 'title-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
-                                propertyName: 'containerStyle',
-                                hideLabel: true,
+                                propertyName: 'titleStyle',
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
@@ -414,7 +419,7 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'containerStyle',
-                                hideLabel: true,
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',

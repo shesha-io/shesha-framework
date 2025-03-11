@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Shesha.Reflection;
+using Shesha.Settings.Exceptions;
 using Shesha.Utilities;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -34,23 +35,36 @@ namespace Shesha.Settings
                 ? settingAttribute.Name
                 : property.Name;
 
-            Module = property.DeclaringType.GetConfigurableModuleName();
+            Module = property.DeclaringType.NotNull().GetConfigurableModuleName().NotNull();
         }
 
         /// inheritedDoc
-        public async Task<TValue> GetValueAsync()
+        public async Task<TValue?> GetValueOrNullAsync()
         {
             return await _settingManager.GetOrNullAsync<TValue>(Module, Name);
         }
 
         /// inheritedDoc
-        public TValue GetValue()
+        public async Task<TValue> GetValueAsync()
         {
-            return AsyncHelper.RunSync<TValue>(() => GetValueAsync());
+            var value = await GetValueOrNullAsync();
+            return value ?? throw new UnexpectedNullSettingValueException(Module, Name);
         }
 
         /// inheritedDoc
-        public async Task SetValueAsync(TValue value)
+        public TValue? GetValueOrNull()
+        {
+            return AsyncHelper.RunSync<TValue?>(() => GetValueOrNullAsync());
+        }
+
+        /// inheritedDoc
+        public TValue GetValue()
+        {
+            return GetValueOrNull() ?? throw new UnexpectedNullSettingValueException(Module, Name);
+        }
+
+        /// inheritedDoc
+        public async Task SetValueAsync(TValue? value)
         {
             await _settingManager.SetAsync<TValue>(Module, Name, value);
         }
@@ -62,6 +76,6 @@ namespace Shesha.Settings
         }
 
         /// inheritedDoc
-        public object GetDefaultValue() => DefaultValue;
+        public object? GetDefaultValue() => DefaultValue;        
     }
 }

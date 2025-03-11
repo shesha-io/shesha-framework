@@ -247,7 +247,7 @@ namespace Shesha.Import
             await ImportAsync(fileName, stream, cancellationToken, null);
         }
 
-        public async Task ImportAsync(string fileName, Stream stream, CancellationToken cancellationToken, Action<T> prepareResultAction)
+        public async Task ImportAsync(string fileName, Stream stream, CancellationToken cancellationToken, Action<T>? prepareResultAction)
         {
             try
             {

@@ -6,8 +6,6 @@ import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 export type ImageSourceType = 'url' | 'storedFile' | 'base64';
 
 export interface IImageFieldProps {
-  height?: number | string;
-  width?: number | string;
   value?: string;
   onChange?: (newValue: string) => void;
   readOnly: boolean;
@@ -19,7 +17,7 @@ export interface IImageFieldProps {
 }
 
 export const ImageField: FC<IImageFieldProps> = (props) => {
-  const { height, width, imageSource, value, allowPreview = false, styles, onChange } = props;
+  const { imageSource, value, allowPreview = false, styles, onChange } = props;
 
   const readOnly = props?.readOnly || props.imageSource === 'url';
 
@@ -96,8 +94,8 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
         <Image
           src={content}
           alt={props?.alt}
-          width={Number(width) ? `${width}px` : width}
-          height={Number(height) ? `${height}px` : height}
+          width={styles.width}
+          height={styles.height}
           preview={allowPreview}
           style={styles}
         />

@@ -139,5 +139,5 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
 
   return (
     <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
-  ); 
+  );
 };

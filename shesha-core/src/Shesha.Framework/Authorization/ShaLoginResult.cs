@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization.Users;
 using Abp.MultiTenancy;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace Shesha.Authorization
@@ -11,18 +12,21 @@ namespace Shesha.Authorization
 
         public int? TenantId { get; private set; }
 
-        public TUser User { get; private set; }
+        public TUser? User { get; private set; }
 
-        public ClaimsIdentity Identity { get; private set; }
+        public ClaimsIdentity? Identity { get; private set; }
 
-        public ShaLoginResult(ShaLoginResultType result, AbpTenantBase tenant = null, TUser user = null)
+        [MemberNotNullWhen(true, nameof(Identity))]   
+        public bool IsSuccess => Result == ShaLoginResultType.Success;
+
+        public ShaLoginResult(ShaLoginResultType result, AbpTenantBase? tenant = null, TUser? user = null)
         {
             Result = result;
             TenantId = tenant?.Id;
             User = user;
         }
 
-        public ShaLoginResult(AbpTenantBase tenant, TUser user, ClaimsIdentity identity)
+        public ShaLoginResult(AbpTenantBase? tenant, TUser user, ClaimsIdentity identity)
             : this(ShaLoginResultType.Success, tenant)
         {
             User = user;

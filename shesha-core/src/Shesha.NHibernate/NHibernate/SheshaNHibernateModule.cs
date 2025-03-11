@@ -64,7 +64,7 @@ namespace Shesha.NHibernate
         /// <summary>
         /// NHibernate session factory object.
         /// </summary>
-        private ISessionFactory _sessionFactory;
+        private ISessionFactory? _sessionFactory;
         private global::NHibernate.Cfg.Configuration _nhConfig;
 
         public override void PreInitialize()
@@ -307,7 +307,7 @@ namespace Shesha.NHibernate
                     }                    
 
                     // Log application start if DB was not ready for logging before the migrations
-                    if (!dbIsReadyForLogging)
+                    if (startupDto == null)
                         startupDto = await appStartup.LogApplicationStartAsync(appStartLogArgs);
 
                     if (!skipBootstrappers) 
@@ -324,8 +324,8 @@ namespace Shesha.NHibernate
                                 {
                                     Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
-                                    var method = bootstrapperType.GetMethod(nameof(IBootstrapper.ProcessAsync));
-                                    var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+                                    var method = bootstrapperType.GetRequiredMethod(nameof(IBootstrapper.ProcessAsync));
+                                    var unitOfWorkAttribute = method.GetAttributeOrNull<UnitOfWorkAttribute>(true);
                                     var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
 
                                     if (useDefaultUnitOfWork)
@@ -373,7 +373,7 @@ namespace Shesha.NHibernate
             var withDeps = types.Select(t => new
                 {
                     Type = t,
-                    Dependencies = t.GetAttribute<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
+                    Dependencies = t.GetAttributeOrNull<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
                 })
                 .ToList();
             

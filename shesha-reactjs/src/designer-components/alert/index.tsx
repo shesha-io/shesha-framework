@@ -12,23 +12,22 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import Marquee from 'react-fast-marquee';
 
-
 const defaultTextForPreview = {
   success: {
-    text: 'Success Alert Preview Text', 
-    description: 'This is a success alert preview text. More information here.'
+    text: 'Success Alert Preview Text',
+    description: 'This is a success alert preview text. More information here. If no info is provided, the description will not be displayed.'
   },
   info: {
     text: 'Info Alert Preview Text',
-    description: 'This is an info alert preview text. More information here.'
+    description: 'Info alert preview text. More details here. Description hidden if no info is provided.'
   },
   warning: {
     text: 'Warning Alert Preview Text',
-    description: 'This is a warning alert preview text. More information here.'
+    description: 'This is a warning alert preview text. More information here. If no info is provided, the description will not be displayed.'
   },
   error: {
     text: 'Error Alert Preview Text',
-    description: 'This is an error alert preview text. More information here.'
+    description: 'This is an error alert preview text. More information here. If no info is provided, the description will not be displayed.'
   }
 };
 
@@ -62,12 +61,14 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
     return (
       <Alert
         className="sha-alert"
-        message={model.marquee ? (<Marquee pauseOnHover gradient={false}><div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} /></Marquee>) : <div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} />}
+        message={model.marquee ? (<Marquee pauseOnHover gradient={false}><div style={{ padding: 0 }} dangerouslySetInnerHTML={{ __html: evaluatedMessage }} /></Marquee>) :
+          <div style={{ padding: '0' }} dangerouslySetInnerHTML={{ __html: evaluatedMessage }} />
+        }
         banner={model.banner}
         type={alertType}
         description={!model.banner && evaluatedDescription}
         showIcon={showIcon}
-        style={getStyle(style, formData)} // Temporary. Make it configurable
+        style={{ ...getStyle(style, formData), padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />
