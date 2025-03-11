@@ -12,7 +12,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
     
     .ant-steps-item {
       --ant-color-primary: ${primaryBgColor};
-      --ant-color-text-description: ${styles.color}45;
+      --ant-color-text-description: ${styles.color}75;
       --ant-color-text: ${styles.color};
       --ant-font-size: calc(${styles.fontSize}/1.3);
       --ant-font-size-lg: ${styles.fontSize || 16};
