@@ -119,7 +119,7 @@ export const getSettings = (data: ISwitchComponentProps) => {
                           id: 'dimensionsStylePnl',
                           components: [...new DesignerToolbarSettings()
                             .addSettingsInputRow({
-                              id: 'dimensionsStyleRowHeight',
+                              id: nanoid(),
                               parentId: 'dimensionsStylePnl',
                               inline: true,
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
