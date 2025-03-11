@@ -99,7 +99,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         display: none;
       }
         
-      ${hasBorder && '--ant-line-width: 0px !important;'}
+      ${!isSimpleDesign && hasBorder && '--ant-line-width: 0px !important;'};
       --primary-color: ${token.colorPrimary};
       --ant-collapse-content-padding: ${paddingTop || 16}px ${paddingRight || 16}px ${paddingBottom || 16}px ${paddingLeft || 16}px !important;
       width: ${width};
@@ -233,9 +233,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         text-align: ${textAlign};
         font-size: ${fontSize};
         font-weight: ${fontWeight};
-      }
+      };
 
-      --ant-line-width: 0px !important;
       --primary-color: ${token.colorPrimary};
       &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
@@ -247,7 +246,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
             font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
             font-weight: 'bold';
           }
-         
         }
       }
 
