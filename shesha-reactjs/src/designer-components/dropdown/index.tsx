@@ -23,6 +23,7 @@ import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useSheshaApplication } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { ConfigProvider } from 'antd';
 
 
 const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
@@ -101,16 +102,31 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
               onChange(...args);
           };
 
-          return <Dropdown
-            {...model}
-            style={{
-              ...finalStyle,
-            }}
-            {...customEvent}
-            value={value}
-            size={model?.size}
-            onChange={onChangeInternal}
-          />;
+          return (
+            <ConfigProvider
+              theme={{
+                components: {
+                  Dropdown: {
+                    fontFamily: model?.font?.type,
+                    fontSize: model?.font?.size,
+                    fontWeightStrong: Number(fontStyles.fontWeight),
+                  },
+                },
+              }}
+            >
+              <Dropdown
+                {...model}
+                style={{
+                  ...finalStyle
+                }}
+                {...customEvent}
+                value={value}
+                size={model?.size}
+                onChange={onChangeInternal}
+              />
+            </ConfigProvider>
+
+          );
         }}
       </ConfigurableFormItem>
     );
