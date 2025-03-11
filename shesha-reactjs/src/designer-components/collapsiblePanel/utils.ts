@@ -12,7 +12,13 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
             radiusType: 'all', borderType: 'all',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
-                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { style: 'none' } },
+                    : {
+                        all: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        top: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        bottom: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        left: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        right: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                    },
             },
             radius: { all: borderRadius || 8, topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
         },
@@ -34,7 +40,13 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
             radiusType: 'all', borderType: 'all',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
-                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, bottom: { width: '0px' } },
+                    : {
+                        all: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        bottom: { width: '0px', color: '#d9d9d9', style: 'solid' },
+                        top: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        left: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        right: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                    },
             },
             radius: { all: borderRadius, bottomLeft: '0px', bottomRight: '0px', topLeft: isSimpleDesign || ghost ? '0px' : borderRadius || 8, topRight: isSimpleDesign || ghost ? '0px' : borderRadius || 8 }
         },
