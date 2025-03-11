@@ -22,7 +22,7 @@ import { ValidationErrors } from '@/components';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { useSheshaApplication } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from '../textField/utils';
+import { defaultStyles } from './utils';
 
 
 const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
@@ -30,6 +30,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
@@ -80,7 +81,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
       ...dimensionsStyles,
@@ -90,7 +90,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       ...shadowStyles
     });
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
-
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -105,12 +104,11 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
           return <Dropdown
             {...model}
             style={{
-              ...finalStyle, ...localStyle
+              ...finalStyle,
             }}
             {...customEvent}
             value={value}
             size={model?.size}
-            hideBorder={model?.border?.hideBorder}
             onChange={onChangeInternal}
           />;
         }}
