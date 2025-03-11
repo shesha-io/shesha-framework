@@ -112,6 +112,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
           {...mergedProps}
           data-sha-form-id={shaForm.form.id}
+          data-sha-form-name={`${shaForm.form.module}/${shaForm.form.name}`}
         >
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
           {children}
