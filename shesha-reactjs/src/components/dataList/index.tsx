@@ -23,6 +23,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
+import { ConfigurableItemFullName } from '@/interfaces';
 
 interface EntityForm {
   entityType: string;
@@ -346,7 +347,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       'data-sha-parent-form-id': `${shaForm?.form?.id}`,
       'data-sha-parent-form-name': `${shaForm?.form?.module}/${shaForm?.form?.name}`,
       'data-sha-form-id': `${entityForm?.formConfiguration?.id}`,
-      'data-sha-form-name': `${entityForm?.formId?.module}/${entityForm?.formId?.name}`,
+      'data-sha-form-name': `${(entityForm?.formId as ConfigurableItemFullName)?.module}/${(entityForm?.formId as ConfigurableItemFullName)?.name}`,
     };
 
     return (

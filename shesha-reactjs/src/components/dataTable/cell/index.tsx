@@ -36,7 +36,7 @@ export const getCellRenderer = <D extends object = {}, V = any>(
       return null;
     }
     case 'form': {
-      const baseProps = { columnConfig: column as ITableFormColumn, parentFormId: shaForm?.form?.id, parentFormName: `${shaForm?.formId?.module}/${shaForm?.formId?.name}` };
+      const baseProps = { columnConfig: column as ITableFormColumn, parentFormId: shaForm?.form?.id, parentFormName: `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}` };
       return (cellProps: CellProps<D, V>) => <FormCell<D, V> {...cellProps} {...baseProps} />;
     }
     default: {

@@ -318,8 +318,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return getCruadActionConditions(crudOptions, prevCrudOptions);
   }, [crudOptions, prevCrudOptions]);
 
-  console.log('shaForm', shaForm);
-
   const preparedColumns = useMemo<Column<any>[]>(() => {
     setVisibleColumns(columns?.filter((c) => c.show).length);
     const localPreparedColumns = columns

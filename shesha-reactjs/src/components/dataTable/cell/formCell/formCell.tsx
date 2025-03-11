@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Result } from 'antd';
 import { useCrud } from "@/providers/crudContext/index";
 import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
-import { ComponentsContainer, FormIdentifier, FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useShaFormInstance } from '@/index';
+import { ComponentsContainer, ConfigurableItemFullName, FormIdentifier, FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import ParentProvider from '@/providers/parentProvider/index';
 import { ITableFormColumn } from '@/providers/dataTable/interfaces';
@@ -48,7 +48,7 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
 
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
-    'data-sha-form-name': `${props.columnConfig.displayFormId?.module}/${props.columnConfig.displayFormId?.name}`,
+    'data-sha-form-name': `${(props.columnConfig.displayFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.displayFormId as ConfigurableItemFullName)?.name}`,
     'data-sha-parent-form-id': `${props.parentFormId}`,
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
@@ -82,9 +82,9 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
 
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
-    'data-sha-form-name': `${props.columnConfig.createFormId?.module}/${props.columnConfig.createFormId?.name}`,
-    'data-sha-parent-form-id': `${props.parentFormId}`,
-    'data-sha-parent-form-name': `${props.parentFormName}`,
+    'data-sha-form-name': `${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`,
+    'data-sha-parent-form-id': `${(props as any)?.parentFormId}`,
+    'data-sha-parent-form-name': `${(props as any)?.parentFormName}`,
   };
 
   return !props.columnConfig.createFormId
@@ -93,7 +93,7 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
       <FormCellRender formId={props.columnConfig.createFormId}>
         {(form) => (
           <AttributeDecorator attributes={attributes}>
-            <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${props.columnConfig.createFormId?.module}/${props.columnConfig.createFormId?.name}`}>
+            <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`}>
               <FormItemProvider labelCol={form.settings?.labelCol}>
                 <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
                   <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
@@ -116,7 +116,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
 
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
-    'data-sha-form-name': `${props.columnConfig.editFormId?.module}/${props.columnConfig.editFormId?.name}`,
+    'data-sha-form-name': `${(props.columnConfig.editFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.editFormId as ConfigurableItemFullName)?.name}`,
     'data-sha-parent-form-id': `${props.parentFormId}`,
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
