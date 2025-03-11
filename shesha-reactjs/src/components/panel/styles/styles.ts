@@ -79,10 +79,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
-    paddingBottom: headerPaddingBottom = 8,
-    paddingTop: headerPaddingTop = 8,
-    paddingLeft: headerPaddingLeft = 8,
-    paddingRight: headerPaddingRight = 8,
+    paddingBottom: headerPaddingBottom = '8px',
+    paddingTop: headerPaddingTop = '8px',
+    paddingLeft: headerPaddingLeft = '8px',
+    paddingRight: headerPaddingRight = '8px',
     overflow: headerOverflow,
     ...headerRest
   } = headerStyle;
@@ -99,9 +99,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         display: none;
       }
         
-      ${!isSimpleDesign && hasBorder && '--ant-line-width: 0px !important;'};
+      ${(!isSimpleDesign && hasBorder) && '--ant-line-width: 0px !important;'};
       --primary-color: ${token.colorPrimary};
-      --ant-line-width: 0px !important;
       --ant-collapse-content-padding: ${paddingTop || 16}px ${paddingRight || 16}px ${paddingBottom || 16}px ${paddingLeft || 16}px !important;
       width: ${width};
       min-width: ${minWidth};
@@ -145,7 +144,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   }
 
     .ant-collapse-header[aria-expanded="false"] {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
+      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
 
     .ant-collapse-header[aria-expanded="true"] {
