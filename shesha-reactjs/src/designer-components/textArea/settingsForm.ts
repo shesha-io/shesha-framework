@@ -97,7 +97,7 @@ export const getSettings = (data: any) => {
                     type: 'switch',
                     id: nanoid(),
                     propertyName: 'passEmptyStringByDefault',
-                    label: 'Empty as default',
+                    label: 'Empty As Default',
                     jsSetting: true,
                     parentId: commonTabId,
                   }
@@ -162,7 +162,14 @@ export const getSettings = (data: any) => {
                     propertyName: 'showCount',
                     parentId: commonTabId,
                     label: 'Show Chars Count',
-                    jsSetting: true,
+                    jsSetting: false,
+                  },
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'spellCheck',
+                    parentId: commonTabId,
+                    label: 'Spell Check',
                   }
                 ],
               })
@@ -233,15 +240,6 @@ export const getSettings = (data: any) => {
                     }
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: "spellCheck",
-                  parentId: validationId,
-                  label: "Spell Check",
-                  version: 3,
-                  inputType: "switch",
-                  jsSetting: true,
                 })
                 .toJson()
             ]
