@@ -11,9 +11,6 @@ export const useStyles = createStyles(({ css, cx, token }, { fontWeight, fontFam
 
         :hover {
             border-color: ${token.colorPrimary} !important;
-            border-top-color: ${token.colorPrimary} !important;
-            border-bottom-color: ${token.colorPrimary} !important;
-            border-left-color: ${token.colorPrimary} !important;
         }
 
   `);
