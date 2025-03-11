@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Result } from 'antd';
 import { useCrud } from "@/providers/crudContext/index";
 import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
-import { ComponentsContainer, FormIdentifier, FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
+import { ComponentsContainer, FormIdentifier, FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useShaFormInstance } from '@/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import ParentProvider from '@/providers/parentProvider/index';
 import { ITableFormColumn } from '@/providers/dataTable/interfaces';
@@ -12,6 +12,7 @@ import { ComponentsContainerFormCell } from './componentsContainerFormCell';
 import { useFormById } from '@/providers/formManager/hooks';
 import { UpToDateForm } from '@/providers/formManager/interfaces';
 import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
+import AttributeDecorator from '@/components/attributeDecorator';
 
 const MODE_READONLY_TRUE = { readOnly: true };
 const MODE_READONLY_FALSE = { readOnly: false };
@@ -34,7 +35,7 @@ const FormCellRender: FC<FormCellRenderProps> = ({ formId, children }) => {
       ? formLoading.error?.code === 404
         ? <Result status="404" title="404" subTitle={getFormNotFoundMessage(formId)} />
         : formLoading.error?.code === 401 || formLoading.error?.code === 403
-          ?<Result status="403" title="403" subTitle={getFormForbiddenMessage(formId)} />
+          ? <Result status="403" title="403" subTitle={getFormForbiddenMessage(formId)} />
           : <>Form loading error</>
       : children(formLoading.form);
 };
@@ -45,20 +46,29 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
+  const attributes = {
+    'data-sha-datatable-cell-type': 'subForm',
+    'data-sha-form-name': `${props.columnConfig.displayFormId?.module}/${props.columnConfig.displayFormId?.name}`,
+    'data-sha-parent-form-id': `${props.parentFormId}`,
+    'data-sha-parent-form-name': `${props.parentFormName}`,
+  };
+
   return !props.columnConfig.displayFormId
     ? null
     : (
       <FormCellRender formId={props.columnConfig.displayFormId}>
         {(form) => (
-          <div className={styles.shaFormCell} style={styleMinHeight}>
-            <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure} isScope>
-                <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
-                  <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-                </ComponentsContainerProvider>
-              </ParentProvider>
-            </FormItemProvider>
-          </div>
+          <AttributeDecorator attributes={attributes}>
+            <div className={styles.shaFormCell} style={styleMinHeight}>
+              <FormItemProvider labelCol={form.settings?.labelCol}>
+                <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure} isScope>
+                  <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
+                    <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+                  </ComponentsContainerProvider>
+                </ParentProvider>
+              </FormItemProvider>
+            </div>
+          </AttributeDecorator>
         )}
       </FormCellRender>
     );
@@ -70,20 +80,29 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
+  const attributes = {
+    'data-sha-datatable-cell-type': 'subForm',
+    'data-sha-form-name': `${props.columnConfig.createFormId?.module}/${props.columnConfig.createFormId?.name}`,
+    'data-sha-parent-form-id': `${props.parentFormId}`,
+    'data-sha-parent-form-name': `${props.parentFormName}`,
+  };
+
   return !props.columnConfig.createFormId
     ? null
     : (
       <FormCellRender formId={props.columnConfig.createFormId}>
         {(form) => (
-          <div className={styles.shaFormCell} style={styleMinHeight}>
-            <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
-                <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
-                  <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-                </ComponentsContainerProvider>
-              </ParentProvider>
-            </FormItemProvider>
-          </div>
+          <AttributeDecorator attributes={attributes}>
+            <div className={styles.shaFormCell} style={styleMinHeight} data-sha-form-name={`${props.columnConfig.createFormId?.module}/${props.columnConfig.createFormId?.name}`}>
+              <FormItemProvider labelCol={form.settings?.labelCol}>
+                <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
+                  <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
+                    <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+                  </ComponentsContainerProvider>
+                </ParentProvider>
+              </FormItemProvider>
+            </div>
+          </AttributeDecorator>
         )}
       </FormCellRender>
     );
@@ -95,20 +114,29 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     return { minHeight: props.columnConfig.minHeight ?? 0 };
   }, [props.columnConfig.minHeight]);
 
+  const attributes = {
+    'data-sha-datatable-cell-type': 'subForm',
+    'data-sha-form-name': `${props.columnConfig.editFormId?.module}/${props.columnConfig.editFormId?.name}`,
+    'data-sha-parent-form-id': `${props.parentFormId}`,
+    'data-sha-parent-form-name': `${props.parentFormName}`,
+  };
+
   return !props.columnConfig.editFormId
     ? <ReadFormCell {...props} />
     : (
       <FormCellRender formId={props.columnConfig.editFormId}>
         {(form) => (
-          <div className={styles.shaFormCell} style={styleMinHeight}>
-            <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
-                <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
-                  <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-                </ComponentsContainerProvider>
-              </ParentProvider>
-            </FormItemProvider>
-          </div>
+          <AttributeDecorator attributes={attributes}>
+            <div className={styles.shaFormCell} style={styleMinHeight}>
+              <FormItemProvider labelCol={form.settings?.labelCol}>
+                <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
+                  <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
+                    <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+                  </ComponentsContainerProvider>
+                </ParentProvider>
+              </FormItemProvider>
+            </div>
+          </AttributeDecorator>
         )}
       </FormCellRender>
     );
