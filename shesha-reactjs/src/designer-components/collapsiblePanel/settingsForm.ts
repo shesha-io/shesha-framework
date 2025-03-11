@@ -786,6 +786,7 @@ export const getSettings = () => {
                                                         label: 'Border',
                                                         labelAlign: 'right',
                                                         collapsedByDefault: true,
+                                                        hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                                         parentId: 'panel-header-styles-pnl',
                                                         content: {
                                                             id: 'panelheaderborderStylePnl',
@@ -826,6 +827,7 @@ export const getSettings = () => {
                                                         label: 'Background',
                                                         labelAlign: 'right',
                                                         collapsedByDefault: true,
+                                                        hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
                                                         content: {
