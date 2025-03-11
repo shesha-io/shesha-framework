@@ -1,13 +1,15 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { ITextFieldComponentProps } from './interfaces';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs } from '../_settings/utils/border/utils';
+import { getCornerInputs } from '../_settings/utils/border/utils';
+import { IDropdownComponentProps } from './model';
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
-export const getSettings = (data: ITextFieldComponentProps) => {
+export const getSettings = (data: IDropdownComponentProps) => {
 
     return {
+
         components: new DesignerToolbarSettings(data)
             .addSearchableTabs({
                 id: 'W_m7doMyCpCYwAYDfRh6I',
@@ -38,7 +40,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                             .addLabelConfigurator({
                                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
-                                label: 'Label',
+                                label: 'label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
@@ -47,16 +49,16 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
                                     {
-                                        type: 'textField',
-                                        id: 'placeholder-s4gmBg31azZC0UjZjpfTm',
+                                        id: '57a40a33-7e10-4ce4-9f08-a34d24a83338',
                                         propertyName: 'placeholder',
                                         label: 'Placeholder',
+                                        type: 'textField',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
+                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
                                         type: 'textArea',
-                                        id: 'tooltip-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'description',
                                         label: 'Tooltip',
                                         jsSetting: true,
@@ -70,16 +72,16 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                     {
+                                        id: '5c813b1a-04c5-7758-ac0f-cbcbae6b3bd4',
                                         type: 'editModeSelector',
-                                        id: 'editMode-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'editMode',
                                         label: 'Edit Mode',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
+                                        id: '5c813b1a-04c5-4678-ac0f-cbcbae6b3bd4',
                                         type: 'switch',
-                                        id: 'hidden-s4gmBg31azZC0UjZjpfTm',
                                         propertyName: 'hidden',
                                         label: 'Hide',
                                         jsSetting: true,
@@ -87,157 +89,265 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                     },
                                 ],
                             })
-                            .addSettingsInputRow({
-                                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [
-                                    {
-                                        type: 'dropdown',
-                                        id: 'type-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'textType',
-                                        label: 'Type',
-                                        size: 'small',
-                                        jsSetting: true,
-                                        dropdownOptions: [
-                                            {
-                                                label: 'text',
-                                                value: 'text',
-                                            },
-                                            {
-                                                label: 'password',
-                                                value: 'password',
-                                            },
-                                        ],
-                                    },
-                                    {
-                                        type: 'textField',
-                                        id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'initialValue',
-                                        label: 'Default Value',
-                                        tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
-                                        jsSetting: true,
-                                    },
-                                ],
-                            })
-                            .addSettingsInputRow({
-                                id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'textField',
-                                        id: 'prefix-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'prefix',
-                                        label: 'Prefix',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'iconPicker',
-                                        id: 'prefixIcon-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'prefixIcon',
-                                        label: 'Prefix Icon',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        type: 'textField',
-                                        id: 'suffix-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'suffix',
-                                        label: 'Suffix',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'iconPicker',
-                                        id: 'suffixIcon-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'suffixIcon',
-                                        label: 'Suffix Icon',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInput({
-                                propertyName: 'spellCheck',
-                                id: 'spellCheck-s4gmBg31azZC0UjZjpfTm',
-                                label: 'Spell Check',
-                                inputType: 'switch',
-                            })
                             .toJson()
                         ]
                     },
                     {
                         key: '2',
-                        title: 'Validation',
+                        title: 'Data',
                         id: '6eBJvoll3xtLJxdvOAlnB',
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                                propertyName: 'validate.required',
-                                label: 'Required',
-                                inputType: 'switch',
+                                propertyName: 'defaultValue',
+                                label: 'Default Value',
+                                size: 'small',
+                                jsSetting: true,
+                                inputType: "numberField",
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                            })
+                            .addSettingsInput({
+                                id: 'Scip2BCqWk6HniFIJTwtA',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                label: "Mode",
+                                propertyName: "mode",
+                                inputType: "dropdown",
+                                size: "small",
+                                defaultValue: "single",
+                                jsSetting: true,
+                                dropdownOptions: [
+                                    {
+                                        value: "single",
+                                        label: "Single"
+                                    },
+                                    {
+                                        value: "tags",
+                                        label: "tags"
+                                    },
+                                    {
+                                        value: "multiple",
+                                        label: "multiple"
+                                    }
+                                ]
+                            })
+                            .addSettingsInput({
+                                id: 'Scip2BCqWk6HniFIGHwtA',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                label: "DataSource type",
+                                propertyName: "dataSourceType",
+                                inputType: "dropdown",
+                                size: "small",
+                                jsSetting: true,
+                                dropdownOptions: [
+                                    {
+                                        value: "values",
+                                        label: "Values"
+                                    },
+                                    {
+                                        value: "referenceList",
+                                        label: "Reference List"
+                                    },
+                                ],
+                            })
+                            .addContainer({
+                                id: 'ELxx5jarWvInJXJF5xHN2',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                propertyName: 'container1',
+                                label: 'Container1',
+                                labelAlign: 'right',
+                                hidden: {
+                                    _code: `return  getSettingValue(data.dataSourceType) !== 'referenceList';`,
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                direction: 'vertical',
+                                justifyContent: 'left',
+                                settingsValidationErrors: [],
+                                components: [...new DesignerToolbarSettings()
+                                    .addSettingsInput({
+                                        id: 'Scip2BCqWk6HniFIGHwtA',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        propertyName: 'referenceListId',
+                                        label: 'Reference List',
+                                        isDynamic: true,
+                                        inputType: 'referenceListAutocomplete',
+                                        settingsValidationErrors: [],
+                                    })
+                                    .addQueryBuilder({
+                                        id: 'Scip2BCqWk6HniFIGHwtA',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        propertyName: 'filter',
+                                        label: 'Items Filter',
+                                        isDynamic: true,
+                                        validate: {},
+                                        settingsValidationErrors: [],
+                                        modelType: 'Shesha.Framework.ReferenceListItem',
+                                        version: 2
+                                    })
+                                    .addSettingsInput({
+                                        id: 'Scip2BCqWk6HniFIGHHqA',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        label: "Value format",
+                                        propertyName: "valueFormat",
+                                        inputType: "dropdown",
+                                        size: "small",
+                                        jsSetting: true,
+                                        defaultValue: 'simple',
+                                        dropdownOptions: [
+                                            {
+                                                value: "simple",
+                                                label: "Simple item value"
+                                            },
+                                            {
+                                                value: "listItem",
+                                                label: "Reference List item"
+                                            },
+                                            {
+                                                value: "custom",
+                                                label: "Custom"
+                                            }
+                                        ],
+                                    })
+                                    .addSettingsInput({
+                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        id: '16ab0599-914d-4d2d-875c-765a495472f8',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'incomeCustomJs',
+                                        label: 'Key value',
+                                        labelAlign: 'right',
+                                        tooltip: 'Return key from the value',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        hidden: {
+                                            "_code": "return  getSettingValue(data?.valueFormat) !== 'custom';",
+                                            "_mode": "code",
+                                            "_value": false
+                                        } as any,
+                                    })
+                                    .addSettingsInput({
+                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        id: '16ab0599-914d-4d2d-875c-765a495472g9',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'outcomeCustomJs',
+                                        label: 'Custom value',
+                                        labelAlign: 'right',
+                                        tooltip: 'Return value that will be stored as field value',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        hidden: {
+                                            "_code": "return  getSettingValue(data?.valueFormat) !== 'custom';",
+                                            "_mode": "code",
+                                            "_value": false
+                                        } as any,
+                                    })
+                                    .addSettingsInput({
+                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        id: '16ab0500-914d-4d2d-875c-765a495472g9',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'labelCustomJs',
+                                        label: 'Item custom label',
+                                        labelAlign: 'right',
+                                        tooltip: 'Return label value',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                    })
+                                    .addSettingsInput({
+                                        id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534x0',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        inputType: 'switch',
+                                        propertyName: 'disableItemValue',
+                                        tooltip: 'Disable reference list from selection',
+                                        label: 'Disable item value',
+                                        jsSetting: true,
+                                        layout: 'horizontal',
+                                        version: 'latest'
+
+                                    })
+                                    .addSettingsInput({
+                                        id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        inputType: 'textArea',
+                                        propertyName: 'ignoredValues',
+                                        label: 'Ignored Values',
+                                        allowClear: true,
+                                        tooltip: 'Pass an array of positive integers to ignore specific values. For example: [1, 2, 3].',
+                                    })
+                                    .addSettingsInput({
+                                        id: '99629618-d725-4690-b744-97a4b0ae3b19',
+                                        inputType: 'textField',
+                                        propertyName: 'dataSourceUrl',
+                                        label: 'Data Source Url',
+                                        labelAlign: 'right',
+                                        parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                        language: 'typescript',
+                                        hidden: {
+                                            "_code": "return  getSettingValue(data.dataSourceType) !== 'url';",
+                                            "_mode": "code",
+                                            "_value": false
+                                        },
+                                        version: 2
+                                    })
+
+                                    .toJson()
+                                ]
+
+                            })
+                            .addLabelValueEditor({
+                                id: 'Scip2BCqWL4GniFIGHwdQ',
+                                parentId: '6eBJvoll3xtLJxdvOAlnB',
+                                propertyName: 'values',
+                                label: 'Values',
+                                labelName: 'label',
+                                labelTitle: 'Label',
+                                valueName: 'value',
+                                valueTitle: 'Value',
+                                hidden: {
+                                    _code: `return  getSettingValue(data.dataSourceType) !== 'values';`,
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                mode: 'dialog',
+                            })
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '03959ffd-cadb-496c-bf6d-b742f7f6edc5',
+                                hidden: {
+                                    _code: 'return  !getSettingValue(data.disableItemValue);',
+                                    _mode: 'code',
+                                    _value: false
+                                },
+                                inputType: 'textArea',
+                                propertyName: 'ignoredValues',
+                                label: 'Ignored Values',
                                 size: 'small',
                                 layout: 'horizontal',
                                 jsSetting: true,
+                                allowClear: true,
+                                tooltip: "Pass an array of positive integers to ignore specific values. For example: [1, 2, 3].",
                                 parentId: '6eBJvoll3xtLJxdvOAlnB'
-                            })
-                            .addSettingsInputRow({
-                                id: 'qOkkwAnHvKJ0vYXeXMLsd',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                inputs: [
-                                    {
-                                        type: 'numberField',
-                                        id: 'minLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.minLength',
-                                        label: 'Min Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'numberField',
-                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.maxLength',
-                                        label: 'Max Length',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInputRow({
-                                id: 'Scip2BCqWk6HniFIJTgtA',
-                                parentId: '6eBJvoll3xtLJxdvOAlnB',
-                                inputs: [
-                                    {
-                                        type: 'textField',
-                                        id: 'message-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.message',
-                                        label: 'Message',
-                                        size: 'small',
-                                        jsSetting: true,
-                                    },
-                                    {
-                                        type: 'codeEditor',
-                                        id: 'validator-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.validator',
-                                        label: 'Validator',
-                                        labelAlign: 'right',
-                                        tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise',
-                                    }
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ]
                     },
                     {
                         key: '3',
+                        title: 'Validation',
+                        id: '6eBJvoll3xtLJxdvOAlnB',
+                        components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                                inputType: 'switch',
+                                propertyName: 'validate.required',
+                                label: 'Required',
+                                size: 'small',
+                                layout: 'horizontal',
+                                jsSetting: true,
+                                parentId: '6eBJvoll3xtLJxdvOAlnB'
+                            })
+                            .toJson()
+                        ]
+                    },
+                    {
+                        key: '4',
                         title: 'Events',
                         id: 'Cc47W08MWrKdhoGqFKMI2',
                         components: [...new DesignerToolbarSettings()
@@ -251,31 +361,11 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
                                 parentId: 'Cc47W08MWrKdhoGqFKMI2'
                             })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
-                                inputType: 'codeEditor',
-                                propertyName: 'onFocusCustom',
-                                label: 'On Focus',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
-                                inputType: 'codeEditor',
-                                propertyName: 'onBlurCustom',
-                                label: 'On Blur',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                                parentId: 'Cc47W08MWrKdhoGqFKMI2'
-                            })
                             .toJson()
                         ]
                     },
                     {
-                        key: '4',
+                        key: '5',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
                         components: [...new DesignerToolbarSettings()
@@ -320,14 +410,14 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 hideLabel: true,
                                                                 dropdownOptions: fontTypes,
                                                             },
-                                                            {
-                                                                type: 'numberField',
-                                                                id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Size',
-                                                                propertyName: 'font.size',
-                                                                hideLabel: true,
-                                                                width: 50,
-                                                            },
+                                                            // {
+                                                            //     type: 'numberField',
+                                                            //     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
+                                                            //     label: 'Size',
+                                                            //     propertyName: 'font.size',
+                                                            //     hideLabel: true,
+                                                            //     width: 50,
+                                                            // },
                                                             {
                                                                 type: 'dropdown',
                                                                 id: 'fontWeight-s4gmBg31azZC0UjZjpfTm',
@@ -338,13 +428,13 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 dropdownOptions: fontWeights,
                                                                 width: 100,
                                                             },
-                                                            {
-                                                                type: 'colorPicker',
-                                                                id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Color',
-                                                                hideLabel: true,
-                                                                propertyName: 'font.color',
-                                                            },
+                                                            // {
+                                                            //     type: 'colorPicker',
+                                                            //     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
+                                                            //     label: 'Color',
+                                                            //     hideLabel: true,
+                                                            //     propertyName: 'font.color',
+                                                            // },
                                                             {
                                                                 type: 'dropdown',
                                                                 id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
@@ -355,147 +445,6 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 dropdownOptions: textAlign,
                                                             },
                                                         ],
-                                                    })
-                                                    .toJson()
-                                                ]
-                                            }
-                                        })
-                                        .addCollapsiblePanel({
-                                            id: 'dimensionsStyleCollapsiblePanel',
-                                            propertyName: 'pnlDimensions',
-                                            label: 'Dimensions',
-                                            parentId: 'styleRouter',
-                                            labelAlign: 'right',
-                                            ghost: true,
-                                            collapsible: 'header',
-                                            content: {
-                                                id: 'dimensionsStylePnl',
-                                                components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowWidth',
-                                                        parentId: 'dimensionsStylePnl',
-                                                        inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'textField',
-                                                                id: 'width-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Width",
-                                                                width: 85,
-                                                                propertyName: "dimensions.width",
-                                                                icon: "widthIcon",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
-                                                            },
-                                                            {
-                                                                type: 'textField',
-                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Min Width",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.minWidth",
-                                                                icon: "minWidthIcon",
-                                                            },
-                                                            {
-                                                                type: 'textField',
-                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Max Width",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.maxWidth",
-                                                                icon: "maxWidthIcon",
-                                                            }
-                                                        ]
-                                                    })
-                                                    .addSettingsInputRow({
-                                                        id: 'dimensionsStyleRowHeight',
-                                                        parentId: 'dimensionsStylePnl',
-                                                        inline: true,
-                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'textField',
-                                                                id: 'height-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Height",
-                                                                width: 85,
-                                                                propertyName: "dimensions.height",
-                                                                icon: "heightIcon",
-                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-                                                            },
-                                                            {
-                                                                type: 'textField',
-                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Min Height",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.minHeight",
-                                                                icon: "minHeightIcon",
-                                                            },
-                                                            {
-                                                                type: 'textField',
-                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
-                                                                label: "Max Height",
-                                                                width: 85,
-                                                                hideLabel: true,
-                                                                propertyName: "dimensions.maxHeight",
-                                                                icon: "maxHeightIcon",
-                                                            }
-                                                        ]
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: 'predefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
-                                                        ]
-                                                    })
-                                                    .toJson()
-                                                ]
-                                            }
-                                        })
-                                        .addCollapsiblePanel({
-                                            id: 'borderStyleCollapsiblePanel',
-                                            propertyName: 'pnlBorderStyle',
-                                            label: 'Border',
-                                            labelAlign: 'right',
-                                            ghost: true,
-                                            parentId: 'styleRouter',
-                                            collapsible: 'header',
-                                            content: {
-                                                id: 'borderStylePnl',
-                                                components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
-                                                    .addContainer({
-                                                        id: 'borderStyleRow',
-                                                        parentId: 'borderStylePnl',
-                                                        components: getBorderInputs() as any
-                                                    })
-                                                    .addContainer({
-                                                        id: 'borderRadiusStyleRow',
-                                                        parentId: 'borderStylePnl',
-                                                        components: getCornerInputs() as any
                                                     })
                                                     .toJson()
                                                 ]
@@ -660,6 +609,147 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                             }
                                         })
                                         .addCollapsiblePanel({
+                                            id: 'dimensionsStyleCollapsiblePanel',
+                                            propertyName: 'pnlDimensions',
+                                            label: 'Dimensions',
+                                            parentId: 'styleRouter',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            collapsible: 'header',
+                                            content: {
+                                                id: 'dimensionsStylePnl',
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: 'dimensionsStyleRowWidth',
+                                                        parentId: 'dimensionsStylePnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'width-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Width",
+                                                                width: 85,
+                                                                propertyName: "dimensions.width",
+                                                                icon: "widthIcon",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Width",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.minWidth",
+                                                                icon: "minWidthIcon",
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Width",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.maxWidth",
+                                                                icon: "maxWidthIcon",
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInputRow({
+                                                        id: 'dimensionsStyleRowHeight',
+                                                        parentId: 'dimensionsStylePnl',
+                                                        inline: true,
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'height-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Height",
+                                                                width: 85,
+                                                                propertyName: "dimensions.height",
+                                                                icon: "heightIcon",
+                                                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Min Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.minHeight",
+                                                                icon: "minHeightIcon",
+                                                            },
+                                                            {
+                                                                type: 'textField',
+                                                                id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
+                                                                label: "Max Height",
+                                                                width: 85,
+                                                                hideLabel: true,
+                                                                propertyName: "dimensions.maxHeight",
+                                                                icon: "maxHeightIcon",
+                                                            }
+                                                        ]
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: 'predefinedSizes',
+                                                        inputType: 'dropdown',
+                                                        propertyName: 'size',
+                                                        label: 'Size',
+                                                        width: '150px',
+                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
+                                                        dropdownOptions: [
+                                                            { value: 'small', label: 'Small' },
+                                                            { value: 'medium', label: 'Medium' },
+                                                            { value: 'large', label: 'Large' },
+                                                        ]
+                                                    })
+                                                    .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
+                                            id: 'borderStyleCollapsiblePanel',
+                                            propertyName: 'pnlBorderStyle',
+                                            label: 'Border',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: 'styleRouter',
+                                            collapsible: 'header',
+                                            content: {
+                                                id: 'borderStylePnl',
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: `borderStyleRow`,
+                                                        parentId: 'borderStylePnl',
+                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'button',
+                                                                id: 'borderStyleRow-hideBorder',
+                                                                label: "Border",
+                                                                hideLabel: true,
+                                                                propertyName: "border.hideBorder",
+                                                                icon: "EyeOutlined",
+                                                                iconAlt: "EyeInvisibleOutlined"
+                                                            },
+                                                        ]
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
+                                                    .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
                                             id: 'shadowStyleCollapsiblePanel',
                                             propertyName: 'pnlShadowStyle',
                                             label: 'Shadow',
@@ -748,7 +838,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Styles',
+                                            label: 'Custom Style',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -761,7 +851,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
-                                                        hideLabel: false,
+                                                        hideLabel: true,
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })
@@ -773,7 +863,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                             }).toJson()]
                     },
                     {
-                        key: '5',
+                        key: '6',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         components: [...new DesignerToolbarSettings()

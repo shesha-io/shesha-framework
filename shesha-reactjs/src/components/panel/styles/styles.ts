@@ -38,7 +38,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     minHeight,
     maxWidth,
     maxHeight,
-    borderRadius,
+    borderRadius = '8px 8px 8px 8px',
     marginBottom,
     marginTop,
     marginLeft,
@@ -79,25 +79,27 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
-    paddingBottom: headerPaddingBottom = 8,
-    paddingTop: headerPaddingTop = 8,
-    paddingLeft: headerPaddingLeft = 8,
-    paddingRight: headerPaddingRight = 8,
+    paddingBottom: headerPaddingBottom = '8px',
+    paddingTop: headerPaddingTop = '8px',
+    paddingLeft: headerPaddingLeft = '8px',
+    paddingRight: headerPaddingRight = '8px',
     overflow: headerOverflow,
     ...headerRest
   } = headerStyle;
 
-  const borderTopLeftRadius = addPx(borderRadius || 8)?.split(' ')[0];
-  const borderTopRightRadius = addPx(borderRadius || 8)?.split(' ')[1];
-  const borderBottomLeftRadius = addPx(borderRadius || 8)?.split(' ')[2];
-  const borderBottomRightRadius = addPx(borderRadius || 8)?.split(' ')[3];
+  const initialValue = isSimpleDesign || ghost ? 0 : 8;
+  const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
+  const borderTopLeftRadius = addPx(borderRadius)?.split(' ')[0] || initialValue;
+  const borderTopRightRadius = addPx(borderRadius)?.split(' ')[1] || initialValue;
+  const borderBottomLeftRadius = addPx(borderRadius)?.split(' ')[2] || initialValue;
+  const borderBottomRightRadius = addPx(borderRadius)?.split(' ')[3] || initialValue;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
         
-      ${borderWidth && '--ant-line-width: 0px !important;'}
+      ${(!isSimpleDesign && hasBorder) && '--ant-line-width: 0px !important;'};
       --primary-color: ${token.colorPrimary};
       --ant-collapse-content-padding: ${paddingTop || 16}px ${paddingRight || 16}px ${paddingBottom || 16}px ${paddingLeft || 16}px !important;
       width: ${width};
@@ -111,7 +113,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
-
 
     .ant-collapse-item {
       display: flex;
@@ -143,11 +144,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   }
 
     .ant-collapse-header[aria-expanded="false"] {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
+      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
 
     .ant-collapse-header[aria-expanded="true"] {
-      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
+      border-radius : ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} 0 0 !important;
     }
 
     .ant-collapse-header {
@@ -231,9 +232,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         text-align: ${textAlign};
         font-size: ${fontSize};
         font-weight: ${fontWeight};
-      }
+      };
 
-      --ant-line-width: 0px !important;
       --primary-color: ${token.colorPrimary};
       &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
@@ -245,7 +245,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
             font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
             font-weight: 'bold';
           }
-         
         }
       }
 
