@@ -231,9 +231,16 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties = properties
-      ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
-      : null;
+    if (properties) {
+      const props = Array.isArray(properties) ? properties : [properties];
+      // Always include the `id` property/. Useful for deleting
+      props.push('id');
+      // add _className property for Dynamic form selection mode to get actual entity type
+      if (dataSource === 'api' && formSelectionMode === 'dynamic') 
+        props.push('_className');
+
+      params.properties = [...Array.from(new Set(props || []))].join(' ');
+    }
 
     if (queryParams) {
       params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
