@@ -13,9 +13,10 @@ using Shesha.EntityReferences;
 using Shesha.NHibernate;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
-using Shesha.Notifications.Helpers;
 using Shesha.Notifications.MessageParticipants;
 using Shesha.Services;
+using Stubble.Core;
+using Stubble.Core.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,10 @@ namespace Shesha.Notifications
         private readonly IRepository<NotificationTemplate, Guid> _messageTemplateRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         private readonly INotificationManager _notificationManager;
+        private readonly StubbleVisitorRenderer _stubbleRenderer = new StubbleBuilder().Configure(settings =>
+        {
+            settings.SetIgnoreCaseOnKeyLookup(true);
+        }).Build();
 
         public ILogger Logger { get; set; }
 
@@ -183,8 +188,8 @@ namespace Shesha.Notifications
             {
                 PartOf = notification,
                 Channel = channelConfig,
-                Subject = TemplateHelper.ReplacePlaceholders(template.TitleTemplate, data),
-                Message = TemplateHelper.ReplacePlaceholders(template.BodyTemplate, data),
+                Subject = await GenerateContentAsync(template.TitleTemplate, data) ?? string.Empty,
+                Message = await GenerateContentAsync(template.BodyTemplate, data) ?? string.Empty,
                 RetryCount = 0,
                 ReadStatus = RefListNotificationReadStatus.Unread,
                 Direction = RefListNotificationDirection.Outgoing,
@@ -219,6 +224,16 @@ namespace Shesha.Notifications
             {
                 _unitOfWorkManager.Current.DoAfterTransaction(() => BackgroundJob.Enqueue(() => SendAsync(message.Id)));
             }
+        }
+
+        /// <summary>
+        /// Generate content based on template (uses mustache syntax)
+        /// </summary>
+        protected async Task<string?> GenerateContentAsync<TData>(string? template, TData data)
+        {
+            return !string.IsNullOrWhiteSpace(template)
+                ? await _stubbleRenderer.RenderAsync(template, data)
+                : template;
         }
 
         private INotificationChannelSender GetChannelSender(NotificationMessage message) 
