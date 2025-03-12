@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Result } from 'antd';
 import { useCrud } from "@/providers/crudContext/index";
 import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
-import { ComponentsContainer, ConfigurableItemFullName, FormIdentifier, FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
+import { ComponentsContainer, ConfigurableItemFullName, FormIdentifier, FormItemProvider, isFormFullName, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import ParentProvider from '@/providers/parentProvider/index';
 import { ITableFormColumn } from '@/providers/dataTable/interfaces';
@@ -48,10 +48,14 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
 
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
-    'data-sha-form-name': `${(props.columnConfig.displayFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.displayFormId as ConfigurableItemFullName)?.name}`,
     'data-sha-parent-form-id': `${props.parentFormId}`,
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
+
+  if (isFormFullName(props.columnConfig.displayFormId))
+    attributes['data-sha-form-name'] = `${props.columnConfig.displayFormId.module}/${props.columnConfig.displayFormId.name}`;
+  else if (typeof props.columnConfig.displayFormId === 'string' && props.columnConfig.displayFormId)
+    attributes['data-sha-form-id'] = props.columnConfig.displayFormId;
 
   return !props.columnConfig.displayFormId
     ? null
@@ -74,7 +78,14 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     );
 };
 
-export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) => {
+export interface ICreateFormCellProps extends IConfigurableCellProps<ITableFormColumn> {
+  /** FormId GUID */
+  parentFormId?: string;
+  /** `Module`/`FormName` */
+  parentFormName?: string;
+}
+
+export const CreateFormCell = (props: ICreateFormCellProps) => {
   const { styles } = useStyles();
   const styleMinHeight = useMemo(() => {
     return { minHeight: props.columnConfig.minHeight ?? 0 };
@@ -82,10 +93,16 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
 
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
-    'data-sha-form-name': `${(props.columnConfig.createFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.createFormId as ConfigurableItemFullName)?.name}`,
-    'data-sha-parent-form-id': `${(props as any)?.parentFormId}`,
-    'data-sha-parent-form-name': `${(props as any)?.parentFormName}`,
+    'data-sha-parent-form-name': `${props.parentFormName}`,
   };
+
+  if (props.parentFormId)
+    attributes['data-sha-parent-form-id'] = props.parentFormId;
+
+  if (isFormFullName(props.columnConfig.createFormId))
+    attributes['data-sha-form-name'] = `${props.columnConfig.createFormId.module}/${props.columnConfig.createFormId.name}`;
+  else if (typeof props.columnConfig.createFormId === 'string' && props.columnConfig.createFormId)
+    attributes['data-sha-form-id'] = props.columnConfig.createFormId;
 
   return !props.columnConfig.createFormId
     ? null
@@ -116,10 +133,14 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
 
   const attributes = {
     'data-sha-datatable-cell-type': 'subForm',
-    'data-sha-form-name': `${(props.columnConfig.editFormId as ConfigurableItemFullName)?.module}/${(props.columnConfig.editFormId as ConfigurableItemFullName)?.name}`,
     'data-sha-parent-form-id': `${props.parentFormId}`,
     'data-sha-parent-form-name': `${props.parentFormName}`,
   };
+
+  if (isFormFullName(props.columnConfig.editFormId))
+    attributes['data-sha-form-name'] = `${props.columnConfig.editFormId.module}/${props.columnConfig.editFormId.name}`;
+  else if (typeof props.columnConfig.editFormId === 'string')
+    attributes['data-sha-form-id'] = props.columnConfig.editFormId;
 
   return !props.columnConfig.editFormId
     ? <ReadFormCell {...props} />

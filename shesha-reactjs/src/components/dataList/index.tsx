@@ -10,7 +10,7 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useAvailableConstantsData, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useAvailableConstantsData, executeScriptSync, getStyle, isFormFullName } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -23,7 +23,6 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
-import { ConfigurableItemFullName } from '@/interfaces';
 
 interface EntityForm {
   entityType: string;
@@ -347,8 +346,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       'data-sha-parent-form-id': `${shaForm?.form?.id}`,
       'data-sha-parent-form-name': `${shaForm?.form?.module}/${shaForm?.form?.name}`,
       'data-sha-form-id': `${entityForm?.formConfiguration?.id}`,
-      'data-sha-form-name': `${(entityForm?.formId as ConfigurableItemFullName)?.module}/${(entityForm?.formId as ConfigurableItemFullName)?.name}`,
     };
+
+    if (isFormFullName(entityForm?.formId))
+      attributes['data-sha-form-name'] = `${entityForm?.formId.module}/${entityForm?.formId.name}`;
 
     return (
       <AttributeDecorator attributes={attributes}>
