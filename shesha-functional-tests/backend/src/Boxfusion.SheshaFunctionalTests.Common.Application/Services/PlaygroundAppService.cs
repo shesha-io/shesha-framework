@@ -1,9 +1,11 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Json;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Shesha;
 using Shesha.Domain;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Services;
 using Shesha.Services.Urls;
@@ -19,6 +21,30 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             )
         {
             _testClassRepo = testClassRepo;
+        }
+
+        public class TestDto
+        {
+            public string Name { get; set; }
+            public GenericEntityReference Test { get; set; }
+        }
+
+        public async Task<string> TestGenericEntityReferenceAsync()
+        {
+            var test = await _testClassRepo.GetAll().FirstOrDefaultAsync();
+            var dto = new TestDto
+            {
+                Name = "Test",
+                Test = test
+            };
+
+            var json = dto.ToJsonString();
+            var obj = json.FromJsonString<TestDto>();
+
+            var newRef = obj.Test;
+            var newTest = (TestClass)obj.Test;
+
+            return "OK";
         }
 
         public async Task<string?> TestFileVersionUrlAsync(Guid id) 

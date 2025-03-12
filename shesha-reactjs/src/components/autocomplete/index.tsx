@@ -25,12 +25,19 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const keyPropName = props.keyPropName || (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
   const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
-  const keyValueFunc: KayValueFunc = props.keyValueFunc ?? ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
-  const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ?? ((value: any) => 
-    ({in: [{var: `${keyPropName}`}, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]]}));
+  const keyValueFunc: KayValueFunc = props.keyValueFunc ?? 
+    ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
+  const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ?? 
+    ((value: any) => ({in: [{var: `${keyPropName}`}, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]]}));
   const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => ({"!": {and: [filterKeysFunc(value)]}}));
-  const displayValueFunc: DisplayValueFunc = props.displayValueFunc ?? ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
-  const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ?? ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
+  const displayValueFunc: DisplayValueFunc = props.displayValueFunc ?? 
+    ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
+  const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ?? 
+    // --- For backward compatibility
+    (props.dataSourceType === 'entitiesList' 
+      ? ((value: any) => ({id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className}))
+    // ---
+      : ((value: any) => getValueByPropertyName(value, keyPropName) ?? value));
 
   // register columns
   useDeepCompareEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);

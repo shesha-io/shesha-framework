@@ -173,7 +173,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
         {loadingState === 'loading'
           ? <span><Spin size="small" /> Loading...</span>
           : loadingState === 'success'
-            ? formTitle ?? emptyText
+            ? formTitle || emptyText
             : 'Quickview not configured properly'
         }
       </Button>
@@ -212,9 +212,11 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
       });
   }, [props.className, props.formType, formConfig]);
 
-  return formConfig === undefined 
-    ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
-    : <Popover content={''} title='Quickview not configured properly'></Popover>
+  return formConfig
+    ? <QuickView {...props} formIdentifier={formConfig} />
+    : formConfig === undefined 
+      ? <Button type="link"><span><Spin size="small" /> Loading...</span></Button>
+      : <Popover content={'Quickview not configured properly'} title='Quickview not configured properly'></Popover>
   ;
 };
 
