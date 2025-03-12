@@ -21,10 +21,10 @@ export interface ICommonCellProps<TConfig extends ITableColumn, D extends object
 
 export interface IDataCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableDataColumn, D, V> { }
 
-export interface IFormCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableFormColumn, D, V> { 
+export interface IFormCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableFormColumn, D, V> {
   /** FormId GUID */
   parentFormId?: string;
-  /** Module/FormName */
+  /** `Module`/`FormName` */
   parentFormName?: string;
 }
 
