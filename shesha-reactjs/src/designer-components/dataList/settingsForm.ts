@@ -1,150 +1,7 @@
 import { DesignerToolbarSettings } from "@/index";
-
-import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
-import { IDataListComponentProps } from './model';
-import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
-import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
-import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
-import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FormLayout } from "antd/es/form/Form";
 
-const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
-
-interface ITypedOption<T = string> {
-  label: React.ReactNode;
-  value: T;
-}
-const yesNoInheritOptions: ITypedOption<YesNoInherit>[] = [
-  { label: 'Yes', value: 'yes' },
-  { label: 'No', value: 'no' },
-  { label: 'Inherit', value: 'inherit' },
-];
-const inlineEditModes: ITypedOption<InlineEditMode>[] = [
-  { label: 'One by one', value: 'one-by-one' },
-  { label: 'All at once', value: 'all-at-once' }
-];
-const inlineSaveModes: ITypedOption<InlineSaveMode>[] = [
-  { label: 'Auto', value: 'auto' },
-  { label: 'Manual', value: 'manual' }
-];
-/*const rowCapturePositions: ITypedOption<NewListItemCapturePosition>[] = [
-  { label: 'Top', value: 'top' },
-  { label: 'Bottom', value: 'bottom' }
-];*/
-
-const NEW_ROW_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  }
-];
-
-const ROW_SAVE_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'data',
-    description: 'Current list item data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  }
-];
-
-const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'data',
-    description: 'Current list item data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'contexts',
-    description: 'Contexts data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global model of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  }
-];
 
 export const getSettings = (data: any) => {
   return {
@@ -221,10 +78,11 @@ export const getSettings = (data: any) => {
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .addFormAutocomplete({
+              .addSettingsInput({
                 id: nanoid(),
                 propertyName: 'formId',
                 label: 'Modal form',
+                inputType: 'formAutocomplete',
                 labelAlign: 'right',
                 parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
                 hidden: false,
@@ -316,10 +174,10 @@ export const getSettings = (data: any) => {
                 jsSetting: false,
                 defaultValue: 1,
                 dropdownOptions: [
-                  { label: '100%', value: 1 },
-                  { label: '50%', value: 0.5 },
-                  { label: '33%', value: 0.33 },
-                  { label: '25%', value: 0.25 },
+                  { label: '100%', value: '1' },
+                  { label: '50%', value: '0.5' },
+                  { label: '33%', value: '0.33' },
+                  { label: '25%', value: '0.25' },
                   { label: '(Custom)', value: 'custom' },
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
