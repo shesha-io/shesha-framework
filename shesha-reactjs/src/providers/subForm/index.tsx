@@ -233,7 +233,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     if (properties) {
       // Always include the `id` property/. Useful for deleting
-      params.properties = ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties] || []))].join(' ');
+      params.properties = ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties]))].join(' ');
     }
 
     if (queryParams) {
