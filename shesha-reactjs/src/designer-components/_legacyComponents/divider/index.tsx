@@ -17,6 +17,7 @@ export interface IDividerProps extends IConfigurableFormComponent {
 
 const settingsForm = settingsFormJson as FormMarkup;
 
+/** @deprecated: Use Section Separator instead */
 const DividerComponent: IToolboxComponent<IDividerProps> = {
   type: 'divider',
   isInput: false,
