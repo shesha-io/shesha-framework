@@ -2,7 +2,6 @@ import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from "antd/es/form/Form";
 
-
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
@@ -22,7 +21,7 @@ export const getSettings = (data: any) => {
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'text',
+                inputType: 'textField',
                 propertyName: "componentName",
                 parentId: 'root',
                 label: "Component name",
@@ -84,6 +83,10 @@ export const getSettings = (data: any) => {
                 label: 'Modal form',
                 inputType: 'formAutocomplete',
                 labelAlign: 'right',
+                defaultValue: {
+                  "name": "person-create",
+                  "module": "Shesha"
+              },
                 parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
                 hidden: false,
                 validate: {
@@ -172,7 +175,7 @@ export const getSettings = (data: any) => {
                 label: "List Item Width",
                 hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
                 jsSetting: false,
-                defaultValue: 1,
+                defaultValue: '1',
                 dropdownOptions: [
                   { label: '100%', value: '1' },
                   { label: '50%', value: '0.5' },
@@ -184,7 +187,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'number',
+                inputType: 'numberField',
                 propertyName: "customListItemWidth",
                 parentId: 'root',
                 label: "Custom List Item Width (px)",
@@ -194,7 +197,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'text',
+                inputType: 'textField',
                 propertyName: "cardMinWidth",
                 parentId: 'root',
                 label: "Card Minimum Width",
@@ -205,7 +208,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'text',
+                inputType: 'textField',
                 propertyName: "cardMaxWidth",
                 parentId: 'root',
                 label: "Card Maximum Width",
@@ -216,7 +219,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'text',
+                inputType: 'textField',
                 propertyName: "cardHeight",
                 parentId: 'root',
                 label: "Card Height",
@@ -227,7 +230,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'text',
+                inputType: 'textField',
                 propertyName: "cardSpacing",
                 parentId: 'root',
                 label: "Card Spacing",
@@ -267,7 +270,7 @@ export const getSettings = (data: any) => {
               components: [...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'text',
+                  inputType: 'textField',
                   propertyName: "noDataText",
                   parentId: 'root',
                   label: "Primary Text",
@@ -277,7 +280,7 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'text',
+                  inputType: 'textField',
                   propertyName: "noDataSecondaryText",
                   parentId: 'root',
                   label: "Secondary Text",

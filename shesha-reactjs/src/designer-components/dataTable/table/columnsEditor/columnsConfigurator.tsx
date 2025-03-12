@@ -9,10 +9,11 @@ import { Column } from './column';
 export interface IColumnsConfiguratorProps {
   readOnly: boolean;
   value: ColumnsItemProps[];
+  parentComponentType?: string;
   onChange: (newValue: ColumnsItemProps[]) => void;
 }
 
-export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onChange, readOnly }) => {
+export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onChange, readOnly, parentComponentType }) => {
   const makeNewItem = (items: ColumnsItemProps[]): ColumnsItemProps => {
     const safeItems = items ?? [];
     const itemsCount = safeItems.filter((i) => i.itemType === 'item').length;
@@ -43,7 +44,7 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onCh
       initNewItem={makeNewItem}
       readOnly={readOnly}
       header={<Alert message={readOnly ? 'Here you can view columns configuration.' : 'Here you can configure columns by adjusting their settings and ordering.'} />}
-      itemProperties={(itemProps) => (<ColumnProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
+      itemProperties={(itemProps) => (<ColumnProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} parentComponentType={parentComponentType} />)}
       addItemText='Add Column'
     >
       {({ item }) => (

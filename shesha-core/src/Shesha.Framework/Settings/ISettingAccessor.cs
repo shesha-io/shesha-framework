@@ -11,7 +11,7 @@ namespace Shesha.Settings
         /// Get default value
         /// </summary>
         /// <returns></returns>
-        object GetDefaultValue();
+        object? GetDefaultValue();
     }
 
     /// <summary>
@@ -22,7 +22,17 @@ namespace Shesha.Settings
         /// <summary>
         /// Get setting value
         /// </summary>
+        Task<TValue?> GetValueOrNullAsync();
+
+        /// <summary>
+        /// Get setting value
+        /// </summary>
         Task<TValue> GetValueAsync();
+
+        /// <summary>
+        /// Get setting value
+        /// </summary>
+        TValue? GetValueOrNull();
 
         /// <summary>
         /// Get setting value
@@ -32,7 +42,7 @@ namespace Shesha.Settings
         /// <summary>
         /// Set setting value
         /// </summary>
-        Task SetValueAsync(TValue value);
+        Task SetValueAsync(TValue? value);
 
         /// <summary>
         /// Sets default value of the setting

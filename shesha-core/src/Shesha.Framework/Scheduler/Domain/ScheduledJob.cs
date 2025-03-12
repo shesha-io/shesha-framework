@@ -50,7 +50,7 @@ namespace Shesha.Scheduler.Domain
         /// Folder to store the logs
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string LogFolder { get; set; }
+        public virtual string? LogFolder { get; set; }
 
         /// <summary>
         /// Used to specify if job class uses generic definition of ScheduledJobBase or default.

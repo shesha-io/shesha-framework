@@ -40,8 +40,8 @@ export interface IBorderValue {
             style?: IBorderType;
         };
     };
-    selectedCorner?: string;
-    selectedSide?: string;
+    radiusType?: string;
+    borderType?: string;
     hideBorder?: boolean;
 }
 

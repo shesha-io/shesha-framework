@@ -7,7 +7,7 @@ namespace Shesha.Authorization
 {
     public static class JwtTokenHelper
     {
-        public static JwtSecurityToken GetSecurityToken(this HttpContext httpContext)
+        public static JwtSecurityToken? GetSecurityToken(this HttpContext httpContext)
         {
             var cookies = httpContext?.Request.Cookies;
             var jwtToken = cookies?["Abp.AuthToken"];
@@ -18,7 +18,7 @@ namespace Shesha.Authorization
             return handler.ReadToken(jwtToken) as JwtSecurityToken;
         }
 
-        public static string GetUsernameFromJwtToken(this HttpContext httpContext)
+        public static string? GetUsernameFromJwtToken(this HttpContext httpContext)
         {
             var token = httpContext.GetSecurityToken();
             return token?.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;

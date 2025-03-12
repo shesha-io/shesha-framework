@@ -23,49 +23,49 @@ export const getSettings = (data: any) => {
             id: 's4gmBg31azZC0UjZjpfTm',
             components: [
               ...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'componentName',
-                parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
-                label: 'Component Name',
-                inputType: 'propertyAutocomplete',
-                validate: {
-                  required: true,
-                },
-                jsSetting: false
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'label',
-                parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
-                label: 'Heading',
-                jsSetting: true,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'hidden',
-                parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
-                label: 'Hide',
-                inputType: 'switch',
-                jsSetting: true,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'hideHeading',
-                parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
-                label: 'Hide Heading',
-                inputType: 'switch',
-                jsSetting: true,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'switch',
-                label: 'Hide When Empty',
-                propertyName: 'hideWhenEmpty',
-                defaultValue: false,
-                jsSetting: true,
-            })
-              .toJson(),
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'componentName',
+                  parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
+                  label: 'Component Name',
+                  inputType: 'propertyAutocomplete',
+                  validate: {
+                    required: true,
+                  },
+                  jsSetting: false
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'label',
+                  parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
+                  label: 'Heading',
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
+                  label: 'Hide',
+                  inputType: 'switch',
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'hideHeading',
+                  parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
+                  label: 'Hide Heading',
+                  inputType: 'switch',
+                  jsSetting: true,
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  label: 'Hide When Empty',
+                  propertyName: 'hideWhenEmpty',
+                  defaultValue: false,
+                  jsSetting: true,
+                })
+                .toJson(),
             ],
           },
 
@@ -90,7 +90,7 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
-                    .addCollapsiblePanel({
+                      .addCollapsiblePanel({
                         id: 'borderStyleCollapsiblePanel',
                         propertyName: 'pnlBorderStyle',
                         label: 'Border',
@@ -120,36 +120,16 @@ export const getSettings = (data: any) => {
                                 },
                               ]
                             })
-                            .addSettingsInputRow(
-                              getBorderInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[4] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[4] as any
-                            )
+                            .addContainer({
+                              id: 'borderStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getBorderInputs() as any
+                            })
+                            .addContainer({
+                              id: 'borderRadiusStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getCornerInputs() as any
+                            })
                             .toJson()
                           ]
                         }
@@ -182,7 +162,7 @@ export const getSettings = (data: any) => {
                                 id: "backgroundStyleRow-color",
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: 'backgroundStyleRow-color',
                                   label: "Color",
                                   propertyName: "background.color",
@@ -211,7 +191,7 @@ export const getSettings = (data: any) => {
                                 id: "backgroundStyle-url",
                                 parentId: "backgroundStylePnl",
                                 inputs: [{
-                                  type: 'text',
+                                  type: 'textField',
                                   id: 'backgroundStyle-url',
                                   propertyName: "background.url",
                                   jsSetting: false,
@@ -240,7 +220,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: "background.storedFile.id",
@@ -252,6 +232,7 @@ export const getSettings = (data: any) => {
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
@@ -305,47 +286,47 @@ export const getSettings = (data: any) => {
                               readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               inputs: [
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: 'shadowStyleRow-offsetX',
                                   label: 'Offset X',
                                   hideLabel: true,
                                   width: 60,
-                                  inputType: 'number',
+                                  inputType: 'numberField',
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: 'shadowStyleRow-offsetY',
                                   label: 'Offset Y',
                                   hideLabel: true,
                                   width: 60,
-                                  inputType: 'number',
+                                  inputType: 'numberField',
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: 'shadowStyleRow-blur',
                                   label: 'Blur',
                                   hideLabel: true,
                                   width: 60,
-                                  inputType: 'number',
+                                  inputType: 'numberField',
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
                                 },
                                 {
-                                  type: 'number',
+                                  type: 'numberField',
                                   id: 'shadowStyleRow-spread',
                                   label: 'Spread',
                                   hideLabel: true,
                                   width: 60,
-                                  inputType: 'number',
+                                  inputType: 'numberField',
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
                                 },
                                 {
-                                  type: 'color',
+                                  type: 'colorPicker',
                                   id: 'shadowStyleRow-color',
                                   label: 'Color',
                                   hideLabel: true,
@@ -393,16 +374,15 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'text',
-                                propertyName: 'className',
-                                label: 'Custom CSS Class',
-                                })
+                              id: nanoid(),
+                              inputType: 'textField',
+                              propertyName: 'className',
+                              label: 'Custom CSS Class',
+                            })
                             .toJson()
                           ]
                         }

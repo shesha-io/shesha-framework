@@ -3,6 +3,7 @@ using System.Globalization;
 using log4net;
 using log4net.Core;
 using log4net.Util;
+using Shesha.Reflection;
 using ILogger = Castle.Core.Logging.ILogger;
 
 namespace Shesha.Scheduler.Logging
@@ -14,7 +15,7 @@ namespace Shesha.Scheduler.Logging
     {
         private static readonly Type DeclaringType = typeof(ScheduledJobLogger);
 
-        public ScheduledJobLogger(log4net.Core.ILogger logger, ScheduledJobLoggerFactory factory)
+        public ScheduledJobLogger(log4net.Core.ILogger logger, ScheduledJobLoggerFactory? factory)
         {
             Logger = logger;
             Factory = factory;
@@ -24,7 +25,7 @@ namespace Shesha.Scheduler.Logging
         {
         }
 
-        internal ScheduledJobLogger(ILog log, ScheduledJobLoggerFactory factory)
+        internal ScheduledJobLogger(ILog log, ScheduledJobLoggerFactory? factory)
             : this(log.Logger, factory)
         {
         }
@@ -39,18 +40,18 @@ namespace Shesha.Scheduler.Logging
 
         public bool IsWarnEnabled => Logger.IsEnabledFor(Level.Warn);
 
-        protected internal ScheduledJobLoggerFactory Factory { get; set; }
+        protected internal ScheduledJobLoggerFactory? Factory { get; set; }
 
         protected internal log4net.Core.ILogger Logger { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return Logger.ToString();
         }
 
         public virtual global::Castle.Core.Logging.ILogger CreateChildLogger(string name)
         {
-            return Factory.Create(Logger.Name + "." + name);
+            return Factory.NotNull().Create(Logger.Name + "." + name);
         }
 
         public void Trace(string message)

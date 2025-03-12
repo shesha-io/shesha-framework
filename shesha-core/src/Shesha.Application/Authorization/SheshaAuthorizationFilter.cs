@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Abp.AspNetCore.Mvc.Authorization;
-using Abp.AspNetCore.Mvc.Extensions;
+﻿using Abp.AspNetCore.Mvc.Extensions;
 using Abp.AspNetCore.Mvc.Results;
 using Abp.Authorization;
 using Abp.Dependency;
@@ -14,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
@@ -39,7 +37,7 @@ namespace Shesha.Authorization
 
         public virtual async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var endpoint = context?.HttpContext?.GetEndpoint();
+            var endpoint = context.HttpContext?.GetEndpoint();
             // Allow Anonymous skips all authorization
             if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
             {
@@ -71,9 +69,10 @@ namespace Shesha.Authorization
 
                 if (ActionResultHelper.IsObjectResult(context.ActionDescriptor.GetMethodInfo().ReturnType))
                 {
+                    var identity = context.HttpContext?.User.Identity;
                     context.Result = new ObjectResult(new AjaxResponse(_errorInfoBuilder.BuildForException(ex), true))
                     {
-                        StatusCode = context.HttpContext.User.Identity.IsAuthenticated
+                        StatusCode = identity != null && identity.IsAuthenticated
                             ? (int)System.Net.HttpStatusCode.Forbidden
                             : (int)System.Net.HttpStatusCode.Unauthorized
                     };

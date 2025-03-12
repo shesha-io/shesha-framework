@@ -127,7 +127,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}
-                style={style}
+                style={{borderWidth: '0px', ...style}}
                 allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
@@ -157,12 +157,12 @@ export const Dropdown: FC<IDropdownProps> = ({
             onChange={onChange}
             value={options.length > 0 ? value || defaultValue : undefined}
             defaultValue={defaultValue}
-            variant={hideBorder ? 'borderless' : undefined}
+            variant={'borderless'}
             disabled={readOnly}
             mode={selectedMode}
             placeholder={placeholder}
             showSearch
-            style={style}
+            style={{borderWidth: '0px', ...style}}
             size={size}
         >
             {options.map((option, index) => (

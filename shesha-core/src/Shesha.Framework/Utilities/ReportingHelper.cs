@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using Shesha.Exceptions;
+using System.IO;
 using System.Reflection;
 
 namespace Shesha.Utilities
 {
-    public class ReportingHelper
+    public static class ReportingHelper
     {
         public static MemoryStream GetResourceStream(string resourceName)
         {
@@ -20,7 +21,7 @@ namespace Shesha.Utilities
         {
             var result = new MemoryStream();
 
-            using (var resourceStream = assembly.GetManifestResourceStream(resourceName)) 
+            using (var resourceStream = assembly.GetEmbeddedResourceStream(resourceName)) 
             {
                 var buffer = new byte[8 * 1024];
                 int len;
@@ -48,6 +49,22 @@ namespace Shesha.Utilities
             {
                 return sr.ReadToEnd();
             }
+        }
+
+        /// <summary>
+        /// Get embedded resource stream. Throws exception if stream not found
+        /// </summary>
+        /// <param name="assembly">Assembly containing embeddeed resource</param>
+        /// <param name="resourceName">Resource name</param>
+        /// <returns></returns>
+        /// <exception cref="ManifestResourceStreamNotFoundException"></exception>
+        public static Stream GetEmbeddedResourceStream(this Assembly assembly, string resourceName) 
+        {
+            var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+                throw new ManifestResourceStreamNotFoundException(assembly, resourceName);
+
+            return stream;            
         }
     }
 }

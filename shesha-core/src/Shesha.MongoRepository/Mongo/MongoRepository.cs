@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using MongoDbRepository;
 using Shesha.MongoRepository.Utils;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Shesha.MongoRepository.Mongo
 
         public MongoRepository()
         {
-            context = new MongoDbContext(MongoUtil.ConnectionString);
+            context = new MongoDbContext(MongoUtil.ConnectionString.NotNullOrWhiteSpace());
         }
 
         #region Properties

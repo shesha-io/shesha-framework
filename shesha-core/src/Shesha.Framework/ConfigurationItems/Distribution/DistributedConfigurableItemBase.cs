@@ -27,7 +27,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Label of the con
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Item name
@@ -37,7 +37,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Module name

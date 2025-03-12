@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Abp.Auditing;
+﻿using Abp.Auditing;
 using Abp.Authorization.Users;
-using Abp.Extensions;
 using Shesha.Validation;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Authorization.Accounts.Dto
 {
@@ -36,7 +35,7 @@ namespace Shesha.Authorization.Accounts.Dto
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!UserName.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(UserName))
             {
                 if (!UserName.Equals(EmailAddress) && ValidationHelper.IsEmail(UserName))
                 {

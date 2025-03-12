@@ -1,5 +1,4 @@
 ﻿using Abp.Domain.Entities;
-using Abp.Extensions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -12,7 +11,7 @@ namespace Shesha.EntityReferences
     {
         private object _entity;
        
-        public GenericEntityReference(string id, string typeName, string dysplayName = null)
+        public GenericEntityReference(string id, string typeName, string? dysplayName = null)
         {
             Id = id;
             _className = typeName;
@@ -26,17 +25,18 @@ namespace Shesha.EntityReferences
             _entity = entity;
             if (_entity.GetType().GetProperty("Id") == null)
                 throw new NullReferenceException($"entity.{nameof(GenericEntityReference.Id)} not found");
-            Id = _entity.GetType().GetProperty("Id")?.GetValue(_entity)?.ToString();
-            if (Id.IsNullOrEmpty())
+            var id = _entity.GetType().GetProperty("Id")?.GetValue(_entity)?.ToString();
+            if (string.IsNullOrWhiteSpace(id))
                 throw new NullReferenceException($"entity.{nameof(GenericEntityReference.Id)} can not be NULL");
 
-            _className = _entity.GetType().StripCastleProxyType().FullName;
+            Id = id;
+            _className = _entity.GetType().StripCastleProxyType().GetRequiredFullName();
             _displayName = _entity.GetEntityDisplayName();
         }
 
-        public virtual string? Id { get; internal set; }
+        public virtual string Id { get; internal set; }
 
-        public virtual string? _className { get; internal set; }
+        public virtual string _className { get; internal set; }
 
         public virtual string? _displayName { get; internal set; }
 
@@ -65,23 +65,26 @@ namespace Shesha.EntityReferences
                 Id == obj.Id && _className == obj._className;
         }
 
-        public static bool operator ==(GenericEntityReference l, GenericEntityReference r)
+        public static bool operator ==(GenericEntityReference? l, GenericEntityReference? r)
         {
-            if (l is null && r is null)
-                return true;
-
-            if ((l is null) != (r is null))
+            if (l is null)
+            {
+                if (r is null)
+                    return true;
+                // Only the left side is null.
                 return false;
-
+            }
             // Equals handles case of null on right side.
             return l.Equals(r);
         }
 
-        public static bool operator !=(GenericEntityReference l, GenericEntityReference r) => !(l == r);
+        public static bool operator !=(GenericEntityReference? l, GenericEntityReference? r) => !(l == r);
 
         public override int GetHashCode()
         {
-            return Id.IsNullOrEmpty() ? 0 : Id.GetHashCode();
+            return string.IsNullOrWhiteSpace(Id)
+                ? 0 
+                : Id.GetHashCode();
         }
     }
 }

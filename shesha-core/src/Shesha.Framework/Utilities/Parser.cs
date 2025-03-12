@@ -1,5 +1,6 @@
 ﻿using Shesha.Reflection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Shesha.Utilities
@@ -21,7 +22,7 @@ namespace Shesha.Utilities
         /// <param name="isDateOnly"></param>
         /// <param name="returnNullEvenIfNonNullable"></param>
         /// <returns>Returns true if the value could be converted successfully to the target property's type.</returns>
-        public static bool TryParseToValueType(string value, Type targetType, out object? parsedValue, string format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
+        public static bool TryParseToValueType(string? value, Type targetType, out object? parsedValue, string? format = null, bool isDateOnly = false, bool returnNullEvenIfNonNullable = false)
         {
             try
             {
@@ -75,15 +76,11 @@ namespace Shesha.Utilities
                         }
                         else
                         {
-                            Type nonNullableTargetType;
-                            if (ReflectionHelper.IsNullableType(targetType))
-                                nonNullableTargetType = Nullable.GetUnderlyingType(targetType);
-                            else
-                                nonNullableTargetType = targetType;
+                            var nonNullableTargetType = targetType.GetUnderlyingTypeIfNullable();
 
                             if (nonNullableTargetType.IsEnum)
                             {
-                                parsedValue = System.Enum.Parse(nonNullableTargetType, value);
+                                parsedValue = Enum.Parse(nonNullableTargetType, value);
                             }
                             else
                             {
@@ -124,7 +121,7 @@ namespace Shesha.Utilities
             return parsedValue;
         }
 
-        public static TimeSpan? ParseTime(string value, string format = null)
+        public static TimeSpan? ParseTime(string? value, string? format = null)
         {
             if (string.IsNullOrWhiteSpace(value))
                 return null;
@@ -132,7 +129,7 @@ namespace Shesha.Utilities
             if (int.TryParse(value, out var seconds) && seconds < TimeSpan.FromHours(24).TotalSeconds) 
                 return TimeSpan.FromSeconds(seconds);
 
-            var timeFormats = new string[] {
+            var timeFormats = new string?[] {
                 format,
                 /*note: `hh` is always 24-hours for TimeSpan*/
                 @"hh\:mm\:ss", 
@@ -146,7 +143,7 @@ namespace Shesha.Utilities
             return null;
         }
 
-        public static DateTime ParseDate(string value, string format = null, bool isDateOnly = true)
+        public static DateTime ParseDate(string value, string? format = null, bool isDateOnly = true)
         {
             var dateVal = new DateTime();
             bool parseSuccessful = false;
@@ -196,7 +193,7 @@ namespace Shesha.Utilities
 
         #endregion
 
-        public static bool CanParseTo(string value, Type type)
+        public static bool CanParseTo([NotNullWhen(true)] string? value, Type type)
         {
             try
             {
@@ -212,7 +209,7 @@ namespace Shesha.Utilities
         /// <summary>
         /// Parses the Id of the entity of the specified type
         /// </summary>
-        public static object ParseId(string value, Type entityType)
+        public static object? ParseId(string? value, Type entityType)
         {
             if (string.IsNullOrWhiteSpace(value) || value == "-999")
                 return null;
@@ -223,12 +220,12 @@ namespace Shesha.Utilities
 
             var result = ParseTo(value, idProp.PropertyType);
 
-            return typeof(Int64).IsAssignableFrom(idProp.PropertyType) && ((Int64)result <= 0)
+            return typeof(Int64).IsAssignableFrom(idProp.PropertyType) && result != null && ((Int64)result <= 0)
                 ? null
                 : result;
         }
 
-        public static bool CanParseId(string value, Type entityType)
+        public static bool CanParseId([NotNullWhen(true)]string? value, Type entityType)
         {
             if (string.IsNullOrWhiteSpace(value) || value == "-999")
                 return false;
@@ -240,7 +237,7 @@ namespace Shesha.Utilities
             return CanParseTo(value, idProp.PropertyType);
         }
 
-        public static object ParseTo(string value, Type type)
+        public static object? ParseTo(string? value, Type type)
         {
             if (string.IsNullOrEmpty(value) || type == null)
                 return null;

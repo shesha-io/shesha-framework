@@ -1,13 +1,8 @@
 ﻿using Abp.Auditing;
-using Abp.Domain.Entities;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
 {

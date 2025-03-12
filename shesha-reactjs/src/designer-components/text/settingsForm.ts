@@ -114,15 +114,15 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: {_code: 'return  getSettingValue(data?.dataType) !== "date-time";', _mode: 'code', _value: false} as any,
+                  hidden: { _code: 'return  getSettingValue(data?.dataType) !== "date-time";', _mode: 'code', _value: false } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
-                      type: 'text',
+                      type: 'textField',
                       id: 'type-s2gmBg3QaaZC0UjZjpfTm',
                       hidden: false,
                       propertyName: 'dateFormat',
-                      label: 'Date Format',                    
+                      label: 'Date Format',
                       size: 'small',
                       jsSetting: true,
                       placeholder: 'Date Format',
@@ -133,7 +133,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: {_code: 'return  getSettingValue(data?.dataType) !== "number";', _mode: 'code', _value: false} as any,
+                  hidden: { _code: 'return  getSettingValue(data?.dataType) !== "number";', _mode: 'code', _value: false } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -169,7 +169,7 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: {_code: 'return getSettingValue(data?.contentDisplay) === "name";', _mode: 'code', _value: false} as any,
+                  hidden: { _code: 'return getSettingValue(data?.contentDisplay) === "name";', _mode: 'code', _value: false } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -248,7 +248,7 @@ export const getSettings = (data: any) => {
                                     dropdownOptions: fontTypes,
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Size',
                                     propertyName: 'font.size',
@@ -266,7 +266,7 @@ export const getSettings = (data: any) => {
                                     width: 100,
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Color',
                                     hideLabel: true,
@@ -310,7 +310,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'width-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
@@ -319,7 +319,7 @@ export const getSettings = (data: any) => {
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'minWidth-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Min Width',
                                     width: 85,
@@ -328,7 +328,7 @@ export const getSettings = (data: any) => {
                                     icon: 'minWidthIcon',
                                   },
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'maxWidth-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Max Width',
                                     width: 85,
@@ -349,7 +349,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'height-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
@@ -358,7 +358,7 @@ export const getSettings = (data: any) => {
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'minHeight-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Min Height',
                                     width: 85,
@@ -367,7 +367,7 @@ export const getSettings = (data: any) => {
                                     icon: 'minHeightIcon',
                                   },
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'maxHeight-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Max Height',
                                     width: 85,
@@ -437,16 +437,16 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInputRow(getBorderInputs()[0] as any)
-                              .addSettingsInputRow(getBorderInputs()[1] as any)
-                              .addSettingsInputRow(getBorderInputs()[2] as any)
-                              .addSettingsInputRow(getBorderInputs()[3] as any)
-                              .addSettingsInputRow(getBorderInputs()[4] as any)
-                              .addSettingsInputRow(getCornerInputs()[0] as any)
-                              .addSettingsInputRow(getCornerInputs()[1] as any)
-                              .addSettingsInputRow(getCornerInputs()[2] as any)
-                              .addSettingsInputRow(getCornerInputs()[3] as any)
-                              .addSettingsInputRow(getCornerInputs()[4] as any)
+                              .addContainer({
+                                id: 'borderStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getBorderInputs() as any
+                              })
+                              .addContainer({
+                                id: 'borderRadiusStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getCornerInputs() as any
+                              })
                               .toJson(),
                           ],
                         },
@@ -579,7 +579,7 @@ export const getSettings = (data: any) => {
                                 parentId: 'backgroundStylePnl',
                                 inputs: [
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'backgroundStyleRow-color',
                                     label: 'Color',
                                     propertyName: 'background.color',
@@ -629,7 +629,7 @@ export const getSettings = (data: any) => {
                                 parentId: 'backgroundStylePnl',
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-url',
                                     propertyName: 'background.url',
                                     jsSetting: false,
@@ -688,7 +688,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'backgroundStyle-storedFile',
                                     jsSetting: false,
                                     propertyName: 'background.storedFile.id',
@@ -778,7 +778,7 @@ export const getSettings = (data: any) => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'background.repeat',
-                                     buttonGroupOptions: repeatOptions,
+                                    buttonGroupOptions: repeatOptions,
                                   },
                                 ],
                               })
@@ -809,7 +809,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-offsetX',
                                     label: 'Offset X',
                                     hideLabel: true,
@@ -818,7 +818,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'shadow.offsetX',
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-offsetY',
                                     label: 'Offset Y',
                                     hideLabel: true,
@@ -827,7 +827,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'shadow.offsetY',
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: 'shadowStyleRow-blurRadius',
                                     label: 'Blur',
                                     hideLabel: true,
@@ -836,7 +836,7 @@ export const getSettings = (data: any) => {
                                     propertyName: 'shadow.blurRadius',
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: 'shadowStyleRow-color',
                                     label: 'Color',
                                     hideLabel: true,

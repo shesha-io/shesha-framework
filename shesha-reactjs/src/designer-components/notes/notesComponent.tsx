@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
-import settingsFormJson from './settingsForm.json';
+import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components';
 import { useFormData } from '@/providers';
 import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -20,8 +20,6 @@ export interface INotesProps extends IConfigurableFormComponent {
   autoSize?: boolean;
   allowDelete?: boolean;
 }
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
   type: 'notes',
@@ -47,7 +45,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
       </NotesProvider>
     );
   },
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const customModel: INotesProps = {
       ...model,
@@ -56,7 +54,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
     };
     return customModel;
   },
-  settingsFormMarkup: settingsForm,
+  settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) => m
     .add<INotesProps>(0, (prev) =>
       migratePropertyName(

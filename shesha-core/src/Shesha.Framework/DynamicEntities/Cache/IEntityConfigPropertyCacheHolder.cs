@@ -2,7 +2,7 @@
 
 namespace Shesha.DynamicEntities.Cache
 {
-    public interface IEntityConfigPropertyCacheHolder : ICacheHolder<string, EntityConfigCacheItem>
+    public interface IEntityConfigPropertyCacheHolder : ICacheHolder<string, EntityConfigCacheItem?>
     {
     }
 }

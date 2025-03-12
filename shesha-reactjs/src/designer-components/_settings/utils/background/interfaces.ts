@@ -26,5 +26,5 @@ export interface IRadioOption {
 
 export interface IDropdownOption {
     label: string | React.ReactNode;
-    value: string | number;
+    value: string;
 }

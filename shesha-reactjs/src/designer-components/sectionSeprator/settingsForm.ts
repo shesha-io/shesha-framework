@@ -48,9 +48,14 @@ export const getSettings = (data: any) => {
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
+                  labelAlignOptions: [
+                    { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                    { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                    { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
+                  ],
                 })
                 .addSettingsInput({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
@@ -120,61 +125,32 @@ export const getSettings = (data: any) => {
                           id: 'stylePnl-M500-911MFR',
                           components: [
                             ...new DesignerToolbarSettings()
-                              .addCollapsiblePanel({
-                                id: 'linefontStyleCollapsiblePanel',
-                                propertyName: 'linepnlFontStyle',
-                                label: 'Font',
-                                labelAlign: 'right',
-                                parentId: 'styleRouter',
-                                ghost: true,
-                                collapsible: 'header',
-                                content: {
-                                  id: 'fontStylePnlline',
-                                  components: [
-                                    ...new DesignerToolbarSettings()
-                                      .addSettingsInputRow({
-                                        id: 'trye26vo0xhs-HxJ5k5ngYE',
-                                        parentId: 'fontStylePnlline',
-                                        inline: true,
-                                        propertyName: 'lineFont',
-                                        readOnly: {
-                                          _code: 'return  getSettingValue(data?.readOnly);',
-                                          _mode: 'code',
-                                          _value: false,
-                                        } as any,
-                                        inputs: [
-                                          {
-                                            type: 'number',
-                                            id: 'fontSize-s04gmBg31azZC0UjZjpfTm',
-                                            label: 'Size',
-                                            propertyName: 'lineFont.size',
-                                            hideLabel: true,
-                                            width: 50,
-                                          },
-                                          {
-                                            type: 'color',
-                                            id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
-                                            label: 'Color',
-                                            hideLabel: true,
-                                            propertyName: 'lineFont.color',
-                                          },
-                                        ],
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
                               .addSettingsInputRow({
-                                id: `lineStyleRow`,
-                                parentId: 'lineStylePnl',
+                                id: 'trye26vo0xhs-HxJ5k5ngYE',
+                                parentId: 'fontStylePnlline',
                                 inline: true,
-                                hidden: false,
+                                propertyName: 'lineFont',
                                 readOnly: {
-                                  _code: 'return getSettingValue(data?.readOnly);',
+                                  _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
                                 } as any,
                                 inputs: [
+                                  {
+                                    type: 'numberField',
+                                    id: 'fontSize-s04gmBg31azZC0UjZjpfTm',
+                                    label: 'Thickness',
+                                    propertyName: 'lineFont.size',
+                                    hideLabel: false,
+                                    width: 50,
+                                  },
+                                  {
+                                    type: 'colorPicker',
+                                    id: 'fontColor-s40gmBg31azZC0UjZjpfTm',
+                                    label: 'Color',
+                                    hideLabel: false,
+                                    propertyName: 'lineFont.color',
+                                  },
                                   {
                                     type: 'switch',
                                     id: 'dashed',
@@ -182,13 +158,16 @@ export const getSettings = (data: any) => {
                                     hideLabel: false,
                                     propertyName: 'dashed',
                                     layout: 'horizontal',
+                                    defaultValue: 'false',
                                   },
                                 ],
                               })
+
                               .toJson(),
                           ],
                         },
                       })
+
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -217,7 +196,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'width-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
@@ -243,7 +222,7 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 inputs: [
                                   {
-                                    type: 'text',
+                                    type: 'textField',
                                     id: 'height-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Height',
                                     width: 85,
@@ -302,7 +281,7 @@ export const getSettings = (data: any) => {
                                             dropdownOptions: fontTypes,
                                           },
                                           {
-                                            type: 'number',
+                                            type: 'numberField',
                                             id: 'fontSize-s4gmBg31azZC0UjZjpfTm',
                                             label: 'Size',
                                             propertyName: 'font.size',
@@ -320,7 +299,7 @@ export const getSettings = (data: any) => {
                                             width: 100,
                                           },
                                           {
-                                            type: 'color',
+                                            type: 'colorPicker',
                                             id: 'fontColor-s4gmBg31azZC0UjZjpfTm',
                                             label: 'Color',
                                             hideLabel: true,
@@ -347,7 +326,7 @@ export const getSettings = (data: any) => {
                                         id: 'styleBoxPnl',
                                         label: 'Margin Padding',
                                         hideLabel: true,
-                                        propertyName: 'stylingBox',
+                                        propertyName: 'titleStylingBox',
                                       })
                                       .toJson(),
                                   ],
@@ -361,8 +340,8 @@ export const getSettings = (data: any) => {
                                 } as any,
                                 id: 'title-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
-                                propertyName: 'containerStyle',
-                                hideLabel: true,
+                                propertyName: 'titleStyle',
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
@@ -399,7 +378,7 @@ export const getSettings = (data: any) => {
                                         id: 'stylecontainerBoxPnl',
                                         label: 'Margin Padding',
                                         hideLabel: true,
-                                        propertyName: 'stylingBox',
+                                        propertyName: 'containerStylingBox',
                                       })
                                       .toJson(),
                                   ],
@@ -414,7 +393,7 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'containerStyle',
-                                hideLabel: true,
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',

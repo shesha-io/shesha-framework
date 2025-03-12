@@ -5,16 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
     public interface ICascadeEntityCreator
     {
         IIocManager IocManager { get; set; }
-        object FindEntity(CascadeRuleEntityFinderInfo info);
+        object? FindEntity(CascadeRuleEntityFinderInfo info);
         bool VerifyEntity(CascadeRuleEntityFinderInfo info, List<ValidationResult> validationResult);
         object PrepareEntity(CascadeRuleEntityFinderInfo info);
     }
@@ -31,7 +28,7 @@ namespace Shesha.DynamicEntities
             };
         }
 
-        public object FindEntity(CascadeRuleEntityFinderInfo info)
+        public object? FindEntity(CascadeRuleEntityFinderInfo info)
         {
             return FindEntity(GetNewInfo(info));
         }
@@ -54,7 +51,7 @@ namespace Shesha.DynamicEntities
         /// <param name="info">Input data</param>
         /// <returns>Found Entity. Null if not found. Throw exception <see cref="CascadeUpdateRuleException"/> if found any constraints</returns>
         /// <exception cref="CascadeUpdateRuleException">Throw exception of this type if found any constraints</exception>
-        public virtual T FindEntity(CascadeRuleEntityFinderInfo<T, TId> info)
+        public virtual T? FindEntity(CascadeRuleEntityFinderInfo<T, TId> info)
         {
             return null;
         }
