@@ -57,7 +57,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
 
 
-        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...style, ...(memoizedColor ? { backgroundColor: memoizedColor, backgroundImage: 'none', color: '' } : {}) }}>
+        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...style, ...(memoizedColor ? { backgroundColor: memoizedColor, backgroundImage: 'none', color: '', border: 'none' } : {}) }}>
           {showReflistName && itemData?.item}
         </RefTag>
 
