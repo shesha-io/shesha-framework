@@ -33,7 +33,7 @@ export const useStyles = () => {
   return tableStyles;
 };
 
-export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {hoverColor, oddRowColor, selectedColor, sortIndicatorColor}) => {
   const {
     shaTable,
     thead,
@@ -63,7 +63,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   // var(--ant-primary-3)
   const hoverableRow = `
         &:not(.${trSelected}) {
-            background: ${token.colorPrimaryBgHover} !important;
+            background: ${ hoverColor || token.colorPrimaryBgHover} !important;
         }
     `;
 
@@ -213,14 +213,14 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trOdd} {
-            background: #f0f0f0;
+            background: ${oddRowColor || '#f0f0f0'};
           }
 
           &.${trSelected} {
             .sha-link {
               color: white;
             }
-            background: ${token.colorPrimary};
+            background: ${selectedColor || token.colorPrimary};
             color: white;
 
             .ant-form-item-control-input-content, button, a {
@@ -261,11 +261,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
         .${th} {
           &.${sortedAsc} {
-            border-top: 3px solid ${token.colorPrimary};
+            border-top: 3px solid ${sortIndicatorColor || token.colorPrimary};
             padding-top: 5px;
           }
           &.${sortedDesc} {
-            border-bottom: 3px solid ${token.colorPrimary};
+            border-bottom: 3px solid ${sortIndicatorColor || token.colorPrimary};
           }
           &.${fixedColumn} {
             display: inline-block;

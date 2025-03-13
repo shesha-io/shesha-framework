@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { Select, Input, InputNumber } from 'antd';
+import { Select, Input } from 'antd';
 import { ITableComponentProps } from './models';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
@@ -17,11 +17,50 @@ import { ColumnsConfig } from './columnsEditor/columnsConfig';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
+import { ColorPicker } from '@/index';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
   value: T;
 }
+
+const borderTypeOptions: ITypedOption<string>[] = [
+  { label: 'Solid', value: 'solid' },
+  { label: 'Dashed', value: 'dashed' },
+  { label: 'Dotted', value: 'dotted' },
+];
+
+const overflowOptions: ITypedOption<string>[] = [
+  { label: 'Auto', value: 'auto' },
+  { label: 'Hidden', value: 'hidden' },
+  { label: 'Scroll', value: 'scroll' },
+  { label: 'Clip', value: 'clip' },
+  { label: 'Visible', value: 'visible' }
+];
+
+const fontFamilyOptions: ITypedOption<string>[] = [
+  { label: 'Arial', value: 'Arial, sans-serif' },
+  { label: 'Helvetica', value: 'Helvetica, Arial, sans-serif' },
+  { label: 'Times New Roman', value: 'Times New Roman, serif' },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Verdana', value: 'Verdana, Geneva, sans-serif' },
+  { label: 'Roboto', value: 'Roboto, Arial, sans-serif' },
+  { label: 'Open Sans', value: 'Open Sans, Arial, sans-serif' },
+  { label: 'System Font', value: '-MacOS-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif' },
+  { label: 'Monospace', value: 'Monaco, Consolas, Courier New, monospace' },
+  { label: 'SF Pro (MacOS)', value: '-MacOS-system, SF Pro, sans-serif' },
+  { label: 'SF Pro Text (MacOS)', value: 'SF Pro Text, -MacOS-system, sans-serif' },
+  { label: 'SF Pro Display (MacOS)', value: 'SF Pro Display, -MacOS-system, sans-serif' },
+  { label: 'SF Mono (MacOS)', value: 'SF Mono, Monaco, monospace' },
+  { label: 'New York (MacOS)', value: 'New York, Times New Roman, serif' },
+  { label: 'Segoe UI (Windows)', value: 'Segoe UI, Tahoma, sans-serif' },
+  { label: 'Calibri (Windows)', value: 'Calibri, Arial, sans-serif' },
+  { label: 'Cambria (Windows)', value: 'Cambria, Georgia, serif' },
+  { label: 'Consolas (Windows)', value: 'Consolas, Monaco, monospace' },
+  { label: 'Tahoma (Windows)', value: 'Tahoma, Geneva, sans-serif' },
+  { label: 'Candara (Windows)', value: 'Candara, Verdana, sans-serif' }
+];
+
 const yesNoInheritOptions: ITypedOption<YesNoInheritJs>[] = [
   { label: 'Yes', value: 'yes' },
   { label: 'No', value: 'no' },
@@ -165,23 +204,23 @@ export interface IProps {
 
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
   const { readOnly } = props;
-  
+
   const { model } = useSettingsForm<ITableComponentProps>();
 
-  const crudConstants = useAvailableConstantsMetadata({ 
+  const crudConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData, SheshaConstants.moment
     ]
   });
 
-  const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
+  const onNewRowInitializeConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+  const onRowSaveConstants = useAvailableConstantsMetadata({
     addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
@@ -191,7 +230,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
     }
   });
 
-  const styleConstants = useAvailableConstantsMetadata({ 
+  const styleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData
@@ -214,6 +253,9 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
       <SettingsFormItem name="freezeHeaders" label="Freeze Headers" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
+      <SettingsFormItem name="toggleZebraStripes" label="Striped" valuePropName="checked" jsSetting>
+        <Checkbox defaultChecked disabled={readOnly} />
+      </SettingsFormItem>
 
 
       <SettingsCollapsiblePanel header='CRUD'>
@@ -224,6 +266,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         >
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
+
         <SettingsFormItem name="canEditInlineExpression" label="Can edit inline expression" hidden={model.canEditInline !== 'js'}>
           <CodeEditor
             propertyName="canEditInlineExpression"
@@ -267,6 +310,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={crudConstants}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="newRowCapturePosition" label="New row capture position" hidden={model.canAddInline === 'no'}>
           <Select disabled={readOnly} options={rowCapturePositions} />
         </SettingsFormItem>
@@ -317,6 +361,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             availableConstants={onRowSaveConstants}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="onRowSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
             editorConfig={null}
@@ -326,6 +371,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
             exposedVariables={ROW_SAVED_SUCCESS_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
+
         <SettingsFormItem name="canDeleteInline" label="Can delete inline">
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
@@ -347,51 +393,253 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         <SettingsFormItem name="customDeleteUrl" label="Custom delete url" hidden={model.canDeleteInline === 'no'}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
-
       </SettingsCollapsiblePanel>
-      <SettingsCollapsiblePanel header="Layout">
-        <SettingsFormItem jsSetting
-          name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
-          <InputNumber />
-        </SettingsFormItem>
 
-        <SettingsFormItem jsSetting
-          name="maxHeight" label="Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
-          <InputNumber />
-        </SettingsFormItem>
-
-        <SettingsFormItem name="containerStyle" label="Table container style">
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="containerStyle"
-            label="Table container style"
-            description="The style that will be applied to the table container/wrapper"
-            exposedVariables={[]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getContainerStyle'
-            }}
-            availableConstants={styleConstants}
+      <SettingsCollapsiblePanel header='Events' collapsedByDefault>
+        <SettingsFormItem name="onRowClick" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On Row Click"
+            description="Custom business logic to be executed after the user clicks on a table row."
           />
         </SettingsFormItem>
 
-        <SettingsFormItem name="tableStyle" label="Table style">
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="tableStyle"
-            label="Table style"
-            description="The style that will be applied to the table"
-            exposedVariables={[]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getTableStyle'
-            }}
-            availableConstants={styleConstants}
+        <SettingsFormItem name="onRowDblClick" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On Row Double Click"
+            description="Custom business logic to be executed after the user double-clicks on a table row."
           />
         </SettingsFormItem>
+
+        <SettingsFormItem name="onRowSelect" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+          <ConfigurableActionConfigurator
+            editorConfig={null}
+            level={1}
+            label="On Row Select"
+            description="Custom business logic to be executed after the user selects a table row."
+          />
+        </SettingsFormItem>
+
       </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Table Styles & Layout" collapsedByDefault>
+        <SettingsFormItem jsSetting
+          name="height" label="Table Height" tooltip="Sets the overall height of the table (useful for scrollable tables).">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="minHeight" label="Table Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="maxHeight" label="Table Max Height" tooltip="The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="width" label="Table Width" tooltip="Overall width of the table.">
+          <Input />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="backgroundColor" label="Background Color" tooltip="Sets the background color of the table.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="overflowY" label="Overflow Y" tooltip="Controls how content behaves when it exceeds the table dimensions along the Y axis.">
+          <Select options={overflowOptions} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="overflowX" label="Overflow X" tooltip="Controls how content behaves when it exceeds the table dimensions along the X axis.">
+          <Select options={overflowOptions} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="borderRadius" label="Border Radius" tooltip="Defines the roundness of table corners.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="sortIndicator" label="Sort Indicator Color" tooltip="Sets the color of the table sort indicator.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Table Shadow" collapsedByDefault>
+
+        <SettingsFormItem
+          jsSetting
+          name="boxShadowX"
+          label="Box Shadow X"
+          tooltip="Horizontal offset of the shadow">
+          <Input disabled={readOnly}/>
+        </SettingsFormItem>
+
+        <SettingsFormItem
+          jsSetting
+          name="boxShadowY"
+          label="Box Shadow Y"
+          tooltip="Vertical offset of the shadow">
+          <Input disabled={readOnly}/>
+        </SettingsFormItem>
+
+        <SettingsFormItem
+          jsSetting
+          name="boxShadowBlur"
+          label="Box Shadow Blur"
+          tooltip="Blur radius of the shadow">
+          <Input disabled={readOnly}/>
+        </SettingsFormItem>
+
+        <SettingsFormItem
+          jsSetting
+          name="boxShadowSpread"
+          label="Box Shadow Spread"
+          tooltip="Spread radius of the shadow">
+          <Input disabled={readOnly}/>
+        </SettingsFormItem>
+
+        <SettingsFormItem
+          jsSetting
+          name="boxShadowColor"
+          label="Box Shadow Color"
+          tooltip="Color of the shadow">
+          <ColorPicker allowClear readOnly={readOnly}/>
+        </SettingsFormItem>
+
+        <SettingsFormItem
+          jsSetting
+          name="boxShadowInset"
+          label="Box Shadow Inset"
+          tooltip="Whether the shadow is inset or not">
+          <Checkbox disabled={readOnly}/>
+        </SettingsFormItem>
+
+      </SettingsCollapsiblePanel>
+      <SettingsCollapsiblePanel header="Border Styles" collapsedByDefault>
+        <SettingsFormItem jsSetting
+          name="borderWidth" label="Border Width" tooltip="Specifies the style of the table border.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="borderStyle" label="Border Type" tooltip="Specifies the style of the table border.">
+          <Select disabled={readOnly} options={borderTypeOptions} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="borderColor" label="Border Color" tooltip="Specifies the color of the table border.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Font Styles" collapsedByDefault>
+        <SettingsFormItem jsSetting
+          name="fontFamily" label="Font Family" tooltip="Defines the font style for the table text.">
+          <Select disabled={readOnly} options={fontFamilyOptions} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="tableFontSize" label="Font Size" tooltip="The height of each row in the table.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="fontColor" label="Font Color" tooltip="Defines the font color for the table text.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Row Styles" collapsedByDefault>
+        <SettingsFormItem jsSetting
+          name="rowHeight" label="Row Height" tooltip="The height of each row in the table.">
+          <Input />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="rowPadding" label="Row Padding" tooltip="Adds padding inside rows.">
+          <Input />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="hoverHighlight" label="Hover Highlight" tooltip="Highlights a row on hover for better interactivity.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="rowSelectedColor" label="Selected Row Color" tooltip="Specifies the background color for selected rows.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="zebraStripeColor" label="Zebra Stripe Color" tooltip="Alternates row colors for zebra striping.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+
+      <SettingsCollapsiblePanel header="Header Styles" collapsedByDefault>
+        <SettingsFormItem jsSetting
+          name="headerHeight" label="Header Height" tooltip="Sets the height of the header row.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="headerBackgroundColor" label="Header Background Color" tooltip="Sets the background color of the header row.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="headerFontSize" label="Header Font Size" tooltip="The height of each row in the table.">
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem jsSetting
+          name="headerTextColor" label="Header Text Color" tooltip="Defines the text color of column headers.">
+          <ColorPicker readOnly={readOnly} allowClear />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+
+      <SettingsFormItem name="containerStyle" label="Table container style">
+        <CodeEditor
+          readOnly={readOnly}
+          mode="dialog"
+          propertyName="containerStyle"
+          label="Table container style"
+          description="The style that will be applied to the table container/wrapper"
+          exposedVariables={[]}
+          wrapInTemplate={true}
+          templateSettings={{
+            functionName: 'getContainerStyle'
+          }}
+          availableConstants={styleConstants}
+        />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="tableStyle" label="Table style">
+        <CodeEditor
+          readOnly={readOnly}
+          mode="dialog"
+          propertyName="tableStyle"
+          label="Table style"
+          description="The style that will be applied to the table"
+          exposedVariables={[]}
+          wrapInTemplate={true}
+          templateSettings={{
+            functionName: 'getTableStyle'
+          }}
+          availableConstants={styleConstants}
+        />
+      </SettingsFormItem>
 
       <SettingsCollapsiblePanel header='Empty Table'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
@@ -415,8 +663,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
           label="Permissions"
           name="permissions"
           initialValue={props.model.permissions}
-          tooltip="Enter a list of permissions that should be associated with this component"
-        >
+          tooltip="Enter a list of permissions that should be associated with this component">
           <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>

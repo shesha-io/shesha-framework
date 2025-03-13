@@ -6,6 +6,7 @@ import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
 import {
   FormMode,
+  IConfigurableActionConfiguration,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
@@ -70,6 +71,35 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+  striped?: boolean;
+  onRowClick?: IConfigurableActionConfiguration;
+  onRowDblClick?: IConfigurableActionConfiguration;
+  onRowSelect?: IConfigurableActionConfiguration;
+  onRowSelectionChange?: IConfigurableActionConfiguration;
+  renderedShadow?: string;
+  shadowObject?: any;
+  borderObject?: any;
+  renderedBorder?: string;
+  tableFontSize?: number;
+  fontFamily?: string;
+  headerFontSize?: number;
+  headerHeight?: number;
+  headerBackgroundColor?: string;
+  headerTextColor?: string;
+  headerBorder?: string;
+  width?: number;
+  tableHeight?: number;
+  backgroundColor?: string;
+  zebraStripeColor?: string;
+  hoverHighlight?: string;
+  rowHeight?: number;
+  rowPadding?: number;
+  tableFontColor?: string;
+  rowSelectedColor?: string;
+  overflowX?:  CSSProperties['overflowX'];
+  overflowY?: CSSProperties['overflowY'];
+  borderRadius?: number;
+  sortIndicator?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -101,7 +131,35 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   noDataText,
   noDataSecondaryText,
   noDataIcon,
+  striped,
   onRowSaveSuccessAction: onRowSaveSuccess,
+  onRowClick,
+  onRowDblClick,
+  onRowSelect,
+  onRowSelectionChange,
+  renderedShadow,
+  shadowObject,
+  borderObject,
+  renderedBorder,
+  tableFontSize,
+  fontFamily,
+  headerFontSize,
+  headerBackgroundColor,
+  headerHeight,
+  headerTextColor,
+  width,
+  backgroundColor,
+  tableHeight,
+  zebraStripeColor,
+  hoverHighlight,
+  rowHeight,
+  rowPadding,
+  tableFontColor,
+  rowSelectedColor,
+  overflowX,
+  overflowY,
+  borderRadius,
+  sortIndicator,
   ...props
 }) => {
   const store = useDataTableStore();
@@ -704,6 +762,40 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
     onResizedChange: onResizedChange,
+
+    striped,
+    onRowClick,
+    onRowDblClick,
+    onRowSelect,
+
+    shadowObject,
+    renderedShadow,
+
+    borderObject,
+    renderedBorder,
+
+    tableFontSize,
+    fontFamily,
+    headerFontSize,
+    headerBackgroundColor,
+    headerHeight,
+    headerTextColor,
+
+    width,
+    backgroundColor,
+    tableHeight,
+
+    zebraStripeColor,
+    hoverHighlight,
+    rowPadding,
+    rowHeight,
+    tableFontColor,
+    rowSelectedColor,
+
+    overflowX,
+    overflowY,
+    borderRadius,
+    sortIndicator,
   };
 
   return (
