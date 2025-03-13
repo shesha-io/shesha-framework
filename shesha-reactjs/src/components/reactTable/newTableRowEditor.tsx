@@ -1,4 +1,4 @@
-import { IFlatComponentsStructure } from '@/interfaces';
+import { FormIdentifier, IFlatComponentsStructure } from '@/interfaces';
 import { CrudProvider } from '@/providers/crudContext';
 import React from 'react';
 import { FC } from 'react';
@@ -11,11 +11,12 @@ export interface INewRowEditorProps {
   creater: (data: any) => Promise<any>;
   onInitData?: () => Promise<object>;
   components?: IFlatComponentsStructure;
+  parentFormId?: FormIdentifier;
 }
 
 export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
-  const { creater, columns, headerGroups, onInitData, components } = props;
-
+  const { creater, columns, headerGroups, onInitData, components, parentFormId } = props;
+ 
   const {key, ...headerGroupProps} = headerGroups.length > 0 ? headerGroups[0].getHeaderGroupProps() : {key: ''};
 
   return (
@@ -36,7 +37,7 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
           {columns
             .filter((c) => c.isVisible)
             .map((column, index) => {
-              return <NewRowCell key={index} column={column} rowIndex={index} row={columns} />;
+              return <NewRowCell key={index} column={column} rowIndex={index} row={columns} parentFormId={parentFormId} />;
             })}
         </div>
       </CrudProvider>
