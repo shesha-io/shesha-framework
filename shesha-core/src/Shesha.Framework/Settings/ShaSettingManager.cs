@@ -32,7 +32,10 @@ namespace Shesha.Settings
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;        
 
-        public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, IConfigurationFrameworkRuntime cfRuntime, IRepository<SettingValue, Guid> settingValueRepository, Services.Settings.ISettingStore settingStore, 
+        public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, 
+            IConfigurationFrameworkRuntime cfRuntime, 
+            IRepository<SettingValue, Guid> settingValueRepository, 
+            Services.Settings.ISettingStore settingStore, 
             IRepository<FrontEndApp, Guid> appRepository,
             IRepository<Module, Guid> moduleRepository,
             IRepository<User, long> userRepository)
