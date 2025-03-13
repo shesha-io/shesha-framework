@@ -5,8 +5,8 @@ export const initialStyles = (): IStyleType => {
     return {
         border: {
             hideBorder: false,
-            selectedCorner: 'all',
-            selectedSide: 'all',
+            radiusType: 'all',
+            borderType: 'all',
             border: {
                 all: {
                     width: '1px',

@@ -111,6 +111,7 @@ import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
+import DividerComponent from '@/designer-components/_legacyComponents/divider';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -181,7 +182,6 @@ export const getToolboxComponents = (
       name: 'Tables and Lists',
       visible: true,
       components: [
-        TableTemplate,
         TableContext,
         DataTable,
         DataList,
@@ -228,6 +228,8 @@ export const getToolboxComponents = (
         FormAutocompleteComponent,
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,
+        TableTemplate,
+        DividerComponent
       ],
     },
     {

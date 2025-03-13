@@ -32,7 +32,7 @@ namespace Shesha.Configuration.Runtime
         protected void Initialise()
         {
             var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType() || t.IsJsonEntityType()) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
-                .Select(t => new { Type = t, TypeShortAlias = t.GetAttribute<EntityAttribute>()?.TypeShortAlias })
+                .Select(t => new { Type = t, TypeShortAlias = t.GetAttributeOrNull<EntityAttribute>()?.TypeShortAlias })
                 .ToList();
 
             // check for duplicates
@@ -51,13 +51,13 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public string GetEntityTypeAlias(Type entityType)
+        public string? GetEntityTypeAlias(Type entityType)
         {
             var entityConfig = Get(entityType);
             return entityConfig?.TypeShortAlias;
         }
 
-        private Type GetTypeOrNull(string nameOrAlias) 
+        private Type? GetTypeOrNull(string nameOrAlias) 
         {
             return _entityByTypeShortAlias.ContainsKey(nameOrAlias)
                 ? _entityByTypeShortAlias[nameOrAlias] as Type
@@ -67,7 +67,7 @@ namespace Shesha.Configuration.Runtime
         }
 
         /// inheritedDoc
-        public EntityConfiguration GetOrNull(string nameOrAlias)
+        public EntityConfiguration? GetOrNull(string nameOrAlias)
         {
             var type = GetTypeOrNull(nameOrAlias);
 

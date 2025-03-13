@@ -54,17 +54,17 @@ namespace Shesha.Authorization.Settings
             var dto = new AuthorizationSettingsDto();
             
             //Lockout
-            dto.IsLockoutEnabled = await _securitySettings.UserLockOutEnabled.GetValueAsync();
-            dto.DefaultAccountLockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
-            dto.MaxFailedAccessAttemptsBeforeLockout = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
+            dto.IsLockoutEnabled = await _securitySettings.UserLockOutEnabled.GetValueOrNullAsync();
+            dto.DefaultAccountLockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueOrNullAsync();
+            dto.MaxFailedAccessAttemptsBeforeLockout = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueOrNullAsync();
             dto.AutoLogoffTimeout = settings.AutoLogoffTimeout;
 
             //Password complexity
-            dto.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();
-            dto.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueAsync();
-            dto.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueAsync();
-            dto.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueAsync();
-            dto.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
+            dto.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueOrNullAsync();
+            dto.RequireLowercase = await _passwordComplexitySettings.RequireLowercase.GetValueOrNullAsync();
+            dto.RequireNonAlphanumeric = await _passwordComplexitySettings.RequireNonAlphanumeric.GetValueOrNullAsync();
+            dto.RequireUppercase = await _passwordComplexitySettings.RequireUppercase.GetValueOrNullAsync();
+            dto.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueOrNullAsync();
 
             // Password reset
             dto.ResetPasswordWithEmailLinkIsSupported =  settings.UseResetPasswordViaEmailLink;

@@ -12,6 +12,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Reflection;
 using Shesha.Tests.DynamicEntities.Mvc;
 using Shesha.Utilities;
 using Shouldly;
@@ -176,7 +177,7 @@ namespace Shesha.Tests.DynamicEntities
         {
             var content = await GetResourceStringAsync($"{this.GetType().Namespace}.Resources.{jsonResourceName}", this.GetType().Assembly);
             var deserialized = JsonConvert.DeserializeObject(content, modelType);
-            return deserialized;
+            return deserialized.NotNull();
         }
 
         private async Task<string> GetResourceStringAsync(string resourceName, Assembly assembly)
@@ -206,8 +207,8 @@ namespace Shesha.Tests.DynamicEntities
 
         private static DefaultModelBindingContext GetBindingContext(
             Type modelType,
-            HttpContext httpContext = null,
-            IModelMetadataProvider metadataProvider = null)
+            HttpContext? httpContext = null,
+            IModelMetadataProvider? metadataProvider = null)
         {
             if (httpContext == null)
             {
@@ -245,7 +246,7 @@ namespace Shesha.Tests.DynamicEntities
                 .Returns(async () =>
                 {
                     var schema = await ReadJsonRequestAsync(typeof(List<EntityPropertyDto>), schemaResourceName) as List<EntityPropertyDto>;
-                    return schema;
+                    return schema.NotNull();
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();

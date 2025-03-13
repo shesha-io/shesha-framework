@@ -45,6 +45,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
             label: item?.label,
             icon: item?.icon
           })),
+          tooltip: item?.description || item?.tooltip,
           buttonGroupOptions: item.buttonGroupOptions ?? item.items
         }))
       }
@@ -54,9 +55,11 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
       dropdownOptions: item?.values?.map((item: any) => ({
         ...item,
+        tooltip: item?.description || item?.tooltip,
         label: item?.label,
         icon: item?.icon
       })),
+      tooltip: item?.description || item?.tooltip,
       buttonGroupOptions: item.buttonGroupOptions ?? item.items
     };
   };

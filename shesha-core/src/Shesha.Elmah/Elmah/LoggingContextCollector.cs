@@ -75,7 +75,7 @@ namespace Shesha.Elmah
         }
 
         /// inheritedDoc
-        public IDisposable BeginScope(Action<LoggingContextState> initAction = null)
+        public IDisposable BeginScope(Action<LoggingContextState>? initAction = null)
         {
             var state = new LoggingContextState();
             initAction?.Invoke(state);

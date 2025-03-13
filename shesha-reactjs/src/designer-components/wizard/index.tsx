@@ -104,7 +104,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
-      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 

@@ -24,6 +24,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   borderRadius?: number;
+  noMargin?: boolean;
   hasCustomHeader?: boolean;
   customHeader?: ICollapsiblePanelContent;
   panelHeadType?: headerType;

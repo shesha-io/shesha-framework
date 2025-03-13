@@ -44,7 +44,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// Create entity changes set
         /// </summary>
         /// <returns></returns>
-        EntityChangeSet CreateEntityChangeSet();
+        EntityChangeSet? CreateEntityChangeSet();
 
         //Task SaveAsync(DbContext context, EntityChangeSet changeSet);
 

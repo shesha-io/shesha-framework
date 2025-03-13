@@ -4,7 +4,6 @@ using AutoMapper;
 using Shesha.AutoMapper;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Services;
 using System;
 
@@ -19,7 +18,7 @@ namespace Shesha.Areas.Dto
             CreateMap<Area, AreaDto>()
                 .ForMember(u => u.ParentArea, options =>
                     options.MapFrom(e => e.ParentArea != null 
-                        ? new EntityReferenceDto<Guid?>(e.ParentArea.Id, e.ParentArea.Name, e.ParentArea.GetClassName())
+                        ? new EntityReferenceDto<Guid>(e.ParentArea)
                         : null))
                 .MapReferenceListValuesToDto();
 
@@ -45,7 +44,7 @@ namespace Shesha.Areas.Dto
         }
 
         // todo: implement automapper convention for nested entities
-        private static T GetEntity<T, TId>(TId id) where T : class, IEntity<TId>
+        private static T? GetEntity<T, TId>(TId id) where T : class, IEntity<TId>
         {
             if (id == null || id is Guid guid && guid == Guid.Empty)
                 return null;

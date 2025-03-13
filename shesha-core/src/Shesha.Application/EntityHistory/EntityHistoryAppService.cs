@@ -2,6 +2,7 @@
 using Abp.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Extensions;
+using Shesha.QuickSearch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,15 @@ namespace Shesha.EntityHistory
     public class EntityHistoryAppService : ApplicationService, IEntityHistoryAppService
     {
         private readonly IEntityHistoryProvider _entityHistoryProvider;
-
+        private readonly IQuickSearcher _quickSearcher;
+        
         public EntityHistoryAppService(
-            IEntityHistoryProvider entityHistoryProvider
+            IEntityHistoryProvider entityHistoryProvider,
+            IQuickSearcher quickSearcher
         )
         {
             _entityHistoryProvider = entityHistoryProvider;
+            _quickSearcher = quickSearcher;
         }
 
         public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrailAsync(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
@@ -31,10 +35,8 @@ namespace Shesha.EntityHistory
             var totalRowsBeforeFilter = history.Count();
 
             // Dynamic filter
-            if (!string.IsNullOrEmpty(input.QuickSearch))
-            {
-                history = history.LikeDynamic(input.QuickSearch).ToList();
-            }
+            if (!string.IsNullOrWhiteSpace(input.QuickSearch))
+                history = await _quickSearcher.ApplyQuickSearch(history.AsQueryable(), input.QuickSearch).ToListAsync();
 
             var totalRows = history.Count();
             var totalPages = (int)Math.Ceiling((double)history.Count() / input.MaxResultCount);
@@ -48,6 +50,8 @@ namespace Shesha.EntityHistory
                 var sorting = input.Sorting.Split(",");
                 var sort = sorting[0].Split(" ");
                 var sortOrder = sort.Length > 1 ? sort[1] : "asc";
+
+                // TODO: review and replace with code from AbpCrudAppService.ApplySorting
                 history = history.OrderByDynamic(sort[0], sortOrder.ToLower()).ToList();
             }
 
@@ -57,22 +61,6 @@ namespace Shesha.EntityHistory
 
             var dataRows = new List<Dictionary<string, object>>();
             
-            /*var authorizedColumns =
-                tableConfig.Columns //.Where(c => c.AuthorizationRules == null || c.AuthorizationRules.IsAuthorized())
-            .ToList();
-
-            foreach (var item in history)
-            {
-                var row = new Dictionary<string, object>();
-                foreach (var col in authorizedColumns)
-                {
-                    var value = item.GetType().GetProperty(col.PropertyName)?.GetValue(item);
-                    row.Add(col.PropertyName, value);
-                }
-
-                dataRows.Add(row);
-            }*/
-
             var result = new PagedResultDto<EntityHistoryItemDto>
             {
                 TotalCount= totalRows,

@@ -1,6 +1,15 @@
+import { addPx } from '@/components/sectionSeparator/utils';
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyles, panelHeadType, bodyStyle, hideCollapseContent }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
+  headerStyle = {} as CSSProperties,
+  panelHeadType,
+  bodyStyle = {} as CSSProperties,
+  hideCollapseContent,
+  isSimpleDesign,
+  ghost
+}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -29,7 +38,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     minHeight,
     maxWidth,
     maxHeight,
-    borderRadius,
+    borderRadius = '8px 8px 8px 8px',
     marginBottom,
     marginTop,
     marginLeft,
@@ -70,21 +79,29 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
+    paddingBottom: headerPaddingBottom = '8px',
+    paddingTop: headerPaddingTop = '8px',
+    paddingLeft: headerPaddingLeft = '8px',
+    paddingRight: headerPaddingRight = '8px',
+    overflow: headerOverflow,
     ...headerRest
-  } = headerStyles;
+  } = headerStyle;
 
-  const borderTopLeftRadius = borderRadius?.split(' ')[0] || 0;
-  const borderTopRightRadius = borderRadius?.split(' ')[1] || 0;
-  const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 0;
-  const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
+  const initialValue = isSimpleDesign || ghost ? 0 : 8;
+  const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
+  const borderTopLeftRadius = addPx(borderRadius)?.split(' ')[0] || initialValue;
+  const borderTopRightRadius = addPx(borderRadius)?.split(' ')[1] || initialValue;
+  const borderBottomLeftRadius = addPx(borderRadius)?.split(' ')[2] || initialValue;
+  const borderBottomRightRadius = addPx(borderRadius)?.split(' ')[3] || initialValue;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
-      ${borderWidth && '--ant-line-width: 0px !important;'}
+        
+      ${(!isSimpleDesign && hasBorder) && '--ant-line-width: 0px !important;'};
       --primary-color: ${token.colorPrimary};
-      --ant-collapse-content-padding: ${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft};
+      --ant-collapse-content-padding: ${paddingTop || 16}px ${paddingRight || 16}px ${paddingBottom || 16}px ${paddingLeft || 16}px !important;
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};
@@ -97,15 +114,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
 
-
     .ant-collapse-item {
       display: flex;
       flex-direction: column;
       box-shadow: ${boxShadow};
-      ${rest}
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
     }
-      
+    
     .ant-collapse-content-box {
       ${rest}
       width: ${width};
@@ -129,14 +144,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   }
 
     .ant-collapse-header[aria-expanded="false"] {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
+      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
 
     .ant-collapse-header[aria-expanded="true"] {
-      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
+      border-radius : ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} 0 0 !important;
     }
 
     .ant-collapse-header {
+        ${headerRest}
         position: relative;
         visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
         background: ${headerBgImage || headerBgColor};
@@ -147,6 +163,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
         border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
         border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
+        padding-top: ${headerPaddingTop} !important;
+        padding-right: ${headerPaddingRight} !important;
+        padding-bottom: ${headerPaddingBottom} !important;
+        padding-left: ${headerPaddingLeft} !important;
         ${headerRest}
 
       .ant-collapse-header-text {
@@ -156,23 +176,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         font-size: ${fontSize};
         font-weight: ${fontWeight};
         align-self: center;
-        margin-left: 10px;
       }
 
       .ant-collapse-extra {
         align-self: center;
-        margin-right: 10px;
       }
 
       .ant-collapse-expand-icon {
         align-self: center;
+        margin-right: 8px;
       }
-
     }
 
     &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
+           --ant-collapse-header-padding: 5px 0px !important;
             border-bottom: 2px solid ${token.colorPrimary};
             border-bottom-left-radius: unset;
             border-bottom-right-radius: unset;
@@ -213,20 +232,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         text-align: ${textAlign};
         font-size: ${fontSize};
         font-weight: ${fontWeight};
-      }
+      };
 
-      --ant-line-width: 0px !important;
       --primary-color: ${token.colorPrimary};
       &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
+           --ant-collapse-header-padding: ${headerStyle?.padding || '12px 16px'} !important;
             padding: 12px 16px !important;
             border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
             border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
             font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
             font-weight: 'bold';
           }
-         
         }
       }
 

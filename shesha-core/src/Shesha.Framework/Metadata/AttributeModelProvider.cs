@@ -26,7 +26,7 @@ namespace Shesha.Metadata
                 .Distinct(new AssemblyFullNameComparer())
                 .SelectMany(a => a.GetTypes())
                 .Where(t =>
-                    t.GetAttribute<AddToMetadataAttribute>() != null &&
+                    t.GetAttributeOrNull<AddToMetadataAttribute>() != null &&
                     // skip entity types, they shouldn't be returned by the application service at all
                     !t.IsEntityType()
                 ).ToList();

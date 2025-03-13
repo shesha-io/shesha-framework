@@ -69,7 +69,7 @@ namespace Shesha.Extensions
         public static TResult MinOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
         {
             return source.Any()
-                ? source.Min(selector)
+                ? source.Min(selector) ?? defaultValue
                 : defaultValue;
         }
 
@@ -86,7 +86,7 @@ namespace Shesha.Extensions
         public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, TResult defaultValue)
         {
             return source.Any()
-                ? source.Max(selector)
+                ? source.Max(selector) ?? defaultValue
                 : defaultValue;
         }
 
@@ -96,7 +96,7 @@ namespace Shesha.Extensions
         public static TSource MaxOrDefault<TSource>(this IEnumerable<TSource> source, TSource defaultValue) 
         {
             return source.Any()
-                ? source.Max()
+                ? source.Max() ?? defaultValue
                 : defaultValue;
         }
 

@@ -1,7 +1,9 @@
-﻿using Abp.Specifications;
+﻿using Abp;
+using Abp.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Shesha.Specifications
 {
@@ -24,12 +26,12 @@ namespace Shesha.Specifications
 
         public IDisposable DisableSpecifications()
         {
-            return null;
+            return new DisposeAction(() => { });
         }
 
         public ISpecification<T> GetSpecificationInstance<T>(ISpecificationInfo specInfo)
         {
-            return null;
+            return new NullSpecification<T>();
         }
 
         public List<ISpecification<T>> GetSpecifications<T>()
@@ -44,12 +46,25 @@ namespace Shesha.Specifications
 
         public ISpecificationsContext Use<TSpec, TEntity>() where TSpec : ISpecification<TEntity>
         {
-            return null;
+            return new SpecificationsContext(typeof(TSpec), typeof(TEntity));
         }
 
         public IDisposable Use(params Type[] specificationType)
         {
-            return null;
+            return new DisposeAction(() => { });
+        }
+
+        public class NullSpecification<T> : ISpecification<T>
+        {
+            public bool IsSatisfiedBy(T obj)
+            {
+                return true;
+            }
+
+            public Expression<Func<T, bool>> ToExpression()
+            {
+                return (e) => true;
+            }
         }
     }
 }

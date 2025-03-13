@@ -16,15 +16,14 @@ namespace Shesha.Tests.Otp
         {
             var settings = new Mock<IOtpSettings>();
 
-            var passwordLengthAccessor = new Mock<ISettingAccessor<int>>();
-            passwordLengthAccessor.Setup(s => s.GetValue()).Returns(length);
+            var otpSettings = new OtpSettings {
+                Alphabet = alphabet,
+                PasswordLength = length,
+            };
+            var otpSettingsMock = new Mock<ISettingAccessor<OtpSettings>>();
+            otpSettingsMock.Setup(s => s.GetValueOrNull()).Returns(otpSettings);
 
-            settings.SetupGet(s => s.OneTimePins.GetValue().PasswordLength).Returns(passwordLengthAccessor.Object.GetValue());
-
-            var alphabetAccessor = new Mock<ISettingAccessor<string>>();
-            alphabetAccessor.Setup(s => s.GetValue()).Returns(alphabet);
-            settings.SetupGet(s => s.OneTimePins.GetValue().Alphabet).Returns(alphabetAccessor.Object.GetValue());
-
+            settings.SetupGet(s => s.OneTimePins).Returns(otpSettingsMock.Object);
 
             var generator = new Shesha.Otp.OtpGenerator(settings.Object);
 

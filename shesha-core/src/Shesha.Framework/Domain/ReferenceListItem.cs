@@ -30,7 +30,7 @@ namespace Shesha.Domain
         public virtual ReferenceList ReferenceList { get; set; }
 
         //[Lazy(Laziness = HbmLaziness.False)]
-        public virtual ReferenceListItem Parent { get; set; }
+        public virtual ReferenceListItem? Parent { get; set; }
 
         /// <summary>
         /// Color associated with the item

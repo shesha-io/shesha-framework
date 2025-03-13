@@ -5,7 +5,7 @@ using Shesha.DynamicEntities.Dtos;
 
 namespace Shesha.DynamicEntities.Cache
 {
-    public class ModelConfigsCacheHolder : CacheHolder<string, ModelConfigurationDto>, IModelConfigsCacheHolder, ISingletonDependency
+    public class ModelConfigsCacheHolder : CacheHolder<string, ModelConfigurationDto?>, IModelConfigsCacheHolder, ISingletonDependency
     {
         public ModelConfigsCacheHolder(ICacheManager cacheManager) : base("ModelConfigsCache", cacheManager)
         {

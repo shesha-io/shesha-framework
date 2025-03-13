@@ -43,7 +43,7 @@ namespace Shesha.DynamicEntities
 
             var props = obj.GetType().GetProperties().Where(p =>
                 p.CanRead && p.IsPublic()
-                && !p.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>()
+                && !p.HasAttribute<JsonIgnoreAttribute>()
                 && !p.HasAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>()
                 && !IsServiceDtoField(p))
                 .ToList();
@@ -56,7 +56,7 @@ namespace Shesha.DynamicEntities
                         if (!addMissedProperties) continue;
                         else jobj.Add(prop.Name.ToCamelCase(), null);
 
-                    var jprop = jobj.Property(prop.Name.ToCamelCase());
+                    var jprop = jobj.Property(prop.Name.ToCamelCase()).NotNull();
 
                     var val = prop.GetValue(obj);
 
@@ -86,7 +86,8 @@ namespace Shesha.DynamicEntities
 
         public static JToken ValueToJson(Type propType, object? val, JToken? jval, bool addMissedProperties = true)
         {
-            if (val == null || !val.GetType().IsAssignableTo(propType)) return null;
+            if (val == null || !val.GetType().IsAssignableTo(propType)) 
+                return JValue.CreateNull();
 
             if (ObjectExtensions.IsListType(propType)
                 || ObjectExtensions.IsDictionaryType(propType))
@@ -126,17 +127,20 @@ namespace Shesha.DynamicEntities
             if (propType.IsEntityType())
             {
                 var jref = new JObject();
-                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName()));
+                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName() ?? string.Empty));
                 jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.GetRequiredFullName()));
                 jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId().NotNull()));
                 return jref;
             }
 
+            // TODO: Alex, please review
+#pragma warning disable CS8602
             if (val != null && jval.IsNullOrEmpty()
                 || !val.Equals(jval?.ToObject(propType)))
                 return JProperty.FromObject(val);
+#pragma warning restore CS8602
 
-            return jval;
+            return jval ?? JValue.CreateNull();
         }
 
         private static JToken ConvertGeometry(Geometry geometry) 
