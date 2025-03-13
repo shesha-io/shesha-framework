@@ -4,6 +4,7 @@ using Shesha.Attributes;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityReferences;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Modules;
@@ -110,7 +111,7 @@ namespace Shesha.Reflection
             return new PropertyValueAccessor(propInfo, parent);
         }
 
-        public static object? GetPropertyValue(object obj, string propertyName, object defaultValue)
+        public static object? GetPropertyValue(object obj, string propertyName, object? defaultValue)
         {
             if (obj == null)
                 return null;
@@ -674,12 +675,18 @@ namespace Shesha.Reflection
         /// <exception cref="InvalidCastException"></exception>
         public static TDestination ForceCastAs<TDestination>(this object? source) where TDestination : class 
         {
-            return source is TDestination dest
-                ? dest
-                : throw new InvalidCastException(source != null 
-                    ? $"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'" 
-                    : "Failed to cast null to type '{typeof(TDestination).FullName}'"
-                );
+            if (source is TDestination dest)
+                return dest;
+
+            if (source is GenericEntityReference genericEntity && typeof(Entity<Guid>).IsAssignableFrom(typeof(TDestination))) {
+                var entity = (Entity<Guid>)genericEntity.NotNull();
+                return entity.ForceCastAs<TDestination>();
+            }
+
+            throw new InvalidCastException(source != null
+                ? $"Failed to cast value of type '{source.GetType().FullName}' to type '{typeof(TDestination).FullName}'"
+                : "Failed to cast null to type '{typeof(TDestination).FullName}'"
+            );
         }
 
         /// <summary>

@@ -1,19 +1,21 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
 using Abp.UI;
 using Castle.Core.Logging;
 using Hangfire;
-using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.EntityReferences;
+using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
 using Shesha.Notifications.MessageParticipants;
+using Shesha.Reflection;
 using Shesha.Services;
 using Stubble.Core;
 using Stubble.Core.Builders;
@@ -40,6 +42,18 @@ namespace Shesha.Notifications
         private readonly StubbleVisitorRenderer _stubbleRenderer = new StubbleBuilder().Configure(settings =>
         {
             settings.SetIgnoreCaseOnKeyLookup(true);
+            settings.AddValueGetter(typeof(GenericEntityReference), (object value, string key, bool ignoreCase) => {
+                if (value is GenericEntityReference entityRef)
+                {
+                    var entity = (Entity<Guid>)entityRef;
+
+                    return entity != null
+                        ? ReflectionHelper.GetPropertyValue(entity, key, null)
+                        : null;
+                }
+                else
+                    return null;
+            });
         }).Build();
 
         public ILogger Logger { get; set; }
