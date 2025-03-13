@@ -94,4 +94,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     noSelectionItemValue?: string;
     componentType?: ComponentType;
     parentComponentType?: string;
+    filter?: object;
 };

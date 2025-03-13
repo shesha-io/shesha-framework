@@ -4,7 +4,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
-import { ChevronSettingsForm } from './settings';
+import { getSettings } from './settingsForm';
 import { ConfigurableFormItem } from '@/components';
 import { IChevronProps } from '@/components/chevron/models';
 
@@ -14,7 +14,6 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   name: 'Chevron',
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
-
     if (model.hidden) return null;
 
     return (
@@ -29,11 +28,7 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: (props) => {
-    return (
-      <ChevronSettingsForm {...props} />
-    );
-  }
+  settingsFormMarkup: (props) => getSettings(props),
 };
 
 export default ChevronComponent;
