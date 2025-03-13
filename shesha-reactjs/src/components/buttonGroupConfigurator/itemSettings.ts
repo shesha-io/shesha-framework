@@ -356,20 +356,6 @@ export const getItemSettings = (data) => {
                                                     }
                                                 ]
                                             })
-                                            .addSettingsInput({
-                                                id: 'predefinedSizes',
-                                                parentId: 'dimensionsStylePnl',
-                                                propertyName: 'size',
-                                                label: 'Size',
-                                                inputType: 'dropdown',
-                                                width: '150px',
-                                                hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                dropdownOptions: [
-                                                    { value: 'small', label: 'Small' },
-                                                    { value: 'medium', label: 'Medium' },
-                                                    { value: 'large', label: 'Large' },
-                                                ]
-                                            })
                                             .toJson()
                                         ]
                                     }

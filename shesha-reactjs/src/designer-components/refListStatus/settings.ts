@@ -43,11 +43,25 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
+                            .addSettingsInputRow({
+                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                inputs: [
+                                    {
+                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
+                                        type: 'textArea',
+                                        propertyName: 'description',
+                                        label: 'Tooltip',
+                                        jsSetting: true,
+                                    },
+                                ],
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            })
                             .addSettingsInput({
                                 id: '5c826b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 inputType: 'referenceListAutocomplete',
                                 propertyName: 'referenceListId',
-                                label: 'Reference list',
+                                label: 'Reference List',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 validate: {
                                     required: true,
@@ -65,35 +79,21 @@ export const getSettings = (data: IRefListStatusProps) => {
                                 defaultValue: true,
                                 parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
                             })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
-                                inputType: 'switch',
-                                propertyName: 'showIcon',
-                                label: 'Show Icon',
-                                size: 'small',
-                                tooltip: 'When checked the icon will display on the left side of the DisplayName',
-                                parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
-                            })
-                            .addSettingsInputRow({
-                                id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputs: [
-                                    {
-                                        id: '57a40a33-7e08-4ce4-9f08-a34d24a84438',
-                                        type: 'textArea',
-                                        propertyName: 'description',
-                                        label: 'Tooltip',
-                                        jsSetting: true,
-                                    },
-                                ],
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
+                                    {
+                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        id: '1adea529-1f0x-4sef-bd41-ee166a5dfcd7',
+                                        type: 'switch',
+                                        propertyName: 'showIcon',
+                                        label: 'Show Icon',
+                                        size: 'small',
+                                        tooltip: 'When checked the icon will display on the left side of the DisplayName',
+                                        parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
+                                    },
                                     {
                                         id: '5c813b1a-04c5-4678-ac0f-cbcbae6b3bd4',
                                         type: 'switch',
@@ -101,7 +101,7 @@ export const getSettings = (data: IRefListStatusProps) => {
                                         label: 'Hide',
                                         jsSetting: true,
                                         layout: 'horizontal',
-                                    },
+                                    }
                                 ],
                             })
                             .toJson()
@@ -273,19 +273,6 @@ export const getSettings = (data: IRefListStatusProps) => {
                                                                 propertyName: "dimensions.maxHeight",
                                                                 icon: "maxHeightIcon",
                                                             }
-                                                        ]
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: 'predefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
                                                         ]
                                                     })
                                                     .toJson()
