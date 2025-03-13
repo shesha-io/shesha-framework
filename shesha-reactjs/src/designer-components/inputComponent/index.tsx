@@ -36,6 +36,7 @@ import { IWizardStepProps } from '../wizard/models';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
+import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
 
 export const InputComponent: FC<ISettingsInputProps> = (props) => {
     const icons = require('@ant-design/icons');
@@ -47,11 +48,17 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         })
     );
 
+    const placeholderRef = {
+        "id": "af113a13-1557-4231-a828-02e6d2549778",
+        "_displayName": "Shesha.Core.AccountStatus",
+        "_className": "Shesha.Domain.ReferenceList"
+    }
+
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
 
@@ -308,6 +315,9 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
                 propertyMeta={propertyMeta}
             />;
+
+        case 'nullForNow':
+                return <RefListItemSelectorSettingsModal {...props} value={referenceList} referenceList={referenceList} readOnly={false}/>
         default:
             return <Input
                 size={size}

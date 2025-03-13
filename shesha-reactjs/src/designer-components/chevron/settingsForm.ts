@@ -107,7 +107,8 @@ export const getSettings = (data: any) => {
                 label: 'Items',
                 labelAlign: 'right',
                 parentId: itemsTabId,
-                inputType: 'referenceListAutocomplete',
+                referenceList: { _code: 'return getSettingValue(data?.referenceList);', _mode: 'code', _value: false } as any,
+                inputType: 'nullForNow',
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()

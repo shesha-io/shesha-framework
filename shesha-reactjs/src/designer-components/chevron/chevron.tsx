@@ -4,6 +4,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
+import { ChevronSettingsForm } from './settings';
 import { getSettings } from './settingsForm';
 import { ConfigurableFormItem } from '@/components';
 import { IChevronProps } from '@/components/chevron/models';
@@ -28,7 +29,12 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (props) => getSettings(props),
+  //settingsFormMarkup: (props) => getSettings(props),
+  settingsFormFactory: (props) => {
+    return (
+      <ChevronSettingsForm {...props} />
+    );
+  }
 };
 
 export default ChevronComponent;
