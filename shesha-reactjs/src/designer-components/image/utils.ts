@@ -4,7 +4,7 @@ export const defaultStyles = (prev): IStyleType => {
     const { borderWidth, borderColor, borderRadius, borderType } = prev;
     return {
         border: {
-            selectedCorner: 'all', selectedSide: 'all',
+            radiusType: 'all', borderType: 'all',
             border: {
                 all: { width: borderWidth || '0px', style: borderType, color: borderColor },
                 top: { width: '0px', },

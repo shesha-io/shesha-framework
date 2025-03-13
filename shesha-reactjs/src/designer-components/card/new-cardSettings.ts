@@ -120,36 +120,16 @@ export const getSettings = (data: any) => {
                                 },
                               ]
                             })
-                            .addSettingsInputRow(
-                              getBorderInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[4] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[4] as any
-                            )
+                            .addContainer({
+                              id: 'borderStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getBorderInputs() as any
+                            })
+                            .addContainer({
+                              id: 'borderRadiusStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getCornerInputs() as any
+                            })
                             .toJson()
                           ]
                         }
@@ -394,7 +374,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })

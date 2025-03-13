@@ -288,9 +288,9 @@ export class DesignerToolbarSettings<T> {
     this.form.push({
       ...obj,
       type,
-      hidden: obj.hidden as any,
-      version: typeof (obj.version) === 'number'
-        ? obj.version
+      hidden: obj?.hidden as any,
+      version: typeof (obj?.version) === 'number'
+        ? obj?.version
         : 'latest'
     });
 

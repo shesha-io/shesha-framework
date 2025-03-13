@@ -404,36 +404,16 @@ export const getItemSettings = (data) => {
                                                     },
                                                 ]
                                             })
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[0] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[1] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[2] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[3] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[4] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[0] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[1] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[2] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[3] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[4] as any
-                                            )
+                                            .addContainer({
+                                                id: 'borderStyleRow',
+                                                parentId: 'borderStylePnl',
+                                                components: getBorderInputs('', false) as any
+                                            })
+                                            .addContainer({
+                                                id: 'borderRadiusStyleRow',
+                                                parentId: 'borderStylePnl',
+                                                components: getCornerInputs('', false) as any
+                                            })
                                             .toJson()
                                         ]
                                     }
@@ -534,7 +514,7 @@ export const getItemSettings = (data) => {
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-controls",
                                                     parentId: 'backgroundStyleRow',
-                                                    inline: true, 
+                                                    inline: true,
                                                     hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [

@@ -97,7 +97,7 @@ export const getSettings = (data: any) => {
                     type: 'switch',
                     id: nanoid(),
                     propertyName: 'passEmptyStringByDefault',
-                    label: 'Empty as default',
+                    label: 'Empty As Default',
                     jsSetting: true,
                     parentId: commonTabId,
                   }
@@ -114,7 +114,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'autoSize',
                     parentId: commonTabId,
                     label: 'Auto Size',
-                    defaultValue: true,
+                    defaultValue: false,
                     jsSetting: true,
                   },
                   {
@@ -162,7 +162,14 @@ export const getSettings = (data: any) => {
                     propertyName: 'showCount',
                     parentId: commonTabId,
                     label: 'Show Chars Count',
-                    jsSetting: true,
+                    jsSetting: false,
+                  },
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'spellCheck',
+                    parentId: commonTabId,
+                    label: 'Spell Check',
                   }
                 ],
               })
@@ -233,15 +240,6 @@ export const getSettings = (data: any) => {
                     }
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: "spellCheck",
-                  parentId: validationId,
-                  label: "Spell Check",
-                  version: 3,
-                  inputType: "switch",
-                  jsSetting: true,
                 })
                 .toJson()
             ]
@@ -500,36 +498,16 @@ export const getSettings = (data: any) => {
                                 },
                               ]
                             })
-                            .addSettingsInputRow(
-                              getBorderInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[4] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[4] as any
-                            )
+                            .addContainer({
+                              id: 'borderStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getBorderInputs() as any
+                            })
+                            .addContainer({
+                              id: 'borderRadiusStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getCornerInputs() as any
+                            })
                             .toJson()
                           ]
                         }
@@ -657,6 +635,7 @@ export const getSettings = (data: any) => {
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
@@ -797,7 +776,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })

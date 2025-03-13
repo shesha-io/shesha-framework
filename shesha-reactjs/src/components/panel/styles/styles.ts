@@ -1,6 +1,15 @@
+import { addPx } from '@/components/sectionSeparator/utils';
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle, panelHeadType, bodyStyle, hideCollapseContent }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
+  headerStyle = {} as CSSProperties,
+  panelHeadType,
+  bodyStyle = {} as CSSProperties,
+  hideCollapseContent,
+  isSimpleDesign,
+  ghost
+}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -29,7 +38,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     minHeight,
     maxWidth,
     maxHeight,
-    borderRadius,
+    borderRadius = '8px 8px 8px 8px',
     marginBottom,
     marginTop,
     marginLeft,
@@ -70,29 +79,27 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
-    padding: headerPadding,
-    paddingTop: headerPaddingTop,
-    paddingBottom: headerPaddingBottom,
-    paddingRight: headerPaddingRight,
-    paddingLeft: headerPaddingLeft,
-    marginTop: headerMarginTop,
-    marginBottom: headerMarginBottom,
-    marginLeft: headerMarginLeft,
-    marginRight: headerMarginRight,
+    paddingBottom: headerPaddingBottom = '8px',
+    paddingTop: headerPaddingTop = '8px',
+    paddingLeft: headerPaddingLeft = '8px',
+    paddingRight: headerPaddingRight = '8px',
+    overflow: headerOverflow,
     ...headerRest
   } = headerStyle;
 
-  const borderTopLeftRadius = borderRadius?.split(' ')[0] || 0;
-  const borderTopRightRadius = borderRadius?.split(' ')[1] || 0;
-  const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 0;
-  const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
+  const initialValue = isSimpleDesign || ghost ? 0 : 8;
+  const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
+  const borderTopLeftRadius = addPx(borderRadius)?.split(' ')[0] || initialValue;
+  const borderTopRightRadius = addPx(borderRadius)?.split(' ')[1] || initialValue;
+  const borderBottomLeftRadius = addPx(borderRadius)?.split(' ')[2] || initialValue;
+  const borderBottomRightRadius = addPx(borderRadius)?.split(' ')[3] || initialValue;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
          &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
         
-      ${borderWidth && '--ant-line-width: 0px !important;'}
+      ${(!isSimpleDesign && hasBorder) && '--ant-line-width: 0px !important;'};
       --primary-color: ${token.colorPrimary};
       --ant-collapse-content-padding: ${paddingTop || 16}px ${paddingRight || 16}px ${paddingBottom || 16}px ${paddingLeft || 16}px !important;
       width: ${width};
@@ -106,7 +113,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
-
 
     .ant-collapse-item {
       display: flex;
@@ -138,11 +144,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   }
 
     .ant-collapse-header[aria-expanded="false"] {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
+      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
     }
 
     .ant-collapse-header[aria-expanded="true"] {
-      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
+      border-radius : ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} 0 0 !important;
     }
 
     .ant-collapse-header {
@@ -157,14 +163,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
         border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
         border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
-        padding-top: ${headerPaddingTop}px !important;
-        padding-right: ${headerPaddingRight}px !important;
-        padding-bottom ${headerPaddingBottom}px !important;
-        padding-left: ${headerPaddingLeft}px !important;
-        margin-top: ${headerMarginTop}px !important;
-        margin-right: ${headerMarginRight}px !important;
-        margin-bottom ${headerMarginBottom}px !important;
-        margin-left: ${headerMarginLeft}px !important;
+        padding-top: ${headerPaddingTop} !important;
+        padding-right: ${headerPaddingRight} !important;
+        padding-bottom: ${headerPaddingBottom} !important;
+        padding-left: ${headerPaddingLeft} !important;
+        ${headerRest}
 
       .ant-collapse-header-text {
         color: ${headerColor};
@@ -177,7 +180,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
 
       .ant-collapse-extra {
         align-self: center;
-        margin-right: 10px;
       }
 
       .ant-collapse-expand-icon {
@@ -230,9 +232,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         text-align: ${textAlign};
         font-size: ${fontSize};
         font-weight: ${fontWeight};
-      }
+      };
 
-      --ant-line-width: 0px !important;
       --primary-color: ${token.colorPrimary};
       &.${prefixCls}-collapse-ghost {
         > .${prefixCls}-collapse-item {
@@ -244,7 +245,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
             font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
             font-weight: 'bold';
           }
-         
         }
       }
 

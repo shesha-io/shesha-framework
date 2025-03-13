@@ -54,7 +54,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     const isBottom = position === 'bottom';
 
     const getBorder = (side) => {
-        return `${styles[`${side}Width`] ?? borderWidth} ${styles[`${side}Style`] ?? borderStyle} ${styles[`${side}Color`] ?? borderColor}`;
+        const width = `${side}Width`;
+        const style = `${side}Style`;
+        const color = `${side}Color`;
+        return `${styles[width] ?? borderWidth} ${styles[style] ?? borderStyle} ${styles[color] ?? borderColor}`;
     };
 
     const borderMap = {
@@ -135,7 +138,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
                 ${cardStyles};
                 ${isLeft && `border-right-width: ${styles.borderLeftWidth} !important` || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
-                ${isLeft ? `margin-right: -${styles.borderLeftWidth} !important` : isRight ? `margin-left: -${styles.borderRightWidth} !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
+                ${isLeft ? `margin-right: calc(var(--ant-line-width) * -1) !important` : isRight ? `margin-left: calc(var(--ant-line-width) * -1) !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
                 width: ${cardWidth};
                 height: ${cardHeight};
                 min-width: ${cardMinWidth};

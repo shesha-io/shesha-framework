@@ -33,7 +33,7 @@ export const getSettings = (data: any) => {
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
@@ -150,9 +150,10 @@ export const getSettings = (data: any) => {
                     {
                       type: 'editModeSelector',
                       id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'editModeSelector',
+                      propertyName: 'editMode',
                       label: 'Edit Mode',
                       size: 'small',
+                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -167,7 +168,7 @@ export const getSettings = (data: any) => {
                       type: 'textField',
                       id: 'default-s4gmBg31azZC0UjZjpfTm',
                       propertyName: 'defaultValue',
-                      label: 'Default Checked',
+                      label: 'Default Value',
                       jsSetting: true,
                     },
                   ],
@@ -191,6 +192,45 @@ export const getSettings = (data: any) => {
                   layout: 'horizontal',
                   jsSetting: true,
                   parentId: '6eBJvoll3xtLJxdvOAlnB',
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: '3',
+            title: 'Events',
+            id: 'Cc47W08MWrKdhoGqFKMI2',
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .toJson(),
             ],
@@ -223,6 +263,7 @@ export const getSettings = (data: any) => {
                         label: 'Direction',
                         size: 'small',
                         jsSetting: true,
+                        defaultValue: 'horizontal',
                         dropdownOptions: [
                           {
                             label: 'Horizontal',

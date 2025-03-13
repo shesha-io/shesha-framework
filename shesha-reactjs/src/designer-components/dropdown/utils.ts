@@ -12,7 +12,7 @@ export const defaultStyles = (): IStyleType => {
         border: {
             border: {
                 all: {
-                    width: 1,
+                    width: '1px',
                     style: 'solid',
                     color: '#d9d9d9'
                 }
