@@ -17,8 +17,8 @@ namespace Shesha.Otp.Dto
         [Required]
         public OtpSendType SendType { get; set; }
 
-        public string RecipientType { get; set; }
-        public string RecipientId { get; set; }
+        public string? RecipientType { get; set; }
+        public string? RecipientId { get; set; }
 
         /// <summary>
         /// Lifetime of the one time password in seconds
@@ -28,6 +28,6 @@ namespace Shesha.Otp.Dto
         /// <summary>
         /// Type of action (e.g. 'password restore'). May be used for audit purposes and template selection
         /// </summary>
-        public string ActionType { get; set; }
+        public string? ActionType { get; set; }
     }
 }
