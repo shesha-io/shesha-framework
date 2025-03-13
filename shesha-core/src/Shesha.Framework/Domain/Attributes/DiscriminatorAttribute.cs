@@ -15,7 +15,7 @@ namespace Shesha.Domain.Attributes
         /// <summary>
         /// Name of the discriminator column
         /// </summary>
-        public string DiscriminatorColumn { get; set; }
+        public string? DiscriminatorColumn { get; set; }
         
         /// <summary>
         /// If true, indicates that entity uses discriminator

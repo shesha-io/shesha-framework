@@ -10,7 +10,7 @@ namespace Shesha.DelayedUpdate
     public abstract class BaseDelayedUpdateManager<TDelayedUpdateData> : IDelayedUpdateManager
     {
 
-        public TDelayedUpdateData GetData(object data)
+        public TDelayedUpdateData? GetData(object? data)
         {
             if (data is JObject jData)
                 return jData.ToObject<TDelayedUpdateData>();
@@ -25,7 +25,7 @@ namespace Shesha.DelayedUpdate
             {
                 foreach (var item in items)
                 {
-                    TDelayedUpdateData data = GetData(item.Data);
+                    var data = GetData(item.Data);
                     await UpdateItemAsync(entity, item.Id, data, validationResult);
                 }
             }
@@ -35,7 +35,7 @@ namespace Shesha.DelayedUpdate
             }
         }
 
-        public abstract Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, TDelayedUpdateData data, List<ValidationResult> validationResult);
+        public abstract Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, TDelayedUpdateData? data, List<ValidationResult> validationResult);
 
         public abstract bool IsApplicable(string type);
     }

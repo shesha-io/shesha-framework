@@ -60,11 +60,6 @@ namespace Shesha.Services.ReferenceLists.Distribution
 
                 // reflist specific properties
                 Items = await ExportRefListItemsAsync(refList),
-                /*
-                Markup = refList.Markup,
-                ModelType = refList.ModelType,
-                TemplateId = refList.Template?.Id,
-                */
             };
 
             return result;
@@ -75,7 +70,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
         {
             var items = await _refListItemRepo.GetAll().Where(item => item.ReferenceList == refList).ToListAsync();
 
-            async Task ProcessRecursiveAsync(ReferenceListItem parent, List<DistributedReferenceListItem> container) 
+            async Task ProcessRecursiveAsync(ReferenceListItem? parent, List<DistributedReferenceListItem> container) 
             {
                 var levelItems = items.Where(item => item.Parent == parent).OrderBy(item => item.OrderIndex).ToList();
                 foreach (var item in levelItems) 

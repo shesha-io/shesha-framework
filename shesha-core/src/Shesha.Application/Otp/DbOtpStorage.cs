@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Domain;
 using Shesha.Otp.Dto;
+using Shesha.Otp.Exceptions;
 using System;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -74,7 +75,7 @@ namespace Shesha.Otp
         /// </summary>
         /// <param name="operationId"></param>
         /// <returns></returns>
-        public async Task<OtpDto> GetAsync(Guid operationId)
+        public async Task<OtpDto?> GetOrNullAsync(Guid operationId)
         {
             using (var uow = _uowManager.Begin(TransactionScopeOption.Suppress))
             {
@@ -97,6 +98,11 @@ namespace Shesha.Otp
                     ErrorMessage = item.ErrorMessage
                 };
             }
+        }
+
+        public async Task<OtpDto> GetAsync(Guid operationId)
+        {
+            return (await GetOrNullAsync(operationId)) ?? throw new OtpOperationNotFoundException(operationId);
         }
     }
 }

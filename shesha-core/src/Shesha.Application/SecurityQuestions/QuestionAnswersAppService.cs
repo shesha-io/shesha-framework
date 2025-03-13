@@ -1,11 +1,10 @@
-﻿using Abp.Authorization;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
+using Shesha.Reflection;
 using Shesha.SecurityQuestions.Dto;
 using System;
 using System.Threading.Tasks;
@@ -31,9 +30,7 @@ namespace Shesha.SecurityQuestions
             var currentUserId = AbpSession.UserId;
 
             if (!currentUserId.HasValue)
-            {
                 throw new UserFriendlyException("Please log in to submit your answers to the security questions.");
-            }
 
             var user = await _userRepository.GetAsync(currentUserId.Value);
 
@@ -48,6 +45,7 @@ namespace Shesha.SecurityQuestions
                 throw new UserFriendlyException($"Maximum of {numberOfQuestionsAllowed} questions allowed");
             }
 
+            input.SelectedQuestion.NotNull("Question is not selected");
             var alreadyAnsweredQuestions = await Repository.CountAsync(q => q.User == user && q.SelectedQuestion.Id == input.SelectedQuestion.Id);
             if (alreadyAnsweredQuestions != 0)
             {

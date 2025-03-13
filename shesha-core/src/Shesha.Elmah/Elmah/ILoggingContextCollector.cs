@@ -8,7 +8,7 @@ namespace Shesha.Elmah
         /// <summary>
         /// Make a watchdog for entity to link all unhandled exception to a specified entity
         /// </summary>
-        IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity);
+        IDisposable MakeEntityWatchDog<TId>(IEntity<TId> entity) where TId : notnull;
 
         IDisposable MakeWatchDog(string type, string id);
         IDisposable MakeWatchDog(ErrorReference errorRef);
@@ -24,7 +24,7 @@ namespace Shesha.Elmah
         /// </summary>
         /// <param name="initAction"></param>
         /// <returns></returns>
-        IDisposable BeginScope(Action<LoggingContextState> initAction = null);
+        IDisposable BeginScope(Action<LoggingContextState>? initAction = null);
 
         /// <summary>
         /// Specify location scope, is used to collect user-friendly locations of unhandled exceptions

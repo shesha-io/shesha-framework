@@ -1,8 +1,11 @@
 ﻿namespace Shesha.Configuration.MappingMetadata
 {
+    /// <summary>
+    /// Property mapping metadata
+    /// </summary>
     public class PropertyMappingMetadata
     {
-        public string TableName { get; set; }
-        public string[] ColumnNames { get; set; }
+        public required string TableName { get; init; }
+        public required string[] ColumnNames { get; init; }
     }
 }

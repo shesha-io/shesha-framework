@@ -38,7 +38,7 @@ namespace Shesha.DynamicEntities.Mapper
             throw new NotSupportedException("This method supports only mapping from/to entity type");
         }
 
-        private string GetCacheKey(string @namespace, string name)
+        private string GetCacheKey(string? @namespace, string name)
         {
             return $"{@namespace}.{name}";
         }
@@ -101,8 +101,9 @@ namespace Shesha.DynamicEntities.Mapper
                 return cacheItem;
             });
 
-            IMapper mapper = null;
+            IMapper? mapper = null;
 
+            // TODO: review cache usage and test
             var mappers = await _internalCache.GetAsync(cacheKey, () => {
                 var cacheItem = itemFactory();
                 mapper = cacheItem.Mapper;

@@ -199,25 +199,22 @@ namespace Shesha.Tests.QuickSearch
 
         #region private methods
 
-        private async Task<List<T>> TryFetchDataAsync<T, TId>(Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
+        private async Task<List<T>> TryFetchDataAsync<T, TId>(Func<IQueryable<T>, IQueryable<T>>? prepareQueryable = null, Action<List<T>>? assertions = null) where T : class, IEntity<TId>
         {
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
-            List<T> data = null;
-
-            await WithUnitOfWorkAsync(async () => {
+            return await WithUnitOfWorkAsync(async () => {
                 var query = repository.GetAll();
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);
 
-                data = await asyncExecuter.ToListAsync(query);
+                var data = await asyncExecuter.ToListAsync(query);
 
                 assertions?.Invoke(data);
+                return data;
             });
-
-            return data;
         }
 
         #endregion

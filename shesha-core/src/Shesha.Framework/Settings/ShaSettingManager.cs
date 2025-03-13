@@ -13,7 +13,6 @@ using Shesha.Settings.Json;
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
 using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 
@@ -46,7 +45,7 @@ namespace Shesha.Settings
             _userRepository = userRepository;
         }
 
-        public async Task<JObject> GetJObjectOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null)
+        public async Task<JObject> GetJObjectOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -57,7 +56,7 @@ namespace Shesha.Settings
                 : JObject.FromObject(JsonConvert.SerializeObject(setting.GetDefaultValue()));
         }
 
-        public async Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
+        public async Task<object?> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -69,7 +68,7 @@ namespace Shesha.Settings
         }
 
 
-        public async Task<object> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext context = null)
+        public async Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.GetOrNull(module, name);
 
@@ -87,13 +86,11 @@ namespace Shesha.Settings
                 : setting.GetDefaultValue();
         }
 
-        public async Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType,[CanBeNull] TValue value, SettingManagementContext context = null)
+        public async Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType,[CanBeNull] TValue? value, SettingManagementContext? context = null)
         {
             context = context ?? GetCurrentContext();
 
             var setting = _settingDefinitionManager.GetOrNull(module, name);
-
-            SettingConfiguration configuration = null;
 
             if (setting == null)
             {
@@ -101,7 +98,7 @@ namespace Shesha.Settings
                 _settingDefinitionManager.AddDefinition(setting);
             }
 
-            configuration = await EnsureConfigurationAsync(setting);
+            var configuration = await EnsureConfigurationAsync(setting);
 
             var settingValue = await _settingStore.GetSettingValueAsync(setting, context);
             if (settingValue == null)
@@ -132,7 +129,7 @@ namespace Shesha.Settings
             await _settingValueRepository.InsertOrUpdateAsync(settingValue);
         }
 
-        public async Task<TValue> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
+        public async Task<TValue?> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext? context = null) 
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
@@ -145,7 +142,7 @@ namespace Shesha.Settings
                     : default;
         }
 
-        public async Task SetAsync<TValue>([NotNull] string module, [NotNull] string name, [CanBeNull] TValue value, SettingManagementContext context = null)
+        public async Task SetAsync<TValue>([NotNull] string module, [NotNull] string name, [CanBeNull] TValue? value, SettingManagementContext? context = null)
         {
             context = context ?? GetCurrentContext();
             var setting = _settingDefinitionManager.Get(module, name);
@@ -212,7 +209,7 @@ namespace Shesha.Settings
             };
         }
 
-        private TValue Deserialize<TValue>(string value) 
+        private TValue? Deserialize<TValue>(string value) 
         {
             if (typeof(TValue).IsClass)
             {
@@ -222,7 +219,7 @@ namespace Shesha.Settings
                 return To<TValue>(value);
         }
 
-        private object Deserialize(string value, Type targetType)
+        private object? Deserialize(string value, Type targetType)
         {
             if (targetType.IsClass)
             {
@@ -240,18 +237,20 @@ namespace Shesha.Settings
                 return To(value, targetType);
         }
 
-        private static T To<T>(object obj) 
+        private static T? To<T>(object obj) 
         {
             if (typeof(T) == typeof(Guid) || typeof(T) == typeof(TimeSpan))
             {
-                return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(obj.ToString());
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                var value = converter.ConvertFromInvariantString(obj.ToString() ?? string.Empty);
+                return (T?)value;
             }
 
             if (typeof(T).IsEnum)
             {
                 if (Enum.IsDefined(typeof(T), obj))
                 {
-                    return (T)Enum.Parse(typeof(T), obj.ToString());
+                    return (T)Enum.Parse(typeof(T), obj.ToString() ?? string.Empty);
                 }
 
                 throw new ArgumentException($"Enum type undefined '{obj}'.");
@@ -260,18 +259,18 @@ namespace Shesha.Settings
             return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
 
-        private static object To(object obj, Type targetType)
+        private static object? To(object obj, Type targetType)
         {
             if (targetType == typeof(Guid) || targetType == typeof(TimeSpan))
             {
-                return TypeDescriptor.GetConverter(targetType).ConvertFromInvariantString(obj.ToString());
+                return TypeDescriptor.GetConverter(targetType).ConvertFromInvariantString(obj.ToString() ?? string.Empty);
             }
 
             if (targetType.IsEnum)
             {
                 if (Enum.IsDefined(targetType, obj))
                 {
-                    return Enum.Parse(targetType, obj.ToString());
+                    return Enum.Parse(targetType, obj.ToString() ?? string.Empty);
                 }
 
                 throw new ArgumentException($"Enum type undefined '{obj}'.");

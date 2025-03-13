@@ -26,7 +26,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="entity">Changed entity</param>
         /// <param name="description">Description of changes</param>
         /// <param name="property">Changed property</param>
-        public static void AddPropertyChangeDescription<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property)
+        public static void AddPropertyChangeDescription<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property) where TModel: notnull
         {
             try
             {
@@ -45,7 +45,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="entity">Changed entity</param>
         /// <param name="description">Comment of changes</param>
         /// <param name="property">Changed property</param>
-        public static void AddPropertyChangeComment<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property)
+        public static void AddPropertyChangeComment<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property) where TModel : notnull
         {
             try
             {
@@ -148,7 +148,7 @@ namespace Shesha.NHibernate.EntityHistory
             }
         }
 
-        public static void AddHistoryEvent(this object entity, string eventType, string eventName, string description, string propertyName)
+        public static void AddHistoryEvent(this object entity, string? eventType, string? eventName, string description, string? propertyName)
         {
             try
             {
@@ -163,7 +163,7 @@ namespace Shesha.NHibernate.EntityHistory
 
                 var id = "";
 
-                var entry = session.GetEntry(entity);
+                var entry = session.GetEntryOrNull(entity);
                 id = entry != null
                     ? entry.Id.ToString()
                     : entity.ToString();

@@ -49,7 +49,7 @@ namespace Shesha.NHibernate.Maps
         private LazyRelation? _defaultLazyRelation;
         private readonly INameGenerator _nameGenerator;
 
-        public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>> idMapper = null)
+        public Conventions(INameGenerator nameGenerator, Func<Type, Action<IIdMapper>?>? idMapper = null)
         {
             _nameGenerator = nameGenerator;
             _entitiesToMap = new List<Type>();
@@ -95,10 +95,9 @@ namespace Shesha.NHibernate.Maps
             });
 
             _defaultMapper = new ModelMapperWithNamingConventions();
-            DefaultModelInspector = _defaultMapper.ModelInspector;
         }
 
-        private readonly Func<Type, Action<IIdMapper>> _idMapper;
+        private readonly Func<Type, Action<IIdMapper>?> _idMapper;
         private readonly List<Assembly> _assemblies = new List<Assembly>();
 
         public bool AssemblyAdded(Assembly assembly)
@@ -106,14 +105,13 @@ namespace Shesha.NHibernate.Maps
             return _assemblies.Contains(assembly);
         }
 
-        public void AddAssembly(Assembly assembly, string databasePrefix = "")
+        public void AddAssembly(Assembly assembly, string? databasePrefix = null)
         {
             _assemblies.Add(assembly);
-            MappingHelper.AddDatabasePrefixForAssembly(assembly, databasePrefix);
+            MappingHelper.AddDatabasePrefixForAssembly(assembly, databasePrefix ?? string.Empty);
         }
 
-        public static IModelInspector DefaultModelInspector { get; set; }
-        private static ModelMapperWithNamingConventions _defaultMapper;
+        private ModelMapperWithNamingConventions _defaultMapper;
         private List<Type> _entitiesToMap;
 
         public void Compile(NHcfg.Configuration configuration)
@@ -260,13 +258,11 @@ namespace Shesha.NHibernate.Maps
             {
                 var propertyType = ByCode.TypeExtensions.GetPropertyOrFieldType(member.LocalMember);
 
-                var lazyAttribute = member.LocalMember.GetAttribute<NhLazyLoadAttribute>(true);
+                var lazyAttribute = member.LocalMember.GetAttributeOrNull<NhLazyLoadAttribute>(true);
                 if (lazyAttribute != null)
                     propertyCustomizer.Lazy(true);
 
                 var columnName = MappingHelper.GetColumnName(member.LocalMember);
-                string sqlType = null;
-                IType columnType = null;
 
                 if (member.LocalMember.DeclaringType == typeof(GenericEntityReference) ||
                     member.LocalMember.GetMemberType() == typeof(GenericEntityReference))
@@ -302,7 +298,7 @@ namespace Shesha.NHibernate.Maps
                     if (!propertyType.IsAssignableTo(typeof(IIdentifierFactory)))
                         throw new Exception($"Type '{propertyType.Name}' must implement '{nameof(IIdentifierFactory)}'");
 
-                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType);
+                    var prefix = MappingHelper.GetColumnPrefix(member.LocalMember.DeclaringType.NotNull());
                     var moduleColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(ConfigurationItemIdentifier.Module));
                     var nameColumn = MappingHelper.GetNameForMember(member.LocalMember, prefix, member.LocalMember.Name, nameof(ConfigurationItemIdentifier.Name));
 
@@ -314,6 +310,9 @@ namespace Shesha.NHibernate.Maps
                     propertyCustomizer.Type(gtype, null);
                     return;
                 }
+
+                string? sqlType = null;
+                IType? columnType = null;
 
                 if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
                 {
@@ -450,7 +449,7 @@ namespace Shesha.NHibernate.Maps
                 // IMayHaveTenant support
                 if (typeof(IMustHaveTenant).IsAssignableFrom(type))
                 {
-                    var tenantIdProp = type.GetProperty(nameof(IMustHaveTenant.TenantId));
+                    var tenantIdProp = type.GetRequiredProperty(nameof(IMustHaveTenant.TenantId));
                     var tenantIdColumnName = MappingHelper.GetColumnName(tenantIdProp);
                     classCustomizer.Filter(AbpDataFilters.MustHaveTenant, m =>
                     {
@@ -462,7 +461,7 @@ namespace Shesha.NHibernate.Maps
                 // IMayHaveTenant support
                 if (typeof(IMayHaveTenant).IsAssignableFrom(type))
                 {
-                    var tenantIdProp = type.GetProperty(nameof(IMayHaveTenant.TenantId));
+                    var tenantIdProp = type.GetRequiredProperty(nameof(IMayHaveTenant.TenantId));
                     var tenantIdColumnName = MappingHelper.GetColumnName(tenantIdProp);
                     classCustomizer.Filter(AbpDataFilters.MayHaveTenant, m =>
                     {
@@ -474,7 +473,7 @@ namespace Shesha.NHibernate.Maps
                 // ISoftDelete support
                 if (typeof(ISoftDelete).IsAssignableFrom(type))
                 {
-                    var isDeletedProp = type.GetProperty(nameof(ISoftDelete.IsDeleted));
+                    var isDeletedProp = type.GetRequiredProperty(nameof(ISoftDelete.IsDeleted));
                     var isDeletedColumnName = MappingHelper.GetColumnName(isDeletedProp);
 
                     classCustomizer.Filter(AbpDataFilters.SoftDelete, m =>
@@ -495,9 +494,9 @@ namespace Shesha.NHibernate.Maps
 
             mapper.BeforeMapManyToOne += (modelInspector, propertyPath, map) =>
            {
-               string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType);
+               string columnPrefix = MappingHelper.GetColumnPrefix(propertyPath.LocalMember.DeclaringType.NotNull());
 
-               var lazyAttribute = propertyPath.LocalMember.GetAttribute<LazyLoadAttribute>(true);
+               var lazyAttribute = propertyPath.LocalMember.GetAttributeOrNull<LazyLoadAttribute>(true);
                var lazyRelation = lazyAttribute != null
                     ? lazyAttribute is NhLazyLoadAttribute nhLazy
                         ? nhLazy.GetLazyRelation()
@@ -519,14 +518,14 @@ namespace Shesha.NHibernate.Maps
                    map.Update(false);
                }
 
-               var cascadeAttribute = propertyPath.LocalMember.GetAttribute<CascadeAttribute>(true);
+               var cascadeAttribute = propertyPath.LocalMember.GetAttributeOrNull<CascadeAttribute>(true);
                map.Cascade(cascadeAttribute?.Cascade ?? ByCode.Cascade.Persist);
                map.Class(ByCode.TypeExtensions.GetPropertyOrFieldType(propertyPath.LocalMember));
            };
 
             mapper.BeforeMapBag += (modelInspector, propertyPath, map) =>
             {
-                var inversePropertyAttribute = propertyPath.LocalMember.GetAttribute<InversePropertyAttribute>(true);
+                var inversePropertyAttribute = propertyPath.LocalMember.GetAttributeOrNull<InversePropertyAttribute>(true);
                 if (inversePropertyAttribute != null)
                     map.Key(keyMapper => keyMapper.Column(inversePropertyAttribute.Property));
                 else
@@ -537,7 +536,7 @@ namespace Shesha.NHibernate.Maps
 
                 var bagMapper = map as NMIMPL.BagMapper;
 
-                var manyToManyAttribute = propertyPath.LocalMember.GetAttribute<ManyToManyAttribute>(true);
+                var manyToManyAttribute = propertyPath.LocalMember.GetAttributeOrNull<ManyToManyAttribute>(true);
 
                 if (manyToManyAttribute != null)
                 {
@@ -571,15 +570,6 @@ namespace Shesha.NHibernate.Maps
                             map.Where(manyToManyAttribute.Where);
                         if (!string.IsNullOrEmpty(manyToManyAttribute.OrderBy))
                             map.OrderBy(manyToManyAttribute.OrderBy);
-
-                        /* AS: Experiments for using one table for linking two entities with several list properties with the same entity types
-                        map.Where($"PropertyName = '{propertyPath.LocalMember.Name}'");
-                        map.SqlInsert($"INSERT INTO {tableName} (Id, {parentColumnName}, {childColumnName}, PropertyName) VALUES (NEWID(), ?, ?, '{propertyPath.LocalMember.Name}')", SqlCheck.None);
-                        map.SqlUpdate("-- skip update MultiEntityReference table", SqlCheck.None);
-                        map.SqlDelete("-- skip update MultiEntityReference table", SqlCheck.None);
-                        map.SqlDeleteAll("-- skip update MultiEntityReference table", SqlCheck.None);
-                        map.Persister(typeof(Persister));
-                        */
                     }
                 }
                 else if (bagMapper != null && typeof(ISoftDelete).IsAssignableFrom(bagMapper.ElementType))
@@ -588,7 +578,6 @@ namespace Shesha.NHibernate.Maps
                     map.Filter("SoftDelete", m =>
                     {
                     });
-                    // map.Where($"{SheshaDatabaseConsts.IsDeletedColumn.DoubleQuote()} = 0");
                 }
 
             };
@@ -597,7 +586,7 @@ namespace Shesha.NHibernate.Maps
             {
                 //map.NotFound(NotFoundMode.Ignore); disabled due to performance issues, this option breaks lazy loading
 
-                var manyToManyAttribute = propertyPath.LocalMember.GetAttribute<ManyToManyAttribute>(true);
+                var manyToManyAttribute = propertyPath.LocalMember.GetAttributeOrNull<ManyToManyAttribute>(true);
                 if (manyToManyAttribute != null)
                 {
                     if (!string.IsNullOrEmpty(manyToManyAttribute.ChildColumn))
@@ -651,19 +640,6 @@ namespace Shesha.NHibernate.Maps
 
             // sort entity types by hierarchy
             _entitiesToMap = MappingHelper.SortEntityTypesByInheritance(_entitiesToMap);
-            /* for debug
-            foreach (var ent in _entitiesToMap)
-            {
-                try
-                {
-                    var mapping1 = mapper.CompileMappingFor(new List<Type> { ent });
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
-            }
-            */
 
             HbmMapping mapping = mapper.CompileMappingFor(_entitiesToMap);
 
@@ -683,9 +659,9 @@ namespace Shesha.NHibernate.Maps
         /// <summary>
         /// Last compiled conventions in the xml format
         /// </summary>
-        public static string LastCompiledXml { get; set; }
+        public static string? LastCompiledXml { get; set; }
 
-        private static Type GetEntityTypeByMapping(Type mappingType)
+        private static Type? GetEntityTypeByMapping(Type mappingType)
         {
             var genericMapping = mappingType.BaseType;
             return genericMapping != null && genericMapping.GenericTypeArguments.Any()
@@ -702,7 +678,7 @@ namespace Shesha.NHibernate.Maps
                     if (it.GetGenericTypeDefinition() == typeof(ClassMapping<>) || it.GetGenericTypeDefinition() == typeof(SubclassMapping<>) || it.GetGenericTypeDefinition() == typeof(JoinedSubclassMapping<>))
                         return true;
 
-            Type baseType = type.BaseType;
+            var baseType = type.BaseType;
             if (baseType == null) return false;
 
             return baseType.IsGenericType &&
@@ -712,19 +688,4 @@ namespace Shesha.NHibernate.Maps
                 IsClassMapping(baseType);
         }
     }
-
-    /* AS: Experiments for using one tbale for linking two entities with several list properties with the same entity types
-    public class Persister : BasicCollectionPersister
-    {
-        public Persister(Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) : base(collection, cache, factory)
-        {
-        }
-
-        protected override SqlCommandInfo GenerateInsertRowString()
-        {
-            var res = base.GenerateInsertRowString();
-            return res;
-        }
-    }
-    */
 }

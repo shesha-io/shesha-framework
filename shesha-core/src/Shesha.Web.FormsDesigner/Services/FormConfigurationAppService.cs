@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
@@ -21,6 +20,7 @@ using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Exceptions;
@@ -65,7 +65,7 @@ namespace Shesha.Web.FormsDesigner.Services
             _permissionedObjectManager = permissionedObjectManager;
         }
 
-        private async Task<string[]> GetFormPermissionsAsync(string module, string name)
+        private async Task<string[]> GetFormPermissionsAsync(string? module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name),
@@ -85,7 +85,7 @@ namespace Shesha.Web.FormsDesigner.Services
             return await _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
         }
 
-        private async Task<bool> CheckFormPermissionsAsync(string module, string name)
+        private async Task<bool> CheckFormPermissionsAsync(string? module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name),
@@ -100,7 +100,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 throw new AbpAuthorizationException("You are not authorized for this form");
             if (access == RefListPermissionedAccess.RequiresPermissions)
             {
-                var permissions = permission.Permissions.ToArray() ?? [];
+                var permissions = permission?.Permissions?.ToArray() ?? [];
                 return await PermissionChecker.IsGrantedAsync(false, permissions);
             }
             return true;
@@ -281,8 +281,8 @@ namespace Shesha.Web.FormsDesigner.Services
                 {
                     Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                     Name = $"{form.Module?.Name}.{form.Name}",
-                    Module = form.Module.Name,
-                    ModuleId = form.Module.Id,
+                    Module = form.Module?.Name,
+                    ModuleId = form.Module?.Id,
                     Type = ShaPermissionedObjectsTypes.Form,
                     Access = input.Access,
                     Permissions = input.Permissions,
@@ -447,6 +447,7 @@ namespace Shesha.Web.FormsDesigner.Services
             if (validationResults.Any())
                 throw new AbpValidationException("Failed to import JSON", validationResults);
 
+            input.File.NotNull();
             using (var fileStream = input.File.OpenReadStream()) 
             {
                 using (var reader = new StreamReader(fileStream)) 
@@ -469,7 +470,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module != null && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -530,40 +531,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return await MapToEntityDtoAsync(form);
         }
 
-        [HttpGet]
-        public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string term, string selectedValue)
-        {
-            var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
-            var models = (await AsyncQueryableExecuter.ToListAsync(
-                Repository.GetAll().Select(x => new { Name = x.Name, Module = x.Module.Name }))
-                ).Distinct();
-
-            var formIdJson = (string name, string module) => { return $"{{\"name\":\"{name}\",\"module\":\"{module}\"}}"; };
-
-            var entities = isPreselection
-                ? models.Where(e => formIdJson(e.Name, e.Module) == selectedValue).ToList()
-                : models
-                .Where(e => 
-                    !string.IsNullOrWhiteSpace(e.Name) &&
-                    (string.IsNullOrWhiteSpace(term)
-                    || (e.Name ?? "").Contains(term, StringComparison.InvariantCultureIgnoreCase)
-                    || (e.Module ?? "").Contains(term, StringComparison.InvariantCultureIgnoreCase))
-                )
-                .OrderBy(e => $"{e.Module}.{e.Name}")
-                .Take(10)
-                .ToList();
-
-            var result = entities
-                .Select(e => new AutocompleteItemDto
-                {
-                    DisplayText = $"{e.Module}.{e.Name}",
-                    Value = formIdJson(e.Name, e.Module)
-                })
-                .ToList();
-
-            return result;
-        }
-
         public async Task<List<object>> GetFormsWithNotImplementedAsync()
         {
             var configs = (await _entityConfigManager.GetMainDataListAsync()).Where(x => x.NotImplemented).ToList();
@@ -581,7 +548,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 var className = $"\"{config.FullClassName}\"";
                 var typeShortAlias = $"\"{config.TypeShortAlias}\"";
                 var usetsa = !config.TypeShortAlias.IsNullOrWhiteSpace();
-                var formConfigs = forms.Where(x =>/*usetsa && x.Markup.Contains(typeShortAlias) ||*/ x.Markup.Contains(className)).ToList();
+                var formConfigs = forms.Where(x => x.Markup != null && x.Markup.Contains(className)).ToList();
 
                 list.AddRange(formConfigs.Select(x => {
                     return new
@@ -604,7 +571,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName) 
+        private async Task<Module?> GetModuleAsync(string? moduleName) 
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
@@ -612,40 +579,6 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         #endregion
-
-        public async Task ExportAllAsync(ExportAllInput input) 
-        {
-            if (!Directory.Exists(input.Path))
-                Directory.CreateDirectory(input.Path);
-
-            var forms = await Repository.GetAll()
-                .Select(f => new
-            {
-                Name = f.Name,
-                Version = f.VersionNo,
-                Markup = f.Markup,
-                Module = f.Module != null ? f.Module.Name : "[no-module]"
-            }).ToListAsync();
-
-            foreach (var form in forms)
-            {
-                if (!string.IsNullOrWhiteSpace(form.Markup)) 
-                {
-                    try
-                    {
-                        var fileName = Path.Combine(input.Path, form.Module, $"{form.Name}.v{form.Version}.json".RemovePathIllegalCharacters());
-                        var directory = Path.GetDirectoryName(fileName);
-                        if (!Directory.Exists(directory))
-                            Directory.CreateDirectory(directory);
-
-                        await File.WriteAllTextAsync(fileName, form.Markup);
-                    }
-                    catch (Exception e) {
-                        e.LogError();
-                    }
-                }
-            }
-        }
 
         [EntityAction(StandardEntityActions.List)]
         public override async Task<PagedResultDto<FormConfigurationDto>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
@@ -671,11 +604,6 @@ namespace Shesha.Web.FormsDesigner.Services
                 totalCount,
                 dtos
             );
-        }
-
-        public class ExportAllInput 
-        { 
-            public string Path { get; set; }
         }
     }
 }

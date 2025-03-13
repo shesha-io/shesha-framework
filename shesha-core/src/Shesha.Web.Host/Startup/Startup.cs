@@ -86,6 +86,7 @@ namespace Shesha.Web.Host.Startup
                     options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
                 })
                 .AddApiExplorer()
+                .AddDataAnnotations()
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);

@@ -1,8 +1,8 @@
 ﻿using Abp;
 using Abp.Dependency;
 using Abp.Specifications;
-using Castle.Core.Internal;
-using Shesha.Specifications.Exceptions;
+using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,11 +18,9 @@ namespace Shesha.Specifications
     {
         private static readonly AsyncLocal<SpecificationManagerState> InternalState = new AsyncLocal<SpecificationManagerState>();
 
-        private static readonly AsyncLocal<bool> IsDisabled = new AsyncLocal<bool>();
-
         private readonly ISpecificationsFinder _specificationsFinder;
 
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         public SpecificationManager(ISpecificationsFinder specificationsFinder)
         {
@@ -91,7 +89,7 @@ namespace Shesha.Specifications
         {
             var specInstance = IocManager.IsRegistered(specInfo.SpecificationsType)
                 ? IocManager.Resolve(specInfo.SpecificationsType)
-                : Activator.CreateInstance(specInfo.SpecificationsType);
+                : ActivatorHelper.CreateNotNullObject(specInfo.SpecificationsType);
 
             if (specInstance is ISpecification<T> thisTypeSpec)
                 return thisTypeSpec;
@@ -101,8 +99,8 @@ namespace Shesha.Specifications
                 throw new InvalidCastException($"Type `{typeof(T).FullName}` is not inherited from `{specInfo.EntityType}`");
 
             var specType = typeof(InheritedSpecification<,>).MakeGenericType(specInfo.EntityType, typeof(T));
-            var instance = Activator.CreateInstance(specType, specInstance);
-            return instance as ISpecification<T>;
+            var instance = ActivatorHelper.CreateNotNullObject(specType, specInstance);
+            return instance.ForceCastAs<ISpecification<T>>();
         }
 
         public ISpecificationsContext Use<TSpec, TEntity>() where TSpec : ISpecification<TEntity>

@@ -20,7 +20,7 @@ namespace Shesha.Domain.ConfigurationItems
         /// Module name
         /// </summary>
         [StringLength(200)]
-        public virtual string Name { get; set; }
+        public required virtual string Name { get; set; }
 
         /// <summary>
         /// Friendly name
@@ -77,7 +77,7 @@ namespace Shesha.Domain.ConfigurationItems
         [StringLength(200)]
         public virtual string? Accessor { get; set; }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return FriendlyName;
         }

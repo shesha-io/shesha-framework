@@ -1,4 +1,4 @@
-﻿using Abp.Notifications;
+using Abp.Notifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
@@ -19,12 +19,30 @@ namespace Shesha.Notifications
         /// </summary>
         public static NullNotificationSender Instance { get; } = new NullNotificationSender();
 
-        public Task SendNotificationAsync<TData>(NotificationTypeConfig type, IMessageSender sender, IMessageReceiver receiver, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public Task SendNotificationAsync<TData>(
+            NotificationTypeConfig type, 
+            IMessageSender? sender, 
+            IMessageReceiver receiver, 
+            TData data, 
+            RefListNotificationPriority priority, 
+            List<NotificationAttachmentDto>? attachments = null,
+            string? cc = null,
+            GenericEntityReference? triggeringEntity = null, 
+            NotificationChannelConfig? channel = null) where TData : NotificationData
         {
             return Task.CompletedTask;
         }
 
-        public Task SendNotificationAsync<TData>(NotificationTypeConfig type, Person sender, Person receiver, TData data, RefListNotificationPriority priority, List<NotificationAttachmentDto> attachments = null, GenericEntityReference triggeringEntity = null, NotificationChannelConfig channel = null) where TData : NotificationData
+        public Task SendNotificationAsync<TData>(
+            NotificationTypeConfig type, 
+            Person? sender, 
+            Person receiver, 
+            TData data, 
+            RefListNotificationPriority priority, 
+            List<NotificationAttachmentDto>? attachments = null,
+            string? cc = null,
+            GenericEntityReference? triggeringEntity = null, 
+            NotificationChannelConfig? channel = null) where TData : NotificationData
         {
             return Task.CompletedTask;
         }

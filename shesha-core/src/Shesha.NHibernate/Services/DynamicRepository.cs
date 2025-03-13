@@ -2,11 +2,12 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using NHibernate;
-using NHibernate.Context;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Session;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace Shesha.Services
 
         public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, INhCurrentSessionContext currentSessionContext)
         {
+            CurrentUnitOfWorkProvider = default!;
+
             _entityConfigurationStore = entityConfigurationStore;
             _currentSessionContext = currentSessionContext;
         }
@@ -145,8 +148,9 @@ namespace Shesha.Services
         {
             var where = new Func<IQueryable<int>, Expression<Func<int, bool>>, IQueryable<int>>(Queryable.Where).Method;
             var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
-            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.FullName);
-            return (IQueryable)whereForMyType.Invoke(query, new object[] { query, lambda });
+            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.GetRequiredFullName());
+
+            return whereForMyType.Invoke(query, [query, lambda]).ForceCastAs<IQueryable>();
         }
     }
 }

@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -32,7 +33,7 @@ namespace Shesha.Domain
         public virtual string? Category { get; set; }
 
         [DataType(DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
 
         public virtual int SortOrder { get; set; }
 
@@ -45,7 +46,7 @@ namespace Shesha.Domain
         /// The setter is private as it should be set once on creation and not changed.
         /// </summary>
         //[LogChanges]
-        public virtual string Folder { get; set; }
+        public virtual string? Folder { get; set; }
 
         /// <summary>
         /// If true, the file is version controlled and the full version
@@ -84,9 +85,9 @@ namespace Shesha.Domain
         /// </summary>
         /// <typeparam name="TId">Id type of the owner</typeparam>
         /// <param name="entity">Owner entity</param>
-        public virtual void SetOwner<TId>(IEntity<TId> entity)
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
         {
-            Owner = new GenericEntityReference(entity.Id.ToString(), entity.GetType().StripCastleProxyType().FullName);
+            Owner = new GenericEntityReference(entity.Id.ToString().NotNull(), entity.GetType().StripCastleProxyType().GetRequiredFullName());
         }
 
         /// <summary>

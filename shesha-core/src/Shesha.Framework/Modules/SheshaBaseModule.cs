@@ -17,7 +17,9 @@ namespace Shesha.Modules
             { 
                 Logger = this.Logger,
             };
-            return await seeder?.SeedEmbeddedPackagesAsync(context);
+            return seeder != null
+                ? await seeder.SeedEmbeddedPackagesAsync(context)
+                : false;
         }
     }
 }

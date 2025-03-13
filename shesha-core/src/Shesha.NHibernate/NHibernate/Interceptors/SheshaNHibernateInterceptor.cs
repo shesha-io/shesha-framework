@@ -15,6 +15,7 @@ using NHibernate.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using Shesha.NHibernate.UoW;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,50 +33,43 @@ namespace Shesha.NHibernate.Interceptors
         private readonly Lazy<IEventBus> _eventBus;
         public ILogger Logger { get; set; } = new NullLogger();
 
-        public EntityHistory.IEntityHistoryHelper EntityHistoryHelper => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.EntityHistoryHelper as EntityHistory.IEntityHistoryHelper;
-        public ISession Session => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.GetSession(true);
+        public EntityHistory.IEntityHistoryHelper? EntityHistoryHelper => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.EntityHistoryHelper as EntityHistory.IEntityHistoryHelper;
+        public ISession? Session => (_iocManager.Resolve<IUnitOfWorkManager>().Current as NhUnitOfWork)?.GetSessionOrNull(true);
 
         public SheshaNHibernateInterceptor(IIocManager iocManager)
         {
-            try
-            {
-                _iocManager = iocManager;
+            EntityChangeEventHelper = default!;
+            _iocManager = iocManager;
 
-                _abpSession =
-                    new Lazy<IAbpSession>(
-                        () => _iocManager.IsRegistered(typeof(IAbpSession))
-                            ? _iocManager.Resolve<IAbpSession>()
-                            : NullAbpSession.Instance,
-                        isThreadSafe: true
-                        );
-                _guidGenerator =
-                    new Lazy<IGuidGenerator>(
-                        () => _iocManager.IsRegistered(typeof(IGuidGenerator))
-                            ? _iocManager.Resolve<IGuidGenerator>()
-                            : SequentialGuidGenerator.Instance,
-                        isThreadSafe: true
-                        );
-
-                _eventBus =
-                    new Lazy<IEventBus>(
-                        () => _iocManager.IsRegistered(typeof(IEventBus))
-                            ? _iocManager.Resolve<IEventBus>()
-                            : NullEventBus.Instance,
-                        isThreadSafe: true
+            _abpSession =
+                new Lazy<IAbpSession>(
+                    () => _iocManager.IsRegistered(typeof(IAbpSession))
+                        ? _iocManager.Resolve<IAbpSession>()
+                        : NullAbpSession.Instance,
+                    isThreadSafe: true
                     );
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e.Message, e);
-            }
+            _guidGenerator =
+                new Lazy<IGuidGenerator>(
+                    () => _iocManager.IsRegistered(typeof(IGuidGenerator))
+                        ? _iocManager.Resolve<IGuidGenerator>()
+                        : SequentialGuidGenerator.Instance,
+                    isThreadSafe: true
+                    );
+
+            _eventBus =
+                new Lazy<IEventBus>(
+                    () => _iocManager.IsRegistered(typeof(IEventBus))
+                        ? _iocManager.Resolve<IEventBus>()
+                        : NullEventBus.Instance,
+                    isThreadSafe: true
+                );
         }
 
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
             //Set Id for Guids
-            if (entity is IEntity<Guid>)
+            if (entity is IEntity<Guid> guidEntity)
             {
-                var guidEntity = entity as IEntity<Guid>;
                 if (guidEntity.IsTransient())
                 {
                     guidEntity.Id = _guidGenerator.Value.Create();
@@ -83,25 +77,25 @@ namespace Shesha.NHibernate.Interceptors
             }
 
             //Set CreationTime for new entity
-            if (entity is IHasCreationTime)
+            if (entity is IHasCreationTime hasCreationTime)
             {
                 for (var i = 0; i < propertyNames.Length; i++)
                 {
                     if (propertyNames[i] == "CreationTime")
                     {
-                        state[i] = (entity as IHasCreationTime).CreationTime = Clock.Now;
+                        state[i] = hasCreationTime.CreationTime = Clock.Now;
                     }
                 }
             }
 
             //Set CreatorUserId for new entity
-            if (entity is ICreationAudited && _abpSession.Value.UserId.HasValue)
+            if (entity is ICreationAudited creationAudited && _abpSession.Value.UserId.HasValue)
             {
                 for (var i = 0; i < propertyNames.Length; i++)
                 {
                     if (propertyNames[i] == "CreatorUserId")
                     {
-                        state[i] = (entity as ICreationAudited).CreatorUserId = _abpSession.Value.UserId;
+                        state[i] = creationAudited.CreatorUserId = _abpSession.Value.UserId;
                     }
                 }
             }
@@ -120,25 +114,25 @@ namespace Shesha.NHibernate.Interceptors
             var updated = false;
 
             //Set modification audits
-            if (entity is IHasModificationTime)
+            if (entity is IHasModificationTime hasModificationTime)
             {
                 for (var i = 0; i < propertyNames.Length; i++)
                 {
                     if (propertyNames[i] == "LastModificationTime")
                     {
-                        currentState[i] = (entity as IHasModificationTime).LastModificationTime = Clock.Now;
+                        currentState[i] = hasModificationTime.LastModificationTime = Clock.Now;
                         updated = true;
                     }
                 }
             }
 
-            if (entity is IModificationAudited && _abpSession.Value.UserId.HasValue)
+            if (entity is IModificationAudited modificationAudited && _abpSession.Value.UserId.HasValue)
             {
                 for (var i = 0; i < propertyNames.Length; i++)
                 {
                     if (propertyNames[i] == "LastModifierUserId")
                     {
-                        currentState[i] = (entity as IModificationAudited).LastModifierUserId = _abpSession.Value.UserId;
+                        currentState[i] = modificationAudited.LastModifierUserId = _abpSession.Value.UserId;
                         updated = true;
                     }
                 }
@@ -160,26 +154,26 @@ namespace Shesha.NHibernate.Interceptors
                 if (!previousIsDeleted)
                 {
                     //set DeletionTime
-                    if (entity is IHasDeletionTime)
+                    if (entity is IHasDeletionTime hasDeletionTime)
                     {
                         for (var i = 0; i < propertyNames.Length; i++)
                         {
                             if (propertyNames[i] == "DeletionTime")
                             {
-                                currentState[i] = (entity as IHasDeletionTime).DeletionTime = Clock.Now;
+                                currentState[i] = hasDeletionTime.DeletionTime = Clock.Now;
                                 updated = true;
                             }
                         }
                     }
 
                     //set DeleterUserId
-                    if (entity is IDeletionAudited && _abpSession.Value.UserId.HasValue)
+                    if (entity is IDeletionAudited deletionAudited && _abpSession.Value.UserId.HasValue)
                     {
                         for (var i = 0; i < propertyNames.Length; i++)
                         {
                             if (propertyNames[i] == "DeleterUserId")
                             {
-                                currentState[i] = (entity as IDeletionAudited).DeleterUserId = _abpSession.Value.UserId;
+                                currentState[i] = deletionAudited.DeleterUserId = _abpSession.Value.UserId;
                                 updated = true;
                             }
                         }
@@ -226,7 +220,7 @@ namespace Shesha.NHibernate.Interceptors
                 if (collection is IPersistentCollection map)
                 {
                     // find exact property by loop because map.Role is empty here
-                    PropertyInfo property = null;
+                    PropertyInfo? property = null;
                     var props = map.Owner.GetType().GetProperties();
                     foreach (var prop in props)
                     {
@@ -256,7 +250,7 @@ namespace Shesha.NHibernate.Interceptors
                 if (collection is IPersistentCollection map)
                 {
                     var propertyName = map.Role.Split('.').Last();
-                    var property = map.Owner.GetType().GetProperty(propertyName);
+                    var property = map.Owner.GetType().GetRequiredProperty(propertyName);
                     var newValue = property.GetValue(map.Owner, null);
                     EntityHistoryHelper?.AddAuditedAsManyToMany(map.Owner, property, collection, newValue);
                 }
@@ -280,39 +274,9 @@ namespace Shesha.NHibernate.Interceptors
                 if (collection is IPersistentCollection map)
                 {
                     var propertyName = map.Role.Split('.').Last();
-                    var property = map.Owner.GetType().GetProperty(propertyName);
+                    var property = map.Owner.GetType().GetRequiredProperty(propertyName);
                     var newValue = property.GetValue(map.Owner, null);
                     EntityHistoryHelper?.AddAuditedAsManyToMany(map.Owner, property, map.StoredSnapshot, newValue);
-
-                    /* AS: Experiments for using one table for linking two entities with several list properties with the same entity types */
-                    /*var (added, removed) = IEnumerableExtensions.GetListNewAndRemoved<object>(map.StoredSnapshot, newValue);
-                    if (added.Any())
-                    {
-                        foreach (var item in added)
-                        {
-                            var parentId = map.Owner.GetType().GetProperty("Id").GetValue(map.Owner);
-                            var childId = item.GetType().GetProperty("Id").GetValue(item);
-
-                            var instance = Activator.CreateInstance("Boxfusion.SheshaFunctionalTests.Common.Application", "Boxfusion.SheshaFunctionalTests.Common.Application.Services.OrganisationTestDirectPersons")?
-                                .Unwrap();
-                            var objType = instance.GetType();
-                            objType.GetProperty("OrganisationTestId").SetValue(instance, parentId);
-                            objType.GetProperty("PersonId").SetValue(instance, childId);
-                            objType.GetProperty("Test").SetValue(instance, propertyName);
-
-                            Session.Save(instance);
-                        }
-                    }*/
-                    /*foreach (var item in removed)
-                    {
-                        var childId = item.GetType().GetProperty("Id").GetValue(item);
-
-                        var instance = Activator.CreateInstance("Boxfusion.SheshaFunctionalTests.Common.Application", "oxfusion.SheshaFunctionalTests.Common.Application.Services.OrganisationTestDirectPersons");
-                        var objType = instance.GetType();
-                        objType.GetProperty("OrganisationTestId").SetValue(instance, parentId);
-                        objType.GetProperty("PersonId").SetValue(instance, childId);
-                        objType.GetProperty("Test").SetValue(instance, propertyName);
-                    }*/
                 }
             }
             catch (HibernateException e)
@@ -407,18 +371,14 @@ namespace Shesha.NHibernate.Interceptors
             }
         }
 
-        private static void NormalizeDateTimePropertiesForComponentType(object componentObject, IType type)
+        private static void NormalizeDateTimePropertiesForComponentType(object? componentObject, IType type)
         {
             if (componentObject == null)
-            {
                 return;
-            }
 
             var componentType = type as ComponentType;
             if (componentType == null)
-            {
                 return;
-            }
 
             for (int i = 0; i < componentType.PropertyNames.Length; i++)
             {

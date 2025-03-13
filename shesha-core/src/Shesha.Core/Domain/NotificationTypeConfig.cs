@@ -58,7 +58,7 @@ namespace Shesha.Domain
         /// Serialized JSON string representing override channels.
         /// </summary>
         [StringLength(int.MaxValue)]
-        public string OverrideChannels { get; set; }
+        public string? OverrideChannels { get; set; }
 
         private List<NotificationChannelIdentifier> _parsedOverrideChannels;
 
@@ -74,7 +74,7 @@ namespace Shesha.Domain
                 {
                     try
                     {
-                        var jsonStrings = JsonSerializer.Deserialize<List<string>>(OverrideChannels);
+                        var jsonStrings = JsonSerializer.Deserialize<List<string>>(OverrideChannels) ?? new();
 
                         _parsedOverrideChannels = jsonStrings
                             .Select(json => JsonSerializer.Deserialize<NotificationChannelIdentifier>(json, new JsonSerializerOptions

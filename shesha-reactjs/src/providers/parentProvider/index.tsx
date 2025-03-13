@@ -63,8 +63,8 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   const childParentProvider = useRef<IParentProviderStateContext[]>([]);
 
   const formModeLocal = formMode ?? parent?.formMode;
-  const formFlatMarkupLocal = formFlatMarkup ?? parent?.formFlatMarkup;
-  const formApiLocal = formApi ?? parent?.formApi;
+  const formFlatMarkupLocal = formFlatMarkup ?? (isScope ? form.flatStructure : parent?.formFlatMarkup);
+  const formApiLocal = formApi ?? (isScope ? form.getPublicFormApi() : parent?.formApi);
   const contextLocal = context ?? parent?.context;
 
   const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {

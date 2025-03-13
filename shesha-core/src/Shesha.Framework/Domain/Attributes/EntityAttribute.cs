@@ -11,7 +11,7 @@ namespace Shesha.Domain.Attributes
         /// <summary>
         /// Specifies friendly name of the entity that should be shown to user when required
         /// </summary>
-        public string FriendlyName { get; set; }
+        public string? FriendlyName { get; set; }
 
         /// <summary>
         /// This is a short version of the Type name of the entity class that is unique within 
@@ -20,7 +20,7 @@ namespace Shesha.Domain.Attributes
         /// the Discriminator value defined for the entity on NHibernate mapping if the entity
         /// is a subclass of another entity.
         /// </summary>
-        public string TypeShortAlias { get; set; }
+        public string? TypeShortAlias { get; set; }
 
         /// <summary>
         /// If AlwaysGenerateApplicationService, indicates that an Application Service should be generated for this entity.
@@ -34,7 +34,7 @@ namespace Shesha.Domain.Attributes
         /// <summary>
         /// Name of the auto-generated applicaiton service, applicable only when <see cref="GenerateApplicationService"/> is true. Leave empty to use `{class name}Crud` as a name of the applicaiton service
         /// </summary>
-        public string ApplicationServiceName { get; set; }
+        public string? ApplicationServiceName { get; set; }
 
         public EntityAttribute()
         {

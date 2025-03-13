@@ -7,7 +7,7 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.Configuration;
 using Shesha.Exceptions;
-using Shesha.FluentMigrator;
+using Shesha.Reflection;
 using System;
 
 namespace Shesha.NHibernate.Configuration
@@ -17,9 +17,9 @@ namespace Shesha.NHibernate.Configuration
         private readonly IWebHostEnvironment _env;
         private readonly IAbpStartupConfiguration _startupConfig;
         
-        public Type CustomDialect { get; private set; }
-        public Type CustomDriver { get; private set; }
-        public Func<global::NHibernate.Cfg.Configuration, ISessionFactory> SessionFactoryBuilder { get; private set; }
+        public Type? CustomDialect { get; private set; }
+        public Type? CustomDriver { get; private set; }
+        public Func<global::NHibernate.Cfg.Configuration, ISessionFactory>? SessionFactoryBuilder { get; private set; }
 
         public ShaNHibernateModuleConfiguration(IWebHostEnvironment env, IAbpStartupConfiguration startupConfig)
         {
@@ -32,13 +32,13 @@ namespace Shesha.NHibernate.Configuration
         public global::NHibernate.Cfg.Configuration NhConfiguration { get; }
 
         private DbmsType _databaseType = DbmsType.NotSpecified;
-        private string _connectionString;        
+        private string? _connectionString;        
 
         /// inheritedDoc
         public DbmsType DatabaseType => _databaseType;
 
         /// inheritedDoc
-        public string ConnectionString => _connectionString;
+        public string ConnectionString => _connectionString.NotNullOrWhiteSpace("Connection string is unavailable");
 
         private void SetConnectionOptions(DbmsType dbmsType, string connectionString) 
         {
@@ -79,7 +79,7 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public void UseMsSql()
         {
-            UseMsSql(c => c.GetConnectionString(SheshaConsts.ConnectionStringName));
+            UseMsSql(c => c.GetRequiredConnectionString(SheshaConsts.ConnectionStringName));
         }
 
         #endregion
@@ -93,7 +93,7 @@ namespace Shesha.NHibernate.Configuration
         }
 
         /// inheritedDoc
-        public void UsePostgreSql(Func<IConfigurationRoot, string> connectionStringGetter = null)
+        public void UsePostgreSql(Func<IConfigurationRoot, string> connectionStringGetter)
         {
             var connectionString = GetConnectionStringFromEnvironment(connectionStringGetter);
             UsePostgreSql(connectionString);
@@ -102,7 +102,7 @@ namespace Shesha.NHibernate.Configuration
         /// inheritedDoc
         public void UsePostgreSql()
         {
-            UsePostgreSql(c => c.GetConnectionString(SheshaConsts.ConnectionStringName));
+            UsePostgreSql(c => c.GetRequiredConnectionString(SheshaConsts.ConnectionStringName));
         }
 
         #endregion

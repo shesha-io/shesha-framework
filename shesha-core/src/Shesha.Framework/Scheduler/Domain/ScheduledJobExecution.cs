@@ -30,12 +30,12 @@ namespace Shesha.Scheduler.Domain
         /// Log file path
         /// </summary>
         [StringLength(500)]
-        public virtual string LogFilePath { get; set; }
+        public virtual string? LogFilePath { get; set; }
 
         /// <summary>
         /// Stored file log (if enabled on the job)
         /// </summary>
-        public virtual StoredFile LogFile { get; set; }
+        public virtual StoredFile? LogFile { get; set; }
 
         /// <summary>
         /// User who started the job (if it was done manually)
@@ -45,18 +45,18 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// Executed scheduled job
         /// </summary>
-        public virtual ScheduledJob Job { get; set; }
+        public virtual ScheduledJob Job { get; set; } = default!;
 
         /// <summary>
         /// Trigger by which the job was executed. May be null for manual jobs
         /// </summary>
-        public virtual ScheduledJobTrigger Trigger { get; set; }
+        public virtual ScheduledJobTrigger? Trigger { get; set; }
 
         /// <summary>
         /// Error message
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string ErrorMessage { get; set; }
+        public virtual string? ErrorMessage { get; set; }
 
         /// <summary>
         /// Status of the execution
@@ -72,6 +72,6 @@ namespace Shesha.Scheduler.Domain
         /// <summary>
         /// This is a JSON string containing the job stats.
         /// </summary>
-        public virtual ScheduledJobStatistic JobStatistics { get; set; }
+        public virtual ScheduledJobStatistic? JobStatistics { get; set; }
     }
 }

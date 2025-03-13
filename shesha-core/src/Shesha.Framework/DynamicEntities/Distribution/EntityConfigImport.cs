@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
-using Newtonsoft.Json;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
@@ -14,14 +13,13 @@ using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
 {
     /// inheritedDoc
-    public class EntityConfigImport : ConfigurationItemImportBase, IEntityConfigImport, ITransientDependency
+    public class EntityConfigImport : ConfigurationItemImportBase<EntityConfig, DistributedEntityConfig>, IEntityConfigImport, ITransientDependency
     {
         public string ItemType => EntityConfig.ItemTypeName;
 
@@ -30,7 +28,7 @@ namespace Shesha.DynamicEntities.Distribution
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IEntityConfigManager _entityConfigManager;
-        private readonly ITypedCache<string, ModelConfigurationDto> _modelConfigsCache;
+        private readonly ITypedCache<string, ModelConfigurationDto?> _modelConfigsCache;
 
         public EntityConfigImport(
             IRepository<Module, Guid> moduleRepo,
@@ -71,7 +69,7 @@ namespace Shesha.DynamicEntities.Distribution
             var dbItem = await _entityConfigRepo.FirstOrDefaultAsync(x =>
                 x.Namespace == item.Namespace && x.ClassName == item.ClassName
                 //x.Name == item.Name 
-                && (x.Module == null && item.ModuleName == null || x.Module.Name == item.ModuleName)
+                && (x.Module == null && item.ModuleName == null || x.Module != null && x.Module.Name == item.ModuleName)
                 && x.IsLast);
 
             if (dbItem != null)
@@ -88,45 +86,6 @@ namespace Shesha.DynamicEntities.Distribution
                 await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
                 return dbItem;
-
-                /*switch (dbItem.VersionStatus)
-                {
-                    case ConfigurationItemVersionStatus.Draft:
-                    case ConfigurationItemVersionStatus.Ready:
-                        {
-                            // cancel existing version
-                            await _entityConfigManager.CancelVersoinAsync(dbItem);
-                            break;
-                        }
-                }
-                // mark existing live form as retired if we import new form as live
-                if (statusToImport == ConfigurationItemVersionStatus.Live)
-                {
-                    var liveForm = dbItem.VersionStatus == ConfigurationItemVersionStatus.Live
-                        ? dbItem
-                        : await _entityConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    if (liveForm != null)
-                    {
-                        await _entityConfigManager.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
-                        await _unitOfWorkManager.Current.SaveChangesAsync(); // save changes to guarantee sequence of update
-                    }
-                }
-
-                // create new version
-                var newItemVersion = await _entityConfigManager.CreateNewVersionAsync(dbItem);
-                await MapEntityConfigAync(item, newItemVersion, context);
-                await MapPropertiesAsync(dbItem, item.Properties);
-
-                // important: set status according to the context
-                newItemVersion.VersionStatus = statusToImport;
-                newItemVersion.CreatedByImport = context.ImportResult;
-                newItemVersion.Normalize();
-
-                await _entityConfigRepo.UpdateAsync(newItemVersion);
-
-                await ModelConfigsCache.RemoveAsync($"{newItemVersion.Namespace}|{newItemVersion.ClassName}");
-
-                return newItemVersion;*/
             }
             else
             {
@@ -157,10 +116,6 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.Module = await GetModuleAsync(item.ModuleName, context);
             dbItem.Application = await GetFrontEndAppAsync(item.FrontEndApplication, context);
             dbItem.ItemType = item.ItemType;
-
-            //dbItem.Origin = item.OriginId;
-            //dbItem.BaseItem = item.BaseItem;
-            //dbItem.ParentVersion = item.ParentVersionId;
 
             dbItem.Label = item.Label;
             dbItem.Description = item.Description;
@@ -220,7 +175,7 @@ namespace Shesha.DynamicEntities.Distribution
             foreach (var src in Properties)
             {
                 var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty();
+                    ?? new EntityProperty() { EntityConfig = item };
                 
                 dbItem.EntityConfig = item;
                 dbItem.Name = src.Name;
@@ -249,15 +204,6 @@ namespace Shesha.DynamicEntities.Distribution
                 dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
                 await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
-            }
-        }
-
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedEntityConfig>(json);
             }
         }
     }

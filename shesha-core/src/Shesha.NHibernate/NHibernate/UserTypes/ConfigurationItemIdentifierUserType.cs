@@ -23,7 +23,7 @@ namespace Shesha.NHibernate.UserTypes
             throw new NotImplementedException();
         }
 
-        public object DeepCopy(object value)
+        public object? DeepCopy(object value)
         {
             if (value is ConfigurationItemIdentifier er)
                 return TIdentifier.New(er.Module, er.Name);
@@ -49,7 +49,7 @@ namespace Shesha.NHibernate.UserTypes
             return x == null ? 0 : x.GetHashCode();
         }
 
-        public object GetPropertyValue(object component, int property)
+        public object? GetPropertyValue(object component, int property)
         {
             if (component is TIdentifier formId)
             {
@@ -62,7 +62,7 @@ namespace Shesha.NHibernate.UserTypes
             return null;
         }
 
-        public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
+        public object? NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
         {
             if (names.Length != 2)
                 throw new InvalidOperationException("Only expecting two column...");

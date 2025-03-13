@@ -8,6 +8,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.Metadata;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace Shesha.DynamicEntities
             _dynamicRepository = dynamicRepository;
         }
 
-        public async Task<string> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property)
+        public async Task<string?> GetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property) where TId : notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
 
@@ -53,7 +54,7 @@ namespace Shesha.DynamicEntities
         }
 
         // todo: get IsVersioned flag from the EntityPropertyDto
-        public async Task SetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property, string value, bool createNewVersion)
+        public async Task SetValueAsync<TId>(IEntity<TId> entity, EntityPropertyDto property, string value, bool createNewVersion) where TId: notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
 
@@ -85,6 +86,7 @@ namespace Shesha.DynamicEntities
         public async Task MapDtoToEntityAsync<TDynamicDto, TEntity, TId>(TDynamicDto dynamicDto, TEntity entity)
             where TEntity : class, IEntity<TId>
             where TDynamicDto : class, IDynamicDto<TEntity, TId>
+            where TId : notnull
         {
             await MapPropertiesAsync(entity, dynamicDto, async (ent, dto, entProp, dtoProp) =>
             {
@@ -97,6 +99,7 @@ namespace Shesha.DynamicEntities
         public async Task MapEntityToDtoAsync<TDynamicDto, TEntity, TId>(TEntity entity, TDynamicDto dynamicDto)
             where TEntity : class, IEntity<TId>
             where TDynamicDto : class, IDynamicDto<TEntity, TId>
+            where TId : notnull
         {
             await MapPropertiesAsync(entity, dynamicDto, async (ent, dto, entProp, dtoProp) =>
             {
@@ -109,7 +112,7 @@ namespace Shesha.DynamicEntities
         }
 
         public async Task MapPropertiesAsync<TId, TDynamicDto>(IEntity<TId> entity, TDynamicDto dto, 
-            Func<IEntity<TId>, TDynamicDto, EntityPropertyDto, PropertyInfo, Task> action)
+            Func<IEntity<TId>, TDynamicDto, EntityPropertyDto, PropertyInfo, Task> action) where TDynamicDto: notnull
         {
             var dynamicProperties = (await DtoTypeBuilder.GetEntityPropertiesAsync(entity.GetType()))
                 .Where(p => p.Source == MetadataSourceType.UserDefined).ToList();
@@ -126,6 +129,7 @@ namespace Shesha.DynamicEntities
 
         public async Task MapJObjectToEntityAsync<TEntity, TId>(JObject jObject, TEntity entity)
             where TEntity : class, IEntity<TId>
+            where TId : notnull
         {
             var dynamicProperties = (await DtoTypeBuilder.GetEntityPropertiesAsync(entity.GetType()))
                 .Where(p => p.Source == MetadataSourceType.UserDefined).ToList();
@@ -142,20 +146,21 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        public async Task<object> GetPropertyAsync(object entity, string propertyName) 
+        public async Task<object?> GetPropertyAsync(object entity, string propertyName) 
         {
             try 
             {
                 if (entity == null)
                     return null;
 
-                var getterMethod = this.GetType().GetMethod(nameof(GetEntityPropertyAsync));
+                var getterMethod = this.GetType().GetRequiredMethod(nameof(GetEntityPropertyAsync));
                 var entityType = entity.GetType();
                 var idType = entityType.GetEntityIdType();
 
                 var genericGetterMethod = getterMethod.MakeGenericMethod(entityType, idType);
 
-                return await (genericGetterMethod.Invoke(this, new object[] { entity, propertyName }) as Task<object>);
+                var result = genericGetterMethod.Invoke(this, [entity, propertyName]).ForceCastAs<Task<object>>();
+                return await result;
             }
             catch (Exception) 
             {
@@ -163,8 +168,9 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        public async Task<object> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
+        public async Task<object?> GetEntityPropertyAsync<TEntity, TId>(TEntity entity, string propertyName)
             where TEntity : class, IEntity<TId>
+            where TId : notnull
         {
             var dynamicProperty = (await DtoTypeBuilder.GetEntityPropertiesAsync(entity.GetType()))
                 .FirstOrDefault(p => p.Source == MetadataSourceType.UserDefined && p.Name == propertyName);
@@ -176,17 +182,18 @@ namespace Shesha.DynamicEntities
             if (serializedValue == null)
                 return null;
 
-            Type simpleType = null;
+            Type? simpleType = null;
             switch (dynamicProperty.DataType) 
             {
                 case DataTypes.EntityReference:
                     {
                         var entityConfig = _entityConfigurationStore.Get(dynamicProperty.EntityType);
-                        var id = SerializationManager.DeserializeProperty(entityConfig.IdType, serializedValue);
-                        if (id == null)
+                        var id = SerializationManager.DeserializeProperty(entityConfig.IdType.NotNull(), serializedValue);
+                        var stringId = id?.ToString();
+                        if (string.IsNullOrWhiteSpace(stringId))
                             return null;
 
-                        return await _dynamicRepository.GetAsync(entityConfig.EntityType, id.ToString());
+                        return await _dynamicRepository.GetAsync(entityConfig.EntityType, stringId);
                     }
                 case DataTypes.Boolean:
                     simpleType = typeof(bool?);
