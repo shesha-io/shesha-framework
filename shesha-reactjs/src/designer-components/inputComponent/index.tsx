@@ -317,7 +317,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             />;
 
         case 'nullForNow':
-                return <RefListItemSelectorSettingsModal {...props} value={referenceList} referenceList={referenceList} readOnly={false}/>
+            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList._data} readOnly={false}/>
         default:
             return <Input
                 size={size}
