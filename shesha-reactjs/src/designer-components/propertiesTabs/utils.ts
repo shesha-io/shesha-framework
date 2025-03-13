@@ -41,11 +41,12 @@ export const filterDynamicComponents = (components, query, data) => {
 
             return {
                 ...c,
+                collapsedByDefault: c.collapsedByDefault ?? true,
+                collapsible: c.collapsible ?? 'header',
                 content: {
                     ...c.content,
                     components: contentComponents
                 },
-                className: 'y-overflow',
                 stylingBox: '{"marginBottom":"5px"}',
                 hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren)
             };

@@ -81,7 +81,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     borderRadius: headerBorderRadius,
     paddingBottom: headerPaddingBottom = '8px',
     paddingTop: headerPaddingTop = '8px',
-    paddingLeft: headerPaddingLeft = '8px',
+    paddingLeft: headerPaddingLeft = '0px',
     paddingRight: headerPaddingRight = '8px',
     overflow: headerOverflow,
     ...headerRest
