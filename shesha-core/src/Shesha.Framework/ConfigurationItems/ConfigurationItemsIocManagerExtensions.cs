@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
-using Abp.Reflection;
 using Castle.MicroKernel.Registration;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Reflection;
 using System;
-using System.Linq;
 
 namespace Shesha.ConfigurationItems
 {
@@ -24,7 +22,7 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurationItemManager<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurationItemManager<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurationItemManager<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }
