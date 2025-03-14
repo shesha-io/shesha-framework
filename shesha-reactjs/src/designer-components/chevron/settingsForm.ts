@@ -108,7 +108,7 @@ export const getSettings = (data: any) => {
                 labelAlign: 'right',
                 parentId: itemsTabId,
                 referenceList: { _code: 'return getSettingValue(data?.referenceList);', _mode: 'code', _value: false } as any,
-                inputType: 'nullForNow',
+                inputType: 'RefListItemSelectorSettingsModal',
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()

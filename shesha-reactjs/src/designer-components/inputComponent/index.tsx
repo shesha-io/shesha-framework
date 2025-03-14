@@ -48,12 +48,6 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         })
     );
 
-    const placeholderRef = {
-        "id": "af113a13-1557-4231-a828-02e6d2549778",
-        "_displayName": "Shesha.Core.AccountStatus",
-        "_className": "Shesha.Domain.ReferenceList"
-    }
-
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
@@ -315,9 +309,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
                 propertyMeta={propertyMeta}
             />;
-
-        case 'nullForNow':
-            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList._data} readOnly={false}/>
+        case 'RefListItemSelectorSettingsModal':
+            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList?._data} readOnly={false}/>
         default:
             return <Input
                 size={size}
