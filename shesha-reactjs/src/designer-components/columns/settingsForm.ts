@@ -50,6 +50,25 @@ export const getSettings = (data: any) => {
             ]
           },
           {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId,
+                permissions: data.permissions,
+                tooltip: "Enter a list of permissions that should be associated with this component"
+              })
+              .toJson()
+            ]
+          },
+          {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceId,
@@ -603,25 +622,6 @@ export const getSettings = (data: any) => {
                   parentId: dataTabId
                 })
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId,
-                permissions: data.permissions,
-                tooltip: "Enter a list of permissions that should be associated with this component"
-              })
-              .toJson()
             ]
           }
         ]

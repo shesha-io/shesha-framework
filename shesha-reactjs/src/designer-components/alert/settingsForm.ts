@@ -170,6 +170,24 @@ export const getSettings = (data: IAlertComponentProps) => {
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
                 .toJson()]
+          }
+          ,
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId
+              })
+              .toJson()
+            ]
           },
           {
             key: 'appearance',
@@ -202,23 +220,6 @@ export const getSettings = (data: IAlertComponentProps) => {
                   }
                 })
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityTabId
-              })
-              .toJson()
             ]
           }
         ]

@@ -41,6 +41,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   "required": true
                 },
                 jsSetting: true,
+                styledLabel: true,
               })
               .addLabelConfigurator({
                 id: nanoid(),
@@ -93,6 +94,23 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     jsSetting: true,
                   },
                 ],
+              })
+              .toJson()
+            ]
+          },
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
               })
               .toJson()
             ]
@@ -349,133 +367,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             ]
           },
           {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'autocomplete',
-                  propertyName: 'getEntityUrl',
-                  label: 'Get Entity URL',
-                  labelAlign: 'right',
-                  parentId: mainSettingsTabId,
-                  hidden: false,
-                  dataSourceType: 'url',
-                  validate: { required: true },
-                  dataSourceUrl: '/api/services/app/Api/Endpoints',
-                  settingsValidationErrors: [],
-                  useRawValues: true,
-                  width: '100%'
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  hidden: { _code: 'return getSettingValue(data?.displayType) !== "displayProperty";', _mode: 'code', _value: false } as any,
-                  inputs: [{
-                    id: nanoid(),
-                    propertyName: 'displayProperty',
-                    label: 'Display Property',
-                    parentId: mainSettingsTabId,
-                    type: 'propertyAutocomplete',
-                    jsSetting: true,
-                    width: '100%',
-                  }]
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'entityReferenceType',
-                  label: 'Entity Reference Type',
-                  parentId: mainSettingsTabId,
-                  inputType: 'dropdown',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    { value: 'quickview', label: 'Quickview' },
-                    { value: 'navigateLink', label: 'Navigate Link' },
-                    { value: 'dialog', label: 'Dialog' },
-                  ],
-                  defaultValue: 'Quickview',
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: mainSettingsTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
-                  inputs: [{
-                    id: nanoid(),
-                    propertyName: 'formType',
-                    label: 'Form Type',
-                    parentId: mainSettingsTabId,
-                    type: 'formTypeAutocomplete',
-                    jsSetting: true,
-                    width: '100%',
-                  }]
-                })
-                .toJson()
-            ]
-          },
-          {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addCollapsiblePanel({
-                  id: nanoid(),
-                  propertyName: 'pnlOnSuccess',
-                  label: 'On Success',
-                  labelAlign: 'right',
-                  ghost: true,
-                  parentId: mainSettingsTabId,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [
-                      ...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                          id: nanoid(),
-                          propertyName: 'onSuccess',
-                          label: 'On Success',
-                          parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfigurator',
-                          jsSetting: true,
-                        })
-                        .toJson()
-                    ]
-                  },
-                  hidden: { _code: 'return getSettingValue(data?.handleSuccess) !== true;', _mode: 'code', _value: false } as any,
-                })
-                .addCollapsiblePanel({
-                  id: nanoid(),
-                  propertyName: 'pnlOnFail',
-                  label: 'On Fail',
-                  labelAlign: 'right',
-                  ghost: true,
-                  parentId: mainSettingsTabId,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [
-                      ...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                          id: nanoid(),
-                          propertyName: 'onFail',
-                          label: 'On Fail',
-                          parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfigurator',
-                          jsSetting: true,
-                        })
-                        .toJson()
-                    ]
-                  },
-                  hidden: { _code: 'return getSettingValue(data?.handleFail) !== true;', _mode: 'code', _value: false } as any,
-                })
-                .toJson()
-            ]
-          },
-          {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
@@ -654,20 +545,130 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
             ]
           },
           {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
+            key: 'data',
+            title: 'Data',
+            id: dataTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'autocomplete',
+                  propertyName: 'getEntityUrl',
+                  label: 'Get Entity URL',
+                  labelAlign: 'right',
+                  parentId: mainSettingsTabId,
+                  hidden: false,
+                  dataSourceType: 'url',
+                  validate: { required: true },
+                  dataSourceUrl: '/api/services/app/Api/Endpoints',
+                  settingsValidationErrors: [],
+                  useRawValues: true,
+                  width: '100%'
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: mainSettingsTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.displayType) !== "displayProperty";', _mode: 'code', _value: false } as any,
+                  inputs: [{
+                    id: nanoid(),
+                    propertyName: 'displayProperty',
+                    label: 'Display Property',
+                    parentId: mainSettingsTabId,
+                    type: 'propertyAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                  }]
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'entityReferenceType',
+                  label: 'Entity Reference Type',
+                  parentId: mainSettingsTabId,
+                  inputType: 'dropdown',
+                  jsSetting: true,
+                  dropdownOptions: [
+                    { value: 'quickview', label: 'Quickview' },
+                    { value: 'navigateLink', label: 'Navigate Link' },
+                    { value: 'dialog', label: 'Dialog' },
+                  ],
+                  defaultValue: 'Quickview',
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: mainSettingsTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                  inputs: [{
+                    id: nanoid(),
+                    propertyName: 'formType',
+                    label: 'Form Type',
+                    parentId: mainSettingsTabId,
+                    type: 'formTypeAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                  }]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'pnlOnSuccess',
+                  label: 'On Success',
+                  labelAlign: 'right',
+                  ghost: true,
+                  parentId: mainSettingsTabId,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'onSuccess',
+                          label: 'On Success',
+                          parentId: mainSettingsTabId,
+                          inputType: 'configurableActionConfigurator',
+                          jsSetting: true,
+                        })
+                        .toJson()
+                    ]
+                  },
+                  hidden: { _code: 'return getSettingValue(data?.handleSuccess) !== true;', _mode: 'code', _value: false } as any,
+                })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  propertyName: 'pnlOnFail',
+                  label: 'On Fail',
+                  labelAlign: 'right',
+                  ghost: true,
+                  parentId: mainSettingsTabId,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [
+                      ...new DesignerToolbarSettings()
+                        .addSettingsInput({
+                          id: nanoid(),
+                          propertyName: 'onFail',
+                          label: 'On Fail',
+                          parentId: mainSettingsTabId,
+                          inputType: 'configurableActionConfigurator',
+                          jsSetting: true,
+                        })
+                        .toJson()
+                    ]
+                  },
+                  hidden: { _code: 'return getSettingValue(data?.handleFail) !== true;', _mode: 'code', _value: false } as any,
+                })
+                .toJson()
             ]
           }
         ]
