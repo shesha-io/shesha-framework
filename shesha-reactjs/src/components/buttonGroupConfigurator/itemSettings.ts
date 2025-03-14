@@ -656,7 +656,7 @@ export const getItemSettings = (data) => {
             colon: false,
             layout: 'vertical' as FormLayout,
             labelCol: { span: 24 },
-            wrapperCol: { span: 24 }
-        }
+            wrapperCol: { span: 24 },
+        },
     };
 };

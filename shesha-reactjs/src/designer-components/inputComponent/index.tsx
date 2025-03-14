@@ -334,7 +334,7 @@ export interface IInputRowProps {
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
 
-    return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+    return hidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
             const { type } = props;
 
