@@ -21,6 +21,8 @@ export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {
   direction?: SpaceProps['direction'];
   value?: any;
   onChange?: (e: RadioChangeEvent) => void;
+  onBlur?: (e: any) => void;
+  onFocus?: (e: any) => void;
   style?: CSSProperties;
   dataSourceUrl?: string;
   reducerFunc?: string; // The function that receives data from the API and returns it in the format { value, label }

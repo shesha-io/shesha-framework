@@ -353,19 +353,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInput({
-                                                        id: 'predefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
-                                                        ]
-                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -398,36 +385,16 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -692,7 +659,6 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
-                                                        hideLabel: true,
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })

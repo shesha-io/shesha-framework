@@ -50,7 +50,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
 
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [jsStyle, border]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 

@@ -5,18 +5,22 @@ export const useStyles = createStyles(({ css, cx }) => {
     const filterItem = cx("filter-item", css`
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        position: relative; 
 
         .${controls} {
-            transition: opacity 0.2s;
+            visibility: hidden;
             opacity: 0;
+            transition: opacity 0.2s ease-in-out;
             display: flex;
             align-items: center;
+            position: absolute; 
+            right: 0; 
         }
-        
-        &:hover {
-            >.${controls} {
-                opacity: 1;
-            }
+
+        &:hover .${controls} {
+            visibility: visible;
+            opacity: 1;
         }
     `);
 
@@ -25,3 +29,5 @@ export const useStyles = createStyles(({ css, cx }) => {
         controls,
     };
 });
+
+

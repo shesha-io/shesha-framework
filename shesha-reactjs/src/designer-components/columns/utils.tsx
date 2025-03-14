@@ -10,8 +10,8 @@ export const defaultStyles = (): IColumnsInputProps => {
       { id: nanoid(), flex: 12, offset: 0, push: 0, pull: 0, components: [] },
     ],
     border: {
-      selectedSide: 'all',
-      selectedCorner: 'all',
+      borderType: 'all',
+      radiusType: 'all',
       border: {
         all: { width: '0px', color: '#d3d3d3', style: 'solid' },
         bottom: { width: '0px', color: '#d3d3d3', style: 'solid' },

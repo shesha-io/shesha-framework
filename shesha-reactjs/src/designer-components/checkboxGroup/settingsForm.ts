@@ -1,5 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+
 export const getSettings = (data: any) => {
   return {
     components: new DesignerToolbarSettings(data)
@@ -33,7 +34,7 @@ export const getSettings = (data: any) => {
                 .addLabelConfigurator({
                   id: '16d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
@@ -51,6 +52,77 @@ export const getSettings = (data: any) => {
                   ],
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
+                .addSettingsInput({
+                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                  inputType: 'dropdown',
+                  propertyName: 'mode',
+                  label: 'Mode',
+                  size: 'small',
+                  jsSetting: true,
+                  dropdownOptions: [
+                    {
+                      label: 'Single',
+                      value: 'single',
+                    },
+                    {
+                      label: 'Multiple',
+                      value: 'multiple',
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'editModeSelector',
+                      id: 'editMode-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'editMode',
+                      label: 'Edit Mode',
+                      defaultValue: 'inherited',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      jsSetting: true,
+                      layout: 'horizontal',
+                    },
+                  ],
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: '2',
+            title: 'Validation',
+            id: '6eBJvoll3xtLJxdvOAlnB',
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                  propertyName: 'validate.required',
+                  label: 'Required',
+                  inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
+                  jsSetting: true,
+                  parentId: '6eBJvoll3xtLJxdvOAlnB',
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: 'data',
+            title: 'Data',
+            id: '6eBJvoll3xtLJxdvOAlnB',
+            components: [
+              ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: '52813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                   inputType: 'dropdown',
@@ -142,85 +214,44 @@ export const getSettings = (data: any) => {
                   ],
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
-                .addSettingsInput({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                  inputType: 'dropdown',
-                  propertyName: 'direction',
-                  label: 'Direction',
-                  size: 'small',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    {
-                      label: 'Horizontal',
-                      value: 'horizontal',
-                    },
-                    {
-                      label: 'Vertical',
-                      value: 'vertical',
-                    },
-                  ],
-                })
-                .addSettingsInput({
-                  id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                  inputType: 'dropdown',
-                  propertyName: 'mode',
-                  label: 'Mode',
-                  size: 'small',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    {
-                      label: 'Single',
-                      value: 'single',
-                    },
-                    {
-                      label: 'Multiple',
-                      value: 'multiple',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      defaultValue: 'inherit',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
-                  ],
-                })
                 .toJson(),
             ],
           },
           {
-            key: '2',
-            title: 'Validation',
-            id: '6eBJvoll3xtLJxdvOAlnB',
+            key: '3',
+            title: 'Events',
+            id: 'Cc47W08MWrKdhoGqFKMI2',
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  size: 'small',
-                  layout: 'horizontal',
-                  jsSetting: true,
-                  parentId: '6eBJvoll3xtLJxdvOAlnB',
+                  id: '3cef348b-6bba-4176-93f6-f3a8b21e33c9',
+                  inputType: 'codeEditor',
+                  propertyName: 'onChangeCustom',
+                  label: 'On Change',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '88c2d96c-b808-4316-8a36-701b09e5f6c7',
+                  inputType: 'codeEditor',
+                  propertyName: 'onFocusCustom',
+                  label: 'On Focus',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
+                })
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '4a2b7329-1a89-45d1-a5b0-f66db21744b0',
+                  inputType: 'codeEditor',
+                  propertyName: 'onBlurCustom',
+                  label: 'On Blur',
+                  labelAlign: 'right',
+                  tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
+                  parentId: 'Cc47W08MWrKdhoGqFKMI2',
                 })
                 .toJson(),
             ],
@@ -246,6 +277,25 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInput({
+                        id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                        inputType: 'dropdown',
+                        propertyName: 'direction',
+                        label: 'Direction',
+                        size: 'small',
+                        jsSetting: true,
+                        defaultValue: 'horizontal',
+                        dropdownOptions: [
+                          {
+                            label: 'Horizontal',
+                            value: 'horizontal',
+                          },
+                          {
+                            label: 'Vertical',
+                            value: 'vertical',
+                          },
+                        ],
+                      })
                       .addCollapsiblePanel({
                         id: 'customStyleCollapsiblePanel',
                         propertyName: 'customStyle',

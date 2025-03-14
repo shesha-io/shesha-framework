@@ -96,62 +96,85 @@ export const getSettings = () => {
                                 validate: {},
                                 version: 3
                             })
-                            .addSettingsInput({
-                                id: 'panel-wYzLo-lK468vwxVVBDMh',
-                                propertyName: 'collapsedByDefault',
-                                label: 'Collapsed by default',
-                                labelAlign: 'right',
-                                inputType: 'switch',
+                            .addSettingsInputRow({
+                                id: 'collapsedByDefault-ghost-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                hidden: false,
-                                isDynamic: false,
-                                description: '',
-                                jsSetting: true,
-                                validate: {},
+                                readOnly: { _code: 'return  getSettingValue(data?.ghost);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        id: 'panel-wYzLo-lK468vwxVVBDMh',
+                                        propertyName: 'collapsedByDefault',
+                                        label: 'Collapsed by default',
+                                        labelAlign: 'right',
+                                        type: 'switch',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        hidden: false,
+                                        isDynamic: false,
+                                        description: '',
+                                        jsSetting: true,
+                                        validate: {},
+                                    },
+                                    {
+                                        id: 'panel-wYzLo-lK468vwxVVBDMh',
+                                        label: 'Ghost',
+                                        propertyName: 'ghost',
+                                        type: 'switch',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        jsSetting: true
+                                    }
+                                ]
                             })
-                            .addSettingsInput({
-                                id: 'panel-wYzLo-lK468vwxVVBDMh',
-                                label: 'Ghost',
-                                propertyName: 'ghost',
-                                inputType: 'switch',
+                            .addSettingsInputRow({
+                                id: 'isSimpleDesign-hideTopBar-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                jsSetting: true
+                                readOnly: { _code: 'return  getSettingValue(data?.hideCollapseContent);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
+                                        propertyName: 'isSimpleDesign',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Simple Design',
+                                        type: 'switch',
+                                        jsSetting: true
+                                    },
+                                    {
+                                        id: 'panel7e5fc1c1-a804-4f0a-8327-1a92e963e5e1',
+                                        propertyName: 'hideCollapseContent',
+                                        label: 'Hide Top Bar',
+                                        labelAlign: 'right',
+                                        type: 'switch',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        description: 'Hides the collapsible panel',
+                                        jsSetting: true
+                                    }
+
+                                ]
                             })
-                            .addSettingsInput({
-                                id: 'panelcfd7d45e-smpl-4a27-987b-dc525c412448',
-                                propertyName: 'isSimpleDesign',
+                            .addSettingsInputRow({
+                                id: 'hide-when-empty-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Simple Design',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
-                                propertyName: 'hidden',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'hide',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panel7e5fc1c1-a804-4f0a-8327-1a92e963e5e1',
-                                propertyName: 'hideCollapseContent',
-                                label: 'Hide Top Bar',
-                                labelAlign: 'right',
-                                inputType: 'switch',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                description: 'Hides the collapsible panel',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
-                                propertyName: 'hideWhenEmpty',
-                                label: 'Hide when empty',
-                                labelAlign: 'right',
-                                parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
-                                inputType: 'switch',
-                                jsSetting: true,
-                                description: 'Allows to hide the panel when all components are hidden due to some conditions',
+                                readOnly: { _code: 'return  getSettingValue(data?.hideWhenEmpty);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
+                                        propertyName: 'hideWhenEmpty',
+                                        label: 'Hide when empty',
+                                        labelAlign: 'right',
+                                        parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
+                                        type: 'switch',
+                                        jsSetting: true,
+                                        description: 'Allows to hide the panel when all components are hidden due to some conditions',
+
+                                    },
+                                    {
+                                        id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
+                                        propertyName: 'hidden',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'hide',
+                                        type: 'switch',
+                                        jsSetting: true
+                                    }
+                                ]
                             })
                             .toJson()]
                     },
@@ -299,36 +322,16 @@ export const getSettings = () => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -676,7 +679,7 @@ export const getSettings = () => {
                                                             components: [...new DesignerToolbarSettings()
                                                                 .addSettingsInputRow({
                                                                     id: 'try26voxhs-HxJ5k5ngYE',
-                                                                    parentId: 'panel-header-styles-pnl',
+                                                                    parentId: 'panel-header-s,ktyles-pnl',
                                                                     inline: true,
                                                                     propertyName: 'font',
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -783,6 +786,7 @@ export const getSettings = () => {
                                                         label: 'Border',
                                                         labelAlign: 'right',
                                                         collapsedByDefault: true,
+                                                        hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                                         parentId: 'panel-header-styles-pnl',
                                                         content: {
                                                             id: 'panelheaderborderStylePnl',
@@ -804,37 +808,16 @@ export const getSettings = () => {
                                                                         },
                                                                     ]
                                                                 })
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getBorderInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[0] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[1] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[2] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[3] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
-                                                                .addSettingsInputRow(
-                                                                    { ...getCornerInputs(true, 'headerStyles')[4] as any, parentId: 'panelheaderborderStylePnl' }
-                                                                )
+                                                                .addContainer({
+                                                                    id: 'borderStyleRow',
+                                                                    parentId: 'borderStylePnl',
+                                                                    components: getBorderInputs('headerStyles', true) as any
+                                                                })
+                                                                .addContainer({
+                                                                    id: 'borderRadiusStyleRow',
+                                                                    parentId: 'borderStylePnl',
+                                                                    components: getCornerInputs('headerStyles', true) as any
+                                                                })
                                                                 .toJson()]
                                                         }
                                                     })
@@ -844,6 +827,7 @@ export const getSettings = () => {
                                                         label: 'Background',
                                                         labelAlign: 'right',
                                                         collapsedByDefault: true,
+                                                        hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
                                                         content: {
@@ -960,6 +944,7 @@ export const getSettings = () => {
                                                                     id: "header-backgroundStyleRow-controls",
                                                                     parentId: 'panel-header-styles-pnl',
                                                                     inline: true,
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
@@ -993,6 +978,25 @@ export const getSettings = () => {
                                                         }
                                                     })
                                                     .addCollapsiblePanel({
+                                                        id: 'panelheader-styling-box',
+                                                        propertyName: 'stylingBox',
+                                                        label: 'Styling Box',
+                                                        labelAlign: 'right',
+                                                        parentId: 'panel-header-styles-pnl',
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'panelheader-styling-box-pnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addStyleBox({
+                                                                    id: 'header-styleBoxPnl',
+                                                                    label: 'Margin Padding',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'headerStyles.stylingBox',
+                                                                })
+                                                                .toJson()]
+                                                        }
+                                                    })
+                                                    .addCollapsiblePanel({
                                                         id: 'panelheaderjsstyle',
                                                         propertyName: 'customStyle',
                                                         label: 'Custom Styles',
@@ -1011,6 +1015,12 @@ export const getSettings = () => {
                                                                     hideLabel: false,
                                                                     label: 'Style',
                                                                     description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                                                })
+                                                                .addStyleBox({
+                                                                    id: nanoid(),
+                                                                    label: 'Margin Padding',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'headerStyles.stylingBox',
                                                                 })
                                                                 .toJson()]
                                                         }

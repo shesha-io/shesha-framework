@@ -377,24 +377,6 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInput({
-                                id: 'predefinedSizes',
-                                inputType: 'dropdown',
-                                propertyName: 'size',
-                                label: 'Size',
-                                width: '150px',
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                dropdownOptions: [
-                                  { value: 'small', label: 'Small' },
-                                  { value: 'medium', label: 'Medium' },
-                                  { value: 'large', label: 'Large' },
-                                ],
-                              })
                               .toJson(),
                           ],
                         },
@@ -437,16 +419,16 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInputRow(getBorderInputs()[0] as any)
-                              .addSettingsInputRow(getBorderInputs()[1] as any)
-                              .addSettingsInputRow(getBorderInputs()[2] as any)
-                              .addSettingsInputRow(getBorderInputs()[3] as any)
-                              .addSettingsInputRow(getBorderInputs()[4] as any)
-                              .addSettingsInputRow(getCornerInputs()[0] as any)
-                              .addSettingsInputRow(getCornerInputs()[1] as any)
-                              .addSettingsInputRow(getCornerInputs()[2] as any)
-                              .addSettingsInputRow(getCornerInputs()[3] as any)
-                              .addSettingsInputRow(getCornerInputs()[4] as any)
+                              .addContainer({
+                                id: 'borderStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getBorderInputs() as any
+                              })
+                              .addContainer({
+                                id: 'borderRadiusStyleRow',
+                                parentId: 'borderStylePnl',
+                                components: getCornerInputs() as any
+                              })
                               .toJson(),
                           ],
                         },

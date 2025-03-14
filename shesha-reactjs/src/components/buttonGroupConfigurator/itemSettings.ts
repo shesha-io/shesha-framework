@@ -356,20 +356,6 @@ export const getItemSettings = (data) => {
                                                     }
                                                 ]
                                             })
-                                            .addSettingsInput({
-                                                id: 'predefinedSizes',
-                                                parentId: 'dimensionsStylePnl',
-                                                propertyName: 'size',
-                                                label: 'Size',
-                                                inputType: 'dropdown',
-                                                width: '150px',
-                                                hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                dropdownOptions: [
-                                                    { value: 'small', label: 'Small' },
-                                                    { value: 'medium', label: 'Medium' },
-                                                    { value: 'large', label: 'Large' },
-                                                ]
-                                            })
                                             .toJson()
                                         ]
                                     }
@@ -404,36 +390,16 @@ export const getItemSettings = (data) => {
                                                     },
                                                 ]
                                             })
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[0] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[1] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[2] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[3] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getBorderInputs(false)[4] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[0] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[1] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[2] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[3] as any
-                                            )
-                                            .addSettingsInputRow(
-                                                getCornerInputs(false)[4] as any
-                                            )
+                                            .addContainer({
+                                                id: 'borderStyleRow',
+                                                parentId: 'borderStylePnl',
+                                                components: getBorderInputs('', false) as any
+                                            })
+                                            .addContainer({
+                                                id: 'borderRadiusStyleRow',
+                                                parentId: 'borderStylePnl',
+                                                components: getCornerInputs('', false) as any
+                                            })
                                             .toJson()
                                         ]
                                     }
@@ -534,7 +500,7 @@ export const getItemSettings = (data) => {
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-controls",
                                                     parentId: 'backgroundStyleRow',
-                                                    inline: true, 
+                                                    inline: true,
                                                     hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
