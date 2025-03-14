@@ -19,6 +19,7 @@ import { useCrud } from '@/providers/crudContext';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
+import MultiEntityCell from './default/multiEntityCell';
 
 export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { columnConfig } = props;
@@ -42,11 +43,14 @@ export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props:
     case 'entity':
       return <EntityCell<D, V> {...cellProps} />;
     case 'array': {
-      return columnConfig.dataFormat === 'reference-list-item' ? (
-        <MultivalueReferenceListCell<D, V> {...cellProps} />
-      ) : (
-        <StringCell<D, V> {...props} />
-      );
+      switch (columnConfig.dataFormat) {
+        case 'reference-list-item':
+          return <MultivalueReferenceListCell<D, V> {...cellProps} />;
+        case 'entity':
+          return <MultiEntityCell<D, V> {...cellProps} />;
+        default:
+          return <StringCell<D, V> {...cellProps} />;
+      }
     }
     case 'string':
       return <StringCell<D, V> {...cellProps} />;

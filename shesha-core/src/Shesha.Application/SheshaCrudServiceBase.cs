@@ -77,7 +77,7 @@ namespace Shesha
         where TPrimaryKey : notnull
     {
         public IQuickSearcher QuickSearcher { get; set; } = new NullQuickSearcher();
-        public ISpecificationManager SpecificationManager { get; set; } = new NullSpecificationManager();
+        public ISpecificationManager SpecificationManager { get; set; } = NullSpecificationManager.Instance;
 
         [EntityAction(StandardEntityActions.Create)]
         public override Task<TEntityDto> CreateAsync(TCreateInput input)

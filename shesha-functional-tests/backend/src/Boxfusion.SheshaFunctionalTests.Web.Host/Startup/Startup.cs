@@ -78,6 +78,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                 options.Filters.AddService(typeof(SpecificationsActionFilter), order: 1);
             })
             .AddApiExplorer()
+			.AddDataAnnotations()
             .AddNewtonsoftJson(options =>
             {
                 options.UseCamelCasing(true);

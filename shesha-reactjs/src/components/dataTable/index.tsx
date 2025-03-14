@@ -14,6 +14,7 @@ import {
   useGlobalState,
   useHttpClient,
   useMetadata,
+  useShaFormInstance,
   useSheshaApplication,
 } from '@/providers';
 import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/contexts';
@@ -214,6 +215,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const httpClient = useHttpClient();
 
   const toolboxComponents = useFormDesignerComponents();
+  const shaForm = useShaFormInstance();
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize
@@ -350,7 +352,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         const width = strictWidth ?? columnItem.width;
 
         const cellStyleAccessor = getCellStyleAccessor(columnItem);
-        const cellRenderer = getCellRenderer(columnItem, columnItem.metadata);
+        const cellRenderer = getCellRenderer(columnItem, columnItem.metadata, shaForm);
         const column: DataTableColumn<any> = {
           ...columnItem,
           accessor: camelcaseDotNotation(columnItem.accessor),

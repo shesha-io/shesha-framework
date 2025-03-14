@@ -169,11 +169,11 @@ namespace Shesha.ConfigurationItems
         private class ModuleItem
         {
             public Guid Id { get; set; }
-            public Type ModuleType { get; set; }
-            public SheshaModule Instance { get;set; }
-            public SheshaModuleInfo ModuleInfo { get; set; }
+            public required Type ModuleType { get; set; }
+            public required SheshaModule Instance { get;set; }
+            public required SheshaModuleInfo ModuleInfo { get; set; }
             public string? Version { get; set; }
-            public string Accessor { get; set; }
+            public string? Accessor { get; set; }
             public bool IsNewModule { get; set; }            
         }
     }

@@ -51,7 +51,7 @@ namespace Shesha.Permission
                     var items = await permissionedObjectProvider.GetAllAsync(objectType, true);
 
                     var dbItems = await _permissionedObjectRepository.GetAll()
-                        .Where(x => x.Type == objectType || x.Type.Contains($"{objectType}.")).ToListAsync();
+                        .Where(x => x.Type != null && (x.Type == objectType || x.Type.Contains($"{objectType}."))).ToListAsync();
 
                     // Add news items
                     var toAdd = items.Where(i => dbItems.All(dbi => dbi.Object != i.Object))
@@ -86,7 +86,7 @@ namespace Shesha.Permission
                         }
                         dbItem.Hardcoded = item.Hardcoded ?? false;
 
-                        dbItem.Md5 = item.Md5;
+                        dbItem.Md5 = item.Md5 ?? "";
                         await _permissionedObjectRepository.UpdateAsync(dbItem);
                         foreach (var parameter in item.AdditionalParameters)
                         {

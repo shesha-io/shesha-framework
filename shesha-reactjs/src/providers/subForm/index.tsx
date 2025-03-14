@@ -121,7 +121,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, [value, propertyName]);
 
-  const internalEntityType = entityType || value?.['_className'];
+  const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
+  const prevRenderedEntityTypeForm = useRef<string>(null);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -152,11 +153,46 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   // show form based on the entity type
   useEffect(() => {
-    if (value && formSelectionMode === 'dynamic') {
-      if (value && typeof value === 'object' && value?.['_className'] && !formConfig?.formId)
-        getEntityFormId(value['_className'], formType).then((formid) => {
-          setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+    if (formSelectionMode === 'dynamic') {
+      if (internalEntityType) {
+        if (internalEntityType !== prevRenderedEntityTypeForm.current) {
+          const cachedFormDto = entityTypeFormCache.current[internalEntityType];
+          if (cachedFormDto) {
+            setMarkup({
+              hasFetchedConfig: true,
+              id: cachedFormDto.id,
+              module: cachedFormDto.module,
+              name: cachedFormDto.name,
+              components: cachedFormDto.markup,
+              formSettings: cachedFormDto.settings,
+              versionNo: cachedFormDto.versionNo,
+              versionStatus: cachedFormDto.versionStatus,
+              description: cachedFormDto.description,
+            });
+            prevRenderedEntityTypeForm.current = internalEntityType;
+          } else {
+            getEntityFormId(internalEntityType, formType).then((formid) => {
+              setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+              prevRenderedEntityTypeForm.current = internalEntityType;
+            });
+          }
+        }
+        if (!internalEntityType && state.formSettings?.modelType)
+          onChangeInternal(deepMergeValues(value, { _className: state.formSettings?.modelType }));
+      } else {
+        setMarkup({
+          hasFetchedConfig: false,
+          id: null,
+          module: null,
+          name: null,
+          components: [],
+          formSettings: null,
+          versionNo: null,
+          versionStatus: null,
+          description: null,
         });
+        prevRenderedEntityTypeForm.current = null;
+      }
     }
   }, [value]);
 
@@ -178,9 +214,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties = !!properties
-      ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
-      : null;
+    if (properties) {
+      // Always include the `id` property/. Useful for deleting
+      params.properties = ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties]))].join(' ');
+    }
 
     if (queryParams) {
       params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
@@ -350,6 +387,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       getForm({ formId: formConfig.formId, skipCache: false, configurationItemMode: configurationItemMode })
         .then((response) => {
           setFormLoadingState({ isLoading: false, error: null });
+
+          if (internalEntityType && formSelectionMode === 'dynamic' && !entityTypeFormCache.current[internalEntityType])
+            entityTypeFormCache.current[internalEntityType] = response;
 
           setMarkup({
             hasFetchedConfig: true,

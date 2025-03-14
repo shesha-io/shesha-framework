@@ -1,7 +1,11 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
-    const shaFormCell = cx("sha-form-cell", css`
+  const shaMultiEntityCell = cx("sha-form-cell", css`
+      white-space: normal;
+    `);
+
+  const shaFormCell = cx("sha-form-cell", css`
       width: 100%;
 
       .ant-form-item-control {
@@ -27,5 +31,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     return {
         shaChildTableErrorContainer: tableErrorContainer,
         shaFormCell,
+        shaMultiEntityCell,
     };
 });

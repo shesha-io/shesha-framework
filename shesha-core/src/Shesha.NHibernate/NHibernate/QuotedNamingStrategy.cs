@@ -11,7 +11,7 @@ namespace Shesha.NHibernate
     {
         private static readonly INamingStrategy Wrapped = DefaultNamingStrategy.Instance;
 
-        private static QuotedNamingStrategy _postgreNamingStrategy;
+        private static QuotedNamingStrategy? _postgreNamingStrategy;
 
         public static INamingStrategy Instance
         {

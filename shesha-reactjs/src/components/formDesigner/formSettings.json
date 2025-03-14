@@ -33,9 +33,7 @@
                             "useRawValues": true,
                             "version": 5,
                             "settingsValidationErrors": [],
-                            "mode": [
-                                "single"
-                            ]
+                            "mode": "single"
                         },
                         {
                             "id": "kqiWeis_L7y_Nvj7-tPuTQos3p5jj6",

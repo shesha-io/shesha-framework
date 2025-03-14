@@ -95,7 +95,6 @@ namespace Shesha.NHibernate.Maps
             });
 
             _defaultMapper = new ModelMapperWithNamingConventions();
-            DefaultModelInspector = _defaultMapper.ModelInspector;
         }
 
         private readonly Func<Type, Action<IIdMapper>?> _idMapper;
@@ -112,8 +111,7 @@ namespace Shesha.NHibernate.Maps
             MappingHelper.AddDatabasePrefixForAssembly(assembly, databasePrefix ?? string.Empty);
         }
 
-        public static IModelInspector DefaultModelInspector { get; set; }
-        private static ModelMapperWithNamingConventions _defaultMapper;
+        private ModelMapperWithNamingConventions _defaultMapper;
         private List<Type> _entitiesToMap;
 
         public void Compile(NHcfg.Configuration configuration)
@@ -642,19 +640,6 @@ namespace Shesha.NHibernate.Maps
 
             // sort entity types by hierarchy
             _entitiesToMap = MappingHelper.SortEntityTypesByInheritance(_entitiesToMap);
-            /* for debug
-            foreach (var ent in _entitiesToMap)
-            {
-                try
-                {
-                    var mapping1 = mapper.CompileMappingFor(new List<Type> { ent });
-                }
-                catch (Exception e)
-                {
-                    throw;
-                }
-            }
-            */
 
             HbmMapping mapping = mapper.CompileMappingFor(_entitiesToMap);
 
@@ -674,7 +659,7 @@ namespace Shesha.NHibernate.Maps
         /// <summary>
         /// Last compiled conventions in the xml format
         /// </summary>
-        public static string LastCompiledXml { get; set; }
+        public static string? LastCompiledXml { get; set; }
 
         private static Type? GetEntityTypeByMapping(Type mappingType)
         {

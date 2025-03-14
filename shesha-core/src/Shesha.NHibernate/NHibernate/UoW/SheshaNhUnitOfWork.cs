@@ -13,10 +13,8 @@ namespace Shesha.NHibernate.UoW
             ISessionFactory sessionFactory,
             IConnectionStringResolver connectionStringResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
-            IUnitOfWorkFilterExecuter filterExecuter,
-
-            SheshaNHibernateModule nhModule)
-            : base(sessionFactory, connectionStringResolver, defaultOptions, filterExecuter, nhModule)
+            IUnitOfWorkFilterExecuter filterExecuter)
+            : base(sessionFactory, connectionStringResolver, defaultOptions, filterExecuter)
         {
         }
     }

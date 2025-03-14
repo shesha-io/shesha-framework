@@ -93,26 +93,26 @@ namespace Shesha.Extensions
             public Assembly Assembly { get; protected set; }
             public Type ModuleType { get; protected set; }
             public SheshaModuleInfo ModuleInfo { get; protected set; }
+            
+            protected ModuleCacheItem(Assembly assembly, Type moduleType, SheshaModuleInfo moduleInfo)
+            {
+                Assembly = assembly;
+                ModuleType = moduleType;
+                ModuleInfo = moduleInfo;
+            }
         }
 
         private class MainModuleCacheItem: ModuleCacheItem
         {
-            public MainModuleCacheItem(SheshaModule module)
+            public MainModuleCacheItem(SheshaModule module): base(module.GetType().Assembly, module.GetType(), module.ModuleInfo)
             {
-                var moduleType = module.GetType();
-                Assembly = moduleType.Assembly;
-                ModuleType = moduleType;
-                ModuleInfo = module.ModuleInfo;
             }
         }
 
         private class SubModuleCacheItem : ModuleCacheItem
         {
-            public SubModuleCacheItem(ISheshaSubmodule submodule, MainModuleCacheItem mainModuleItem) 
+            public SubModuleCacheItem(ISheshaSubmodule submodule, MainModuleCacheItem mainModuleItem): base(submodule.GetType().Assembly, mainModuleItem.ModuleType, mainModuleItem.ModuleInfo) 
             {
-                Assembly = submodule.GetType().Assembly;
-                ModuleType = mainModuleItem.ModuleType;
-                ModuleInfo = mainModuleItem.ModuleInfo;
             }
         }
     }

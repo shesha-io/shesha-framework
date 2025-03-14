@@ -35,7 +35,7 @@ namespace Shesha.Notifications
             return await _emailSettings.EmailSettings.GetValueAsync();
         }
 
-        public async Task<SendStatus> SendAsync(IMessageSender sender, IMessageReceiver receiver, NotificationMessage message, List<EmailAttachment>? attachments = null)
+        public async Task<SendStatus> SendAsync(IMessageSender? sender, IMessageReceiver receiver, NotificationMessage message, List<EmailAttachment>? attachments = null)
         {
             var settings = await GetSettingsAsync();
 
@@ -54,7 +54,7 @@ namespace Shesha.Notifications
             if (string.IsNullOrWhiteSpace(toAddress))
                 return SendStatus.Failed("Recipient address is empty");
 
-            using (var mail = BuildMessageWith(sender.GetAddress(this), toAddress, message.Subject, message.Message, message.Cc))
+            using (var mail = BuildMessageWith(sender?.GetAddress(this), toAddress, message.Subject, message.Message, message.Cc))
             {
                 if (attachments != null)
                 {
@@ -129,7 +129,7 @@ namespace Shesha.Notifications
         /// <param name="body"></param>
         /// <param name="cc"></param>
         /// <returns></returns>
-        private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string cc = "")
+        private MailMessage BuildMessageWith(string? fromAddress, string toAddress, string subject, string body, string? cc = null)
         {
             var smtpSettings = _emailSettings.SmtpSettings.GetValue();
             var message = new MailMessage

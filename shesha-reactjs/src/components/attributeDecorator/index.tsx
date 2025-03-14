@@ -10,6 +10,7 @@ interface AttributeDecoratorProps {
 /**
  * Takes decoration attributes as props.attributes [{ key: value }, ...] and injects them as custom data attributes to the element that is being wrapped / 'decorated'.  
  * The children must be a single element.  
+ * 
  * Reference: https://stackoverflow.com/questions/65123286/inject-custom-data-attribute-to-react-props-children/75875667#75875667 with some modifications to make it more flexible.  
  * @returns The decorated element with the attributes injected into it
  */

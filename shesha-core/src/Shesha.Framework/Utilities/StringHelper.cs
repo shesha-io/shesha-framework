@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -867,8 +868,11 @@ namespace Shesha.Utilities
             return string.Join(" ", SplitUpperCase(source));
         }
 
-        public static bool IsValidEmail(this string inputEmail)
+        public static bool IsValidEmail([NotNullWhen(true)]this string? inputEmail)
         {
+            if (string.IsNullOrWhiteSpace(inputEmail))
+                return false;
+
             string strRegex = @"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}" +
                               @"\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\" +
                               @".)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$";

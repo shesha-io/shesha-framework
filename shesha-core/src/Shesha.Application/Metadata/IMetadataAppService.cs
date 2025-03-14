@@ -17,7 +17,7 @@ namespace Shesha.Metadata
         /// <param name="term">Term to search</param>
         /// <param name="selectedValue">Selected value, is used to fetch user-friendly name of selected item</param>
         /// <returns></returns>
-        Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string term, string selectedValue);
+        Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue);
 
         /// <summary>
         /// Autocomplete of container's properties
@@ -26,7 +26,7 @@ namespace Shesha.Metadata
         /// <param name="container">Container (e.g. entity type)</param>
         /// <param name="selectedValue">Selected value, is used to fetch user-friendly name of selected item</param>
         /// <returns></returns>
-        Task<List<PropertyMetadataDto>> PropertyAutocompleteAsync(string term, string container, string selectedValue);
+        Task<List<PropertyMetadataDto>> PropertyAutocompleteAsync(string? term, string container, string? selectedValue);
 
         /// <summary>
         /// Get properties of the specified container

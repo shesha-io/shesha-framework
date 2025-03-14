@@ -8,7 +8,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class ModuleSyncRequest
     {
-        public string Accessor { get; set; }
+        public string? Accessor { get; set; }
         public List<EntitySyncRequest> Entities { get; set; } = new List<EntitySyncRequest>();
     }
 }
