@@ -99,26 +99,6 @@ export const getSettings = (data: any) => {
           },
           {
             key: '2',
-            title: 'Validation',
-            id: '6eBJvoll3xtLJxdvOAlnB',
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  size: 'small',
-                  layout: 'horizontal',
-                  jsSetting: true,
-                  parentId: '6eBJvoll3xtLJxdvOAlnB',
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'data',
             title: 'Data',
             id: '6eBJvoll3xtLJxdvOAlnB',
             components: [
@@ -219,6 +199,26 @@ export const getSettings = (data: any) => {
           },
           {
             key: '3',
+            title: 'Validation',
+            id: '6eBJvoll3xtLJxdvOAlnB',
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                  propertyName: 'validate.required',
+                  label: 'Required',
+                  inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
+                  jsSetting: true,
+                  parentId: '6eBJvoll3xtLJxdvOAlnB',
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: '4',
             title: 'Events',
             id: 'Cc47W08MWrKdhoGqFKMI2',
             components: [
@@ -257,7 +257,7 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: '4',
+            key: '5',
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [
@@ -333,7 +333,7 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: '5',
+            key: '6',
             title: 'Security',
             id: '6Vw9iiDw9d0MD_Rh5cbIn',
             components: [

@@ -42,11 +42,20 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
         {(value, onChange) => {
           const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (e: any) => {
-            customEvents.onChange({...e, currentTarget: { value: e.target.value }});
+            if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
             if (typeof onChange === 'function') onChange(e);
           };
+
+          const onFocusInternal = (e: any) => {
+            if (e.target) customEvents.onFocus({ ...e, currentTarget: { value: e.target.value } });
+          };
+
+          const onBlurInternal = (e: any) => {
+            if (e.target) customEvents.onBlur({ ...e, currentTarget: { value: e.target.value } });
+          };
+
           return (
-            <RadioGroup {...restProps} {...customEvents} style={getStyle(style, formData)} value={value} onChange={onChangeInternal} />
+            <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChangeInternal} onFocus={onFocusInternal} onBlur={onBlurInternal} />
           );
         }}
       </ConfigurableFormItem>
@@ -87,9 +96,9 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
       dataSourceType: isRefList ? 'referenceList' : 'values',
       referenceListId: isRefList
         ? {
-            module: metadata.referenceListModule,
-            name: metadata.referenceListName,
-          }
+          module: metadata.referenceListModule,
+          name: metadata.referenceListName,
+        }
         : null,
     };
   },

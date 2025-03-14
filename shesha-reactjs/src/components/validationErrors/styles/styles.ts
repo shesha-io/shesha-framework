@@ -1,10 +1,7 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     const shaValidationErrorAlert = cx("sha-validation-error-alert", css`
-        margin-bottom: ${sheshaStyles.paddingMD}px !important;
-        padding: ${sheshaStyles.paddingLG}px !important;
 
         .${prefixCls}-alert-description {
             >ul {

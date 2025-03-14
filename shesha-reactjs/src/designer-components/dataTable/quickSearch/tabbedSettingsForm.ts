@@ -123,27 +123,6 @@ export const getSettings = (data: any) => {
                                 }
                               ]
                             })
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: 'dimensionsStylePnl',
-                              inline: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'dropdown',
-                                  id: nanoid(),
-                                  label: "Size",
-                                  propertyName: "size",
-                                  defaultValue: 'default',
-                                  dropdownOptions: [
-                                    { value: 'small', label: 'Small' },
-                                    { value: 'medium', label: 'Medium' },
-                                    { value: 'large', label: 'Large' },
-                                  ],
-                                  tooltip: 'Controls the height of the input field.',
-                                }
-                              ],
-                            })
                             .toJson()
                           ]
                         }
