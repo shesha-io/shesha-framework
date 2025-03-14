@@ -1,6 +1,5 @@
 ﻿using Shesha.Domain;
 using Shesha.Settings;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Configuration

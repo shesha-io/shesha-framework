@@ -46,7 +46,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Tests
         public SheshaFunctionalTestsCommonDomainTestModule(SheshaNHibernateModule nhModule)
         {
             var appConfig = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json").Build();
-            ConnectionString = appConfig.GetConnectionString("TestDB");
+            ConnectionString = appConfig.GetRequiredConnectionString("TestDB");
 
             var nhConfig = Configuration.Modules.ShaNHibernate();
             nhConfig.UseMsSql(ConnectionString);

@@ -1,5 +1,4 @@
-﻿using Shesha.Domain.QueryBuilder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Shesha.Metadata

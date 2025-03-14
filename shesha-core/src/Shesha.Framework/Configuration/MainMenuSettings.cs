@@ -4,7 +4,7 @@ namespace Shesha.Configuration
 {
     public class MainMenuSettings
     {
-        private static MainMenuSettings defaultInstance;
+        private static MainMenuSettings? defaultInstance;
         public static MainMenuSettings Default
         {
             get
@@ -19,6 +19,6 @@ namespace Shesha.Configuration
         }
 
         public int Version { get; set; }
-        public List<object> Items { get; set; }
+        public List<object> Items { get; set; } = new();
     }
 }

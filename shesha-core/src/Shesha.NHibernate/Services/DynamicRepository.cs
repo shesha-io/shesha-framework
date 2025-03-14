@@ -31,6 +31,8 @@ namespace Shesha.Services
 
         public DynamicRepository(IEntityConfigurationStore entityConfigurationStore, INhCurrentSessionContext currentSessionContext)
         {
+            CurrentUnitOfWorkProvider = default!;
+
             _entityConfigurationStore = entityConfigurationStore;
             _currentSessionContext = currentSessionContext;
         }

@@ -13,6 +13,6 @@ namespace Shesha.Startup
         public ApplicationStartupStatus Status { get; set; }
         public bool BootstrappersDisabled { get; set; }
         public bool MigrationsDisabled { get; set; }
-        public List<ApplicationStartupAssemblyDto> Assemblies { get; set; } = new List<ApplicationStartupAssemblyDto>();
+        public List<ApplicationStartupAssemblyDto> Assemblies { get; set; } = new();
     }
 }

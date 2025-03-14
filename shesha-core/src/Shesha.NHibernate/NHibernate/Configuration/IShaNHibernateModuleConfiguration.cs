@@ -2,8 +2,6 @@
 using NHibernate;
 using NHibernate.Dialect;
 using NHibernate.Driver;
-using Shesha.Configuration;
-using Shesha.FluentMigrator;
 using System;
 
 namespace Shesha.NHibernate.Configuration
@@ -33,17 +31,17 @@ namespace Shesha.NHibernate.Configuration
         /// <summary>
         /// Custom dialect
         /// </summary>
-        Type CustomDialect { get; }
+        Type? CustomDialect { get; }
 
         /// <summary>
         /// Custom driver
         /// </summary>
-        Type CustomDriver { get; }
+        Type? CustomDriver { get; }
 
         /// <summary>
         /// Session factory builder
         /// </summary>
-        Func<global::NHibernate.Cfg.Configuration, ISessionFactory> SessionFactoryBuilder { get; }
+        Func<global::NHibernate.Cfg.Configuration, ISessionFactory>? SessionFactoryBuilder { get; }
 
         /// <summary>
         /// Set MS Sql as a DBMS type
