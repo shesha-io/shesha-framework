@@ -37,7 +37,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             model={{
                 hideLabel: props.hideLabel,
                 propertyName: name,
-                label: <div className={styles.label}>{label}</div>,
+                label: <div className={styles.label} style={{ top: '8px', fontSize: '12px' }}>{label}</div>,
                 type: '',
                 id: '',
                 description: tooltip,

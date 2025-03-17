@@ -37,7 +37,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     readOnly?: boolean;
     onChange?: (value: any) => void;
     hasUnits?: boolean;
-    hidden?: boolean | string;
+    hidden?: any;
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;

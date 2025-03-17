@@ -101,7 +101,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: 
             key={uuid}
             {...props}
             size={size}
-            style={removeNullUndefined({ ...finalStyles })}
+            style={removeNullUndefined({ ...finalStyles, '--ant-button-padding-block-lg': '0px' })}
             readOnly={props.readOnly}
             buttonType={buttonType}
             form={form}
