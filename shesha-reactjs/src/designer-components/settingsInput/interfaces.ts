@@ -27,7 +27,7 @@ export interface InputType {
     | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator';
 }
 
-export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
+export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden'> {
     type: InputType['type'];
     label: string;
     propertyName: string;
@@ -37,7 +37,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     readOnly?: boolean;
     onChange?: (value: any) => void;
     hasUnits?: boolean;
-    hidden?: boolean;
+    hidden?: boolean | string;
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;

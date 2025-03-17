@@ -90,20 +90,27 @@ export const getColumnSettings = (data?: any) => ({
                             ]
                         },
                         {
-                            "id": "caption1",
-                            "type": "settingsInput",
-                            "inputType": "textField",
-                            "propertyName": "caption",
-                            "label": "Caption",
-                            "labelAlign": "right"
-                        },
-                        {
-                            "id": "description1",
-                            "type": "settingsInput",
-                            "inputType": "textArea",
-                            "propertyName": "description",
-                            "label": "Tooltip Description",
-                            "labelAlign": "right"
+                            "id": "caption-tooltip-row",
+                            "type": "settingsInputRow",
+                            "propertyName": "captionTooltipRow",
+                            "label": "Caption & Tooltip",
+                            "labelAlign": "right",
+                            "inputs": [
+                                {
+                                    "id": "caption1",
+                                    "type": "textField",
+                                    "propertyName": "caption",
+                                    "label": "Caption",
+                                    "labelAlign": "right"
+                                },
+                                {
+                                    "id": "description1",
+                                    "type": "textArea",
+                                    "propertyName": "description",
+                                    "label": "Tooltip",
+                                    "labelAlign": "right"
+                                },
+                            ]
                         },
                         {
                             "id": "actionContainer1",
@@ -134,69 +141,42 @@ export const getColumnSettings = (data?: any) => ({
                                     "settingsValidationErrors": [],
                                     "parentId": "root",
                                     "version": 1
-                                  },
+                                },
                             ]
                         },
                         {
-                            "id": "minWidth1",
-                            "type": "settingsInput",
-                            "inputType": "numberField",
-                            "propertyName": "minWidth",
-                            "label": "Min Width",
-                            "labelAlign": "right"
-                        },
-                        {
-                            "id": "maxWidth1",
-                            "type": "settingsInput",
-                            "inputType": "numberField",
-                            "propertyName": "maxWidth",
-                            "label": "Max Width",
-                            "labelAlign": "right"
-                        },
-                        {
-                            "id": "minHeight1",
+                            "id": "isVisible-anchored-row",
                             "type": "settingsInputRow",
-                            "propertyName": "minHeight",
-                            "label": "Min Height",
-                            "hidden": {
-                                "_code": "return getSettingValue(data?.columnType) !== 'form';",
-                                "_mode": "code",
-                                "_value": false
-                            },
+                            "propertyName": "isVisibleAnchoredRow",
+                            "label": "Is Visible & Anchored",
+                            "labelAlign": "right",
                             "inputs": [
                                 {
-                                    "type": "numberField",
-                                    "propertyName": "minHeight",
-                                    "label": "Min Height",
+                                    "id": "anchored1",
+                                    "type": "dropdown",
+                                    "propertyName": "anchored",
+                                    "label": "Anchored",
+                                    "jsSetting": true,
+                                    "dropdownOptions": [
+                                        {
+                                            "label": "Left",
+                                            "value": "left"
+                                        },
+                                        {
+                                            "label": "Right",
+                                            "value": "right"
+                                        }
+                                    ],
+                                    "allowClear": true
+                                },
+                                {
+                                    "id": "isVisible1",
+                                    "type": "switch",
+                                    "propertyName": "isVisible",
+                                    "label": "Is Visible",
                                     "labelAlign": "right"
                                 }
                             ]
-                        },
-                        {
-                            "id": "isVisible1",
-                            "type": "settingsInput",
-                            "inputType": "switch",
-                            "propertyName": "isVisible",
-                            "label": "Is Visible",
-                            "labelAlign": "right"
-                        },
-                        {
-                            "id": "anchored1",
-                            "type": "settingsInput",
-                            "inputType": "dropdown",
-                            "propertyName": "anchored",
-                            "label": "Anchored",
-                            "dropdownOptions": [
-                                {
-                                    "label": "Left",
-                                    "value": "left"
-                                },
-                                {
-                                    "label": "Right",
-                                    "value": "right"
-                                }
-                            ],
-                            "allowClear": true
                         },
                         {
                             "id": "displayContainer1",
