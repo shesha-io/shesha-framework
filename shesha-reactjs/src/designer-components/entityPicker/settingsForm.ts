@@ -360,11 +360,7 @@ export const getSettings = (data) => {
                         {
                           label: 'Large',
                           value: '80%',
-                        },
-                        // {
-                        //   label: 'Custom',
-                        //   value: 'custom',
-                        // },
+                        }
                       ]
                     })
                     .toJson()]

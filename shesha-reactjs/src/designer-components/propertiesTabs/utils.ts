@@ -97,6 +97,7 @@ export const filterDynamicComponents = (components, query, data, primaryColor) =
                     components: contentComponents
                 },
                 ghost: false,
+                collapsedByDefault: true,
                 headerStyles: getHeaderStyles(primaryColor),
                 border: {
                     "hideBorder": false,
