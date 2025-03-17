@@ -80,7 +80,7 @@ export const getSettings = (data: any) => {
                               label: 'Show Header',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: true,
+                              defaultValue: false,
                             },
                             {
                               id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -90,7 +90,7 @@ export const getSettings = (data: any) => {
                               label: 'Show Action Buttons',
                               size: 'small',
                               jsSetting: true,
-                              defaultValue: true,
+                              defaultValue: false,
                             },
                           ],
                         })
@@ -236,8 +236,9 @@ export const getSettings = (data: any) => {
                                     id: 'width-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Width',
                                     width: 85,
+                                    defaultValue: '100%',
                                     propertyName: 'width',
-                                    icon: 'width',
+                                    icon: "widthIcon",
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                 ],
@@ -261,10 +262,11 @@ export const getSettings = (data: any) => {
                                   {
                                     type: 'textField',
                                     id: 'height-s4gmBg31azZC0UjZjpfTm',
-                                    label: 'height',
+                                    label: 'Height',
                                     width: 85,
+                                    defaultValue: '100%',
                                     propertyName: 'dimensions.height',
-                                    icon: 'height',
+                                    icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                                   },
                                 ],
@@ -705,8 +707,8 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
-                                hideLabel: true,
-                                label: 'Body Style',
+                                hideLabel: false,
+                                label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -1073,8 +1075,8 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'headerStyle',
-                                hideLabel: true,
-                                label: 'Header Style',
+                                hideLabel: false,
+                                label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -1441,8 +1443,8 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-sc1d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'footerStyle',
-                                hideLabel: true,
-                                label: 'Footer Style',
+                                hideLabel: false,
+                                label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
                               })
@@ -1452,24 +1454,6 @@ export const getSettings = (data: any) => {
                       })
                       .toJson(),
                   ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
                 })
                 .toJson(),
             ],
