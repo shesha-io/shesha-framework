@@ -35,9 +35,10 @@ export const getSettings = (data: any) => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
+                .addSettingsInput({
                   id: propertyNameId,
                   propertyName: "componentName",
+                  inputType: 'textField',
                   parentId: commonTabId,
                   label: "Component Name",
                   size: "small",
@@ -610,7 +611,8 @@ export const getSettings = (data: any) => {
                   label: 'Columns',
                   labelAlign: 'right',
                   tooltip: 'Configure columns',
-                  parentId: dataTabId
+                  parentId: dataTabId,
+                  size: 'small',
                 })
                 .toJson()
             ]
