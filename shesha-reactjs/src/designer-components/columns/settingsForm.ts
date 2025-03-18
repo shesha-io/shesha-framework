@@ -84,37 +84,31 @@ export const getSettings = (data: any) => {
             id: appearanceId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'gutterX',
-                  label: 'Gutter X',
-                  labelAlign: 'right',
                   parentId: appearanceId,
-                  inputType: 'numberField',
-                  size: 'small',
-                  jsSetting: true,
-                  min: 0,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'gutterY',
-                  label: 'Gutter Y',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'numberField',
-                  size: 'small',
-                  jsSetting: true,
-                  min: 0,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'hidden',
-                  label: 'hide',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'switch',
-                  size: 'small',
-                  jsSetting: true,
+                  inline: true,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'gutterX',
+                      label: 'Gutter X',
+                      labelAlign: 'right',
+                      jsSetting: true,
+                      min: 0,
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'gutterY',
+                      label: 'Gutter Y',
+                      labelAlign: 'right',
+                      jsSetting: true,
+                      min: 0,
+                    },
+                  ]
                 })
                 .addPropertyRouter({
                   id: styleRouterId,
