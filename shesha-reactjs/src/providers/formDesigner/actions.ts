@@ -32,6 +32,7 @@ export enum FormActionEnums {
 
   SetFlatComponentsAction = 'SET_FLAT_COMPONENTS',
   SetDebugMode = 'SET_DEBUG_MODE',
+  SetPreviewMode = 'SET_PREVIEW_MODE',
   StartDraggingNewItem = 'START_DRAGGING_NEW_ITEM',
   EndDraggingNewItem = 'END_DRAGGING_NEW_ITEM',
   StartDragging = 'START_DRAGGING',
@@ -98,6 +99,7 @@ export const setFlatComponentsAction = createAction<IFlatComponentsStructure, IF
 );
 
 export const setDebugModeAction = createAction<boolean, boolean>(FormActionEnums.SetDebugMode, (p) => p);
+export const setPreviewModeAction = createAction<boolean, boolean>(FormActionEnums.SetPreviewMode, (p) => p);
 
 export const startDraggingNewItemAction = createAction(FormActionEnums.StartDraggingNewItem);
 export const endDraggingNewItemAction = createAction(FormActionEnums.EndDraggingNewItem);

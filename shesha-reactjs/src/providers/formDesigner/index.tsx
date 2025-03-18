@@ -27,6 +27,7 @@ import {
   setActiveDataSourceAction,
   setDebugModeAction,
   setFlatComponentsAction,
+  setPreviewModeAction,
   setReadOnlyAction,
   setSelectedComponentAction,
   setValidationErrorsAction,
@@ -179,6 +180,10 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(setDebugModeAction(isDebug));
   }, [dispatch]);
 
+  const setPreviewMode = useCallback((isPreview: boolean) => {
+    dispatch(setPreviewModeAction(isPreview));
+  }, [dispatch]);
+
   const startDraggingNewItem = useCallback(() => {
     dispatch(startDraggingNewItemAction());
   }, [dispatch]);
@@ -244,6 +249,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       duplicateComponent,
       updateComponent,
       setDebugMode,
+      setPreviewMode,
       startDraggingNewItem,
       endDraggingNewItem,
       startDragging,
@@ -284,7 +290,8 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     addDataSource,
     removeDataSource,
     setActiveDataSource,
-    setReadOnly
+    setReadOnly,
+    setPreviewMode,
     /* NEW_ACTION_GOES_HERE */
   ]);
 
