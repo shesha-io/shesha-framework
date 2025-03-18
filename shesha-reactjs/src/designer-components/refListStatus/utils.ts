@@ -1,6 +1,6 @@
 export const defaultStyles = (): any => {
     return {
-        background: { type: 'color', color: 'transparent' },
+        background: { type: 'color', color: '' },
         font: {
             weight: '400',
             size: 12,

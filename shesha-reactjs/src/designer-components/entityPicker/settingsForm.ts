@@ -290,22 +290,18 @@ export const getSettings = (data) => {
                         propertyName: 'footerButtons',
                         label: 'Buttons Type',
                         type: 'dropdown',
+                        width: 120,
                         dropdownOptions: [
                           { label: 'Default', value: 'default' },
                           { label: 'Custom', value: 'custom' },
                           { label: 'None', value: 'none' },
                         ],
                         defaultValue: 'default',
-                      }
-                      ]
-                    })
-                    .addSettingsInputRow({
-                      id: 'submit-http-verb-s4gmBg31azZC0UjZjpfTm',
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
-                      inputs: [{
+                      },
+                      {
                         type: 'dropdown',
                         id: nanoid(),
+                        hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
                         propertyName: 'submitHttpVerb',
                         label: 'Submit Http Verb',
                         dropdownOptions: [
@@ -313,29 +309,11 @@ export const getSettings = (data) => {
                           { label: 'PUT', value: 'PUT' },
                         ],
                         defaultValue: 'POST',
-                      }
-                      ]
-                    })
-                    .addSettingsInputRow({
-                      id: 'submit-http-verb-s4gmBg31azZC0UjZjpfTm',
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      hidden: { _code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false } as any,
-                      inputs: [
-                        {
-                          type: 'textField',
-                          id: nanoid(),
-                          propertyName: 'onSuccessRedirectUrl',
-                          label: 'Success Redirect URL',
-                        }
-                      ]
-                    })
-                    .addSettingsInputRow({
-                      id: 'buttons-s4gmBg31azZC0UjZjpfTm',
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                      hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false },
-                      inputs: [{
+                      },
+                      {
                         id: nanoid(),
                         propertyName: 'buttons',
+                        hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false } as any,
                         label: 'Configure Modal Buttons',
                         type: 'buttonGroupConfigurator',
                       }
@@ -360,11 +338,7 @@ export const getSettings = (data) => {
                         {
                           label: 'Large',
                           value: '80%',
-                        },
-                        // {
-                        //   label: 'Custom',
-                        //   value: 'custom',
-                        // },
+                        }
                       ]
                     })
                     .toJson()]

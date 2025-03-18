@@ -13,11 +13,10 @@ const evaluateString = (expression: string, data: any): any => {
 const getHeaderStyles = (primaryColor) => (
     {
         "font": {
-            "color": "#000",
+            "color": "darkslategrey",
             "size": 14,
             "weight": "500",
             "align": "left",
-            "type": "Arial"
         },
         "background": {
             "type": "color",
@@ -97,6 +96,7 @@ export const filterDynamicComponents = (components, query, data, primaryColor) =
                     components: contentComponents
                 },
                 ghost: false,
+                collapsedByDefault: true,
                 headerStyles: getHeaderStyles(primaryColor),
                 border: {
                     "hideBorder": false,
