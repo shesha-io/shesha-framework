@@ -35,15 +35,26 @@ export const getSettings = (data: any) => {
             id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
+                .addSettingsInput({
                   id: propertyNameId,
                   propertyName: "componentName",
+                  inputType: 'textField',
                   parentId: commonTabId,
                   label: "Component Name",
                   size: "small",
                   validate: {
                     "required": true
                   },
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  labelAlign: 'right',
+                  parentId: appearanceId,
+                  inputType: 'switch',
+                  size: 'small',
                   jsSetting: true,
                 })
                 .toJson()
@@ -74,37 +85,31 @@ export const getSettings = (data: any) => {
             id: appearanceId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  propertyName: 'gutterX',
-                  label: 'Gutter X',
-                  labelAlign: 'right',
                   parentId: appearanceId,
-                  inputType: 'numberField',
-                  size: 'small',
-                  jsSetting: true,
-                  min: 0,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'gutterY',
-                  label: 'Gutter Y',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'numberField',
-                  size: 'small',
-                  jsSetting: true,
-                  min: 0,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'hidden',
-                  label: 'hide',
-                  labelAlign: 'right',
-                  parentId: appearanceId,
-                  inputType: 'switch',
-                  size: 'small',
-                  jsSetting: true,
+                  inline: true,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'gutterX',
+                      label: 'Gutter X',
+                      labelAlign: 'right',
+                      jsSetting: true,
+                      min: 0,
+                    },
+                    {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'gutterY',
+                      label: 'Gutter Y',
+                      labelAlign: 'right',
+                      jsSetting: true,
+                      min: 0,
+                    },
+                  ]
                 })
                 .addPropertyRouter({
                   id: styleRouterId,
@@ -200,19 +205,6 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
                                 }
-                              ]
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'dropdown',
-                              propertyName: 'size',
-                              label: 'Size',
-                              width: '150px',
-                              hidden: { _code: 'return getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                              dropdownOptions: [
-                                { value: 'small', label: 'Small' },
-                                { value: 'medium', label: 'Medium' },
-                                { value: 'large', label: 'Large' },
                               ]
                             })
                             .toJson()
@@ -619,7 +611,8 @@ export const getSettings = (data: any) => {
                   label: 'Columns',
                   labelAlign: 'right',
                   tooltip: 'Configure columns',
-                  parentId: dataTabId
+                  parentId: dataTabId,
+                  size: 'small',
                 })
                 .toJson()
             ]
