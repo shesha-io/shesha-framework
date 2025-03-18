@@ -48,7 +48,8 @@ export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSPr
         style.backgroundColor = input?.color;
     } else if (input?.type === 'gradient') {
         const colors = input?.gradient?.colors || [];
-        style.backgroundImage = `linear-gradient(${input?.gradient?.direction || 'to right'}, ${Object.values(colors).filter(color => color !== undefined && color !== '').join(', ')})`;
+        const colorsString = Object.values(colors).filter(color => color !== undefined && color !== '').join(', ');
+        style.backgroundImage = `linear-gradient(${input?.gradient?.direction || 'to right'}, ${colorsString})`;
     } else if (input?.type === 'url') {
         style.backgroundImage = `url(${input?.url})`;
     } else if (input?.type === 'image') {
