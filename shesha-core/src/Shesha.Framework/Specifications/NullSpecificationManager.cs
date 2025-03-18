@@ -12,6 +12,8 @@ namespace Shesha.Specifications
     /// </summary>
     public class NullSpecificationManager : ISpecificationManager
     {
+        public static readonly ISpecificationManager Instance = new NullSpecificationManager();
+
         public List<Type> SpecificationTypes => throw new NotImplementedException();
 
         public IQueryable<T> ApplySpecifications<T>(IQueryable<T> queryable)

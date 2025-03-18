@@ -29,7 +29,7 @@ namespace Shesha.Domain
         /// <summary>
         /// CC emails
         /// </summary>
-        public virtual string Cc { get; set; }
+        public virtual string? Cc { get; set; }
         /// <summary>
         /// 
         /// </summary>

@@ -26,7 +26,7 @@ namespace Shesha.Areas
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string term, RefListAreaType? areaType, Guid? parentAreaId)
+        public async Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term, RefListAreaType? areaType, Guid? parentAreaId)
         {
             term = (term ?? "").ToLower();
 

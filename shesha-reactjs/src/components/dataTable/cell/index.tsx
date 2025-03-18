@@ -1,6 +1,6 @@
 import React from 'react';
 import { CellProps, Renderer } from 'react-table';
-import { ITableColumn } from '@/interfaces';
+import { IShaFormInstance, ITableColumn } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
   ITableActionColumn,
@@ -15,7 +15,8 @@ import FormCell from './formCell/formCell';
 
 export const getCellRenderer = <D extends object = {}, V = any>(
   column: ITableColumn,
-  propertyMeta?: IPropertyMetadata
+  propertyMeta?: IPropertyMetadata,
+  shaForm?: IShaFormInstance
 ): Renderer<CellProps<D, V>> | undefined => {
   switch (column.columnType) {
     case 'data': {
@@ -35,7 +36,7 @@ export const getCellRenderer = <D extends object = {}, V = any>(
       return null;
     }
     case 'form': {
-      const baseProps = { columnConfig: column as ITableFormColumn };
+      const baseProps = { columnConfig: column as ITableFormColumn, parentFormId: shaForm?.form?.id, parentFormName: `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}` };
       return (cellProps: CellProps<D, V>) => <FormCell<D, V> {...cellProps} {...baseProps} />;
     }
     default: {

@@ -72,7 +72,6 @@ namespace Shesha.NHibernate.EntityHistory
 
         public Guid Id { get; set; }
 
-        public EntityChangeSet EntityChangeSet { get; set; }
         public List<EntityChange> EntityChanges { get; set; }
         public List<EntityHistoryEvent> EntityHistoryEvents { get; set; }
         public ISession? Session => (UnitOfWorkManager.Current as NhUnitOfWork)?.GetSessionOrNull();

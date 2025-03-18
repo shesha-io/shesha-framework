@@ -13,76 +13,20 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        Task<bool> IsDataAdministrator(Person person);
+        Task<bool> IsDataAdministratorAsync(Person person);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        Task<bool> IsGlobalAdmin(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsFacilityAdmin(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsCapturer(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsViewer(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsApproverLevel1(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsApproverLevel2(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsManager(Person person);
+        Task<bool> IsGlobalAdminAsync(Person person);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        Task<bool> IsAdmin(Person person);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="person"></param>
-        /// <returns></returns>
-        //Task<bool> IsScheduleManager(Person person);
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="person"></param>
-        ///// <returns></returns>
-        //Task<bool> IsScheduleFulfiller(Person person);
+        Task<bool> IsAdminAsync(Person person);
     }
 }
