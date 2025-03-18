@@ -42,6 +42,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   useEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
 
   // init state
+  const [open, setOpen] = useState<boolean>(false);
   const [loadingValues, setLoadingValues] = useState<boolean>(false);
   const selected = useRef<Array<any>>([]);
   const lastSearchText = useRef<string>('');
@@ -99,11 +100,6 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     debouncedSearch(searchText);
     if (props.onSearch)
       props.onSearch(searchText);
-  };
-
-  const onDropdownVisibleChange = (open: boolean) => {
-    if (!open)
-      debouncedSearch('');
   };
 
   const handleSelect = () => {
@@ -190,7 +186,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   const onDropdownVisibleChange = (open: boolean) => {
     if (!open) {
-      setOpen(false);
+      setOpen(false); 
+      debouncedSearch('');
     } else {
       const selectedValue =selected.current?.length
         ? selected.current.map((s) => outcomeValueFunc(s, allData))

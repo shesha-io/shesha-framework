@@ -116,9 +116,9 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <Form.Item name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
+        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </Form.Item>
+        </FormItem>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name={FORM_ARGUMENTS_FIELD} label={null}>
