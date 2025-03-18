@@ -1,8 +1,6 @@
 import { DesignerToolbarSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
-import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
-import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
 
 export const getSettings = (data: any) => {
   // Generate IDs for tabs and panels
