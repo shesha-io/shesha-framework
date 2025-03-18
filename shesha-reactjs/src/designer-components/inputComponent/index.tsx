@@ -187,7 +187,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 ))}
             </Radio.Group>;
         case 'dynamicItemsConfigurator':
-            return <DynamicActionsConfigurator editorConfig={props} readOnly={readOnly} value={value} onChange={onChange} />;
+            return <DynamicActionsConfigurator editorConfig={{ ...props, hidden: props.hidden as any }} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}
@@ -205,7 +205,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
-                <QueryBuilder {...props} hideLabel={true}
+                <QueryBuilder {...{ ...props, hidden: props.hidden as any }} hideLabel={true}
                     defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
@@ -226,11 +226,12 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete {...props} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
+            return <ContextPropertyAutocomplete {...{ ...props, hidden: props.hidden as any }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
                 value={value}
+                size={size}
                 onChange={onChange}
             />;
         case 'labelValueEditor':
@@ -333,10 +334,14 @@ export interface IInputRowProps {
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
+    const { data: formData } = useFormData();
 
-    return hidden ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
+
+    return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
             const { type } = props;
+            const isHidden = typeof props?.hidden === 'string' ? evaluateString(props?.hidden, { data: formData }) : props?.hidden;
 
             const width = type === 'numberField' ? 100 :
                 type === 'button' ? 24 :
@@ -348,6 +353,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             return (
                 <SettingInput key={i + props.label}
                     {...props}
+                    hidden={isHidden}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />

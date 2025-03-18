@@ -69,6 +69,24 @@ export const getSettings = (data: any) => {
               })
               .toJson()
             ]
+          }
+          ,
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
+              })
+              .toJson()
+            ]
           },
           {
             key: 'appearance',
@@ -236,19 +254,6 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
                                 }
-                              ]
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'dropdown',
-                              propertyName: 'size',
-                              label: 'Size',
-                              width: '150px',
-                              hidden: { _code: 'return getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                              dropdownOptions: [
-                                { value: 'small', label: 'Small' },
-                                { value: 'medium', label: 'Medium' },
-                                { value: 'large', label: 'Large' },
                               ]
                             })
                             .toJson()
@@ -582,23 +587,6 @@ export const getSettings = (data: any) => {
                   ]
                 })
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
             ]
           }
         ]

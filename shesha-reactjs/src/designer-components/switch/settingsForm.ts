@@ -86,6 +86,24 @@ export const getSettings = (data: ISwitchComponentProps) => {
             ]
           },
           {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: nanoid(),
+                  inputType: 'permissions',
+                  propertyName: 'permissions',
+                  label: 'Permissions',
+                  size: 'small',
+                  parentId: securityTabId,
+                })
+                .toJson()
+            ]
+          },
+          {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
@@ -185,24 +203,6 @@ export const getSettings = (data: ISwitchComponentProps) => {
                   labelAlign: 'right',
                   tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
                   parentId: eventsTabId
-                })
-                .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  parentId: securityTabId,
                 })
                 .toJson()
             ]

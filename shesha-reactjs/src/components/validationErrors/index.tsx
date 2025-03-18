@@ -28,16 +28,22 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   if (!error) return null;
 
   const renderValidationErrors = (props: AlertProps) => {
+    const widthStyle = {
+      width: `calc(${props.style?.width} - (${props.style?.marginLeft} + ${props.style?.marginRight}))`,
+      maxWidth: `calc(${props.style?.width} - (${props.style?.marginLeft} + ${props.style?.marginRight}))`,
+      minWidth: `calc(${props.style?.width} - (${props.style?.marginLeft} + ${props.style?.marginRight}))`
+    };
+
     if (renderMode === 'alert') {
       return (
-          <Alert
-            className={classNames(styles.shaValidationErrorAlert, className)}
-            type="error"
-            showIcon
-            closable
-            {...props}
-            style={{ ...props.style }}
-          />  
+        <Alert
+          className={classNames(styles.shaValidationErrorAlert, className)}
+          type="error"
+          showIcon
+          closable
+          {...props}
+          style={{ ...props.style, ...widthStyle }}
+        />
       );
     }
 
