@@ -12,9 +12,9 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
     const { data: formData } = useFormData();
 
     const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
+    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
 
-
-    return hidden ? null :
+    return isHidden ? null :
         <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
             <ConditionalWrap
                 condition={Boolean(modelType)}
@@ -25,7 +25,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                     hideLabel={hideLabel}
                     label={label}
                     tooltip={tooltip}
-                    hidden={hidden}
+                    hidden={isHidden as any}
                     required={validate?.required}
                     layout='vertical'
                     jsSetting={type === 'codeEditor' ? false : jsSetting ? jsSetting : false}
@@ -39,6 +39,7 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                         tooltip={tooltip}
                         readOnly={readOnly}
                         modelType={modelType}
+                        hidden={isHidden}
                         {...rest} />
                     }
                 </FormItem>
