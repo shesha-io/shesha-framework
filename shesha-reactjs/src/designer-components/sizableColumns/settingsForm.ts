@@ -44,6 +44,15 @@ export const getSettings = (data: any) => {
                   validate: {
                     "required": true
                   },
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'switch',
+                  propertyName: 'hidden',
+                  parentId: commonTabId,
+                  label: 'Hide',
+                  size: 'small',
                   jsSetting: true,
                 })
                 .toJson()
