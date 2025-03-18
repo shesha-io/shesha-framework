@@ -1,9 +1,11 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.Localization;
+using Abp.Json;
+using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Shesha;
 using Shesha.Domain;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Services;
 using Shesha.Services.Urls;
@@ -12,24 +14,40 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
     public class PlaygroundAppService: SheshaAppServiceBase
     {
-        public async Task<string> TestAuditAsync()
+
+        private readonly IRepository<TestClass, Guid> _testClassRepo;
+        public PlaygroundAppService(
+            IRepository<TestClass, Guid> testClassRepo
+            )
         {
-            var repoP = IocManager.Resolve<IRepository<Person, Guid>>();
-            var repoL = IocManager.Resolve<IRepository<Abp.Localization.ApplicationLanguage, int>>();
-
-            var person = repoP.GetAll().FirstOrDefault(x => x.Id == Guid.Parse("D519B92F-86E9-4F0F-8DF4-00AAE8A43158"));
-
-            var ll = repoL.GetAll().ToList();
-            var l = ll.FirstOrDefault(x => !person.PreferredLanguages.Select(z => z.Id).Contains(x.Id));
-
-            person.PreferredLanguages.Add(l);
-
-            await repoP.InsertOrUpdateAsync(person);
-
-            return "Ok";
+            _testClassRepo = testClassRepo;
         }
 
-        public async Task<string> TestFileVersionUrl(Guid id) 
+        public class TestDto
+        {
+            public string Name { get; set; }
+            public GenericEntityReference Test { get; set; }
+        }
+
+        public async Task<string> TestGenericEntityReferenceAsync()
+        {
+            var test = await _testClassRepo.GetAll().FirstOrDefaultAsync();
+            var dto = new TestDto
+            {
+                Name = "Test",
+                Test = test
+            };
+
+            var json = dto.ToJsonString();
+            var obj = json.FromJsonString<TestDto>();
+
+            var newRef = obj.Test;
+            var newTest = (TestClass)obj.Test;
+
+            return "OK";
+        }
+
+        public async Task<string?> TestFileVersionUrlAsync(Guid id) 
         {
             var repo = IocManager.Resolve<IRepository<StoredFileVersion, Guid>>();
             var version = await repo.GetAsync(id);
@@ -49,7 +67,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         }
 
 
-        public async Task<string> TestLinkState() 
+        public Task<string> TestLinkStateAsync() 
         {
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             if (linkGeneratorContext == null)
@@ -57,7 +75,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             if (linkGeneratorContext.State == null)
                 throw new Exception("linkGeneratorContext.State is null");
 
-            return JsonConvert.SerializeObject(linkGeneratorContext.State);
+            return Task.FromResult(JsonConvert.SerializeObject(linkGeneratorContext.State) ?? string.Empty);
         }        
     }
 }

@@ -17,7 +17,7 @@ namespace Shesha.ConfigurationItems.Exceptions
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Form name
@@ -27,14 +27,14 @@ namespace Shesha.ConfigurationItems.Exceptions
         /// <summary>
         /// Front-end application
         /// </summary>
-        public string FrontEndApplication { get; set; }
+        public string? FrontEndApplication { get; set; }
 
         /// <summary>
         /// Error code
         /// </summary>
         public int Code { get; set; }
 
-        public ConfigurationItemNotFoundException(string itemType, string module, string name, string frontEndApplication) : base()
+        public ConfigurationItemNotFoundException(string itemType, string? module, string name, string? frontEndApplication) : base()
         {
             ItemType = itemType;
             Name = name;

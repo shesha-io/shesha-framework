@@ -1,9 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Shesha.Domain;
 
 namespace Shesha.DeviceForceUpdate.Dto
 {
@@ -18,6 +15,5 @@ namespace Shesha.DeviceForceUpdate.Dto
         public string AppStoreUrl { get; set; }
         public int? OSType { get; set; }
         public double? VersionNo { get; set; }
-
     }
 }

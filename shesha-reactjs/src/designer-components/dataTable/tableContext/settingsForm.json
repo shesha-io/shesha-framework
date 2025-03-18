@@ -55,7 +55,7 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
-      "version": "latest",
+      "version": 4,
       "language": "typescript",
       "placeholder": "",
       "wrapInTemplate": true,

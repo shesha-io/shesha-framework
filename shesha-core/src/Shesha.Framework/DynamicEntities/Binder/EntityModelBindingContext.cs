@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Binder
 {
@@ -28,9 +25,9 @@ namespace Shesha.DynamicEntities.Binder
         /// </summary>
         public bool LocalSkipValidation { get; set; } = false;
 
-        public Func<Type, JObject, EntityModelBindingContext, List<string>, object> GetObjectOrObjectReference { get; set; }
+        public Func<Type, JObject, EntityModelBindingContext, List<string>?, object> GetObjectOrObjectReference { get; set; }
         
-        public Func<Type, string, string, string, EntityModelBindingContext, object> GetEntityById { get; set; }
+        public Func<Type, string, string?, string, EntityModelBindingContext, object?> GetEntityById { get; set; }
 
         public int? ArrayItemIndex { get; set; } = null;
     }

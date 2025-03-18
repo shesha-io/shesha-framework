@@ -22,32 +22,32 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label of the con
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Item name
         /// </summary>
-        public string ItemType { get; set; }
+        public required string ItemType { get; set; }
 
         /// <summary>
         /// Item description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Module name
         /// </summary>
-        public string ModuleName { get; set; }
+        public string? ModuleName { get; set; }
 
         /// <summary>
         /// Front-end application name
         /// </summary>
-        public string FrontEndApplication { get; set; }
+        public string? FrontEndApplication { get; set; }
 
         /// <summary>
         /// Base item. Is used if the current item is inherited from another one

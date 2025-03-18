@@ -2,13 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.DynamicEntities.Json;
 using Shesha.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
 {
@@ -16,13 +12,13 @@ namespace Shesha.DynamicEntities
     public class SerializationManager : ISerializationManager, ITransientDependency
     {
         /// inheritedDoc
-        public object DeserializeProperty(Type propertyType, string value)
+        public object? DeserializeProperty(Type propertyType, string value)
         {
             return JsonConvert.DeserializeObject(value, propertyType);
         }
 
         /// inheritedDoc
-        public string SerializeProperty(EntityPropertyDto propertyDto, object value)
+        public string SerializeProperty(EntityPropertyDto propertyDto, object? value)
         {
             switch (propertyDto.DataType) 
             {

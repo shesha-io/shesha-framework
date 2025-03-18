@@ -1,5 +1,4 @@
 import StatusTagComponent from '@/designer-components/statusTag';
-import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 import CheckboxComponent from '@/designer-components/checkbox/checkbox';
 import DateFieldComponent from '@/designer-components/dateField/dateField';
 import DropdownComponent from '@/designer-components/dropdown';
@@ -10,6 +9,7 @@ import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary } from '@/interfaces';
+import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 
 type PropertyInclusionPredicate = (name: string) => boolean;
 
@@ -63,7 +63,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'mode',
       'dataSourceType',
       'dataSourceUrl',
-      'entityTypeShortAlias',
+      'entityType',
       'height',
       'width',
       'borderSize',

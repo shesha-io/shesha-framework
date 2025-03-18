@@ -20,7 +20,7 @@ namespace Shesha.Metadata
         /// Get model type by name or alias
         /// </summary>
         /// <returns></returns>
-        Task<Type> GetModelTypeAsync(string nameOrAlias);
+        Task<Type?> GetModelTypeAsync(string nameOrAlias);
 
         /// <summary>
         /// Clear models cache

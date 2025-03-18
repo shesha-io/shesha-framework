@@ -1,11 +1,8 @@
-﻿using System;
-using System.Globalization;
-using Abp.Configuration;
-using Abp.Dependency;
-using Abp.Net.Mail;
+﻿using Abp.Dependency;
 using Abp.Net.Mail.Smtp;
 using Abp.Runtime.Session;
 using Shesha.Configuration.Email;
+using System;
 
 namespace Shesha.Email
 {
@@ -26,12 +23,12 @@ namespace Shesha.Email
 
         public virtual string DefaultFromAddress
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.DefaultFromAddress;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.DefaultFromAddress ?? string.Empty;
         }
 
         public virtual string DefaultFromDisplayName
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.DefaultFromDisplayName;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.DefaultFromDisplayName ?? string.Empty;
         }
 
         /// <summary>
@@ -39,7 +36,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string Host
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.Host;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.Host ?? string.Empty;
         }
 
         /// <summary>
@@ -47,7 +44,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual int Port
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.Port ?? 0;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.Port ?? 0;
         }
 
         /// <summary>
@@ -55,7 +52,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string UserName
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.UserName;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.UserName ?? string.Empty;
         }
 
         /// <summary>
@@ -63,7 +60,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string Password
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.Password;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.Password ?? string.Empty;
         }
 
         /// <summary>
@@ -71,15 +68,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual string Domain
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.Domain;
-        }
-
-        /// <summary>
-        /// Domain name to login to incoming server.
-        /// </summary>
-        public virtual string IncomingServer
-        {
-            get => _emailSettings.SmtpSettings.GetValue()?.IncomingServer;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.Domain ?? string.Empty;
         }
 
         /// <summary>
@@ -87,7 +76,7 @@ namespace Shesha.Email
         /// </summary>
         public virtual bool EnableSsl
         {
-            get => _emailSettings.SmtpSettings.GetValue()?.EnableSsl ?? false;
+            get => _emailSettings.SmtpSettings.GetValueOrNull()?.EnableSsl ?? false;
         }
 
         /// <summary>

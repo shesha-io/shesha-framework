@@ -95,7 +95,9 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           validate: {},
           dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
           settingsValidationErrors: [],
-          useRawValues: true,
+          displayPropName: 'displayText',
+          keyPropName: 'value',
+          mode: 'single',
           queryParams: null,
         })
         .addContainer({
@@ -278,7 +280,6 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                 validate: {
                   required: true,
                 },
-                convertToFullId: false,
               })
               .addDropdown({
                 id: nanoid(),

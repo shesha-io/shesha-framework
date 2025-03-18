@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Abp.Dependency;
+using Shesha.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.IO.Pipelines;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Abp.Dependency;
-using Shesha.Utilities;
 
 namespace Shesha.Tests.SolutionGenerator
 {
@@ -46,7 +44,7 @@ namespace Shesha.Tests.SolutionGenerator
         private async Task PrepareFileAndCopyAsync(string path, Stream dstStream, Dictionary<string, string> tags, CancellationToken cancellationToken)
         {
             var extension = Path.GetExtension(path)?.ToLower();
-            if (_sourceFileExtensions.Contains(extension))
+            if (!string.IsNullOrWhiteSpace(extension) && _sourceFileExtensions.Contains(extension))
             {
                 using (var sr = new StreamReader(path))
                 {
@@ -80,7 +78,8 @@ namespace Shesha.Tests.SolutionGenerator
                     continue;
 
                 var dstRelativePath = relativePath.ReplaceTags(tags);
-                filesDictionary.Add(file, dstRelativePath);
+                if (!string.IsNullOrWhiteSpace(dstRelativePath))
+                    filesDictionary.Add(file, dstRelativePath);
             }
 
             var directories = Directory.GetDirectories(directory);

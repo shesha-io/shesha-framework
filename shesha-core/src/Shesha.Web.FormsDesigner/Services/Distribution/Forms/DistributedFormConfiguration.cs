@@ -13,12 +13,12 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// <summary>
         /// Form markup
         /// </summary>
-        public string Markup { get; set; }
+        public string? Markup { get; set; }
 
         /// <summary>
         /// ModelType
         /// </summary>
-        public string ModelType { get; set; }
+        public string? ModelType { get; set; }
 
         public Guid? TemplateId { get; set; }
 
@@ -26,6 +26,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         public RefListPermissionedAccess? Access { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
     }
 }

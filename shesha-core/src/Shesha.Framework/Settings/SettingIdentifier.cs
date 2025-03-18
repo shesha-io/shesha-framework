@@ -26,12 +26,12 @@ namespace Shesha.Settings
         {
             return NormalizedFullName.GetHashCode();
         }
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as SettingIdentifier);
         }
 
-        public bool Equals(SettingIdentifier obj)
+        public bool Equals(SettingIdentifier? obj)
         {
             return obj != null && obj.NormalizedFullName == this.NormalizedFullName;
         }

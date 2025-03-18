@@ -37,7 +37,7 @@ namespace Shesha.Import
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
+        public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         private string _loggerName;
         private string _logGroupName;
@@ -247,7 +247,7 @@ namespace Shesha.Import
             await ImportAsync(fileName, stream, cancellationToken, null);
         }
 
-        public async Task ImportAsync(string fileName, Stream stream, CancellationToken cancellationToken, Action<T> prepareResultAction)
+        public async Task ImportAsync(string fileName, Stream stream, CancellationToken cancellationToken, Action<T>? prepareResultAction)
         {
             try
             {

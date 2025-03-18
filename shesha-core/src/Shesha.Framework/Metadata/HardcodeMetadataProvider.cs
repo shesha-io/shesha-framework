@@ -1,5 +1,4 @@
-﻿using Abp.Collections.Extensions;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
@@ -38,7 +37,7 @@ namespace Shesha.Metadata
         }
 
         /// inheritedDoc
-        public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext context = null)
+        public List<PropertyMetadataDto> GetProperties(Type containerType, MetadataContext? context = null)
         {
             context ??= new MetadataContext(containerType);
 
@@ -63,7 +62,7 @@ namespace Shesha.Metadata
 
         private double? GetMin(PropertyInfo property) 
         {
-            var value = property.GetAttribute<RangeAttribute>()?.Minimum;
+            var value = property.GetAttributeOrNull<RangeAttribute>()?.Minimum;
             return value != null
                 ? Convert.ToDouble(value)
                 : null;
@@ -71,7 +70,7 @@ namespace Shesha.Metadata
 
         private double? GetMax(PropertyInfo property)
         {
-            var value = property.GetAttribute<RangeAttribute>()?.Maximum;
+            var value = property.GetAttributeOrNull<RangeAttribute>()?.Maximum;
             return value != null
                 ? Convert.ToDouble(value)
                 : null;
@@ -94,7 +93,7 @@ namespace Shesha.Metadata
             var epc = entityConfig?[property.Name];
 
             var dataType = GetDataType(property);
-            var cascadeAttribute = property.GetAttribute<CascadeUpdateRulesAttribute>()
+            var cascadeAttribute = property.GetAttributeOrNull<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
 
             var result = new PropertyMetadataDto
@@ -102,22 +101,22 @@ namespace Shesha.Metadata
                 Path = path,
                 Label = ReflectionHelper.GetDisplayName(property),
                 Description = ReflectionHelper.GetDescription(property),
-                IsVisible = property.GetAttribute<BrowsableAttribute>()?.Browsable ?? true,
+                IsVisible = property.GetAttributeOrNull<BrowsableAttribute>()?.Browsable ?? true,
                 Required = property.HasAttribute<RequiredAttribute>(),
                 Readonly = !property.CanWrite 
                     || property.HasAttribute<ReadonlyPropertyAttribute>()
-                    || (property.GetAttribute<ReadOnlyAttribute>()?.IsReadOnly ?? false),
+                    || (property.GetAttributeOrNull<ReadOnlyAttribute>()?.IsReadOnly ?? false),
                 Min = GetMin(property),
                 Max = GetMax(property),
-                MinLength = property.GetAttribute<StringLengthAttribute>()?.MinimumLength
-                    ?? property.GetAttribute<MinLengthAttribute>()?.Length,
-                MaxLength = property.GetAttribute<StringLengthAttribute>()?.MaximumLength
-                    ?? property.GetAttribute<MaxLengthAttribute>()?.Length,
+                MinLength = property.GetAttributeOrNull<StringLengthAttribute>()?.MinimumLength
+                    ?? property.GetAttributeOrNull<MinLengthAttribute>()?.Length,
+                MaxLength = property.GetAttributeOrNull<StringLengthAttribute>()?.MaximumLength
+                    ?? property.GetAttributeOrNull<MaxLengthAttribute>()?.Length,
                 Audited = property.IsAuditedProperty(),
-                RegExp = property.GetAttribute<RegularExpressionAttribute>()?.Pattern,
-                ValidationMessage = property.GetAttribute<RangeAttribute>()?.ErrorMessage 
-                    ?? property.GetAttribute<StringLengthAttribute>()?.ErrorMessage
-                    ?? property.GetAttribute<RegularExpressionAttribute>()?.ErrorMessage,
+                RegExp = property.GetAttributeOrNull<RegularExpressionAttribute>()?.Pattern,
+                ValidationMessage = property.GetAttributeOrNull<RangeAttribute>()?.ErrorMessage 
+                    ?? property.GetAttributeOrNull<StringLengthAttribute>()?.ErrorMessage
+                    ?? property.GetAttributeOrNull<RegularExpressionAttribute>()?.ErrorMessage,
                 CascadeCreate = cascadeAttribute?.CanCreate,
                 CascadeUpdate = cascadeAttribute?.CanUpdate,
                 CascadeDeleteUnreferenced = cascadeAttribute?.DeleteUnreferenced,
@@ -127,7 +126,7 @@ namespace Shesha.Metadata
                 ReferenceListModule = epc?.ReferenceListModule,
                 ReferenceListName = epc?.ReferenceListName,
                 EnumType = epc?.EnumType,
-                OrderIndex = property.GetAttribute<DisplayAttribute>()?.GetOrder() ?? -1,
+                OrderIndex = property.GetAttributeOrNull<DisplayAttribute>()?.GetOrder() ?? -1,
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
                 IsNullable = property.IsNullable(),
                 //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
@@ -140,8 +139,12 @@ namespace Shesha.Metadata
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
-                result.EntityType = result.DataFormat == DataTypes.EntityReference ? result.ItemsType.EntityType : null;
-                result.EntityModule = result.DataFormat == DataTypes.EntityReference ? result.ItemsType.EntityModule : null;
+
+                var entityType = result.DataFormat == DataTypes.EntityReference
+                    ? result.ItemsType
+                    : null;
+                result.EntityType = entityType?.EntityType;
+                result.EntityModule = entityType?.EntityModule;
             }
             else
                 if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
@@ -181,7 +184,7 @@ namespace Shesha.Metadata
             }
         }
 
-        private PropertyMetadataDto GetItemsType(PropertyInfo property, MetadataContext context)
+        private PropertyMetadataDto? GetItemsType(PropertyInfo property, MetadataContext context)
         {
             if (property.IsMultiValueReferenceListProperty()) 
             {
@@ -267,18 +270,18 @@ namespace Shesha.Metadata
                 return false;
 
             return @interface.IsGenericType
-                ? property.DeclaringType.GetInterfaces().Any(x =>
+                ? property.DeclaringType.NotNull().GetInterfaces().Any(x =>
                         x.IsGenericType &&
                         x.GetGenericTypeDefinition() == @interface)
-                : property.DeclaringType.GetInterfaces().Contains(@interface);
+                : property.DeclaringType.NotNull().GetInterfaces().Contains(@interface);
         }
 
-        private string GetStringFormat([CanBeNull]MemberInfo propInfo) 
+        private string? GetStringFormat([CanBeNull]MemberInfo? propInfo) 
         {
             if (propInfo == null)
                 return null;
 
-            var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+            var dataTypeAtt = propInfo.GetAttributeOrNull<DataTypeAttribute>();
 
             switch (dataTypeAtt?.DataType)
             {
@@ -311,12 +314,12 @@ namespace Shesha.Metadata
             return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
         }
 
-        public DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo propInfo)
+        public DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo)
         {
             if (propType == typeof(Guid))
                 return new DataTypeInfo(DataTypes.Guid);
 
-            var dataTypeAtt = propInfo?.GetAttribute<DataTypeAttribute>();
+            var dataTypeAtt = propInfo?.GetAttributeOrNull<DataTypeAttribute>();
 
             // for enums - use underlaying type
             if (propType.IsEnum)
@@ -367,18 +370,10 @@ namespace Shesha.Metadata
 
             if (IsList(propType))
             {
-                var paramType = GetListElementType(propType);
+                var paramType = GetListElementType(propType).NotNull();
 
                 var elementDataType = GetDataTypeByPropertyType(paramType, null);
-                /*
-                var format = paramType.IsClass
-                    ? paramType.IsEntityType()
-                        ? ArrayFormats.EntityReference
-                        : paramType.IsJsonEntityType()
-                            ? ArrayFormats.ObjectReference
-                            : GetDataTypeByPropertyType(paramType, null)?.DataType
-                    : null;
-                */
+                
                 return new DataTypeInfo(DataTypes.Array, elementDataType?.DataType, elementDataType?.DataFormat);
             } else
                 if (propType.IsClass)
@@ -399,7 +394,7 @@ namespace Shesha.Metadata
                 type.GetInterface(nameof(IEnumerable)) != null;
         }
 
-        public static Type GetListElementType(Type type) 
+        public static Type? GetListElementType(Type type) 
         {
             if (!IsList(type))
                 return null;

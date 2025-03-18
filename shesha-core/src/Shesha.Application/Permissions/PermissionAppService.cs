@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Collections.Extensions;
+﻿using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions.Dtos;
+using Shesha.Reflection;
 using Shesha.Roles.Dto;
 using System;
 using System.Collections.Generic;
@@ -20,30 +20,27 @@ namespace Shesha.Permissions
     [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
     public class PermissionAppService : SheshaAppServiceBase
     {
-        private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ILocalizationContext _localizationContext;
-        private IPermissionDefinitionContext _defenitionContext => PermissionManager as IPermissionDefinitionContext;
-        private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
+        private IShaPermissionManager _shaPermissionManager => PermissionManager.ForceCastAs<IShaPermissionManager>();
         private readonly IShaPermissionChecker _permissionChecker;
 
         private const string emptyId = "_";
 
         public PermissionAppService(
-            IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
             IRepository<Module, Guid> moduleRepository,
             ILocalizationContext localizationContext,
             IShaPermissionChecker permissionChecker
             )
         {
-            _permissionDefinitionRepository = permissionDefinitionRepository;
             _moduleRepository = moduleRepository;
             _localizationContext = localizationContext;
             _permissionChecker = permissionChecker;
         }
 
-        public async Task<PermissionDto> GetAsync(string id)
+        public async Task<PermissionDto?> GetAsync(string id)
         {
+            /* TODO: Alex, please review. If an entity is requested we must return value or  throw exception. It's abnormal case if we get request with empty id, so there should be an exception*/
             if (string.IsNullOrEmpty(id))
                 return null;
 
@@ -126,7 +123,7 @@ namespace Shesha.Permissions
                 Parent = permission.ParentName ?? permission.Parent?.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
                 VersionNo = 1,
-                VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
+                VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
             var res = await _shaPermissionManager.CreatePermissionAsync(dbp);
@@ -137,7 +134,7 @@ namespace Shesha.Permissions
         [HttpPut, HttpPost] // ToDo: temporary - Allow HttpPost because permission can be created from edit mode
         public async Task<PermissionDto> UpdateAsync(PermissionDto permission)
         {
-            if (permission?.Id == emptyId)
+            if (permission.Id == emptyId)
             {
                 permission.Id = null;
                 return await CreateAsync(permission);
@@ -151,10 +148,10 @@ namespace Shesha.Permissions
                 Parent = permission.ParentName ?? permission.Parent?.Name,
                 Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
                 VersionNo = 1,
-                VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
+                VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
-            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id, dbp);
+            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id.NotNull(), dbp);
 
             return ObjectMapper.Map<PermissionDto>(res);
         }
@@ -173,7 +170,7 @@ namespace Shesha.Permissions
         }
 
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string term)
+        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term)
         {
             term = (term ?? "").ToLower();
             
@@ -199,7 +196,7 @@ namespace Shesha.Permissions
         /// </summary>
         [HttpGet]
         [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
-        public async Task<bool> IsPermissionGranted(IsPermissionGrantedInput input) 
+        public async Task<bool> IsPermissionGrantedAsync(IsPermissionGrantedInput input) 
         {
             if (input.PermissionedEntityId.IsNullOrEmpty() || input.PermissionedEntityClass.IsNullOrEmpty())
                 return await _permissionChecker.IsGrantedAsync(input.PermissionName);

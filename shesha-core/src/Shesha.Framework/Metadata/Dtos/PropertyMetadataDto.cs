@@ -34,43 +34,43 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Validation RegularExpression 
         /// </summary>
-        public string RegExp { get; set; }
+        public string? RegExp { get; set; }
 
         /// <summary>
         /// Validation message
         /// </summary>
-        public virtual string ValidationMessage { get; set; }
+        public virtual string? ValidationMessage { get; set; }
 
         public string Path { get; set; }
-        public string Label { get; set; }
-        public string Description { get; set; }
+        public string? Label { get; set; }
+        public string? Description { get; set; }
 
         public string DataType { get; set; }
-        public string DataFormat { get; set; }
+        public string? DataFormat { get; set; }
 
         /// <summary>
         /// Type of the entity. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
         /// </summary>
         [JsonProperty("entityType")]
         [JsonPropertyName("entityType")]
-        public string EntityType { get; set; }
+        public string? EntityType { get; set; }
 
         /// <summary>
         /// Module the entity belongs to. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
         /// </summary>
-        public string EntityModule { get; set; }
+        public string? EntityModule { get; set; }
 
         public string TypeAccessor { get; set; }
         public string ModuleAccessor { get; set; }
 
         [Newtonsoft.Json.JsonIgnore]
         [System.Text.Json.Serialization.JsonIgnore]
-        public Type EnumType { get; set; }
+        public Type? EnumType { get; set; }
 
-        public string ReferenceListName { get; set; }
-        public string ReferenceListModule { get; set; }
+        public string? ReferenceListName { get; set; }
+        public string? ReferenceListModule { get; set; }
         public int OrderIndex { get; set; }
-        public string GroupName { get; set; }
+        public string? GroupName { get; set; }
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)
@@ -95,7 +95,7 @@ namespace Shesha.Metadata.Dtos
         /// <summary>
         /// Items type (applicable for arrays)
         /// </summary>
-        public PropertyMetadataDto ItemsType { get; set; }
+        public PropertyMetadataDto? ItemsType { get; set; }
 
         public MetadataSourceType Source { get; set; }
 
@@ -108,8 +108,8 @@ namespace Shesha.Metadata.Dtos
         {
             var propertyProps = typeof(PropertyMetadataDto).GetProperties().OrderBy(p => p.Name).ToList();
 
-            Action<List<PropertyMetadataDto>, List<PropertyMetadataDto>> expr = null;
-            expr = (List<PropertyMetadataDto> l, List<PropertyMetadataDto> props) =>
+            
+            void expr(List<PropertyMetadataDto> l, List<PropertyMetadataDto> props)
             {
                 foreach (var prop in props)
                 {

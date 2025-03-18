@@ -1,13 +1,14 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Newtonsoft.Json;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
+using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
     /// <summary>
     /// Reference list import
     /// </summary>
-    public class ReferenceListImport: IReferenceListImport, ITransientDependency
+    public class ReferenceListImport: ConfigurationItemImportBase<ReferenceList, DistributedReferenceList>, IReferenceListImport, ITransientDependency
     {
         private readonly IRepository<ReferenceList, Guid> _refListRepo;
         private readonly IRepository<ReferenceListItem, Guid> _refListItemRepo;
@@ -24,7 +25,12 @@ namespace Shesha.Services.ReferenceLists.Distribution
         private readonly IReferenceListManager _refListManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public ReferenceListImport(IReferenceListManager formManger, IRepository<ReferenceList, Guid> refListRepo, IRepository<ReferenceListItem, Guid> refListItemRepo, IRepository<Module, Guid> moduleRepo, IUnitOfWorkManager unitOfWorkManager)
+        public ReferenceListImport(IReferenceListManager formManger, 
+            IRepository<ReferenceList, Guid> refListRepo, 
+            IRepository<ReferenceListItem, Guid> refListItemRepo, 
+            IRepository<Module, Guid> moduleRepo,
+            IRepository<FrontEndApp, Guid> frontEndAppRepo,
+            IUnitOfWorkManager unitOfWorkManager): base (moduleRepo, frontEndAppRepo)
         {
             _refListManger = formManger;
             _refListRepo = refListRepo;
@@ -48,20 +54,10 @@ namespace Shesha.Services.ReferenceLists.Distribution
         }
 
         /// inheritedDoc
-        public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream) 
-        {
-            using (var reader = new StreamReader(jsonStream))
-            {
-                var json = await reader.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<DistributedReferenceList>(json);
-            }
-        }
-
-        /// inheritedDoc
         protected async Task<ConfigurationItemBase> ImportRefListAsync(DistributedReferenceList item, IConfigurationItemsImportContext context)
         {
             // check if form exists
-            var existingList = await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.IsLast);
+            var existingList = await _refListRepo.GetByByFullName(item.ModuleName, item.Name).FirstOrDefaultAsync(e => e.IsLast);
 
             // use status specified in the context with fallback to imported value
             var statusToImport = context.ImportStatusAs ?? item.VersionStatus;
@@ -82,7 +78,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
                 {
                     var liveVersion = existingList.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingList
-                        : await _refListRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                        : await _refListRepo.GetByByFullName(item.ModuleName, item.Name).FirstOrDefaultAsync(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                     if (liveVersion != null)
                     {
                         await _refListManger.UpdateStatusAsync(liveVersion, ConfigurationItemVersionStatus.Retired);
@@ -134,7 +130,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
             await ImportListItemLevelAsync(refList, distributedItems, null);
         }
 
-        private async Task ImportListItemLevelAsync(ReferenceList refList, List<DistributedReferenceListItem> items, ReferenceListItem parent)
+        private async Task ImportListItemLevelAsync(ReferenceList refList, List<DistributedReferenceListItem> items, ReferenceListItem? parent)
         {
             foreach (var distributedItem in items)
             {
@@ -158,30 +154,9 @@ namespace Shesha.Services.ReferenceLists.Distribution
             dst.ItemValue = src.ItemValue;
             dst.Description = src.Description;
             dst.OrderIndex = src.OrderIndex;
-            // todo: decide how to handle hard linked items
-            //dst.HardLinkToApplication = src.HardLinkToApplication;
             dst.Color = src.Color;
             dst.Icon = src.Icon;
             dst.ShortAlias = src.ShortAlias;
-        }
-
-        private async Task<Module> GetModuleAsync(string name, IConfigurationItemsImportContext context) 
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return null;
-
-            var module = await _moduleRepo.FirstOrDefaultAsync(m => m.Name == name);
-            if (module == null) 
-            {
-                if (context.CreateModules) 
-                {
-                    module = new Module { Name = name, IsEnabled = true };
-                    await _moduleRepo.InsertAsync(module);
-                } else
-                    throw new NotSupportedException($"Module `{name}` is missing in the destination");
-            }
-
-            return module;
         }
 
         private void MapToRefList(DistributedReferenceList item, ReferenceList refList) 
@@ -191,11 +166,6 @@ namespace Shesha.Services.ReferenceLists.Distribution
             refList.Description = item.Description;
             refList.VersionStatus = item.VersionStatus;
             refList.Suppress = item.Suppress;
-        }
-
-        public Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items)
-        {
-            return Task.FromResult(items);
         }
     }
 }

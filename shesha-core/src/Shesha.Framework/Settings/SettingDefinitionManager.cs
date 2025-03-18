@@ -1,19 +1,13 @@
 ﻿using Abp;
 using Abp.Collections.Extensions;
-using Abp.Configuration;
 using Abp.Dependency;
-using Abp.Domain.Repositories;
 using Abp.Reflection;
-using Castle.MicroKernel.SubSystems.Conversion;
-using Newtonsoft.Json.Linq;
-using Shesha.ConfigurationItems.Specifications;
-using Shesha.Domain;
+using Shesha.Extensions;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Shesha.Settings
 {
@@ -24,15 +18,13 @@ namespace Shesha.Settings
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IIocManager _iocManager;
-        private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
 
         protected Lazy<IDictionary<SettingIdentifier, SettingDefinition>> SettingDefinitions { get; }
 
-        public SettingDefinitionManager(ITypeFinder typeFinder, IIocManager iocManager, IRepository<SettingConfiguration, Guid> settingConfigurationRepository)
+        public SettingDefinitionManager(ITypeFinder typeFinder, IIocManager iocManager)
         {
             _typeFinder = typeFinder;
             _iocManager = iocManager;
-            _settingConfigurationRepository = settingConfigurationRepository;
 
             SettingDefinitions = new Lazy<IDictionary<SettingIdentifier, SettingDefinition>>(CreateSettingDefinitions, true);
         }
@@ -46,7 +38,10 @@ namespace Shesha.Settings
                     _iocManager.IsRegistered(t)
                 ).ToList();
 
-            var definitionProviders = definitionProvidersTypes.Select(t => _iocManager.Resolve(t) as ISettingDefinitionProvider).OrderBy(p => (p as IOrderedSettingDefinitionProvider)?.OrderIndex ?? int.MaxValue).ToList();
+            var definitionProviders = definitionProvidersTypes
+                .Select(t => _iocManager.Resolve(t).ForceCastAs<ISettingDefinitionProvider>())
+                .OrderBy(p => (p as IOrderedSettingDefinitionProvider)?.OrderIndex ?? int.MaxValue)
+                .ToList();
 
             var settings = new Dictionary<SettingIdentifier, SettingDefinition>();
 
@@ -89,23 +84,23 @@ namespace Shesha.Settings
         }
 
         // Generic method to create a SettingDefinition
-        public virtual SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object value = default)
+        public virtual SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object? value = default)
         {
             var type = GetTypeFromName(dataType);
 
-            object convertedDefaultValue = value == null && type.IsValueType ? Activator.CreateInstance(type) : ConvertToType(value, type);
+            object? convertedDefaultValue = value == null && type.IsValueType 
+                ? Activator.CreateInstance(type)
+                : ConvertToType(value, type);
 
             // Create the generic type SettingDefinition<TValue>
             Type genericType = typeof(SettingDefinition<>).MakeGenericType(type);
 
             // Create an instance of the generic type
-            ConstructorInfo constructor = genericType.GetConstructor(new[] { typeof(string), type, typeof(string) });
+            var constructor = genericType.GetConstructor([typeof(string), type, typeof(string)]);
             if (constructor == null)
-            {
                 throw new InvalidOperationException($"Constructor not found for type '{genericType.FullName}'.");
-            }
 
-            SettingDefinition setting = (SettingDefinition)constructor.Invoke(new[] { name, convertedDefaultValue, name });
+            SettingDefinition setting = (SettingDefinition)constructor.Invoke([name, convertedDefaultValue, name]);
 
             setting.ModuleName = module;
             setting.DisplayName = name;
@@ -128,7 +123,7 @@ namespace Shesha.Settings
             return type;
         }
 
-        public static object ConvertToType(object value, Type type)
+        public static object? ConvertToType(object? value, Type type)
         {
             if (value == null || type.IsAssignableFrom(value.GetType()))
             {

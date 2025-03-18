@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Uow;
 using NHibernate;
 using NHibernate.Context;
 using Shesha.NHibernate.UoW;
@@ -24,12 +23,12 @@ namespace Shesha.NHibernate.Session
         /// Returns current session
         /// </summary>
         /// <returns></returns>
-        public ISession CurrentSession()
+        public ISession? CurrentSession()
         {
             var uowProvider = StaticContext.IocManager.Resolve<ICurrentUnitOfWorkProvider>();
 
             return uowProvider.Current is NhUnitOfWork nhUow
-                ? nhUow.GetSession()
+                ? nhUow.GetSessionOrNull()
                 : null;
         }
     }

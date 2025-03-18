@@ -10,9 +10,9 @@ using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
-using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Services;
 using Shesha.Web.FormsDesigner.Services.Distribution;
 using Shouldly;
@@ -471,7 +471,7 @@ namespace Shesha.Tests.ConfigurationItems
                     {
                         using (var jsonStream = item.StreamGetter())
                         {
-                            var itemDto = await item.Importer.ReadFromJsonAsync(jsonStream);
+                            var itemDto = await item.Importer.NotNull().ReadFromJsonAsync(jsonStream);
                             await item.Importer.ImportItemAsync(itemDto, importContext);
                         }
                     }
@@ -505,7 +505,7 @@ namespace Shesha.Tests.ConfigurationItems
             };
 
             if (initAction != null)
-                await initAction?.Invoke(formConfig);
+                await initAction.Invoke(formConfig);
 
             return formConfig;
         }

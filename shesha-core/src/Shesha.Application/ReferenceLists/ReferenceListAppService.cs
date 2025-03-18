@@ -109,9 +109,12 @@ namespace Shesha.ReferenceLists
             await _refListManager.UpdateAsync(entity, input);
 
             await CurrentUnitOfWork.SaveChangesAsync();
-            
-            var module = _moduleRepository.Get(input.ModuleId ?? Guid.Empty)?.Name;
-            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, module, input.Name, _cfRuntime.ViewMode, null);
+
+            var module = input.ModuleId.HasValue
+                ? await _moduleRepository.GetAsync(input.ModuleId.Value)
+                : null;
+
+            await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, module?.Name, input.Name, _cfRuntime.ViewMode, null);
 
             return MapToEntityDto(entity);
         }
@@ -136,18 +139,6 @@ namespace Shesha.ReferenceLists
         {
             var json = JsonConvert.SerializeObject(dto);
             return json.ToMd5Fingerprint();
-        }
-
-        /// <summary>
-        /// Ger module by name
-        /// </summary>
-        /// <param name="moduleName"></param>
-        /// <returns></returns>
-        private async Task<Module> GetModuleAsync(string moduleName)
-        {
-            return !string.IsNullOrWhiteSpace(moduleName)
-                ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
-                : null;
         }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿using Shesha.ConfigurationItems.Exceptions;
-using Shesha.Web.FormsDesigner.Domain;
+using Shesha.Domain;
 
 namespace Shesha.Web.FormsDesigner.Exceptions
 {
@@ -8,7 +8,7 @@ namespace Shesha.Web.FormsDesigner.Exceptions
     /// </summary>
     public class ConfigurableComponentNotFoundException : ConfigurationItemNotFoundException
     {
-        public ConfigurableComponentNotFoundException(string frontEndApplication, string module, string name): base(ConfigurableComponent.ItemTypeName, module, name, frontEndApplication) 
+        public ConfigurableComponentNotFoundException(string? frontEndApplication, string? module, string name): base(ConfigurableComponent.ItemTypeName, module, name, frontEndApplication) 
         {
             FrontEndApplication = frontEndApplication;
             Name = name;

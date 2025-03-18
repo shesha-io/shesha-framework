@@ -6,7 +6,6 @@ using Shesha.Scheduler.Services.ScheduledJobs;
 using Shesha.Services;
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace Shesha.Scheduler.Attributes
 {
@@ -31,23 +30,17 @@ namespace Shesha.Scheduler.Attributes
 
             var jobType = jobManager.GetJobType(triggerId);
 
-            var jobAttribute = jobType.GetAttribute<ScheduledJobAttribute>();
+            var jobAttribute = jobType.GetAttributeOrNull<ScheduledJobAttribute>();
             if (jobAttribute == null)
                 throw new NotSupportedException($"Job '{jobType.FullName}' must be decorated with '{nameof(ScheduledJobAttribute)}'");
 
-            var disableConcurrentAttribute = jobType.GetAttribute<DisableConcurrentExecutionAttribute>();
+            var disableConcurrentAttribute = jobType.GetAttributeOrNull<DisableConcurrentExecutionAttribute>();
             if (disableConcurrentAttribute == null)
                 return;
 
             var resource = jobAttribute.Uid.ToString();
 
-            var timeoutField = typeof(DisableConcurrentExecutionAttribute).GetField("_timeoutInSeconds", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (timeoutField == null)
-                throw new NotSupportedException($"Failed to find timeout field on the '{nameof(DisableConcurrentExecutionAttribute)}'");
-
-            var timeoutSeconds = (int)timeoutField.GetValue(disableConcurrentAttribute);
-
-            var timeout = TimeSpan.FromSeconds(timeoutSeconds);
+            var timeout = TimeSpan.FromSeconds(disableConcurrentAttribute.TimeoutSec);
 
             var distributedLock = filterContext.Connection.AcquireDistributedLock(resource, timeout);
             filterContext.Items[DistributedLockKey] = distributedLock;

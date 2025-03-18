@@ -1,9 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace Shesha.Domain
 {
@@ -24,7 +22,7 @@ namespace Shesha.Domain
         [StringLength(300)]
         [Display(Name = "Namespace")]
         [Obsolete("Is used for backward compatibility only")]
-        public virtual string Namespace { get; set; }
+        public virtual string? Namespace { get; set; }
 
         /// <summary>
         /// If true indicates that the application logic references

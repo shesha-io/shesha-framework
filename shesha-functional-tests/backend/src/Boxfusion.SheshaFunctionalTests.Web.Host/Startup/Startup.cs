@@ -41,6 +41,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Reflection;
+using Shesha.Specifications;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -74,8 +75,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
                 options.Filters.AddService(typeof(SheshaAuthorizationFilter));
                 options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
+                options.Filters.AddService(typeof(SpecificationsActionFilter), order: 1);
             })
             .AddApiExplorer()
+			.AddDataAnnotations()
             .AddNewtonsoftJson(options =>
             {
                 options.UseCamelCasing(true);

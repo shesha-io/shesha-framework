@@ -46,7 +46,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             {
                 Name = recipientPerson?.FullName ?? "Unknown Recipient",
                 Subject = type.Name,
-                Body = type.Description
+                Body = type.Description ?? string.Empty
             };
 
             // Get attachments only if recipient is provided
@@ -71,13 +71,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                     ? new RawAddressMessageParticipant(notification.RecipientText)
                     : throw new ArgumentException($"{nameof(notification.RecipientText)} must not be null");
 
-            await _notificationService.SendNotification(
+            await _notificationService.SendNotificationAsync(
                 type,
                 sender,
                 recipient,                
                 data,
                 notification.Priority,
                 attachments,
+                notification.Cc,
                 null,
                 channel
             );
@@ -109,12 +110,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 foreach (var recipient in notification.RecipientTexts)
                 {
                     var receiver = new RawAddressMessageParticipant(recipient);
-                    await _notificationService.SendNotification(
+                    await _notificationService.SendNotificationAsync(
                         type,
                         sender,
                         receiver,
                         data,
                         notification.Priority,
+                        null,
                         null,
                         null,
                         channel
@@ -129,12 +131,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 {
                     var receiver = await _personRepository.GetAsync(recipient.Id);
 
-                    await _notificationService.SendNotification(
+                    await _notificationService.SendNotificationAsync(
                         type,
                         senderPerson,
                         receiver,
                         data,
                         notification.Priority,
+                        null,
                         null,
                         null,
                         channel

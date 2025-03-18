@@ -22,12 +22,12 @@ namespace Shesha.Settings
         public string DisplayName { get; set; }
 
         [CanBeNull]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Category of the setting, is used for groupping in the UI only
         /// </summary>
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
         /// <summary>
         /// Accessor of the category (camelCased name or alias if specified)
@@ -48,9 +48,9 @@ namespace Shesha.Settings
         /// Edit form
         /// </summary>
         [CanBeNull]
-        public ConfigurationItemIdentifier EditForm { get; set; }
+        public ConfigurationItemIdentifier? EditForm { get; set; }
 
-        public abstract object GetDefaultValue();
+        public abstract object? GetDefaultValue();
         public abstract Type GetValueType();
         
         /// <summary>
@@ -61,7 +61,7 @@ namespace Shesha.Settings
         /// <summary>
         /// Accessor of the module (usually it's camelCased name or alias if specified)
         /// </summary>
-        public string ModuleAccessor { get; set; }
+        public string? ModuleAccessor { get; set; }
 
         public string FullName => !string.IsNullOrWhiteSpace(ModuleName)
             ? $"{ModuleName}.{Name}"
@@ -86,7 +86,7 @@ namespace Shesha.Settings
             DefaultValue = defaultValue;
         }
 
-        public override object GetDefaultValue()
+        public override object? GetDefaultValue()
         {
             return DefaultValue;
         }

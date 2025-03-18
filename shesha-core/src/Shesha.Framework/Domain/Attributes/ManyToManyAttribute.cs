@@ -18,7 +18,7 @@ namespace Shesha.Domain.Attributes
             KeyColumn = keyColumn;
             Where = @where;
         }
-        public ManyToManyAttribute(string table, string childColumn, string keyColumn)
+        public ManyToManyAttribute(string? table, string? childColumn, string? keyColumn)
         {
             Table = table;
             ChildColumn = childColumn;
@@ -70,26 +70,26 @@ namespace Shesha.Domain.Attributes
         /// <summary>
         /// It can be set either to the table you link to or the intermediate link table (only if it has a mapping)
         /// </summary>
-        public string Table { get; set; }
+        public string? Table { get; set; }
 
         /// <summary>
         /// Column to filter by
         /// </summary>
-        public string ChildColumn { get; set; }
+        public string? ChildColumn { get; set; }
 
         /// <summary>
         /// Column to load entity from
         /// </summary>
-        public string KeyColumn { get; set; }
+        public string? KeyColumn { get; set; }
 
         /// <summary>
         /// SQL Filter
         /// </summary>
-        public string Where { get; set; }
+        public string? Where { get; set; }
 
         /// <summary>
         /// SQL Order By clause
         /// </summary>
-        public string OrderBy { get; set; }
+        public string? OrderBy { get; set; }
     }
 }

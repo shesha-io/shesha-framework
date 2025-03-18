@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using Abp.Dependency;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Uow;
 using Abp.EntityHistory;
 using Abp.Events.Bus.Entities;
 using Abp.Extensions;
@@ -16,6 +13,8 @@ using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
 using Shesha.Reflection;
 using Shesha.Services;
+using System;
+using System.Linq.Expressions;
 
 namespace Shesha.NHibernate.EntityHistory
 {
@@ -27,7 +26,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="entity">Changed entity</param>
         /// <param name="description">Description of changes</param>
         /// <param name="property">Changed property</param>
-        public static void AddPropertyChangeDescription<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property)
+        public static void AddPropertyChangeDescription<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property) where TModel: notnull
         {
             try
             {
@@ -46,7 +45,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// <param name="entity">Changed entity</param>
         /// <param name="description">Comment of changes</param>
         /// <param name="property">Changed property</param>
-        public static void AddPropertyChangeComment<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property)
+        public static void AddPropertyChangeComment<TModel, TValue>(this TModel entity, string description, Expression<Func<TModel, TValue>> property) where TModel : notnull
         {
             try
             {
@@ -149,19 +148,22 @@ namespace Shesha.NHibernate.EntityHistory
             }
         }
 
-        public static void AddHistoryEvent(this object entity, string eventType, string eventName, string description, string propertyName)
+        public static void AddHistoryEvent(this object entity, string? eventType, string? eventName, string description, string? propertyName)
         {
             try
             {
                 var uow = StaticContext.IocManager.Resolve<IUnitOfWorkManager>().Current;
                 var entityHistoryHelper = (uow as NhUnitOfWork)?.EntityHistoryHelper;
-                var session = StaticContext.IocManager.Resolve<ISessionFactory>().GetCurrentSession();
+                var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
+
+                using var sessionContext = StaticContext.IocManager.Resolve<INhCurrentSessionContext>();
+                var session = sessionContext.Session;
 
                 var abpSession = StaticContext.IocManager.Resolve<IAbpSession>();
 
                 var id = "";
 
-                var entry = session.GetEntry(entity);
+                var entry = session.GetEntryOrNull(entity);
                 id = entry != null
                     ? entry.Id.ToString()
                     : entity.ToString();
@@ -195,5 +197,4 @@ namespace Shesha.NHibernate.EntityHistory
             }
         }
     }
-
 }

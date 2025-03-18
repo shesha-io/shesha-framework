@@ -16,7 +16,7 @@ namespace Shesha.Authorization.Users
 {
     public class UserRegistrationManager : DomainService
     {
-        public IAbpSession AbpSession { get; set; }
+        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         private readonly TenantManager _tenantManager;
         private readonly UserManager _userManager;
@@ -37,7 +37,7 @@ namespace Shesha.Authorization.Users
             AbpSession = NullAbpSession.Instance;
         }
 
-        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
+        public async Task<User> RegisterAsync(string name, string? surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
         {
             CheckForTenant();
 
@@ -78,28 +78,27 @@ namespace Shesha.Authorization.Users
             }
         }
 
-        private async Task<Tenant> GetActiveTenantAsync()
+        private async Task<Tenant?> GetActiveTenantOrNullAsync()
         {
             if (!AbpSession.TenantId.HasValue)
-            {
                 return null;
-            }
 
             return await GetActiveTenantAsync(AbpSession.TenantId.Value);
+        }
+
+        private async Task<Tenant> GetActiveTenantAsync()
+        {
+            return await GetActiveTenantOrNullAsync() ?? throw new Exception("Tenant is not available");
         }
 
         private async Task<Tenant> GetActiveTenantAsync(int tenantId)
         {
             var tenant = await _tenantManager.FindByIdAsync(tenantId);
             if (tenant == null)
-            {
                 throw new UserFriendlyException(L("UnknownTenantId{0}", tenantId));
-            }
 
             if (!tenant.IsActive)
-            {
                 throw new UserFriendlyException(L("TenantIdIsNotActive{0}", tenantId));
-            }
 
             return tenant;
         }

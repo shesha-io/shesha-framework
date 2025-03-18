@@ -11,23 +11,12 @@ using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Abp.Threading;
 using Castle.MicroKernel.Registration;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using NHibernate;
-using NHibernate.Dialect;
-using NHibernate.Driver;
-using NHibernate.Engine;
-using NHibernate.Spatial.Dialect;
-using NHibernate.Spatial.Mapping;
-using NHibernate.Spatial.Metadata;
-using NHibernate.Type;
-using Npgsql;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
-using Shesha.Configuration;
 using Shesha.Configuration.Startup;
 using Shesha.Domain;
-using Shesha.Exceptions;
 using Shesha.FluentMigrator;
 using Shesha.Generators;
 using Shesha.Locks;
@@ -41,7 +30,6 @@ using Shesha.NHibernate.PostgreSql;
 using Shesha.NHibernate.Repositories;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.Uow;
-using Shesha.NHibernate.Utilites;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Startup;
@@ -59,10 +47,12 @@ namespace Shesha.NHibernate
         typeof(AbpAspNetCoreModule),
         typeof(SheshaFrameworkModule)
         )]
-    public class SheshaNHibernateModule : AbpModule
+    public sealed class SheshaNHibernateModule : AbpModule, IDisposable
     {
         public const string SkipMigrationsSetting = "skipMigrations";
         public const string SkipBootstrappersSetting = "skipBootstrappers";
+        private bool _disposed;
+
 
         /* Used it tests to skip dbcontext registration */
         public bool SkipDbContextRegistration { get; set; }
@@ -74,7 +64,7 @@ namespace Shesha.NHibernate
         /// <summary>
         /// NHibernate session factory object.
         /// </summary>
-        private ISessionFactory _sessionFactory;
+        private ISessionFactory? _sessionFactory;
         private global::NHibernate.Cfg.Configuration _nhConfig;
 
         public override void PreInitialize()
@@ -156,6 +146,7 @@ namespace Shesha.NHibernate
                 // ToDo: ABP662, some ABP entities (WebhookEvent, DynamicProperty) contain not virtual properties
                 _nhConfig.Properties.Add("use_proxy_validator", "false");
 
+                _sessionFactory?.Dispose();
                 _sessionFactory = config.SessionFactoryBuilder != null
                     ? config.SessionFactoryBuilder.Invoke(_nhConfig)
                     : _nhConfig.BuildSessionFactory();
@@ -174,6 +165,26 @@ namespace Shesha.NHibernate
             );
 
             IocManager.RegisterAssemblyByConvention(Assembly.GetExecutingAssembly());
+        }
+
+        private void FreeSessionFactory() 
+        {
+            if (_sessionFactory != null)
+            {
+                _sessionFactory.Dispose();
+                _sessionFactory = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            FreeSessionFactory();
         }
 
         private IDbmsSpecificConfigurationProvider GetConfigProvider(DbmsType dbmsType) 
@@ -244,7 +255,7 @@ namespace Shesha.NHibernate
             
             const string seedDbKey = "AppStart:SeedDb";
             const string seedDbFinishedOnKey = "SeedDbFinishedOn";
-            var cache = CacheManagerExtensions.GetCache<string, DateTime>(cacheManager, seedDbKey);
+            using var cache = cacheManager.GetCache<string, DateTime>(seedDbKey);
 
             var initializationStart = DateTime.Now.ToUniversalTime();
             var initializedByCurrentInstance = false;
@@ -296,7 +307,7 @@ namespace Shesha.NHibernate
                     }                    
 
                     // Log application start if DB was not ready for logging before the migrations
-                    if (!dbIsReadyForLogging)
+                    if (startupDto == null)
                         startupDto = await appStartup.LogApplicationStartAsync(appStartLogArgs);
 
                     if (!skipBootstrappers) 
@@ -313,8 +324,8 @@ namespace Shesha.NHibernate
                                 {
                                     Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
-                                    var method = bootstrapperType.GetMethod(nameof(IBootstrapper.ProcessAsync));
-                                    var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+                                    var method = bootstrapperType.GetRequiredMethod(nameof(IBootstrapper.ProcessAsync));
+                                    var unitOfWorkAttribute = method.GetAttributeOrNull<UnitOfWorkAttribute>(true);
                                     var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
 
                                     if (useDefaultUnitOfWork)
@@ -362,7 +373,7 @@ namespace Shesha.NHibernate
             var withDeps = types.Select(t => new
                 {
                     Type = t,
-                    Dependencies = t.GetAttribute<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
+                    Dependencies = t.GetAttributeOrNull<DependsOnBootstrapperAttribute>()?.DependedBootstrappers?.ToList()
                 })
                 .ToList();
             
@@ -395,7 +406,15 @@ namespace Shesha.NHibernate
         /// <inheritdoc/>
         public override void Shutdown()
         {
-            _sessionFactory?.Dispose();
+            FreeSessionFactory();
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
         }
     }
 }

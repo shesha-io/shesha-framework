@@ -38,8 +38,6 @@ namespace Shesha.Elmah.SqlServer
                 throw new ArgumentNullException(nameof(connectionString));
 
             ConnectionString = connectionString;
-
-            //PrepareDatabase();
         }
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace Shesha.Elmah.SqlServer
         // ReSharper disable once MemberCanBeProtected.Global
         public virtual string ConnectionString { get; }
 
-        public override string Log(Error error)
+        public override string? Log(Error error)
         {
             var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
@@ -81,7 +79,7 @@ namespace Shesha.Elmah.SqlServer
                     var exceptionDetails = provider.CurrentState?.AllExceptions?.FirstOrDefault(e => e.Exception == error.Exception);
                     var location = exceptionDetails?.Location;
 
-                    ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
+                    ExecuteCommand(connection, () => Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
 
                     // gather refs and log them
                     if (error.Exception != null && provider.CurrentState != null)
@@ -91,7 +89,7 @@ namespace Shesha.Elmah.SqlServer
                         {
                             foreach (var item in allRefs)
                             {
-                                ExecuteCommand(connection, Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                                ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
                             }
                         }
                     }
@@ -103,14 +101,14 @@ namespace Shesha.Elmah.SqlServer
             }
         }
 
-        private void ExecuteCommand(SqlConnection connection, SqlCommand command) 
+        private void ExecuteCommand(SqlConnection connection, Func<SqlCommand> commandFactory)
         {
+            using var command = commandFactory();
             command.Connection = connection;
             command.ExecuteNonQuery();
-            command.Dispose();
         }
 
-        public override ErrorLogEntry GetError(string id)
+        public override ErrorLogEntry? GetError(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
             if (id.Length == 0) throw new ArgumentException(null, nameof(id));
@@ -171,25 +169,8 @@ namespace Shesha.Elmah.SqlServer
                 using (var command = Commands.GetErrorsXmlTotal(ApplicationName))
                 {
                     command.Connection = connection;
-                    return int.Parse(command.ExecuteScalar().ToString());
+                    return Convert.ToInt32(command.ExecuteScalar());
                 }
-            }
-        }
-
-        private void PrepareDatabase() 
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-
-                if (!Commands.SchemaExists(connection, DBConstants.Schema))
-                    Commands.CreateSchema(connection, DBConstants.Schema);
-
-                if (!Commands.TableExists(connection, DBConstants.Schema, DBConstants.ErrorsTable))
-                    Commands.CreateErrorsTable(connection);
-
-                if (!Commands.TableExists(connection, DBConstants.Schema, DBConstants.ErrorRefsTable))
-                    Commands.CreateErrorRefsTable(connection);
             }
         }
 
@@ -341,7 +322,7 @@ ON [PRIMARY]");
                 int statusCode,
                 DateTime time,
                 string xml,
-                string location)
+                string? location)
             {
                 var command = new SqlCommand
                 {

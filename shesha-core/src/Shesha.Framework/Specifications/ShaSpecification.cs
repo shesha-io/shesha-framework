@@ -12,9 +12,9 @@ namespace Shesha.Specifications
     /// <typeparam name="T">The type of the object to which the specification is applied.</typeparam>
     public abstract class ShaSpecification<T> : ISpecification<T>, ITransientDependency
     {
-        public IAbpSession AbpSession { get; set; }
-        public IIocManager IocManager { get; set; }
-        public ISpecificationManager SpecificationManager { get; set; }
+        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
+        public IIocManager IocManager { get; set; } = default!;
+        public ISpecificationManager SpecificationManager { get; set; } = NullSpecificationManager.Instance;
 
         /// <summary>
         /// Returns a <see cref="bool"/> value which indicates whether the specification

@@ -49,7 +49,7 @@ namespace Shesha.Domain
         /// Tenancy name.
         /// </summary>
         [StringLength(MaxTenancyNameLength)]
-        public virtual string TenancyName { get; set; }
+        public virtual string? TenancyName { get; set; }
 
         /// <summary>
         /// User's Id, if <see cref="UserNameOrEmailAddress"/> was a valid username or email address.
@@ -96,9 +96,9 @@ namespace Shesha.Domain
         }
 
         [StringLength(20)]
-        public virtual string IMEI { get; set; }
+        public virtual string? IMEI { get; set; }
         [StringLength(255)]
-        public virtual string DeviceName { get; set; }
+        public virtual string? DeviceName { get; set; }
 
         public virtual int? LoginAttemptNumber { get; set; }
     }

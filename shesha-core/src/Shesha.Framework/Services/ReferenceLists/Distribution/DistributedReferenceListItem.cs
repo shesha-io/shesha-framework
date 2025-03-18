@@ -11,7 +11,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
         /// <summary>
         /// Item text
         /// </summary>
-        public string Item { get; set; }
+        public string? Item { get; set; }
 
         /// <summary>
         /// Item value
@@ -21,7 +21,7 @@ namespace Shesha.Services.ReferenceLists.Distribution
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Order index
@@ -36,17 +36,17 @@ namespace Shesha.Services.ReferenceLists.Distribution
         /// <summary>
         /// Assicoated color
         /// </summary>
-        public string Color { get; set; }
+        public string? Color { get; set; }
 
         /// <summary>
         /// Assiciated icon
         /// </summary>
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
 
         /// <summary>
         /// Short alias
         /// </summary>
-        public string ShortAlias { get; set; }
+        public string? ShortAlias { get; set; }
 
         /// <summary>
         /// Child items

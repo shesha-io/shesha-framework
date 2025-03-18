@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Shesha.DynamicEntities.Dtos
 {
@@ -12,18 +8,19 @@ namespace Shesha.DynamicEntities.Dtos
 
         public string Type { get; set; }
 
-        public FormIdFullNameDto FormId { get; set; }
+        public FormIdFullNameDto? FormId { get; set; }
     }
 
+    // TODO: replace with FormIdentifier
     public class FormIdFullNameDto
     {
-        public string Name { get; set; }
-        public string Module { get; set; }
+        public string? Name { get; set; }
+        public string? Module { get; set; }
     }
 
     public static class FormIdFullNameDtoExtensions
     {
-        public static bool IsEmpty(this FormIdFullNameDto formId)
+        public static bool IsEmpty([NotNullWhen(false)]this FormIdFullNameDto? formId)
         {
             return formId == null || string.IsNullOrWhiteSpace(formId.Name);
         }

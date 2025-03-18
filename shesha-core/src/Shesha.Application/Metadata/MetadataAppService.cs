@@ -8,6 +8,7 @@ using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace Shesha.Metadata
             return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }
 
-        private async Task<Type> GetContainerTypeAsync(string container)
+        private async Task<Type?> GetContainerTypeOrNullAsync(string container)
         {
             var allModels = await GetAllModelsAsync();
             var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
@@ -56,8 +57,14 @@ namespace Shesha.Metadata
             return models.FirstOrDefault()?.Type;
         }
 
+        private async Task<Type> GetContainerTypeAsync(string container) 
+        {
+            return await GetContainerTypeOrNullAsync(container) ?? throw new MetadataOfTypeNotFoundException(container);
+        }
+        
+
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string term, string selectedValue)
+        public Task<List<AutocompleteItemDto>> TypeAutocompleteAsync(string? term, string? selectedValue)
         {
             // note: temporary return only entities
             return EntityTypeAutocompleteAsync(term, selectedValue);
@@ -65,7 +72,7 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string term, string selectedValue)
+        public async Task<List<AutocompleteItemDto>> EntityTypeAutocompleteAsync(string? term, string? selectedValue)
         {
             var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
             var models = await GetAllModelsAsync();
@@ -95,12 +102,12 @@ namespace Shesha.Metadata
 
         /// inheritedDoc
         [HttpGet]
-        public async Task<List<PropertyMetadataDto>> PropertyAutocompleteAsync(string term, string container, string selectedValue)
+        public async Task<List<PropertyMetadataDto>> PropertyAutocompleteAsync(string? term, string container, string? selectedValue)
         {
             if (string.IsNullOrWhiteSpace(container))
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
 
-            var containerType = await GetContainerTypeAsync(container);
+            var containerType = await GetContainerTypeOrNullAsync(container);
 
             if (containerType == null)
                 return new List<PropertyMetadataDto>();
@@ -138,10 +145,7 @@ namespace Shesha.Metadata
             if (string.IsNullOrWhiteSpace(container))
                 throw new AbpValidationException($"'{nameof(container)}' is mandatory");
 
-            // ToDo: show Dynamic entities
             var containerType = await GetContainerTypeAsync(container);
-            if (containerType == null)
-                throw new MetadataOfTypeNotFoundException(container);
 
             return await _metadataProvider.GetAsync(containerType, container);
         }
@@ -161,9 +165,9 @@ namespace Shesha.Metadata
 
         private class ModelDtoTypeComparer : IEqualityComparer<ModelDto>
         {
-            bool IEqualityComparer<ModelDto>.Equals(ModelDto x, ModelDto y)
+            bool IEqualityComparer<ModelDto>.Equals(ModelDto? x, ModelDto? y)
             {
-                return x.ClassName == y.ClassName;
+                return x != null && y != null && x.ClassName == y.ClassName || x == null && y == null;
             }
 
             int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
