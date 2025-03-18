@@ -52,7 +52,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
     const {
       href: initialHref = '',
-      content = '',
+      content = 'Link',
       style,
       target,
       direction,
