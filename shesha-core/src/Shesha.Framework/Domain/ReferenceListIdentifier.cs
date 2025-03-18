@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace Shesha.Domain
 {
@@ -8,6 +9,7 @@ namespace Shesha.Domain
     [Serializable]
     public class ReferenceListIdentifier : ConfigurationItemIdentifier<ReferenceList>, IIdentifierFactory<ReferenceListIdentifier>
     {
+        [JsonConstructor]
         public ReferenceListIdentifier(string? module, string name) : base(module, name)
         {
         }
