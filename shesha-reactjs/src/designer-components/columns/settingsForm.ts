@@ -44,6 +44,16 @@ export const getSettings = (data: any) => {
                   validate: {
                     "required": true
                   },
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  propertyName: 'hidden',
+                  label: 'Hide',
+                  labelAlign: 'right',
+                  parentId: appearanceId,
+                  inputType: 'switch',
+                  size: 'small',
                   jsSetting: true,
                 })
                 .toJson()
@@ -200,19 +210,6 @@ export const getSettings = (data: any) => {
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
                                 }
-                              ]
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'dropdown',
-                              propertyName: 'size',
-                              label: 'Size',
-                              width: '150px',
-                              hidden: { _code: 'return getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                              dropdownOptions: [
-                                { value: 'small', label: 'Small' },
-                                { value: 'medium', label: 'Medium' },
-                                { value: 'large', label: 'Large' },
                               ]
                             })
                             .toJson()
