@@ -44,6 +44,7 @@ import { Result } from 'antd';
 import { EntityActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { WebStorageContextProvider } from '../dataContextProvider/webStorageContext';
+import { ProgressBar } from './progressBar';
 
 
 export interface IShaApplicationProviderProps {
@@ -141,7 +142,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                                       <DebugPanel>
                                                         <ApplicationActionsProcessor>
                                                           <MainMenuProvider>
-                                                            {children}
+                                                            <ProgressBar>
+                                                              {children}
+                                                            </ProgressBar>
                                                           </MainMenuProvider>
                                                         </ApplicationActionsProcessor>
                                                       </DebugPanel>
