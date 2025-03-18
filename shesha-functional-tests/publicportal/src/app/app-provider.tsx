@@ -12,7 +12,6 @@ import {
   PublicPortalApplicationPlugin,
 } from "@shesha-io/pd-publicportal";
 import { OrganisationsActionsProvider } from "@/components/dynamic-list/dynamic-actions";
-import { ProgressBar } from "./progressBar";
 
 export interface IAppProviderProps {
   backendUrl: string;
@@ -32,7 +31,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
         noAuth={nextRouter.path?.includes("/no-auth")}
         applicationKey="public-portal"
       >
-        <ProgressBar />
         <GlobalPublicPortalStyles />
         <PublicPortalApplicationPlugin>
           <OrganisationsActionsProvider>
