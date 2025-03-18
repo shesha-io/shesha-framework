@@ -386,6 +386,14 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         isDebug: payload,
       };
     },
+    [FormActionEnums.SetPreviewMode]: (state: IFormDesignerStateContext, action: ReduxActions.Action<boolean>) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        isPreview: payload,
+      };
+    },
 
     [FormActionEnums.StartDraggingNewItem]: (state: IFormDesignerStateContext) => {
       return {

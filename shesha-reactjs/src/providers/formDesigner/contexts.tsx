@@ -29,6 +29,7 @@ export interface IFormDesignerStateContext {
   hasDragged: boolean;
   dataSources: IDataSource[];
   isDebug: boolean;
+  isPreview: boolean;
   readOnly: boolean;
 
   settingsPanelRef?: MutableRefObject<any>;
@@ -102,6 +103,7 @@ export interface IFormDesignerActionsContext {
   setValidationErrors: (payload: IFormValidationErrors) => void;
 
   setDebugMode: (isDebug: boolean) => void;
+  setPreviewMode: (isPreview: boolean) => void;
 
   updateFormSettings: (settings: IFormSettings) => void;
 
@@ -125,6 +127,7 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   hasDragged: false,
   isDragging: false,
   isDebug: false,
+  isPreview: false,
   formSettings: DEFAULT_FORM_SETTINGS,
   formFlatMarkup: {
     allComponents: {},

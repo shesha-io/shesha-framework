@@ -1,9 +1,9 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { MetadataProvider, useCanvas, useForm } from '@/providers';
-import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { DebugPanel } from '../debugPanel';
@@ -16,16 +16,9 @@ export interface IDesignerMainAreaProps {
 
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesignerState();
-    const { setSelectedComponent } = useFormDesignerActions();
     const { form, formMode, formSettings } = useForm();
     const { designerWidth, zoom } = useCanvas();
     const { styles } = useStyles();
-
-    useEffect(() => {
-        if (formMode !== 'designer') {
-            setSelectedComponent(null);
-        }
-    }, [formMode]);
 
     return (
         <div className={styles.mainArea} style={{
