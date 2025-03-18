@@ -46,9 +46,12 @@ namespace Shesha.Notifications
                 if (value is GenericEntityReference entityRef)
                 {
                     var entity = (Entity<Guid>)entityRef;
-
-                    return entity != null
-                        ? ReflectionHelper.GetPropertyValue(entity, key, null)
+                    if (entity == null)
+                        return null;
+                    
+                    var propAccessor = ReflectionHelper.GetPropertyValueAccessor(entity, key);
+                    return propAccessor.IsValueAvailable
+                        ? propAccessor.Value
                         : null;
                 }
                 else
