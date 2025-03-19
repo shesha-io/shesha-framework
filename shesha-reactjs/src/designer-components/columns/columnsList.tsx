@@ -260,7 +260,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   return (
     <Fragment>
-      <Button onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
+      <Button size="small" onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
 
       <Modal 
         title={ readOnly ? 'View Columns' : 'Configure Columns' } 
