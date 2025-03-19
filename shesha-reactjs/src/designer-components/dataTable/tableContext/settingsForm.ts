@@ -53,6 +53,23 @@ export const getSettings = (data: any) => {
             ]
           },
           {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId
+              })
+              .toJson()
+            ]
+          },
+          {
             key: 'data',
             title: 'Data',
             id: dataTabId,
@@ -424,23 +441,6 @@ export const getSettings = (data: any) => {
                   }
                 })
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityTabId
-              })
-              .toJson()
             ]
           }
         ]
