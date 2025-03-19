@@ -130,6 +130,29 @@ namespace Shesha.Web.Host.Startup
             // add Shesha GraphQL
             services.AddSheshaGraphQL();
 
+            // Add Identity services
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            // Add external authentication providers
+            services.AddAuthentication()
+                .AddGoogle(googleOptions =>
+                {
+                    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                })
+                .AddFacebook(facebookOptions =>
+                {
+                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                })
+                .AddMicrosoftAccount(microsoftOptions =>
+                {
+                    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                });
+                
             // Add ABP and initialize 
             // Configure Abp and Dependency Injection
             return services.AddAbp<SheshaWebHostModule>(
@@ -194,7 +217,7 @@ namespace Shesha.Web.Host.Startup
 
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-                Authorization = new [] {new HangfireAuthorizationFilter() }
+                Authorization = new[] { new HangfireAuthorizationFilter() }
             });
 
             app.UseMiddleware<GraphQLMiddleware>();
@@ -236,7 +259,7 @@ namespace Shesha.Web.Host.Startup
                     Type = SecuritySchemeType.ApiKey
                 });
 
-                options.ResolveConflictingActions(apiDescriptions => 
+                options.ResolveConflictingActions(apiDescriptions =>
                     apiDescriptions.FirstOrDefault()
                 );
                 //options.SchemaFilter<DynamicDtoSchemaFilter>();
