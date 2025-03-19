@@ -37,6 +37,23 @@ export const getSettings = (data: any) => {
             ]
           },
           {
+            key: 'security',
+            title: 'Security',
+            id: securityId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityId
+              })
+              .toJson()
+            ]
+          },
+          {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceId,
@@ -106,27 +123,6 @@ export const getSettings = (data: any) => {
                                 }
                               ]
                             })
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: 'dimensionsStylePnl',
-                              inline: true,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'dropdown',
-                                  id: nanoid(),
-                                  label: "Size",
-                                  propertyName: "size",
-                                  defaultValue: 'default',
-                                  dropdownOptions: [
-                                    { value: 'small', label: 'Small' },
-                                    { value: 'medium', label: 'Medium' },
-                                    { value: 'large', label: 'Large' },
-                                  ],
-                                  tooltip: 'Controls the height of the input field.',
-                                }
-                              ],
-                            })
                             .toJson()
                           ]
                         }
@@ -135,23 +131,6 @@ export const getSettings = (data: any) => {
                   ]
                 })
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityId
-              })
-              .toJson()
             ]
           }
         ]

@@ -39,9 +39,15 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     if (input?.radius) {
         const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
         if (input?.radiusType === 'all') {
-            style.borderRadius = `${all ?? 8}px ${all ?? 8}px ${all ?? 8}px ${all ?? 8}px`;
+            style.borderTopRightRadius = `${all || 0}px`;
+            style.borderBottomRightRadius = `${all || 0}px`;
+            style.borderBottomLeftRadius = `${all || 0}px`;
+            style.borderTopLeftRadius = `${all || 0}px`;
         } else {
-            style.borderRadius = `${topLeft || all || 8}px ${topRight || all || 8}px ${bottomRight || all || 8}px ${bottomLeft || all || 8}px`;
+            style.borderTopRightRadius = `${topRight || 0}px`;
+            style.borderBottomRightRadius = `${bottomRight || 0}px`;
+            style.borderBottomLeftRadius = `${bottomLeft || 0}px`;
+            style.borderTopLeftRadius = `${topLeft || 0}px`;
         }
     };
 
