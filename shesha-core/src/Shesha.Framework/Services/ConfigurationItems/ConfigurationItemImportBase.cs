@@ -1,13 +1,14 @@
-﻿using Shesha.ConfigurationItems.Distribution;
-using Shesha.Domain;
-using System.Threading.Tasks;
-using System;
-using Abp.Domain.Repositories;
-using Shesha.Domain.ConfigurationItems;
+﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using Shesha.ConfigurationItems.Distribution;
+using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Shesha.Services.ConfigurationItems
 {
@@ -18,7 +19,7 @@ namespace Shesha.Services.ConfigurationItems
     {
         protected IRepository<Module, Guid> ModuleRepo { get; private set; }
         protected IRepository<FrontEndApp, Guid> FrontendAppRepo { get; private set; }
-        public IUnitOfWorkManager UnitOfWorkManager { get; set; }
+        public IUnitOfWorkManager UnitOfWorkManager { get; set; } = default!;
 
         public ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo)
         {

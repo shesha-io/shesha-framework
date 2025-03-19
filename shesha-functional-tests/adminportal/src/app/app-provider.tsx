@@ -8,7 +8,6 @@ import {
     useNextRouter,
 } from '@shesha-io/reactjs';
 import { OrganisationsActionsProvider } from '@/components/dynamic-list/dynamic-actions';
-import { ProgressBar } from './progressBar';
 
 export interface IAppProviderProps {
     backendUrl: string;
@@ -24,7 +23,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 router={nextRouter}
                 noAuth={nextRouter.path?.includes('/no-auth')}
             >
-                <ProgressBar />
                 <OrganisationsActionsProvider>
                     <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
                         {children}

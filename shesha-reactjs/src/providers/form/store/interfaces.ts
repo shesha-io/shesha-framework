@@ -83,6 +83,7 @@ export interface IShaFormInstance<Values = any> {
     readonly dataSubmitState: ProcessingState;
 
     readonly form?: FormInfo;
+    readonly formId?: FormIdentifier;
     readonly settings?: IFormSettings;
     readonly flatStructure?: IFlatComponentsStructure;
     readonly initialValues?: Values;

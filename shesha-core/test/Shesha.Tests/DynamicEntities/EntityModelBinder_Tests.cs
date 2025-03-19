@@ -5,6 +5,7 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -327,7 +328,7 @@ namespace Shesha.Tests.DynamicEntities
             if (p.DateOfBirth == null) throw new Exception($"`{nameof(Person.DateOfBirth)}` is mandatory");
             var sd = p.DateOfBirth?.Date;
             var ed = sd?.AddDays(1);
-            return info.Repository.GetAll().FirstOrDefault(x => x.FirstName == p.FirstName && x.LastName == p.LastName && x.DateOfBirth > sd && x.DateOfBirth < ed);
+            return info.Repository.NotNull().GetAll().FirstOrDefault(x => x.FirstName == p.FirstName && x.LastName == p.LastName && x.DateOfBirth > sd && x.DateOfBirth < ed);
         }
     }
 
@@ -347,7 +348,7 @@ namespace Shesha.Tests.DynamicEntities
 
         public override Person? FindEntity(CascadeRuleEntityFinderInfo<Person, Guid> info)
         {
-            return info.Repository.GetAll().FirstOrDefault(x => x.FirstName == info.NewObject.FirstName);
+            return info.Repository.NotNull().GetAll().FirstOrDefault(x => x.FirstName == info.NewObject.FirstName);
         }
     }
 

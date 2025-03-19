@@ -11,7 +11,7 @@ namespace Shesha.Startup
     public class ShaApplicationModuleConfiguration : IShaApplicationModuleConfiguration
     {
         public List<DynamicAppServiceRegistration> DynamicApplicationServiceRegistrations { get; private set; }
-        public IocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         public ShaApplicationModuleConfiguration()
         {

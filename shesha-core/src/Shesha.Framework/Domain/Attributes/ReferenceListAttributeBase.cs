@@ -16,7 +16,7 @@ namespace Shesha.Domain.Attributes
 
         protected string ReferenceListName { get; set; }
 
-        private string _module;
+        private string? _module;
         public string Module {
             get {
                 throw new MemberAccessException($"Use `{nameof(GetReferenceListIdentifier)}` to read correct module name");

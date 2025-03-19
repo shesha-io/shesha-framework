@@ -254,9 +254,9 @@ namespace Shesha.Domain
             var prefixAttribute = type.GetCustomAttribute<PrefixAttribute>();
             if (prefixAttribute != null)
             {
-                return !prefixAttribute.UsePrefixes
-                    ? ""
-                    : prefixAttribute.Prefix;
+                return prefixAttribute.UsePrefixes && !string.IsNullOrWhiteSpace(prefixAttribute.Prefix)
+                    ? prefixAttribute.Prefix
+                    : string.Empty;
             }
 
             if (!IsRootEntity(type))

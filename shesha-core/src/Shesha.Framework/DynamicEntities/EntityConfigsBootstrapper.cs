@@ -344,7 +344,7 @@ namespace Shesha.DynamicEntities
         {
             if (dbp.DataType == DataTypes.Array && cp.ItemsType != null)
             {
-                var itemsTypeProp = dbp.ItemsType ?? (dbp.ItemsType = new EntityProperty());
+                var itemsTypeProp = dbp.ItemsType ?? (dbp.ItemsType = new EntityProperty() { EntityConfig = dbp.EntityConfig });
 
                 itemsTypeProp.EntityConfig = dbp.EntityConfig;
                 // keep label and description???

@@ -74,7 +74,7 @@ namespace Shesha.Permissions
             _permissionedObjectsCache = permissionedObjectsCacheHolder.Cache;
         }
 
-        private string GetCacheKey(string? objectName, string objectType)
+        private string GetCacheKey(string? objectName, string? objectType)
         {
             return $"{objectName}"; // TODO: AS review using Permissioned objects types _{objectType}";
         }
@@ -118,7 +118,7 @@ namespace Shesha.Permissions
             if (withNested && !string.IsNullOrEmpty(type?.Trim()))
             {
                 var nestedItems = await _permissionedObjectRepository.GetAll()
-                    .Where(x => x.Type.StartsWith($"{type}."))
+                    .Where(x => x.Type != null && x.Type.StartsWith($"{type}."))
                     .WhereIf(!withHidden, x => !x.Hidden)
                     .ToListAsync();
                 var nested = (await nestedItems.SelectAsync(async x => await GetCacheOrDtoAsync(x)))
@@ -160,7 +160,7 @@ namespace Shesha.Permissions
         {
             var childQuery = list.Where(x => x.Parent == dto.Object);
             if (!withHidden)
-                childQuery = childQuery.Where(x => !x.Hidden);
+                childQuery = childQuery.Where(x => !(x.Hidden ?? false));
 
             var child = childQuery
                 .OrderBy(x => x.Name)
@@ -257,7 +257,7 @@ namespace Shesha.Permissions
                 dtoObj.ActualAccess = dtoObj.Access;
 
                 // skip hidden
-                if (!useHidden && dtoObj.Hidden)
+                if (!useHidden && (dtoObj.Hidden ?? false))
                     return null;
 
                 var parent = !string.IsNullOrEmpty(dtoObj.Parent)
@@ -402,7 +402,7 @@ namespace Shesha.Permissions
             obj.Category = permissionedObject.Category;
             obj.Description = permissionedObject.Description;
             obj.Permissions = string.Join(",", permissionedObject.Permissions ?? new List<string>());
-            obj.Hidden = permissionedObject.Hidden;
+            obj.Hidden = permissionedObject.Hidden ?? false;
             obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
             var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
@@ -479,7 +479,7 @@ namespace Shesha.Permissions
             };
         }
 
-        private void RemoveCache(string objectName, string objectType, string? parentName)
+        private void RemoveCache(string objectName, string? objectType, string? parentName)
         {
             var key = "";
             var pkey = GetCacheKey(objectName, objectType);

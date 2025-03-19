@@ -1,5 +1,4 @@
 ﻿using System;
-using Shesha.Domain;
 
 namespace Shesha.EntityHistory
 {
@@ -8,17 +7,13 @@ namespace Shesha.EntityHistory
     {
         public Type EntityType { get; set; }
 
-        public string OwnerIdField { get; set; }
+        public string? OwnerIdField { get; set; }
         
-        public string OwnerTypeField { get; set; }
+        public string? OwnerTypeField { get; set; }
 
-        public string DisplayName { get; set; }
+        public string? DisplayName { get; set; }
 
-        public string NameField { get; set; }
-
-        public string CategoryField { get; set; }
-
-        public object CategoryValue { get; set; }
+        public string? NameField { get; set; }
 
         public DisplayGenericEntitesAuditTrailAttribute(Type entityType)
         {

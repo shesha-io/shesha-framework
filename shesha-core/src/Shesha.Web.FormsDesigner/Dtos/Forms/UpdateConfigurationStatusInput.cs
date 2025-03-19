@@ -12,7 +12,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// Filter string in JsonLogic format
         /// </summary>
         [Required]
-        public string Filter { get; set; }
+        public required string Filter { get; set; }
 
         /// <summary>
         /// New status

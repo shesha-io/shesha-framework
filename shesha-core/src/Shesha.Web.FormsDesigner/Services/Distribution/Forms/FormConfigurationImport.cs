@@ -153,17 +153,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             form.Markup = item.Markup;
             form.ModelType = item.ModelType;
             form.IsTemplate = item.IsTemplate;
-
-            // todo: decide how to handle other properties
-            /*
-            form.Configuration.Origin
-            form.Configuration.Module
-            form.Configuration.BaseItem
-            form.Configuration.VersionNo
-            form.Configuration.ParentVersion
-            form.Configuration.CreatedByImport
-            form.Configuration.TenantId
-            */
         }
     }
 }

@@ -21,10 +21,10 @@ namespace Shesha.Domain
         public virtual OtpSendType SendType { get; set; }
 
         [StringLength(100)]
-        public virtual string RecipientType { get; set; }
+        public virtual string? RecipientType { get; set; }
         
         [StringLength(40)]
-        public virtual string RecipientId { get; set; }
+        public virtual string? RecipientId { get; set; }
 
         /// <summary>
         /// Expiration date
@@ -40,11 +40,11 @@ namespace Shesha.Domain
         public virtual string Otp { get; set; }
         
         [StringLength(100)]
-        public virtual string ActionType { get; set; }
+        public virtual string? ActionType { get; set; }
 
         public virtual OtpSendStatus SendStatus { get; set; }
         
         [StringLength(int.MaxValue)]
-        public virtual string ErrorMessage { get; set; }
+        public virtual string? ErrorMessage { get; set; }
     }
 }

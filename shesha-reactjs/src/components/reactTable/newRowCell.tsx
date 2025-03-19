@@ -1,7 +1,7 @@
 import CrudOperationsCell from '@/components/dataTable/cell/crudOperationsCell';
 import { CreateDataCell } from '@/components/dataTable/cell/dataCell';
 import { DataTableColumn } from '@/components/dataTable/interfaces';
-import { useMetadata } from '@/providers';
+import { FormIdentifier, useMetadata } from '@/providers';
 import React, { FC } from 'react';
 import { Cell, ColumnInstance, HeaderPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
 import { toCamelCase } from '@/utils/string';
@@ -10,7 +10,8 @@ import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
-import { CreateFormCell } from '../dataTable/cell/formCell/formCell';
+import { CreateFormCell, ICreateFormCellProps } from '../dataTable/cell/formCell/formCell';
+import { isFormFullName } from '@/index';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -29,9 +30,10 @@ export interface INewRowCellProps {
   column: ColumnInstance;
   row?: ColumnInstance<{}>[];
   rowIndex?: number;
+  parentFormId?: FormIdentifier;
 }
 
-export const NewRowCell: FC<INewRowCellProps> = ({ column, row }) => {
+export const NewRowCell: FC<INewRowCellProps> = ({ column, row, parentFormId }) => {
   const columnConfig = (column as DataTableColumn)?.originalConfig;
 
   const metadata = useMetadata(false)?.metadata;
@@ -81,6 +83,12 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row }) => {
 
   const hasShadow = numOfFixed === index && anchored?.isFixed;
 
+  const parentFormProps: ICreateFormCellProps = {};
+  if (isFormFullName(parentFormId))
+    parentFormProps.parentFormName = `${parentFormId.module}/${parentFormId.name}`;
+  else if (typeof parentFormId === 'string' && parentFormId)
+    parentFormProps.parentFormId = parentFormId;
+
   return (
     <div
       {...headerProps}
@@ -95,7 +103,7 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row }) => {
         <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
       )}
       {columnConfig && columnConfig.columnType === 'form' && (
-        <CreateFormCell columnConfig={columnConfig} />
+        <CreateFormCell columnConfig={columnConfig} {...parentFormProps} />
       )}
       {columnConfig && columnConfig.columnType === 'crud-operations' && (
         <CrudOperationsCell columnConfig={columnConfig} />

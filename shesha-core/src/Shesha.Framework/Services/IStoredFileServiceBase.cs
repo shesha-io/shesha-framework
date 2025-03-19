@@ -12,12 +12,12 @@ namespace Shesha.Services
     {
         Task MarkDownloadedAsync(StoredFileVersion fileVersion);
 
-        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string fileCategory);
-        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string? fileCategory);
+        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(IEntity<TId> owner);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(TId id, string typeShortAlias);
 
-        Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string? fileCategory);
         Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias);
 
         Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string? fileCategory);

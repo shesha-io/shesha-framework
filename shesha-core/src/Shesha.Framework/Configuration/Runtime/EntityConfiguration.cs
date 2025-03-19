@@ -80,13 +80,13 @@ namespace Shesha.Configuration.Runtime
             }
         }
 
-        public string FriendlyName { get; set; }
-        public string Accessor { get; set; }
+        public string? FriendlyName { get; set; }
+        public string? Accessor { get; set; }
 
         public string? TableName => MappingMetadata?.TableName;
         public string? DiscriminatorValue => MappingMetadata?.DiscriminatorValue;
 
-        private EntityMappingMetadata _mappingMetadata;
+        private EntityMappingMetadata? _mappingMetadata;
         private static object _nhMetadataLock = new object();
         public EntityMappingMetadata MappingMetadata
         {
@@ -106,7 +106,7 @@ namespace Shesha.Configuration.Runtime
         }
 
         private readonly object _typeShortAliasesHierarchyLock = new object();
-        private List<string> _typeShortAliasesHierarchy;
+        private List<string>? _typeShortAliasesHierarchy;
         public List<string> TypeShortAliasesHierarchy
         {
             get
@@ -165,7 +165,7 @@ namespace Shesha.Configuration.Runtime
         /// <summary>
         /// Type of the default application service
         /// </summary>
-        public Type ApplicationServiceType { get; set; }
+        public Type? ApplicationServiceType { get; set; }
 
         public class PropertySetChangeLoggingConfiguration
         {
@@ -174,7 +174,6 @@ namespace Shesha.Configuration.Runtime
                 AuditedProperties = new List<string>();
             }
 
-            public virtual string Namespace { get; internal set; }
             public virtual IList<string> AuditedProperties { get; internal set; }
         }
     }

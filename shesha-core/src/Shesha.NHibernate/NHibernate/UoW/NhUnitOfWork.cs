@@ -60,14 +60,12 @@ namespace Shesha.NHibernate.UoW
         /// <see cref="NhUnitOfWork"/> uses this DbConnection if it's set.
         /// This is usually set in tests.
         /// </summary>
-        public DbConnection DbConnection { get; set; }
+        public DbConnection? DbConnection { get; set; }
 
         /// <summary>
         /// Entity history helper
         /// </summary>
-        public EntityHistoryHelperBase EntityHistoryHelper { get; set; }
-
-        private readonly SheshaNHibernateModule _nhModule;
+        public EntityHistoryHelperBase EntityHistoryHelper { get; set; } = default!;
 
         /// <summary>
         /// Creates a new instance of <see cref="NhUnitOfWork"/>.
@@ -77,17 +75,13 @@ namespace Shesha.NHibernate.UoW
             ISessionFactory sessionFactory,
             IConnectionStringResolver connectionStringResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
-            IUnitOfWorkFilterExecuter filterExecuter,
-
-            SheshaNHibernateModule nhModule)
+            IUnitOfWorkFilterExecuter filterExecuter)
             : base(
                   connectionStringResolver,
                   defaultOptions,
                   filterExecuter)
         {
             _sessionFactory = sessionFactory;
-
-            _nhModule = nhModule;
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
-import { useRouter } from 'next-nprogress-bar';
 import { IRouter } from "@/providers";
-import { ReadonlyURLSearchParams, usePathname, useSearchParams } from 'next/navigation';
+import { ReadonlyURLSearchParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const convertSearchParamsToDictionary = (params: ReadonlyURLSearchParams): NodeJS.Dict<string | string[]> => {
     const entries = params.entries();

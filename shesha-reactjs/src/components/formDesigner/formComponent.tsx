@@ -1,6 +1,6 @@
 import React, { FC, MutableRefObject } from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
-import { useCanvas, useForm, useSheshaApplication } from '@/providers';
+import { useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { IModelValidation } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
@@ -28,6 +28,7 @@ export const formComponentActualModelPropertyFilter = (component: IToolboxCompon
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   const formInstance = useForm();
+  const shaForm = useShaFormInstance();
   const { form, isComponentFiltered, formMode } = formInstance;
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -70,13 +71,20 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     }
   }
 
+  const attributes = {
+    'data-sha-c-id': `${componentModel.id}`,
+    'data-sha-c-name': `${componentModel.componentName}`,
+    'data-sha-c-type': `${componentModel.type}`,
+  };
+
+  if (componentModel.type === 'subForm') {
+    attributes['data-sha-c-form-name'] = `${(componentModel as any)?.formId?.module}/${(componentModel as any)?.formId?.name}`;
+    attributes['data-sha-parent-form-id'] = `${shaForm.form.id}`;
+    attributes['data-sha-parent-form-name'] = `${(shaForm as any)?.formId?.module}/${(shaForm as any)?.formId?.name}`;
+  }
+
   return (
-    <AttributeDecorator attributes={{
-      'data-sha-c-id': `${componentModel.id}`,
-      'data-sha-c-name': `${componentModel.componentName}`,
-      'data-sha-c-type': `${componentModel.type}`
-    }}
-    >
+    <AttributeDecorator attributes={attributes}>
       <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
     </AttributeDecorator>
   );

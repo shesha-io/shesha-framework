@@ -14,7 +14,7 @@ namespace Shesha.DynamicEntities
 
         public static SheshaActionDescriptorChangeProvider Instance { get; } = new SheshaActionDescriptorChangeProvider();
 
-        public CancellationTokenSource TokenSource { get; private set; }
+        public CancellationTokenSource? TokenSource { get; private set; }
 
         public bool HasChanged { get; set; }
 

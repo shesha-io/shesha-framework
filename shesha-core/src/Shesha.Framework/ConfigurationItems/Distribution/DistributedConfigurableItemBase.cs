@@ -22,7 +22,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label of the con
@@ -32,7 +32,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Item name
         /// </summary>
-        public string ItemType { get; set; }
+        public required string ItemType { get; set; }
 
         /// <summary>
         /// Item description

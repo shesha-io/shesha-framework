@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Json;
 using Abp.Timing;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
@@ -34,6 +35,35 @@ namespace Shesha.Tests.EntityReferenceTest
             _entityModelBinder = Resolve<IEntityModelBinder>();
 
             _moduleRepo = Resolve<IRepository<Module, Guid>>();
+        }
+
+        public class TestDto
+        {
+            public string Name { get; set; }
+            public GenericEntityReference Test { get; set; }
+        }
+
+        [Fact]
+        public async Task TestGnericEntityReferenceSerializationAsync()
+        {
+            LoginAsHostAdmin();
+
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync(x => x.FirstName != null && x.FirstName != "");
+                var dto = new TestDto
+                {
+                    Name = "Test",
+                    Test = person
+                };
+
+                var json = dto.ToJsonString();
+                var obj = json.FromJsonString<TestDto>();
+
+                var newTest = (Person)obj.Test;
+
+                Assert.True(newTest.FirstName?.Equals(person.FirstName));
+            }
         }
 
         [Fact]

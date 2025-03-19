@@ -30,5 +30,13 @@ namespace Shesha.Services.Settings
         /// <param name="context">Setting context</param>
         /// <returns></returns>
         Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context);
+
+        /// <summary>
+        /// Get setting value
+        /// </summary>
+        /// <param name="setting">Setting definition</param>
+        /// <param name="context">Setting context</param>
+        /// <returns></returns>
+        Task<string?> GetValueAsync(SettingDefinition setting, SettingManagementContext context);
     }
 }

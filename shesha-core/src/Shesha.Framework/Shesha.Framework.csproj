@@ -14,10 +14,12 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DocumentationFile>.\Shesha.Framework.xml</DocumentationFile>
+        <WarningsNotAsErrors></WarningsNotAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DocumentationFile>.\Shesha.Framework.xml</DocumentationFile>
+        <WarningsNotAsErrors></WarningsNotAsErrors>
     </PropertyGroup>
 
     <ItemGroup>

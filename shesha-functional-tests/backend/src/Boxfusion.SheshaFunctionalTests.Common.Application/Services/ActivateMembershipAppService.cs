@@ -1,6 +1,5 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
-using Abp.UI;
 using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
@@ -8,13 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using NHibernate.Linq;
 using Shesha;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.Utilities;
-using System;
-using System.Collections.Generic;
+using Shesha.Extensions;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
@@ -36,7 +30,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         /// <returns></returns>
         /// <exception cref="AbpValidationException"></exception>
         [HttpPut, Route("[action]")]
-        public async Task<DynamicDto<Member, Guid>> ActivateMembership(Guid memberId)
+        public async Task<DynamicDto<Member, Guid>> ActivateMembershipAsync(Guid memberId)
         {
             var member = await _memberRepo.GetAsync(memberId);
             var payments = await _membershipPaymentRepo.GetAllListAsync(data => data.Member.Id == memberId);
@@ -67,31 +61,26 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         /// </summary>
         /// <param name="memberId"></param>
         /// <returns></returns>
-        public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetMemberPayments (Guid memberId)
+        public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetMemberPaymentsAsync(Guid memberId)
         {
-            var memberPayments = await Task.WhenAll(_membershipPaymentRepo.GetAll().Where(data => data.Member.Id == memberId)
-                                                        .ToList()
-                                                        .Select(async m =>
-                                                        {
-                                                            var result = await MapToDynamicDtoAsync<MembershipPayment, Guid>(m);
-                                                            return result;
-                                                        }));
-            return memberPayments.ToList();
+            var memberPayments = await _membershipPaymentRepo.GetAll()
+                .Where(data => data.Member.Id == memberId)
+                .ToListAsync();
+
+            var dtos = (await memberPayments.SelectAsync(async m => await MapToDynamicDtoAsync<MembershipPayment, Guid>(m))).ToList();
+            return dtos;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetAllMembershipPayments()
+        public async Task<List<DynamicDto<MembershipPayment, Guid>>> GetAllMembershipPaymentsAsync()
         {
-            var memberPayments = await Task.WhenAll(_membershipPaymentRepo.GetAll().ToList()
-                                                        .Select(async m =>
-                                                        {
-                                                            var result = await MapToDynamicDtoAsync<MembershipPayment, Guid>(m);
-                                                            return result;
-                                                        }));
-            return memberPayments.ToList();
+            var memberPayments = await _membershipPaymentRepo.GetAll().ToListAsync();
+
+            var dtos = (await memberPayments.SelectAsync(async m => await MapToDynamicDtoAsync<MembershipPayment, Guid>(m))).ToList();
+            return dtos;
         }
 
 
@@ -99,7 +88,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task<DynamicDto<MembershipPayment, Guid>> CreateMemberPayment(MembershipPaymentDto input)
+        public async Task<DynamicDto<MembershipPayment, Guid>> CreateMemberPaymentAsync(MembershipPaymentDto input)
         {
             var memberPayment = ObjectMapper.Map<MembershipPayment>(input);
             await _membershipPaymentRepo.InsertAsync(memberPayment);

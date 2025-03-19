@@ -170,7 +170,7 @@ namespace Shesha.Permissions
         }
 
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string term)
+        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term)
         {
             term = (term ?? "").ToLower();
             

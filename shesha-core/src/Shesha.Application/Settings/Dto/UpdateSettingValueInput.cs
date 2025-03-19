@@ -15,6 +15,6 @@ namespace Shesha.Settings.Dto
         /// <summary>
         /// Front-end application key, see <seealso cref="FrontEndApp.AppKey"/>. Is used for client-specific applications only
         /// </summary>
-        public string AppKey { get; set; }
+        public string? AppKey { get; set; }
     }
 }

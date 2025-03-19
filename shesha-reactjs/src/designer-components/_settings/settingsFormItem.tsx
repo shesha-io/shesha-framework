@@ -14,7 +14,7 @@ import { getFieldNameFromExpression } from '@/index';
 
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
-    label?: string;
+    label?: string | React.ReactNode;
     jsSetting?: boolean;
     readOnly?: boolean;
     disabled?: boolean;

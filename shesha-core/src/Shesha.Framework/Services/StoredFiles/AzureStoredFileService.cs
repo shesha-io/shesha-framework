@@ -20,7 +20,7 @@ namespace Shesha.Services.StoredFiles
         private const string ContainerName = "files";
         private readonly IocManager _iocManager;
         private readonly IConfigurationRoot _configuration;
-        private BlobContainerClient _blobContainerClient;
+        private BlobContainerClient? _blobContainerClient;
 
         public AzureStoredFileService(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IocManager iocManager)
             : base(fileService, versionService)

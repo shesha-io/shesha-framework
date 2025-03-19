@@ -104,8 +104,6 @@ namespace Shesha.Tests
 
             Configuration.ReplaceService<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>(DependencyLifeStyle.Singleton);
 
-            Configuration.Settings.Providers.Add<TestSettingsProvider>();
-
             Configuration.EntityHistory.Selectors.Add("Settings", typeof(Setting));
 
             if (!IocManager.IsRegistered<ApplicationPartManager>())

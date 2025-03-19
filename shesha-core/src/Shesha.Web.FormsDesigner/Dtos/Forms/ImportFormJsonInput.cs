@@ -20,6 +20,6 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// </summary>
         [Required]
         [BindProperty(Name = "file")]
-        public IFormFile File { get; set; }
+        public required IFormFile File { get; set; }
     }
 }

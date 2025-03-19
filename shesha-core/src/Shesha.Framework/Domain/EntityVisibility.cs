@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {

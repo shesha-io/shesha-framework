@@ -22,7 +22,7 @@ namespace Shesha.ConfigurationItems
             where TImplementation : IConfigurationItemManager<TItem>
         {
             iocManager.IocContainer.Register(
-                Component.For<IConfigurationItemManager<TItem>>().Forward<TInterface>().ImplementedBy<TImplementation>().LifestyleTransient()
+                Component.For<IConfigurationItemManager<TItem>>().Forward<TInterface>().Forward<TImplementation>().ImplementedBy<TImplementation>().LifestyleTransient()
             );
             return iocManager;
         }

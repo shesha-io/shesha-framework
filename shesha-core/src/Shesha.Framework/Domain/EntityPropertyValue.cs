@@ -1,12 +1,4 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Attributes;
-using Shesha.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using JetBrains.Annotations;
+﻿using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {

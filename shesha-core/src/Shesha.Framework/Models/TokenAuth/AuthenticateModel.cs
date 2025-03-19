@@ -7,17 +7,17 @@ namespace Shesha.Models.TokenAuth
     {
         [Required]
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
-        public string UserNameOrEmailAddress { get; set; }
+        public required string UserNameOrEmailAddress { get; set; }
 
         [Required]
         [StringLength(AbpUserBase.MaxPlainPasswordLength)]
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
         //public bool RememberClient { get; set; }
         
         /// <summary>
         /// Optional IMEI number. Is used for mobile applications
         /// </summary>
-        public string IMEI { get; set; }
+        public string? IMEI { get; set; }
     }
 }

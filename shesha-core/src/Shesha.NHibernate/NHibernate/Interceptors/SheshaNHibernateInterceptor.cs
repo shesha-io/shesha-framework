@@ -38,37 +38,31 @@ namespace Shesha.NHibernate.Interceptors
 
         public SheshaNHibernateInterceptor(IIocManager iocManager)
         {
-            try
-            {
-                _iocManager = iocManager;
+            EntityChangeEventHelper = default!;
+            _iocManager = iocManager;
 
-                _abpSession =
-                    new Lazy<IAbpSession>(
-                        () => _iocManager.IsRegistered(typeof(IAbpSession))
-                            ? _iocManager.Resolve<IAbpSession>()
-                            : NullAbpSession.Instance,
-                        isThreadSafe: true
-                        );
-                _guidGenerator =
-                    new Lazy<IGuidGenerator>(
-                        () => _iocManager.IsRegistered(typeof(IGuidGenerator))
-                            ? _iocManager.Resolve<IGuidGenerator>()
-                            : SequentialGuidGenerator.Instance,
-                        isThreadSafe: true
-                        );
-
-                _eventBus =
-                    new Lazy<IEventBus>(
-                        () => _iocManager.IsRegistered(typeof(IEventBus))
-                            ? _iocManager.Resolve<IEventBus>()
-                            : NullEventBus.Instance,
-                        isThreadSafe: true
+            _abpSession =
+                new Lazy<IAbpSession>(
+                    () => _iocManager.IsRegistered(typeof(IAbpSession))
+                        ? _iocManager.Resolve<IAbpSession>()
+                        : NullAbpSession.Instance,
+                    isThreadSafe: true
                     );
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e.Message, e);
-            }
+            _guidGenerator =
+                new Lazy<IGuidGenerator>(
+                    () => _iocManager.IsRegistered(typeof(IGuidGenerator))
+                        ? _iocManager.Resolve<IGuidGenerator>()
+                        : SequentialGuidGenerator.Instance,
+                    isThreadSafe: true
+                    );
+
+            _eventBus =
+                new Lazy<IEventBus>(
+                    () => _iocManager.IsRegistered(typeof(IEventBus))
+                        ? _iocManager.Resolve<IEventBus>()
+                        : NullEventBus.Instance,
+                    isThreadSafe: true
+                );
         }
 
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
