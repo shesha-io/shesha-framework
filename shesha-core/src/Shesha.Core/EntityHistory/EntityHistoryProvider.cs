@@ -417,7 +417,6 @@ namespace Shesha.EntityHistory
                     })
                     .ToList();
 
-                // TODO: Alex, please review. The logic is not clear here
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds.AddRange(childItems.Select(x => x.InnerObject?.DeleterUserId));
