@@ -72,22 +72,23 @@ namespace Shesha.Settings
         }
 
 
-        public async Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null)
+        public async Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string? dataType, TValue? defaultValue, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.GetOrNull(module, name);
 
-            if (setting == null)
+            if (setting == null && dataType != null)
             {
                 setting = _settingDefinitionManager.CreateUserSettingDefinition(module, name, dataType, defaultValue);
                 _settingDefinitionManager.AddDefinition(setting);
-                var configuration = await EnsureConfigurationAsync(setting);
+                await EnsureConfigurationAsync(setting);
+
+                var value = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+                return value != null
+                    ? Deserialize(value.Value, setting.GetValueType())
+                    : setting.GetDefaultValue();
             }
 
-            var value = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
-
-            return value != null
-                ? Deserialize(value.Value, setting.GetValueType())
-                : setting.GetDefaultValue();
+            return null;
         }
 
         public async Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType,[CanBeNull] TValue? value, SettingManagementContext? context = null)
