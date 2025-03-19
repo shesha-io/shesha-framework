@@ -10,11 +10,11 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// View mode
         /// </summary>
-        public ConfigurationItemViewMode ViewMode { get; set; }
+        public ConfigurationItemViewMode ViewMode { get; set; } = ConfigurationItemViewMode.Live;
 
         /// <summary>
         /// Front-end application
         /// </summary>
-        public string FrontEndApplication { get; set; }
+        public string? FrontEndApplication { get; set; }
     }
 }

@@ -96,7 +96,7 @@ namespace Shesha.Authorization
             return authenticateResult;
         }
 
-        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 
+        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string? imei) 
         {
             if (!loginResult.IsSuccess)
                 throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));
@@ -296,7 +296,7 @@ namespace Shesha.Authorization
             return _tenantCache.GetOrNull(AbpSession.TenantId.Value)?.TenancyName;
         }
 
-        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string imei, string? tenancyName)
+        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string? imei, string? tenancyName)
         {
             var loginResult = await _logInManager.LoginAsync(usernameOrEmailAddress, password, imei, tenancyName);
 

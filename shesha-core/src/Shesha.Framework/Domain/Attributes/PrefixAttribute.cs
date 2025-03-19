@@ -9,7 +9,7 @@ namespace Shesha.Domain.Attributes
     public class PrefixAttribute : Attribute
     {
         public bool UsePrefixes { get; set; }
-        public string Prefix { get; set; }
+        public string? Prefix { get; set; }
 
         public PrefixAttribute()
         {

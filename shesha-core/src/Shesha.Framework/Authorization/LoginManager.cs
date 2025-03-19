@@ -58,7 +58,7 @@ namespace Shesha.Authorization
         {
             if (user.AllowedFrontEndApps != null
                 && user.AllowedFrontEndApps.Any()
-                && !user.AllowedFrontEndApps.Contains(_cfRuntime.FrontEndApplication)
+                && (string.IsNullOrWhiteSpace(_cfRuntime.FrontEndApplication) || !user.AllowedFrontEndApps.Contains(_cfRuntime.FrontEndApplication))
                 )
                 return new ShaLoginResult<User>(ShaLoginResultType.ForbiddenFrontend, tenant, user);
             return null;

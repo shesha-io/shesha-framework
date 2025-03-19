@@ -74,7 +74,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
     errors: [{ error: error.message }],
   } as IModelValidation;
 
-  const shaMessage = `An error has ocured when '${componentName}' (${componentType}) rendered`;
+  const shaMessage = `An error has occurred when '${componentName}' (${componentType}) rendered`;
 
   return <ComponentError errors={shaError} message={shaMessage} type='error' resetErrorBoundary={resetErrorBoundary}/>;
 };

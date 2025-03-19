@@ -533,7 +533,7 @@ namespace Shesha.Users
         public async Task<ResetPasswordVerifyOtpResponse> ResetPasswordVerifyOtpAsync(ResetPasswordVerifyOtpInput input)
         {
             var otp = await _otpManager.GetOrNullAsync(input.OperationId);
-            var personId = otp?.RecipientId.ToGuid() ?? Guid.Empty;
+            var personId = otp?.RecipientId?.ToGuid() ?? Guid.Empty;
             var user = personId != Guid.Empty
                 ? (await _personRepository.GetAsync(personId))?.User
                 : await GetUniqueUserByMobileNoAsync(input.MobileNo);

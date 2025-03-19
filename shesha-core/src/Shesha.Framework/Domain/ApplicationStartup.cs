@@ -16,14 +16,14 @@ namespace Shesha.Domain
     public class ApplicationStartup: Entity<Guid>
     {
         [StringLength(100)]
-        public virtual string MachineName { get; set; }
-        public virtual string Folder { get; set; }
+        public virtual string? MachineName { get; set; }
+        public virtual string? Folder { get; set; }
         [StringLength(100)]
-        public virtual string Account { get; set; }
+        public virtual string? Account { get; set; }
         public virtual DateTime StartedOn { get; set; }
         public virtual DateTime? FinishedOn { get; set; }
         public virtual ApplicationStartupStatus Status { get; set; }
-        public virtual string ErrorMessage { get; set; }
+        public virtual string? ErrorMessage { get; set; }
 
         public virtual bool BootstrappersDisabled { get; set; }
         public virtual bool MigrationsDisabled { get; set; }

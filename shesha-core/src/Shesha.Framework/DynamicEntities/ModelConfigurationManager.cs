@@ -515,10 +515,10 @@ namespace Shesha.DynamicEntities
                     var hardCodedProp = hardCodedProps.FirstOrDefault(pp => pp.Path == prop.Name);
                     if (hardCodedProp != null)
                     {
-                        prop.Suppress = !hardCodedProp.IsVisible || prop.Suppress;
-                        prop.Required = hardCodedProp.Required || prop.Required;
-                        prop.ReadOnly = hardCodedProp.Readonly || prop.ReadOnly;
-                        prop.Audited = hardCodedProp.Audited || prop.Audited;
+                        prop.Suppress = !hardCodedProp.IsVisible || (prop.Suppress ?? false);
+                        prop.Required = hardCodedProp.Required || (prop.Required ?? false);
+                        prop.ReadOnly = hardCodedProp.Readonly || (prop.ReadOnly ?? false);
+                        prop.Audited = hardCodedProp.Audited || (prop.Audited ?? false);
                         prop.MinLength = hardCodedProp.MinLength ?? prop.MinLength;
                         prop.MaxLength = hardCodedProp.MaxLength ?? prop.MaxLength;
                         prop.Min = hardCodedProp.Min ?? prop.Min;

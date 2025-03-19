@@ -10,7 +10,7 @@ namespace Shesha.Settings
         /// <summary>
         /// AppKey of the front-end application (<see cref="FrontEndApp.AppKey"/>)
         /// </summary>
-        public string AppKey { get; set; }
+        public string? AppKey { get; set; }
 
         /// <summary>
         /// Tenant Id

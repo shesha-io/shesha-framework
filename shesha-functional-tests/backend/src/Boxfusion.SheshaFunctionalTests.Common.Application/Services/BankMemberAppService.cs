@@ -30,7 +30,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             return await MapToDynamicDtoAsync<Bank, Guid>(bank);
         }
 
-        public async Task<BankMemberDto> GetBankWithMembers (Guid id)
+        public async Task<BankMemberDto> GetBankWithMembersAsync(Guid id)
         {
             var bank = await _bankRepo.GetAsync(id);
             var bankMembers = new BankMemberDto()
@@ -44,7 +44,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             return ObjectMapper.Map<BankMemberDto>(bankMembers);
         }
 
-        public async Task<List<BankMemberDto>> GetAllBankWithMembers()
+        public Task<List<BankMemberDto>> GetAllBankWithMembersAsync()
         {
             var bankMembers = _bankRepo.GetAll().Select(x => new BankMemberDto
             {
@@ -54,7 +54,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 Name = x.Name,
                 Members = _memberRepo.GetAll().Where(m => m.Bank.Id == x.Id).Select(n => n.Id).ToList()
             }).ToList();
-            return ObjectMapper.Map<List<BankMemberDto>>(bankMembers);
+            var result = ObjectMapper.Map<List<BankMemberDto>>(bankMembers);
+
+            return Task.FromResult(result);
         }
     }
 }

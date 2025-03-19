@@ -16,13 +16,13 @@ namespace Shesha.DynamicEntities.Dtos
     public class EntityConfigDto: EntityDto<Guid>, IConfigurationItemDto
     {
         [StringLength(255)]
-        public string FriendlyName { get; set; }
+        public string? FriendlyName { get; set; }
         [StringLength(100)]
         public string? TypeShortAlias { get; set; }
         [StringLength(255)]
         public string? TableName { get; set; }
         [StringLength(500)]
-        public string ClassName { get; set; }
+        public string? ClassName { get; set; }
         [StringLength(500)]
         public string? Namespace { get; set; }
         [StringLength(255)]
@@ -39,7 +39,7 @@ namespace Shesha.DynamicEntities.Dtos
 
         // From ConfigurationItem
         public bool Suppress { get; set; }
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public string Name { get; set; }
         public string? Label { get; set; }
 

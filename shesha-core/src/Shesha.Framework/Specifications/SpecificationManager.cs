@@ -18,11 +18,9 @@ namespace Shesha.Specifications
     {
         private static readonly AsyncLocal<SpecificationManagerState> InternalState = new AsyncLocal<SpecificationManagerState>();
 
-        private static readonly AsyncLocal<bool> IsDisabled = new AsyncLocal<bool>();
-
         private readonly ISpecificationsFinder _specificationsFinder;
 
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         public SpecificationManager(ISpecificationsFinder specificationsFinder)
         {

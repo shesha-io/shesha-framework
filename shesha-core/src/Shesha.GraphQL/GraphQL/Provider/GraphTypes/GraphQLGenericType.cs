@@ -246,6 +246,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             Field(listType, propertyInfo.Name);
                             break;
                         }
+                    case nameof(Guid): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
                     case nameof(Boolean): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
                     case nameof(Int32): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
                     case nameof(Int64): Field(GraphTypeMapper.GetGraphType(propertyInfo.PropertyType, isInput: false), propertyInfo.Name); break;
@@ -276,6 +277,13 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             {
                                 switch (underlyingType.Name)
                                 {
+                                    case nameof(Guid):
+                                        Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
+                                        {
+                                            var nullableGuid = propertyInfo.GetValue(context.Source) as Guid?;
+                                            if (nullableGuid.HasValue) return nullableGuid.Value;
+                                            else return null;
+                                        }); break;
                                     case nameof(Int32):
                                         Field(GraphTypeMapper.GetGraphType(underlyingType, isInput: false), propertyInfo.Name, resolve: context =>
                                         {

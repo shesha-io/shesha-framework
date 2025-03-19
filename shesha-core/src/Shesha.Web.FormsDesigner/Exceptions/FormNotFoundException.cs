@@ -8,7 +8,7 @@ namespace Shesha.Web.FormsDesigner.Exceptions
     /// </summary>
     public class FormNotFoundException: ConfigurationItemNotFoundException
     {
-        public FormNotFoundException(string module, string name): base(FormConfiguration.ItemTypeName, module, name, null) 
+        public FormNotFoundException(string? module, string name): base(FormConfiguration.ItemTypeName, module, name, null) 
         {
             Name = name;
             Module = module;

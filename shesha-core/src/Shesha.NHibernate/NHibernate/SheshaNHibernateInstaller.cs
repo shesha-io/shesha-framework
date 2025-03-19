@@ -21,7 +21,7 @@ namespace Shesha.NHibernate
                 Component.For<ICurrentSessionContext>().ImplementedBy(typeof(UnitOfWorkSessionContext)).LifestyleTransient(),
                 Component.For<ISession>().UsingFactory<ISessionFactory, ISession>(f => f.OpenSession()).LifestyleScoped(),
                 Component.For<NHibernateEntityHistoryStore>().ImplementedBy(typeof(NHibernateEntityHistoryStore)).LifestyleTransient(),
-                Component.For<EntityHistoryHelperBase>().ImplementedBy(typeof(EntityHistory.EntityHistoryHelper)).LifestyleTransient()
+                Component.For<EntityHistoryHelperBase>().ImplementedBy(typeof(EntityHistoryHelper)).LifestyleTransient()
             );
         }
     }

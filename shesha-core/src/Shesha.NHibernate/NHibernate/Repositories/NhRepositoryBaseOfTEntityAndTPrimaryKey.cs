@@ -45,6 +45,9 @@ namespace Shesha.NHibernate.Repositories
         public NhRepositoryBase(ISessionProvider sessionProvider)
         {
             _sessionProvider = sessionProvider;
+
+            SpecificationManager = default!;
+            CurrentUnitOfWorkProvider = default!;
         }
 
         public IQueryable<TEntity> QueryAll() 

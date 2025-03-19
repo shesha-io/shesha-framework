@@ -60,7 +60,7 @@ namespace Shesha.Scheduler
 
         private const string JobExecutionIdKey = "JobExecutionId";
 
-        private IHubContext<SignalrAppenderHub> _signalrHub;
+        private IHubContext<SignalrAppenderHub>? _signalrHub;
         internal IHubContext<SignalrAppenderHub> SignalrHub => _signalrHub ??= _iocManager.Resolve<IHubContext<SignalrAppenderHub>>();
 
         /// inheritedDoc

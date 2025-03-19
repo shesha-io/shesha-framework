@@ -10,6 +10,6 @@ namespace Shesha.Domain.Attributes
     {
         public bool IsVersionControlled { get; set; }
         public bool IsEncrypted { get; set; }
-        public string Accept { get; set; }
+        public string? Accept { get; set; }
     }
 }

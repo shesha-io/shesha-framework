@@ -427,11 +427,11 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         await this.loadFormByRawMarkupAsync();
 
         this.initialValues = initialValues;
-        this.#setInternalFormData(initialValues);
+        this.formData = initialValues;
 
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
-        //await this.loadData(formArguments);
+
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
         this.forceRootUpdate();
 

@@ -29,21 +29,21 @@
             SheshaFunctionalTests Permission checker
             </summary>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsDataAdministrator(Shesha.Domain.Person)">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsDataAdministratorAsync(Shesha.Domain.Person)">
             <summary>
             
             </summary>
             <param name="person"></param>
             <returns></returns>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsGlobalAdmin(Shesha.Domain.Person)">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsGlobalAdminAsync(Shesha.Domain.Person)">
             <summary>
             
             </summary>
             <param name="person"></param>
             <returns></returns>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsAdmin(Shesha.Domain.Person)">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.ISheshaFunctionalTestsPermissionChecker.IsAdminAsync(Shesha.Domain.Person)">
             <summary>
             
             </summary>
@@ -76,7 +76,7 @@
             <param name="permissionName"></param>
             <returns></returns>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsInAnyOfRoles(Shesha.Domain.Person,System.String[])">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsInAnyOfRolesAsync(Shesha.Domain.Person,System.String[])">
             <summary>
             inheritedDoc
             </summary>
@@ -84,21 +84,21 @@
             <param name="roles"></param>
             <returns></returns>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsDataAdministrator(Shesha.Domain.Person)">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsDataAdministratorAsync(Shesha.Domain.Person)">
             <summary>
             
             </summary>
             <param name="person"></param>
             <returns></returns>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsAdmin(Shesha.Domain.Person)">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsAdminAsync(Shesha.Domain.Person)">
             <summary>
             
             </summary>
             <param name="person"></param>
             <returns></returns>
         </member>
-        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsGlobalAdmin(Shesha.Domain.Person)">
+        <member name="M:Boxfusion.SheshaFunctionalTests.Common.Authorization.SheshaFunctionalTestsPermissionChecker.IsGlobalAdminAsync(Shesha.Domain.Person)">
             <summary>
             
             </summary>

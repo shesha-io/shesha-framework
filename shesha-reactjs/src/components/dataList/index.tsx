@@ -3,14 +3,14 @@ import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useAvailableConstantsData, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useAvailableConstantsData, executeScriptSync, getStyle, isFormFullName } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -21,7 +21,8 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
-import {EmptyState} from "..";
+import { EmptyState } from "..";
+import AttributeDecorator from '../attributeDecorator';
 
 interface EntityForm {
   entityType: string;
@@ -104,6 +105,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const [content, setContent] = useState<React.JSX.Element[]>(null);
   const rows = useRef<React.JSX.Element[]>(null);
 
+  const shaForm = useShaFormInstance();
+
   useDeepCompareEffect(() => {
     entityForms.current = [];
     entityFormInfo.current = undefined;
@@ -146,8 +149,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     changeSelectedIds(
       val
         ? records?.map((item: any) => {
-            return item?.id;
-          })
+          return item?.id;
+        })
         : []
     );
     onMultiSelectRows(
@@ -174,7 +177,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    return executeScriptSync(formIdExpression, {...allData, item});
+    return executeScriptSync(formIdExpression, { ...allData, item });
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -191,21 +194,20 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   //The below forces the card to use max-width, therefore avoiding the issue of having cards
   //with varying sizes. This is only a problem when selection mode is not "none"
 
-  if(orientation === "wrap" && selectionMode !== "none"){
+  if (orientation === "wrap" && selectionMode !== "none") {
     cardMinWidth = cardMaxWidth;
-  }  
-
+  }
 
   useEffect(() => {
     if (measured?.width === 0) return;
-     let res = null;
-    if(orientation === "horizontal" && listItemWidth !== 'custom'){
+    let res = null;
+    if (orientation === "horizontal" && listItemWidth !== 'custom') {
       res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
 
-    }else if (orientation === "horizontal" && listItemWidth === "custom") {
-      res = ({width: `${customListItemWidth}px`} as React.CSSProperties);
+    } else if (orientation === "horizontal" && listItemWidth === "custom") {
+      res = ({ width: `${customListItemWidth}px` } as React.CSSProperties);
 
-    }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+    } else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -239,11 +241,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       entityForms.current.push(entityForm);
       if (!entityFormInfo?.current)
         entityFormInfo.current = entityForm;
-    } else 
+    } else
       return !!entityForm.formConfiguration;
 
     if (!!entityForm.formId) {
-      getForm({formId: entityForm.formId, configurationItemMode, skipCache})
+      getForm({ formId: entityForm.formId, configurationItemMode, skipCache })
         .then(response => {
           entityForm.formConfiguration = response;
           isReady(entityForms.current);
@@ -253,13 +255,13 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       const f = loadedFormId.current[`${entityForm.entityType}_${fType}`]
         ?? getEntityFormId(entityForm.entityType, fType);
 
-      f.then((e) => 
-        getForm({formId: e, configurationItemMode, skipCache})
-        .then(response => {
-          entityForm.formId = e;
-          entityForm.formConfiguration = response;
-          isReady(entityForms.current);
-        })
+      f.then((e) =>
+        getForm({ formId: e, configurationItemMode, skipCache })
+          .then(response => {
+            entityForm.formId = e;
+            entityForm.formConfiguration = response;
+            isReady(entityForms.current);
+          })
       );
 
       loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
@@ -268,7 +270,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   useDeepCompareEffect(() => {
-    let  isReady = true;
+    let isReady = true;
 
     let fId = createFormId;
     let className = '$createFormName$';
@@ -320,7 +322,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
-    if (!entityForm?.formConfiguration?.markup) 
+    if (!entityForm?.formConfiguration?.markup)
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
     const dblClick = () => {
@@ -338,28 +340,39 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       } else console.error('Action is not configured');
       return false;
     };
-  
+
+    const attributes = {
+      'data-sha-datalist-item-type': 'subForm',
+      'data-sha-parent-form-id': `${shaForm?.form?.id}`,
+      'data-sha-parent-form-name': `${shaForm?.form?.module}/${shaForm?.form?.name}`,
+      'data-sha-form-id': `${entityForm?.formConfiguration?.id}`,
+    };
+
+    if (isFormFullName(entityForm?.formId))
+      attributes['data-sha-form-name'] = `${entityForm?.formId.module}/${entityForm?.formId.name}`;
+
     return (
-      <div onDoubleClick={dblClick}>
-        <DataListItemRenderer
-          isNewObject={false}
-          markup={entityForm?.formConfiguration?.markup}
-          formSettings={entityForm?.formConfiguration?.settings}
-          data={item}
-          listId={id}
-          listName='Data List'
-          itemIndex={index}
-          itemId={item['id']}
-          allowEdit={canEditInline}
-          allowDelete={canDeleteInline}
-          updater={(rowData) => updateAction(index, rowData)}
-          deleter={() => deleteAction(index, item)}        
-          allowChangeEditMode={inlineEditMode === 'one-by-one'}
-          editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
-          autoSave={inlineSaveMode === 'auto'}
+      <AttributeDecorator attributes={attributes}>
+        <div onDoubleClick={dblClick}>
+          <DataListItemRenderer
+            isNewObject={false}
+            markup={entityForm?.formConfiguration?.markup}
+            formSettings={entityForm?.formConfiguration?.settings}
+            data={item}
+            listId={id}
+            listName='Data List'
+            itemIndex={index}
+            itemId={item['id']}
+            allowEdit={canEditInline}
+            allowDelete={canDeleteInline}
+            updater={(rowData) => updateAction(index, rowData)}
+            deleter={() => deleteAction(index, item)}
+            allowChangeEditMode={inlineEditMode === 'one-by-one'}
+            editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
+            autoSave={inlineSaveMode === 'auto'}
           />
-         
-      </div>
+        </div>
+      </AttributeDecorator>
     );
   };
 
@@ -398,7 +411,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           }
           parent = g.currentGroup.$childs;
         });
-        parent.push({index: rowIndex, row} as Row);
+        parent.push({ index: rowIndex, row } as Row);
       });
       return result;
     }
@@ -440,7 +453,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
-  
+
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
@@ -460,14 +473,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Checkbox>
           )}
         >
-
           <div
             className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
-            ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
+            style={orientation === 'wrap' ? {
+              minWidth: `${Number(cardMinWidth) ? cardMinWidth + 'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth + 'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight + 'px' : cardHeight}`,
+              ...(showBorder && { border: '1px #d3d3d3 solid' })
+            } : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -497,26 +511,26 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         : {}
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
-  
+
 
   const updateRows = () => {
     rows.current = records?.map((item: any, index) => renderSubForm(item, index));
   };
 
   const updateContent = () => {
-    setContent(groups 
+    setContent(groups
       ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
-      : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index))
+      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index))
     );
   };
 
   return (
     <>
       {createModalOpen && createFormInfo?.current?.formConfiguration &&
-        <DataListItemCreateModal 
+        <DataListItemCreateModal
           id={id}
           formInfo={persistedCreateFormProps}
-          markup={createFormInfo?.current?.formConfiguration.markup} 
+          markup={createFormInfo?.current?.formConfiguration.markup}
           formSettings={createFormInfo?.current?.formConfiguration.settings}
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
@@ -551,48 +565,47 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Button>
         </Show>*/}
       </div>
-      <FormInfo visible={formInfoBlockVisible} formProps={{...(persistedFormProps as IPersistedFormProps)}}>
-      <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
-        <div
-          key="spin_key"
-          ref={measuredRef}
-          className={classNames(styles.shaDatalistComponentBody, {
-            loading: isFetchingTableData && records?.length === 0,
-            horizontal: orientation === 'horizontal',
-          })}
-        >
+      <FormInfo visible={formInfoBlockVisible} formProps={{ ...(persistedFormProps as IPersistedFormProps) }}>
+        <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
+          <div
+            key="spin_key"
+            ref={measuredRef}
+            className={classNames(styles.shaDatalistComponentBody, {
+              loading: isFetchingTableData && records?.length === 0,
+              horizontal: orientation === 'horizontal',
+            })}
+          >
 
-          <Show when={records?.length === 0}>
+            <Show when={records?.length === 0}>
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
-          </Show>
+            </Show>
 
-          <Show when={records?.length > 0}>
-            {orientation === "wrap" &&
-              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
-                {content}
-              </div>
-            }
+            <Show when={records?.length > 0}>
+              {orientation === "wrap" &&
+                <div className={styles.shaDatalistWrapParent} style={{ gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))` }}>
+                  {content}
+                </div>
+              }
 
+              {orientation === "horizontal" &&
+                <div className={styles.shaDatalistHorizontal}>
+                  {React.Children.map(content, child => {
+                    return React.cloneElement(child, { style: itemWidthCalc });
+                  })}
+                </div>
+              }
 
-            {orientation === "horizontal" && 
-              <div className={styles.shaDatalistHorizontal}>
-              {React.Children.map(content, child => {
-              return React.cloneElement(child, { style: itemWidthCalc });
-              })}
-              </div>
-            }
+              {orientation === "vertical" &&
+                <div style={itemWidthCalc}>
+                  {React.Children.map(content, child => {
+                    return React.cloneElement(child, { style: itemWidthCalc });
+                  })}
+                </div>
+              }
 
-            {orientation === "vertical" && 
-              <div style={itemWidthCalc}>
-              {React.Children.map(content, child => {
-              return React.cloneElement(child, { style: itemWidthCalc });
-              })}
-              </div>
-            }
-
-          </Show>
-        </div>
-      </ShaSpin>
+            </Show>
+          </div>
+        </ShaSpin>
       </FormInfo>
     </>
   );

@@ -18,12 +18,12 @@ namespace Shesha.Domain
         /// <summary>
         /// Owner entity config
         /// </summary>
-        public virtual EntityConfig EntityConfig { get; set; }
+        public required virtual EntityConfig EntityConfig { get; set; }
 
         /// <summary>
         /// Property Name
         /// </summary>
-        public virtual string Name { get; set; }
+        public virtual string Name { get; set; } = default!;
 
         /// <summary>
         /// Label (display name)
@@ -41,7 +41,7 @@ namespace Shesha.Domain
         /// Data type
         /// </summary>
         [StringLength(100)]
-        public virtual string DataType { get; set; }
+        public virtual string? DataType { get; set; }
 
         /// <summary>
         /// Data format
@@ -86,7 +86,7 @@ namespace Shesha.Domain
         /// Child properties (applicable for objects)
         /// </summary>
         [InverseProperty("ParentPropertyId")]
-        public virtual IList<EntityProperty> Properties { get; set; }
+        public virtual IList<EntityProperty> Properties { get; set; } = new List<EntityProperty>();
 
         /// <summary>
         /// Items type (applicable for arrays)

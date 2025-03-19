@@ -2,11 +2,9 @@
 using Abp.Application.Services.Dto;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Linq;
-using System;
-using System.Collections.Generic;
+using Abp.Linq.Extensions;
+using Shesha.Application.Services.Dto;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha
@@ -29,7 +27,7 @@ namespace Shesha
     }
 
     public abstract class AbpAsyncCrudAppService<TEntity, TEntityDto, TPrimaryKey>
-        : AbpAsyncCrudAppService<TEntity, TEntityDto, TPrimaryKey, PagedAndSortedResultRequestDto>
+        : AbpAsyncCrudAppService<TEntity, TEntityDto, TPrimaryKey, ShaFilteredPagedAndSortedResultRequestDto>
         where TEntity : class, IEntity<TPrimaryKey>
         where TEntityDto : IEntityDto<TPrimaryKey>
     {
@@ -169,6 +167,22 @@ namespace Shesha
         {
             return Repository.GetAsync(id);
         }
-    }
 
+        protected override IQueryable<TEntity> ApplyPaging(IQueryable<TEntity> query, TGetAllInput input)
+        {
+            if (input is IPagedResultRequest pagedInput) 
+            {
+                if (pagedInput.SkipCount > 0)
+                    query = query.Skip(pagedInput.SkipCount);
+            }
+
+            if (input is ILimitedResultRequest limitedInput) 
+            {
+                if (limitedInput.MaxResultCount > 0 && limitedInput.MaxResultCount < int.MaxValue)
+                    query = query.Take(limitedInput.MaxResultCount);
+            }
+                
+            return query;
+        }
+    }
 }

@@ -23,17 +23,17 @@ namespace Shesha.Otp.Dto
         /// </summary>
         OtpSendType SendType { get; }
 
-        string RecipientType { get; }
-        string RecipientId { get; }
+        string? RecipientType { get; }
+        string? RecipientId { get; }
         /// <summary>
         /// Type of action (e.g. 'password restore'). May be used for audit purposes and template selection
         /// </summary>
-        string ActionType { get; }
+        string? ActionType { get; }
 
         DateTime? SentOn { get; }
 
         OtpSendStatus SendStatus { get; }
 
-        string ErrorMessage { get; }
+        string? ErrorMessage { get; }
     }
 }
