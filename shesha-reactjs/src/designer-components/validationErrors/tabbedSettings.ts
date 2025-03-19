@@ -445,15 +445,16 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                  {
-                                    type: 'radio',
-                                    id: nanoid(),
-                                    label: "Repeat",
-                                    hideLabel: true,
-                                    propertyName: "background.repeat",
-                                    buttonGroupOptions: repeatOptions,
-                                  }
                                 ]
+                              })
+                              .addSettingsInput({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
                               })
                               .toJson()
                           ],

@@ -72,7 +72,7 @@ export const getSettings = () => {
                       label: 'List Type',
                       type: 'dropdown',
                       dropdownOptions: [
-                        { label: 'File Name', value: 'text' },
+                        { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
                       ],
                     }]
@@ -602,16 +602,17 @@ export const getSettings = () => {
                                   customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
-                                },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
+                            })
+                            .addSettingsInput({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              label: 'Repeat',
+                              hideLabel: true,
+                              propertyName: 'background.repeat',
+                              inputType: 'radio',
+                              buttonGroupOptions: repeatOptions,
                             })
                             .toJson()
                         ],

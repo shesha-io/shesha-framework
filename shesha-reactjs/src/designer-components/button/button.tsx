@@ -92,9 +92,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       ...(['primary', 'default'].includes(model.buttonType) && backgroundStyles),
       ...(['primary', 'default'].includes(model.buttonType) && shadowStyles),
       ...stylingBoxAsCSS,
-      ...jsStyle,
-      display: 'flex',
-      lineHeight: '1.5'
+      ...jsStyle
     };
 
     return (

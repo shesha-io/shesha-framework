@@ -941,15 +941,17 @@ export const getSettings = () => {
                                                                             propertyName: "headerStyles.background.position",
                                                                             dropdownOptions: positionOptions,
                                                                         },
-                                                                        {
-                                                                            type: 'radio',
-                                                                            id: nanoid(),
-                                                                            label: "Repeat",
-                                                                            hideLabel: true,
-                                                                            propertyName: "headerStyles.background.repeat",
-                                                                            buttonGroupOptions: repeatOptions,
-                                                                        }
                                                                     ]
+                                                                })
+                                                                .addSettingsInput({
+                                                                    id: 'backgroundStyleRow-repeat',
+                                                                    parentId: 'backgroundStyleRow',
+                                                                    label: 'Repeat',
+                                                                    hideLabel: true,
+                                                                    propertyName: 'background.repeat',
+                                                                    inputType: 'radio',
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                    buttonGroupOptions: repeatOptions,
                                                                 })
                                                                 .toJson()
                                                             ]

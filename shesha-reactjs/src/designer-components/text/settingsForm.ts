@@ -3,7 +3,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { DEFAULT_CONTENT_TYPE } from './utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: any) => {
   return {
@@ -715,54 +715,19 @@ export const getSettings = (data: any) => {
                                     label: 'Position',
                                     hideLabel: true,
                                     propertyName: 'background.position',
-                                    dropdownOptions: [
-                                      {
-                                        value: 'center',
-                                        label: 'Center',
-                                      },
-                                      {
-                                        value: 'top',
-                                        label: 'Top',
-                                      },
-                                      {
-                                        value: 'left',
-                                        label: 'Left',
-                                      },
-                                      {
-                                        value: 'right',
-                                        label: 'Right',
-                                      },
-                                      {
-                                        value: 'bottom',
-                                        label: 'Bottom',
-                                      },
-                                      {
-                                        value: 'top left',
-                                        label: 'Top Left',
-                                      },
-                                      {
-                                        value: 'top right',
-                                        label: 'Top Right',
-                                      },
-                                      {
-                                        value: 'bottom left',
-                                        label: 'Bottom Left',
-                                      },
-                                      {
-                                        value: 'bottom right',
-                                        label: 'Bottom Right',
-                                      },
-                                    ],
-                                  },
-                                  {
-                                    type: 'radio',
-                                    id: 'backgroundStyleRow-repeat',
-                                    label: 'Repeat',
-                                    hideLabel: true,
-                                    propertyName: 'background.repeat',
-                                    buttonGroupOptions: repeatOptions,
+                                    dropdownOptions: positionOptions
                                   },
                                 ],
+                              })
+                              .addSettingsInput({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson(),
                           ],

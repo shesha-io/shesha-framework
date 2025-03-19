@@ -467,6 +467,7 @@ export const getSettings = (data) => {
                               id: 'backgroundStyleRow-repeat',
                               parentId: 'backgroundStyleRow',
                               label: 'Repeat',
+                              hideLabel: true,
                               propertyName: 'background.repeat',
                               inputType: 'radio',
                               buttonGroupOptions: repeatOptions,

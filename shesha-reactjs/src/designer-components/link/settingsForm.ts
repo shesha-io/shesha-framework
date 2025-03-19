@@ -129,19 +129,19 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       dropdownOptions: [
                         {
-                          label: '_blank',
+                          label: 'Blank',
                           value: '_blank',
                         },
                         {
-                          label: '_parent',
+                          label: 'Parent',
                           value: '_parent',
                         },
                         {
-                          label: '_self',
+                          label: 'Self',
                           value: '_self',
                         },
                         {
-                          label: '_top',
+                          label: 'Top',
                           value: '_top',
                         },
                       ],
