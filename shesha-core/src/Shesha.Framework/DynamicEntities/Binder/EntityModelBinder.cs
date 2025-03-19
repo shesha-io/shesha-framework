@@ -509,7 +509,6 @@ namespace Shesha.DynamicEntities.Binder
                             context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be updated."));
                             return;
                         }
-                        // TODO: Alex, please review this method and simplify, ansure that nullable variables are handled properly
                         r = await BindPropertiesAsync(jEntity, newChildEntity.NotNull(), context, null, childFormFields); 
                         r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
                     }

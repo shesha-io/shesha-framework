@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -95,10 +96,9 @@ namespace Shesha.Permissions
 
         public override async Task<PermissionedObjectDto> GetAsync(EntityDto<Guid> input)
         {
-            /* TODO: Alex, please review. If an entity is requested we must return value or  throw exception. It's abnormal case if we get request with empty id, so there should be an exception
             if (input.Id == Guid.Empty)
-                return null;
-            */
+                throw new ArgumentNullException("id");
+
             return await _permissionedObjectManager.GetAsync(input.Id);
         }
 

@@ -468,7 +468,6 @@ namespace Shesha.StoredFiles
             }
             else
             {
-                // TODO: Alex, please review this code
                 var owner = await GetOwnerAsync(input.OwnerType, input.OwnerId, input.OwnerName);
                 var ownerId = owner.NotNull().GetId()?.ToString();
                 var ownerType = owner.GetType().StripCastleProxyType().GetRequiredFullName();
