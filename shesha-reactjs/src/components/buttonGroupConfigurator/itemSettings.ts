@@ -65,7 +65,6 @@ export const getItemSettings = (data) => {
                                             id: 'name-8b38-4b82-b192-563259afc159',
                                             parentId: 's4gmBg31azZC0UjZjpfTm',
                                             readOnly: data?.readOnly,
-
                                             inputs: [{
                                                 id: 'name-8b38-4b82-b192-563259afc159',
                                                 type: 'textField',
@@ -88,7 +87,8 @@ export const getItemSettings = (data) => {
                                                     type: "textField",
                                                     propertyName: "label",
                                                     parentId: "root",
-                                                    label: "Caption"
+                                                    label: "Caption",
+                                                    jsSetting: true
                                                 },
                                                 {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",
@@ -98,7 +98,8 @@ export const getItemSettings = (data) => {
                                                     labelAlign: "right",
                                                     parentId: "root",
                                                     hidden: false,
-                                                    allowClear: false
+                                                    allowClear: false,
+                                                    jsSetting: true
                                                 }
                                             ]
                                         })
@@ -512,6 +513,7 @@ export const getItemSettings = (data) => {
                                                             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                             propertyName: "background.size",
                                                             dropdownOptions: sizeOptions,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         },
                                                         {
                                                             label: "Position",
@@ -521,16 +523,18 @@ export const getItemSettings = (data) => {
                                                             customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                             propertyName: "background.position",
                                                             dropdownOptions: positionOptions,
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         },
-                                                        {
-                                                            type: 'radio',
-                                                            id: 'backgroundStyleRow-repeat',
-                                                            label: "Repeat",
-                                                            hideLabel: true,
-                                                            propertyName: "background.repeat",
-                                                            buttonGroupOptions: repeatOptions,
-                                                        }
                                                     ]
+                                                })
+                                                .addSettingsInput({
+                                                    inputType: 'radio',
+                                                    id: 'backgroundStyleRow-repeat',
+                                                    label: "Repeat",
+                                                    hideLabel: true,
+                                                    propertyName: "background.repeat",
+                                                    buttonGroupOptions: repeatOptions,
+                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                 })
                                                 .toJson()
                                         ],

@@ -71,6 +71,8 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     iconAlt?: string | React.ReactNode;
     inline?: boolean;
     inputType?: InputType['type'];
+    referenceList?: any;
+    filter?: any;
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
     entityType?: string;

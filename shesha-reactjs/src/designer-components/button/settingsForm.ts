@@ -35,18 +35,26 @@ export const getSettings = (data) => {
                 },
                 jsSetting: true,
               })
-              .addSettingsInput({
-                id: 'label-4c18-468c-89e1-60c002ce96c5',
-                propertyName: 'label',
-                label: 'Caption',
+              .addSettingsInputRow({
+                id: 'caption-tooltip-row',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
-              })
-              .addSettingsInput({
-                id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
-                inputType: 'textArea',
-                propertyName: 'tooltip',
-                label: 'Tooltip',
-                jsSetting: true,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: 'label-4c18-468c-89e1-60c002ce96c5',
+                    propertyName: 'label',
+                    label: 'Caption',
+                    parentId: 's4gmBg31azZC0UjZjpfTm',
+                  },
+                  {
+                    id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
+                    type: 'textArea',
+                    propertyName: 'tooltip',
+                    label: 'Tooltip',
+                    jsSetting: true,
+                  }
+                ]
               })
               .addSettingsInputRow({
                 id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
@@ -453,15 +461,15 @@ export const getSettings = (data) => {
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
-                                }
                               ]
+                            })
+                            .addSettingsInput({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              label: 'Repeat',
+                              propertyName: 'background.repeat',
+                              inputType: 'radio',
+                              buttonGroupOptions: repeatOptions,
                             })
                             .toJson()
                         ],

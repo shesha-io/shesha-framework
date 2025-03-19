@@ -53,13 +53,12 @@ export const getSettings = () => {
                                     label: 'Tab Type',
                                     defaultValue: 'card',
                                     dropdownOptions: [
-                                        { value: 'line', label: 'Label' },
+                                        { value: 'line', label: 'Line' },
                                         { value: 'card', label: 'Card' }
                                     ],
                                     jsSetting: false,
                                     labelAlign: 'right',
                                     parentId: 'root'
-
                                 })
                                 .addSettingsInput({
                                     id: '4595a895-5078-4986-934b-c5013bf315ad',
@@ -76,7 +75,7 @@ export const getSettings = () => {
                                     id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
                                     inputType: 'switch',
                                     propertyName: 'hidden',
-                                    label: 'hide',
+                                    label: 'Hide',
                                     labelAlign: 'right',
                                     parentId: 'root',
                                     hidden: false,
@@ -88,7 +87,7 @@ export const getSettings = () => {
                                     propertyName: 'editMode',
                                     parentId: 'root',
                                     defaultValue: 'inherited',
-                                    label: 'Edit mode'
+                                    label: 'Edit Mode'
                                 })
                                 .toJson()
                         ]
