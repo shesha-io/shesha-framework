@@ -18,8 +18,6 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     const [showRightArrow, setShowRightArrow] = useState(true);
     const containerRef = useRef(null);
 
-    console.log("chevron props", props);
-
     const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance<any>) => {
         function getColor(source: string) {
             switch (source) {

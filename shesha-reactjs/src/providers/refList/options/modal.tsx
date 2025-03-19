@@ -74,8 +74,6 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
-
-  console.log("RefListItemSelectorSettingsModal",props.referenceList, props.value);
   
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -84,8 +82,6 @@ export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSetting
   const hideModal = () => setModalVisible(false);
 
   const items = (props.value as IRefListItemFormModel[]) || [];
-
-  console.log("REF ITEMS::",items, props?.value);
 
   return (
     <RefListItemGroupConfiguratorProvider referenceList={props.referenceList} items={items} readOnly={props.readOnly}>
