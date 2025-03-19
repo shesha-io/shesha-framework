@@ -74,7 +74,7 @@ namespace Shesha.Permissions
         /// <param name="access"></param>
         /// <param name="permissions"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
+        public async Task<PermissionedObjectDto?> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
         {
             return await _permissionedObjectManager.SetPermissionsAsync(objectName, access, permissions);
         }
@@ -120,7 +120,7 @@ namespace Shesha.Permissions
         /// <param name="access"></param>
         /// <param name="permissions"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> SetApiPermissionsAsync(string serviceName, string actionName, RefListPermissionedAccess access, List<string> permissions)
+        public async Task<PermissionedObjectDto?> SetApiPermissionsAsync(string serviceName, string actionName, RefListPermissionedAccess access, List<string> permissions)
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
             return await _permissionedObjectManager.SetPermissionsAsync($"{serviceName}{action}", access, permissions);

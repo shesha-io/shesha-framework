@@ -133,8 +133,7 @@ namespace Shesha.DynamicEntities
                 return jref;
             }
 
-            // TODO: Alex, please review
-            if (val != null && (jval.IsNullOrEmpty() || !val.Equals(jval?.ToObject(propType))))
+            if (jval.IsNullOrEmpty() || !val.Equals(jval.ToObject(propType)))
                 return JProperty.FromObject(val);
 
             return jval ?? JValue.CreateNull();
