@@ -104,7 +104,7 @@ export const getSettings = (data: any) => {
               .addSettingsInput({
                 id: nanoid(),
                 propertyName: 'items',
-                label: 'Items',
+                label: '',
                 labelAlign: 'right',
                 parentId: itemsTabId,
                 referenceList: { _code: 'return getSettingValue(data?.referenceList);', _mode: 'code', _value: false } as any,
@@ -274,7 +274,7 @@ export const getSettings = (data: any) => {
                             inputType: 'colorPicker',
                             jsSetting: true,
                             parentId: styleRouterId,
-                            hidden: { _code: 'return getSettingValue(data?.colorSource) !== "custom";', _mode: 'code', _value: false } as any,
+                            //hidden: { _code: 'return getSettingValue(data?.colorSource) !== "custom";', _mode: 'code', _value: false } as any,
                             readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           })
                           .addSettingsInput({

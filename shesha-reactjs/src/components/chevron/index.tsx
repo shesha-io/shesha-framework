@@ -26,15 +26,17 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
                 case 'custom':
                     return activeColor ?? theme.application.primaryColor;
                 case 'reflist':
-                    return props.color;
+                    return props?.color ?? 'none';
                 default:
                     return theme.application.primaryColor;
             }
         }
 
+        console.log("CHEVRON COLOR::",getColor(colorSource))
+
         const newStyles: CSSProperties = {
             color: fontColor,
-            backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource), 70),
+            backgroundColor: props.itemValue === value ? getColor(colorSource) : fadeColor(getColor(colorSource) ?? '', 70),
             clipPath: 'polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%)',
             textAlign: 'center',
             cursor: 'pointer',
