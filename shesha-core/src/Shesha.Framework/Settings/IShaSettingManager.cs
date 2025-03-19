@@ -36,7 +36,7 @@ namespace Shesha.Settings
         /// <param name="defaultValue"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null);
+        Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string? dataType, TValue? defaultValue, SettingManagementContext? context = null);
 
         /// <summary>
         /// Get setting value or null
