@@ -134,11 +134,8 @@ namespace Shesha.DynamicEntities
             }
 
             // TODO: Alex, please review
-#pragma warning disable CS8602
-            if (val != null && jval.IsNullOrEmpty()
-                || !val.Equals(jval?.ToObject(propType)))
+            if (val != null && (jval.IsNullOrEmpty() || !val.Equals(jval?.ToObject(propType))))
                 return JProperty.FromObject(val);
-#pragma warning restore CS8602
 
             return jval ?? JValue.CreateNull();
         }

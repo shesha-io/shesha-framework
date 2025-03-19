@@ -9,6 +9,7 @@ using Abp.Localization;
 using Abp.MultiTenancy;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -75,8 +76,6 @@ namespace Shesha.Authorization
                         permission = GetPermissionOrNull(dbPermission?.Parent);
                     }
 
-#pragma warning disable CS8604
-                    // TODO: Alex, please review
                     if (permission != null)
                     {
                         await CreateChildPermissionsAsync(dbPermissions, permission);
@@ -84,10 +83,9 @@ namespace Shesha.Authorization
                     else
                     {
                         // remove permission with missed parent
-                        await _permissionDefinitionRepository.DeleteAsync(dbPermission);
+                        await _permissionDefinitionRepository.DeleteAsync(dbPermission.NotNull());
                     }
-                    dbPermissions.Remove(dbPermission);
-#pragma warning restore CS8604
+                    dbPermissions.Remove(dbPermission.NotNull());
                 }
             }
         }

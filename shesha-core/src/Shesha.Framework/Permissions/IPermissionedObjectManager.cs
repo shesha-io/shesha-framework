@@ -35,7 +35,7 @@ namespace Shesha.Permissions
         /// <summary>
         /// Get Protected Object by object name with children
         /// </summary>
-        Task<PermissionedObjectDto> GetObjectWithChildAsync(string objectName, string? type = null, bool withHidden = false);
+        Task<PermissionedObjectDto?> GetObjectWithChildOrNullAsync(string objectName, string? type = null, bool withHidden = false);
 
         /// <summary>
         /// Get Protected Object by object name
@@ -47,7 +47,7 @@ namespace Shesha.Permissions
         Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string? inheritedFromName = null);
 
 
-        Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType);
+        Task<PermissionedObjectDto?> GetOrNullAsync(string objectName, string objectType);
 
         /// <summary>
         /// Get Protected Object by object name
@@ -59,7 +59,7 @@ namespace Shesha.Permissions
 
         Task<PermissionedObjectDto> GetAsync(Guid id);
 
-        Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string? dstObjectType = null);
+        Task<PermissionedObjectDto?> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string? dstObjectType = null);
 
         /// <summary>
         /// Get Protected Object by object name
@@ -85,7 +85,7 @@ namespace Shesha.Permissions
         /// <param name="access">Get permission data from the parent Protected Object if value is Inherited</param>
         /// <param name="permissions">Required permissions for Protected Object. Will be ignored if Inherited is True</param>
         /// <returns></returns>
-        Task<PermissionedObjectDto> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions);
+        Task<PermissionedObjectDto?> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions);
 
         /// <summary>
         /// Checks if the action descriptor is not disabled as permissioned object 

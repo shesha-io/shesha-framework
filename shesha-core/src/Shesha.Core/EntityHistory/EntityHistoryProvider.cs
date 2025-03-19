@@ -418,10 +418,9 @@ namespace Shesha.EntityHistory
                     .ToList();
 
                 // TODO: Alex, please review. The logic is not clear here
-#pragma warning disable CS8602
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
-                userIds.AddRange(childItems.Select(x => x.InnerObject.DeleterUserId));
+                userIds.AddRange(childItems.Select(x => x.InnerObject?.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
                 var persons = await _personRepository.GetAll().Where(x => x.User != null && userIds.Contains(x.User.Id)).ToListAsync();
 
@@ -455,7 +454,7 @@ namespace Shesha.EntityHistory
                     }
                     else
                     {
-                        if (childItem.InnerObject.IsDeleted)
+                        if (childItem.InnerObject?.IsDeleted ?? false)
                         {
                             var deletedBy = GetPersonByUserIdInternal(persons, childItem.InnerObject.DeleterUserId);
                             list.Add(new EntityHistoryItemDto()
@@ -470,7 +469,6 @@ namespace Shesha.EntityHistory
                             });
                         }
                     }
-#pragma warning restore CS8602
 
                     var fields = new List<string>() { "Updated" };
                     fields.AddRange(attr.AuditedFields ?? new string[0]);
@@ -697,7 +695,7 @@ namespace Shesha.EntityHistory
             var history = new List<EntityHistoryItemDto>();
             if (!attrs.Any()) return history;
 
-            var typeShortAlias = itemType.GetCustomAttribute<EntityAttribute>()?.TypeShortAlias ?? itemType.FullName;
+            var typeShortAlias = itemType.GetCustomAttribute<EntityAttribute>()?.TypeShortAlias ?? "";
 
             foreach (var attr in attrs)
             {
@@ -724,11 +722,11 @@ namespace Shesha.EntityHistory
                 var memberExpression1 = Expression.PropertyOrField(parameterExpression, ownerIdField);
                 var action1 = Expression.Equal(memberExpression1, Expression.Constant(Guid.Parse(entityId)));
                 var memberExpression2 = Expression.PropertyOrField(parameterExpression, ownerTypeField);
-#pragma warning disable CS8604
-                // TODO: Alex, please review. typeShortAlias may be null and it may breake the logic
-                var action2 = Expression.Equal(memberExpression2, Expression.Constant(Guid.Parse(typeShortAlias)));
-#pragma warning restore CS8604
-                var andExpression = Expression.And(action1, action2);
+                var action2 = Expression.Equal(memberExpression2, Expression.Constant(typeShortAlias));
+                var memberExpression3 = Expression.PropertyOrField(parameterExpression, ownerTypeField);
+                var action3 = Expression.Equal(memberExpression3, Expression.Constant(itemType.FullName));
+                var orExpression = Expression.Or(action2, action3);
+                var andExpression = Expression.And(action1, orExpression);
                 var lambda = Expression.Lambda(andExpression, parameterExpression);
 
                 var res = _dynamicRepository.Where(childType, lambda).ToDynamicList();
