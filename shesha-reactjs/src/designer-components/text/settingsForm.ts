@@ -3,7 +3,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { DEFAULT_CONTENT_TYPE } from './utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
-import { positionOptions, repeatOptions } from '../_settings/utils/background/utils';
+import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: any) => {
   return {
@@ -719,14 +719,47 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInput({
+
+                              .addSettingsInputRow({
+                                id: "backgroundStyleRow-controls",
+                                parentId: 'backgroundStyleRow',
+                                inline: true,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                  {
+                                    type: 'customDropdown',
+                                    id: 'backgroundStyleRow-size',
+                                    label: "Size",
+                                    hideLabel: true,
+                                    propertyName: "background.size",
+                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                    dropdownOptions: sizeOptions,
+                                  },
+                                  {
+                                    type: 'customDropdown',
+                                    id: 'backgroundStyleRow-position',
+                                    label: "Position",
+                                    hideLabel: true,
+                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
+                                    propertyName: "background.position",
+                                    dropdownOptions: positionOptions,
+                                  }
+                                ]
+                              })
+                              .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                label: 'Repeat',
-                                hideLabel: true,
-                                propertyName: 'background.repeat',
-                                inputType: 'radio',
-                                buttonGroupOptions: repeatOptions,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat-radio',
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson(),

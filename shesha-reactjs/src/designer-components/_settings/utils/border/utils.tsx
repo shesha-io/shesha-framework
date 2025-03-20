@@ -100,7 +100,7 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
     return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 
-export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
+export const getBorderInputs = (path = '', isResponsive: boolean = true, ) => {
 
     return [...new DesignerToolbarSettings()
         .addSettingsInput({

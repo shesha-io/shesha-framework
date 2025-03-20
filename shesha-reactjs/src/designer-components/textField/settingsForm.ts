@@ -622,6 +622,7 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                     propertyName: "background.size",
                                                                     customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                                                     dropdownOptions: sizeOptions,
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -634,14 +635,19 @@ export const getSettings = (data: ITextFieldComponentProps) => {
                                                                 },
                                                             ]
                                                         })
-                                                        .addSettingsInput({
+                                                        .addSettingsInputRow({
                                                             id: 'backgroundStyleRow-repeat',
                                                             parentId: 'backgroundStyleRow',
-                                                            label: 'Repeat',
-                                                            hideLabel: true,
-                                                            propertyName: 'background.repeat',
-                                                            inputType: 'radio',
-                                                            buttonGroupOptions: repeatOptions,
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
                                                             hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
