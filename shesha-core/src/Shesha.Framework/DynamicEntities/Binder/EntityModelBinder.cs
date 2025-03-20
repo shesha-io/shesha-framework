@@ -451,7 +451,7 @@ namespace Shesha.DynamicEntities.Binder
             var cascadeAttr = property.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>()
                 ?? (propConfig == null ? null
-                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate, propConfig.CascadeUpdate, propConfig.CascadeDeleteUnreferenced));
+                    : new CascadeUpdateRulesAttribute(propConfig.CascadeCreate ?? false, propConfig.CascadeUpdate ?? false, propConfig.CascadeDeleteUnreferenced ?? false));
 
             var propertyType = property.PropertyType.IsGenericType
                 ? property.PropertyType.GetGenericArguments()[0]
@@ -509,7 +509,6 @@ namespace Shesha.DynamicEntities.Binder
                             context.LocalValidationResult.Add(new ValidationResult($"`{property.Name}` is not allowed to be updated."));
                             return;
                         }
-                        // TODO: Alex, please review this method and simplify, ansure that nullable variables are handled properly
                         r = await BindPropertiesAsync(jEntity, newChildEntity.NotNull(), context, null, childFormFields); 
                         r = r && await _objectValidatorManager.ValidateObjectAsync(newChildEntity, context.LocalValidationResult);
                     }
@@ -699,7 +698,8 @@ namespace Shesha.DynamicEntities.Binder
                 && (x.Name == reference.EntityConfig.ClassName || x.GetTypeShortAliasOrNull() == reference.EntityConfig.ClassName))
                 .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
-                if (refType == null || !refType.IsEntityType()) continue;
+                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
+                    continue;
 
                 var refParam = Expression.Parameter(refType);
                 var query = Expression.Lambda(

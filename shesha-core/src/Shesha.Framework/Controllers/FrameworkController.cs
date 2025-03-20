@@ -25,7 +25,7 @@ namespace Shesha.Controllers
     public class FrameworkController: ControllerBase, ITransientDependency
     {
         public ILogger Logger { get; set; } = new NullLogger();
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         [HttpPost]
         public async Task<string> BootstrapReferenceListsAsync()
@@ -100,7 +100,7 @@ namespace Shesha.Controllers
 
         [HttpPost]
         [DontWrapResult]
-        public string TestException(ExceptionInput input)
+        public string? TestException(ExceptionInput input)
         {
             if (input.GenerateException)
                 throw new Exception(input.Message);
@@ -133,7 +133,7 @@ namespace Shesha.Controllers
         public class ExceptionInput 
         { 
             public bool GenerateException { get; set; }
-            public string Message { get; set; }
+            public string? Message { get; set; }
         }
     }
 }

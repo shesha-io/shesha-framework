@@ -20,14 +20,23 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const selectRef = useRef(null);
 
   // init props
-  const keyPropName = props.keyPropName || 'id';
-  const displayPropName = props.displayPropName || '_displayName';
-  const keyValueFunc: KayValueFunc = props.keyValueFunc ?? ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
-  const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ?? ((value: any) => 
-    ({in: [{var: `${keyPropName}`}, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]]}));
+  // --- For backward compatibility
+  const keyPropName = props.keyPropName || (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
+  const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+  // ---
+  const keyValueFunc: KayValueFunc = props.keyValueFunc ?? 
+    ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
+  const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ?? 
+    ((value: any) => ({in: [{var: `${keyPropName}`}, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]]}));
   const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => ({"!": {and: [filterKeysFunc(value)]}}));
-  const displayValueFunc: DisplayValueFunc = props.displayValueFunc ?? ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
-  const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ?? ((value: any) => getValueByPropertyName(value, keyPropName) ?? value);
+  const displayValueFunc: DisplayValueFunc = props.displayValueFunc ?? 
+    ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
+  const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ?? 
+    // --- For backward compatibility
+    (props.dataSourceType === 'entitiesList' 
+      ? ((value: any) => ({id: value.id, _displayName: getValueByPropertyName(value, displayPropName), _className: value._className}))
+    // ---
+      : ((value: any) => getValueByPropertyName(value, keyPropName) ?? value));
 
   // register columns
   useEffect(() => source?.registerConfigurableColumns(props.uid, getColumns(props.fields)), [props.fields]);
@@ -48,9 +57,21 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
 
   // update local store of values details
   useEffect(() => {
+    if (!keys.length && props.readOnly)
+      return;
     if (props.dataSourceType === 'entitiesList' && props.entityType
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
+      // use _displayName from value if dataSourceType === 'entitiesList' and displayPropName is empty
+      if (keys.length) {
+        const hasDisplayName = (Array.isArray(props.value) ? props.value[0] : props.value).hasOwnProperty('_displayName');
+        if (props.dataSourceType === 'entitiesList' && !props.displayPropName && hasDisplayName) {
+          setLoadingValues(false);
+          const values = Array.isArray(props.value) ? props.value : [props.value];
+          selected.current = keys.map((x) => values.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+          return;
+        }
+      }
       props.disableRefresh.current = false;
       if (selected.current?.length === 0 && keys.length) {
         if (!loadingValues) {
@@ -102,15 +123,11 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
       ? Array.isArray(option)
         ? (option as ISelectOption[]).map((o) => outcomeValueFunc(o.data, allData))
         : outcomeValueFunc((option as ISelectOption).data, allData)
-      : undefined;
+      : null;
 
-    const keys = selectedValue
-      ?Array.isArray(selectedValue)
-        ? selectedValue.map((x) => keyValueFunc(x, allData))
-        : [keyValueFunc(selectedValue, allData)]
-      : [];
-
-    const selectedFilter = keys?.length ? filterNotKeysFunc(selectedValue) : null;
+    const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length) 
+      ? filterNotKeysFunc(selectedValue) 
+      : null;
     source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
     //debouncedSearch('', true);
 
@@ -168,6 +185,23 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         && <Select.Option value='total' key='total' disabled={true}>{`Total found: ${source?.totalRows} ...`}</Select.Option>}
     </>;
   }, [selected.current, source?.tableData, props.grouping]);
+
+  const title = useMemo(() => {
+    return selected.current.length === 1 ? displayValueFunc(selected.current[0], allData) : null;
+  }, [selected.current]);
+
+  const onDropdownVisibleChange = (open: boolean) => {
+    if (!open) {
+      setOpen(false);
+    } else {
+      const selectedValue =selected.current?.length
+        ? selected.current.map((s) => outcomeValueFunc(s, allData))
+        : undefined;
+      const selectedFilter = selectedValue ? filterNotKeysFunc(selectedValue) : null;
+      source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
+      setOpen(true);
+    }
+  };
 
   if (props.readOnly) {
     const readonlyValue = props.mode === 'multiple' 
@@ -322,13 +356,24 @@ export const EntityDtoAutocomplete = (props: IAutocompleteProps) => {
  */
 export const RawAutocomplete = (props: IAutocompleteProps) => {
   return (
-    <Autocomplete {...props} displayPropName={props.displayPropName || 'displayText'} keyPropName={props.keyPropName || 'value'} mode='single'/>
+    <Autocomplete 
+      {...props}
+      displayPropName={props.displayPropName || (props.dataSourceType === 'url' ? 'displayText' : '_displayName')}
+      keyPropName={props.keyPropName || (props.dataSourceType === 'url' ? 'value' : 'id')}
+      mode='single'
+    />
   );
 };
 
 type InternalAutocompleteType = typeof Autocomplete;
 interface IInternalAutocompleteInterface extends InternalAutocompleteType {
+  /** 
+   * @deprecated The method should not be used, please use Autocomplete
+   */
   Raw: typeof RawAutocomplete;
+  /** 
+   * @deprecated The method should not be used, please use Autocomplete
+   */
   EntityDto: typeof EntityDtoAutocomplete;
 }
 

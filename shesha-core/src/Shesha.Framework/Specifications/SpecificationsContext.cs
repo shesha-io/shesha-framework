@@ -36,14 +36,14 @@ namespace Shesha.Specifications
         }
 
         /// inheritedDoc
-        public event EventHandler Disposed;
+        public event EventHandler? Disposed;
 
         /// <summary>
         /// Called to trigger <see cref="Disposed"/> event.
         /// </summary>
         protected virtual void OnDisposed()
         {
-            Disposed.InvokeSafely(this);
+            Disposed?.InvokeSafely(this);
         }
 
         /// <summary>

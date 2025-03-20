@@ -44,7 +44,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the specified entity with the specified <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string? fileCategory)
         {
             return await GetAttachmentsInternalAsync(owner.Id, owner.GetTypeShortAlias(), f => f.Category == fileCategory);
         }
@@ -52,7 +52,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// Returns list of files attached to the entity with the specified <paramref name="id"/>, <paramref name="typeShortAlias"/> and <paramref name="fileCategory"/>
         /// </summary>
-        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory)
+        public async Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory)
         {
             return await GetAttachmentsInternalAsync(id, typeShortAlias, f => f.Category == fileCategory);
         }
@@ -83,7 +83,7 @@ namespace Shesha.Services.StoredFiles
             return await GetAttachmentsLastVersionsQuery(id, typeShortAlias, filterPredicate).OrderBy(e => e.File.SortOrder).ToListAsync();
         }
 
-        public async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string fileCategory)
+        public async Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string? fileCategory)
         {
             return await GetLastVersionsOfAttachmentsInternalAsync(id, typeShortAlias, f => f.File.Category == fileCategory);
         }

@@ -25,6 +25,7 @@ import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
 import { CODE, entitiesCode } from "@/publicJsApis";
 import { Environment } from "@/publicJsApis/metadataBuilder";
+import { EOL } from "./models";
 
 export interface BuildResult {
     content: string;
@@ -89,8 +90,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 : [];
         const sortedProperties = loadedProperties.sort((a, b) => a.path.localeCompare(b.path));
 
-        const promises = sortedProperties.map(prop => propertyHandler(prop));
-        await Promise.all(promises);
+        for (const prop of sortedProperties) {
+            await propertyHandler(prop);
+        }
     };
 
     getEntityTypeName = (entityType: string): string => {
@@ -273,7 +275,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
         const importSection = typesImporter.generateImports();
 
-        const content = [importSection, backEndCode, commonTypeCode].filter(x => x).join('\n\n');
+        const content = [importSection, backEndCode, commonTypeCode].filter(x => x).join(EOL);
 
         this.makeFile(fileName, content);
 
@@ -383,7 +385,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
             const importSection = typesImporter.generateImports();
             const content = importSection
-                ? `${importSection}\n\n${exportSection}`
+                ? `${importSection}${EOL}${exportSection}`
                 : exportSection;
 
             this.makeFile(fileName, content);
@@ -467,7 +469,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
         const result: BuildResult = {
             content: importSection && !isEmptyString(importSection)
-                ? `${importSection}\n\n${exportSection}`
+                ? `${importSection}${EOL}${exportSection}`
                 : exportSection,
         };
         return result;
@@ -520,7 +522,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
         const importSection = typesImporter.generateImports();
         const content = importSection
-            ? `${importSection}\n\n${exportSection}`
+            ? `${importSection}${EOL}${exportSection}`
             : exportSection;
 
         const result: BuildResult = {

@@ -175,7 +175,7 @@ namespace Shesha.DynamicEntities.Distribution
             foreach (var src in Properties)
             {
                 var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty();
+                    ?? new EntityProperty() { EntityConfig = item };
                 
                 dbItem.EntityConfig = item;
                 dbItem.Name = src.Name;

@@ -9,6 +9,11 @@ namespace Shesha.Extensions
     public static class ObjectExtensions
     {
 
+        public static bool NullEquals(this object? first, object? second)
+        {
+            return first == null && second == null || (first?.Equals(second) ?? false);
+        }
+
         public static string? GetClassName(this object obj)
         {
             return obj == null ? null : obj.GetType().FullName;
