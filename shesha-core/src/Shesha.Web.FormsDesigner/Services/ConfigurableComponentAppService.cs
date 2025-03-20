@@ -181,7 +181,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module?> GetModuleAsync(string moduleName)
+        private async Task<Module?> GetModuleAsync(string? moduleName)
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
@@ -208,22 +208,22 @@ namespace Shesha.Web.FormsDesigner.Services
             /// <summary>
             /// Module name
             /// </summary>
-            public string Module { get; set; }
+            public string? Module { get; init; }
 
             /// <summary>
             /// Component name
             /// </summary>
-            public string Name { get; set; }
+            public required string Name { get; init; }
 
             /// <summary>
             /// Application key
             /// </summary>
-            public string? FrontEndApplication { get; set; }
+            public required string? FrontEndApplication { get; init; }
 
             /// <summary>
             /// If true, indicates that component is application specific
             /// </summary>
-            public bool IsApplicationSpecific { get; set; }
+            public required bool IsApplicationSpecific { get; init; }            
         }
     }
 }

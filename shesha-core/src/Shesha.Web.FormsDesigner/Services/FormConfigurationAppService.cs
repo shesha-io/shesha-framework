@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
@@ -66,7 +65,7 @@ namespace Shesha.Web.FormsDesigner.Services
             _permissionedObjectManager = permissionedObjectManager;
         }
 
-        private async Task<string[]> GetFormPermissionsAsync(string module, string name)
+        private async Task<string[]> GetFormPermissionsAsync(string? module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name),
@@ -549,7 +548,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 var className = $"\"{config.FullClassName}\"";
                 var typeShortAlias = $"\"{config.TypeShortAlias}\"";
                 var usetsa = !config.TypeShortAlias.IsNullOrWhiteSpace();
-                var formConfigs = forms.Where(x =>/*usetsa && x.Markup.Contains(typeShortAlias) ||*/ x.Markup.Contains(className)).ToList();
+                var formConfigs = forms.Where(x => x.Markup != null && x.Markup.Contains(className)).ToList();
 
                 list.AddRange(formConfigs.Select(x => {
                     return new
@@ -572,7 +571,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// </summary>
         /// <param name="moduleName"></param>
         /// <returns></returns>
-        private async Task<Module?> GetModuleAsync(string moduleName) 
+        private async Task<Module?> GetModuleAsync(string? moduleName) 
         {
             return !string.IsNullOrWhiteSpace(moduleName)
                 ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
@@ -580,40 +579,6 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         #endregion
-
-        public async Task ExportAllAsync(ExportAllInput input) 
-        {
-            if (!Directory.Exists(input.Path))
-                Directory.CreateDirectory(input.Path);
-
-            var forms = await Repository.GetAll()
-                .Select(f => new
-            {
-                Name = f.Name,
-                Version = f.VersionNo,
-                Markup = f.Markup,
-                Module = f.Module != null ? f.Module.Name : "[no-module]"
-            }).ToListAsync();
-
-            foreach (var form in forms)
-            {
-                if (!string.IsNullOrWhiteSpace(form.Markup)) 
-                {
-                    try
-                    {
-                        var fileName = Path.Combine(input.Path, form.Module, $"{form.Name}.v{form.Version}.json".RemovePathIllegalCharacters());
-                        var directory = Path.GetDirectoryName(fileName);
-                        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
-                            Directory.CreateDirectory(directory);
-
-                        await File.WriteAllTextAsync(fileName, form.Markup);
-                    }
-                    catch (Exception e) {
-                        e.LogError();
-                    }
-                }
-            }
-        }
 
         [EntityAction(StandardEntityActions.List)]
         public override async Task<PagedResultDto<FormConfigurationDto>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
@@ -639,11 +604,6 @@ namespace Shesha.Web.FormsDesigner.Services
                 totalCount,
                 dtos
             );
-        }
-
-        public class ExportAllInput 
-        { 
-            public string Path { get; set; }
         }
     }
 }

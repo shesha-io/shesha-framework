@@ -1,21 +1,24 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Notifications;
 using Abp.UI;
 using Castle.Core.Logging;
 using Hangfire;
-using NHibernate.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Email.Dtos;
 using Shesha.EntityReferences;
+using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.Exceptions;
-using Shesha.Notifications.Helpers;
 using Shesha.Notifications.MessageParticipants;
+using Shesha.Reflection;
 using Shesha.Services;
+using Stubble.Core;
+using Stubble.Core.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +39,25 @@ namespace Shesha.Notifications
         private readonly IRepository<NotificationTemplate, Guid> _messageTemplateRepository;
         private readonly IRepository<StoredFile, Guid> _storedFileRepository;
         private readonly INotificationManager _notificationManager;
+        private readonly StubbleVisitorRenderer _stubbleRenderer = new StubbleBuilder().Configure(settings =>
+        {
+            settings.SetIgnoreCaseOnKeyLookup(true);
+            settings.AddValueGetter(typeof(GenericEntityReference), (object value, string key, bool ignoreCase) => {
+                if (value is GenericEntityReference entityRef)
+                {
+                    var entity = (Entity<Guid>)entityRef;
+                    if (entity == null)
+                        return null;
+                    
+                    var propAccessor = ReflectionHelper.GetPropertyValueAccessor(entity, key);
+                    return propAccessor.IsValueAvailable
+                        ? propAccessor.Value
+                        : null;
+                }
+                else
+                    return null;
+            });
+        }).Build();
 
         public ILogger Logger { get; set; }
 
@@ -97,12 +119,12 @@ namespace Shesha.Notifications
         /// <returns></returns>
         public async Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
-            IMessageSender sender, 
+            IMessageSender? sender, 
             IMessageReceiver receiver, 
             TData data, 
             RefListNotificationPriority priority, 
             List<NotificationAttachmentDto>? attachments = null,
-            string cc = "",
+            string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {
@@ -121,7 +143,7 @@ namespace Shesha.Notifications
             {
                 Name = type.Name,
                 NotificationType = type,
-                FromPerson = sender.GetPerson(),
+                FromPerson = sender?.GetPerson(),
                 ToPerson = receiver.GetPerson(),
                 NotificationData = JsonSerializer.Serialize(data),
                 TriggeringEntity = triggeringEntity,
@@ -165,12 +187,12 @@ namespace Shesha.Notifications
         private async Task SendNotificationToChannelAsync<TData>(
             Notification notification, 
             TData data, 
-            IMessageSender sender, 
+            IMessageSender? sender, 
             IMessageReceiver receiver,
             NotificationTypeConfig type,
             RefListNotificationPriority priority, 
             NotificationChannelConfig channelConfig,
-            string cc = "",
+            string? cc = null,
             List<NotificationAttachmentDto>? attachments = null) where TData : NotificationData
         {
             var template = await _messageTemplateRepository.FirstOrDefaultAsync(x => x.PartOf.Id == type.Id && channelConfig.SupportedFormat == x.MessageFormat);
@@ -183,8 +205,8 @@ namespace Shesha.Notifications
             {
                 PartOf = notification,
                 Channel = channelConfig,
-                Subject = TemplateHelper.ReplacePlaceholders(template.TitleTemplate, data),
-                Message = TemplateHelper.ReplacePlaceholders(template.BodyTemplate, data),
+                Subject = await GenerateContentAsync(template.TitleTemplate, data) ?? string.Empty,
+                Message = await GenerateContentAsync(template.BodyTemplate, data) ?? string.Empty,
                 RetryCount = 0,
                 ReadStatus = RefListNotificationReadStatus.Unread,
                 Direction = RefListNotificationDirection.Outgoing,
@@ -221,6 +243,16 @@ namespace Shesha.Notifications
             }
         }
 
+        /// <summary>
+        /// Generate content based on template (uses mustache syntax)
+        /// </summary>
+        protected async Task<string?> GenerateContentAsync<TData>(string? template, TData data)
+        {
+            return !string.IsNullOrWhiteSpace(template)
+                ? await _stubbleRenderer.RenderAsync(template, data)
+                : template;
+        }
+
         private INotificationChannelSender GetChannelSender(NotificationMessage message) 
         {
             var sender = _channelSenders.FirstOrDefault(x => x.GetType().Name == message.Channel.SenderTypeName);
@@ -231,7 +263,7 @@ namespace Shesha.Notifications
             return sender;
         }
 
-        private IMessageSender GetMessageSender(NotificationMessage message)
+        private IMessageSender? GetMessageSenderOrNull(NotificationMessage message)
         {
             if (message.PartOf.FromPerson != null)
                 return new PersonMessageParticipant(message.PartOf.FromPerson);
@@ -239,9 +271,11 @@ namespace Shesha.Notifications
             if (!string.IsNullOrWhiteSpace(message.SenderText))
                 return new RawAddressMessageParticipant(message.SenderText);
 
-            throw new Exception($"{nameof(message.PartOf.FromPerson)} or {nameof(message.SenderText)} must not be null");
+            return null;
         }
-        
+
+        private IMessageSender GetMessageSender(NotificationMessage message) => GetMessageSenderOrNull(message) ?? throw new Exception($"{nameof(message.PartOf.FromPerson)} or {nameof(message.SenderText)} must not be null");
+
         private IMessageReceiver GetMessageReceiver(NotificationMessage message)
         {
             if (message.PartOf.ToPerson != null)
@@ -263,7 +297,7 @@ namespace Shesha.Notifications
 
                 var attachments = await GetAttachmentsAsync(message);
 
-                var sender = GetMessageSender(message);
+                var sender = GetMessageSenderOrNull(message);
                 var reciever = GetMessageReceiver(message);
 
                 message.RecipientText = reciever.GetAddress(channelSender);
@@ -308,7 +342,7 @@ namespace Shesha.Notifications
         /// Attempts to send a notification and handles exceptions internally.
         /// </summary>
         private async Task<SendStatus> TrySendAsync(
-            IMessageSender sender,
+            IMessageSender? sender,
             IMessageReceiver receiver,
             NotificationMessage message,
             INotificationChannelSender notificationChannelSender,
@@ -338,16 +372,18 @@ namespace Shesha.Notifications
 
         public async Task SendNotificationAsync<TData>(
             NotificationTypeConfig type, 
-            Person senderPerson, 
+            Person? senderPerson, 
             Person receiverPerson, 
             TData data, 
             RefListNotificationPriority priority, 
             List<NotificationAttachmentDto>? attachments = null,
-            string cc = "",
+            string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
             NotificationChannelConfig? channel = null) where TData : NotificationData
         {
-            var sender = new PersonMessageParticipant(senderPerson);
+            var sender = senderPerson != null 
+                ? new PersonMessageParticipant(senderPerson)
+                : null;
             var receiver = new PersonMessageParticipant(receiverPerson);            
             await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel);            
         }

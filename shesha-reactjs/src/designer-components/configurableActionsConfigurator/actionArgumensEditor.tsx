@@ -104,5 +104,3 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     />
   );
 };
-
-export default ActionArgumentsEditor;

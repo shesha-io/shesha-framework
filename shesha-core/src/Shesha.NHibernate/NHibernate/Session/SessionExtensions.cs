@@ -67,9 +67,9 @@ namespace Shesha.NHibernate.Session
 
         public class DirtyPropertyInfo
         {
-            public string Name { get; set; }
-            public object? OldValue { get; set; }
-            public object? NewValue { get; set; }
+            public required string Name { get; init; }
+            public object? OldValue { get; init; }
+            public object? NewValue { get; init; }
         }
 
         /// <summary>

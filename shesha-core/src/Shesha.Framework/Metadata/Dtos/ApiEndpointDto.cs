@@ -8,11 +8,11 @@
         /// <summary>
         /// Http verb (get/post/put etc)
         /// </summary>
-        public string HttpVerb { get; set; }
+        public required string HttpVerb { get; init; }
 
         /// <summary>
         /// Url
         /// </summary>
-        public string Url { get; set; }
+        public required string Url { get; init; }
     }
 }

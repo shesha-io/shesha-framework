@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities;
+using Newtonsoft.Json;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -9,13 +10,14 @@ namespace Shesha.EntityReferences
     [Serializable]
     public class GenericEntityReference : IEquatable<GenericEntityReference>, IGenericEntityReference
     {
-        private object _entity;
-       
-        public GenericEntityReference(string id, string typeName, string? dysplayName = null)
+        private object? _entity;
+
+        [JsonConstructor]
+        public GenericEntityReference(string id, string _className, string? _displayName = null)
         {
             Id = id;
-            _className = typeName;
-            _displayName = dysplayName;
+            this._className = _className;
+            this._displayName = _displayName;
         }
 
         public GenericEntityReference(object entity)
@@ -34,6 +36,7 @@ namespace Shesha.EntityReferences
             _displayName = _entity.GetEntityDisplayName();
         }
 
+        [JsonProperty("id")]
         public virtual string Id { get; internal set; }
 
         public virtual string _className { get; internal set; }

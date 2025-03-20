@@ -7,15 +7,15 @@ import React, {
   useReducer,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { App, ColProps } from 'antd';
 import {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
   upgradeComponents,
   useApplicationContextData
-  } from '@/providers/form/utils';
-import { DEFAULT_FORM_SETTINGS } from '../form/models';
+} from '@/providers/form/utils';
+import { DEFAULT_FORM_SETTINGS, IFormDto } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
 import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
 import { GetDataError, useDeepCompareMemo, useMutate } from '@/hooks';
@@ -86,8 +86,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const { globalState, setState: setGlobalState } = useGlobalState();
   const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
-  
+
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const designerComponents = useFormDesignerComponents();
 
   const actualQueryParams = useActualContextExecution(props.queryParams);
   const actualGetUrl = useActualContextExecution(props.getUrl);
@@ -95,12 +96,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const actualPutUrl = useActualContextExecution(props.putUrl);
 
   const onChangeInternal = (newValue: any) => {
-    if (onChange) 
-      onChange({...(typeof value === 'object' ? value : {} ), ...newValue });
+    if (onChange)
+      onChange(newValue);
   };
 
   const onClearInternal = () => {
-    if (onChange) 
+    if (onChange)
       onChange({});
   };
 
@@ -121,7 +122,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     }
   }, [value, propertyName]);
 
-  const internalEntityType = entityType || value?.['_className'];
+  const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
+  const prevRenderedEntityTypeForm = useRef<string>(null);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -129,13 +131,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     return actualGetUrl
       ? // if getUrl is specified - evaluate value using JS
-        Promise.resolve(actualGetUrl)
+      Promise.resolve(actualGetUrl)
       : internalEntityType
-      ? // if entityType is specified - get default url for the entity
+        ? // if entityType is specified - get default url for the entity
         urlHelper
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then((endpoint) => endpoint.url)
-      : // return empty string
+        : // return empty string
         Promise.resolve('');
   };
 
@@ -146,17 +148,68 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const { getEntityFormId } = useConfigurationItemsLoader();
 
+  const entityTypeFormCache = useRef<{ [key: string]: IFormDto }>({});
+
   useEffect(() => {
     if (formConfig?.formId !== formId) setFormConfig({ formId, lazy: true });
   }, [formId]);
 
+  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
+    const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
+    upgradeComponents(designerComponents, payload.formSettings, flatStructure);
+    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
+
+    dispatch(
+      setMarkupWithSettingsAction({
+        ...payload,
+        components: tree,
+        ...flatStructure,
+      })
+    );
+  };
+
   // show form based on the entity type
   useEffect(() => {
-    if (value && formSelectionMode === 'dynamic') {
-      if (value && typeof value === 'object' && value?.['_className'] && !formConfig?.formId)
-        getEntityFormId(value['_className'], formType).then((formid) => {
-          setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+    if (formSelectionMode === 'dynamic') {
+      if (internalEntityType) {
+        if (internalEntityType !== prevRenderedEntityTypeForm.current) {
+          const cachedFormDto = entityTypeFormCache.current[internalEntityType];
+          if (cachedFormDto) {
+            setMarkup({
+              hasFetchedConfig: true,
+              id: cachedFormDto.id,
+              module: cachedFormDto.module,
+              name: cachedFormDto.name,
+              components: cachedFormDto.markup,
+              formSettings: cachedFormDto.settings,
+              versionNo: cachedFormDto.versionNo,
+              versionStatus: cachedFormDto.versionStatus,
+              description: cachedFormDto.description,
+            });
+            prevRenderedEntityTypeForm.current = internalEntityType;
+          } else {
+            getEntityFormId(internalEntityType, formType).then((formid) => {
+              setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+              prevRenderedEntityTypeForm.current = internalEntityType;
+            });
+          }
+        }
+        if (!internalEntityType && state.formSettings?.modelType)
+          onChangeInternal(deepMergeValues(value, { _className: state.formSettings?.modelType }));
+      } else {
+        setMarkup({
+          hasFetchedConfig: false,
+          id: null,
+          module: null,
+          name: null,
+          components: [],
+          formSettings: null,
+          versionNo: null,
+          versionStatus: null,
+          description: null,
         });
+        prevRenderedEntityTypeForm.current = null;
+      }
     }
   }, [value]);
 
@@ -178,14 +231,15 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties = !!properties
-      ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
-      : null;
+    if (properties) {
+      // Always include the `id` property/. Useful for deleting
+      params.properties = ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties]))].join(' ');
+    }
 
     if (queryParams) {
       params = { ...params, ...(typeof actualQueryParams === 'object' ? actualQueryParams : {}) };
     }
-    
+
     if (!params.id && Boolean(value) && value['id'] != null && value['id'] !== undefined)
       params.id = value['id'];
 
@@ -213,7 +267,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     // clear sub-form values and skip loading if the Id is empty
     if (!finalQueryParams?.id?.trim() || finalQueryParams?.id.trim() === 'undefined') {
       onClearInternal();
-      dispatch(fetchDataSuccessAction({entityId: finalQueryParams?.id}));
+      dispatch(fetchDataSuccessAction({ entityId: finalQueryParams?.id }));
       return;
     }
 
@@ -232,7 +286,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     dispatch(fetchDataRequestAction());
     getReadUrl().then((getUrl) => {
       if (!Boolean(getUrl)) {
-        dispatch(fetchDataSuccessAction({entityId: undefined}));
+        dispatch(fetchDataSuccessAction({ entityId: undefined }));
         return;
       }
 
@@ -249,7 +303,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
           if (dataResponse.success) {
             onChangeInternal(dataResponse?.result);
-            dispatch(fetchDataSuccessAction({entityId: dataResponse?.result?.id}));
+            dispatch(fetchDataSuccessAction({ entityId: dataResponse?.result?.id }));
           } else {
             onClearInternal();
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
@@ -268,7 +322,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // fetch data on first rendering and on change of some properties
   useDeepCompareEffect(() => {
     if (dataSource === 'api') fetchData();
-  }, [dataSource, finalQueryParams]); // TODO: memoize final getUrl and add as a dependency
+  }, [dataSource, finalQueryParams, internalEntityType]); // TODO: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {
     if (!actualPostUrl) {
@@ -326,22 +380,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   }, 300);
   //#endregion
 
-  const designerComponents = useFormDesignerComponents();
-
-  const setMarkup = (payload: IPersistedFormPropsWithComponents) => {
-    const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
-    upgradeComponents(designerComponents, payload.formSettings, flatStructure);
-    const tree = componentsFlatStructureToTree(designerComponents, flatStructure);
-
-    dispatch(
-      setMarkupWithSettingsAction({
-        ...payload,
-        components: tree,
-        ...flatStructure,
-      })
-    );
-  };
-
   //#region Fetch Form
   useDeepCompareEffect(() => {
     if (formConfig.formId && !markup) {
@@ -350,6 +388,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       getForm({ formId: formConfig.formId, skipCache: false, configurationItemMode: configurationItemMode })
         .then((response) => {
           setFormLoadingState({ isLoading: false, error: null });
+
+          if (internalEntityType && formSelectionMode === 'dynamic' && !entityTypeFormCache.current[internalEntityType])
+            entityTypeFormCache.current[internalEntityType] = response;
 
           setMarkup({
             hasFetchedConfig: true,
@@ -379,7 +420,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   //#endregion
 
   const getChildComponents = (componentId: string) => {
-    
+
     const childIds = state.componentRelations[componentId];
 
     if (!childIds) return [];
@@ -513,7 +554,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         >
           <ParentProvider model={props} context={context} isScope
             formApi={subFormApi}
-            formFlatMarkup={{allComponents: state.allComponents, componentRelations: state.componentRelations}}
+            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
           >
             {children}
           </ParentProvider>

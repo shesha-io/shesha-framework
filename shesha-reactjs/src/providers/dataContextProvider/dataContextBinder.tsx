@@ -14,6 +14,7 @@ import {
   DataContextProviderActionsContext,
   DataContextProviderStateContext,
   DataContextType,
+  IDataContextFull,
   IDataContextProviderActionsContext,
   IDataContextProviderActionsContextOverride,
   IDataContextProviderStateContext,
@@ -37,7 +38,6 @@ export interface IDataContextBinderProps {
   setFieldValue?: ContextSetFieldValue;
   onChangeData?: ContextOnChangeData;
   actionsOverride?: IDataContextProviderActionsContextOverride;
-  includeSetFieldValue?: boolean;
 }
 
 const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props) => {
@@ -49,7 +49,6 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     type, 
     data,
     onChangeData,
-    includeSetFieldValue = true,
   } = props;
 
   const { onChangeContext, onChangeContextData } = useDataContextManager();
@@ -88,7 +87,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
       return props.getData();
 
     return dataRef.current ?? {};
-  }, [props.getFieldValue]);
+  }, [props.getData]);
 
   const setFieldValue = useDeepCompareCallback((name: string, value: any) => {
     if (props.setFieldValue)
@@ -119,12 +118,10 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   };
 
   const getFull: ContextGetFull = () => {
-    const data = getData();
+    const data: IDataContextFull = getData();
     const api = getApi();
-    if (!!api) 
+    if (api) 
       data.api = api;
-    if (includeSetFieldValue)
-      data.setFieldValue = setFieldValue;
     return data;
   };
 
