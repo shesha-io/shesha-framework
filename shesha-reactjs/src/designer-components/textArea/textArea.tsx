@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
+import { ConfigProvider, Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import {
@@ -131,9 +131,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       allowClear: model.allowClear,
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
       size: model?.size,
-      style: { 
-        ...finalStyle, 
-        ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0') 
+      style: {
+        ...finalStyle,
+        ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
           ? { marginBottom: model?.showCount ? '16px' : '0px' }
           : {})
       },
@@ -168,14 +168,26 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           ) : model.readOnly ? (
             <ReadOnlyDisplayFormItem value={value} />
           ) : (
-            <Input.TextArea
-              rows={2}
-              {...textAreaProps}
-              disabled={model.readOnly}
-              {...customEvents}
-              value={value}
-              onChange={onChangeInternal}
-            />
+            <ConfigProvider
+              theme={{
+                components: {
+                  Input: {
+                    fontFamily: model?.font?.type,
+                    fontSize: model?.font?.size,
+                    fontWeightStrong: Number(fontStyles.fontWeight)
+                  },
+                },
+              }}
+            >
+              <Input.TextArea
+                rows={2}
+                {...textAreaProps}
+                disabled={model.readOnly}
+                {...customEvents}
+                value={value}
+                onChange={onChangeInternal}
+              />
+            </ConfigProvider>
           );
         }}
       </ConfigurableFormItem>
