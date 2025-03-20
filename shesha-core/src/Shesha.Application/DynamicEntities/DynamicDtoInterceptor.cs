@@ -1,4 +1,5 @@
 ﻿using Castle.DynamicProxy;
+using Shesha.Extensions;
 using Shesha.Reflection;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ namespace Shesha.DynamicEntities
         private string _name;
         private DynamicDtoInterceptor _parent;
 
-        private Dictionary<string, object> _changes = new Dictionary<string, object>();
+        private Dictionary<string, object?> _changes = new ();
 
         private bool _isChanged = false;
 
@@ -29,7 +30,7 @@ namespace Shesha.DynamicEntities
             _changes.Clear();
         }
 
-        public void Change(string name, object value)
+        public void Change(string name, object? value)
         {
             if (_changes.ContainsKey(name)) _changes[name] = value;
             else _changes.Add(name, value);
@@ -63,13 +64,10 @@ namespace Shesha.DynamicEntities
                 if (prop != null)
                 {
                     var val = prop.GetValue(invocation.InvocationTarget, null);
-                    // TODO: Alex, please review
-#pragma warning disable CS8602
-                    if (!val.Equals(invocation.Arguments[0]))
+                    if (!val.NullEquals(invocation.Arguments[0]))
                     {
                         Change(prop.Name, val);
                     }
-#pragma warning restore CS8602
                 }
 
             }

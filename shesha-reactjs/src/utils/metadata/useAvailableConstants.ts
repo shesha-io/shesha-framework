@@ -99,9 +99,7 @@ export const useContextsRegistration = (): MetadataBuilderAction => {
                       });
                   } else {
                       builder.addObject(context.name, context.description, builder => {
-                          builder.addCustom('setFieldValue', 'Sets field value', () => Promise.resolve({ typeName: '(name: string, value: any) => void;', files: [] }))
-                              .addAny('[key: string]', 'fields');
-                              //.addaction('[key: string]', 'fields', () => Promise.resolve({ typeName: 'any', files: [] }));
+                          builder.addAny('[key: string]', 'fields');
                       });
                   }
               return builder;

@@ -48,13 +48,11 @@ namespace Shesha.Permissions
                    : null;
         }
 
-        private List<string> _hardcoded;
-
         public async Task<List<PermissionedObjectDto>> GetAllAsync(string? objectType = null, bool skipUnchangedAssembly = false)
         {
             var list = new List<PermissionedObjectDto>();
 
-            _hardcoded = (await _permissionedObjectRepository.GetAll()
+            var hardcoded = (await _permissionedObjectRepository.GetAll()
                 .Where(x =>
                     (x.Type == ShaPermissionedObjectsTypes.Entity || x.Type == ShaPermissionedObjectsTypes.EntityAction)
                     &&
@@ -76,7 +74,7 @@ namespace Shesha.Permissions
                 {
                     using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                     {
-                        list.AddRange(await ProcessAssemblyAsync(assembly));
+                        list.AddRange(await ProcessAssemblyAsync(assembly, hardcoded));
                     }
                     await unitOfWork.CompleteAsync();
                 }
@@ -124,7 +122,7 @@ namespace Shesha.Permissions
             return dto;
         }
 
-        private async Task<List<PermissionedObjectDto>> ProcessAssemblyAsync(Assembly assembly)
+        private async Task<List<PermissionedObjectDto>> ProcessAssemblyAsync(Assembly assembly, List<string> hardcoded)
         {
             var m = await _moduleManager.GetOrCreateModuleAsync(assembly);
 
@@ -137,7 +135,7 @@ namespace Shesha.Permissions
                 // Get all CrudAccessAttribute
                 var accessAttributes = et.GetAttributes<CrudAccessAttribute>();
                 var disableAttribute = et.GetAttribute<CrudDisableActionsAttribute>();
-                if (disableAttribute == null && !accessAttributes.Any() && !_hardcoded.Contains(et.GetRequiredFullName()))
+                if (disableAttribute == null && !accessAttributes.Any() && !hardcoded.Contains(et.GetRequiredFullName()))
                     continue;
 
                 // But use only one for each type of action

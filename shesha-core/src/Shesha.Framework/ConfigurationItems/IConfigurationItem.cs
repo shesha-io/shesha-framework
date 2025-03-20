@@ -39,7 +39,7 @@ namespace Shesha.ConfigurationItems
         /// The Guid for the Config Item.
         /// Different versions for the same Config Item will share this Id which the very first version of the item will be responsible for generating.
         /// </summary>
-        ConfigurationItem Origin { get; set; }
+        ConfigurationItem? Origin { get; set; }
 
         /// <summary>
         /// If true, indicates that this is a last version of the configuration item

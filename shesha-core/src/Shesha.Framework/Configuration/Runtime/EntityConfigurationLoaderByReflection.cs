@@ -45,8 +45,7 @@ namespace Shesha.Configuration.Runtime
             {
                 try
                 {
-                    var propConfig = new PropertyConfiguration(config.EntityType);
-                    LoadPropertyConfiguration(prop, propConfig);
+                    var propConfig = LoadPropertyConfiguration(prop, config.EntityType);
                     config.Properties.Add(prop.Name, propConfig);
                 }
                 catch
@@ -74,11 +73,14 @@ namespace Shesha.Configuration.Runtime
             config.DisplayNamePropertyInfo = config.EntityType.GetDisplayNamePropertyInfoOrNull();
         }
 
-        private static void LoadPropertyConfiguration(PropertyInfo prop, PropertyConfiguration propConfig)
+        private static PropertyConfiguration LoadPropertyConfiguration(PropertyInfo prop, Type entityType)
         {
-            propConfig.PropertyInfo = prop;
-            propConfig.GeneralType = GetGeneralDataType(prop);
-            propConfig.Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category;
+            var propConfig = new PropertyConfiguration(entityType) {
+                PropertyInfo = prop,
+                GeneralType = GetGeneralDataType(prop),
+                Category = prop.GetAttributeOrNull<CategoryAttribute>()?.Category,
+                Label = prop.GetDisplayName(),
+            };
 
             switch (propConfig.GeneralType)
             {
@@ -86,29 +88,27 @@ namespace Shesha.Configuration.Runtime
                 case GeneralDataType.ReferenceList:
                     {
                         var refListAtt = prop.GetAttributeOrNull<ReferenceListAttribute>(true);
-                        if (refListAtt != null) 
+                        var refListId = refListAtt?.GetReferenceListIdentifier(prop);
+                        if (refListId == null)
                         {
-                            var refListId = refListAtt.GetReferenceListIdentifier(prop);
-                            if (refListId == null)
+                            var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
+
+                            if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
                             {
-                                var underlyingType = prop.PropertyType.GetUnderlyingTypeIfNullable();
-
-                                if (underlyingType.IsEnum && underlyingType.HasAttribute<ReferenceListAttribute>())
-                                {
-                                    refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
-                                    refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
-                                }
-                            }
-
-                            if (refListId != null)
-                            {
-                                propConfig.ReferenceListName = refListId.Name;
-                                propConfig.ReferenceListModule = refListId.Module;
-
-                                if (refListAtt != null)
-                                    propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                                refListAtt = underlyingType.GetAttributeOrNull<ReferenceListAttribute>();
+                                refListId = refListAtt?.GetReferenceListIdentifier(underlyingType);
                             }
                         }
+
+                        if (refListId != null)
+                        {
+                            propConfig.ReferenceListName = refListId.Name;
+                            propConfig.ReferenceListModule = refListId.Module;
+
+                            if (refListAtt != null)
+                                propConfig.ReferenceListOrderByName = refListAtt.OrderByName;
+                        }
+
                         break;
                     }
                 case GeneralDataType.Enum:
@@ -130,9 +130,9 @@ namespace Shesha.Configuration.Runtime
                     break;
             }
 
-            propConfig.Label = prop.GetDisplayName();
-
             LoadChangeLoggingPropertyConfiguration(prop, propConfig);
+            
+            return propConfig;
         }
 
         private void LoadChangeLoggingConfiguration(EntityConfiguration config)

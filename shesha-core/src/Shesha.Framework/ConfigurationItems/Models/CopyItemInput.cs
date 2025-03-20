@@ -20,16 +20,16 @@ namespace Shesha.ConfigurationItems.Models
         /// <summary>
         /// Name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace Shesha.Authorization.Users
 {
     public class UserRegistrationManager : DomainService
     {
-        public IAbpSession AbpSession { get; set; }
+        public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         private readonly TenantManager _tenantManager;
         private readonly UserManager _userManager;
@@ -37,7 +37,7 @@ namespace Shesha.Authorization.Users
             AbpSession = NullAbpSession.Instance;
         }
 
-        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
+        public async Task<User> RegisterAsync(string name, string? surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
         {
             CheckForTenant();
 

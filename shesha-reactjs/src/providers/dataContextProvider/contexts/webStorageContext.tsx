@@ -1,8 +1,8 @@
 import React, { FC, PropsWithChildren, useMemo, useRef } from "react";
-import DataContextBinder from "./dataContextBinder";
-import { SheshaCommonContexts } from "../dataContextManager/models";
+import DataContextBinder from "../dataContextBinder";
+import { SheshaCommonContexts } from "../../dataContextManager/models";
 import { DataTypes, IObjectMetadata, useDataContextManager } from "@/index";
-import { WebStorageProxy } from "./webStorageWrapper";
+import { WebStorageProxy } from "./webStorageProxy";
 import { webStorageCode } from '@/publicJsApis';
 
 
@@ -50,7 +50,6 @@ export const WebStorageContextProvider: FC<PropsWithChildren<any>> = (props) => 
       setFieldValue={setFieldValue}
       getFieldValue={getFieldValue}
       getData={() => data}
-      includeSetFieldValue={false}
     >
       {props.children}
     </DataContextBinder>

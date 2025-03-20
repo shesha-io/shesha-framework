@@ -5,7 +5,7 @@ namespace Shesha.Authentication.External
 {
     public abstract class ExternalAuthProviderApiBase : IExternalAuthProviderApi, ITransientDependency
     {
-        public ExternalLoginProviderInfo ProviderInfo { get; set; }
+        public ExternalLoginProviderInfo? ProviderInfo { get; set; }
 
         public void Initialize(ExternalLoginProviderInfo providerInfo)
         {

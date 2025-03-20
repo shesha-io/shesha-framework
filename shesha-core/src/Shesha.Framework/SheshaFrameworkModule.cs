@@ -165,7 +165,6 @@ namespace Shesha
         public override void PostInitialize()
         {
             IocManager.Resolve<ShaPermissionManager>().Initialize();
-            //IocManager.Resolve<SheshaSettingDefinitionManager>().Initialize();
 
             var def = IocManager.Resolve<IPermissionDefinitionContext>();
 

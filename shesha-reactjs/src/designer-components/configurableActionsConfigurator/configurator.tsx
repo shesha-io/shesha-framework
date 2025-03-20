@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Collapse, Form } from 'antd';
 import { useForm, useConfigurableActionDispatcher } from '@/providers';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import ActionArgumentsEditor from './actionArgumensEditor';
+import { ActionArgumentsEditor } from './actionArgumensEditor';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -12,7 +12,6 @@ import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sources
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
-import FormItem from '../_settings/components/formItem';
 
 const { Panel } = Collapse;
 
@@ -32,6 +31,9 @@ const parseActionFullName = (fullName: string): IActionIdentifier => {
     ? { actionOwner: parts[0], actionName: parts[1] }
     : null;
 };
+
+const FORM_ARGUMENTS_FIELD = 'actionArguments';
+const ACTION_FULL_NAME_FIELD = 'actionFullName';
 
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
@@ -55,19 +57,34 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
     return result;
   }, [value]);
 
-  const onValuesChange = (_value, values) => {
-    if (onChange) {
-      const { actionFullName, ...restProps } = values;
-      const actionId = parseActionFullName(actionFullName);
+  const hasChangedAction = (changedValues): boolean => {
+    if (changedValues && changedValues.hasOwnProperty(ACTION_FULL_NAME_FIELD)){
+      const { actionFullName } = changedValues;
+      const prevActionFullName = formValues?.actionFullName;
+      return prevActionFullName !== actionFullName;
+    }
+    return false;
+  };
 
-      const formValues = {
+  const onValuesChange = (changedValues, values) => {
+    const actionChanged = hasChangedAction(changedValues);
+    if (actionChanged){
+      form.setFieldValue(FORM_ARGUMENTS_FIELD, undefined);
+    }
+
+    if (onChange) {
+      const { actionFullName, actionArguments, ...restProps } = values;
+      const actionId = parseActionFullName(actionFullName);
+      
+      const newFormValues = {
         _type: StandardNodeTypes.ConfigurableActionConfig,
         actionName: actionId?.actionName,
         actionOwner: actionId?.actionOwner,
+        actionArguments: actionChanged ? undefined : actionArguments,
         ...restProps,
       };
 
-      onChange(formValues);
+      onChange(newFormValues);
     }
   };
 
@@ -98,12 +115,12 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <FormItem name="actionFullName" label={label as string} tooltip={description}>
+        <Form.Item name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </FormItem>
+        </Form.Item>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
-            <Form.Item name="actionArguments" label={null}>
+            <Form.Item name={FORM_ARGUMENTS_FIELD} label={null}>
               <ActionArgumentsEditor
                 action={selectedAction}
                 readOnly={readOnly}

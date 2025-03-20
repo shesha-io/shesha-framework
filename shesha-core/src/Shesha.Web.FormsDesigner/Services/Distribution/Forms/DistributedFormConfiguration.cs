@@ -13,7 +13,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// <summary>
         /// Form markup
         /// </summary>
-        public string Markup { get; set; }
+        public string? Markup { get; set; }
 
         /// <summary>
         /// ModelType
