@@ -3,6 +3,7 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -29,7 +30,8 @@ namespace Shesha.Domain
         /// <summary>
         /// CC emails
         /// </summary>
-        public virtual string Cc { get; set; }
+        [Column("cc")]
+        public virtual string? Cc { get; set; }
         /// <summary>
         /// 
         /// </summary>

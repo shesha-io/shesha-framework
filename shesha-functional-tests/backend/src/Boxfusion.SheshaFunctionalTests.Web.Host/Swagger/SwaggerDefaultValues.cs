@@ -1,10 +1,10 @@
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Linq;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Swagger
 {
@@ -28,10 +28,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Swagger
                 {
                     parameter.Description ??= description?.ModelMetadata?.Description;
 
-                    parameter.Required |= description.IsRequired;
-                }
-                else
-                {
+                    if (description != null)
+                        parameter.Required |= description.IsRequired;
                 }
             }
         }

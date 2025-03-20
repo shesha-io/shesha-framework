@@ -19,15 +19,15 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         public class PersonSelect
         {
             public Guid Id { get; set; }
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
 
-        public async Task<List<PersonSelect>> GetPersonList()
+        public async Task<List<PersonSelect>> GetPersonListAsync()
         {
             return await _memberRepo.GetAll().Take(5).Select(x => new PersonSelect { Id = x.Id, Name = x.FirstName }).ToListAsync();
         }
 
-        public async Task<Dictionary<string, object>> GetPersonDetails(PropsFilteredPagedAndSortedResultRequestDto input)
+        public async Task<Dictionary<string, object>> GetPersonDetailsAsync(PropsFilteredPagedAndSortedResultRequestDto input)
         {
             var columns = input.Properties?.Replace(',', ' ').Split(' ') ?? [];
 

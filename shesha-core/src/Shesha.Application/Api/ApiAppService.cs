@@ -31,7 +31,7 @@ namespace Shesha.Api
         }
 
         [HttpGet]
-        public async Task<List<AutocompleteItemDto>> EndpointsAsync(string term, string verb, int maxResultCount = 10)
+        public async Task<List<AutocompleteItemDto>> EndpointsAsync(string? term, string? verb, int maxResultCount = 10)
         {
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
 

@@ -18,19 +18,13 @@ namespace Shesha.Domain
         /// </summary>
         [StringLength(int.MaxValue)]
         [LazyLoad]
-        public virtual string Markup { get; set; }
+        public virtual string? Markup { get; set; }
 
         /// <summary>
         /// ModelType
         /// </summary>
         [StringLength(int.MaxValue)]
         public virtual string? ModelType { get; set; }
-
-        /// <summary>
-        /// Type
-        /// </summary>
-        [StringLength(100)]
-        public virtual string Type { get; set; }
 
         public override string ItemType => ItemTypeName;
 

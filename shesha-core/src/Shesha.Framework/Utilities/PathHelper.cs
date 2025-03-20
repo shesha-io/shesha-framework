@@ -11,7 +11,7 @@ namespace Shesha.Utilities
     /// </summary>
     public class PathHelper: IPathHelper, ITransientDependency
     {
-        public IocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         /// <summary>
         /// Performs similar function to Path.Combine() which combine multiple file path segments into

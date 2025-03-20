@@ -1,4 +1,3 @@
-﻿using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,6 +20,6 @@ namespace Shesha.Domain
         /// Form markup
         /// </summary>
         [StringLength(int.MaxValue)]
-        public virtual string Settings { get; set; }
+        public virtual string? Settings { get; set; }
     }
 }

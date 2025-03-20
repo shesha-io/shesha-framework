@@ -22,14 +22,14 @@ namespace Shesha.DynamicEntities.Dtos
 
         public bool AllowConfigureAppService { get; set; }
 
-        public List<ModelPropertyDto> Properties { get; set; }
+        public List<ModelPropertyDto> Properties { get; set; } = new List<ModelPropertyDto>();
 
-        public string HardcodedPropertiesMD5 { get; set; }
+        public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }
 
         // ConfigurationItem        
         public Guid? ModuleId { get; set; }
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public string Name { get; set; }
         public string? Label { get; set; }
         public string? Description { get; set; }

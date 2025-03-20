@@ -37,7 +37,7 @@ namespace Shesha.Import
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
+        public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         private string _loggerName;
         private string _logGroupName;

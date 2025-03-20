@@ -10,7 +10,7 @@ namespace Shesha.DelayedUpdate
     public abstract class BaseDelayedUpdateManager<TDelayedUpdateData> : IDelayedUpdateManager
     {
 
-        public TDelayedUpdateData? GetData(object data)
+        public TDelayedUpdateData? GetData(object? data)
         {
             if (data is JObject jData)
                 return jData.ToObject<TDelayedUpdateData>();

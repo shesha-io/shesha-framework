@@ -5,7 +5,7 @@
     /// </summary>
     public class AutocompleteItemDto
     {
-        public string Value { get; set; }
-        public string DisplayText { get; set; }
+        public required string Value { get; set; }
+        public required string DisplayText { get; set; }
     }
 }

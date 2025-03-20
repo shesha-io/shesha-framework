@@ -15,10 +15,10 @@ export interface IDataContextProviderStateContext {
 }
 
 export interface IDataContextFull {
-  data: any;
-  api: any;
-  metadata: Promise<IModelMetadata>;
-  setFieldValue: ContextSetFieldValue;
+  [key: string]: any;
+  api?: any;
+  metadata?: Promise<IModelMetadata>;
+  setFieldValue?: ContextSetFieldValue;
 }
 
 export interface IDataContextProviderActionsContext {

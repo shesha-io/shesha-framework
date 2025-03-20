@@ -29,7 +29,7 @@ namespace Shesha.ConfigurationItems.Distribution
         private readonly IRepository<ConfigurationItemBase, Guid> _itemsRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         public ConfigurationPackageManager(IRepository<ConfigurationItemBase, Guid> itemsRepository, IStoredFileService storedFileService, IRepository<ConfigurationPackageImportResult, Guid> importResultRepository)
         {
@@ -86,10 +86,9 @@ namespace Shesha.ConfigurationItems.Distribution
                         ModuleName = parts[0],
                         ItemType = parts[1],
                         StreamGetter = () => entry.Open(),
-                    };
-
-                    item.FileName = containsAppKey ? parts[3] : parts[2];
-                    item.ApplicationKey = containsAppKey ? parts[2] : null;
+                        FileName = containsAppKey ? parts[3] : parts[2],
+                        ApplicationKey = containsAppKey ? parts[2] : null,
+                    };                    
 
                     var importer = context.GetImporter(item.ItemType);
                     if (importer == null)
