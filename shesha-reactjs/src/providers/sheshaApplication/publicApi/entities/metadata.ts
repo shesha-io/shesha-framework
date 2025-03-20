@@ -8,6 +8,7 @@ import { StringBuilder } from "@/utils/metadata/stringBuilder";
 import { TypesImporter } from "@/utils/metadata/typesImporter";
 import { getEntityIdJsType } from "@/utils/metadata";
 import camelcase from "camelcase";
+import { EOL } from "@/utils/metadata/models";
 
 type EntityItemType = 'module' | 'entityType';
 
@@ -221,7 +222,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
         const moduleExportSection = moduleSb.build();
         const moduleImportSection = moduleImporter.generateImports();
-        const moduleContent = `${moduleImportSection}\n\n${moduleExportSection}`;
+        const moduleContent = `${moduleImportSection}${EOL}${moduleExportSection}`;
 
         const moduleFileName = `entities/${property.path}/index.d.ts`;
 
@@ -241,7 +242,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     const exportSection = sb.build();
     const importSection = typesImporter.generateImports();
 
-    apiFile.content = `${importSection}\n\n${exportSection}`;
+    apiFile.content = `${importSection}${EOL}${exportSection}`;
 
     return result;
 };
