@@ -204,7 +204,7 @@
             "values": [
               { "id": "0b294d66-9591-4434-b94b-37196f3bd90d", "label": "Tiny", "value": "tiny" },
               { "id": "3ae51bbf-9f1d-4f82-b9df-835ec5c55893", "label": "Extra small", "value": "xsmall" },
-              { "id": "8cd7806d-9b7f-46dc-9e83-a2b7c55dace0", "label": "Middle", "value": "middle" },
+              { "id": "8cd7806d-9b7f-46dc-9e83-a2b7c55dace0", "label": "Medium","value": "middle" },
               { "id": "4bab05a3-a72f-4b1b-9b39-26d6904791ec", "label": "Large", "value": "large" }
             ]
           },
