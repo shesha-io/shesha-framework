@@ -3,7 +3,6 @@ import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
-import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
@@ -21,18 +20,19 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   markup,
   onValuesChange,
   readOnly = false,
+  cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
 
   return (
     <ConfigurableForm
-      layout='vertical'
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
       shaFormRef={formRef}
       onFinish={onSave}
-      markup={newMarkUp as FormMarkup}
+      markup={markup}
+      cacheKey={cacheKey}
       initialValues={model}
       onValuesChange={onValuesChange}
     />

@@ -12,7 +12,6 @@ import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sources
 import { StyledLabel } from '../_settings/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
-import FormItem from '../_settings/components/formItem';
 
 const { Panel } = Collapse;
 
@@ -118,7 +117,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       >
         <Form.Item name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </FormItem>
+        </Form.Item>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name={FORM_ARGUMENTS_FIELD} label={null}>
