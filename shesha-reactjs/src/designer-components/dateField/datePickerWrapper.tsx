@@ -17,6 +17,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const properties = asPropertiesArray(metaProperties, []);
   const [MIDNIGHT_MOMENT, setMIDNIGHT_MOMENT] = useState(moment('00:00:00', 'HH:mm:ss'));
   const [momentValue, setMomentValue] = useState<moment.Moment | null>(null);
+  const [rangeMomentValue, setRangeMomentValue] = useState<any>(null);
 
   const { globalState } = useGlobalState();
 
@@ -89,7 +90,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const handleOnOk = (value: moment.Moment | null) => handleDatePickerChange(value, value?.format(pickerFormat));
 
   const getCurrentTime = () => {
-    setMomentValue(null); // Reset the state to null
+    // Reset the state to null
+    setMomentValue(null);
+    setRangeMomentValue(null);
+
     if (defaultToMidnight) {
       setMIDNIGHT_MOMENT(moment('00:00:00', 'HH:mm:ss'));
     } else {
@@ -105,13 +109,16 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   };
 
   const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
-
-  const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
   const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
 
   useEffect(() => {
-    const newMomentValue = getMoment(value, pickerFormat);
-    setMomentValue(newMomentValue);
+    if (range) {
+      const newRangeMomentValue = getRangeMoment(value, pickerFormat);
+      setRangeMomentValue(newRangeMomentValue);
+    } else {
+      const newMomentValue = getMoment(value, pickerFormat);
+      setMomentValue(newMomentValue);
+    }
   }, [value, pickerFormat]);
 
   if (range) {
