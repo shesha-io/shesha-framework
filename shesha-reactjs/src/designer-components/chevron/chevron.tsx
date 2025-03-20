@@ -15,7 +15,6 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
-
     return (
       <ConfigurableFormItem model={model}>
         {value => (
