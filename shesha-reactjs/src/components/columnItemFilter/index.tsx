@@ -36,11 +36,9 @@ import {
 
 type MenuItem = MenuProps['items'][number];
 
-const { RangePicker: DateRangePicker } = DatePicker;
-
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   date: ['equals', 'between', 'before', 'after'],
-  datetime: ['equals', 'between', 'before', 'after'],
+  'date-time': ['equals', 'between', 'before', 'after'],
   time: ['equals', 'between', 'before', 'after'],
   number: ['lessThan', 'greaterThan', 'equals', 'between'],
   string: ['contains', 'startsWith', 'endsWith', 'equals'],
@@ -240,7 +238,7 @@ const DateTimeFilter: FC<DateTimeFilterProps> = ({ id, filter, filterOption, onC
   }, [filter, format]);
 
   return filterOption === 'between' ? (
-    <DateRangePicker size="small" onChange={onChange} value={memoizedRange} format={format} showTime={showTime} />
+    <DatePicker.RangePicker size="small" onChange={onChange} value={memoizedRange} format={format} showTime={showTime} />
   ) : (
     <DatePicker
       size="small"
