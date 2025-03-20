@@ -45,6 +45,7 @@ export function withEnvironment<WrappedProps>(WrappedComponent: ComponentType<Wi
                     resultType,
                     state: 'ready',
                 };
+
                 return result;
             });
         }, [availableConstants], { constants: undefined, resultType: undefined, state: 'loading' });

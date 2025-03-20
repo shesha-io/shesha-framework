@@ -170,10 +170,14 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             } catch (error) {
                 console.error('Failed to create model', { error, uri, content });
             }
+        } else {
+            const currentValue = model.getValue();
+            if (currentValue !== content){
+                // content has been modified - sync model
+                model.setValue(content);
+            }            
         }
 
-        // addExtralibIfMissing(monaco.languages.typescript.javascriptDefaults, content, filePath);
-        // addExtralibIfMissing(monaco.languages.typescript.typescriptDefaults, content, filePath);
         return model;
     };
 
