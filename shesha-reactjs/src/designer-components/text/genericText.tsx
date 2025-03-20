@@ -1,12 +1,10 @@
 import classNames from 'classnames';
-import React, { CSSProperties, FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
 import { TitleProps } from 'antd/lib/typography/Title';
 import { useStyles } from './styles/styles';
-import { useTheme } from '@/providers';
-import { DEFAULT_PADDING_SIZE, getFontSizeStyle, getPaddingSizeStyle } from './utils';
 import { Typography } from 'antd';
 
 const { Paragraph, Text, Title } = Typography;
@@ -28,19 +26,13 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   fontSize,
   level,
   numberFormat,
-  padding = DEFAULT_PADDING_SIZE,
   textType,
   style,
   ...model
 }) => {
-  const { theme } = useTheme();
   const { styles } = useStyles();
   const [updateKey, setUpdateKey] = useState(0);
   // NOTE: to be replaced with a generic context implementation
-  const sizeIdentifier = textType === 'title' ? level : fontSize;
-
-  const fontSizeStyle = typeof sizeIdentifier === 'string' ? getFontSizeStyle(sizeIdentifier) : {};
-  const paddingStyle = getPaddingSizeStyle(padding);
 
   useEffect(() => {
     setUpdateKey((prev) => prev + 1);
@@ -56,15 +48,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     model.strong,
   ]);
 
-  const textColor = useMemo(() => {
-    if (!contentType || !contentType[0]) return theme?.text?.default;
-
-    if (contentType === 'secondary') return theme?.text?.secondary;
-
-    if (contentType === 'custom' && color) return color;
-
-    return null;
-  }, [color, contentType, theme?.text]);
 
   const baseProps: ITypographyProps = {
     code: model?.code,
@@ -75,15 +58,8 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     underline: model?.underline,
     keyboard: model?.keyboard,
     italic: model?.italic,
-    textType: textType,
-    styles: {
-      margin: 'unset',
-      ...fontSizeStyle,
-      ...paddingStyle,
-      ...(style ?? {}),
-      backgroundColor: backgroundColor,
-      color: textColor,
-    },
+    type: contentType !== 'custom' && contentType !== 'info' && contentType !== 'primary' ? contentType : null,
+    style: {...style, color: contentType === 'custom' ? style.color : undefined, textAlign: 'right'},
   };
 
   const textProps: TextProps = {
