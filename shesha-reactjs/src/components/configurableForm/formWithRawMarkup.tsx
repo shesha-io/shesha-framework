@@ -27,9 +27,8 @@ export const FormWithRawMarkup: FC<IFormWithRawMarkupProps> = (props) => {
         }
     });
     
-    const { markupLoadingState/*, dataLoadingState*/ } = shaForm;
+    const { markupLoadingState } = shaForm;
 
-    //const MarkupErrorRender = markupLoadingError ?? MarkupLoadingError;
     return (
         <>
             {markupLoadingState.status === 'ready' && (
@@ -45,36 +44,7 @@ export const FormWithRawMarkup: FC<IFormWithRawMarkupProps> = (props) => {
                     }}
                     shaForm={shaForm}
                 />
-        //         <FormWithFlatMarkupMemo
-        //     shaForm={shaForm}
-        //     {...restProps}
-        //     formFlatMarkup={form.flatStructure}
-        //     formSettings={form.settings}
-        //     onMarkupUpdated={props.onMarkupUpdated}
-        // />
             )}
         </>
     );
-/*
-    const { components, formSettings } = getComponentsAndSettings(markup);
-    const { state, form } = useFormByMarkup({ markup: components, key: cacheKey, formSettings, isSettingsForm });
-
-    return state === 'ready'
-        ? (
-            <FormWithFlatMarkupMemo
-                shaForm={shaForm}
-                {...restProps}
-                formFlatMarkup={form.flatStructure}
-                formSettings={form.settings}
-                onMarkupUpdated={props.onMarkupUpdated}
-            />
-        )
-        : state === 'loading'
-            ? (
-                <Skeleton loading={true} />
-            )
-            : state === 'error'
-                ? <Alert message={state} type="error" />
-                : null;
-                */
 };
