@@ -52,7 +52,13 @@ export const getComponentModel = (item: RefListGroupItemProps) => ({
 
 export function fadeColor(color: string, fadePercentage: number): string {
   // Helper function to parse RGB values from different formats
-  function getRGBValues(color: string): [number, number, number] {
+
+  //handle simple colors
+  if (/^[a-zA-Z]+$/.test(color)) {
+    return color;
+  }
+
+  function getRGBValues(color: string): [number, number, number] | string {
     // Handle hex
     if (color.startsWith('#')) {
       if (!/^#([0-9A-F]{3}){1,2}$/i.test(color)) {
