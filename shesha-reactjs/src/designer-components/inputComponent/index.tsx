@@ -289,7 +289,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator editorConfig={null} level={0} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} />;
         case 'typeAutoComplete':
             return <Autocomplete.Raw
                 dataSourceType="url"
