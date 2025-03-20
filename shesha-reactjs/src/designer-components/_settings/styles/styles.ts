@@ -29,11 +29,11 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
     `);
 
     const label = cx("properties-label", css`
-            font-size: 14px;
+            font-size: 12px;
             color: darkslategrey;
             font-weight: 500;
             position: relative;
-
+            
             +.ant-form-item-tooltip {
             align-self: end !important;
             position: relative;

@@ -445,15 +445,23 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                  {
-                                    type: 'radio',
-                                    id: nanoid(),
-                                    label: "Repeat",
-                                    hideLabel: true,
-                                    propertyName: "background.repeat",
-                                    buttonGroupOptions: repeatOptions,
-                                  }
                                 ]
+                              })
+
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat-radio',
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ],

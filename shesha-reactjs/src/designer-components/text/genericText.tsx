@@ -84,7 +84,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Text key={`text-${updateKey}`} style={{display: 'block'}} {...textProps} className={className}>
+      <Text key={`text-${updateKey}`} style={{ display: 'block' }} {...textProps} className={className}>
         {children}
       </Text>
     );

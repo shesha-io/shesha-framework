@@ -3,6 +3,9 @@ import { nanoid } from "@/utils/uuid";
 import { FormLayout } from "antd/lib/form/Form";
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
 import { fontTypes, fontWeights, textAlign } from "../_settings/utils/font/utils";
+import { repeatOptions } from "../_settings/utils/background/utils";
+import { positionOptions } from "../_settings/utils/background/utils";
+import { sizeOptions } from "../_settings/utils/background/utils";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
@@ -427,104 +430,48 @@ export const getSettings = (data: any) => {
                                   }
                                 ]
                               })
+
                               .addSettingsInputRow({
-                                id: `${backgroundStylePnlId}-controls`,
-                                parentId: backgroundStylePnlId,
+                                id: "backgroundStyleRow-controls",
+                                parentId: 'backgroundStyleRow',
                                 inline: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
-                                    id: nanoid(),
+                                    id: 'backgroundStyleRow-size',
                                     label: "Size",
-                                    hideLabel: false,
+                                    hideLabel: true,
                                     propertyName: "background.size",
-                                    dropdownOptions: [
-                                      {
-                                        value: "cover",
-                                        label: "Cover"
-                                      },
-                                      {
-                                        value: "contain",
-                                        label: "Contain"
-                                      },
-                                      {
-                                        value: "auto",
-                                        label: "Auto"
-                                      }
-                                    ],
+                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                    dropdownOptions: sizeOptions,
                                   },
                                   {
                                     type: 'customDropdown',
-                                    id: nanoid(),
+                                    id: 'backgroundStyleRow-position',
                                     label: "Position",
-                                    hideLabel: false,
+                                    hideLabel: true,
+                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                     propertyName: "background.position",
-                                    dropdownOptions: [
-                                      {
-                                        value: "center",
-                                        label: "Center"
-                                      },
-                                      {
-                                        value: "top",
-                                        label: "Top"
-                                      },
-                                      {
-                                        value: "left",
-                                        label: "Left"
-                                      },
-                                      {
-                                        value: "right",
-                                        label: "Right"
-                                      },
-                                      {
-                                        value: "bottom",
-                                        label: "Bottom"
-                                      },
-                                      {
-                                        value: "top left",
-                                        label: "Top Left"
-                                      },
-                                      {
-                                        value: "top right",
-                                        label: "Top Right"
-                                      },
-                                      {
-                                        value: "bottom left",
-                                        label: "Bottom Left"
-                                      },
-                                      {
-                                        value: "bottom right",
-                                        label: "Bottom Right"
-                                      }
-                                    ],
-                                  },
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    label: "Repeat",
-                                    hideLabel: false,
-                                    propertyName: "background.repeat",
-                                    dropdownOptions: [
-                                      {
-                                        value: "repeat",
-                                        label: "repeat"
-                                      },
-                                      {
-                                        value: "repeat-x",
-                                        label: "repeatX"
-                                      },
-                                      {
-                                        value: "repeat-y",
-                                        label: "repeatY"
-                                      },
-                                      {
-                                        value: "no-repeat",
-                                        label: "noRepeat"
-                                      }
-                                    ],
+                                    dropdownOptions: positionOptions,
                                   }
                                 ]
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat-radio',
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ],

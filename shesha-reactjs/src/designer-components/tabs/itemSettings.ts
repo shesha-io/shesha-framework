@@ -108,7 +108,7 @@ export const getItemSettings = () => {
                                         id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
                                         type: 'switch',
                                         propertyName: 'hidden',
-                                        label: 'hide',
+                                        label: 'Hide',
                                         labelAlign: 'right',
                                         parentId: 'root',
                                         hidden: false,

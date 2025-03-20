@@ -542,16 +542,23 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                                                     propertyName: "background.position",
                                                                     dropdownOptions: positionOptions,
                                                                     customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                                                },
-                                                                {
-                                                                    type: 'radio',
-                                                                    id: 'backgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],

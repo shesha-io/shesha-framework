@@ -208,10 +208,10 @@ export const getSettings = (data: any) => {
                                 hidden: false,
                                 defaultValue: 'right',
                                 dropdownOptions: [
-                                  { label: 'top', value: 'top' },
-                                  { label: 'right', value: 'right' },
-                                  { label: 'bottom', value: 'bottom' },
-                                  { label: 'left', value: 'left' },
+                                  { label: 'Top', value: 'top' },
+                                  { label: 'Right', value: 'right' },
+                                  { label: 'Bottom', value: 'bottom' },
+                                  { label: 'Left', value: 'left' },
                                 ],
                                 validate: { required: true },
                               })

@@ -4,7 +4,7 @@ import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector } from '
 import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
+import { evaluateExpression, evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -37,7 +37,7 @@ import { ConfigurableActionConfigurator } from '../configurableActionsConfigurat
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 
-export const InputComponent: FC<ISettingsInputProps> = (props) => {
+export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
     const { styles } = useStyles();
 
@@ -150,8 +150,8 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'numberField':
-            return <InputNumber min={props.min} max={props.max} placeholder={placeholder} step={props.step}
-                defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
+            return <InputNumber min={props.min} max={props.max} placeholder={placeholder} step={props.step} controls={false}
+                defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)}</span>}
             />;
         case 'customDropdown':
             return <CustomDropdown
@@ -187,7 +187,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 ))}
             </Radio.Group>;
         case 'dynamicItemsConfigurator':
-            return <DynamicActionsConfigurator editorConfig={{ ...props, hidden: props.hidden as any }} readOnly={readOnly} value={value} onChange={onChange} />;
+            return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
             return <Autocomplete.Raw
                 dataSourceType={dataSourceType}
@@ -205,7 +205,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
-                <QueryBuilder {...{ ...props, hidden: props.hidden as any }} hideLabel={true}
+                <QueryBuilder {...{ ...props }} hideLabel={true}
                     defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
@@ -226,7 +226,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete {...{ ...props, hidden: props.hidden as any }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
+            return <ContextPropertyAutocomplete {...{ ...props }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
@@ -336,12 +336,11 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
     const { styles } = useStyles();
     const { data: formData } = useFormData();
 
-    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
+    const isHidden = typeof hidden === 'string' ? evaluateExpression(hidden, { data: formData }) : hidden;
 
     return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
             const { type } = props;
-            const isHidden = typeof props?.hidden === 'string' ? evaluateString(props?.hidden, { data: formData }) : props?.hidden;
 
             const width = type === 'numberField' ? 100 :
                 type === 'button' ? 24 :
@@ -353,7 +352,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             return (
                 <SettingInput key={i + props.label}
                     {...props}
-                    hidden={isHidden}
+                    hidden={hidden}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />

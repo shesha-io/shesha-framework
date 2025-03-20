@@ -35,18 +35,26 @@ export const getSettings = (data) => {
                 },
                 jsSetting: true,
               })
-              .addSettingsInput({
-                id: 'label-4c18-468c-89e1-60c002ce96c5',
-                propertyName: 'label',
-                label: 'Caption',
+              .addSettingsInputRow({
+                id: 'caption-tooltip-row',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
-              })
-              .addSettingsInput({
-                id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
-                inputType: 'textArea',
-                propertyName: 'tooltip',
-                label: 'Tooltip',
-                jsSetting: true,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: 'label-4c18-468c-89e1-60c002ce96c5',
+                    propertyName: 'label',
+                    label: 'Caption',
+                    parentId: 's4gmBg31azZC0UjZjpfTm',
+                  },
+                  {
+                    id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
+                    type: 'textArea',
+                    propertyName: 'tooltip',
+                    label: 'Tooltip',
+                    jsSetting: true,
+                  }
+                ]
               })
               .addSettingsInputRow({
                 id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
@@ -228,8 +236,8 @@ export const getSettings = (data) => {
                                 width: 85,
                                 propertyName: "dimensions.width",
                                 icon: "widthIcon",
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType) === "link";', _mode: 'code', _value: false } as any,
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
                               },
                               {
                                 type: 'textField',
@@ -453,15 +461,22 @@ export const getSettings = (data) => {
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
-                                }
                               ]
+                            })
+                            .addSettingsInputRow({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [{
+                                type: 'radio',
+                                id: 'backgroundStyleRow-repeat-radio',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
+                              }],
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ],
