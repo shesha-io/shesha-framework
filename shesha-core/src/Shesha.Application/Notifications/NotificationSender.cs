@@ -57,6 +57,15 @@ namespace Shesha.Notifications
                 else
                     return null;
             });
+            settings.AddValueGetter(typeof(NotificationData), (object value, string key, bool ignoreCase) => {
+                if (value is NotificationData notificationData)
+                {
+                    return notificationData[key];
+                }
+                else
+                    return null;
+            });
+            
         }).Build();
 
         public ILogger Logger { get; set; }
