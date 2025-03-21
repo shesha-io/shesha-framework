@@ -14,3 +14,7 @@ export const isConfigurableItemRawId = (value: ConfigurableItemIdentifier): valu
 export const isConfigurableItemFullName = (value: ConfigurableItemIdentifier): value is ConfigurableItemFullName => {
   return value && Boolean((value as ConfigurableItemFullName)?.name);
 };
+
+export const ConfigurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
+  return isConfigurableItemFullName(value) ? `${value.module}:${value.name}` : value;
+};

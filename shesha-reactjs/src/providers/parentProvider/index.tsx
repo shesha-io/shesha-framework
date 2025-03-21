@@ -1,9 +1,10 @@
 import React, { useContext, FC, PropsWithChildren, useMemo, useId, useRef, useEffect } from "react";
-import { ConfigurableActionDispatcherProvider, DataContextManager, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, useShaFormInstance } from "../index";
+import { ConfigurableActionDispatcherProvider, DataContextManager, DataContextProvider, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, useShaFormInstance } from "../index";
 import { createNamedContext } from "@/utils/react";
 import ConditionalWrap from "@/components/conditionalWrapper";
 import ValidateProvider from "../validateProvider";
 import { IFormApi } from "../form/formApi";
+import { SheshaCommonContexts } from "../dataContextManager/models";
 
 export interface IParentProviderStateContext {
   id: string;
@@ -19,6 +20,7 @@ export interface IParentProviderStateContext {
 }
 
 export interface IParentProviderProps { 
+  name?: string;
   formMode?: FormMode;
   context?: string;
   model: any;
@@ -47,7 +49,7 @@ export function useParent(require: boolean = true) {
 }
 
 const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
-  const { 
+  const {
     children,
     model,
     formMode,
@@ -130,7 +132,11 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
           <ValidateProvider>
             <DataContextManager id={id}>
               <ConfigurableActionDispatcherProvider>
-                {children}
+                <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
+                  description={`${props.name || id}`}
+                >
+                  {children}
+                </DataContextProvider>
               </ConfigurableActionDispatcherProvider>
             </DataContextManager>
           </ValidateProvider>

@@ -1,6 +1,6 @@
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useCanvas, useForm } from '@/providers';
+import { DataContextProvider, MetadataProvider, useCanvas, useForm } from '@/providers';
 import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useEffect } from 'react';
@@ -9,6 +9,7 @@ import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
 export interface IDesignerMainAreaProps {
 
@@ -64,11 +65,15 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                         wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
                     >
                         <ParentProvider model={{}} formMode='designer'>
-                            <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
-                                {isDebug && (
-                                    <DebugPanel formData={form.getFieldValue([])} />
-                                )}
-                            </ConfigurableFormRenderer>
+                            <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
+                                description='Form designer'
+                            >
+                                <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                                    {isDebug && (
+                                        <DebugPanel formData={form.getFieldValue([])} />
+                                    )}
+                                </ConfigurableFormRenderer>
+                            </DataContextProvider>
                         </ParentProvider>
                     </ConditionalWrap>
 
