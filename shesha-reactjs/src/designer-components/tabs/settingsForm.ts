@@ -521,7 +521,7 @@ export const getSettings = () => {
                                                             {
                                                                 type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
-                                                                label: 'Spead',
+                                                                label: 'Spread',
                                                                 hideLabel: true,
                                                                 tooltip: 'Spread radius',
                                                                 width: 80,

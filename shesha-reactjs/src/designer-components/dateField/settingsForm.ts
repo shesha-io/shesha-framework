@@ -582,7 +582,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions:backgroundTypeOptions,
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -749,7 +749,7 @@ export const getSettings = (data: IDateFieldProps) => {
                                                             {
                                                                 type: 'numberField',
                                                                 id: 'shadowStyleRow-spreadRadius',
-                                                                label: 'Spead',
+                                                                label: 'Spread',
                                                                 hideLabel: true,
                                                                 tooltip: 'Spread radius',
                                                                 width: 80,
