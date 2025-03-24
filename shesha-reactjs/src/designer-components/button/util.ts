@@ -42,14 +42,3 @@ export const defaultStyles = (prev): IStyleType => {
     };
 };
 
-export const marginPadding = {
-    paddingLeft: 0,
-    marginLeft: 0,
-    paddingRight: 0,
-    marginRight: 0,
-    paddingTop: 0,
-    marginTop: 0,
-    paddingBottom: 0,
-    marginBottom: 0
-};
-

@@ -220,7 +220,6 @@ export const getSettings = () => {
                                                                 propertyName: "dimensions.width",
                                                                 icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
                                                             },
                                                             {
                                                                 type: 'textField',

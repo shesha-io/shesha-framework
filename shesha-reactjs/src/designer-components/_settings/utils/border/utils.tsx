@@ -17,8 +17,8 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     if (!input || jsStyle?.border) return {};
 
     const style: React.CSSProperties = {};
-    const { all, top, right, bottom, left } = input?.border;
-
+    const border = input.border || {};
+    const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
     const handleBorderPart = (part, prefix: string) => {
         const hideBorder = input?.border?.[part]?.style === 'none';
@@ -136,7 +136,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     label: "Width",
                     hideLabel: true,
                     propertyName: `${borderProp}.all.width`,
-                    readOnly: { _code: `return getSettingValue(data?.${borderProp}.all.style) === 'none;`, _mode: 'code', _value: false } as any,
+                    readOnly: { _code: `return getSettingValue(data?.${borderProp}.all.style) === 'none';`, _mode: 'code', _value: false } as any,
                 },
                 {
                     id: nanoid(),

@@ -8,7 +8,6 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
-import { marginPadding } from '../util';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
   form: FormInstance<any>;
@@ -77,7 +76,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
       size={props?.size}
       disabled={buttonDisabled}
-      style={{ ...marginPadding, ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}
+      style={{ ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}
     >
       {props.label}
     </Button>
