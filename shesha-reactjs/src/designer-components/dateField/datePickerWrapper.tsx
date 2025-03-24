@@ -15,7 +15,7 @@ const { RangePicker } = DatePicker;
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
   const properties = asPropertiesArray(metaProperties, []);
-  const [MIDNIGHT_MOMENT, setMIDNIGHT_MOMENT] = useState(moment('00:00:00', 'HH:mm:ss'));
+  const [MIDNIGHT_MOMENT, SET_MIDNIGHT_MOMENT] = useState(moment('00:00:00', 'HH:mm:ss'));
   const [momentValue, setMomentValue] = useState<moment.Moment | null>(null);
   const [rangeMomentValue, setRangeMomentValue] = useState<any>(null);
 
@@ -95,7 +95,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     setRangeMomentValue(null);
 
     if (defaultToMidnight) {
-      setMIDNIGHT_MOMENT(moment('00:00:00', 'HH:mm:ss'));
+      SET_MIDNIGHT_MOMENT(moment('00:00:00', 'HH:mm:ss'));
     } else {
       // Get the current system time as a Moment object and format it to 'HH:mm:ss'
       const MIDNIGHT = moment().set({
@@ -104,7 +104,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         second: moment().second(),
         millisecond: 0,
       });
-      setMIDNIGHT_MOMENT(moment(MIDNIGHT.format('HH:mm:ss')));
+      SET_MIDNIGHT_MOMENT(moment(MIDNIGHT.format('HH:mm:ss')));
     }
   };
 
