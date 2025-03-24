@@ -3,6 +3,16 @@ import { nanoid } from '@/utils/uuid';
 import { FormLayout } from "antd/es/form/Form";
 
 export const getSettings = (data: any) => {
+  const formTypes = [
+    {label: 'Table', value: 'table'}, 
+    {label: 'Create', value: 'create'}, 
+    {label: 'Edit', value: 'edit'}, 
+    {label: 'Details', value: 'details'}, 
+    {label: 'Quickview', value: 'quickview'}, 
+    {label: 'ListItem', value: 'listItem'}, 
+    {label: 'Picker', value: 'picker'}
+  ];
+  
   return {
     components: new DesignerToolbarSettings(data)
       .addSearchableTabs({
@@ -95,7 +105,7 @@ export const getSettings = (data: any) => {
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'autocomplete',
+                inputType: 'dropdown',
                 propertyName: "formType",
                 parentId: 'root',
                 label: "Form type",
