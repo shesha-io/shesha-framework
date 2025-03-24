@@ -17,8 +17,8 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
     if (!input || jsStyle?.border) return {};
 
     const style: React.CSSProperties = {};
-    const { all, top, right, bottom, left } = input?.border;
-
+    const border = input.border || {};
+    const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
     const handleBorderPart = (part, prefix: string) => {
         const hideBorder = input?.border?.[part]?.style === 'none';
@@ -102,6 +102,8 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
 
 export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
 
+    const borderProp = path ? `${path}.border.border` : 'border.border';
+
     return [...new DesignerToolbarSettings()
         .addSettingsInput({
             id: nanoid(),
@@ -133,12 +135,13 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     type: 'textField',
                     label: "Width",
                     hideLabel: true,
-                    propertyName: path ? `${path}.border.border.all.width` : `border.border.all.width`,
+                    propertyName: `${borderProp}.all.width`,
+                    readOnly: { _code: `return getSettingValue(data?.${borderProp}.all.style) === 'none';`, _mode: 'code', _value: false } as any,
                 },
                 {
                     id: nanoid(),
                     label: "Style",
-                    propertyName: path ? `${path}.border.border.all.style` : `border.border.all.style`,
+                    propertyName: `${borderProp}.all.style`,
                     type: "dropdown",
                     hideLabel: true,
                     width: 60,
@@ -148,7 +151,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                 {
                     id: nanoid(),
                     label: `Color`,
-                    propertyName: path ? `${path}.border.border.all.color` : `border.border.all.color`,
+                    propertyName: `${borderProp}.all.color`,
                     type: "colorPicker",
                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hideLabel: true,
@@ -186,12 +189,12 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                                 type: 'textField',
                                 label: "Width",
                                 hideLabel: true,
-                                propertyName: path ? `${path}.border.border.${side}.width` : `border.border.${side}.width`,
+                                propertyName: `${borderProp}.${side}.width`,
                             },
                             {
                                 id: nanoid(),
                                 label: "Style",
-                                propertyName: path ? `${path}.border.border.${side}.style` : `border.border.${side}.style`,
+                                propertyName: `${borderProp}.${side}.style`,
                                 type: "dropdown",
                                 hideLabel: true,
                                 width: 60,
@@ -201,7 +204,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                             {
                                 id: nanoid(),
                                 label: `Color`,
-                                propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
+                                propertyName: `${borderProp}.${side}.color`,
                                 type: "colorPicker",
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 hideLabel: true,

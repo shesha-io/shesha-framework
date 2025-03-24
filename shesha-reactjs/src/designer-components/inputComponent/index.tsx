@@ -53,18 +53,53 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor } = props;
 
-    const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
-
-        if (typeof icon === 'string') {
-            return icons[icon] ?
-                <Tooltip title={hint}><ShaIcon iconName={icon as IconType} style={style} /></Tooltip> :
-                customIcons[icon] ?
-                    <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
-                    : icon === 'sectionSeparator' ?
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
-                            <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
-                        </div> : icon;
+    const iconElement = (icon: string | React.ReactNode, size?: any, hint?: string, style?: React.CSSProperties) => {
+        if (typeof icon !== 'string') {
+            return icon;
         }
+
+        if (icons[icon]) {
+            return (
+                <Tooltip title={hint}>
+                    <ShaIcon iconName={icon as IconType} style={style} />
+                </Tooltip>
+            );
+        }
+
+        if (customIcons[icon]) {
+            return (
+                <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}>
+                    <span style={style}>{customIcons[icon]}</span>
+                </Tooltip>
+            );
+        }
+
+        if (icon === 'sectionSeparator') {
+            return (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    verticalAlign: 'middle',
+                    top: 10
+                }}>
+                    <Space>
+                        {size}
+                        <Tooltip className={styles.icon} title={hint}>
+                            <SectionSeparator
+                                containerStyle={{ margin: 0 }}
+                                lineThickness={Number(size[0]) / 2}
+                                lineWidth='20'
+                                lineColor='#000'
+                                fontSize={14}
+                                marginBottom='0px'
+                            />
+                        </Tooltip>
+                    </Space>
+                </div>
+            );
+        }
+
         return icon;
     };
 
@@ -182,14 +217,14 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {editModes.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
+                {editModes.map(({ value, icon }) => (
+                    <Radio.Button key={value} value={value}>{iconElement(icon, null, "title")}</Radio.Button>
                 ))}
             </Radio.Group>;
         case 'dynamicItemsConfigurator':
             return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'autocomplete':
-            return <Autocomplete.Raw
+            return <Autocomplete
                 dataSourceType={dataSourceType}
                 dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
@@ -289,13 +324,15 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator editorConfig={null} level={0} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} />;
         case 'typeAutoComplete':
-            return <Autocomplete.Raw
+            return <Autocomplete
                 dataSourceType="url"
                 dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
                 readOnly={readOnly}
                 size={size}
+                value={value}
+                onChange={onChange}
             />;
         case 'componentSelector':
             return <FormComponentSelector
@@ -317,7 +354,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 variant={variant}
                 placeholder={placeholder}
-                suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
+                suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)}</span>}
                 value={value?.value ? value.value : value}
             />;
     }

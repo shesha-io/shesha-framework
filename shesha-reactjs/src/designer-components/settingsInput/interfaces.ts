@@ -5,6 +5,8 @@ import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ComponentType } from '@/components/formComponentSelector';
+import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 export interface IRadioOption {
     value: string | number;
@@ -36,6 +38,9 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     dropdownOptions?: IDropdownOption[];
     readOnly?: boolean;
     onChange?: (value: any) => void;
+    editorConfig?: IConfigurableActionConfiguratorComponentProps;
+    level?: number;
+    allowedActions?: string[];
     hasUnits?: boolean;
     jsSetting?: boolean;
     children?: React.ReactNode;
@@ -61,7 +66,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     mode?: any;
     /** Can be any valid number e.g.: 1, 0.1, 3, 3.14 */
     step?: number;
-    exposedVariables?: string[];
+    exposedVariables?: string[] | ICodeExposedVariable[];
     dropdownMode?: 'multiple' | 'tags';
     customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
