@@ -1,3 +1,5 @@
+import { EOL } from "./models";
+
 /**
  * String Builder
  */
@@ -46,6 +48,6 @@ export class StringBuilder {
      * @return {string} the joined content
      */
     build() {
-        return this.content.join('\r\n');
+        return this.content.join(EOL);
     }
 }

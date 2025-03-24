@@ -324,13 +324,14 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: "backgroundStyle-image",
                                 parentId: 'backgroundStylePnl',
-                                inputs: [{
-                                  type: 'imageUploader',
-                                  id: 'backgroundStyle-image',
-                                  propertyName: 'background.uploadFile',
-                                  label: "Image",
-                                  jsSetting: false,
-                                }],
+                                inputs: [
+                                  {
+                                    type: 'imageUploader',
+                                    id: 'backgroundStyle-image',
+                                    propertyName: 'background.uploadFile',
+                                    label: "Image",
+                                    jsSetting: false,
+                                  }],
                                 hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })
@@ -373,16 +374,23 @@ export const getSettings = (data: any) => {
                                     customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
-                                  },
-                                  {
-                                    type: 'radio',
-                                    id: 'backgroundStyleRow-repeat',
-                                    label: "Repeat",
-                                    hideLabel: true,
-                                    propertyName: "background.repeat",
-                                    buttonGroupOptions: repeatOptions,
                                   }
                                 ]
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat-radio',
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ],
@@ -410,7 +418,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   label: 'Offset X',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
                                   tooltip: 'OffsetX. The larger the value, the bigger the shadow',
@@ -420,7 +428,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   label: 'Offset Y',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
                                   description: 'OffsetY. The larger the value, the bigger the shadow',
@@ -430,7 +438,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   label: 'Blur',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
                                   description: 'Blur. The larger the value, the bigger the blur',
@@ -440,7 +448,7 @@ export const getSettings = (data: any) => {
                                   id: nanoid(),
                                   label: 'Spread',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
                                   description: 'Spread. The larger the value, the bigger the spread',

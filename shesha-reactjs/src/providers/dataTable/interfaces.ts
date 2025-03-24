@@ -2,7 +2,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
-import { FormIdentifier, IDictionary, IPropertySetting } from '@/interfaces';
+import { FormFullName, IDictionary, IPropertySetting } from '@/interfaces';
 import { CSSProperties } from 'react';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
@@ -92,9 +92,9 @@ export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, I
 export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
   propertiesNames?: string;
 
-  displayFormId?: FormIdentifier;
-  createFormId?: FormIdentifier;
-  editFormId?: FormIdentifier;
+  displayFormId?: FormFullName;
+  createFormId?: FormFullName;
+  editFormId?: FormFullName;
 
   minHeight?: number;
 }

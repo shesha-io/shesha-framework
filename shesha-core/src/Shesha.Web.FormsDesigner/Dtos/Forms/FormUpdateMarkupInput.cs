@@ -13,10 +13,10 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Form markup (components) in JSON format
         /// </summary>
-        public string Markup { get; set; }
+        public string? Markup { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace Shesha.Dto.Interfaces
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Item name

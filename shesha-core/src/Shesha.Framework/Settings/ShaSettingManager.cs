@@ -12,6 +12,7 @@ using Shesha.Services.Settings.Dto;
 using Shesha.Settings.Json;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
@@ -31,7 +32,10 @@ namespace Shesha.Settings
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;        
 
-        public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, IConfigurationFrameworkRuntime cfRuntime, IRepository<SettingValue, Guid> settingValueRepository, Services.Settings.ISettingStore settingStore, 
+        public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, 
+            IConfigurationFrameworkRuntime cfRuntime, 
+            IRepository<SettingValue, Guid> settingValueRepository, 
+            Services.Settings.ISettingStore settingStore, 
             IRepository<FrontEndApp, Guid> appRepository,
             IRepository<Module, Guid> moduleRepository,
             IRepository<User, long> userRepository)
@@ -49,10 +53,10 @@ namespace Shesha.Settings
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
-            var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+            var settingValue = await _settingStore.GetValueAsync(setting, context ?? GetCurrentContext());
 
             return settingValue != null
-                ? JObject.Parse(settingValue.Value)
+                ? JObject.Parse(settingValue)
                 : JObject.FromObject(JsonConvert.SerializeObject(setting.GetDefaultValue()));
         }
 
@@ -60,30 +64,31 @@ namespace Shesha.Settings
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
-            var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+            var settingValue = await _settingStore.GetValueAsync(setting, context ?? GetCurrentContext());
 
             return settingValue != null
-                ? Deserialize(settingValue.Value, setting.GetValueType())
+                ? Deserialize(settingValue, setting.GetValueType())
                 : setting.GetDefaultValue();
         }
 
 
-        public async Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext? context = null)
+        public async Task<object?> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string? dataType, TValue? defaultValue, SettingManagementContext? context = null)
         {
             var setting = _settingDefinitionManager.GetOrNull(module, name);
 
-            if (setting == null)
+            if (setting == null && dataType != null)
             {
                 setting = _settingDefinitionManager.CreateUserSettingDefinition(module, name, dataType, defaultValue);
                 _settingDefinitionManager.AddDefinition(setting);
-                var configuration = await EnsureConfigurationAsync(setting);
+                await EnsureConfigurationAsync(setting);
+
+                var value = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+                return value != null
+                    ? Deserialize(value.Value, setting.GetValueType())
+                    : setting.GetDefaultValue();
             }
 
-            var value = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
-
-            return value != null
-                ? Deserialize(value.Value, setting.GetValueType())
-                : setting.GetDefaultValue();
+            return null;
         }
 
         public async Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType,[CanBeNull] TValue? value, SettingManagementContext? context = null)
@@ -133,10 +138,10 @@ namespace Shesha.Settings
         {
             var setting = _settingDefinitionManager.Get(module, name);
 
-            var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+            var settingValue = await _settingStore.GetValueAsync(setting, context ?? GetCurrentContext());
 
             return settingValue != null
-                ? Deserialize<TValue>(settingValue.Value)
+                ? Deserialize<TValue>(settingValue)
                 : setting.GetDefaultValue() is TValue typedValue
                     ? typedValue
                     : default;
@@ -200,6 +205,7 @@ namespace Shesha.Settings
             });
         }
 
+        [DebuggerStepThrough]
         private SettingManagementContext GetCurrentContext()
         {
             return new SettingManagementContext {

@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
 import { overflowOptions } from '../_settings/utils/dimensions/utils';
@@ -357,33 +357,7 @@ export const getSettings = () => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -528,16 +502,23 @@ export const getSettings = () => {
                                                                             label: "Bottom Right"
                                                                         }
                                                                     ],
-                                                                },
-                                                                {
-                                                                    type: 'radio',
-                                                                    id: 'panelbackgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],
@@ -566,7 +547,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
                                                                 icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
@@ -575,7 +557,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
                                                                 icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
@@ -584,7 +567,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Blur radius',
+                                                                width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
@@ -593,7 +577,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Spread radius',
+                                                                width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
@@ -941,15 +926,22 @@ export const getSettings = () => {
                                                                             propertyName: "headerStyles.background.position",
                                                                             dropdownOptions: positionOptions,
                                                                         },
-                                                                        {
-                                                                            type: 'radio',
-                                                                            id: nanoid(),
-                                                                            label: "Repeat",
-                                                                            hideLabel: true,
-                                                                            propertyName: "headerStyles.background.repeat",
-                                                                            buttonGroupOptions: repeatOptions,
-                                                                        }
                                                                     ]
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: 'backgroundStyleRow-repeat',
+                                                                    parentId: 'backgroundStyleRow',
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [{
+                                                                        type: 'radio',
+                                                                        id: 'backgroundStyleRow-repeat-radio',
+                                                                        label: 'Repeat',
+                                                                        hideLabel: true,
+                                                                        propertyName: 'background.repeat',
+                                                                        inputType: 'radio',
+                                                                        buttonGroupOptions: repeatOptions,
+                                                                    }],
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                 })
                                                                 .toJson()
                                                             ]

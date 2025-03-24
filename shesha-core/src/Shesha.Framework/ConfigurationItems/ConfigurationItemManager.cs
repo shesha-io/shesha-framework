@@ -32,7 +32,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
+        public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         public ConfigurationItemManager(IRepository<TItem, Guid> repository, IRepository<Module, Guid> moduleRepository, IUnitOfWorkManager unitOfWorkManager)
         {

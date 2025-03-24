@@ -10,6 +10,7 @@ export const filtersSettingsForm = new DesignerToolbarSettings()
   .addSettingsInput({
     id: '03959ffd-cadb-496c-bf6d-b742f7f6edc6',
     propertyName: 'tooltip',
+    inputType: 'textArea',
     label: 'Tooltip',
     layout: 'horizontal',
     allowClear: true,

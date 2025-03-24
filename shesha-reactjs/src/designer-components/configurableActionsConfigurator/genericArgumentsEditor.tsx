@@ -21,6 +21,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   markup,
   onValuesChange,
   readOnly = false,
+  cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
 
@@ -80,6 +81,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       shaFormRef={formRef}
       onFinish={onSave}
       markup={newMarkUp as FormMarkup}
+      cacheKey={cacheKey}
       initialValues={model}
       onValuesChange={onValuesChange}
     />

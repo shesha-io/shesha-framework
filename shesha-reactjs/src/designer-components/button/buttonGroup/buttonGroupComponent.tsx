@@ -11,6 +11,8 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
+import { defaultStyles } from '../util';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -40,8 +42,10 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       const newModel = { ...prev };
 
       const updateItemDefaults = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        if (isItem(item) && item.itemSubType === 'line')
-          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link' }; // remove `line`, it works by the same way as `separator`
+        if (isItem(item) && item.itemSubType === 'line') {
+          const initialStyles = migratePrevStyles(item, defaultStyles(item));
+          return { ...item, itemSubType: 'separator', buttonType: item.buttonType ?? 'link', ...initialStyles };
+        } // remove `line`, it works by the same way as `separator`
 
         if (isGroup(item) && typeof (item.hideWhenEmpty) === 'undefined')
           return {

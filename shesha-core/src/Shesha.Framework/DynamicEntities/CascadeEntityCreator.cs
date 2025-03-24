@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,13 +19,13 @@ namespace Shesha.DynamicEntities
 
     public abstract class CascadeEntityCreatorBase<T, TId> : ICascadeEntityCreator where T : class, IEntity<TId>
     {
-        public IIocManager IocManager { get; set; }
+        public IIocManager IocManager { get; set; } = default!;
 
         private CascadeRuleEntityFinderInfo<T, TId> GetNewInfo(CascadeRuleEntityFinderInfo info)
         {
             return new CascadeRuleEntityFinderInfo<T, TId>((T)info._NewObject)
             {
-                _Repository = (IRepository<T, TId>)info._Repository ?? IocManager.Resolve<IRepository<T, TId>>(),
+                _Repository = info._Repository ?? IocManager.Resolve<IRepository<T, TId>>(),
             };
         }
 
@@ -88,7 +89,7 @@ namespace Shesha.DynamicEntities
         }
 
         public object _NewObject { get; set; }
-        public IRepository _Repository { get; set; }
+        public IRepository? _Repository { get; set; }
     }
 
     public class CascadeRuleEntityFinderInfo<T, TId> : CascadeRuleEntityFinderInfo where T : class, IEntity<TId>
@@ -98,7 +99,7 @@ namespace Shesha.DynamicEntities
         }
 
         public T NewObject => (T)_NewObject;
-        public IRepository<T, TId> Repository => (IRepository<T, TId>)_Repository;
+        public IRepository<T, TId>? Repository => _Repository?.ForceCastAs<IRepository<T, TId>>();
     }
 
     /// <summary>

@@ -1,10 +1,9 @@
 import React, { FC, useCallback, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector } from '@/components';
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
+import { evaluateExpression, evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -18,7 +17,6 @@ import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
-import { startCase } from 'lodash';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
@@ -37,8 +35,9 @@ import { ConfigurableActionConfigurator } from '../configurableActionsConfigurat
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
+import { FormLayout } from 'antd/es/form/Form';
 
-export const InputComponent: FC<ISettingsInputProps> = (props) => {
+export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
     const { styles } = useStyles();
 
@@ -54,18 +53,53 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList } = props;
 
-    const iconElement = (icon: string | React.ReactNode, size?, hint?, style?) => {
-
-        if (typeof icon === 'string') {
-            return icons[icon] ?
-                <Tooltip title={hint}><ShaIcon iconName={icon as IconType} style={style} /></Tooltip> :
-                customIcons[icon] ?
-                    <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}><span style={style}>{customIcons[icon]}</span></Tooltip>
-                    : icon === 'sectionSeparator' ?
-                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', verticalAlign: 'middle', top: 10 }}>
-                            <Space>{size} <Tooltip className={styles.icon} title={hint}><SectionSeparator containerStyle={{ margin: 0 }} lineThickness={Number(size[0]) / 2} lineWidth='20' lineColor='#000' fontSize={14} marginBottom={'0px'} /></Tooltip></Space>
-                        </div> : icon;
+    const iconElement = (icon: string | React.ReactNode, size?: any, hint?: string, style?: React.CSSProperties) => {
+        if (typeof icon !== 'string') {
+            return icon;
         }
+
+        if (icons[icon]) {
+            return (
+                <Tooltip title={hint}>
+                    <ShaIcon iconName={icon as IconType} style={style} />
+                </Tooltip>
+            );
+        }
+
+        if (customIcons[icon]) {
+            return (
+                <Tooltip className={styles.icon} title={hint}>
+                    <span style={style}>{customIcons[icon]}</span>
+                </Tooltip>
+            );
+        }
+
+        if (icon === 'sectionSeparator') {
+            return (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    verticalAlign: 'middle',
+                    top: 10
+                }}>
+                    <Space>
+                        {size}
+                        <Tooltip className={styles.icon} title={hint}>
+                            <SectionSeparator
+                                containerStyle={{ margin: 0 }}
+                                lineThickness={Number(size[0]) / 2}
+                                lineWidth='20'
+                                lineColor='#000'
+                                fontSize={14}
+                                marginBottom='0px'
+                            />
+                        </Tooltip>
+                    </Space>
+                </div>
+            );
+        }
+
         return icon;
     };
 
@@ -144,15 +178,24 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'numberField':
-            return <InputNumber min={props.min} max={props.max} placeholder={placeholder} step={props.step}
-                defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
+            return <InputNumber
+                {...props}
+                placeholder={placeholder}
+                // controls={false}
+                defaultValue={defaultValue}
+                variant={variant} readOnly={readOnly}
+                size={size}
+                value={value}
+                onChange={onChange}
+                style={{}}
+                addonAfter={iconElement(icon, null, "tooltip")}
             />;
         case 'customDropdown':
             return <CustomDropdown
@@ -183,14 +226,14 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {editModes.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value} title={title}>{iconElement(icon)}</Radio.Button>
-                ))}
+                {editModes.map(({ value, icon, title }) => {
+                    return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
+                })}
             </Radio.Group>;
         case 'dynamicItemsConfigurator':
-            return <DynamicActionsConfigurator editorConfig={{ ...props, hidden: props.hidden as any }} readOnly={readOnly} value={value} onChange={onChange} />;
+            return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'autocomplete':
-            return <Autocomplete.Raw
+            return <Autocomplete
                 dataSourceType={dataSourceType}
                 dataSourceUrl={dataSourceUrl}
                 readOnly={readOnly}
@@ -206,7 +249,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
             return <ReferenceListAutocomplete value={value} onChange={onChange} readOnly={readOnly} size={size} />;
         case 'queryBuilder':
             return <QueryBuilderWrapper>
-                <QueryBuilder {...{ ...props, hidden: props.hidden as any }} hideLabel={true}
+                <QueryBuilder {...{ ...props }} hideLabel={true}
                     defaultValue={defaultValue} readOnly={props.readOnly}></QueryBuilder>
             </QueryBuilderWrapper>;
         case 'columnsConfig':
@@ -227,7 +270,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 onChange={onChange}
             />;
         case 'contextPropertyAutocomplete':
-            return <ContextPropertyAutocomplete {...{ ...props, hidden: props.hidden as any }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
+            return <ContextPropertyAutocomplete {...{ ...props }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
@@ -252,11 +295,10 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                     return {
                         components: listItemSettingsMarkup,
                         formSettings: {
-                            layout: "horizontal",
-                            isSettingsForm: true,
-                            colon: true,
-                            labelCol: { span: 5 },
-                            wrapperCol: { span: 13 }
+                            colon: false,
+                            layout: 'vertical' as FormLayout,
+                            labelCol: { span: 24 },
+                            wrapperCol: { span: 24 }
                         }
                     };
                 }}
@@ -290,13 +332,15 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator editorConfig={null} level={0} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} />;
         case 'typeAutoComplete':
-            return <Autocomplete.Raw
+            return <Autocomplete
                 dataSourceType="url"
                 dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
                 readOnly={readOnly}
                 size={size}
+                value={value}
+                onChange={onChange}
             />;
         case 'componentSelector':
             return <FormComponentSelector
@@ -320,7 +364,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
                 defaultValue={defaultValue}
                 variant={variant}
                 placeholder={placeholder}
-                suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)} </span>}
+                suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)}</span>}
                 value={value?.value ? value.value : value}
             />;
     }
@@ -339,12 +383,11 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
     const { styles } = useStyles();
     const { data: formData } = useFormData();
 
-    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
+    const isHidden = typeof hidden === 'string' ? evaluateExpression(hidden, { data: formData }) : hidden;
 
     return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
         {inputs.map((props, i) => {
             const { type } = props;
-            const isHidden = typeof props?.hidden === 'string' ? evaluateString(props?.hidden, { data: formData }) : props?.hidden;
 
             const width = type === 'numberField' ? 100 :
                 type === 'button' ? 24 :
@@ -356,7 +399,7 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children,
             return (
                 <SettingInput key={i + props.label}
                     {...props}
-                    hidden={isHidden}
+                    hidden={hidden}
                     readOnly={readOnly}
                     inline={inline}
                     width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />

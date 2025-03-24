@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using Abp.Domain.Entities;
-using Shesha.Utilities;
+﻿using Shesha.Utilities;
+using System;
 
 namespace Shesha.EntityHistory
 {
@@ -12,17 +10,17 @@ namespace Shesha.EntityHistory
 
         public string DisplayName { get; set; }
 
-        public string OwnEntityField { get; set; }
+        public string? OwnEntityField { get; set; }
 
         public string RelatedEntityField { get; set; }
 
-        public Type RelatedEntityType { get; set; }
+        public Type? RelatedEntityType { get; set; }
 
         public bool AnyRelatedEntityType { get; set; }
 
-        public string NameField { get; set; }
+        public string? NameField { get; set; }
 
-        public string[] AuditedFields { get; set; }
+        public string[]? AuditedFields { get; set; }
 
         public DisplayManyToManyAuditTrailAttribute(Type manyToManyEntityType, string relatedEntityField)
         {

@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -27,7 +28,7 @@ namespace Shesha.Startup
         /// <summary>
         /// Gets or sets the logger.
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
         public ApplicationStartupDto? PreviousStartup { get; private set; }
         public ApplicationStartupDto? CurrentStartup { get; private set; }

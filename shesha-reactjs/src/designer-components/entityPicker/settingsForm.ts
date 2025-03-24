@@ -788,16 +788,23 @@ export const getSettings = (data) => {
                                       label: "Bottom Right"
                                     }
                                   ],
-                                },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
+                            })
+                            .addSettingsInputRow({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [{
+                                type: 'radio',
+                                id: 'backgroundStyleRow-repeat-radio',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
+                              }],
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ],
@@ -825,7 +832,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: "offsetHorizontalIcon",
                                 propertyName: 'shadow.offsetX',
                               },
@@ -834,7 +841,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'offsetVerticalIcon',
                                 propertyName: 'shadow.offsetY',
                               },
@@ -843,7 +850,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-blurRadius',
                                 label: 'Blur',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'blurIcon',
                                 propertyName: 'shadow.blurRadius',
                               },
@@ -852,7 +859,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-spreadRadius',
                                 label: 'Spread',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'spreadIcon',
                                 propertyName: 'shadow.spreadRadius',
                               },

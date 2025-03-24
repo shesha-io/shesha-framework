@@ -2,7 +2,7 @@ import { IStyleType } from "@/index";
 
 export const defaultStyles = (): IStyleType => {
     return {
-        background: { type: 'color', color: '#fff' },
+        background: { type: 'gradient', color: '#fff' },
         font: {
             weight: '400',
             size: 14,
