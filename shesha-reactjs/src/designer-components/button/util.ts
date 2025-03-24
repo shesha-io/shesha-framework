@@ -37,6 +37,19 @@ export const defaultStyles = (prev): IStyleType => {
             hideBorder: false,
             borderType: 'all',
         },
+        stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
         dimensions: { width: prev.block ? '100%' : 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' }
     };
 };
+
+export const marginPadding = {
+    paddingLeft: 0,
+    marginLeft: 0,
+    paddingRight: 0,
+    marginRight: 0,
+    paddingTop: 0,
+    marginTop: 0,
+    paddingBottom: 0,
+    marginBottom: 0
+};
+

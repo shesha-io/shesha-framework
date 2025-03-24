@@ -45,6 +45,7 @@ export const getSettings = (data) => {
                     id: 'label-4c18-468c-89e1-60c002ce96c5',
                     propertyName: 'label',
                     label: 'Caption',
+                    jsSetting: true,
                     parentId: 's4gmBg31azZC0UjZjpfTm',
                   },
                   {

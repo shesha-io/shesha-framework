@@ -8,5 +8,6 @@ export const initialValues = (): any => {
             radiusType: 'all', borderType: 'all', hideBorder: false, border: { all: { width: '1px', style: 'solid' } },
             radius: { all: 8 }
         },
+        stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
     };
 };

@@ -5,7 +5,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher, useSheshaApplication } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { getStyle } from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { addPx } from '@/designer-components/_settings/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
@@ -16,6 +16,7 @@ import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { useActualContextData } from '@/hooks/useActualContextData';
+import { marginPadding } from '@/designer-components/button/util';
 
 const { Text } = Typography;
 
@@ -69,12 +70,14 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const font = prevStyles?.font;
   const shadow = prevStyles?.shadow;
   const background = prevStyles?.background;
+  const styling = JSON.parse(model.stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+  const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
     const fetchStyles = async () => {
@@ -102,7 +105,9 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     ...fontStyles,
     ...backgroundStyles,
     ...shadowStyles,
-    ...jsStyle
+    ...jsStyle,
+    ...marginPadding,
+    ...stylingBoxAsCSS
   };
 
   return (
