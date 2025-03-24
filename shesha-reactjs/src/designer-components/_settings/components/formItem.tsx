@@ -51,7 +51,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             className='sha-js-label'
         >
             {(value, onChange) =>
-                jsSetting === false ? (
+                !jsSetting ? (
                     createClonedElement(value, onChange)
                 ) : (
                     <SettingsControl

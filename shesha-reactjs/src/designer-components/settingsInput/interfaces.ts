@@ -56,6 +56,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     wrapperCol?: { span: number };
     fileName?: string;
     availableConstantsExpression?: string;
+    ignorePrefixesOnNewItems?: boolean;
     resultType?: ResultType;
     labelTitle?: string;
     labelName?: string;

@@ -4,7 +4,6 @@ import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settin
 import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import _ from 'lodash';
 
 export const getItemSettings = (data) => {
 
@@ -197,6 +196,9 @@ export const getItemSettings = (data) => {
                         key: '2',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                        hidden: {
+                            _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                        },
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addSettingsInput({
@@ -569,7 +571,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-offsetX',
                                                         label: 'Offset X',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: "offsetHorizontalIcon",
                                                         propertyName: 'shadow.offsetX',
@@ -579,7 +581,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-offsetY',
                                                         label: 'Offset Y',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: 'offsetVerticalIcon',
                                                         propertyName: 'shadow.offsetY',
@@ -589,7 +591,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-blur',
                                                         label: 'Blur',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: 'blurIcon',
                                                         propertyName: 'shadow.blurRadius',
@@ -599,7 +601,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-spread',
                                                         label: 'Spread',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: 'spreadIcon',
                                                         propertyName: 'shadow.spreadRadius',

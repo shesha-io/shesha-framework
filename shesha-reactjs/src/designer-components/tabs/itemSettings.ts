@@ -133,7 +133,7 @@ export const getItemSettings = () => {
                                         type: "dropdown",
                                         propertyName: "selectMode",
                                         parentId: "root",
-                                        label: "Select mode",
+                                        label: "Select Mode",
                                         allowClear: false,
                                         defaultValue: "editable",
                                         dropdownOptions: [

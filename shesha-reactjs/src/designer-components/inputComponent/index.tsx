@@ -36,6 +36,7 @@ import { IWizardStepProps } from '../wizard/models';
 import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
+import { FormLayout } from 'antd/es/form/Form';
 
 export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
@@ -178,15 +179,24 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value} title={title}>{iconElement(icon, null)}</Radio.Button>;
+                    return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
                 })}
             </Radio.Group>;
         case 'switch':
             return <Switch disabled={readOnly} size='small'
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'numberField':
-            return <InputNumber min={props.min} max={props.max} placeholder={placeholder} step={props.step} controls={false}
-                defaultValue={defaultValue} variant={variant} readOnly={readOnly} size={size} value={value} onChange={onChange} style={{ width: "100%" }} suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)}</span>}
+            return <InputNumber
+                {...props}
+                placeholder={placeholder}
+                // controls={false}
+                defaultValue={defaultValue}
+                variant={variant} readOnly={readOnly}
+                size={size}
+                value={value}
+                onChange={onChange}
+                style={{}}
+                addonAfter={iconElement(icon, null, "tooltip")}
             />;
         case 'customDropdown':
             return <CustomDropdown
@@ -217,12 +227,12 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {editModes.map(({ value, icon }) => (
-                    <Radio.Button key={value} value={value}>{iconElement(icon, null, "title")}</Radio.Button>
+                {editModes.map(({ value, icon, title }) => (
+                    <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>
                 ))}
             </Radio.Group>;
         case 'dynamicItemsConfigurator':
-            return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} />;
+            return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
         case 'autocomplete':
             return <Autocomplete
                 dataSourceType={dataSourceType}
@@ -286,11 +296,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                     return {
                         components: listItemSettingsMarkup,
                         formSettings: {
-                            layout: "horizontal",
-                            isSettingsForm: true,
-                            colon: true,
-                            labelCol: { span: 5 },
-                            wrapperCol: { span: 13 }
+                            colon: false,
+                            layout: 'vertical' as FormLayout,
+                            labelCol: { span: 24 },
+                            wrapperCol: { span: 24 }
                         }
                     };
                 }}
@@ -324,7 +333,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 }
             />;
         case 'configurableActionConfigurator':
-            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} />;
+            return <ConfigurableActionConfigurator value={value} onChange={onChange} editorConfig={null} level={0} label={label} />;
         case 'typeAutoComplete':
             return <Autocomplete
                 dataSourceType="url"
