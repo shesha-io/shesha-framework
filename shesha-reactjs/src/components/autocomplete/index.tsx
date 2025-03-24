@@ -57,15 +57,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     return res;
   }, [props.value]);
 
-  // disable refreshing data if readonly
-  useEffect(() => {
-    props.disableRefresh.current = props.readOnly;
-  }, [props.readOnly]);
-
   // update local store of values details
   useEffect(() => {
-    if (!keys.length && props.readOnly)
-      return;
     if (props.dataSourceType === 'entitiesList' && props.entityType
       || props.dataSourceType === 'url' && props.dataSourceUrl
     ) {
@@ -85,8 +78,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
           // request full details for values
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
-          source?.setPredefinedFilters([{ id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter }]);
-          source?.refreshTable();
+          source?.setPredefinedFilters([{id: 'selectedFilter', name: 'selectedFilter', expression: selectedFilter}]);
         }
         if (loadingValues && source?.tableData?.length) {
           // update local store with full details
