@@ -16,7 +16,6 @@ import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { useActualContextData } from '@/hooks/useActualContextData';
-import { marginPadding } from '@/designer-components/button/util';
 
 const { Text } = Typography;
 
@@ -106,7 +105,6 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     ...backgroundStyles,
     ...shadowStyles,
     ...jsStyle,
-    ...marginPadding,
     ...stylingBoxAsCSS
   };
 
