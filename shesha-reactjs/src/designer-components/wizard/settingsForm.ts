@@ -6,7 +6,7 @@ import { getItemSettings } from './itemSettings';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data) => {
     return {
@@ -334,33 +334,7 @@ export const getSettings = (data) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -499,7 +473,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
                                                                 icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
@@ -508,7 +483,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
                                                                 icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
@@ -517,7 +493,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Blur radius',
+                                                                width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
@@ -526,7 +503,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Spread radius',
+                                                                width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },

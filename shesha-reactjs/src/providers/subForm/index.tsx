@@ -47,6 +47,7 @@ import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues } from '@/utils/object';
 import { useActualContextExecution } from '@/hooks/useActualContextExecution';
+import { ConfigurableItemIdentifierToString } from '@/index';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -552,7 +553,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           condition={Boolean(state.formSettings?.modelType)}
           wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
         >
-          <ParentProvider model={props} context={context} isScope
+          <ParentProvider model={props} context={context} isScope name={`SubForm ${ConfigurableItemIdentifierToString(formId)}`}
             formApi={subFormApi}
             formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
           >
