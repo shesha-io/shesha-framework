@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react';
-import { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IDynamicActionsConfiguration } from './models';
 import { ProviderSelector } from './providerSelector';

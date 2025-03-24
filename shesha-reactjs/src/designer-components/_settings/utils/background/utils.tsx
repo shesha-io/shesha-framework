@@ -1,6 +1,5 @@
 import React from "react";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
-import { customIcons } from "@/designer-components/inputComponent/icons";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -81,7 +80,7 @@ export const backgroundTypeOptions: IRadioOption[] = [
     {
         value: "gradient",
         icon: "BgColorsOutlined",
-        title: "Gradient"
+        title: "Gradient bg"
     },
     {
         value: "image",
@@ -101,10 +100,10 @@ export const backgroundTypeOptions: IRadioOption[] = [
 ];
 
 export const repeatOptions: IRadioOption[] = [
-    { value: 'no-repeat', title: 'No Repeat', icon: customIcons['noRepeatIcon'] },
-    { value: 'repeat', title: 'Repeat', icon: customIcons['repeatIcon'] },
-    { value: 'repeat-x', title: 'Repeat X', icon: customIcons['repeatXIcon'] },
-    { value: 'repeat-y', title: 'Repeat Y', icon: customIcons['repeatYIcon'] },
+    { value: 'no-repeat', title: 'No Repeat', icon: 'noRepeatIcon' },
+    { value: 'repeat', title: 'Repeat', icon: 'repeatIcon' },
+    { value: 'repeat-x', title: 'Repeat X', icon: 'repeatXIcon' },
+    { value: 'repeat-y', title: 'Repeat Y', icon: 'repeatYIcon' },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];

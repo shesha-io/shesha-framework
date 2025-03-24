@@ -1,7 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Space, Switch, Tooltip } from "antd";
-import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector } from '@/components';
-import { ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
+import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { evaluateExpression, evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
@@ -18,7 +17,6 @@ import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
-import { startCase } from 'lodash';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
 import { QueryBuilder } from '../queryBuilder/queryBuilder';
@@ -69,7 +67,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
         if (customIcons[icon]) {
             return (
-                <Tooltip className={styles.icon} title={startCase(propertyName.split('.')[1])}>
+                <Tooltip className={styles.icon} title={hint}>
                     <span style={style}>{customIcons[icon]}</span>
                 </Tooltip>
             );
@@ -227,9 +225,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'editModeSelector':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {editModes.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>
-                ))}
+                {editModes.map(({ value, icon, title }) => {
+                    return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
+                })}
             </Radio.Group>;
         case 'dynamicItemsConfigurator':
             return <DynamicActionsConfigurator editorConfig={{ ...props }} readOnly={readOnly} value={value} onChange={onChange} size={size} />;
