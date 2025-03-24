@@ -35,6 +35,7 @@ import { ConfigurableActionConfigurator } from '../configurableActionsConfigurat
 import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import { FormLayout } from 'antd/es/form/Form';
+import { startCase } from 'lodash';
 
 export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
@@ -67,7 +68,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
         if (customIcons[icon]) {
             return (
-                <Tooltip className={styles.icon} title={hint}>
+                <Tooltip className={styles.icon} title={hint || startCase(propertyName.split('.')[1])}>
                     <span style={style}>{customIcons[icon]}</span>
                 </Tooltip>
             );
@@ -194,7 +195,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 value={value}
                 onChange={onChange}
                 style={{}}
-                addonAfter={iconElement(icon, null, "tooltip")}
+                addonAfter={iconElement(icon, null, tooltip)}
             />;
         case 'customDropdown':
             return <CustomDropdown

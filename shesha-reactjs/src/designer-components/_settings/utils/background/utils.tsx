@@ -80,7 +80,7 @@ export const backgroundTypeOptions: IRadioOption[] = [
     {
         value: "gradient",
         icon: "BgColorsOutlined",
-        title: "Gradient bg"
+        title: "Gradient"
     },
     {
         value: "image",
