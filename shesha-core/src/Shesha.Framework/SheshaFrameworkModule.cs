@@ -4,12 +4,14 @@ using Abp.Dependency;
 using Abp.Modules;
 using Abp.Web.Models;
 using Castle.MicroKernel.Registration;
+using JsonLogic.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Configuration.Security;
+using Shesha.Configuration.StressTesting;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
@@ -157,7 +159,14 @@ namespace Shesha
                 {
                     Port = 25,
                     UseSmtpRelay = false,
-                    EnableSsl = false,
+                    EnableSsl = false, 
+                });
+            });
+
+            IocManager.RegisterSettingAccessor<IStressTestingSettings>(s => {
+                s.StressTestingSettings.WithDefaultValue(new StressTestingSettings
+                {
+                    EnableStressTesting = false,
                 });
             });
         }
