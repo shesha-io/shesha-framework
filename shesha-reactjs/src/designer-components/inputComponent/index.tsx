@@ -275,7 +275,6 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 readOnly={readOnly}
                 size={props.size}
                 value={value}
-                size={size}
                 onChange={onChange}
             />;
         case 'labelValueEditor':
