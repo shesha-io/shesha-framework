@@ -15,7 +15,6 @@ import { defaultExposedVariables } from '../_settings/settingsControl';
 import { getValueFromString } from '../settingsInput/utils';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
-import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
@@ -381,32 +380,3 @@ export interface IInputRowProps {
     hidden?: boolean;
 }
 
-export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
-    const { styles } = useStyles();
-    const { data: formData } = useFormData();
-
-    const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
-    return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
-        {inputs.map((props, i) => {
-            const { type } = props;
-            const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: formData }) : props.hidden;
-
-            const width = type === 'numberField' ? props.width || 100 :
-                type === 'button' ? props.width || 24 :
-                    type === 'dropdown' ? props.width || 120 :
-                        type === 'radio' ? props.buttonGroupOptions.length * 32 :
-                            type === 'colorPicker' ? props.width || 24 :
-                                type === 'customDropdown' ? props.width || 120 : props.width || 50;
-
-            return (
-                <SettingInput key={i + props.label}
-                    {...props}
-                    hidden={isHidden as boolean}
-                    readOnly={readOnly}
-                    inline={inline}
-                    width={width} />
-            );
-        })}
-        {children}
-    </div>;
-};
