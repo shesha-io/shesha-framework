@@ -401,9 +401,8 @@ export const getItemSettings = () => {
               content: {
                 id: 'onBeforeRenderContent',
                 components: [...new DesignerToolbarSettings()
-                  .addSettingsInput({
+                  .addConfigurableActionConfigurator({
                     id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
-                    inputType: 'configurableActionConfigurator',
                     propertyName: 'onBeforeRenderActionConfiguration',
                     label: 'Action configuration',
                     hideLabel: true,

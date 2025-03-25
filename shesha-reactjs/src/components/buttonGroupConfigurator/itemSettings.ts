@@ -29,7 +29,7 @@ export const getItemSettings = (data) => {
                                 propertyName: "itemSubType",
                                 label: "Item Type",
                                 labelAlign: "right",
-                                parentId: "root",
+                                parentId: "s4gmBg31azZC0UjZjpfTm",
                                 hidden: false,
                                 jsSetting: false,
                                 dropdownOptions: [
@@ -62,7 +62,7 @@ export const getItemSettings = (data) => {
                                     ...new DesignerToolbarSettings()
                                         .addSettingsInputRow({
                                             id: 'name-8b38-4b82-b192-563259afc159',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             inputs: [{
                                                 id: 'name-8b38-4b82-b192-563259afc159',
@@ -77,7 +77,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             hidden: data?.itemSubType !== 'button',
                                             inputs: [
@@ -104,7 +104,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             inputs: [
                                                 {
                                                     id: 'icon-s4gmBg31azZC0UjZjpfTm',
@@ -112,6 +112,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'icon',
                                                     label: 'Icon',
                                                     size: 'small',
+                                                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -121,6 +122,7 @@ export const getItemSettings = (data) => {
                                                     size: 'small',
                                                     jsSetting: true,
                                                     type: 'radio',
+                                                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     buttonGroupOptions: [
                                                         { title: 'start', value: 'start', icon: 'LeftOutlined' },
                                                         { title: 'end', value: 'end', icon: 'RightOutlined' },
@@ -131,7 +133,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             inputs: [
                                                 {
@@ -140,6 +142,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'editMode',
                                                     label: 'Edit Mode',
                                                     size: 'small',
+                                                    parentId: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -152,11 +155,11 @@ export const getItemSettings = (data) => {
                                                 },
                                             ],
                                         })
-                                        .addSettingsInput({
+                                        .addConfigurableActionConfigurator({
                                             id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                             propertyName: 'actionConfiguration',
-                                            inputType: 'configurableActionConfigurator',
                                             label: 'Action Configuration',
+                                            hideLabel: true,
                                             validate: {},
                                             settingsValidationErrors: [],
                                         }).toJson()

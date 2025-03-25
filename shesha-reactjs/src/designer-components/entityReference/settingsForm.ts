@@ -630,12 +630,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                        .addSettingsInput({
+                        .addConfigurableActionConfigurator({
                           id: nanoid(),
                           propertyName: 'onSuccess',
                           label: 'On Success',
                           parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfigurator',
                           jsSetting: true,
                         })
                         .toJson()
@@ -655,12 +654,11 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
-                        .addSettingsInput({
+                        .addConfigurableActionConfigurator({
                           id: nanoid(),
                           propertyName: 'onFail',
                           label: 'On Fail',
                           parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfigurator',
                           jsSetting: true,
                         })
                         .toJson()
