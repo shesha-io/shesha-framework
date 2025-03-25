@@ -3,7 +3,7 @@ import { getEventHandlers, isValidGuid } from '@/components/formDesigner/compone
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles, useForm, useFormData, useSheshaApplication } from '@/providers';
+import { IInputStyles, useForm, useSheshaApplication } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { toSizeCssProp } from '@/utils/form';
@@ -45,15 +45,10 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   isInput: true,
   isOutput: true,
   Factory: ({ model: passedModel }) => {
-    const { data: formData } = useFormData();
     const { style, valueStyle, titleStyle, prefix, suffix, prefixIcon, suffixIcon, ...model } = passedModel;
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const allData = useAvailableConstantsData();
     const { formMode } = useForm();
-
-    const value = useMemo(() => {
-      return model.value;
-    }, [model]);
 
     const dimensions = model?.dimensions;
     const border = model?.border;
@@ -62,6 +57,8 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const shadow = model?.shadow;
     const background = model?.background;
     const jsStyle = getStyle(passedModel?.style, passedModel);
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
     const valueStyles = getStyle(valueStyle);
     const titleStyles = getStyle(titleStyle);
 
@@ -95,9 +92,6 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    const styling = JSON.parse(model?.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model?.height),
       width: toSizeCssProp(model?.width),
@@ -118,12 +112,12 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     if (formMode === 'designer') {
       return (
         <ShaStatistic
-          value={value}
+          value={passedModel?.value}
           precision={passedModel?.precision}
-          title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel.title}</div>}
-          prefix={<div style={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}>{passedModel.prefixIcon ? <ShaIcon iconName={passedModel.prefixIcon as IconType} /> : null}<span style={{ marginRight: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span></div>}
-          suffix={<div style={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}>{passedModel.suffixIcon ? <ShaIcon iconName={passedModel.suffixIcon as IconType} /> : null}<span style={{ marginLeft: 5 }}>{passedModel.suffix ? passedModel.suffix : null}</span></div>}
-          style={removeUndefinedProps({ ...getStyle(style, formData), ...additionalStyles })}
+          title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
+          prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span></div>}
+          suffix={<div><span style={{ marginRight: 5 }}>{passedModel.suffix && passedModel.suffix}{passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}</span></div>}
+          style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
           valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
           onClick={customEvents?.onClick}
         />
@@ -135,9 +129,9 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         value={passedModel?.value}
         precision={passedModel?.precision}
         title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-        prefix={<div style={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}>{prefixIcon ? <ShaIcon iconName={prefixIcon as IconType} /> : null}<span style={{ marginRight: 5 }}>{prefix ? prefix : null}</span></div>}
-        suffix={<div style={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}>{suffixIcon ? <ShaIcon iconName={suffixIcon as IconType} /> : null}<span style={{ marginLeft: 5 }}>{suffix ? suffix : null}</span></div>}
-        style={removeUndefinedProps({ ...getStyle(style, formData), ...additionalStyles })}
+        prefix={<div>{prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{prefix && prefix}</span></div>}
+        suffix={<div><span style={{ marginRight: 5 }}>{suffix && suffix}</span>{suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}</div>}
+        style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
         valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
         onClick={customEvents?.onClick}
       />
@@ -150,9 +144,9 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     .add<IStatisticComponentProps>(2, (prev) => {
       const styles = {
         style: prev?.style,
-        valueFont: prev?.valueFont,
+        valueFont: defaultStyles().valueFont,
         valueStyle: prev?.valueStyle,
-        titleFont: prev?.titleFont,
+        titleFont: defaultStyles().titleFont,
         titleStyle: prev?.titleStyle,
         hideBorder: prev?.hideBorder,
       };
@@ -161,15 +155,6 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     })
     .add<IStatisticComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IStatisticComponentProps>(4, (prev) => ({ ...getDesignerDefaultContent(prev) }))
-    .add<IStatisticComponentProps>(5, (prev) => {
-      const styles = {
-        ...prev,
-        valueFont: defaultStyles().valueFont,
-        titleFont: defaultStyles().titleFont,
-      };
-
-      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile,  ...styles } };
-    })
 };
 
 export default StatisticComponent;

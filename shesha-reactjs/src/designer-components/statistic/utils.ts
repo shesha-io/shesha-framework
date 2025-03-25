@@ -20,7 +20,7 @@ export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
         },
         dimensions: {
             width: '100%',
-            height: '118px',
+            height: '120px',
             minHeight: '0px',
             maxHeight: 'auto',
             minWidth: '0px',
