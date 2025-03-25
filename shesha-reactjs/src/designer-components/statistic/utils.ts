@@ -3,8 +3,8 @@ import { IStyleType } from "@/index";
 export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
     return {
         background: { type: 'color', color: '#fff' },
-        titleFont: { weight: '500', size: 35, color: '#000', type: 'Segoe UI' },
-        valueFont: { weight: '500', size: 50, color: '#000', type: 'Segoe UI' },
+        titleFont: { weight: '500', size: 20, color: '#000', type: 'Segoe UI', align: 'center' },
+        valueFont: { weight: '500', size: 35, color: '#000', type: 'Segoe UI', align: 'center' },
         border: {
             hideBorder: false,
             radiusType: 'all',
@@ -18,7 +18,28 @@ export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
             },
             radius: { all: 8 }
         },
-        dimensions: {},
-        style: { padding: '0px', margin: '0px', verticalAlign: "middle", textAlign: "center" },
+        dimensions: {
+            width: '100%',
+            height: '120px',
+            minHeight: '0px',
+            maxHeight: 'auto',
+            minWidth: '0px',
+            maxWidth: 'auto'
+        },
+        style: { padding: '0px', margin: '0px auto', verticalAlign: "middle", textAlign: "center" },
     };
 };
+
+export const getDesignerDefaultContent = (model: any) => {
+    return {
+        ...model,
+        title: model.title || "Total Income",
+        value: model.value || 1234,
+        prefix: model.prefix || "R",
+        suffix: model.suffix,
+        prefixIcon: model.prefixIcon,
+        suffixIcon: model.suffixIcon,
+        precision: model.precision || 2
+    };
+};
+
