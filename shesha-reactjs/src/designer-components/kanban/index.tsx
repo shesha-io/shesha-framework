@@ -4,6 +4,7 @@ import { ConfigurableFormItem } from '@/components';
 import {
   getStyle,
   IToolboxComponent,
+  useDataTableStore,
   useForm,
   useSheshaApplication,
   validateConfigurableComponentSettings,
@@ -26,6 +27,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   icon: <FormOutlined />,
 
   Factory: ({ model }) => {
+    const store = useDataTableStore(false);
     const { httpHeaders, backendUrl } = useSheshaApplication();
     const data = model;
     const form = useForm();
@@ -69,7 +71,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
       fetchStyles();
     }, [columnBackground, backendUrl, httpHeaders]);
 
-
     const additionalColumnStyles: CSSProperties = removeUndefinedProps({
       ...columnBackgroundStyle,
       ...columnStyle,
@@ -83,29 +84,32 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
       ...headerStyle,
     });
 
-    if (form.formMode === 'designer' && !model.entityType) {
-      return (
-        <Alert
-          showIcon
-          message="Kanban not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
-          type="warning"
-        />
-      );
-    }
+
+    console.log('store', store);
     return (
       <div>
         <ConfigurableFormItem model={model}>
           {(value) => {
-            return (
+            console.log('model', model);
+            return store ? (
               <RefListItemGroupConfiguratorProvider
                 value={value}
                 items={model.items}
                 referenceList={model.referenceList}
                 readOnly={model.readOnly}
               >
-                <KanbanReactComponent {...model} headerStyles={additionalHeaderStyles} columnStyle={additionalColumnStyles}/>
+                <KanbanReactComponent
+                  {...model}
+                  headerStyles={additionalHeaderStyles}
+                  columnStyle={additionalColumnStyles}
+                />
               </RefListItemGroupConfiguratorProvider>
+            ) : (
+              <Alert
+                className="sha-designer-warning"
+                message="Kanban must be used within a Data Table Context"
+                type="warning"
+              />
             );
           }}
         </ConfigurableFormItem>

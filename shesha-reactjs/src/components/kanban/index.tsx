@@ -3,20 +3,25 @@ import { Flex, Form, App, Modal } from 'antd';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
-import {
-  ConfigurableForm,
-  DataTypes,
-  useFormState,
-  useGet,
-  useMetadataDispatcher,
-} from '@/index';
+import { ConfigurableForm, DataTypes, useDataTableStore, useFormState, useGet, useMetadataDispatcher } from '@/index';
 import KanbanColumn from './components/renderColumn';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { addPx } from '../keyInformationBar/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount, columnStyle } = props;
+  const {
+    gap,
+    groupingProperty,
+    entityType,
+    createFormId,
+    items,
+    componentName,
+    editFormId,
+    maxResultCount,
+    columnStyle,
+  } = props;
 
+  const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
@@ -34,21 +39,32 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  console.log('columnStyle', columnStyle);
-  useEffect(() => {
-    if (!isInDesigner && entityType && groupingProperty) {
-      getMetadata({ modelType: entityType, dataType: DataTypes.entityReference }).then((resp: any) => {
-        const endpoints = resp?.apiEndpoints;
-        setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=${maxResultCount || 100}` })
-          .then((resp) => {
-            setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-          })
-          .catch((err) => console.error('Error fetching tasks:', err));
-      });
-    }
-  }, [groupingProperty, entityType]);
+  console.log('groupingProperty!!', groupingProperty);
+  console.log('tableDat!!', tableData);
 
+  useEffect(() => {
+    if (!isInDesigner && modelType && groupingProperty) {
+      console.log("Effect triggered");
+  
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
+        if (resp?.apiEndpoints) {
+          const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
+          setUrls({
+            updateUrl: update?.url,
+            deleteUrl: deleteEndpoint?.url,
+            postUrl: create?.url,
+          });
+        }
+      });
+  
+      const filteredTasks = tableData.filter((item: any) => item?.[groupingProperty]);
+      console.log("Setting tasks to:", filteredTasks);
+      setTasks(filteredTasks);
+    }
+  }, [isInDesigner, modelType, groupingProperty, tableData]);
+  
+
+  console.log('tasks', tasks);
   useEffect(() => {
     setColumns(items);
   }, [items]);
@@ -91,7 +107,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     setSelectedItem(null);
     setSelectedColumn(null);
   };
-
 
   const handleEditClick = (item: any) => {
     setSelectedItem(item);
