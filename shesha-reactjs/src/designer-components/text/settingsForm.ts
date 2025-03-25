@@ -346,6 +346,12 @@ export const getSettings = (data: any) => {
                                     label: 'Color',
                                     hideLabel: true,
                                     propertyName: 'font.color',
+                                    hidden: {
+                                      _code:
+                                        'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.contentType) !== "custom";',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
                                   },
                                   {
                                     type: 'dropdown',
