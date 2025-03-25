@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { Button, Dropdown, Popconfirm } from 'antd';
 import { ReactSortable } from 'react-sortablejs';
 import { PlusOutlined, MoreOutlined, RightOutlined, LeftOutlined, SettingFilled } from '@ant-design/icons';
@@ -11,6 +11,7 @@ import { useStyles } from '../styles/styles';
 import { addPx } from '@/designer-components/_settings/utils';
 
 interface KanbanColumnProps {
+  columnStyle?: CSSProperties;
   column: any;
   columnTasks: any[];
   handleEditClick: (item: any) => void;
@@ -37,13 +38,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   handleEditClick,
   handleDelete,
   handleCreateClick,
+  columnStyle,
   props,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
   const { styles } = useStyles({ ...props, isCollapsed });
-  const { data: formData } = useFormData();
   const { updateKanban } = useKanbanActions();
   const allData = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
@@ -156,14 +157,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       });
     });
   };
-
   return (
     <>
       {!column.hidden && (
         <div
           key={column.id}
           className={styles.combinedColumnStyle}
-          style={{ ...(getStyle(props.columnStyle, formData) || {}) }}
+          style={props.columnStyle || {}}
           data-column-id={column.id}
         >
           <Flex

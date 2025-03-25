@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, CSSProperties } from 'react';
 import { Flex, Form, App, Modal } from 'antd';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
@@ -15,7 +15,7 @@ import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { addPx } from '../keyInformationBar/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount } = props;
+  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount, columnStyle } = props;
 
   const { message } = App.useApp();
   const [columns, setColumns] = useState([]);
@@ -34,6 +34,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
+  console.log('columnStyle', columnStyle);
   useEffect(() => {
     if (!isInDesigner && entityType && groupingProperty) {
       getMetadata({ modelType: entityType, dataType: DataTypes.entityReference }).then((resp: any) => {
@@ -175,6 +176,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
               handleDelete={handleDelete}
               handleCreateClick={handleCreateClick}
               selectedItem={selectedItem}
+              columnStyle={columnStyle as CSSProperties}
             />
           ))}
         </Flex>

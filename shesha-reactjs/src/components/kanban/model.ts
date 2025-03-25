@@ -2,6 +2,9 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IButtonGroupItem, IButtonItem } from '@/providers';
 import { CSSProperties } from 'styled-components';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
+import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
+import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -52,4 +55,8 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   maxWidth: number;
   minWidth: number;
   font?: IFontValue;
+  background?: IBackgroundValue;
+  columnBackground?: IBackgroundValue;
+  shadow?: IShadowValue;
+  border?: IBorderValue;
 }
