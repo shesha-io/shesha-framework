@@ -1,6 +1,6 @@
 import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
@@ -10,13 +10,14 @@ import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from '
 import { DATE_TIME_FORMATS, disabledDate, disabledTime, getFormat } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 
-const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
-
 const { RangePicker } = DatePicker;
 
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
   const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
   const properties = asPropertiesArray(metaProperties, []);
+  const [MIDNIGHT_MOMENT, SET_MIDNIGHT_MOMENT] = useState(moment('00:00:00', 'HH:mm:ss'));
+  const [momentValue, setMomentValue] = useState<moment.Moment | null>(null);
+  const [rangeMomentValue, setRangeMomentValue] = useState<any>(null);
 
   const { globalState } = useGlobalState();
 
@@ -73,7 +74,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       return;
     }
     const newValue = convertValue(localValue);
-
     (onChange as TimePickerChangeEvent)(newValue, dateString);
   };
 
@@ -89,11 +89,37 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
   const handleOnOk = (value: moment.Moment | null) => handleDatePickerChange(value, value?.format(pickerFormat));
 
-  const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
+  const getCurrentTime = () => {
+    // Reset the state to null
+    setMomentValue(null);
+    setRangeMomentValue(null);
 
-  const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
-  const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
+    if (defaultToMidnight) {
+      SET_MIDNIGHT_MOMENT(moment('00:00:00', 'HH:mm:ss'));
+    } else {
+      // Get the current system time as a Moment object and format it to 'HH:mm:ss'
+      const MIDNIGHT = moment().set({
+        hour: moment().hour(),
+        minute: moment().minute(),
+        second: moment().second(),
+        millisecond: 0,
+      });
+      SET_MIDNIGHT_MOMENT(moment(MIDNIGHT.format('HH:mm:ss')));
+    }
+  };
+
+  const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
   const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
+
+  useEffect(() => {
+    if (range) {
+      const newRangeMomentValue = getRangeMoment(value, pickerFormat);
+      setRangeMomentValue(newRangeMomentValue);
+    } else {
+      const newMomentValue = getMoment(value, pickerFormat);
+      setMomentValue(newMomentValue);
+    }
+  }, [value, pickerFormat]);
 
   if (range) {
     return (
@@ -107,11 +133,12 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         defaultValue={defaultMomentValue}
         {...rest}
         picker={picker}
-        showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
+        showTime={showTime ? { defaultOpenValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : false}
         disabled={readOnly}
         style={evaluatedStyle}
         allowClear
         variant={hideBorder ? 'borderless' : undefined}
+        onClick={getCurrentTime}
       />
     );
   }
@@ -129,7 +156,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       onChange={handleDatePickerChange}
       onOk={handleOnOk}
       variant={hideBorder ? 'borderless' : undefined}
-      showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
+      showTime={showTime ? { defaultOpenValue: MIDNIGHT_MOMENT } : false}
       showNow={showNow}
       picker={picker}
       format={pickerFormat}
@@ -137,6 +164,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       {...rest}
       value={momentValue}
       allowClear
+      onClick={getCurrentTime}
     />
   );
 };
