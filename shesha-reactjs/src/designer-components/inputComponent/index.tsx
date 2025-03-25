@@ -230,6 +230,7 @@ export const InputComponent: FC<ISettingsInputProps> = (props) => {
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
+                size={props.size}
                 value={value}
                 onChange={onChange}
             />;

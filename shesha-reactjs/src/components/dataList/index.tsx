@@ -454,12 +454,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               checked={selected}
               onChange={() => {
                 onSelectRowLocal(index, item);
-              }}
-            >
+              }}>
               {children}
             </Checkbox>
-          )}
-        >
+          )}>
 
           <div
             className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
