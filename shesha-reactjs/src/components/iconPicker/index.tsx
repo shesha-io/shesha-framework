@@ -150,7 +150,7 @@ const IconPicker: FC<IIconPickerProps> = ({
               {...props}
               style={{ fontSize: iconSize || 24 }}
               name={localSelectedIcon}
-              title={localSelectedIcon}
+              //title={localSelectedIcon} removed to avoid it conflicting with icon tooltip
             />
           ) : <Button size={selectBtnSize} disabled={readOnly} icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}>Select Icon</Button>}
         </div>
