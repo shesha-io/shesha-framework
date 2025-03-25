@@ -1,19 +1,18 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const pickerEllipsisBtnWidth = "45px";
+  const pickerEllipsisBtnWidth = "45px";
 
-    const pickerInputGroup = "picker-input-group";
-    const pickerInputGroupInput = "picker-input-group-input";
-    const pickerInputGroupEllipsis = "picker-input-group-ellipsis";
-    const entityPickerModalPagerContainer = "entity-picker-modal-pager-container";
+  const pickerInputGroup = "picker-input-group";
+  const pickerInputGroupInput = "picker-input-group-input";
+  const pickerInputGroupEllipsis = "picker-input-group-ellipsis";
+  const entityPickerModalPagerContainer = "entity-picker-modal-pager-container";
 
-    const shaReactTable = "sha-react-table";
-    const shaGlobalTableFilter = "sha-global-table-filter";
-    
+  const shaReactTable = "sha-react-table";
+  const shaGlobalTableFilter = "sha-global-table-filter";
 
-    const entityPickerContainer = cx("entity-picker-container", css`
+
+  const entityPickerContainer = cx("entity-picker-container", css`
     .${pickerInputGroup} {
       .${pickerInputGroupInput} {
         width: calc(100% - ${pickerEllipsisBtnWidth});
@@ -21,6 +20,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   
       .${pickerInputGroupEllipsis} {
         width: ${pickerEllipsisBtnWidth};
+        border-left: 1px solid #d9d9d9;
       }
     }
   
@@ -29,7 +29,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     }
   `);
 
-    const entityPickerModal = cx("entity-picker-modal", css`
+  const entityPickerModal = cx("entity-picker-modal", css`
         .${prefixCls}-modal-body {
           .ant-alert {
             margin-bottom: 8px;
@@ -64,12 +64,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
     `);
 
-    return {
-        entityPickerContainer,
-        pickerInputGroup,
-        pickerInputGroupInput,
-        pickerInputGroupEllipsis,
-        entityPickerModalPagerContainer,
-        entityPickerModal,
-    };
+  const entitySelect = cx("entity-select", css`
+        &:hover: {
+                color: colorTextSecondary,
+              }
+
+        .ant-select-selector > ant-select-selection-search, ant-select-selection-placeholder {
+          all: inherit !important;
+          border-right: 1px solid #d9d9d9;
+          padding: 0 8px !important;
+          * {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+            }
+          }
+      `);
+
+  return {
+    entityPickerContainer,
+    pickerInputGroup,
+    pickerInputGroupInput,
+    pickerInputGroupEllipsis,
+    entityPickerModalPagerContainer,
+    entityPickerModal,
+    entitySelect
+  };
 });

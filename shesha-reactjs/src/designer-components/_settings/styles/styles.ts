@@ -1,45 +1,12 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
-    const jsSwitch = cx(css`
-        &.${prefixCls}-btn {
-            position: absolute;
-            left: 0;
-            right: auto;
-            top: 4px;
-            font-size: 12px;
-            height: 20px;
-            width: 2.5rem;
-            margin-left: 5px;
-            margin-right: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            ${responsive.mobile} {
-                right: 0;
-                left: auto;
-                top: -28px;
-            }
-
-            // special style when inside the sidebar
-            .sidebar-container & {
-                right: 0;
-                left: auto;
-                top: -28px;
-            }
-            .${sheshaStyles.verticalSettingsClass} & {
-                right: 0;
-                left: auto;
-                top: -28px;
-            }
-        }
-    `);
+export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }, hasCode) => {
 
     const contentJs = cx(css`
         position: relative;
         top: 0px;
     `);
+
     const contentCode = cx(css`
         position: relative;
         top: 0px;
@@ -47,35 +14,76 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             padding-top: 4px;
         }
 
-        // special style when inside the sidebar
-        .sidebar-container & {
-            padding-top: 4px;
-        }
-        .${sheshaStyles.verticalSettingsClass} & {
-            padding-top: 4px;
-        }
     `);
+
     const jsContent = cx(css`
-        margin-left: 64px;
+        position: relative;
         ${responsive.mobile} {
-            margin-left: 0;
+            margin-left: 28px;
         }
 
         // special style when inside the sidebar
         .sidebar-container & {
             margin-right: 0;
-            margin-left: 0;
         }
-        .${sheshaStyles.verticalSettingsClass} & {
-            margin-right: 0;
-            margin-left: 0;
+    `);
+
+    const label = cx("properties-label", css`
+            font-size: 12px;
+            color: darkslategrey;
+            font-weight: 500;
+            position: relative;
+            
+            +.ant-form-item-tooltip {
+            align-self: end !important;
+            position: relative;
+            bottom: -2px;
+            }
+    `);
+
+    const bindingOptionsBtn = cx(css`
+        top: -8px;
+        `);
+    const jsSwitch = cx(css`
+        &.${prefixCls}-btn {
+            position: absolute;
+            right: 0;
+            top: 4px;
+            font-size: 12px;
+            height: 20px;
+            max-width: 100%;
+            margin-left: 5px;
+            margin-right: 0px;
+            color: ${token.colorPrimary};
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            ${responsive.mobile} {
+                right: 0;
+                left: auto;
+                top: -25px;
+            }
+
+            // special style when inside the sidebar
+            .sidebar-container & {
+                right: 0;
+                left: auto;
+                top: ${hasCode ? '-35px' : '-25px'};
+            }
+            .${sheshaStyles.verticalSettingsClass} & {
+                right: 0;
+                left: auto;
+                top: -25px;
+            }
         }
     `);
 
     return {
-        jsSwitch,
         contentJs,
         contentCode,
         jsContent,
+        label,
+        bindingOptionsBtn,
+        jsSwitch
     };
 });

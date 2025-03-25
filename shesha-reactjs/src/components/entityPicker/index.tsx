@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Button, Space, Select, Skeleton } from 'antd';
+import { Button, Space, Select, Skeleton, ConfigProvider } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import _ from 'lodash';
 import React, { useMemo, useRef, useState } from 'react';
@@ -63,13 +63,14 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     title = 'Select Item',
     outcomeValueFunc,
     incomeValueFunc,
-    placeholder
+    placeholder,
+    hideBorder
   } = props;
 
   if (!entityType)
     throw SheshaError.throwPropertyError('entityType');
 
-  const { styles } = useStyles();
+  const { styles } = useStyles(style);
   const selectRef = useRef(undefined);
 
   const [showModal, setShowModal] = useState(false);
@@ -147,48 +148,79 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     if (onChange) onChange(null, null);
   };
 
+  const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
+    borderBottomWidth, borderRightColor, borderRightStyle, borderColor, borderBottomLeftRadius,
+    borderTopLeftRadius, MozBorderTopColors, borderTopStyle, borderTopColor, borderTop, boxShadow,
+    borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, ...restStyle } = style;
+
+  const borderRadii = style?.borderRadius?.toString().split(' ');
+
   return (
     <div className={styles.entityPickerContainer}>
       <div>
-        {useButtonPicker ? (
-          <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
-            {title}
-          </Button>
-        ) : (
-              <Space.Compact style={{ width: '100%' }}>
-                <Select
-                  size={size}
-                  onDropdownVisibleChange={(_e) => {
-                    selectRef.current.blur();
-                    showPickerDialog();
-                  }}
-                  onClear={onClear}
-                  value={selection.loading ? undefined : valueId}
-                  placeholder={selection.loading ? 'Loading...' : placeholder}
-                  notFoundContent={''}
-                  defaultValue={defaultValue}
-                  disabled={disabled || selection.loading}
-                  ref={selectRef}
-                  allowClear
-                  mode={selectedMode}
-                  options={options}
-                  suffixIcon={null} // hide arrow              
-                  onChange={handleMultiChange}
-                  style={{ ...style, width: `calc(100% - ${size === 'large' ? '40px' : '32px'})` }}
-                  loading={selection.loading}
-                  dropdownStyle={{ display: "none" }}
-                >
-                </Select>
-                <Button
-                  onClick={showPickerDialog}
-                  className={styles.pickerInputGroupEllipsis}
-                  disabled={disabled}
-                  loading={loading ?? false}
-                  size={size}
-                  icon={<EllipsisOutlined />}
-                />
-              </Space.Compact>
-        )}
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                fontSize: Number(style?.fontSize ?? 14),
+                colorText: style?.color,
+                fontFamily: style?.fontFamily,
+                fontWeightStrong: Number(style.fontWeight)
+              },
+            },
+          }}
+        >
+          {useButtonPicker ? (
+            <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
+              {title}
+            </Button>
+          ) : (
+            <Space.Compact style={{ width: '100%', ...style }}>
+              <Select
+                size={size}
+                onDropdownVisibleChange={(_e) => {
+                  selectRef.current.blur();
+                  showPickerDialog();
+                }}
+                onClear={onClear}
+                value={selection.loading ? undefined : valueId}
+                placeholder={selection.loading ? 'Loading...' : placeholder}
+                notFoundContent={''}
+                defaultValue={defaultValue}
+                disabled={disabled || selection.loading}
+                ref={selectRef}
+                allowClear
+                mode={selectedMode}
+                options={options}
+                variant={hideBorder ? 'borderless' : null}
+                suffixIcon={null}
+                onChange={handleMultiChange}
+                className={styles.entitySelect}
+                style={{ width: '100%' }}
+                loading={selection.loading}
+              >
+                {''}
+              </Select>
+              <Button
+                onClick={showPickerDialog}
+                className={styles.pickerInputGroupEllipsis}
+                disabled={disabled}
+                loading={loading ?? false}
+                size={size}
+                icon={<EllipsisOutlined />}
+                style={{
+                  ...restStyle,
+                  borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
+                  background: 'transparent',
+                  borderLeft: '1px solid #d9d9d9',
+                  height: '100%',
+                  zIndex: 1,
+                }}
+                type='text'
+              />
+            </Space.Compact>
+          )}
+        </ConfigProvider>
       </div>
 
       {showModal && <EntityPickerModal {...props} onCloseModal={() => setShowModal(false)} />}

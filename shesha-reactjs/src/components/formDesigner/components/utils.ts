@@ -58,7 +58,7 @@ export const getEventHandlers = <T = any>(model: IConfigurableFormComponent, con
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
     onClick: (event) => {
-      event.stopPropagation();
+      onCustomEvent(event, 'onClickCustom');
     },
   };
 };
@@ -134,8 +134,8 @@ export const customAddressEventHandler = (
   context: IApplicationContext,
   onChangeCustom,
   onSelectCustom
-  ): IGooglePlacesAutocompleteProps => {
-  
+): IGooglePlacesAutocompleteProps => {
+
   const onCustomEvent = (event: any, key: string) => {
     const expression = model?.[key];
     if (Boolean(expression)) {
@@ -148,7 +148,7 @@ export const customAddressEventHandler = (
       }
 
       // if context is a simple object
-      return executeScriptSync(expression, {...context, event, value: event?.currentTarget.value});
+      return executeScriptSync(expression, { ...context, event, value: event?.currentTarget.value });
     }
   };
 

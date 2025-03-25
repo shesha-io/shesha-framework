@@ -2,7 +2,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import React from 'react';
 import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
-import { getSettings } from './settings';
+import { getSettings } from './settingsForm';
 import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
@@ -59,7 +59,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             //allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
             disabled={readOnly}
-            count={localCount}
+            count={localCount ?? 5}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}
             style={getStyle(style, allData.data)} // Temporary. Make it configurable
@@ -78,6 +78,11 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))
     .add<IRateProps>(2, (prev) => migrateReadOnly(prev))
     .add<IRateProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRateProps>(4, (prev) => {
+      prev.hideLabel = true;
+      if (!prev.icon) prev.icon = 'StarFilled';
+      return prev;
+    })
   ,
 };
 

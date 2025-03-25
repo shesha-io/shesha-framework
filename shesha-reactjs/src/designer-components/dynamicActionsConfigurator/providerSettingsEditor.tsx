@@ -1,4 +1,3 @@
-import { Collapse } from 'antd';
 import React, { FC, useMemo } from 'react';
 import {
   FormMarkupFactory,
@@ -8,6 +7,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
+import { CollapsiblePanel } from '@/components';
 
 export interface IProviderSettingsEditorProps {
   provider: IDynamicActionsContext;
@@ -85,9 +85,11 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
   if (!settingsEditor) return null;
 
   return (
-    <Collapse
-      defaultActiveKey={['1']}
-      items={[{ key: "1", label: "Settings", children: settingsEditor }]}
-    />
+    <CollapsiblePanel
+      ghost={true}
+      header="Settings"
+    >
+      {settingsEditor}
+    </CollapsiblePanel>
   );
 };

@@ -14,7 +14,7 @@
         {
             "id": "adbc3b29-9a53-4305-869a-f37ba6e8bb94",
             "propertyName": "formId",
-            "label": "Modal form",
+            "label": "Modal Form",
             "validate": {
                 "required": true
             },
@@ -28,7 +28,7 @@
             "type": "radio",
             "propertyName": "formMode",
             "componentName": "formMode",
-            "label": "Form mode",
+            "label": "Form Mode",
             "labelAlign": "right",
             "parentId": "root",
             "hidden": false,
@@ -40,11 +40,13 @@
             "items": [
                 {
                     "label": "Edit",
-                    "value": "edit"
+                    "value": "edit",
+                    "icon": "editIcon"
                 },
                 {
                     "label": "Read only",
-                    "value": "readonly"
+                    "value": "readonly",
+                    "icon": "readonlyIcon"
                 }
             ],
             "validate": {},
@@ -169,7 +171,7 @@
                     {
                         "id": "eX3ZelYUEIbGAcxXAsqW0ZI3u6t9Iy",
                         "propertyName": "footerButtons",
-                        "label": "Buttons type",
+                        "label": "Buttons Type",
                         "dataSourceType": "values",
                         "values": [
                             {
@@ -202,14 +204,15 @@
                             "_value": false
                         },
                         "label": "Configure Modal Buttons",
-                        "type": "buttons",
+                        "type": "buttonGroupConfigurator",
+                        "version": "latest",
                         "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
                     }
                 ]
             },
-            "collapsible": "icon",
-            "ghost": true,
-            "components": []
+            "collapsible": "header",
+            "ghost": false,
+            "isSimpleDesign": false
         }
     ],
     "formSettings": {

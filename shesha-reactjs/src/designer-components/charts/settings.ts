@@ -49,7 +49,7 @@ export const settingsForm = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'hidden',
-            label: 'Hidden',
+            label: 'hide',
             parentId: 'root',
           })
           .addDropdown({
@@ -417,7 +417,6 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: 'root',
             defaultValue: false,
             validate: { required: true },
-            
           })
           .addDropdown({
             id: nanoid(),

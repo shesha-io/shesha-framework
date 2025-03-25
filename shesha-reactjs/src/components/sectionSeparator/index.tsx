@@ -11,8 +11,6 @@ export interface ISectionSeparatorProps {
   containerStyle?: CSSProperties;
   titleStyle?: CSSProperties;
   tooltip?: string;
-  fontSize?: number;
-  fontColor?: string;
   inline?: boolean;
   dashed?: boolean;
   lineColor?: string;
@@ -20,21 +18,19 @@ export interface ISectionSeparatorProps {
   lineWidth?: string;
   lineHeight?: string;
   titleMargin?: number;
+  marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
-  fontWeight?: string;
+  fontSize?: string | number;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   id,
   labelAlign = 'left',
-  fontSize = 14,
-  fontColor = '#000',
-  fontWeight = '500',
   inline,
   dashed,
   lineColor,
-  lineThickness = 2,
+  lineThickness,
   lineWidth,
   lineHeight,
   orientation,
@@ -42,7 +38,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   titleStyle,
   tooltip,
   title,
-  titleMargin
+  titleMargin,
+  marginBottom
 }) => {
   const { styles } = useStyles();
   const titleRef = useRef<HTMLDivElement>(null);
@@ -61,7 +58,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign,
-    marginBottom: '8px',
+    marginBottom: marginBottom || '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
@@ -93,7 +90,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       <div className={styles.titleContainer} style={{ alignItems: 'center', display: 'flex', width: '100%' }
       }>
         <div style={{ ...getLineStyles(true), ...baseStyle }}></div>
-        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap', color: fontColor, fontSize, fontWeight }
+        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap' }
         }>
           {title}
           < Show when={Boolean(tooltip?.trim())}>

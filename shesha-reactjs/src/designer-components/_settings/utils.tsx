@@ -1,6 +1,7 @@
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
+import React from "react";
 import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
-import { ISettingsComponentProps } from "./settingsComponent";
+import { useStyles } from "./styles/styles";
 
 /**
  * Checks if the provided data is an instance of IPropertySetting.
@@ -75,16 +76,17 @@ export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
 export const updateSettingsComponents = (
     toolboxComponents: IToolboxComponents,
     components: IConfigurableFormComponent[]) => {
-    const processComponent = (component: IConfigurableFormComponent) => {
-        const componentRegistration = toolboxComponents[component.type];
-        const oldComponent: IConfigurableFormComponent = {...component, jsSetting: false};
 
-        if (componentRegistration?.canBeJsSetting && (component.jsSetting !== false) 
+    const processComponent = (component: IConfigurableFormComponent) => {
+
+        const componentRegistration = toolboxComponents[component.type];
+
+        const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
+
+        if (componentRegistration?.canBeJsSetting && (component.jsSetting !== false)
             || component.jsSetting === true) {
 
-            const newComponent: ISettingsComponentProps = {...component, jsSetting: false};
-
-            newComponent.availableConstantsExpression = oldComponent.jsSettingsAvailableConstantsExpression;
+            const oldComponent: IConfigurableFormComponent = { ...newComponent };
 
             // If should be wrapped as Setting
             newComponent.type = 'setting';
@@ -93,7 +95,7 @@ export const updateSettingsComponents = (
             // copy `exposedVariables`. NOTE: it's a temporary solution, will be removed later
             if (oldComponent['exposedVariables'])
                 newComponent['exposedVariables'] = oldComponent['exposedVariables'];
-        
+
             // Add source component as a child of Setting component
             if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
                 newComponent['components'] = [{
@@ -117,18 +119,18 @@ export const updateSettingsComponents = (
             const customContainerNames = componentRegistration?.customContainerNames || [];
             customContainerNames.forEach(subContainer => {
                 if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
-                  oldComponent[subContainer].components = component[subContainer]?.components.map(c => {
+                    newComponent[subContainer].components = component[subContainer]?.components.map(c => {
                         return processComponent(c);
                     });
             });
 
             // default container
             if (Array.isArray(component['components']) && component['components'].length > 0)
-              oldComponent['components'] = component['components'].map(c => {
+                newComponent['components'] = component['components'].map(c => {
                     return processComponent(c);
                 });
 
-            return oldComponent;
+            return newComponent;
         }
     };
 
@@ -156,4 +158,14 @@ export const updateSettingsComponentsDict = (
     });
 
     return res;
+};
+
+export const addPx = (value) => {
+    return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
+};
+
+export const StyledLabel = ({ label }: { label: string }) => {
+    const { styles } = useStyles();
+
+    return <span className={styles.label}>{label}</span>;
 };

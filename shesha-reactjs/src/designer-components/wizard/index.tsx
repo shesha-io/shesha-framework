@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import WizardSettingsForm from './settings';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
@@ -16,6 +15,10 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
+import { getSettings } from './settingsForm';
+import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 import { wizardApiCode } from '@/publicJsApis';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
@@ -25,8 +28,8 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   icon: <DoubleRightOutlined />,
   Factory: ({ model, form }) => {
     const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
-      typeDefinitionLoader: () => Promise.resolve({typeName: 'IWizardApi',files: [{ content: wizardApiCode, fileName: 'apis/wizard.ts' }]}),
-      properties: [{path: 'current', dataType: DataTypes.number}],
+      typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWizardApi', files: [{ content: wizardApiCode, fileName: 'apis/wizard.ts' }] }),
+      properties: [{ path: 'current', dataType: DataTypes.number }],
       dataType: DataTypes.object
     } as IObjectMetadata), []);
 
@@ -44,7 +47,6 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
-    stylingBox: "{\"marginBottom\":\"5\"}"
   }),
   migrator: (m) =>
     m
@@ -87,6 +89,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               beforeDoneActionConfiguration: step.doneButtonActionConfiguration,
             };
           }),
+          editMode: 'inherited'
         };
       })
       .add<IWizardComponentProps>(
@@ -101,9 +104,10 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
-  ,
-  settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
-  // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+      .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()) })),
+  settingsFormMarkup: () => getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+
   customContainerNames: ['steps'],
   getContainers: (model) => {
     return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));

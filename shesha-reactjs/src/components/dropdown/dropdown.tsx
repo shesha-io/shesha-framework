@@ -47,9 +47,9 @@ export const Dropdown: FC<IDropdownProps> = ({
       ? defaultVal
       : defaultVal ? evaluateString(defaultVal, { formData, formMode, globalState }) || undefined: undefined;
 
-    const value = typeof val === 'string' 
-      ? (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any
-      : val;
+    const value = typeof val === 'string'
+        ? (evaluateString(val, { formData, formMode, globalState }) ?? undefined) as any
+        : val;
 
     const getOptions = (): ILabelValue[] => {
         return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
@@ -60,7 +60,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             return !!value ? value.itemValue : null;
         }
         if (valueFormat === 'custom') {
-            return executeExpression<string>(incomeCustomJs, {...args, value}, null, null );
+            return executeExpression<string>(incomeCustomJs, { ...args, value }, null, null);
         }
         return value;
     }, [valueFormat, incomeCustomJs]);
@@ -68,11 +68,11 @@ export const Dropdown: FC<IDropdownProps> = ({
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: ReferenceListItemDto, args?: any) => {
         if (valueFormat === 'listItem') {
             return !!value
-              ? {item: value.item, itemValue: value.itemValue}
-              : null;
+                ? { item: value.item, itemValue: value.itemValue }
+                : null;
         }
         if (valueFormat === 'custom') {
-            return executeExpression(outcomeCustomJs, {...args, value}, null, null );
+            return executeExpression(outcomeCustomJs, { ...args, value }, null, null);
         }
         return !!value ? value.itemValue : null;
     }, [valueFormat, outcomeCustomJs]);
@@ -122,13 +122,13 @@ export const Dropdown: FC<IDropdownProps> = ({
                 variant={hideBorder ? 'borderless' : undefined}
                 defaultValue={defaultValue}
                 mode={selectedMode}
-                disabledValues={disableItemValue? disabledValues : [] }
+                disabledValues={disableItemValue ? disabledValues : []}
                 filters={ignoredValues}
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}
-                style={style}
-                allowClear={allowClear} 
+                style={{borderWidth: '0px', ...style}}
+                allowClear={allowClear}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
 
@@ -143,7 +143,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     const selectedValue = options.length > 0 ? value || defaultValue : null;
 
     const getSelectValue = () => {
-      const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
+        const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
         return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(x => x.label)?.join(', ');
     };
 
@@ -157,12 +157,12 @@ export const Dropdown: FC<IDropdownProps> = ({
             onChange={onChange}
             value={options.length > 0 ? value || defaultValue : undefined}
             defaultValue={defaultValue}
-            variant={hideBorder ? 'borderless' : undefined}
+            variant={'borderless'}
             disabled={readOnly}
             mode={selectedMode}
             placeholder={placeholder}
             showSearch
-            style={style}
+            style={{borderWidth: '0px', ...style}}
             size={size}
         >
             {options.map((option, index) => (

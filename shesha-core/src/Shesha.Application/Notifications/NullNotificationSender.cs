@@ -1,4 +1,4 @@
-﻿using Abp.Notifications;
+using Abp.Notifications;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.EntityReferences;

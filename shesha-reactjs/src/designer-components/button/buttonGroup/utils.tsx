@@ -1,3 +1,4 @@
+import { IStyleType } from '@/index';
 import { MenuProps } from 'antd';
 import React from 'react';
 
@@ -16,4 +17,13 @@ export function getButtonGroupMenuItem(
     className: 'sha-button-menu',
     disabled,
   } as MenuItem;
+};
+
+export const defaultStyles = (prev): IStyleType => {
+  return {
+    background: { type: 'color' },
+    font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },
+    dimensions: { width: prev.block ? '100%' : 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    stylingBox: '{"paddingLeft":"15","paddingBottom":"4","paddingTop":"4","paddingRight":"15"}',
+  };
 };

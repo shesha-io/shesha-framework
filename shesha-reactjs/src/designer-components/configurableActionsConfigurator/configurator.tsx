@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Collapse, Form, Switch } from 'antd';
+import { Collapse, Form } from 'antd';
 import { useForm, useConfigurableActionDispatcher } from '@/providers';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { ActionArgumentsEditor } from './actionArgumensEditor';
@@ -9,6 +9,12 @@ import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
+import { StyledLabel } from '../_settings/utils';
+import { SettingInput } from '../settingsInput/settingsInput';
+import { nanoid } from '@/utils/uuid';
+import FormItem from '../_settings/components/formItem';
+
+const { Panel } = Collapse;
 
 const getActionFullName = (actionOwner: string, actionName: string): string => {
   return actionName
@@ -53,7 +59,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   }, [value]);
 
   const hasChangedAction = (changedValues): boolean => {
-    if (changedValues && changedValues.hasOwnProperty(ACTION_FULL_NAME_FIELD)){
+    if (changedValues && changedValues.hasOwnProperty(ACTION_FULL_NAME_FIELD)) {
       const { actionFullName } = changedValues;
       const prevActionFullName = formValues?.actionFullName;
       return prevActionFullName !== actionFullName;
@@ -63,14 +69,14 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   const onValuesChange = (changedValues, values) => {
     const actionChanged = hasChangedAction(changedValues);
-    if (actionChanged){
+    if (actionChanged) {
       form.setFieldValue(FORM_ARGUMENTS_FIELD, undefined);
     }
 
     if (onChange) {
       const { actionFullName, actionArguments, ...restProps } = values;
       const actionId = parseActionFullName(actionFullName);
-      
+
       const newFormValues = {
         _type: StandardNodeTypes.ConfigurableActionConfig,
         actionName: actionId?.actionName,
@@ -110,9 +116,9 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <Form.Item name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
+        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
-        </Form.Item>
+        </FormItem>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name={FORM_ARGUMENTS_FIELD} label={null}>
@@ -127,42 +133,28 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         )}
         {selectedAction && (
           <>
-            <Form.Item name="handleSuccess" label="Handle Success" valuePropName='checked'>
-              <Switch disabled={readOnly} />
-            </Form.Item >
+            <SettingInput propertyName='handleSuccess' label='Handle Success' type='switch' id={nanoid()} />
             {
               value?.handleSuccess && (
-                <Collapse
-                  defaultActiveKey={['1']}
-                  items={[{
-                    key: "1",
-                    label: "On Success handler",
-                    children: (
-                      <Form.Item name="onSuccess">
-                        <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                      </Form.Item>
-                    )
-                  }]}
-                />
+                <Collapse defaultActiveKey={['1']}>
+                  <Panel header={<StyledLabel label="On Success Handler" />} key="1">
+                    <Form.Item name="onSuccess">
+                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
+                    </Form.Item >
+                  </Panel>
+                </Collapse>
               )
             }
-            <Form.Item name="handleFail" label="Handle Fail" valuePropName='checked'>
-              <Switch disabled={readOnly} />
-            </Form.Item>
+            <SettingInput propertyName='handleFail' label='Handle Fail' type='switch' id={nanoid()} />
             {
               value?.handleFail && (
-                <Collapse
-                  defaultActiveKey={['1']}
-                  items={[{
-                    key: "1",
-                    label: "On Fail handler",
-                    children: (
-                      <Form.Item name="onFail">
-                        <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
-                      </Form.Item>
-                    )
-                  }]}
-                />
+                <Collapse defaultActiveKey={['1']}>
+                  <Panel header={<StyledLabel label="On Fail Handler" />} key="1">
+                    <Form.Item name="onFail">
+                      <ConfigurableActionConfigurator editorConfig={props.editorConfig} level={props.level + 1} readOnly={readOnly} />
+                    </Form.Item>
+                  </Panel>
+                </Collapse>
               )
             }
           </>
@@ -173,7 +165,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 };
 
 interface IConfigurableActionConfiguratorProps {
-  label?: React.ReactNode;
+  label?: string;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;

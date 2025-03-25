@@ -3,13 +3,13 @@ import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { DataListSettingsForm } from './dataListSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl, { NotConfiguredWarning } from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -54,7 +54,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       onListItemSave: migrateFormApi.full(prev.onListItemSave)
     }))
 ,
-  settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
+settingsFormMarkup: (data) => getSettings(data),
 };
 
 export default DataListComponent;

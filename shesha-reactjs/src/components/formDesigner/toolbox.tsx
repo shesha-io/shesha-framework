@@ -4,7 +4,7 @@ import { ToolboxDataSources } from './toolboxDataSources';
 import { useStyles } from './styles/styles';
 import { Tabs } from 'antd';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { isEntityMetadata, isObjectReferenceMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useMetadata } from '@/providers';
 
 export interface IProps { }
@@ -19,7 +19,7 @@ const Toolbox: FC<IProps> = () => {
 
     const defaultItems = [{ key: '1', label: 'Widgets', children: <ToolboxComponents /> }];
 
-    if (isEntityMetadata(currentMeta?.metadata) || isObjectReferenceMetadata(currentMeta?.metadata))
+    if (isEntityMetadata(currentMeta?.metadata))
       dataSources.push({
         id: currentMeta.id,
         name: currentMeta.metadata.name,

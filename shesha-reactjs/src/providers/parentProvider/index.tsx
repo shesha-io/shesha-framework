@@ -86,7 +86,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     if (!exists)
       childParentProvider.current = [...childParentProvider.current, input];
     else
-      childParentProvider.current = childParentProvider.current.map((item) =>{
+      childParentProvider.current = childParentProvider.current.map((item) => {
         return item.id === input.id ? input : item;
       });
   };
@@ -104,7 +104,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
       context: contextLocal,
       formFlatMarkup: formFlatMarkupLocal,
       formApi: formApiLocal,
-      model: {...parent?.model, ...model},
+      model: { ...parent?.model, ...model },
       getChildComponents,
       registerChild,
       unRegisterChild,
@@ -125,8 +125,8 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   }, [value]);
 
   return (
-    <ConditionalWrap 
-      condition={isScope} 
+    <ConditionalWrap
+      condition={isScope}
       wrap={(children: React.ReactNode) => {
         return (
           <ValidateProvider>

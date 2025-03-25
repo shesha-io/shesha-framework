@@ -33,11 +33,8 @@ interface IAutocompleteState {
   properties: IPropertyMetadata[];
 }
 
-const skipPropertyNames = ['_className', '_displayName'];
-
 const getFullPath = (path: string, prefix: string) => {
-  const propName = skipPropertyNames.find(x => x === path) ? path : camelcase(path);
-  return prefix ? `${prefix}.${propName}` : propName;
+  return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
 const properties2options = (properties: IPropertyMetadata[], prefix: string): IOption[] => {

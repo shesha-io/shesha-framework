@@ -1,4 +1,4 @@
-﻿using Abp.Application.Services.Dto;
+using Abp.Application.Services.Dto;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using System;

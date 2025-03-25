@@ -2,15 +2,15 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
 export const navigateArgumentsForm = new DesignerToolbarSettings()
-  .addRadio({
+  .addSettingsInput({
     id: nanoid(),
+    inputType: 'radio',
     propertyName: 'navigationType',
     parentId: 'root',
     label: 'Navigation Type',
-    dataSourceType: 'values',
-    items: [
-      { id: 'url', label: 'Url', value: 'url' },
-      { id: 'form', label: 'Form', value: 'form' },
+    buttonGroupOptions: [
+      { icon: 'LinkOutlined', title: 'Url', value: 'url' },
+      { icon: 'FormOutlined', title: 'Form', value: 'form' },
     ]
   })
   .addTextField({
@@ -28,6 +28,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     id: nanoid(),
     propertyName: 'formId',
     label: 'Form',
+    parentId: 'root',
     validate: {
       required: true,
     },
@@ -39,8 +40,9 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
   .addLabelValueEditor({
     id: nanoid(),
     propertyName: 'queryParameters',
-    label: 'Query String parameters',
+    label: 'Query String Parameters',
     labelName: 'key',
+    parentId: 'root',
     labelTitle: 'Key',
     valueName: 'value',
     valueTitle: 'Value'

@@ -290,8 +290,7 @@
                 "description": "",
                 "settingsValidationErrors": [],
                 "version": 3,
-                "mode": "dialog",
-                "jsSettingsAvailableConstantsExpression": "return metadataBuilder.object(\"constants\").addAllStandard().addObject(\"searchText\", \"Search text\").build();"
+                "mode": "dialog"
               }
             ],
             "version": 4,
