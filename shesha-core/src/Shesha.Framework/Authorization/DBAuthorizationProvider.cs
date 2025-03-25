@@ -1,5 +1,4 @@
 ﻿using Abp.Authorization;
-using Abp.Domain.Uow;
 using Shesha.Domain;
 using Shesha.Utilities;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ namespace Shesha.Authorization
         {
         }
 
-        [UnitOfWork]
         public override void SetPermissions(IPermissionDefinitionContext context)
         {
         }
