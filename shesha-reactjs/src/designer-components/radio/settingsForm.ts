@@ -51,6 +51,48 @@ export const getSettings = (data: any) => {
                   ],
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
+                .addSettingsInputRow({
+                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'editModeSelector',
+                      id: 'editMode-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'editMode',
+                      label: 'Edit Mode',
+                      size: 'small',
+                      defaultValue: 'inherited',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      jsSetting: true,
+                      layout: 'horizontal',
+                    },
+
+                  ],
+                })
+                .addSettingsInput({
+                  inputType: 'textField',
+                  id: 'default-s4gmBg31azZC0UjZjpfTm',
+                  propertyName: 'defaultValue',
+                  label: 'Default Value',
+                  jsSetting: true,
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                })
+                .toJson(),
+            ],
+          },
+          {
+            key: '2',
+            title: 'Data',
+            id: 'data-s4gmBg31azZC0UjZjpfTm',
+            components: [
+              ...new DesignerToolbarSettings()
                 .addSettingsInput({
                   id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                   inputType: 'dropdown',
@@ -142,42 +184,11 @@ export const getSettings = (data: any) => {
                   ],
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
-                .addSettingsInputRow({
-                  id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      size: 'small',
-                      defaultValue: 'inherited',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
-                    {
-                      type: 'textField',
-                      id: 'default-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'defaultValue',
-                      label: 'Default Value',
-                      jsSetting: true,
-                    },
-                  ],
-                })
                 .toJson(),
             ],
           },
           {
-            key: '2',
+            key: '3',
             title: 'Validation',
             id: '6eBJvoll3xtLJxdvOAlnB',
             components: [
@@ -197,7 +208,7 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: '3',
+            key: '4',
             title: 'Events',
             id: 'Cc47W08MWrKdhoGqFKMI2',
             components: [
@@ -236,7 +247,7 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: '4',
+            key: '5',
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [
@@ -312,7 +323,7 @@ export const getSettings = (data: any) => {
             ],
           },
           {
-            key: '5',
+            key: '6',
             title: 'Security',
             id: '6Vw9iiDw9d0MD_Rh5cbIn',
             components: [

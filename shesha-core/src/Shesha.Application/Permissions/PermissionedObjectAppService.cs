@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -73,7 +74,7 @@ namespace Shesha.Permissions
         /// <param name="access"></param>
         /// <param name="permissions"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
+        public async Task<PermissionedObjectDto?> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
         {
             return await _permissionedObjectManager.SetPermissionsAsync(objectName, access, permissions);
         }
@@ -95,10 +96,9 @@ namespace Shesha.Permissions
 
         public override async Task<PermissionedObjectDto> GetAsync(EntityDto<Guid> input)
         {
-            /* TODO: Alex, please review. If an entity is requested we must return value or  throw exception. It's abnormal case if we get request with empty id, so there should be an exception
             if (input.Id == Guid.Empty)
-                return null;
-            */
+                throw new ArgumentNullException("id");
+
             return await _permissionedObjectManager.GetAsync(input.Id);
         }
 
@@ -120,7 +120,7 @@ namespace Shesha.Permissions
         /// <param name="access"></param>
         /// <param name="permissions"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> SetApiPermissionsAsync(string serviceName, string actionName, RefListPermissionedAccess access, List<string> permissions)
+        public async Task<PermissionedObjectDto?> SetApiPermissionsAsync(string serviceName, string actionName, RefListPermissionedAccess access, List<string> permissions)
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
             return await _permissionedObjectManager.SetPermissionsAsync($"{serviceName}{action}", access, permissions);

@@ -5,6 +5,8 @@ import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ComponentType } from '@/components/formComponentSelector';
+import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 export interface IRadioOption {
     value: string | number;
@@ -36,8 +38,10 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     dropdownOptions?: IDropdownOption[];
     readOnly?: boolean;
     onChange?: (value: any) => void;
+    editorConfig?: IConfigurableActionConfiguratorComponentProps;
+    level?: number;
+    allowedActions?: string[];
     hasUnits?: boolean;
-    hidden?: boolean;
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
@@ -52,6 +56,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     wrapperCol?: { span: number };
     fileName?: string;
     availableConstantsExpression?: string;
+    ignorePrefixesOnNewItems?: boolean;
     resultType?: ResultType;
     labelTitle?: string;
     labelName?: string;
@@ -62,7 +67,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     mode?: any;
     /** Can be any valid number e.g.: 1, 0.1, 3, 3.14 */
     step?: number;
-    exposedVariables?: string[];
+    exposedVariables?: string[] | ICodeExposedVariable[];
     dropdownMode?: 'multiple' | 'tags';
     customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
@@ -71,6 +76,8 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     iconAlt?: string | React.ReactNode;
     inline?: boolean;
     inputType?: InputType['type'];
+    referenceList?: any;
+    filter?: any;
     dataSourceType?: AutocompleteDataSourceType;
     dataSourceUrl?: string;
     entityType?: string;

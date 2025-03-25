@@ -97,7 +97,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     props.formSelectionMode === 'name' ? props.formIdentifier : null
   );
   const [fetched, setFetched] = useState(false);
-  const [property, setProperty] = useState([]);
+  const [properties, setProperties] = useState([]);
 
   const [displayText, setDisplayText] = useState((!props.value ? props.placeholder : props.value._displayName) ?? '');
 
@@ -124,7 +124,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   useEffect(() => {
     if (entityType) {
       getMetadata({ modelType: entityType, dataType: null }).then((res) => {
-        setProperty(isPropertiesArray(res?.properties) ? res.properties : []);
+        setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
       });
     }
   }, [entityType]);
@@ -143,7 +143,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
       fetcher
         .then((resp) => {
-          setDisplayText(resp.result[props.displayProperty] ?? displayText);
+          setDisplayText(resp.result[props.displayProperty] || displayText || 'No Display Name');
           setFetched(true);
         })
         .catch((reason) => {
@@ -154,7 +154,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   useEffect(() => {
     setFetched(false);
-    if (!!props?.value?._displayName) setDisplayText(props?.value?._displayName);
+    if (props?.value?._displayName) setDisplayText(props?.value?._displayName);
   }, [entityId, entityType]);
 
   /* Dialog */
@@ -205,18 +205,18 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     });
   };
 
-  const renderDisplayByType = () => {
-    if (props.displayType === 'icon') return <ShaIcon iconName={props.iconName} />;
-
-    if (props.displayType === 'textTitle') return props.textTitle;
-
-    return displayText;
-  };
+  const displayTextByType = useMemo(() => {
+    return props.displayType === 'icon'
+      ? <ShaIcon iconName={props.iconName} />
+      : props.displayType === 'textTitle'
+        ? props.textTitle
+        : displayText;
+  }, [props.displayType, props.iconName, props.textTitle, displayText]);
 
   const navigationStyling = { ...style, marginTop: style?.marginTop ? style.marginTop : '3px' };
 
   const content = useMemo(() => {
-    if (!((formIdentifier && renderDisplayByType() && entityId) || props.entityReferenceType === 'Quickview'))
+    if (!(fetched || props.entityReferenceType === 'Quickview'))
       return (
         <Button className={styles.entityReferenceBtn} type="link">
           <span>
@@ -229,7 +229,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       return (
         <Button className={styles.entityReferenceBtn} disabled style={style} type="link">
           <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-            {renderDisplayByType()}
+            {displayTextByType}
           </ShaLink>
         </Button>
       );
@@ -238,7 +238,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       return (
         <Button className={styles.entityReferenceBtn} style={navigationStyling} type="link">
           <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-            {renderDisplayByType()}
+            {displayTextByType}
           </ShaLink>
         </Button>
       );
@@ -248,7 +248,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         <GenericQuickView
           displayProperty={props.displayProperty}
           displayName={displayText}
-          dataProperties={property}
+          dataProperties={properties}
           entityId={props.value?.id ?? props.value}
           className={entityType}
           getEntityUrl={props.getEntityUrl}
@@ -265,10 +265,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     return (
       <Button className={styles.entityReferenceBtn} style={style} type="link" onClick={dialogExecute}>
-        {renderDisplayByType()}
+        {displayTextByType}
       </Button>
     );
-  }, [formIdentifier, displayText, entityId, props.disabled, property.length]);
+  }, [formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (

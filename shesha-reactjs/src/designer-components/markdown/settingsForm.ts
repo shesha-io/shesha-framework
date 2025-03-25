@@ -235,24 +235,6 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInput({
-                                id: 'predefinedSizes',
-                                inputType: 'dropdown',
-                                propertyName: 'size',
-                                label: 'Size',
-                                width: '150px',
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                dropdownOptions: [
-                                  { value: 'small', label: 'Small' },
-                                  { value: 'medium', label: 'Medium' },
-                                  { value: 'large', label: 'Large' },
-                                ],
-                              })
                               .toJson(),
                           ],
                         },
@@ -560,16 +542,23 @@ export const getSettings = (data: any) => {
                                         label: 'Bottom Right',
                                       },
                                     ],
-                                  },
-                                  {
-                                    type: 'radio',
-                                    id: 'backgroundStyleRow-repeat',
-                                    label: 'Repeat',
-                                    hideLabel: true,
-                                    propertyName: 'background.repeat',
-                                    buttonGroupOptions: repeatOptions,
-                                  },
+                                  }
                                 ],
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat-radio',
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson(),
                           ],
@@ -602,7 +591,7 @@ export const getSettings = (data: any) => {
                                     id: 'shadowStyleRow-offsetX',
                                     label: 'Offset X',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'offsetHorizontalIcon',
                                     propertyName: 'shadow.offsetX',
                                   },
@@ -611,7 +600,7 @@ export const getSettings = (data: any) => {
                                     id: 'shadowStlyleRow-offsetY',
                                     label: 'Offset Y',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'offsetVerticalIcon',
                                     propertyName: 'shadow.offsetY',
                                   },
@@ -620,7 +609,7 @@ export const getSettings = (data: any) => {
                                     id: 'shadowSltyleRow-blurRadius',
                                     label: 'Blur',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'blurIcon',
                                     propertyName: 'shadow.blurRadius',
                                   },
@@ -629,7 +618,7 @@ export const getSettings = (data: any) => {
                                     id: 'shadlowStyleRow-spreadRadius',
                                     label: 'Spread',
                                     hideLabel: true,
-                                    width: 60,
+                                    width: 80,
                                     icon: 'spreadIcon',
                                     propertyName: 'shadow.spreadRadius',
                                   },

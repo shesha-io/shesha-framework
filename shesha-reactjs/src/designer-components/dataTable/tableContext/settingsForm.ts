@@ -52,6 +52,7 @@ export const getSettings = (data: any) => {
                 .toJson()
             ]
           },
+
           {
             key: 'data',
             title: 'Data',

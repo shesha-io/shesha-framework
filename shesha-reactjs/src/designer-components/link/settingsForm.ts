@@ -35,7 +35,7 @@ export const getSettings = (data: any) => {
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
-                  label: 'label',
+                  label: 'Label',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
@@ -129,19 +129,19 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       dropdownOptions: [
                         {
-                          label: '_blank',
+                          label: 'Blank',
                           value: '_blank',
                         },
                         {
-                          label: '_parent',
+                          label: 'Parent',
                           value: '_parent',
                         },
                         {
-                          label: '_self',
+                          label: 'Self',
                           value: '_self',
                         },
                         {
-                          label: '_top',
+                          label: 'Top',
                           value: '_top',
                         },
                       ],

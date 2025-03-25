@@ -37,13 +37,15 @@ export const getSettings = () => {
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
                   hideLabel: true,
-                  label: 'Label'
+                  label: 'Label',
+                  hideLabelPropName: 'hideLabel'
                 })
                 .addSettingsInput({
                   id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
                   propertyName: 'description',
                   label: 'Tooltip',
                   inputType: 'textArea',
+                  jsSetting: true
                 })
                 .addSettingsInputRow({
                   id: 'display-row-0-dragger',
@@ -55,9 +57,11 @@ export const getSettings = () => {
                       propertyName: 'isDragger',
                       label: 'Is Dragger',
                       type: 'switch',
+                      jsSetting: true,
                       description: 'Where the uploader should show a dragger instead of a button',
                     }
                   ],
+                  jsSetting: true,
                   hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
                 })
                 .addSettingsInputRow({
@@ -72,9 +76,10 @@ export const getSettings = () => {
                       label: 'List Type',
                       type: 'dropdown',
                       dropdownOptions: [
-                        { label: 'File Name', value: 'text' },
+                        { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
                       ],
+                      jsSetting: true,
                     }]
                 })
                 .addSettingsInputRow({
@@ -92,8 +97,10 @@ export const getSettings = () => {
                         { label: 'Vertical', value: 'vertical' },
                         { label: 'Horizontal', value: 'horizontal' },
                         { label: 'Grid', value: 'grid' },
-                      ]
-                    },]
+                      ],
+                      jsSetting: true,
+                    }
+                  ]
                 })
                 .addSettingsInputRow({
                   id: 'b920ef96-thumbnail-4a01-bfad-bob7d07218da',
@@ -107,6 +114,7 @@ export const getSettings = () => {
                       label: 'Gap',
                       type: 'numberField',
                       description: 'The gap between the thumbnails.',
+                      jsSetting: true,
                     }]
                 })
                 .addSettingsInputRow({
@@ -119,12 +127,15 @@ export const getSettings = () => {
                       propertyName: 'hidden',
                       label: 'Hide',
                       type: 'switch',
+                      jsSetting: true,
                     },
                     {
                       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       type: 'editModeSelector',
+                      defaultValue: 'inherited',
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -137,6 +148,7 @@ export const getSettings = () => {
                     propertyName: 'hideFileName',
                     label: 'Hide File Name',
                     type: 'switch',
+                    jsSetting: true,
                   }]
                 })
                 .addSettingsInputRow({
@@ -149,6 +161,7 @@ export const getSettings = () => {
                       propertyName: 'allowAdd',
                       label: 'Allow Add',
                       type: 'switch',
+                      jsSetting: true,
                       hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
                     },
                     {
@@ -157,6 +170,7 @@ export const getSettings = () => {
                       label: 'Allow Remove',
                       type: 'switch',
                       hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
                     },
                   ],
                 })
@@ -165,6 +179,7 @@ export const getSettings = () => {
                   propertyName: 'downloadZip',
                   label: 'Download Zip',
                   inputType: 'switch',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
@@ -187,6 +202,7 @@ export const getSettings = () => {
                   propertyName: 'ownerId',
                   label: 'Owner Id',
                   inputType: 'textField',
+                  jsSetting: true,
                 })
                 .addSettingsInput({
                   id: '0009bf13-04a3-49d5-a9d8-1b23df20b97c',
@@ -196,12 +212,14 @@ export const getSettings = () => {
                   dataSourceType: 'url',
                   dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                   useRawValues: true,
+                  jsSetting: true,
                 })
                 .addSettingsInput({
                   id: 'db913b1b-3b25-46c9-afef-21854d917ba7',
                   propertyName: 'filesCategory',
                   label: 'Files Category',
                   inputType: 'textField',
+                  jsSetting: true,
                 })
                 .addSettingsInput({
                   id: nanoid
@@ -226,6 +244,7 @@ export const getSettings = () => {
                   propertyName: 'validate.required',
                   label: 'Required',
                   inputType: 'switch',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],
@@ -602,16 +621,23 @@ export const getSettings = () => {
                                   customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
-                                },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
                                 }
                               ]
+                            })
+                            .addSettingsInputRow({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [{
+                                type: 'radio',
+                                id: 'backgroundStyleRow-repeat-radio',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
+                              }],
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ],
@@ -639,7 +665,7 @@ export const getSettings = () => {
                                 id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: "offsetHorizontalIcon",
                                 propertyName: 'shadow.offsetX',
                               },
@@ -648,7 +674,7 @@ export const getSettings = () => {
                                 id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'offsetVerticalIcon',
                                 propertyName: 'shadow.offsetY',
                               },
@@ -657,7 +683,7 @@ export const getSettings = () => {
                                 id: 'shadowStyleRow-blurRadius',
                                 label: 'Blur',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'blurIcon',
                                 propertyName: 'shadow.blurRadius',
                               },
@@ -666,7 +692,7 @@ export const getSettings = () => {
                                 id: 'shadowStyleRow-spreadRadius',
                                 label: 'Spread',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 icon: 'spreadIcon',
                                 propertyName: 'shadow.spreadRadius',
                               },

@@ -33,7 +33,7 @@ namespace Shesha.Domain
         public virtual string? Category { get; set; }
 
         [DataType(DataType.MultilineText)]
-        public virtual string Description { get; set; }
+        public virtual string? Description { get; set; }
 
         public virtual int SortOrder { get; set; }
 
@@ -46,7 +46,7 @@ namespace Shesha.Domain
         /// The setter is private as it should be set once on creation and not changed.
         /// </summary>
         //[LogChanges]
-        public virtual string Folder { get; set; }
+        public virtual string? Folder { get; set; }
 
         /// <summary>
         /// If true, the file is version controlled and the full version

@@ -1,9 +1,9 @@
 import React, { FC, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '@/components';
-import { FormMarkup } from '@/providers/form/models';
-import tableViewSettingsJson from './filterItemSettings.json';
+
 import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { filtersSettingsForm } from './filterItemSettings';
 
 export type BaseFilterProperties = Omit<ITableViewProps, "expression">;
 
@@ -13,7 +13,7 @@ export interface IFilterItemPropertiesProps {
   readOnly: boolean;
 }
 
-const tableViewSettingsMarkup = tableViewSettingsJson as FormMarkup;
+// const tableViewSettingsMarkup = tableViewSettingsJson as FormMarkup;
 
 export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
@@ -29,7 +29,7 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
-      markup={tableViewSettingsMarkup}
+      markup={filtersSettingsForm}
       initialValues={value}
       onValuesChange={debouncedSave}
     />);

@@ -13,7 +13,6 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
 
     const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
 
-
     return hidden ? null :
         <div key={label} style={type === 'button' ? { width: '24' } : { flex: `1 1 ${inline ? width : '120px'}`, width }}>
             <ConditionalWrap
@@ -25,14 +24,13 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                     hideLabel={hideLabel}
                     label={label}
                     tooltip={tooltip}
-                    hidden={hidden}
                     required={validate?.required}
                     layout='vertical'
-                    jsSetting={type === 'codeEditor' ? false : jsSetting ? jsSetting : false}
+                    jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting ? jsSetting : false}
                     readOnly={readOnly}>
                     {children || <InputComponent size={size ?? 'small'}
                         label={label}
-                        type={type}
+                        type={rest.inputType || type}
                         dropdownOptions={dropdownOptions}
                         buttonGroupOptions={buttonGroupOptions}
                         hasUnits={hasUnits} propertyName={property}

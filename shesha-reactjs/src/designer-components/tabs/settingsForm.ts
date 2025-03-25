@@ -53,13 +53,12 @@ export const getSettings = () => {
                                     label: 'Tab Type',
                                     defaultValue: 'card',
                                     dropdownOptions: [
-                                        { value: 'line', label: 'Label' },
+                                        { value: 'line', label: 'Line' },
                                         { value: 'card', label: 'Card' }
                                     ],
                                     jsSetting: false,
                                     labelAlign: 'right',
                                     parentId: 'root'
-
                                 })
                                 .addSettingsInput({
                                     id: '4595a895-5078-4986-934b-c5013bf315ad',
@@ -76,7 +75,7 @@ export const getSettings = () => {
                                     id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
                                     inputType: 'switch',
                                     propertyName: 'hidden',
-                                    label: 'hide',
+                                    label: 'Hide',
                                     labelAlign: 'right',
                                     parentId: 'root',
                                     hidden: false,
@@ -88,7 +87,7 @@ export const getSettings = () => {
                                     propertyName: 'editMode',
                                     parentId: 'root',
                                     defaultValue: 'inherited',
-                                    label: 'Edit mode'
+                                    label: 'Edit Mode'
                                 })
                                 .toJson()
                         ]
@@ -221,7 +220,6 @@ export const getSettings = () => {
                                                                 propertyName: "dimensions.width",
                                                                 icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
                                                             },
                                                             {
                                                                 type: 'textField',
@@ -440,75 +438,34 @@ export const getSettings = () => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                                                    dropdownOptions: sizeOptions,
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
-                                                                },
-                                                                {
-                                                                    type: 'radio',
-                                                                    id: 'backgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    buttonGroupOptions: repeatOptions,
+                                                                    dropdownOptions: positionOptions,
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],
@@ -536,7 +493,8 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
                                                                 icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
@@ -545,7 +503,8 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
                                                                 icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
@@ -554,7 +513,8 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Blur radius',
+                                                                width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
@@ -563,7 +523,8 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Spread radius',
+                                                                width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
@@ -891,17 +852,18 @@ export const getSettings = () => {
                                                                                 defaultValue: 'center',
                                                                                 propertyName: "card.background.position",
                                                                                 dropdownOptions: positionOptions,
-                                                                            },
-                                                                            {
-                                                                                type: 'radio',
-                                                                                id: 'backgroundStyleRow-repeat',
-                                                                                label: "Repeat",
-                                                                                defaultValue: 'no-repeat',
-                                                                                hideLabel: true,
-                                                                                propertyName: "card.background.repeat",
-                                                                                buttonGroupOptions: repeatOptions,
                                                                             }
                                                                         ]
+                                                                    })
+                                                                    .addSettingsInput({
+                                                                        id: 'backgroundStyleRow-repeat',
+                                                                        parentId: 'backgroundStyleRow',
+                                                                        label: 'Repeat',
+                                                                        hideLabel: true,
+                                                                        propertyName: 'card.background.repeat',
+                                                                        inputType: 'radio',
+                                                                        buttonGroupOptions: repeatOptions,
+                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                     })
                                                                     .toJson()
                                                             ],

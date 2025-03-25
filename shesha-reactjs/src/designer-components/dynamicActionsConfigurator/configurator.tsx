@@ -1,20 +1,21 @@
-import React, { useMemo } from 'react';
-import { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IDynamicActionsConfiguration } from './models';
 import { ProviderSelector } from './providerSelector';
 import { Form } from 'antd';
 import { useDynamicActionsDispatcher, useForm } from '@/providers';
 import { ProviderSettingsEditor } from './providerSettingsEditor';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IDynamicActionsConfiguratorProps {
     value?: IDynamicActionsConfiguration;
     onChange?: (newValue: IDynamicActionsConfiguration) => void;
     editorConfig?: IDynamicActionsConfiguratorComponentProps;
     readOnly?: boolean;
+    size?: SizeType;
 }
 
-export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = ({ value, onChange, readOnly }) => {
+export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = ({ value, onChange, readOnly, size }) => {
     const [form] = Form.useForm();
     const { formSettings } = useForm();
 
@@ -42,6 +43,7 @@ export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = 
             colon={formSettings.colon}
             onValuesChange={onValuesChange}
             initialValues={value}
+            size={size}
         >
             <Form.Item name="providerUid" label="">
                 <ProviderSelector readOnly={readOnly} />

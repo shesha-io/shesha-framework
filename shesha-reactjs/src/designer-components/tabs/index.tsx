@@ -160,7 +160,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         };
         tabItems.push(tab);
       });
-
       return tabItems;
     }, [tabs]);
 

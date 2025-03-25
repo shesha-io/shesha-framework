@@ -1,10 +1,15 @@
-﻿namespace Shesha.Domain
+﻿using Newtonsoft.Json;
+using System;
+
+namespace Shesha.Domain
 {
     /// <summary>
     /// Identifier of the <see cref="ReferenceList"/> (Module, Namespace and Name)
     /// </summary>
+    [Serializable]
     public class ReferenceListIdentifier : ConfigurationItemIdentifier<ReferenceList>, IIdentifierFactory<ReferenceListIdentifier>
     {
+        [JsonConstructor]
         public ReferenceListIdentifier(string? module, string name) : base(module, name)
         {
         }

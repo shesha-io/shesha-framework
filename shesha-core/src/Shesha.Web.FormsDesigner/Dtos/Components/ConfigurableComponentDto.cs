@@ -11,21 +11,21 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Form name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Settings in JSON format
         /// </summary>
-        public string Settings { get; set; }
+        public string? Settings { get; set; }
 
         /// <summary>
         /// Cache MD5, is used for client-side caching
         /// </summary>
-        public string CacheMd5 { get; set; }
+        public string? CacheMd5 { get; set; }
     }
 }

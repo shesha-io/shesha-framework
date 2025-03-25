@@ -76,8 +76,8 @@ const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps> = (pro
     <Form.Item {...formItemProps}>
       <DataBinder
         onChange={(val) => {
-          const value = !!val?.target ? val?.target[!!valuePropName ? valuePropName : 'value'] : val;
-          if (!!context?.setFieldValue)
+          const value = val?.target ? val?.target[valuePropName || 'value'] : val;
+          if (context?.setFieldValue)
             context.setFieldValue(propertyName, value);
         }}
         value={value}

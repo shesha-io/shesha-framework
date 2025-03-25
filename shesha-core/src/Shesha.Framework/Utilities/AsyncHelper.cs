@@ -89,10 +89,12 @@ namespace Shesha.Utilities
             private readonly AutoResetEvent _workItemsWaiting;
             readonly Queue<Tuple<SendOrPostCallback, object?>> items = new Queue<Tuple<SendOrPostCallback, object?>>();
 
+#pragma warning disable CS8618
             public ExclusiveSynchronizationContext()
             {
                 _workItemsWaiting = new AutoResetEvent(false);
             }
+#pragma warning restore CS8618
 
             public override void Send(SendOrPostCallback d, object? state)
             {

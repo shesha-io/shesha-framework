@@ -49,9 +49,9 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
 
   return (
     <div
-      tabIndex={0} 
-      onFocus={model?.onFocus}
-      onBlur={model?.onBlur}
+      tabIndex={0}
+      onFocus={(e) => model?.onFocus?.({ ...e, target: { value: value, ...e.target } })}
+      onBlur={(e) => model?.onBlur?.({ ...e, target: { value: value, ...e.target } })}
     >
       <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
         <Row>
