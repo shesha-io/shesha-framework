@@ -691,48 +691,6 @@ export const getSettings = (data: any) => {
                                 ],
                               })
                               .addSettingsInputRow({
-                                id: 'backgroundStyleRow-controls',
-                                parentId: 'backgroundStyleRow',
-                                inline: true,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
-                                  {
-                                    type: 'customDropdown',
-                                    id: 'backgroundStyleRow-size',
-                                    label: 'Size',
-                                    hideLabel: true,
-                                    propertyName: 'background.size',
-                                    dropdownOptions: [
-                                      {
-                                        value: 'cover',
-                                        label: 'Cover',
-                                      },
-                                      {
-                                        value: 'contain',
-                                        label: 'Contain',
-                                      },
-                                      {
-                                        value: 'auto',
-                                        label: 'Auto',
-                                      },
-                                    ],
-                                  },
-                                  {
-                                    type: 'customDropdown',
-                                    id: 'backgroundStyleRow-position',
-                                    label: 'Position',
-                                    hideLabel: true,
-                                    propertyName: 'background.position',
-                                    dropdownOptions: positionOptions
-                                  },
-                                ],
-                              })
-
-                              .addSettingsInputRow({
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
