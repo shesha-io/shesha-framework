@@ -63,58 +63,79 @@ export const getSettings = (data: any) => {
                         },
                       ],
                     },
+                    {
+                      type: 'dropdown',
+                      id: 'type-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'contentDisplay',
+                      label: 'Content Display',
+                      size: 'small',
+                      defaultValue: 'content',
+                      jsSetting: true,
+                      allowClear: false,
+                      dropdownOptions: [
+                        {
+                          label: 'Content',
+                          value: 'content',
+                        },
+                        {
+                          label: 'Property name',
+                          value: 'name',
+                        },
+                      ],
+                    },
                   ],
                 })
-                .addSettingsInput({
-                  inputType: 'dropdown',
-                  id: 'type-s4gmBg3QaaZC0UjZjpfTm',
-                  propertyName: 'contentDisplay',
-                  label: 'Content Display',
-                  size: 'small',
-                  jsSetting: true,
-                  allowClear: false,
-                  dropdownOptions: [
-                    {
-                      label: 'Content',
-                      value: 'content',
-                    },
-                    {
-                      label: 'Property name',
-                      value: 'name',
-                    },
-                  ],
-                })
-                .addSettingsInput({
-                  inputType: 'dropdown',
+                .addSettingsInputRow({
                   id: 'type-s2gmBg3QaaZC0UjZjpfTm',
-                  propertyName: 'dataType',
-                  label: 'Data type',
-                  size: 'small',
-                  jsSetting: true,
-                  allowClear: false,
-                  dropdownOptions: [
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
                     {
-                      label: 'string',
-                      value: 'string',
+                      type: 'dropdown',
+                      id: 'type-s2gmBg3QaaZC0UjZjpfTm',
+                      propertyName: 'dataType',
+                      label: 'Data Type',
+                      size: 'small',
+                      defaultValue: 'string',
+                      jsSetting: true,
+                      allowClear: false,
+                      dropdownOptions: [
+                        {
+                          label: 'String',
+                          value: 'string',
+                        },
+                        {
+                          label: 'Date Time',
+                          value: 'date-time',
+                        },
+                        {
+                          label: 'Number',
+                          value: 'number',
+                        },
+                        {
+                          label: 'Boolean',
+                          value: 'boolean',
+                        },
+                      ],
                     },
                     {
-                      label: 'date time',
-                      value: 'date-time',
-                    },
-                    {
-                      label: 'number',
-                      value: 'number',
-                    },
-                    {
-                      label: 'boolean',
-                      value: 'boolean',
+                      type: 'switch',
+                      id: 'type-s2gmBg3QaaZC0UjZjpfTm',
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      size: 'small',
+                      jsSetting: true,
                     },
                   ],
                 })
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: { _code: 'return  getSettingValue(data?.dataType) !== "date-time";', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return  getSettingValue(data?.dataType) !== "date-time";',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -133,7 +154,11 @@ export const getSettings = (data: any) => {
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: { _code: 'return  getSettingValue(data?.dataType) !== "number";', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return  getSettingValue(data?.dataType) !== "number";',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -147,29 +172,33 @@ export const getSettings = (data: any) => {
                       allowClear: false,
                       dropdownOptions: [
                         {
-                          label: 'currency',
+                          label: 'Currency',
                           value: 'currency',
                         },
                         {
-                          label: 'double',
+                          label: 'Double',
                           value: 'double',
                         },
                         {
-                          label: 'round',
+                          label: 'Round',
                           value: 'round',
                         },
                         {
-                          label: 'thousand separator',
+                          label: 'Thousand Separator',
                           value: 'thousandSeparator',
                         },
-                      ]
+                      ],
                     },
                   ],
                 })
                 .addSettingsInputRow({
                   id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hidden: { _code: 'return getSettingValue(data?.contentDisplay) === "name";', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.contentDisplay) === "name";',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
@@ -183,14 +212,6 @@ export const getSettings = (data: any) => {
                       allowClear: false,
                     },
                   ],
-                })
-                .addSettingsInput({
-                  inputType: 'switch',
-                  id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                  propertyName: 'hidden',
-                  label: 'Hide',
-                  jsSetting: true,
-                  layout: 'horizontal',
                 })
                 .toJson(),
             ],
@@ -216,6 +237,60 @@ export const getSettings = (data: any) => {
                   },
                   components: [
                     ...new DesignerToolbarSettings()
+                      .addSettingsInputRow({
+                        id: 'color-s4gmBg31azZC0UjZjpfTm',
+                        parentId: 'styleRouter',
+                        readOnly: {
+                          _code: 'return  getSettingValue(data?.readOnly);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
+                          {
+                            type: 'dropdown',
+                            id: 'color-s4gmBg31azZC0UjZjpfTm',
+                            propertyName: 'contentType',
+                            label: 'Type',
+                            hideLabel: false,
+                            width: 50,
+                            defaultValue: DEFAULT_CONTENT_TYPE,
+                            dropdownOptions: [
+                              {
+                                label: 'Default',
+                                value: '',
+                              },
+                              {
+                                label: 'Primary',
+                                value: 'primary',
+                              },
+                              {
+                                label: 'Secondary',
+                                value: 'secondary',
+                              },
+                              {
+                                label: 'Success',
+                                value: 'success',
+                              },
+                              {
+                                label: 'Warning',
+                                value: 'warning',
+                              },
+                              {
+                                label: 'Info',
+                                value: 'info',
+                              },
+                              {
+                                label: 'Error',
+                                value: 'danger',
+                              },
+                              {
+                                label: 'Custom Color',
+                                value: 'custom',
+                              },
+                            ],
+                          },
+                        ],
+                      })
                       .addCollapsiblePanel({
                         id: 'fontStyleCollapsiblePanel',
                         propertyName: 'pnlFontStyle',
@@ -276,7 +351,8 @@ export const getSettings = (data: any) => {
                                     type: 'dropdown',
                                     id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
                                     label: 'Align',
-                                    propertyName: 'font.align',
+                                    propertyName: 'textAlign',
+                                    defaultValue: 'left',
                                     hideLabel: true,
                                     width: 60,
                                     dropdownOptions: textAlign,
@@ -422,82 +498,12 @@ export const getSettings = (data: any) => {
                               .addContainer({
                                 id: 'borderStyleRow',
                                 parentId: 'borderStylePnl',
-                                components: getBorderInputs() as any
+                                components: getBorderInputs() as any,
                               })
                               .addContainer({
                                 id: 'borderRadiusStyleRow',
                                 parentId: 'borderStylePnl',
-                                components: getCornerInputs() as any
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: 'colorStyleCollapsiblePanel',
-                        propertyName: 'pnlColorStyle',
-                        label: 'Color',
-                        labelAlign: 'right',
-                        parentId: 'styleRouter',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: 'borderStylePnl',
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addSettingsInputRow({
-                                id: 'color-s4gmBg31azZC0UjZjpfTm',
-                                parentId: 'styleRouter',
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
-                                  {
-                                    type: 'dropdown',
-                                    id: 'color-s4gmBg31azZC0UjZjpfTm',
-                                    propertyName: 'color',
-                                    label: 'Type',
-                                    hideLabel: false,
-                                    width: 50,
-                                    defaultValue: DEFAULT_CONTENT_TYPE,
-                                    dropdownOptions: [
-                                      {
-                                        label: 'Default',
-                                        value: '',
-                                      },
-                                      {
-                                        label: 'Primary',
-                                        value: 'primary',
-                                      },
-                                      {
-                                        label: 'Secondary',
-                                        value: 'secondary',
-                                      },
-                                      {
-                                        label: 'Success',
-                                        value: 'success',
-                                      },
-                                      {
-                                        label: 'Warning',
-                                        value: 'warning',
-                                      },
-                                      {
-                                        label: 'Info',
-                                        value: 'info',
-                                      },
-                                      {
-                                        label: 'Error',
-                                        value: 'danger',
-                                      },
-                                      {
-                                        label: '(Custom Color)',
-                                        value: 'custom',
-                                      },
-                                    ],
-                                  },
-                                ],
+                                components: getCornerInputs() as any,
                               })
                               .toJson(),
                           ],
@@ -870,7 +876,7 @@ export const getSettings = (data: any) => {
                                 id: 'custom-css-412c-8461-4c8d55e5c073',
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
-                                hideLabel: true,
+                                hideLabel: false,
                                 label: 'Style',
                                 description:
                                   'A script that returns the style of the element as an object. This should conform to CSSProperties',
