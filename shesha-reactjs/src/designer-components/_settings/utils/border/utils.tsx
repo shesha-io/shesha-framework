@@ -239,10 +239,11 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
-                    width: 65,
+                    width: 80,
                     defaultValue: 0,
                     type: 'numberField',
                     icon: 'ExpandOutlined',
+                    tooltip: `Styles will apply to all corners`,
                     propertyName: path ? `${path}.border.radius.all` : 'border.radius.all',
                 }
             ]
@@ -261,10 +262,11 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
-                    width: 65,
+                    width: 80,
                     defaultValue: 0,
                     type: 'numberField',
                     icon: cornerValue.icon,
+                    tooltip: `Styles will apply to ${corner} corner`,
                     propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
                 };
             })

@@ -272,39 +272,39 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'center',
+                                label: 'Center',
                                 value: 'center',
                               },
                               {
-                                label: 'flex-start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'flex-end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'left',
+                                label: 'Left',
                                 value: 'left',
                               },
                               {
-                                label: 'right',
+                                label: 'Right',
                                 value: 'right',
                               },
                               {
-                                label: 'space-between',
+                                label: 'Space Between',
                                 value: 'space-between',
                               },
                               {
-                                label: 'space-around',
+                                label: 'Space Around',
                                 value: 'space-around',
                               },
                               {
-                                label: 'space-evenly',
+                                label: 'Space Evenly',
                                 value: 'space-evenly',
                               },
                               {
-                                label: 'stretch',
+                                label: 'Stretch',
                                 value: 'stretch',
                               },
                             ],
@@ -318,59 +318,59 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'baseline',
+                                label: 'Baseline',
                                 value: 'baseline',
                               },
                               {
-                                label: 'center',
+                                label: 'Center',
                                 value: 'center',
                               },
                               {
-                                label: 'end',
+                                label: 'End',
                                 value: 'end',
                               },
                               {
-                                label: 'flex-end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'flex-start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'inherit',
+                                label: 'Inherit',
                                 value: 'inherit',
                               },
                               {
-                                label: 'initial',
+                                label: 'Initial',
                                 value: 'initial',
                               },
                               {
-                                label: 'normal',
+                                label: 'Normal',
                                 value: 'normal',
                               },
                               {
-                                label: 'revert',
+                                label: 'Revert',
                                 value: 'revert',
                               },
                               {
-                                label: 'self-end',
+                                label: 'Self End',
                                 value: 'self-end',
                               },
                               {
-                                label: 'self-start',
+                                label: 'Self Start',
                                 value: 'self-start',
                               },
                               {
-                                label: 'start',
+                                label: 'Start',
                                 value: 'start',
                               },
                               {
-                                label: 'stretch',
+                                label: 'Stretch',
                                 value: 'stretch',
                               },
                               {
-                                label: 'unset',
+                                label: 'Unset',
                                 value: 'unset',
                               },
                             ],
@@ -384,23 +384,23 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'baseline',
+                                label: 'Baseline',
                                 value: 'baseline',
                               },
                               {
-                                label: 'center',
+                                label: 'Center',
                                 value: 'center',
                               },
                               {
-                                label: 'end',
+                                label: 'End',
                                 value: 'end',
                               },
                               {
-                                label: 'flex-end',
+                                label: 'Flex End',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'flex-start',
+                                label: 'Flex Start',
                                 value: 'flex-start',
                               },
                               {
@@ -408,47 +408,47 @@ export const getSettings = (data: any) => {
                                 value: 'inherit',
                               },
                               {
-                                label: 'initial',
+                                label: 'Initial',
                                 value: 'initial',
                               },
                               {
-                                label: 'left',
+                                label: 'Left',
                                 value: 'left',
                               },
                               {
-                                label: 'legacy',
+                                label: 'Legacy',
                                 value: 'legacy',
                               },
                               {
-                                label: 'normal',
+                                label: 'Normal',
                                 value: 'normal',
                               },
                               {
-                                label: 'revert',
+                                label: 'Revert',
                                 value: 'revert',
                               },
                               {
-                                label: 'right',
+                                label: 'Right',
                                 value: 'right',
                               },
                               {
-                                label: 'self-end',
+                                label: 'Self End',
                                 value: 'self-end',
                               },
                               {
-                                label: 'self-start',
+                                label: 'Self Start',
                                 value: 'self-start',
                               },
                               {
-                                label: 'start',
+                                label: 'Start',
                                 value: 'start',
                               },
                               {
-                                label: 'stretch',
+                                label: 'Stretch',
                                 value: 'stretch',
                               },
                               {
-                                label: 'unset',
+                                label: 'Unset',
                                 value: 'unset',
                               },
                             ],

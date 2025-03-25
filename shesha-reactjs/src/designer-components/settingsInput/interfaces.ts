@@ -35,7 +35,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     propertyName: string;
     variant?: 'borderless' | 'filled' | 'outlined';
     buttonGroupOptions?: IRadioOption[];
-    dropdownOptions?: IDropdownOption[];
+    dropdownOptions?: IDropdownOption[] | string;
     readOnly?: boolean;
     onChange?: (value: any) => void;
     editorConfig?: IConfigurableActionConfiguratorComponentProps;
@@ -92,7 +92,9 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];
     buttonText?: string;
-    modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
+    buttonTextReadOnly?: string;
+    modalSettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
+    modalReadonlySettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
     settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;

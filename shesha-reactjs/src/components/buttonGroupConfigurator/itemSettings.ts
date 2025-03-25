@@ -152,9 +152,10 @@ export const getItemSettings = (data) => {
                                                 },
                                             ],
                                         })
-                                        .addConfigurableActionConfigurator({
+                                        .addSettingsInput({
                                             id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                             propertyName: 'actionConfiguration',
+                                            inputType: 'configurableActionConfigurator',
                                             label: 'Action Configuration',
                                             validate: {},
                                             settingsValidationErrors: [],
