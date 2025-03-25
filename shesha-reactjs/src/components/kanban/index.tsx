@@ -35,8 +35,8 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
-    if (!isInDesigner && entityType.id && groupingProperty) {
-      getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
+    if (!isInDesigner && entityType && groupingProperty) {
+      getMetadata({ modelType: entityType, dataType: DataTypes.entityReference }).then((resp: any) => {
         const endpoints = resp?.apiEndpoints;
         setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
         refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=${maxResultCount || 100}` })
@@ -46,7 +46,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
           .catch((err) => console.error('Error fetching tasks:', err));
       });
     }
-  }, [groupingProperty, entityType.id]);
+  }, [groupingProperty, entityType]);
 
   useEffect(() => {
     setColumns(items);

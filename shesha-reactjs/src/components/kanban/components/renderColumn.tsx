@@ -174,13 +174,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             }
             align="center"
             className={styles.combinedHeaderStyle}
-            style={{ ...(getStyle(props.headerStyles, formData) || {}) }}
+            style={props.headerStyles || {}}
           >
             {props.showIcons && column.icon && (
               <IconPicker
                 value={column.icon}
                 readOnly
-                style={{ color: props.fontColor, fontSize: addPx(props.fontSize) }}
+                style={props.headerStyles || {}}
               />
             )}
             <h3>

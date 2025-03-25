@@ -1,12 +1,15 @@
 import { FormOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { CSSProperties, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components';
-import { IToolboxComponent, useForm } from '@/index';
+import { IToolboxComponent, useForm, validateConfigurableComponentSettings } from '@/index';
 import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
 import { KanbanSettingsForm } from './settings';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
+import { getSettings } from './settingsForm';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { removeUndefinedProps } from '@/utils/object';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -16,6 +19,17 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
   Factory: ({ model }) => {
     const form = useForm();
+    const font = model?.font;
+    const fontStyles = useMemo(() => getFontStyle(font), [font]);
+    
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      // ...stylingBoxAsCSS,
+      // ...dimensionsStyles,
+      // ...borderStyles,
+      ...fontStyles,
+      // ...backgroundStyles,
+      // ...shadowStyles
+    });
 
     if (form.formMode === 'designer' && !model.entityType) {
       return (
@@ -40,6 +54,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
               >
                 <KanbanReactComponent
                   {...model}
+                  headerStyles={additionalStyles}
                 />
               </RefListItemGroupConfiguratorProvider>
             );
@@ -52,9 +67,8 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     ...model,
     hideLabel: true,
   }),
-  settingsFormFactory: (props) => {
-    return <KanbanSettingsForm {...props} />;
-  },
+ settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default KanbanComponent;

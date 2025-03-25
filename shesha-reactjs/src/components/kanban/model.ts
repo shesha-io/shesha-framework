@@ -1,6 +1,7 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IButtonGroupItem, IButtonItem } from '@/providers';
 import { CSSProperties } from 'styled-components';
+import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -30,7 +31,7 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   minHeight?: number;
   maxHeight?: number;
   fontSize?: number;
-  entityType?: { id: string; name: string };
+  entityType?: string;
   allowNewRecord?: boolean;
   readonly?: boolean;
   collapsible?: boolean;
@@ -50,4 +51,5 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   maxResultCount: number;
   maxWidth: number;
   minWidth: number;
+  font?: IFontValue;
 }
