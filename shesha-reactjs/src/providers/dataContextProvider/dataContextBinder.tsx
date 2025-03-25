@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
@@ -25,7 +25,6 @@ import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
 
 export interface IDataContextBinderProps { 
   id: string;
-  uid: string;
   name: string;
   description?: string;
   type: DataContextType;
@@ -45,7 +44,6 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const {
     children,
     id,
-    uid,
     name, 
     description, 
     type, 
@@ -53,6 +51,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     onChangeData,
   } = props;
 
+  const uid = useId();
   const { onChangeContext, onChangeContextData } = useDataContextManager();
   const metadataDispatcher = useMetadataDispatcher();
 

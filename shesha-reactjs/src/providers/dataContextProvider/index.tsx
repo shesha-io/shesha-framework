@@ -1,6 +1,6 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, } from "@/providers";
-import React, { FC, PropsWithChildren, useId, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useRef, useState } from "react";
 import { useDataContextManager } from "../dataContextManager/index";
 import {  DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts";
 import DataContextBinder from "./dataContextBinder";
@@ -30,8 +30,6 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     initialData,
     metadata,
   } = props;
-
-  const uid = useId();
 
   const { onChangeContextData } = useDataContextManager();
   const { executeAction } = useConfigurableActionDispatcher();
@@ -104,8 +102,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
 
   return (
     <DataContextBinder
-      id={id ?? uid}
-      uid={uid}
+      id={id}
       name={name}
       description={description}
       type={type}

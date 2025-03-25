@@ -58,7 +58,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         propertyMetadataAccessor
       );
 
-      if (response.find((f) => f?.unevaluatedExpressions?.length)) 
+      if (!response.length ||  response.find((f) => f?.unevaluatedExpressions?.length)) 
         return undefined;
 
       return response[0]?.expression ?? undefined;
