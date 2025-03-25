@@ -81,7 +81,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       return opts;
     }
     return [];
-  }, [value]);
+  }, [{...value}]); // ToDo: Alexs - review dependencies (proxy problem)
 
   const onModalChange = (value: any) => {
     const data = !!value ? getValueByPropertyName(value, propertyName) : undefined;
