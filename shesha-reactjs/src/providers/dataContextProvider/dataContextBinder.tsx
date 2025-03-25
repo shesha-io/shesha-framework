@@ -25,6 +25,7 @@ import { useDeepCompareCallback } from "@/hooks/useDeepCompareEffect";
 
 export interface IDataContextBinderProps { 
   id: string;
+  uid: string;
   name: string;
   description?: string;
   type: DataContextType;
@@ -44,6 +45,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const {
     children,
     id,
+    uid,
     name, 
     description, 
     type, 
@@ -138,6 +140,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   useDataContextRegister({
     id,
+    uid,
     name,
     description,
     type,
@@ -150,6 +153,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     metadata?.then(res => {
       onChangeContext({
         id,
+        uid,
         name,
         description,
         type,
@@ -164,6 +168,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   useEffect(() => {
     onChangeContext({
       id,
+      uid,
       name,
       description,
       type,

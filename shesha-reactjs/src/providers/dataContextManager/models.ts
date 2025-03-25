@@ -4,6 +4,7 @@ import { DataContextType, IDataContextProviderActionsContext } from "../dataCont
 
 export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
   id: string;
+  uid: string;
   name: string;
   description?: string;
   type: DataContextType;
