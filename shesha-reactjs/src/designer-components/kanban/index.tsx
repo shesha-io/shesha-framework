@@ -1,24 +1,23 @@
-import { FormOutlined } from '@ant-design/icons';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { ConfigurableFormItem } from '@/components';
+import KanbanReactComponent from '@/components/kanban';
+import { IKanbanProps } from '@/components/kanban/model';
 import {
   getStyle,
   IToolboxComponent,
   useDataTableStore,
-  useForm,
   useSheshaApplication,
-  validateConfigurableComponentSettings,
+  validateConfigurableComponentSettings
 } from '@/index';
-import { Alert } from 'antd';
-import KanbanReactComponent from '@/components/kanban';
-import { IKanbanProps } from '@/components/kanban/model';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
-import { getSettings } from './settingsForm';
-import { getFontStyle } from '../_settings/utils/font/utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { FormOutlined } from '@ant-design/icons';
+import { Alert } from 'antd';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getFontStyle } from '../_settings/utils/font/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getSettings } from './settingsForm';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -30,17 +29,20 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     const store = useDataTableStore(false);
     const { httpHeaders, backendUrl } = useSheshaApplication();
     const data = model;
-    const form = useForm();
     const font = model?.font;
     const shadow = model?.shadow;
+    const columnShadow = model?.columnShadow;
     const border = model?.border;
+    const columnBorder = model?.columnBorder.border;
     const background = model?.background;
     const columnBackground = model?.columnBackground;
     const headerStyle = getStyle(model?.headerStyles as string, data);
     const columnStyle = getStyle(model?.columnStyle as string, data);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const borderStyles = useMemo(() => getBorderStyle(border, headerStyle), [border, headerStyle]);
+    const columnBorderStyles = useMemo(() => getBorderStyle(columnBorder, columnStyle), [columnBorder, columnStyle]);
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+    const columnShadowStyles = useMemo(() => getShadowStyle(columnShadow), [columnShadow]);
 
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const [columnBackgroundStyle, setColumnBackgroundStyle] = useState({});
@@ -72,7 +74,9 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     }, [columnBackground, backendUrl, httpHeaders]);
 
     const additionalColumnStyles: CSSProperties = removeUndefinedProps({
+      ...columnBorderStyles,
       ...columnBackgroundStyle,
+      ...columnShadowStyles,
       ...columnStyle,
     });
 
@@ -84,8 +88,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
       ...headerStyle,
     });
 
-
-    console.log('store', store);
     return (
       <div>
         <ConfigurableFormItem model={model}>

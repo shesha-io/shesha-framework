@@ -59,4 +59,8 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   columnBackground?: IBackgroundValue;
   shadow?: IShadowValue;
   border?: IBorderValue;
+  columnShadow?: IShadowValue;
+  columnBorder?: {
+    border: IBorderValue;
+  };
 }

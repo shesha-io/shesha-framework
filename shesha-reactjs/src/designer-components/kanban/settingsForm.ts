@@ -243,7 +243,6 @@ export const getSettings = (data: IKanbanProps) => {
                           id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
-                              
                             .addCollapsiblePanel({
                               id: 'customBackgroundPanel',
                               propertyName: 'pnlCustomBackground',
@@ -490,7 +489,120 @@ export const getSettings = (data: IKanbanProps) => {
                                 ],
                               },
                             })
-                            
+                            .addCollapsiblePanel({
+                              id: 'columnShadowStyleCollapsiblePanel',
+                              propertyName: 'pnlColumnShadowStyle',
+                              label: 'Shadow',
+                              labelAlign: 'right',
+                              ghost: true,
+                              parentId: 'styleRouter',
+                              collapsible: 'header',
+                              content: {
+                                id: 'columnShadowStylePnl',
+                                components: [
+                                  ...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                      id: 'columnShadowStyleRow',
+                                      parentId: 'columnShadowStylePnl',
+                                      inline: true,
+                                      readOnly: {
+                                        _code: 'return getSettingValue(data?.readOnly);',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      inputs: [
+                                        {
+                                          type: 'numberField',
+                                          id: 'columnShadowStyleRow-offsetX',
+                                          label: 'Offset X',
+                                          hideLabel: true,
+                                          width: 80,
+                                          icon: 'offsetHorizontalIcon',
+                                          propertyName: 'columnShadow.offsetX',
+                                        },
+                                        {
+                                          type: 'numberField',
+                                          id: 'columnShadowStyleRow-offsetY',
+                                          label: 'Offset Y',
+                                          hideLabel: true,
+                                          width: 80,
+                                          icon: 'offsetVerticalIcon',
+                                          propertyName: 'columnShadow.offsetY',
+                                        },
+                                        {
+                                          type: 'numberField',
+                                          id: 'columnShadowStyleRow-blurRadius',
+                                          label: 'Blur',
+                                          hideLabel: true,
+                                          width: 80,
+                                          icon: 'blurIcon',
+                                          propertyName: 'columnShadow.blurRadius',
+                                        },
+                                        {
+                                          type: 'colorPicker',
+                                          id: 'columnShadowStyleRow-color',
+                                          label: 'Color',
+                                          hideLabel: true,
+                                          propertyName: 'columnShadow.color',
+                                        },
+                                      ],
+                                    })
+                                    .toJson(),
+                                ],
+                              },
+                            })
+                            .addCollapsiblePanel({
+                              id: 'columnBorderStyleCollapsiblePanel',
+                              propertyName: 'columnBorder',
+                              label: 'Border',
+                              labelAlign: 'right',
+                              ghost: true,
+                              parentId: 'styleRouter',
+                              collapsible: 'header',
+                              content: {
+                                id: 'columnBorderStylePnl',
+                                components: [
+                                  ...new DesignerToolbarSettings()
+                                    .addSettingsInputRow({
+                                      id: `columnBorderStyle`,
+                                      parentId: 'columnBorderStylePnl',
+                                      hidden: {
+                                        _code:
+                                          'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBorder?.hideBorder);',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      readOnly: {
+                                        _code: 'return getSettingValue(data?.readOnly);',
+                                        _mode: 'code',
+                                        _value: false,
+                                      } as any,
+                                      inputs: [
+                                        {
+                                          type: 'button',
+                                          id: 'columnBorderStyleRow-hideBorder',
+                                          label: 'Border',
+                                          hideLabel: true,
+                                          propertyName: 'columnBorder.hideBorder',
+                                          icon: 'EyeOutlined',
+                                          iconAlt: 'EyeInvisibleOutlined',
+                                        },
+                                      ],
+                                    })
+                                    .addContainer({
+                                      id: 'columnBorderStyleContainer',
+                                      parentId: 'columnBorderStylePnl',
+                                      components: getBorderInputs('columnBorder', true) as any,
+                                    })
+                                    .addContainer({
+                                      id: 'columnBorderRadiusStyleRow',
+                                      parentId: 'columnBorderStylePnl',
+                                      components: getCornerInputs('columnBorder', true) as any,
+                                    })
+                                    .toJson(),
+                                ],
+                              },
+                            })
                               // .addSettingsInputRow({
                               //   id: nanoid(),
                               //   parentId: styleRouterId,
@@ -581,14 +693,14 @@ export const getSettings = (data: IKanbanProps) => {
                               //     _value: false,
                               //   } as any,
                               // })
-                              // .addSettingsInput({
-                              //   id: nanoid(),
-                              //   propertyName: 'columnStyle',
-                              //   label: 'Style',
-                              //   parentId: styleRouterId,
-                              //   inputType: 'codeEditor',
-                              //   description: 'CSS Style',
-                              // })
+                              .addSettingsInput({
+                                id: nanoid(),
+                                propertyName: 'columnStyle',
+                                label: 'Style',
+                                parentId: styleRouterId,
+                                inputType: 'codeEditor',
+                                description: 'CSS Style',
+                              })
                               .toJson(),
                           ],
                         },
@@ -1016,11 +1128,13 @@ export const getSettings = (data: IKanbanProps) => {
                                       .addContainer({
                                         id: 'borderStyleRow',
                                         parentId: 'borderStylePnl',
+                                        propertyName: 'borderContainer',
                                         components: getBorderInputs() as any,
                                       })
                                       .addContainer({
                                         id: 'borderRadiusStyleRow',
                                         parentId: 'borderStylePnl',
+                                        propertyName: 'borderRadiusContainer',
                                         components: getCornerInputs() as any,
                                       })
                                       .toJson(),

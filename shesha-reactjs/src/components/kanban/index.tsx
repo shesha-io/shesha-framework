@@ -1,7 +1,7 @@
 import { ConfigurableForm, DataTypes, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { App, Flex, Form, Modal } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { addPx } from '../keyInformationBar/utils';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn from './components/renderColumn';
