@@ -48,107 +48,10 @@ export const getSettings = () => {
                             })
                             .addSettingsInput({
                                 id: nanoid(),
-                                propertyName: 'orientation',
-                                label: 'Orientation',
-                                parentId: commonTabId,
-                                inputType: 'dropdown',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'horizontal', label: 'Horizontal' },
-                                    { value: 'vertical', label: 'Vertical' }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
                                 propertyName: 'columns',
                                 label: 'Columns',
                                 parentId: commonTabId,
                                 inputType: 'keyInformationBarColumnsList',
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'alignItems',
-                                label: 'Align Items',
-                                parentId: commonTabId,
-                                inputType: 'dropdown',
-                                hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
-                                dropdownOptions: [
-                                    { value: 'flex-start', label: 'Flex Start' },
-                                    { value: 'flex-end', label: 'Flex End' },
-                                    { value: 'center', label: 'Center' }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'backgroundColor',
-                                label: 'Background Color',
-                                parentId: commonTabId,
-                                inputType: 'colorPicker',
-                                jsSetting: true,
-                                allowClear: true
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'gap',
-                                label: 'Gap',
-                                parentId: commonTabId,
-                                inputType: 'numberField',
-                                jsSetting: true
-                            })
-                            .toJson()
-                        ]
-                    },
-                    {
-                        key: 'divider',
-                        title: 'Divider',
-                        id: dividerTabId,
-                        components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'dividerMargin',
-                                label: 'Divider Margin',
-                                parentId: dividerTabId,
-                                inputType: 'textField',
-                                jsSetting: true,
-                                tooltip: 'Sets the margin around the divider'
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'dividerHeight',
-                                label: 'Divider Height',
-                                parentId: dividerTabId,
-                                inputType: 'textField',
-                                jsSetting: true,
-                                tooltip: 'Sets the height of the divider',
-                                hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'dividerWidth',
-                                label: 'Divider Width',
-                                parentId: dividerTabId,
-                                inputType: 'textField',
-                                jsSetting: true,
-                                tooltip: 'Sets the width of the divider',
-                                hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical";', _mode: 'code', _value: false } as any
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'dividerThickness',
-                                label: 'Divider Thickness',
-                                parentId: dividerTabId,
-                                inputType: 'textField',
-                                jsSetting: true,
-                                tooltip: 'Sets the thickness of the divider line'
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'dividerColor',
-                                label: 'Divider Color',
-                                parentId: dividerTabId,
-                                inputType: 'colorPicker',
-                                jsSetting: true,
-                                allowClear: true
                             })
                             .toJson()
                         ]
@@ -173,6 +76,45 @@ export const getSettings = () => {
                                 },
                                 components: [
                                     ...new DesignerToolbarSettings()
+                                        .addSettingsInputRow({
+                                            id: nanoid(),
+                                            parentId: commonTabId,
+                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            inputs: [
+                                                {
+                                                    type: 'dropdown',
+                                                    id: nanoid(),
+                                                    propertyName: 'orientation',
+                                                    label: 'Orientation',
+                                                    jsSetting: true,
+                                                    dropdownOptions: [
+                                                        { value: 'horizontal', label: 'Horizontal' },
+                                                        { value: 'vertical', label: 'Vertical' }
+                                                    ]
+                                                },
+                                                {
+                                                    id: nanoid(),
+                                                    propertyName: 'alignItems',
+                                                    label: 'Align Items',
+                                                    parentId: commonTabId,
+                                                    type: 'dropdown',
+                                                    hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
+                                                    dropdownOptions: [
+                                                        { value: 'flex-start', label: 'Flex Start' },
+                                                        { value: 'flex-end', label: 'Flex End' },
+                                                        { value: 'center', label: 'Center' }
+                                                    ]
+                                                }
+                                            ]
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'gap',
+                                            label: 'Gap',
+                                            parentId: commonTabId,
+                                            inputType: 'numberField',
+                                            jsSetting: true
+                                        })
                                         .addCollapsiblePanel({
                                             id: 'dimensionsStyleCollapsiblePanel',
                                             propertyName: 'pnlDimensions',
@@ -555,6 +497,70 @@ export const getSettings = () => {
                                                     .toJson()
                                                 ]
                                             }
+                                        })
+                                        .addCollapsiblePanel({
+                                            id: dividerTabId,
+                                            propertyName: 'divider',
+                                            label: 'Divider',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: styleRouterId,
+                                            collapsible: 'header',
+                                            content: {
+                                                id: 'dividerPnl',
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'dividerMargin',
+                                                        label: 'Divider Margin',
+                                                        parentId: dividerTabId,
+                                                        inputType: 'textField',
+                                                        jsSetting: true,
+                                                        tooltip: 'Sets the margin around the divider'
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'dividerHeight',
+                                                        label: 'Divider Height',
+                                                        parentId: dividerTabId,
+                                                        inputType: 'textField',
+                                                        jsSetting: true,
+                                                        tooltip: 'Sets the height of the divider',
+                                                        hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'dividerWidth',
+                                                        label: 'Divider Width',
+                                                        parentId: dividerTabId,
+                                                        inputType: 'textField',
+                                                        jsSetting: true,
+                                                        tooltip: 'Sets the width of the divider',
+                                                        hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical";', _mode: 'code', _value: false } as any
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'dividerThickness',
+                                                        label: 'Divider Thickness',
+                                                        parentId: dividerTabId,
+                                                        inputType: 'textField',
+                                                        jsSetting: true,
+                                                        tooltip: 'Sets the thickness of the divider line'
+                                                    })
+                                                    .addSettingsInput({
+                                                        id: nanoid(),
+                                                        propertyName: 'dividerColor',
+                                                        label: 'Divider Color',
+                                                        parentId: dividerTabId,
+                                                        inputType: 'colorPicker',
+                                                        jsSetting: true,
+                                                        allowClear: true
+                                                    })
+                                                    .toJson()
+                                                ]
+                                            }
+
+
                                         })
                                         .toJson()]
                             }).toJson()]

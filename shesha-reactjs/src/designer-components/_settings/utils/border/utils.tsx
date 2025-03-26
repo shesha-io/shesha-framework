@@ -15,7 +15,7 @@ import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 import { humanizeString } from "@/utils/string";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
-    if (!input || jsStyle?.border) return {};
+    if (!input) return {};
 
     const style: React.CSSProperties = {};
     const border = input.border || {};
@@ -28,13 +28,15 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
         if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
     };
 
-    if (input.borderType === 'all') {
-        handleBorderPart(all, 'border');
-    } else {
-        handleBorderPart(top, 'borderTop');
-        handleBorderPart(right, 'borderRight');
-        handleBorderPart(bottom, 'borderBottom');
-        handleBorderPart(left, 'borderLeft');
+    if (!jsStyle.border) {
+        if (input.borderType === 'all') {
+            handleBorderPart(all, 'border');
+        } else {
+            handleBorderPart(top, 'borderTop');
+            handleBorderPart(right, 'borderRight');
+            handleBorderPart(bottom, 'borderBottom');
+            handleBorderPart(left, 'borderLeft');
+        }
     };
 
     if (input?.radius) {
