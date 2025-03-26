@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useMemo, CSSProperties } from 'react';
-import { Flex, Form, App, Modal } from 'antd';
+import { ConfigurableForm, DataTypes, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
+import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
+import { App, Flex, Form, Modal } from 'antd';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { addPx } from '../keyInformationBar/utils';
+import KanbanPlaceholder from './components/kanbanPlaceholder';
+import KanbanColumn from './components/renderColumn';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
-import KanbanPlaceholder from './components/kanbanPlaceholder';
-import { ConfigurableForm, DataTypes, useDataTableStore, useFormState, useGet, useMetadataDispatcher } from '@/index';
-import KanbanColumn from './components/renderColumn';
-import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
-import { addPx } from '../keyInformationBar/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const {
@@ -16,7 +16,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     items,
     componentName,
     editFormId,
-    columnStyle,
   } = props;
 
   const { tableData, modelType } = useDataTableStore();
@@ -181,7 +180,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
               handleDelete={handleDelete}
               handleCreateClick={handleCreateClick}
               selectedItem={selectedItem}
-              columnStyle={columnStyle as CSSProperties}
             />
           ))}
         </Flex>

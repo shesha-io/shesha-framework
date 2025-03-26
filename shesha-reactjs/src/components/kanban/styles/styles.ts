@@ -84,7 +84,6 @@ export const useStyles = createStyles(
     const container = cx(
       `${prefixCls}-container`,
       css`
-        background-color: ${columnBackgroundColor || '#ffffff'};
         overflow-y: hidden;
         /* Hide scrollbar for Chrome, Safari and Opera */
         &::-webkit-scrollbar {

@@ -40,42 +40,29 @@ export const getSettings = (data: IKanbanProps) => {
                     required: true,
                   },
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'entityType',
-                  label: 'Entity Type',
-                  parentId: commonTabId,
-                  inputType: 'autocomplete',
-                  dataSourceType: 'url',
-                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                  jsSetting: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'modalFormId',
-                  label: 'Render Form',
-                  parentId: commonTabId,
-                  inputType: 'formAutocomplete',
-                  jsSetting: true,
-                })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
                   inputs: [
+                    {
+                      type: 'formAutocomplete',
+                      id: nanoid(),
+                      propertyName: 'modalFormId',
+                      label: 'Render Form',
+                      jsSetting: true,
+                      validate: {
+                        required: true,
+                      },
+                    },
                     {
                       type: 'propertyAutocomplete',
                       id: nanoid(),
                       propertyName: 'groupingProperty',
                       label: 'Grouping property',
                       jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'maxResultCount',
-                      label: 'Max Result Count',
-                      type: 'numberField',
-                      parentId: commonTabId,
-                      jsSetting: true,
+                      validate: {
+                        required: true,
+                      },
                     },
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -144,6 +131,9 @@ export const getSettings = (data: IKanbanProps) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      validate: {
+                        required: true,
+                      },
                     },
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -170,6 +160,9 @@ export const getSettings = (data: IKanbanProps) => {
                         _mode: 'code',
                         _value: false,
                       } as any,
+                      validate: {
+                        required: true,
+                      },
                     },
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -319,7 +312,7 @@ export const getSettings = (data: IKanbanProps) => {
                                       ],
                                       hidden: {
                                         _code:
-                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
+                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBackground?.type) !== "color";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
@@ -343,7 +336,7 @@ export const getSettings = (data: IKanbanProps) => {
                                       ],
                                       hidden: {
                                         _code:
-                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
+                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBackground?.type) !== "gradient";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
@@ -368,7 +361,7 @@ export const getSettings = (data: IKanbanProps) => {
                                       ],
                                       hidden: {
                                         _code:
-                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
+                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBackground?.type) !== "url";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
@@ -392,7 +385,7 @@ export const getSettings = (data: IKanbanProps) => {
                                       ],
                                       hidden: {
                                         _code:
-                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
+                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBackground?.type) !== "image";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
@@ -407,7 +400,7 @@ export const getSettings = (data: IKanbanProps) => {
                                       parentId: 'customBackgroundPnl',
                                       hidden: {
                                         _code:
-                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
+                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBackground?.type) !== "storedFile";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
@@ -488,7 +481,7 @@ export const getSettings = (data: IKanbanProps) => {
                                       ],
                                       hidden: {
                                         _code:
-                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+                                          'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnBackground?.type) === "color";',
                                         _mode: 'code',
                                         _value: false,
                                       } as any,
