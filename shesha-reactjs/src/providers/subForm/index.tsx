@@ -106,6 +106,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       onChange({});
   };
 
+  // ToDO: Alexs - review and remove
   // update global state on value change
   useDeepCompareEffect(() => {
     if (propertyName) {
@@ -121,7 +122,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         data: value,
       });
     }
-  }, [value, propertyName]);
+  }, [typeof value === 'string' ? value : {...value}, propertyName]);
 
   const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
   const prevRenderedEntityTypeForm = useRef<string>(null);

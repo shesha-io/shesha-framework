@@ -4,11 +4,10 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
-export const getSettings = (data) => {
+export const getSettings = () => {
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
@@ -25,87 +24,113 @@ export const getSettings = (data) => {
                         title: 'Common',
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'componentName',
-                                label: 'Component Name',
-                                parentId: 'root',
-                                size: 'small',
-                                validate: {
-                                    required: true,
-                                },
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'wizardType',
-                                label: 'Wizard Type',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'default', label: 'Default' },
-                                    { value: 'navigation', label: 'Navigation' }
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'textField',
+                                        propertyName: 'componentName',
+                                        label: 'Component Name',
+                                        parentId: 'root',
+                                        size: 'small',
+                                        validate: {
+                                            required: true,
+                                        },
+                                    }
                                 ]
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'steps',
-                                label: 'Configure Steps',
-                                parentId: 'root',
-                                inputType: 'itemListConfiguratorModal',
-                                onAddNewItem: onAddNewItem,
-                                listItemSettingsMarkup: getItemSettings(),
-                                modalProps: {
-                                    title: 'Configure Wizard Steps',
-                                    header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
-                                },
-                                buttonText: 'Configure Wizard Steps',
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'direction',
-                                label: 'Direction',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'To specify the direction of the step bar',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: 'wizardType',
+                                        type: 'dropdown',
+                                        propertyName: 'wizardType',
+                                        label: 'Wizard Type',
+                                        parentId: 'root',
+                                        inputType: 'dropdown',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            { value: 'default', label: 'Default' },
+                                            { value: 'navigation', label: 'Navigation' }
+                                        ]
+                                    },
+                                    {
+                                        id: 'direction',
+                                        type: 'dropdown',
+                                        propertyName: 'direction',
+                                        label: 'Direction',
+                                        parentId: 'root',
+                                        inputType: 'dropdown',
+                                        tooltip: 'To specify the direction of the step bar',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            { value: 'vertical', label: 'Vertical' },
+                                            { value: 'horizontal', label: 'Horizontal' }
+                                        ]
+                                    }
                                 ]
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'labelPlacement',
-                                label: 'Label Placement',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'To specify the label placement',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: 'labelPlacement',
+                                        type: 'dropdown',
+                                        propertyName: 'labelPlacement',
+                                        label: 'Label Placement',
+                                        parentId: 'root',
+                                        inputType: 'dropdown',
+                                        tooltip: 'To specify the label placement',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            { value: 'vertical', label: 'Vertical' },
+                                            { value: 'horizontal', label: 'Horizontal' }
+                                        ]
+                                    },
+
+
                                 ]
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'defaultActiveStep',
-                                label: 'Default Active Step',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'This will be the default step that is active',
-                                jsSetting: true,
-                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                dropdownOptions: data?.steps,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'hidden',
-                                label: 'hide',
-                                parentId: 'root',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
+                            .addSettingsInputRow(
+                                {
+                                    id: nanoid(),
+                                    readOnly: false,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            type: 'itemListConfiguratorModal',
+                                            propertyName: 'steps',
+                                            label: 'Configure Steps',
+                                            parentId: 'root',
+                                            buttonTextReadOnly: 'View Wizard Steps',
+                                            onAddNewItem: onAddNewItem,
+                                            listItemSettingsMarkup: getItemSettings(),
+                                            modalSettings: {
+                                                title: 'Configure Wizard Steps',
+                                                header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
+                                            },
+                                            modalReadonlySettings: {
+                                                title: 'View Wizard Steps',
+                                                header: 'Here you can view wizard steps configuration'
+                                            },
+                                            buttonText: 'Configure Steps',
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'hidden',
+                                            label: 'Hide',
+                                            parentId: 'root',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                        }
+                                    ]
+                                }
+                            )
                             .toJson()
                         ]
                     },

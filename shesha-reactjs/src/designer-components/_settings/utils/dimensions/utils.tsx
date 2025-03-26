@@ -15,9 +15,6 @@ export const getSizeStyle = (input: IDimensionsValue): React.CSSProperties => {
             style[prop] = /^\d+(\.\d+)?$/.test(sizeValue + '') ? `${sizeValue}px` : `${sizeValue}`;
         }
 
-        if (sizeValue) {
-            style[prop] = /^\d+(\.\d+)?$/.test(sizeValue + '') ? `${sizeValue}px` : `${sizeValue}`;
-        }
     });
 
     if (input?.overflow) {

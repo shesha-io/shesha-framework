@@ -162,12 +162,10 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-
                               .toJson(),
                           ],
                         },
                       })
-
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',

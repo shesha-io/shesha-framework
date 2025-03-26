@@ -78,11 +78,11 @@ export const getSettings = (data) => {
                     jsSetting: true,
                     dropdownOptions: [
                       {
-                        label: 'single',
+                        label: 'Single',
                         value: 'single',
                       },
                       {
-                        label: 'multiple',
+                        label: 'Multiple',
                         value: 'multiple',
                       },
                     ],
@@ -202,7 +202,7 @@ export const getSettings = (data) => {
                         type: 'codeEditor',
                         id: '405b0599-914d-4d2d-875c-765a495472f8',
                         propertyName: 'incomeCustomJs',
-                        label: 'Id value',
+                        label: 'Id Value',
                         parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
                         validate: {},
                         settingsValidationErrors: [],
@@ -212,7 +212,7 @@ export const getSettings = (data) => {
                         type: 'codeEditor',
                         id: '81fb0599-914d-4d2d-875c-765a495472f8',
                         propertyName: 'outcomeCustomJs',
-                        label: 'Custom value',
+                        label: 'Custom Value',
                         parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
                         validate: {},
                         settingsValidationErrors: [],
