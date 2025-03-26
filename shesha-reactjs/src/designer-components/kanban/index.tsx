@@ -18,6 +18,7 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -29,7 +30,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     const store = useDataTableStore(false);
     const { httpHeaders, backendUrl } = useSheshaApplication();
     const data = model;
-    const font = model?.font;
     const shadow = model?.shadow;
     const columnShadow = model?.columnShadow;
     const border = model?.border;
@@ -38,7 +38,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     const columnBackground = model?.columnBackground;
     const headerStyle = getStyle(model?.headerStyles as string, data);
     const columnStyle = getStyle(model?.columnStyle as string, data);
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const borderStyles = useMemo(() => getBorderStyle(border, headerStyle), [border, headerStyle]);
     const columnBorderStyles = useMemo(() => getBorderStyle(columnBorder, columnStyle), [columnBorder, columnStyle]);
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -82,7 +81,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
     const additionalHeaderStyles: CSSProperties = removeUndefinedProps({
       ...borderStyles,
-      ...fontStyles,
       ...backgroundStyles,
       ...shadowStyles,
       ...headerStyle,

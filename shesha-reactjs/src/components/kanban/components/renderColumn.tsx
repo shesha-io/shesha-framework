@@ -1,16 +1,13 @@
-import {
-  ConfigurableForm,
-  IconPicker,
-  useAvailableConstantsData,
-  useConfigurableActionDispatcher
-} from '@/index';
+import { ConfigurableForm, IconPicker, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { LeftOutlined, MoreOutlined, PlusOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Flex, MenuProps, Popconfirm } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from '../styles/styles';
 import { useKanbanActions } from '../utils';
+import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 
 interface KanbanColumnProps {
   column: any;
@@ -44,11 +41,15 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
-  const { styles } = useStyles({ ...props, isCollapsed });
+  const dimensions = props.dimensions;
+  const font = props.font;
+  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+  const fontStyles = useMemo(() => getFontStyle(font), [font]);
+
+  const { styles } = useStyles({ ...props, isCollapsed, dimensionsStyles, fontStyles });
   const { updateKanban } = useKanbanActions();
   const allData = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
-
   // Initialize collapse state from props
   useEffect(() => {
     setIsCollapsed(collapse);
@@ -155,15 +156,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       });
     });
   };
-
-  console.log('columnStyle', props.columnStyle); // Debugging
   return (
     <>
       {!column.hidden && (
         <div
           key={column.id}
           className={styles.combinedColumnStyle}
-          style={props.columnStyle || {}}
+          //style={props.columnStyle || {}}
           data-column-id={column.id}
         >
           <Flex
@@ -174,24 +173,17 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             }
             align="center"
             className={styles.combinedHeaderStyle}
-            style={{ ...props.headerStyles }} 
           >
             {props.showIcons && column.icon && (
               <IconPicker
                 value={column.icon}
                 onIconChange={() => {}}
                 readOnly
-                style={{ fontSize: props.headerStyles?.fontSize, color: props.headerStyles?.color }}
+                style={fontStyles}
               />
             )}
 
-            <h3
-              style={{
-                fontSize: props.headerStyles?.fontSize,
-                color: props.headerStyles?.color,
-                fontWeight: props.headerStyles?.fontWeight,
-              }}
-            >
+            <h3>
               {column.item} ({columnTasks.length})
             </h3>
 
@@ -201,7 +193,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                   type="text"
                   icon={
                     <SettingOutlined
-                      style={{ fontSize: props.headerStyles?.fontSize, color: props.headerStyles?.color }}
+                      style={fontStyles}
                     />
                   }
                 />
