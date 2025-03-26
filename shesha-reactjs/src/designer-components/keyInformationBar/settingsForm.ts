@@ -87,6 +87,7 @@ export const getSettings = () => {
                                                     propertyName: 'orientation',
                                                     label: 'Orientation',
                                                     jsSetting: true,
+                                                    defaultValue: 'horizontal',
                                                     dropdownOptions: [
                                                         { value: 'horizontal', label: 'Horizontal' },
                                                         { value: 'vertical', label: 'Vertical' }
@@ -98,6 +99,7 @@ export const getSettings = () => {
                                                     label: 'Align Items',
                                                     parentId: commonTabId,
                                                     type: 'dropdown',
+                                                    defaultValue: 'flex-start',
                                                     hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any,
                                                     dropdownOptions: [
                                                         { value: 'flex-start', label: 'Flex Start' },

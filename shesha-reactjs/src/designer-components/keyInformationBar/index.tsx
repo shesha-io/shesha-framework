@@ -10,6 +10,8 @@ import KeyInformationBar from '@/components/keyInformationBar';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
@@ -19,7 +21,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
 
-    
+
     return (
       <ParentProvider model={model}>
         <KeyInformationBar {...model} />
@@ -33,7 +35,8 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
         (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps
       )
       .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev))
-      .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev)),
+      .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev))
+      .add<IKeyInformationBarProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   initModel: (model) => {
     const tabsModel: IKeyInformationBarProps = {
       ...model,
@@ -49,7 +52,6 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
         }
       ],
       orientation: 'horizontal',
-      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;
