@@ -110,7 +110,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
             inputType: 'radio',
             label: 'Border Type',
             propertyName: `${path ? path + '.' : ''}border.borderType`,
-            defaultValue: 'all',
             buttonGroupOptions: borderConfigType,
         })
         .addSettingsInputRow({
