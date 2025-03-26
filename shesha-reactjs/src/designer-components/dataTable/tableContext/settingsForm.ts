@@ -93,6 +93,7 @@ export const getSettings = (data: any) => {
                           { label: 'Entity', value: 'Entity' },
                           { label: 'Form', value: 'Form' },
                         ],
+                        allowClear: true,
                         validate: { required: true },
                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                         jsSetting: true,
@@ -169,6 +170,7 @@ export const getSettings = (data: any) => {
                         label: "Data Fetching Mode",
                         labelAlign: "right",
                         parentId: dataTabId,
+                        allowClear: true,
                         dropdownOptions: [
                           {
                             label: "Paging",
@@ -199,6 +201,7 @@ export const getSettings = (data: any) => {
                             propertyName: 'defaultPageSize',
                             label: 'Default Page Size',
                             type: 'dropdown',
+                            allowClear: true,
                             dropdownOptions: [
                               {
                                 label: "5",
@@ -324,6 +327,7 @@ export const getSettings = (data: any) => {
                             labelAlign: "right",
                             type: 'dropdown',
                             inputType: 'dropdown',
+                            allowClear: true,
                             validate: {
                               required: {
                                 "_code": "return data.sortMode === 'strict';",
@@ -393,6 +397,7 @@ export const getSettings = (data: any) => {
                             type: 'dropdown',
                             label: 'Allow Reordering',
                             inputType: 'dropdown',
+                            allowClear: true,
                             dropdownOptions: [
                               {
                                 label: "Yes",
