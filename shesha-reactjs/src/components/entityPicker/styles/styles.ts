@@ -20,7 +20,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   
       .${pickerInputGroupEllipsis} {
         width: ${pickerEllipsisBtnWidth};
-        borderLeft: 1px solid #d9d9d9;
+        border-left: 1px solid #d9d9d9;
       }
     }
   
@@ -71,11 +71,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
         .ant-select-selector > ant-select-selection-search, ant-select-selection-placeholder {
           all: inherit !important;
-          borderRight: '1px solid #d9d9d9'
+          border-right: 1px solid #d9d9d9;
           padding: 0 8px !important;
           * {
-            borderTopRightRadius: 0 !important;
-            borderBottomRightRadius: 0 important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
             }
           }
       `);

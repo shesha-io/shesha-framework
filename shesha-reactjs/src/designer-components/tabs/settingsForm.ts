@@ -6,6 +6,7 @@ import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } fr
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { overflowOptions } from '../_settings/utils/dimensions/utils';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
 
@@ -38,56 +39,69 @@ export const getSettings = () => {
                                     validate: { required: true },
                                     parentId: 'root'
                                 })
-                                .addSettingsInput({
-                                    id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
-                                    inputType: 'textField',
-                                    propertyName: 'defaultActiveKey',
-                                    label: 'Default Active Tab',
-                                    labelAlign: 'right',
-                                    parentId: 'root'
+                                .addSettingsInputRow({
+                                    id: nanoid(),
+                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            type: 'textField',
+                                            propertyName: 'defaultActiveKey',
+                                            label: 'Default Active Tab',
+                                            labelAlign: 'right',
+                                            parentId: 'root'
+                                        },
+                                        {
+                                            id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
+                                            type: 'textField',
+                                            propertyName: 'tabType',
+                                            label: 'Tab Type',
+                                            defaultValue: 'card',
+                                            dropdownOptions: [
+                                                { value: 'line', label: 'Line' },
+                                                { value: 'card', label: 'Card' }
+                                            ],
+                                            jsSetting: false,
+                                            labelAlign: 'right',
+                                            parentId: 'root'
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
-                                    id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
-                                    inputType: 'dropdown',
-                                    propertyName: 'tabType',
-                                    label: 'Tab Type',
-                                    defaultValue: 'card',
-                                    dropdownOptions: [
-                                        { value: 'line', label: 'Line' },
-                                        { value: 'card', label: 'Card' }
-                                    ],
-                                    jsSetting: false,
-                                    labelAlign: 'right',
-                                    parentId: 'root'
-                                })
-                                .addSettingsInput({
-                                    id: '4595a895-5078-4986-934b-c5013bf315ad',
-                                    inputType: 'itemListConfiguratorModal',
-                                    propertyName: 'tabs',
-                                    label: 'Tabs',
-                                    labelAlign: 'right',
-                                    parentId: 'root',
-                                    listItemSettingsMarkup: getItemSettings(),
-                                    onAddNewItem: onAddNewItem,
-                                    hidden: false
-                                })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
-                                    inputType: 'switch',
-                                    propertyName: 'hidden',
-                                    label: 'Hide',
-                                    labelAlign: 'right',
-                                    parentId: 'root',
-                                    hidden: false,
-                                    validate: {}
-                                })
-                                .addSettingsInput({
-                                    id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-                                    inputType: 'editModeSelector',
-                                    propertyName: 'editMode',
-                                    parentId: 'root',
-                                    defaultValue: 'inherited',
-                                    label: 'Edit Mode'
+                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: '4595a895-5078-4986-934b-c5013bf315ad',
+                                            type: 'itemListConfiguratorModal',
+                                            propertyName: 'tabs',
+                                            label: 'Tabs',
+                                            labelAlign: 'right',
+                                            parentId: 'root',
+                                            buttonTextReadOnly: 'View Tab Panes',
+                                            buttonText: 'Configure Tabs',
+                                            listItemSettingsMarkup: getItemSettings(),
+                                            onAddNewItem: onAddNewItem,
+                                            hidden: false,
+                                            modalSettings: {
+                                                title: 'Configure Tab Panes',
+                                                header: 'Here you can configure the tab panes by adjusting their settings and ordering.'
+                                            },
+                                            modalReadonlySettings: {
+                                                title: 'View Tab Panes',
+                                                header: 'Here you can view tab panes configuration'
+                                            }
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            type: 'switch',
+                                            propertyName: 'hidden',
+                                            label: 'Hide',
+                                            jsSetting: true,
+                                            labelAlign: 'right',
+                                            parentId: 'root',
+                                        }
+                                    ]
                                 })
                                 .toJson()
                         ]

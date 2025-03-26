@@ -51,7 +51,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const shadow = model?.shadow;
     const background = model?.background;
 
-    const jsStyle = useMemo(() => getStyle(model.style, data), [model.styles]);
+    const jsStyle = useMemo(() => getStyle(model.style, data), [model.style, data]);
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
@@ -73,7 +73,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+        const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
 

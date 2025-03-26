@@ -28,11 +28,13 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   if (!error) return null;
 
   const renderValidationErrors = (props: AlertProps) => {
-    const widthStyle = {
-      width: `calc(${props.style?.width} - (${props.style?.marginLeft} + ${props.style?.marginRight}))`,
-      maxWidth: `calc(${props.style?.width} - (${props.style?.marginLeft} + ${props.style?.marginRight}))`,
-      minWidth: `calc(${props.style?.width} - (${props.style?.marginLeft} + ${props.style?.marginRight}))`
-    };
+    const widthStyle = props.style?.width && props.style?.marginLeft && props.style?.marginRight
+      ? {
+        width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
+        maxWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
+        minWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`
+      }
+      : {};
 
     if (renderMode === 'alert') {
       return (
