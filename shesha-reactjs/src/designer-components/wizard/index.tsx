@@ -51,12 +51,13 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   migrator: (m) =>
     m
       .add<IWizardComponentPropsV0>(0, (prev) => {
+        const id = nanoid();
         const model: IWizardComponentPropsV0 = {
           ...prev,
           name: prev['name'] ?? 'custom Name',
           tabs: prev['filteredTabs'] ?? [
             {
-              id: nanoid(),
+              id: id,
               name: 'step1',
               label: 'Step 1',
               title: 'Step 1',
@@ -68,7 +69,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
               nextButtonText: 'Next',
               backButtonText: 'Back',
               doneButtonText: 'Done',
-              key: 'step1',
+              key: id,
               components: [],
               itemType: 'item',
             },

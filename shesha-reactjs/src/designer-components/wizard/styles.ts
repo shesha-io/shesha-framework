@@ -28,23 +28,27 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
 
     .sha-steps-buttons-container {
       .ant-btn-default {
-        --ant-button-default-color: ${secondaryTextColor} !important;
-        --ant-button-default-active-bg: ${secondaryBgColor} !important;
-        --ant-button-default-bg: ${secondaryBgColor} !important;
-        --ant-button-default-hover-border-color: ${primaryBgColor} !important;
-        --ant-button-default-hover-color: ${primaryBgColor}45 !important;
-        --ant-button-default-color: ${secondaryTextColor} !important;
+        ${secondaryBgColor && `--ant-button-default-bg: ${secondaryBgColor} !important`};
+        ${secondaryTextColor && `--ant-button-default-color: ${secondaryTextColor} !important`};
+        ${secondaryBgColor && `--ant-button-default-active-bg: ${secondaryBgColor}90 !important`};
+        ${secondaryTextColor && `--ant-button-default-active-color: ${secondaryTextColor} !important`};
+        ${secondaryBgColor && `--ant-button-default-active-border-color: ${secondaryBgColor} !important`};
+        ${secondaryBgColor && `--ant-button-default-hover-bg: ${secondaryBgColor} !important`};
+        ${secondaryBgColor && `--ant-button-default-hover-border-color: ${secondaryBgColor} !important`};
+        ${secondaryTextColor && `--ant-button-default-hover-color: ${secondaryTextColor} !important`};
+        ${secondaryTextColor && `--ant-button-default-color: ${secondaryTextColor} !important`};
         font-family: ${styles.fontFamily};
     }
 
     .ant-btn-primary {
-        --ant-color-primary: ${primaryBgColor};
-        --ant-button-primary-active-bg: ${primaryBgColor} !important;
-        --ant-color-primary-hover: ${primaryBgColor}45 !important;
-        --ant-button-primary-hover-color: ${primaryTextColor}45 !important;
-        --ant-color-text-light-solid: ${primaryTextColor} !important;
-        --ant-button-primary-hover-border-color: ${secondaryBgColor} !important;
-        --ant-button-primary-color: ${primaryTextColor} !important;
+        ${primaryBgColor && `--ant-color-primary: ${primaryBgColor};`}
+        ${primaryBgColor && `--ant-button-primary-active-bg: ${primaryBgColor} !important`};
+        ${primaryBgColor && `--ant-color-primary-active: ${primaryBgColor}90 !important`};
+        ${primaryBgColor && `--ant-color-primary-hover: ${primaryBgColor} !important`};
+        ${primaryTextColor && `--ant-button-primary-hover-color: ${primaryTextColor} !important`};
+        ${primaryTextColor && `--ant-color-text-light-solid: ${primaryTextColor} !important`};
+        ${secondaryBgColor && `--ant-button-primary-hover-border-color: ${secondaryBgColor} !important`};
+        ${primaryTextColor && `--ant-button-primary-color: ${primaryTextColor} !important`};
         font-family: ${styles.fontFamily};
       }
   }

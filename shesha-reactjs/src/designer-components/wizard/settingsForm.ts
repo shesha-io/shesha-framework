@@ -24,22 +24,17 @@ export const getSettings = () => {
                         title: 'Common',
                         id: nanoid(),
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
+                            .addSettingsInput({
                                 id: nanoid(),
-                                readOnly: false,
-                                inputs: [
-                                    {
-                                        id: nanoid(),
-                                        type: 'textField',
-                                        propertyName: 'componentName',
-                                        label: 'Component Name',
-                                        parentId: 'root',
-                                        size: 'small',
-                                        validate: {
-                                            required: true,
-                                        },
-                                    }
-                                ]
+                                inputType: 'textField',
+                                propertyName: 'componentName',
+                                label: 'Component Name',
+                                parentId: 'root',
+                                size: 'small',
+                                hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
+                                validate: {
+                                    required: true,
+                                },
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
@@ -53,6 +48,7 @@ export const getSettings = () => {
                                         parentId: 'root',
                                         inputType: 'dropdown',
                                         jsSetting: true,
+                                        hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
                                         dropdownOptions: [
                                             { value: 'default', label: 'Default' },
                                             { value: 'navigation', label: 'Navigation' }
@@ -110,6 +106,7 @@ export const getSettings = () => {
                                             buttonTextReadOnly: 'View Wizard Steps',
                                             onAddNewItem: onAddNewItem,
                                             listItemSettingsMarkup: getItemSettings(),
+                                            hidden: false,
                                             modalSettings: {
                                                 title: 'Configure Wizard Steps',
                                                 header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
@@ -612,7 +609,7 @@ export const getSettings = () => {
                                                         dropdownOptions: [
                                                             { value: 'left', label: 'Left' },
                                                             { value: 'right', label: 'Right' },
-                                                            { value: 'spaceBetween', label: 'Space Between' }
+                                                            { value: 'spaceBetween', label: 'Space between' }
                                                         ]
                                                     })
                                                     .addSettingsInputRow({
