@@ -5,7 +5,6 @@ import { IFontValue } from '@/designer-components/_settings/utils/font/interface
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { I } from 'node_modules/@bprogress/next/dist/types-DfwEfSUF';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;

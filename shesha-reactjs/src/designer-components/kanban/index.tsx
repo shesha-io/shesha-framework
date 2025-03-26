@@ -15,10 +15,8 @@ import { Alert } from 'antd';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -48,29 +46,25 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
     useEffect(() => {
       const fetchStyles = async () => {
-        getBackgroundImageUrl(background, backendUrl, httpHeaders)
-          .then(async (url) => {
-            return await getBackgroundStyle(background, headerStyle, url);
-          })
-          .then((style) => {
-            setBackgroundStyles(style);
-          });
+        const url = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+        const style =  getBackgroundStyle(background, headerStyle, url);
+    
+        setBackgroundStyles((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
       fetchStyles();
     }, [background, backendUrl, httpHeaders]);
+    
 
     useEffect(() => {
       const fetchStyles = async () => {
-        getBackgroundImageUrl(columnBackground, backendUrl, httpHeaders)
-          .then(async (url) => {
-            return await getBackgroundStyle(columnBackground, columnStyle, url);
-          })
-          .then((style) => {
-            setColumnBackgroundStyle(style);
-          });
+        const url = await getBackgroundImageUrl(columnBackground, backendUrl, httpHeaders);
+        const style = getBackgroundStyle(columnBackground, columnStyle, url);
+    
+        setColumnBackgroundStyle((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
       fetchStyles();
     }, [columnBackground, backendUrl, httpHeaders]);
+    
 
     const additionalColumnStyles: CSSProperties = removeUndefinedProps({
       ...columnBorderStyles,
@@ -90,7 +84,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
       <div>
         <ConfigurableFormItem model={model}>
           {(value) => {
-            console.log('model', model);
             return store ? (
               <RefListItemGroupConfiguratorProvider
                 value={value}

@@ -9,14 +9,7 @@ import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const {
-    gap,
-    groupingProperty,
-    createFormId,
-    items,
-    componentName,
-    editFormId,
-  } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
@@ -35,7 +28,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-
   useEffect(() => {
     if (!isInDesigner && modelType && groupingProperty) {
       getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
@@ -48,12 +40,12 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
           });
         }
       });
-  
+
       const filteredTasks = tableData.filter((item: any) => item?.[groupingProperty]);
       setTasks(filteredTasks);
     }
   }, [isInDesigner, modelType, groupingProperty, tableData]);
-  
+
   useEffect(() => {
     setColumns(items);
   }, [items]);

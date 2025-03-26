@@ -2,7 +2,6 @@ import { addPx } from '@/designer-components/_settings/utils';
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, dimensionsStyles, fontStyles }) => {
-  console.log('fontStyles', fontStyles);
   const combinedColumnStyle = cx(
     `${prefixCls}-combined-Column-style`,
     css`
