@@ -105,7 +105,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                 const itemWidth = vertical ? "100%" : addPx(item.width);
                 return (
                     <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }}>
-                        <div key={"divider" + i} className={styles.divider} style={{ ...dividerStyle, alignSelf: "center" }} />
+                        {i !== 0 && <div key={"divider" + i} className={styles.divider} style={{ ...dividerStyle, alignSelf: "center" }} />}
                         <div className={styles.content} style={{ justifyContent: item.textAlign }}>
                             <ComponentsContainer
                                 containerId={item.id}
