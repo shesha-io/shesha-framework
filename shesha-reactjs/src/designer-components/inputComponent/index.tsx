@@ -22,6 +22,7 @@ import { ImagePicker } from '../imagePicker';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
+import KeyInformationBarColumnsList from '../keyInformationBar/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
@@ -194,7 +195,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
-            return <ColumnsList {...props} readOnly={readOnly} />;
+            return <ColumnsList {...props} readOnly={readOnly} value={value} onChange={onChange} />;
+        case 'keyInformationBarColumnsList':
+            return <KeyInformationBarColumnsList {...props} size={size} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'sizableColumnsConfig':
             return <SizableColumnsList {...props} readOnly={readOnly} />;
         case 'editableTagGroupProps':

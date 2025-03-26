@@ -15,11 +15,13 @@ import { DeleteFilled, MenuOutlined, PlusOutlined, QuestionCircleOutlined } from
 import { nanoid } from '@/utils/uuid';
 import { KeyInfomationBarItemProps } from './interfaces';
 import { strings } from '@/components/keyInformationBar/utils';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IProps {
   readOnly: boolean;
   value?: object;
   onChange?: any;
+  size?: SizeType;
 }
 
 const EditableContext = React.createContext(null);
@@ -149,7 +151,7 @@ const DragHandle = () => {
 };
 
 
-export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
+export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly, size }) => {
   const columns = value as KeyInfomationBarItemProps[];
 
   const handleDeleteTab = (key: string) => {
@@ -282,7 +284,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   return (
     <Fragment>
-      <Button onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
+      <Button size={size} onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
 
       <Modal
         title={readOnly ? 'View Columns' : <>Configure Columns {tooltip()}</>}
