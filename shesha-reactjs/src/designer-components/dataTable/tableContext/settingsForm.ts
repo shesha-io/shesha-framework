@@ -140,9 +140,15 @@ export const getSettings = (data: any) => {
                             label: 'Custom Endpoint',
                             labelAlign: 'right',
                             parentId: dataTabId,
-                            type: 'autocomplete',
+                            type: 'endpointsAutocomplete',
                             description: 'The endpoint to use to fetch data.',
-                            validate: { required: false },
+                            validate: {
+                              required: {
+                                _code: "return getSettingValue(data.sourceType) === 'Url';",
+                                _mode: "code",
+                                _value: false
+                              } as any
+                            },
                             dataSourceType: 'url',
                             dataSourceUrl: '/api/services/app/Api/Endpoints',
                             settingsValidationErrors: [],
