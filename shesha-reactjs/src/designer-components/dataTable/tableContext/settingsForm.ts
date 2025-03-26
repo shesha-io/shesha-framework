@@ -117,7 +117,7 @@ export const getSettings = (data: any) => {
                           parentId: dataTabId,
                           hidden: false,
                           dataSourceType: 'url',
-                          validate: { required: true },
+                          validate: {},
                           dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                           settingsValidationErrors: [],
                           jsSetting: true,
@@ -158,6 +158,7 @@ export const getSettings = (data: any) => {
                             useRawValues: true,
                             jsSetting: true,
                             width: '100%',
+                            placeholder: "",
                           }
                         ]
                       })
@@ -238,27 +239,41 @@ export const getSettings = (data: any) => {
                           }
                         ]
                       })
-                      .addSettingsInput({
+                      .addSettingsInputRow({
                         id: nanoid(),
-                        inputType: 'dropdown',
-                        propertyName: "sortMode",
-                        label: "Sort Mode",
-                        labelAlign: "right",
                         parentId: dataTabId,
-                        dropdownOptions: [
-                          {
-                            label: "Standard",
-                            value: "standard"
-                          },
-                          {
-                            label: "Strict",
-                            value: "strict"
-                          }
-                        ],
-                        validate: { required: true },
+                        inline: true,
                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                        settingsValidationErrors: [],
-                        jsSetting: true,
+                        hidden: {
+                          _value: false,
+                          _code: "return getSettingValue(data.sourceType) === 'Url';",
+                          _mode: "code"
+                        } as any,
+                        inputs: [
+                          {
+                            id: nanoid(),
+                            propertyName: "sortMode",
+                            label: "Sort Mode",
+                            labelAlign: "right",
+                            parentId: dataTabId,
+                            type: 'dropdown',
+                            allowClear: true,
+                            dropdownOptions: [
+                              {
+                                label: "Standard",
+                                value: "standard"
+                              },
+                              {
+                                label: "Strict",
+                                value: "strict"
+                              }
+                            ],
+                            validate: { required: true },
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                            settingsValidationErrors: [],
+                            jsSetting: true,
+                          }
+                        ]
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -337,7 +352,7 @@ export const getSettings = (data: any) => {
                         inline: true,
                         hidden: {
                           _value: false,
-                          _code: "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
+                          _code: "return (!getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard') && getSettingValue(data.sourceType) === 'Url';",
                           _mode: "code"
                         },
                         readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
