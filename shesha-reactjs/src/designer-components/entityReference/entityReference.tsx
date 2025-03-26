@@ -45,8 +45,8 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       })
     );
     const additionalStylesWithoutQuotes = additionalStyles
-      .replace(/"([^"]+)":/g, '$1:') // Remove quotes from keys
-      .replace(/'([^']+)':/g, '$1:'); // Remove quotes from keys
+      .replace(/"([^"]+)":/g, '$1:') 
+      .replace(/'([^']+)':/g, '$1:'); 
     const finalStyle = `return ${additionalStylesWithoutQuotes}`;
 
     return (
