@@ -48,20 +48,23 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: "switch",
-                  propertyName: "hidden",
-                  parentId: commonTabId,
-                  label: "Hide",
-                  jsSetting: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
                   inputType: "codeEditor",
                   propertyName: "disableRefresh",
                   parentId: commonTabId,
                   label: "Disable Refresh Data",
-                  description: "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+                  tooltip: "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  jsSetting: true,
+                  availableConstantsExpression: "    return metadataBuilder.object(\"constants\").addAllStandard().build();",
+                  placeholder: "",
+                  language: "typescript",
+                })
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: "switch",
+                  propertyName: "hidden",
+                  parentId: commonTabId,
+                  label: "Hide",
                   jsSetting: true,
                 })
                 .toJson()
