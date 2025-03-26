@@ -3,7 +3,7 @@ import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Space, 
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, CodeEditor, ColorPicker, FormAutocomplete, IconType, LabelValueEditor, PermissionAutocomplete, SectionSeparator, ShaIcon } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateExpression, evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
+import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -15,7 +15,6 @@ import { defaultExposedVariables } from '../_settings/settingsControl';
 import { getValueFromString } from '../settingsInput/utils';
 import CustomDropdown from '../_settings/utils/CustomDropdown';
 import { Autocomplete } from '@/components/autocomplete';
-import { SettingInput } from '../settingsInput/settingsInput';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
 import { QueryBuilderWrapper } from '../queryBuilder/queryBuilderWrapper';
@@ -26,6 +25,7 @@ import { ImagePicker } from '../imagePicker';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
+import KeyInformationBarColumnsList from '../keyInformationBar/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
@@ -36,6 +36,7 @@ import { formTypes } from '../entityReference/settings';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
+import { startCase } from 'lodash';
 
 export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
@@ -68,7 +69,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
         if (customIcons[icon]) {
             return (
-                <Tooltip className={styles.icon} title={hint}>
+                <Tooltip className={styles.icon} title={hint ?? startCase(propertyName.split('.')[1])}>
                     <span style={style}>{customIcons[icon]}</span>
                 </Tooltip>
             );
@@ -168,6 +169,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 variant={variant}
                 className={className}
                 value={value}
+                style={{ width: "100%" }}
                 defaultValue={defaultValue}
                 onChange={
                     onChange}
@@ -186,16 +188,15 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue} onChange={onChange} value={value} />;
         case 'numberField':
             return <InputNumber
-                {...props}
                 placeholder={placeholder}
-                // controls={false}
+                controls={false}
                 defaultValue={defaultValue}
                 variant={variant} readOnly={readOnly}
                 size={size}
                 value={value}
+                style={{ width: "100%" }}
                 onChange={onChange}
-                style={{}}
-                addonAfter={iconElement(icon, null, "tooltip")}
+                addonAfter={iconElement(icon, null, tooltip)}
             />;
         case 'customDropdown':
             return <CustomDropdown
@@ -255,7 +256,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
-            return <ColumnsList {...props} readOnly={readOnly} />;
+            return <ColumnsList {...props} readOnly={readOnly} value={value} onChange={onChange} />;
+        case 'keyInformationBarColumnsList':
+            return <KeyInformationBarColumnsList {...props} size={size} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'sizableColumnsConfig':
             return <SizableColumnsList {...props} readOnly={readOnly} />;
         case 'editableTagGroupProps':
@@ -307,11 +310,13 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                     description: item.tooltip,
                     ...item
                 })}
-                buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
-                modalSettings={{
-                    title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
-                    header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
-                }}
+                buttonText={readOnly ? props.buttonTextReadOnly : props.buttonText}
+                modalSettings={
+                    {
+                        title: readOnly ? props.modalReadonlySettings.title : props.modalSettings.title,
+                        header: <Alert message={readOnly ? props.modalReadonlySettings.header : props.modalSettings.header} />
+                    }
+                }
             >
             </ItemListConfiguratorModal>;
         case 'formTypeAutocomplete':
@@ -355,7 +360,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList?._data} readOnly={false}/>;
+            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList?._data} readOnly={false} />;
         default:
             return <Input
                 size={size}
@@ -368,43 +373,4 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 value={value?.value ? value.value : value}
             />;
     }
-};
-
-
-export interface IInputRowProps {
-    inputs: Array<ISettingsInputProps>;
-    readOnly: boolean;
-    inline?: boolean;
-    children?: React.ReactNode;
-    hidden?: boolean;
-}
-
-export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
-    const { styles } = useStyles();
-    const { data: formData } = useFormData();
-
-    const isHidden = typeof hidden === 'string' ? evaluateExpression(hidden, { data: formData }) : hidden;
-
-    return isHidden || inputs.length === 0 ? null : <div className={inline ? styles.inlineInputs : styles.rowInputs}>
-        {inputs.map((props, i) => {
-            const { type } = props;
-
-            const width = type === 'numberField' ? 100 :
-                type === 'button' ? 24 :
-                    type === 'dropdown' ? 120 :
-                        type === 'radio' ? props.buttonGroupOptions.length * 32 :
-                            type === 'colorPicker' ? 24 :
-                                type === 'customDropdown' ? 120 : 50;
-
-            return (
-                <SettingInput key={i + props.label}
-                    {...props}
-                    hidden={hidden}
-                    readOnly={readOnly}
-                    inline={inline}
-                    width={inline && props.icon ? (props.width || width) : inline ? props.width || width : null} />
-            );
-        })}
-        {children}
-    </div>;
 };

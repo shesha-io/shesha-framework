@@ -3,12 +3,13 @@ import { IToolboxComponent } from '@/interfaces';
 import { BorderLeftOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { KeyInformationBarSettingsForm } from './settings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { IKeyInformationBarProps } from './interfaces';
 import KeyInformationBar from '@/components/keyInformationBar';
 import { removeComponents } from '../_common-migrations/removeComponents';
+import { getSettings } from './settingsForm';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
@@ -18,6 +19,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
 
+    
     return (
       <ParentProvider model={model}>
         <KeyInformationBar {...model} />
@@ -52,7 +54,8 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
 
     return tabsModel;
   },
-  settingsFormFactory: (props) => <KeyInformationBarSettingsForm {...props} />,
+  settingsFormMarkup: () => getSettings(),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
   customContainerNames: ['columns'],
 };
 

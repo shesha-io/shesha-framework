@@ -12,6 +12,7 @@ import { addPx } from "../../utils";
 import { nanoid } from "@/utils/uuid";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
+import { humanizeString } from "@/utils/string";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
     if (!input || jsStyle?.border) return {};
@@ -239,10 +240,11 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
-                    width: 65,
+                    width: 80,
                     defaultValue: 0,
                     type: 'numberField',
                     icon: 'ExpandOutlined',
+                    tooltip: `Styles will apply to all corners`,
                     propertyName: path ? `${path}.border.radius.all` : 'border.radius.all',
                 }
             ]
@@ -254,17 +256,18 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
             inline: true,
             readOnly: false,
             inputs: radiusCorners.map(cornerValue => {
-                const corner = cornerValue.value;
+                const corner = cornerValue.value as string;
 
                 return {
                     id: `borderRadiusStyleRow-${corner}`,
                     parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
-                    width: 65,
+                    width: 80,
                     defaultValue: 0,
                     type: 'numberField',
                     icon: cornerValue.icon,
+                    tooltip: `${humanizeString(corner)} corner`,
                     propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
                 };
             })
