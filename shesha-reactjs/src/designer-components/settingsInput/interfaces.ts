@@ -71,6 +71,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     dropdownMode?: 'multiple' | 'tags';
     customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
+    allowSearch?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
     iconAlt?: string | React.ReactNode;

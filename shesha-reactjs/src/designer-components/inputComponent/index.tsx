@@ -169,8 +169,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 className={className}
                 value={value}
                 defaultValue={defaultValue}
-                onChange={
-                    onChange}
+                onChange={onChange}
+                showSearch={props.allowSearch ?? true}
                 options={typeof dropdownOptions === 'string' ?
                     getValueFromString(dropdownOptions) :
                     dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))}
