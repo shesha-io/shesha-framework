@@ -9,10 +9,8 @@ export interface IShaStatisticProps extends StatisticProps {
 
 export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
   const { styles } = useStyles();
-  return (<div onClick={e => rest.onClick(e)} style={{
-    margin: '0 auto',
-    width: 'fit-content',
-  }}>
+  
+  return (<div onClick={e => rest.onClick(e)}>
     <Statistic className={classNames(styles.shaStatistic, className)} {...rest} />
   </div>);
 };

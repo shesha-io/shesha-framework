@@ -49,6 +49,7 @@ export const getSettings = (data: any) => {
                   "required": true
                 },
                 jsSetting: true,
+                styledLabel: true,
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -551,31 +552,6 @@ export const getSettings = (data: any) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'style',
-                        label: 'Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        collapsedByDefault: true,
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: false,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
                         propertyName: 'titleStyle',
                         label: 'Title Style',
                         labelAlign: 'right',
@@ -746,9 +722,30 @@ export const getSettings = (data: any) => {
                           ]
                         }
                       })
-                      .addSectionSeparator({
+                      .addCollapsiblePanel({
                         id: nanoid(),
-                        parentId: styleRouterId
+                        propertyName: 'style',
+                        label: 'Custom Style',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        collapsedByDefault: true,
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              hideLabel: false,
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
                       })
                       .toJson(),
                   ]
