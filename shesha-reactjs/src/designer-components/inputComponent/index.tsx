@@ -179,9 +179,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={defaultValue} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {buttonGroupOptions.map(({ value, icon, title }) => {
-                    return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
-                })}
+                {
+                    buttonGroupOptions.map(({ value, icon, title }) => {
+                        return <Radio.Button key={value} value={value}>{iconElement(icon, null, title)}</Radio.Button>;
+                    })}
             </Radio.Group>;
         case 'switch':
             return <Switch disabled={readOnly} size='small'
@@ -201,7 +202,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'customDropdown':
             return <CustomDropdown
                 variant={variant} value={value}
-                defaultValue={defaultValue} options={dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
+                defaultValue={defaultValue} options={typeof dropdownOptions === 'string' ?
+                    getValueFromString(dropdownOptions) : dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))} readOnly={readOnly} onChange={onChange} size={size} customTooltip={props.customTooltip} />;
         case 'textArea':
             return <Input.TextArea
                 rows={2}
@@ -300,8 +302,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                         formSettings: {
                             colon: false,
                             layout: 'vertical' as FormLayout,
-                            labelCol: { span: 24 },
-                            wrapperCol: { span: 24 }
+                            labelCol: { span: 6 },
+                            wrapperCol: { span: 18 }
                         }
                     };
                 }}

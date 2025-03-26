@@ -111,7 +111,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
             inputType: 'radio',
             label: 'Border Type',
             propertyName: `${path ? path + '.' : ''}border.borderType`,
-            defaultValue: 'all',
             buttonGroupOptions: borderConfigType,
         })
         .addSettingsInputRow({
@@ -244,7 +243,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     defaultValue: 0,
                     type: 'numberField',
                     icon: 'ExpandOutlined',
-                    tooltip: `Styles will apply to all corners`,
+                    tooltip: 'Styles will apply to all corners',
                     propertyName: path ? `${path}.border.radius.all` : 'border.radius.all',
                 }
             ]
