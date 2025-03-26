@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { AlignItems } from '../container/interfaces';
 
 export interface KeyInfomationBarItemProps {
@@ -10,7 +10,7 @@ export interface KeyInfomationBarItemProps {
   padding?: string;
 }
 
-export interface IKeyInformationBarProps extends IConfigurableFormComponent {
+export interface IKeyInformationBarProps extends IConfigurableFormComponent, IInputStyles {
   width?: string;
   height?: string;
   dividerHeight?: string;
