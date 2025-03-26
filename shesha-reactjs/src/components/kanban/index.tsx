@@ -12,12 +12,10 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const {
     gap,
     groupingProperty,
-    entityType,
     createFormId,
     items,
     componentName,
     editFormId,
-    maxResultCount,
     columnStyle,
   } = props;
 
@@ -26,7 +24,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
-  const { refetch } = useGet({ path: '', lazy: true });
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
@@ -39,13 +36,9 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  console.log('groupingProperty!!', groupingProperty);
-  console.log('tableDat!!', tableData);
 
   useEffect(() => {
     if (!isInDesigner && modelType && groupingProperty) {
-      console.log("Effect triggered");
-  
       getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
         if (resp?.apiEndpoints) {
           const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
@@ -58,13 +51,10 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       });
   
       const filteredTasks = tableData.filter((item: any) => item?.[groupingProperty]);
-      console.log("Setting tasks to:", filteredTasks);
       setTasks(filteredTasks);
     }
   }, [isInDesigner, modelType, groupingProperty, tableData]);
   
-
-  console.log('tasks', tasks);
   useEffect(() => {
     setColumns(items);
   }, [items]);
@@ -163,7 +153,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   };
 
   const memoizedFilteredTasks = useMemo(() => {
-    return columns.map((column) => ({
+    return columns?.map((column) => ({
       column,
       tasks: tasks.filter((task) => parseFloat(task[groupingProperty]) === column.itemValue),
       isCollapsed: settings[column.itemValue] || false, // Default to false if not set

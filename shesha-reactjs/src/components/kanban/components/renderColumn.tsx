@@ -1,8 +1,15 @@
 import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { Button, Dropdown, Popconfirm } from 'antd';
 import { ReactSortable } from 'react-sortablejs';
-import { PlusOutlined, MoreOutlined, RightOutlined, LeftOutlined, SettingFilled } from '@ant-design/icons';
-import { ConfigurableForm, getStyle, IconPicker, useAvailableConstantsData, useConfigurableActionDispatcher, useFormData } from '@/index';
+import Icon, { PlusOutlined, MoreOutlined, RightOutlined, LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
+import {
+  ConfigurableForm,
+  getStyle,
+  IconPicker,
+  useAvailableConstantsData,
+  useConfigurableActionDispatcher,
+  useFormData,
+} from '@/index';
 import { MenuProps } from 'antd';
 import { Flex } from 'antd';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
@@ -86,15 +93,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     },
   ].filter(Boolean);
 
-
-  
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
       return new Promise((resolve) => {
         const { to, dragged } = evt;
         const draggedTask = dragged?.dataset;
-        const targetColumn = to?.dataset?.targetColumn; 
-        
+        const targetColumn = to?.dataset?.targetColumn;
+
         if (!targetColumn?.actionConfiguration?.actionName) {
           resolve(true); // Allow the drag and drop to proceed without action
           return;
@@ -157,6 +162,8 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       });
     });
   };
+
+  console.log('headerStyles', props.headerStyles); // Debugging
   return (
     <>
       {!column.hidden && (
@@ -174,16 +181,24 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             }
             align="center"
             className={styles.combinedHeaderStyle}
-            style={props.headerStyles || {}}
+            style={{ ...props.headerStyles }} 
           >
             {props.showIcons && column.icon && (
               <IconPicker
                 value={column.icon}
+                onIconChange={() => {}}
                 readOnly
-                style={props.headerStyles || {}}
+                style={{ fontSize: props.headerStyles?.fontSize, color: props.headerStyles?.color }}
               />
             )}
-            <h3>
+
+            <h3
+              style={{
+                fontSize: props.headerStyles?.fontSize,
+                color: props.headerStyles?.color,
+                fontWeight: props.headerStyles?.fontWeight,
+              }}
+            >
               {column.item} ({columnTasks.length})
             </h3>
 
@@ -191,7 +206,11 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
                 <Button
                   type="text"
-                  icon={<SettingFilled style={{ color: props.fontColor, fontSize: addPx(props.fontSize) }} />}
+                  icon={
+                    <SettingOutlined
+                      style={{ fontSize: props.headerStyles?.fontSize, color: props.headerStyles?.color }}
+                    />
+                  }
                 />
               </Dropdown>
             )}
