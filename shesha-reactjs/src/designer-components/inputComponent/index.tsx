@@ -3,7 +3,7 @@ import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch 
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateString, evaluateValue, executeScript, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
+import { evaluateString, evaluateValue, executeScript, MetadataProvider, useAvailableConstantsData, useFormData, useMetadata } from '@/index';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
@@ -203,14 +203,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'editableTagGroupProps':
             return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={onChange} readOnly={props.readOnly} />;
         case 'propertyAutocomplete':
-            return <PropertyAutocomplete
-                id={props.id}
-                size={props.size}
-                readOnly={props.readOnly}
-                autoFillProps={props.autoFillProps ?? true}
-                value={value}
-                onChange={onChange}
-            />;
+            return <MetadataProvider modelType={props.modelType}>
+                <PropertyAutocomplete
+                    id={props.id}
+                    size={props.size}
+                    readOnly={props.readOnly}
+                    autoFillProps={props.autoFillProps ?? true}
+                    value={value}
+                    onChange={onChange}
+                />
+            </MetadataProvider>;
         case 'contextPropertyAutocomplete':
             return <ContextPropertyAutocomplete {...{ ...props }} readOnly={readOnly} defaultModelType="defaultType" formData={formData} id="contextPropertyAutocomplete" />;
         case 'formAutocomplete':

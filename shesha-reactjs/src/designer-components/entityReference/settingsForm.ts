@@ -358,8 +358,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       allowClear: true,
                       jsSetting: true,
                       width: '100%',
-                      modelType: '{{data?.entityType}}',
-                      jsSetting: true,
+                      modelType: '{{data.entityType}}',
                     },
                   ],
                 })
