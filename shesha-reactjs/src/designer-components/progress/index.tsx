@@ -53,7 +53,8 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       strokeWidth,
       width,
       defaultValue,
-      hidden
+      hidden,
+      gapDegree
     } = model;
 
     if (hidden) return null;
@@ -64,22 +65,23 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     };
 
     const getEvaluatedStrokeValue = () => {
-      let color = strokeColor;
+      let color: string = strokeColor;
       let isLineOrCircle = false;
 
       if (progressType === 'line') {
-        color = lineStrokeColor;
+        color = lineStrokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (progressType === 'circle') {
-        color = circleStrokeColor;
+        color = circleStrokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (isLineOrCircle) {
         // tslint:disable-next-line:function-constructor
-        return new Function(color)();
+        //console.log(color)
+        return color;
       } else {
         return color;
       }
@@ -109,6 +111,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
+              gapDegree={gapDegree}
             />);
         }}
       </ConfigurableFormItem>

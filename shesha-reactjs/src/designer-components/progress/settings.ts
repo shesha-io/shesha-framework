@@ -20,15 +20,18 @@ export const getSettings = (data: any) => {
             id: nanoid(),
             components: [
               ...new DesignerToolbarSettings()
-                .addContextPropertyAutocomplete({
-                  id: nanoid(),
-                  propertyName: 'propertyName',
-                  parentId: 'root',
-                  label: 'Property Name',
-                  size: 'small',
-                  validate: { required: true },
-                  jsSetting: true,
-                })
+              .addContextPropertyAutocomplete({
+                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                propertyName: 'propertyName',
+                label: 'Property Name',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                styledLabel: true,
+                size: 'small',
+                validate: {
+                    required: true,
+                },
+                jsSetting: true,
+            })
                 .addLabelConfigurator({
                   id: nanoid(),
                   propertyName: 'hideLabel',
@@ -71,6 +74,7 @@ export const getSettings = (data: any) => {
                       propertyName: 'progressType',
                       label: 'Type',
                       tooltip: 'To specify the type of progress bar',
+                      defaultValue: 'line',
                       dropdownOptions: [
                         { label: 'Line', value: 'line' },
                         { label: 'Circle', value: 'circle' },
@@ -99,14 +103,6 @@ export const getSettings = (data: any) => {
                   parentId: 'root',
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'defaultValue',
-                      label: 'Default Value',
-                      tooltip: 'Sets the default value for the progress bar',
-                      jsSetting: true,
-                    },
                     {
                       type: 'numberField',
                       id: nanoid(),
@@ -322,39 +318,38 @@ export const getSettings = (data: any) => {
                           id: nanoid(),
                           components: [
                             ...new DesignerToolbarSettings()
-                              .addSettingsInput({
+                              .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'format',
-                                label: 'Format',
-                                inputType:'codeEditor',
-                                tooltip: 'The template function of the content. This function should return string or number',
-                                description: 'The template function of the content. This function should return string or number',
-                                mode: 'dialog',
-                                exposedVariables: [
-                                  `{ name: 'percent', description: 'Progress percentage', type: 'number' }`,
-                                  `{ name: 'successPercent', description: 'Success percentage', type: 'number' }`
-                                ],
-                                // wrapInTemplate: true,
-                                // templateSettings: {
-                                //   functionName: 'format'
-                                // },
-                                jsSetting: true,
+                                parentId: 'root',
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              })
-                              .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'success',
-                                label: 'Success',
-                                inputType:'codeEditor',
-                                tooltip: 'Configs of successfully progress bar. Returns an object: { percent: number, strokeColor: string }',
-                                description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
-                                mode: 'dialog',
-                                // wrapInTemplate: true,
-                                // templateSettings: {
-                                //   functionName: 'success'
-                                // },
-                                jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'success',
+                                    label: 'Success',
+                                    type:'codeEditor',
+                                    tooltip: 'Configs of successfully progress bar. Returns an object: { percent: number, strokeColor: string }',
+                                    description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
+                                    mode: 'dialog',
+                                    jsSetting: true,
+                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  },
+                                  {
+                                    id: nanoid(),
+                                    propertyName: 'format',
+                                    label: 'Format',
+                                    type:'codeEditor',
+                                    tooltip: 'The template function of the content. This function should return string or number',
+                                    description: 'The template function of the content. This function should return string or number',
+                                    mode: 'dialog',
+                                    exposedVariables: [
+                                      `{ name: 'percent', description: 'Progress percentage', type: 'number' }`,
+                                      `{ name: 'successPercent', description: 'Success percentage', type: 'number' }`
+                                    ],
+                                    jsSetting: true,
+                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  }
+                                ]
                               })
                               .toJson()
                           ]
