@@ -264,6 +264,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 options={formTypesOptions}
                 size={size ?? 'small'}
                 value={value}
+                onChange={onChange}
                 onSearch={(t) =>
                     setFormTypesOptions(
                         (t
