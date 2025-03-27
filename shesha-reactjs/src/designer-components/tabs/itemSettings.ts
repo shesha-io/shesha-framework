@@ -132,7 +132,7 @@ export const getItemSettings = () => {
                                         type: 'editModeSelector',
                                         propertyName: 'editMode',
                                         parentId: 'root',
-                                        label: 'Edit mode',
+                                        label: 'Edit Mode',
                                         jsSetting: true
                                     },
                                     {

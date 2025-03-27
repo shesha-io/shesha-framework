@@ -116,6 +116,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
+                background-repeat: ${cardStyles.backgroundRepeat} !important;
+                background-size: ${cardStyles.backgroundSize} !important;
+                background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px` :

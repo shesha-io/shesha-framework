@@ -110,13 +110,13 @@ export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
     : true;
 };
 
-export const onAddNewItem = (items) => {
+export const onAddNewItem = (items: IWizardStepProps[]) => {
   const count = (items ?? []).length;
+  const id = nanoid();
   const buttonProps: IWizardStepProps = {
-    id: nanoid(),
+    id: id,
     name: `step${count + 1}`,
-    label: `Step ${count + 1}`,
-    key: `stepKey${count + 1}`,
+    key: id,
     title: `Step ${count + 1}`,
     subTitle: `Sub title ${count + 1}`,
     description: `Description ${count + 1}`,
