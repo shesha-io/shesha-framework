@@ -11,11 +11,11 @@ import { migratePropertyName, migrateCustomFunctions } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import Marquee from 'react-fast-marquee';
-
+import parse from 'html-react-parser';
 
 const defaultTextForPreview = {
   success: {
-    text: 'Success Alert Preview Text', 
+    text: 'Success Alert Preview Text',
     description: 'This is a success alert preview text. More information here.'
   },
   info: {
@@ -59,15 +59,58 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
       }
     }
 
+    const renderContent = (content: string | React.ReactNode) => {
+      if (React.isValidElement(content)) {
+        return React.cloneElement(content as React.ReactElement, {
+          style: {
+            ...(content as React.ReactElement).props?.style,
+            padding: 0,
+            margin: 0,
+            lineHeight: 'normal'
+          }
+        });
+      }
+
+      const contentStr = String(content || '');
+      const hasHtmlTags = contentStr.match(/<\/?[a-z][\s\S]*>/i);
+
+      if (hasHtmlTags) {
+        const parsedContent: any = parse(contentStr);
+        // If parsed content is a React element, apply our styles
+        if (React.isValidElement(parsedContent)) {
+          return React.cloneElement(parsedContent as React.ReactElement, {
+            className: 'sha-alert-content',
+            ...(parsedContent as React.ReactElement).props,
+            style: {
+              ...(parsedContent as React.ReactElement).props?.style,
+              padding: 0,
+              margin: 0,
+              lineHeight: 'normal'
+            }
+          });
+        }
+        return parsedContent;
+      }
+
+      return <span style={{ padding: 0, margin: 0, lineHeight: 'normal' }}>{contentStr}</span>;
+    };
+
+    const messageContent = renderContent(evaluatedMessage);
+    const descriptionContent = evaluatedDescription ? renderContent(evaluatedDescription) : null;
+
     return (
       <Alert
         className="sha-alert"
-        message={model.marquee ? (<Marquee pauseOnHover gradient={false}><div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} /></Marquee>) : <div dangerouslySetInnerHTML={{ __html: evaluatedMessage }} />}
+        message={model.marquee ? (
+          <Marquee pauseOnHover gradient={false}>
+            {messageContent}
+          </Marquee>
+        ) : messageContent}
         banner={model.banner}
         type={alertType}
-        description={!model.banner && evaluatedDescription}
+        description={descriptionContent}
         showIcon={showIcon}
-        style={getStyle(style, formData)} // Temporary. Make it configurable
+        style={{ ...getStyle(style, formData), padding: '8px' }} // Temporary. Make it configurable
         closable={closable}
         icon={icon ? <ShaIcon iconName={icon as any} /> : null}
       />

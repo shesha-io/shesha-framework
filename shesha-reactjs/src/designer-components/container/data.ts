@@ -178,8 +178,8 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
       maxWidth
     },
     border: {
-      selectedCorner: 'all',
-      selectedSide: 'all',
+      radiusType: 'all',
+      borderType: 'all',
       border: {
         all: { width: borderWidth, color: borderColor, style: borderStyle as any },
       },

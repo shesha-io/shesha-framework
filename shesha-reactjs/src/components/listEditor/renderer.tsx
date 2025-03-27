@@ -121,7 +121,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
         ? header
         : header === null
             ? () => (null)
-            : () => ((!maxItemsCount || sortableItems?.length < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly}>Add</Button>);
+            : () => ((!maxItemsCount || (sortableItems?.length ?? 0) < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly}>Add</Button>);
 
     return (
         <div className={styles.list}>

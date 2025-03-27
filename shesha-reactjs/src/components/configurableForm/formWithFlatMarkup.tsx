@@ -9,7 +9,6 @@ import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
 import { ConditionalMetadataProvider } from '@/providers';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
-import ParentProvider from '@/providers/parentProvider';
 
 export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
   formFlatMarkup: IFlatComponentsStructure;
@@ -47,29 +46,27 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   return (
     <FormInfo visible={showFormInfo} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated}>
-      <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={formFlatMarkup} formApi={shaForm.getPublicFormApi()} isScope >
-        <ConditionalMetadataProvider modelType={formSettings?.modelType}>
-          <FormFlatMarkupProvider markup={formFlatMarkup}>
-            <FormProvider
+      <ConditionalMetadataProvider modelType={formSettings?.modelType}>
+        <FormFlatMarkupProvider markup={formFlatMarkup}>
+          <FormProvider
+            shaForm={shaForm}
+            name={props.formName}
+            formSettings={formSettings}
+            mode={mode}
+            form={form}
+            formRef={formRef}
+            isActionsOwner={isActionsOwner}
+            propertyFilter={propertyFilter}
+            actions={actions}
+            sections={sections}
+          >
+            <ConfigurableFormRenderer
               shaForm={shaForm}
-              name={props.formName}
-              formSettings={formSettings}
-              mode={mode}
-              form={form}
-              formRef={formRef}
-              isActionsOwner={isActionsOwner}
-              propertyFilter={propertyFilter}
-              actions={actions}
-              sections={sections}
-            >
-              <ConfigurableFormRenderer
-                shaForm={shaForm}
-                {...props}
-              />
-            </FormProvider>
-          </FormFlatMarkupProvider>
-        </ConditionalMetadataProvider>
-      </ParentProvider>
+              {...props}
+            />
+          </FormProvider>
+        </FormFlatMarkupProvider>
+      </ConditionalMetadataProvider>
     </FormInfo>
   );
 };

@@ -21,6 +21,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 
 export interface IImageStyleProps {
   height?: number | string;
@@ -76,12 +77,13 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const theme = useTheme();
 
     const styling = JSON.parse(model.stylingBox || '{}');
-    const { width, height, filter, filterIntensity } = model;
+    const { filter, filterIntensity } = model;
     const stylingBoxAsCSS = pickStyleFromModel(styling);
     const jsStyle = getStyle(model.style, data);
 
     const borderStyles = useMemo(() => getBorderStyle(model?.border, jsStyle), [model.border, jsStyle]);
     const shadowStyles = useMemo(() => getShadowStyle(model?.shadow), [model.shadow]);
+    const dimensionsStyles = useMemo(() => getSizeStyle(model?.dimensions), [model?.dimensions]);
     const filterUnit = filter === 'blur' ? 'px' : filter === 'hue-rotate' ? 'deg' : '%';
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
@@ -93,6 +95,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       borderStyle: model.borderType || 'solid',
       borderColor: model.borderColor || theme.colorBorder,
       opacity: model.opacity,
+      ...dimensionsStyles,
       ...borderStyles,
       ...shadowStyles,
       ...stylingBoxAsCSS
@@ -141,8 +144,6 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               <ImageField
                 allowedFileTypes={model?.allowedFileTypes}
                 imageSource={model.dataSource}
-                width={width}
-                height={height}
                 styles={finalStyle}
                 value={val}
                 readOnly={readonly}
@@ -158,7 +159,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   },
   initModel: (model) => {
     const customModel: IImageProps = {
-      ...model,
+      ...model
     };
     return customModel;
   },
@@ -168,9 +169,11 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     .add<IImageProps>(2, (prev) => {
       return {
         ...prev,
+        hideLabel: true,
+        editMode: 'inherited',
         url: Boolean(prev.url) ? { _mode: 'code', _code: prev.url } : null,
         storedFileId: Boolean(prev.storedFileId) ? { _mode: 'code', _code: prev.storedFileId } : null,
-        border: { selectedCorner: 'all', selectedSide: 'all', border: { all: { width: 0, style: 'solid', color: '#d9d9d9' } } },
+        border: { radiusType: 'all', borderType: 'all', border: { all: { width: 0, style: 'solid', color: '#d9d9d9' } } },
       } as any;
     })
     .add<IImageProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))

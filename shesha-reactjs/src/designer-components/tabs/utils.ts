@@ -3,7 +3,12 @@ import { ITabPaneProps } from "./models";
 import { IStyleType } from "@/index";
 
 export const defaultStyles: IStyleType = {
-
+    font: {
+        size: 14,
+        weight: '500',
+        type: 'Segoe UI',
+        color: '#000000'
+    },
     background: { type: 'color', color: '#FFFFFF' },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
@@ -12,8 +17,8 @@ export const defaultStyles: IStyleType = {
             bottom: { width: '1' }, left: { width: '1' }
         },
         radius: { all: 8 },
-        selectedCorner: 'all',
-        selectedSide: 'all'
+        radiusType: 'all',
+        borderType: 'all'
     },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
 };

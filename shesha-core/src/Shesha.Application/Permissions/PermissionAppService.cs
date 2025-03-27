@@ -40,9 +40,8 @@ namespace Shesha.Permissions
 
         public async Task<PermissionDto?> GetAsync(string id)
         {
-            /* TODO: Alex, please review. If an entity is requested we must return value or  throw exception. It's abnormal case if we get request with empty id, so there should be an exception*/
             if (string.IsNullOrEmpty(id))
-                return null;
+                throw new ArgumentNullException(nameof(id));
 
             var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
             dto.Module = dto.ModuleId != null 

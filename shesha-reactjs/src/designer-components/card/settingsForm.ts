@@ -36,7 +36,7 @@ export const getSettings = (data: any) =>
               id: nanoid(),
               propertyName: 'hidden',
               parentId: '11a170e0-ff22-4448-a2f3-0030580ea52b',
-              label: 'Hidden',
+              label: 'hide',
             })
             .addCheckbox({
               id: nanoid(),
@@ -63,62 +63,63 @@ export const getSettings = (data: any) =>
       },
       components: [
         ...new DesignerToolbarSettings()
-    .addCollapsiblePanel({
-      id: nanoid(),
-      propertyName: 'pnlStyle',
-      parentId: 'root',
-      label: 'Style',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: '92ad3873-216c-4465-a21f-489f21e9cca5',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addTextField({
-              id: nanoid(),
-              propertyName: 'className',
-              componentName: 'className',
-              parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
-              label: 'Custom CSS Class',
-              textType: 'text',
-              description: 'Custom CSS Class to add to this component',
-            })
-            .addCodeEditor({
-              id: nanoid(),
-              propertyName: 'style',
-              parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
-              label: 'Style',
-              description:
-                'A script that returns the style of the element as an object. This should conform to CSSProperties',
-              exposedVariables: [
-                {
-                  id: nanoid(),
-                  name: 'data',
-                  description: 'Form data',
-                  type: 'object',
-                },
-                {
-                  id: nanoid(),
-                  name: 'globalState',
-                  description: 'The global state',
-                  type: 'object',
-                },
+          .addCollapsiblePanel({
+            id: nanoid(),
+            propertyName: 'pnlStyle',
+            parentId: 'root',
+            label: 'Style',
+            labelAlign: 'left',
+            expandIconPosition: 'start',
+            ghost: true,
+            collapsible: 'header',
+            content: {
+              id: '92ad3873-216c-4465-a21f-489f21e9cca5',
+              components: [
+                ...new DesignerToolbarSettings()
+                  .addTextField({
+                    id: nanoid(),
+                    propertyName: 'className',
+                    componentName: 'className',
+                    parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
+                    label: 'Custom CSS Class',
+                    textType: 'text',
+                    description: 'Custom CSS Class to add to this component',
+                  })
+                  .addCodeEditor({
+                    id: nanoid(),
+                    propertyName: 'style',
+                    parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
+                    label: 'Style',
+                    description:
+                      'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                    exposedVariables: [
+                      {
+                        id: nanoid(),
+                        name: 'data',
+                        description: 'Form data',
+                        type: 'object',
+                      },
+                      {
+                        id: nanoid(),
+                        name: 'globalState',
+                        description: 'The global state',
+                        type: 'object',
+                      },
+                    ],
+                  })
+                  .addStyleBox({
+                    id: nanoid(),
+                    propertyName: 'stylingBox',
+                    parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
+                    validate: {},
+                    settingsValidationErrors: [],
+                    jsSetting: false,
+                  })
+                  .toJson(),
               ],
-            })
-            .addStyleBox({
-              id: nanoid(),
-              propertyName: 'stylingBox',
-              parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: false,
-            })
-            .toJson(),
-        ],
-      },
-    }).toJson()]})
+            },
+          }).toJson()]
+    })
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlVisibility',
@@ -156,8 +157,8 @@ export const getSettings = (data: any) =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings() 
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -168,6 +169,6 @@ export const getSettings = (data: any) =>
             validate: {},
           }).toJson()
         ]
-  }
-  })
+      }
+    })
     .toJson();

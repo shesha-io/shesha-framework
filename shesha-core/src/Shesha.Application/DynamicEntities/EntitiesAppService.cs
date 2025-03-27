@@ -51,7 +51,7 @@ namespace Shesha.DynamicEntities
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
+            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
         [HttpGet]

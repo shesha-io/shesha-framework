@@ -59,7 +59,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   }, [value]);
 
   const hasChangedAction = (changedValues): boolean => {
-    if (changedValues && changedValues.hasOwnProperty(ACTION_FULL_NAME_FIELD)){
+    if (changedValues && changedValues.hasOwnProperty(ACTION_FULL_NAME_FIELD)) {
       const { actionFullName } = changedValues;
       const prevActionFullName = formValues?.actionFullName;
       return prevActionFullName !== actionFullName;
@@ -69,14 +69,14 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   const onValuesChange = (changedValues, values) => {
     const actionChanged = hasChangedAction(changedValues);
-    if (actionChanged){
+    if (actionChanged) {
       form.setFieldValue(FORM_ARGUMENTS_FIELD, undefined);
     }
 
     if (onChange) {
       const { actionFullName, actionArguments, ...restProps } = values;
       const actionId = parseActionFullName(actionFullName);
-      
+
       const newFormValues = {
         _type: StandardNodeTypes.ConfigurableActionConfig,
         actionName: actionId?.actionName,
@@ -116,7 +116,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         onValuesChange={onValuesChange}
         initialValues={formValues}
       >
-        <Form.Item name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
+        <FormItem name={ACTION_FULL_NAME_FIELD} label={label} tooltip={description}>
           <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </FormItem>
         {selectedAction && selectedAction.hasArguments && (
@@ -165,7 +165,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 };
 
 interface IConfigurableActionConfiguratorProps {
-  label?: React.ReactNode;
+  label?: string;
   description?: string;
   editorConfig: IConfigurableActionConfiguratorComponentProps;
   value?: IConfigurableActionConfiguration;

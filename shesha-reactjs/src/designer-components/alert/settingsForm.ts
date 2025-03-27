@@ -128,6 +128,29 @@ export const getSettings = (data: IAlertComponentProps) => {
                     {
                       type: 'switch',
                       id: nanoid(),
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'closable',
+                      label: 'Closable',
+                      size: 'small',
+                      jsSetting: true,
+                    }
+                  ],
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: commonTabId,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
                       propertyName: 'marquee',
                       label: 'Marquee',
                       size: 'small',
@@ -146,22 +169,25 @@ export const getSettings = (data: IAlertComponentProps) => {
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'closable',
-                      label: 'Closable',
-                      size: 'small',
-                      jsSetting: true,
-                    }
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
                 .toJson()]
+          }
+          ,
+          {
+            key: 'security',
+            title: 'Security',
+            id: securityTabId,
+            components: [...new DesignerToolbarSettings()
+              .addSettingsInput({
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                id: nanoid(),
+                inputType: 'permissions',
+                propertyName: 'permissions',
+                label: 'Permissions',
+                size: 'small',
+                parentId: securityTabId
+              })
+              .toJson()
+            ]
           },
           {
             key: 'appearance',
@@ -169,21 +195,6 @@ export const getSettings = (data: IAlertComponentProps) => {
             id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      size: 'small',
-                      jsSetting: true,
-                    }
-                  ],
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                })
                 .addCollapsiblePanel({
                   id: nanoid(),
                   propertyName: 'customStyle',
@@ -200,7 +211,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                         id: nanoid(),
                         inputType: 'codeEditor',
                         propertyName: 'style',
-                        hideLabel: true,
+                        hideLabel: false,
                         label: 'Style',
                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                       })
@@ -208,25 +219,7 @@ export const getSettings = (data: IAlertComponentProps) => {
                     ]
                   }
                 })
-
                 .toJson()
-            ]
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: securityTabId
-              })
-              .toJson()
             ]
           }
         ]

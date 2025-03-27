@@ -1,6 +1,8 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
-export interface IStyleBoxComponentProps extends IConfigurableFormComponent {}
+export interface IStyleBoxComponentProps extends IConfigurableFormComponent {
+  noMargin?: boolean;
+}
 
 export interface IInputDirection {
   top?: number;

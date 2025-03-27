@@ -33,12 +33,13 @@ import { ILabelComponentProps } from '@/designer-components/styleLabel/interface
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISettingsInputRowProps } from '@/designer-components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
-import { ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import { IRadioOption, ISettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { IImageFieldProps } from '@/designer-components/image/image';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
   jsSetting?: boolean;
+  labelAlignOptions?: IRadioOption[];
 }
 
 type DropdownType = ToolbarSettingsProp & Omit<IDropdownComponentProps, 'hidden' | 'type'>;
@@ -287,9 +288,9 @@ export class DesignerToolbarSettings<T> {
     this.form.push({
       ...obj,
       type,
-      hidden: obj.hidden as any,
-      version: typeof (obj.version) === 'number'
-        ? obj.version
+      hidden: obj?.hidden as any,
+      version: typeof (obj?.version) === 'number'
+        ? obj?.version
         : 'latest'
     });
 

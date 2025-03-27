@@ -4,8 +4,10 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { getBorderInputs } from '../_settings/utils/border/utils';
 import { getCornerInputs } from '../_settings/utils/border/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
 export const getSettings = (data: INumberFieldComponentProps) => {
+
     return {
         components: new DesignerToolbarSettings(data)
             .addSearchableTabs({
@@ -37,7 +39,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                             .addLabelConfigurator({
                                 id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                                 propertyName: 'hideLabel',
-                                label: 'label',
+                                label: 'Label',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
@@ -87,6 +89,39 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 ],
                             })
                             .addSettingsInputRow({
+                                id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        type: 'dropdown',
+                                        id: 'type-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'textType',
+                                        label: 'Type',
+                                        size: 'small',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            {
+                                                label: 'text',
+                                                value: 'text',
+                                            },
+                                            {
+                                                label: 'password',
+                                                value: 'password',
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        type: 'textField',
+                                        id: 'initialValue-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'initialValue',
+                                        label: 'Default Value',
+                                        tooltip: 'Enter default value of component. (formData, formMode, globalState) are exposed',
+                                        jsSetting: true,
+                                    },
+                                ],
+                            })
+                            .addSettingsInputRow({
                                 id: 'prefix-s4gmBg31azZC0UjZjpfTm',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 inputs: [
@@ -128,6 +163,12 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 ],
                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
+                            .addSettingsInput({
+                                propertyName: 'spellCheck',
+                                id: 'spellCheck-s4gmBg31azZC0UjZjpfTm',
+                                label: 'Spell Check',
+                                inputType: 'switch',
+                            })
                             .toJson()
                         ]
                     },
@@ -153,17 +194,17 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                 inputs: [
                                     {
                                         type: 'numberField',
-                                        id: 'minValue-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.minValue',
-                                        label: 'Min Value',
+                                        id: 'minLength-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.minLength',
+                                        label: 'Min Length',
                                         size: 'small',
                                         jsSetting: true,
                                     },
                                     {
                                         type: 'numberField',
-                                        id: 'maxValue-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.maxValue',
-                                        label: 'Max Value',
+                                        id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'validate.maxLength',
+                                        label: 'Max Length',
                                         size: 'small',
                                         jsSetting: true,
                                     },
@@ -343,7 +384,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 label: "Width",
                                                                 width: 85,
                                                                 propertyName: "dimensions.width",
-                                                                icon: "width",
+                                                                icon: "widthIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
 
                                                             },
@@ -354,7 +395,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.minWidth",
-                                                                icon: "minWidth",
+                                                                icon: "minWidthIcon",
                                                             },
                                                             {
                                                                 type: 'textField',
@@ -363,7 +404,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.maxWidth",
-                                                                icon: "maxWidth",
+                                                                icon: "maxWidthIcon",
                                                             }
                                                         ]
                                                     })
@@ -379,7 +420,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 label: "Height",
                                                                 width: 85,
                                                                 propertyName: "dimensions.height",
-                                                                icon: "height",
+                                                                icon: "heightIcon",
                                                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
                                                             },
                                                             {
@@ -389,7 +430,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.minHeight",
-                                                                icon: "minHeight",
+                                                                icon: "minHeightIcon",
                                                             },
                                                             {
                                                                 type: 'textField',
@@ -398,21 +439,8 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 width: 85,
                                                                 hideLabel: true,
                                                                 propertyName: "dimensions.maxHeight",
-                                                                icon: "maxHeight",
+                                                                icon: "maxHeightIcon",
                                                             }
-                                                        ]
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: 'predefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
                                                         ]
                                                     })
                                                     .toJson()
@@ -447,36 +475,16 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                             },
                                                         ]
                                                     })
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getBorderInputs()[4] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[0] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[1] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[2] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[3] as any
-                                                    )
-                                                    .addSettingsInputRow(
-                                                        getCornerInputs()[4] as any
-                                                    )
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
+                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -501,33 +509,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -613,92 +595,34 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                                                    dropdownOptions: sizeOptions,
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
                                                                     id: 'backgroundStyleRow-position',
                                                                     label: "Position",
                                                                     hideLabel: true,
+                                                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
-                                                                },
-                                                                {
-                                                                    type: 'dropdown',
-                                                                    id: 'backgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "repeat",
-                                                                            label: "repeat"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-x",
-                                                                            label: "repeatX"
-                                                                        },
-                                                                        {
-                                                                            value: "repeat-y",
-                                                                            label: "repeatY"
-                                                                        },
-                                                                        {
-                                                                            value: "no-repeat",
-                                                                            label: "noRepeat"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: positionOptions,
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],
@@ -726,8 +650,9 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
-                                                                icon: "offsetHorizontal",
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
+                                                                icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
                                                             {
@@ -735,8 +660,9 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
-                                                                icon: 'offsetVertical',
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
+                                                                icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
                                                             {
@@ -744,8 +670,9 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
-                                                                icon: 'blur',
+                                                                tooltip: 'Blur radius',
+                                                                width: 80,
+                                                                icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
                                                             {
@@ -753,8 +680,9 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
-                                                                icon: 'spread',
+                                                                tooltip: 'Spread radius',
+                                                                width: 80,
+                                                                icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
                                                             {
@@ -793,7 +721,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -806,7 +734,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                                                         id: 'custom-css-412c-8461-4c8d55e5c073',
                                                         inputType: 'codeEditor',
                                                         propertyName: 'style',
-                                                        hideLabel: true,
+                                                        hideLabel: false,
                                                         label: 'Style',
                                                         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                                     })

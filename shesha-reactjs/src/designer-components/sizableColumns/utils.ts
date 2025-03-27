@@ -8,6 +8,18 @@ export const defaultStyles = (): ISizableColumnInputProps => {
       { id: nanoid(), size: 50, components: [] },
       { id: nanoid(), size: 50, components: [] },
     ],
+    border: {
+      border: {
+        all: {
+          width: 0,
+          style: 'solid',
+          color: '#fff'
+        }
+      },
+      radius: { all: 0 },
+      borderType: 'all',
+      radiusType: 'all'
+    },
     stylingBox: "{\"marginBottom\":\"5\"}"
   };
 };

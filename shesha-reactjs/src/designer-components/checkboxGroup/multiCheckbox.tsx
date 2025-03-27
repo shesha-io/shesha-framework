@@ -42,26 +42,29 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }, [data?.result, model?.reducerFunc]);
   //#endregion
 
-  const options = useMemo(
-    () => {
-      const list = getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [];
-      return list.map(item => item.id ? item : { ...item, id: nanoid() });
-    },
-    [model?.dataSourceType, items, refList?.items, reducedData]
-  );
+  const options = useMemo(() => {
+    const list = getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [];
+    return list.map((item) => (item.id ? item : { ...item, id: nanoid() }));
+  }, [model?.dataSourceType, items, refList?.items, reducedData]);
 
   return (
-    <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
-      <Row>
-        {options.map(({ id, label, value: v }) => (
-          <Col id={id} span={getSpan(direction, options.length)} key={id}>
-            <Checkbox id={id} value={v} disabled={model.readOnly}>
-              {label}
-            </Checkbox>
-          </Col>
-        ))}
-      </Row>
-    </Checkbox.Group>
+    <div
+      tabIndex={0}
+      onFocus={(e) => model?.onFocus?.({ ...e, target: { value: value, ...e.target } })}
+      onBlur={(e) => model?.onBlur?.({ ...e, target: { value: value, ...e.target } })}
+    >
+      <Checkbox.Group className="sha-multi-checkbox" value={value} onChange={onChange} style={model?.style}>
+        <Row>
+          {options.map(({ id, label, value: v }) => (
+            <Col id={id} span={getSpan(direction, options.length)} key={id}>
+              <Checkbox id={id} value={v} disabled={model.readOnly}>
+                {label}
+              </Checkbox>
+            </Col>
+          ))}
+        </Row>
+      </Checkbox.Group>
+    </div>
   );
 };
 

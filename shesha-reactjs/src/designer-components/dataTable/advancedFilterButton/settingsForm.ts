@@ -119,7 +119,7 @@ export const getSettings = (data: any) =>
             id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
             propertyName: 'hidden',
             parentId: 'root',
-            label: 'Hidden',
+            label: 'hide',
           })
           .addEditMode({
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',

@@ -28,7 +28,7 @@ export const getSettings = (data: any) =>
               id: 'bf1823d6-dca4-408a-b7d8-5b42eacb076d',
               propertyName: 'hidden',
               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              label: 'Hidden',
+              label: 'hide',
             })
             .addEditMode({
               id: 'abc823d6-dca4-408a-b7d8-5b42eacb1234',
