@@ -89,6 +89,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     max?: number;
     showText?: boolean;
     fieldsUnavailableHint?: string;
+    wrapInTemplate?: boolean;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];
