@@ -23,7 +23,7 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
     const max = model?.max ? parseInt(model.max, 10) : undefined;
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} initialValue={defaultValue}>
         {(value, onChange) => (
           <Slider
             className="sha-slider"
