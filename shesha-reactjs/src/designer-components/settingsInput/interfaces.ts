@@ -28,7 +28,7 @@ export interface InputType {
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
     | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip'
     | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
-    | 'keyInformationBarColumnsList';
+    | 'keyInformationBarColumnsList' | 'Password';
 }
 
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
@@ -91,6 +91,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     max?: number;
     showText?: boolean;
     fieldsUnavailableHint?: string;
+    wrapInTemplate?: boolean;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];
@@ -107,4 +108,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     componentType?: ComponentType;
     parentComponentType?: string;
     textType?: string;
+    showSearch?: boolean;
 };

@@ -33,6 +33,8 @@ import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal'
 import { FormLayout } from 'antd/es/form/Form';
 import { editModes, getEditor, iconElement } from './utils';
 
+const { Password } = Input;
+
 export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const { styles } = useStyles();
 
@@ -46,7 +48,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, showSearch } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -65,10 +67,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         readOnly: readOnly,
         description: description,
         mode: 'dialog',
-        language: 'typescript',
+        language: props.language ?? 'typescript',
         fileName: propertyName,
         label: label ?? propertyName,
-        wrapInTemplate: true,
+        wrapInTemplate: props.wrapInTemplate ?? true,
         value: value,
         onChange: onChange,
         templateSettings: { functionName: functionName },
@@ -104,6 +106,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 disabled={readOnly}
                 variant={variant}
                 className={className}
+                showSearch={showSearch}
                 value={value}
                 style={{ width: "100%" }}
                 defaultValue={defaultValue}
@@ -301,7 +304,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList?._data} readOnly={false} />;
+            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList?._data} readOnly={false} />;
+
+        case 'Password':
+            return <Password
+                value={value}
+                onChange={onChange}
+                size={size}
+                readOnly={readOnly}
+                variant={variant}
+            />;
         default:
             return <Input
                 size={size}

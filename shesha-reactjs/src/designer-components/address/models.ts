@@ -13,6 +13,6 @@ export interface IAddressCompomentProps extends IConfigurableFormComponent {
   radiusPriority?: number;
   showPriorityBounds?: boolean;
   onSelectCustom?: string;
-  onFocusCustom?: string;
-  onBlurCustom?: string;
+  onFocusCustom?: any;
+  onBlurCustom?: any;
 }
