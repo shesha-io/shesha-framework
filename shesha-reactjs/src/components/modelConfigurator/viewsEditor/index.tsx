@@ -1,4 +1,4 @@
-import { FormAutocomplete } from '@/components/formAutocomplete';
+import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 import React, { FC, useMemo } from 'react';
 import {
     Button,
@@ -6,10 +6,10 @@ import {
     Form,
     Input,
     Row
-    } from 'antd';
+} from 'antd';
 import { DeleteFilled, PlusOutlined } from '@ant-design/icons';
 import { EntityViewConfigurationDto } from '@/apis/modelConfigurations';
-import { FormIdentifier } from '@/providers/form/models';
+import { FormFullName } from '@/providers/form/models';
 
 interface IViewsEditorProps {
     value?: EntityViewConfigurationDto[];
@@ -60,7 +60,10 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                     <Col span={18}>
                         <Row>
                             <Col span={22}>
-                                <FormAutocomplete convertToFullId={true} value={item.formId as FormIdentifier} onChange={(e) => onChangeForm(item, e)} />
+                                <FormAutocomplete
+                                    value={item.formId && item.formId.name ? item.formId as FormFullName : undefined}
+                                    onChange={(e) => onChangeForm(item, e)}
+                                />
                             </Col>
                             <Col span={2} style={{ textAlign: 'center' }}>
                                 {

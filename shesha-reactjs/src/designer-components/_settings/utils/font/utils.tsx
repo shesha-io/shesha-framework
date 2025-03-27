@@ -39,19 +39,36 @@ export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
 export const fontTypes = [
     { value: 'Arial', label: 'Arial' },
     { value: 'Helvetica', label: 'Helvetica' },
-    { value: 'Times New Roman', label: 'Times New Roman' },
-    { value: 'Courier New', label: 'Courier New' },
+    { value: 'Times New Roman', label: 'Times new roman' },
+    { value: 'Courier New', label: 'Courier new' },
     { value: 'Verdana', label: 'Verdana' },
     { value: 'Georgia', label: 'Georgia' },
-    { value: 'Segoe UI', label: 'Segoe UI' },
+    { value: 'Segoe UI', label: 'Segoe ui' },
     { value: 'Palatino', label: 'Palatino' },
     { value: 'monospace', label: 'Monospace' },
     { value: 'Garamond', label: 'Garamond' },
-    { value: 'Comic Sans MS', label: 'Comic Sans MS' },
-    { value: 'Trebuchet MS', label: 'Trebuchet MS' },
-    { value: 'Arial Black', label: 'Arial Black' },
-    { value: 'impact', label: 'Impact' }
+    { value: 'Comic Sans MS', label: 'Comic sans ms' },
+    { value: 'Trebuchet MS', label: 'Trebuchet ms' },
+    { value: 'Arial Black', label: 'Arial black' },
+    { value: 'Impact', label: 'Impact' },
+    { value: '-apple-system', label: 'San francisco' },
+    { value: 'BlinkMacSystemFont', label: 'Blinkmac system font' },
+    { value: 'SF Mono', label: 'San francisco mono' },
+    { value: 'Roboto', label: 'Roboto' },
+    { value: 'Open Sans', label: 'Open sans' },
+    { value: 'Lato', label: 'Lato' },
+    { value: 'Ubuntu', label: 'Ubuntu' },
+    { value: 'Merriweather', label: 'Merriweather' },
+    { value: 'PT Sans', label: 'Pt sans' },
+    { value: 'Source Sans Pro', label: 'Source sans pro' },
+    { value: 'Fira Sans', label: 'Fira sans' },
+    { value: 'Playfair Display', label: 'Playfair display' },
+    { value: 'Noto Sans', label: 'Noto sans' },
+    { value: 'Droid Sans', label: 'Droid sans' },
+    { value: 'Crimson Text', label: 'Crimson text' },
+    { value: 'PT Serif', label: 'Pt serif' }
 ];
+
 
 export const fontWeights = [
     { value: '100', label: 'sectionSeparator' },

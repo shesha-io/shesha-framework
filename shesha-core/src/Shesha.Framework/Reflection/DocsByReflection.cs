@@ -23,7 +23,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="methodInfo">The MethodInfo (reflection data ) of the member to find documentation for</param>
         /// <returns>The XML fragment describing the method</returns>
-        public static XmlElement XMLFromMember(MethodInfo methodInfo)
+        public static XmlElement? XMLFromMember(MethodInfo methodInfo)
         {
             // Calculate the parameter string as this is in the member name in the XML
             string parametersString = "";
@@ -39,9 +39,9 @@ namespace Shesha.Reflection
 
             //AL: 15.04.2008 ==> BUG-FIX remove “()” if parametersString is empty
             if (parametersString.Length > 0)
-                return XMLFromName(methodInfo.DeclaringType, 'M', methodInfo.Name + "(" + parametersString + ")");
+                return XMLFromName(methodInfo.DeclaringType.NotNull(), 'M', methodInfo.Name + "(" + parametersString + ")");
             else
-                return XMLFromName(methodInfo.DeclaringType, 'M', methodInfo.Name);
+                return XMLFromName(methodInfo.DeclaringType.NotNull(), 'M', methodInfo.Name);
         }
 
         /// <summary>
@@ -49,10 +49,10 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="memberInfo">The MemberInfo (reflection data) or the member to find documentation for</param>
         /// <returns>The XML fragment describing the member</returns>
-        public static XmlElement XMLFromMember(MemberInfo memberInfo)
+        public static XmlElement? XMLFromMember(MemberInfo memberInfo)
         {
             // First character [0] of member type is prefix character in the name in the XML
-            return XMLFromName(memberInfo.DeclaringType, memberInfo.MemberType.ToString()[0], memberInfo.Name);
+            return XMLFromName(memberInfo.DeclaringType.NotNull(), memberInfo.MemberType.ToString()[0], memberInfo.Name);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="type">Type to find the documentation for</param>
         /// <returns>The XML fragment that describes the type</returns>
-        public static XmlElement XMLFromType(Type type)
+        public static XmlElement? XMLFromType(Type type)
         {
             // Prefix in type names is T
             return XMLFromName(type, 'T', "");
@@ -74,7 +74,7 @@ namespace Shesha.Reflection
         /// <param name="prefix">The prefix as seen in the name attribute in the documentation XML</param>
         /// <param name="name">Where relevant, the full name qualifier for the element</param>
         /// <returns>The member that has a name that describes the specified reflection element</returns>
-        private static XmlElement XMLFromName(Type type, char prefix, string name)
+        private static XmlElement? XMLFromName(Type type, char prefix, string name)
         {
             string fullName;
 
@@ -87,13 +87,15 @@ namespace Shesha.Reflection
                 fullName = prefix + ":" + type.FullName + "." + name;
             }
 
-            XmlDocument xmlDocument = XMLFromAssembly(type.Assembly);
+            var xmlDocument = XMLFromAssembly(type.Assembly);
 
             if (xmlDocument == null) return null;
 
-            XmlNode matchedElement = null;
+            XmlNode? matchedElement = null;
 
-            var members = xmlDocument["doc"]["members"];
+            var members = xmlDocument["doc"]?["members"];
+            if (members == null)
+                return null;
 
             foreach (XmlNode xmlElement in members)
             {
@@ -108,23 +110,18 @@ namespace Shesha.Reflection
                 }
             }
 
-            /*if (matchedElement == null)
-            {
-                throw new DocsByReflectionException("Could not find documentation for specified element", null);
-            }*/
-
             return matchedElement as XmlElement;
         }
 
         /// <summary>
         /// A cache used to remember Xml documentation for assemblies
         /// </summary>
-        static Dictionary<Assembly, XmlDocument> cache = new Dictionary<Assembly, XmlDocument>();
+        static Dictionary<Assembly, XmlDocument?> cache = new();
 
         /// <summary>
         /// A cache used to store failure exceptions for assembly lookups
         /// </summary>
-        static Dictionary<Assembly, Exception> failCache = new Dictionary<Assembly, Exception>();
+        static Dictionary<Assembly, Exception> failCache = new();
 
         /// <summary>
         /// Obtains the documentation file for the specified assembly
@@ -133,7 +130,7 @@ namespace Shesha.Reflection
         /// <returns>The XML document</returns>
         /// <remarks>This version uses a cache to preserve the assemblies, so that 
         /// the XML file is not loaded and parsed on every single lookup</remarks>
-        public static XmlDocument XMLFromAssembly(Assembly assembly)
+        public static XmlDocument? XMLFromAssembly(Assembly assembly)
         {
             if (failCache.ContainsKey(assembly))
             {
@@ -163,7 +160,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="assembly">The assembly to find the XML document for</param>
         /// <returns>The XML document</returns>
-        private static XmlDocument XMLFromAssemblyNonCached(Assembly assembly)
+        private static XmlDocument? XMLFromAssemblyNonCached(Assembly assembly)
         {
             var assemblyFilename = assembly.Location;
 
@@ -201,7 +198,7 @@ namespace Shesha.Reflection
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or null if none.</param>
-        public DocsByReflectionException(string message, Exception innerException)
+        public DocsByReflectionException(string message, Exception? innerException)
             : base(message, innerException)
         {
 

@@ -24,7 +24,7 @@ namespace Shesha.NHibernate.UserTypes
             throw new NotImplementedException();
         }
 
-        public object DeepCopy(object value)
+        public object? DeepCopy(object value)
         {
             if (value is GenericEntityReference er)
                 return new GenericEntityReference(er.Id, er._className, er._displayName);
@@ -50,7 +50,7 @@ namespace Shesha.NHibernate.UserTypes
             return x == null ? 0 : x.GetHashCode();
         }
 
-        public object GetPropertyValue(object component, int property)
+        public object? GetPropertyValue(object component, int property)
         {
             if (component is GenericEntityReference entityRef)
             {
@@ -64,7 +64,7 @@ namespace Shesha.NHibernate.UserTypes
             return null;
         }
 
-        public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
+        public object? NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
         {
             if (names.Length != 3)
                 throw new InvalidOperationException("Only expecting two column...");

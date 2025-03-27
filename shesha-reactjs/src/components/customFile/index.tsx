@@ -1,7 +1,7 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, } from 'react';
 import { IUploadFilePayload, IStoredFile } from '@/providers/storedFiles/contexts';
 import { StoredFilesRendererBase } from '@/components/';
-import { IInputStyles, useSheshaApplication, useStoredFilesStore } from '@/providers';
+import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
 import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 
 export interface ICustomFileProps extends IInputStyles {
@@ -26,6 +26,7 @@ export interface ICustomFileProps extends IInputStyles {
   thumbnailHeight?: string;
   borderRadius?: number;
   hideFileName?: boolean;
+  container?: IStyleType;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -42,11 +43,6 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
 
   const { backendUrl } = useSheshaApplication();
 
-  // Customizations
-  useEffect(() => {
-    if (props?.onFileListChanged) props?.onFileListChanged(fileList);
-  }, [fileList]);
-
   return (
     <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
@@ -62,6 +58,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         downloadZipFile={downloadZipFile}
         downloadZip={props.downloadZip}
         downloadFile={downloadFile}
+        onFileListChanged={props.onFileListChanged}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
         allowedFileTypes={props?.allowedFileTypes}

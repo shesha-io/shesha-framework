@@ -11,10 +11,9 @@ using Shesha.Domain.Attributes;
 using Shesha.Extensions;
 using Shesha.Migrations;
 using Shesha.NHibernate.Maps;
+using Shesha.NHibernate.Session;
 using Shesha.Reflection;
-using Shesha.Services.Dtos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,10 +26,12 @@ namespace Shesha.Services
     public class NHibernateAppService: IApplicationService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly INhCurrentSessionContext _currentSessionContext;
 
-        public NHibernateAppService(IUnitOfWorkManager unitOfWorkManager)
+        public NHibernateAppService(IUnitOfWorkManager unitOfWorkManager, INhCurrentSessionContext currentSessionContext)
         {
             _unitOfWorkManager = unitOfWorkManager;
+            _currentSessionContext = currentSessionContext;
         }
 
         /// <summary>
@@ -38,20 +39,9 @@ namespace Shesha.Services
         /// </summary>
         /// <returns></returns>
         [DontWrapResult]
-        public Task<string> GetConventions()
+        public Task<string?> GetConventionsAsync()
         {
             return Task.FromResult(Conventions.LastCompiledXml);
-        }
-
-        [HttpPost]
-        [Consumes("multipart/form-data")]
-        [DontWrapResult]
-        public IList ExecuteHql([FromForm] ExecuteHqlInput input)
-        {
-            var sessionFactory = StaticContext.IocManager.Resolve<ISessionFactory>();
-            var session = sessionFactory.GetCurrentSession();
-            var list = session.CreateQuery(input.Query).List();
-            return list;
         }
 
         /// <summary>
@@ -120,7 +110,7 @@ namespace Shesha.Services
                 try
                 {
                     var hql = $"from {type.FullName}";
-                    var session = sessionFactory.GetCurrentSession();
+                    var session = _currentSessionContext.Session;
                     var list = session.CreateQuery(hql).SetMaxResults(1).List();
                 }
                 catch (Exception e)

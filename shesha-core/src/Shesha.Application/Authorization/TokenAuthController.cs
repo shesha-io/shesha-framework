@@ -66,12 +66,12 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model)
+        public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
             var registration = await _userRegistration.FirstOrDefaultAsync(e => e.UserNameOrEmailAddress == model.UserNameOrEmailAddress);
 
-            if (registration != null && !registration.IsComplete)
+            if (registration != null && !registration.IsComplete && registration.AdditionalRegistrationInfoForm != null)
             {
                 // Return a result indicating a client-side redirect
                 return new AuthenticateResultModel
@@ -96,17 +96,21 @@ namespace Shesha.Authorization
             return authenticateResult;
         }
 
-        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string imei) 
+        private async Task<AuthenticateResultModel> GetAuthenticateResultAsync(ShaLoginResult<User> loginResult, string? imei) 
         {
+            if (!loginResult.IsSuccess)
+                throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));
+
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
 
             var expireInSeconds = (int)_configuration.Expiration.TotalSeconds;
 
-            var personId = loginResult?.User != null
-                ? _personRepository.GetAll()
+            var personId = loginResult.User != null
+                ? await _personRepository.GetAll()
                     .Where(p => p.User == loginResult.User)
                     .OrderBy(p => p.CreationTime)
-                    .Select(p => p.Id).FirstOrDefault()
+                    .Select(p => p.Id)
+                    .FirstOrDefaultAsync()
                 : (Guid?)null;
             var device = !string.IsNullOrWhiteSpace(imei)
                 ? await _mobileDeviceRepository.FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
@@ -118,7 +122,7 @@ namespace Shesha.Authorization
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = expireInSeconds,
                 ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
-                UserId = loginResult.User.Id,
+                UserId = loginResult.User?.Id,
                 PersonId = personId,
                 DeviceName = device?.Name,
                 ResultType = AuthenticateResultType.Success
@@ -138,9 +142,9 @@ namespace Shesha.Authorization
         /// </summary>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPin(string userNameOrMobileNo)
+        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
-            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User.UserName == userNameOrMobileNo).ToListAsync();
+            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User != null && u.User.UserName == userNameOrMobileNo).ToListAsync();
             if (!persons.Any())
                 throw new UserFriendlyException("User with the specified mobile number not found");
             if (persons.Count() > 1)
@@ -151,6 +155,9 @@ namespace Shesha.Authorization
             if (person.User == null)
                 throw new UserFriendlyException("User with the specified mobile has no internal account");
 
+            if (string.IsNullOrWhiteSpace(person.MobileNumber1))
+                throw new UserFriendlyException("User has no mobile no");
+
             var sendPinResponse = await _logInManager.SendLoginOtpAsync(person.User, person.MobileNumber1);
 
             return new OtpAuthenticateSendPinResponse
@@ -160,7 +167,7 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> OtpAuthenticate([FromBody] OtpAuthenticateModel model)
+        public async Task<AuthenticateResultModel> OtpAuthenticateAsync([FromBody] OtpAuthenticateModel model)
         {
             var tenancyName = GetTenancyNameOrNull();
             var loginResult = await _logInManager.LoginViaOtpAsync(model.MobileNo, model.OperationId, model.Code, model.IMEI, tenancyName);
@@ -183,9 +190,9 @@ namespace Shesha.Authorization
         }
 
         [HttpPost]
-        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticate([FromBody] ExternalAuthenticateModel model)
+        public async Task<ExternalAuthenticateResultModel> ExternalAuthenticateAsync([FromBody] ExternalAuthenticateModel model)
         {
-            var externalUser = await GetExternalUserInfo(model);
+            var externalUser = await GetExternalUserInfoAsync(model);
 
             var loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
 
@@ -193,6 +200,9 @@ namespace Shesha.Authorization
             {
                 case ShaLoginResultType.Success:
                     {
+                        if (!loginResult.IsSuccess)
+                            throw new ArgumentException("Can't create token for invalid login result", nameof(loginResult));
+
                         var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
                         return new ExternalAuthenticateResultModel
                         {
@@ -214,7 +224,7 @@ namespace Shesha.Authorization
 
                         // Try to login again with newly registered user!
                         loginResult = await _logInManager.LoginAsync(new UserLoginInfo(model.AuthProvider, model.ProviderKey, model.AuthProvider), GetTenancyNameOrNull());
-                        if (loginResult.Result != ShaLoginResultType.Success)
+                        if (!loginResult.IsSuccess)
                         {
                             throw _shaLoginResultTypeHelper.CreateExceptionForFailedLoginAttempt(
                                 loginResult.Result,
@@ -266,7 +276,7 @@ namespace Shesha.Authorization
             return user;
         }
 
-        private async Task<ExternalAuthUserInfo> GetExternalUserInfo(ExternalAuthenticateModel model)
+        private async Task<ExternalAuthUserInfo> GetExternalUserInfoAsync(ExternalAuthenticateModel model)
         {
             var userInfo = await _externalAuthManager.GetUserInfoAsync(model.AuthProvider, model.ProviderAccessCode);
             if (userInfo.ProviderKey != model.ProviderKey)
@@ -278,17 +288,15 @@ namespace Shesha.Authorization
         }
 
         [DebuggerStepThrough]
-        private string GetTenancyNameOrNull()
+        private string? GetTenancyNameOrNull()
         {
             if (!AbpSession.TenantId.HasValue)
-            {
                 return null;
-            }
 
             return _tenantCache.GetOrNull(AbpSession.TenantId.Value)?.TenancyName;
         }
 
-        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string imei, string tenancyName)
+        private async Task<ShaLoginResult<User>> GetLoginResultAsync(string usernameOrEmailAddress, string password, string? imei, string? tenancyName)
         {
             var loginResult = await _logInManager.LoginAsync(usernameOrEmailAddress, password, imei, tenancyName);
 

@@ -110,6 +110,8 @@ import SettingsInput from '@/designer-components/settingsInput';
 import SettingsInputRow from '@/designer-components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
+import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
+import DividerComponent from '@/designer-components/_legacyComponents/divider';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -180,7 +182,6 @@ export const getToolboxComponents = (
       name: 'Tables and Lists',
       visible: true,
       components: [
-        TableTemplate,
         TableContext,
         DataTable,
         DataList,
@@ -218,8 +219,18 @@ export const getToolboxComponents = (
     {
       visible: false,
       name: 'Legacy',
-      components: [Paragraph, Title, Toolbar, List,
-        EditableTagGroup,],
+      components: [
+        Paragraph,
+        Title,
+        Toolbar,
+        List,
+        EditableTagGroup,,
+        FormAutocompleteComponent,
+        ReferenceListAutocompleteComponent,
+        NotificationAutocompleteComponent,
+        TableTemplate,
+        DividerComponent
+      ],
     },
     {
       visible: devMode,
@@ -230,7 +241,6 @@ export const getToolboxComponents = (
         MainMenuEditorComponent,
         PermissionAutocompleteComponent,
         ColumnsEditorComponent, // Hidden
-        ReferenceListAutocompleteComponent,
         PropertyAutocompleteComponent,
         SortingEditorComponent,
         EditModeSelectorComponent,
@@ -254,8 +264,7 @@ export const getToolboxComponents = (
         ImagePickerComponent,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
-        FormAutocompleteComponent,
-        NotificationAutocompleteComponent,
+        ConfigurableItemAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,

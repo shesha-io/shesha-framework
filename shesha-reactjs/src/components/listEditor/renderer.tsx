@@ -15,6 +15,7 @@ export interface IListEditorRendererProps<TItem = any> {
     level?: number;
     header?: ListEditorSectionRenderingFn<TItem>;
     parentItem?: TItem;
+    maxItemsCount?: number;
 }
 
 export interface MakeListContextArgs<TItem = any> {
@@ -72,7 +73,7 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
 
 export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRendererProps<TItem>) => {
     const { styles } = useStyles();
-    const { contextAccessor, children, header, level = 1, parentItem } = props;
+    const { contextAccessor, children, header, level = 1, parentItem, maxItemsCount } = props;
     const {
         value,
         deleteItem,
@@ -120,7 +121,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
         ? header
         : header === null
             ? () => (null)
-            : () => (<Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly}>Add</Button>);
+            : () => ((!maxItemsCount || (sortableItems?.length ?? 0) < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly}>Add</Button>);
 
     return (
         <div className={styles.list}>

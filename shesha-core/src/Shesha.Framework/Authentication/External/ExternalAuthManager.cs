@@ -16,19 +16,19 @@ namespace Shesha.Authentication.External
             _externalAuthConfiguration = externalAuthConfiguration;
         }
 
-        public Task<bool> IsValidUserAsync(string provider, string providerKey, string providerAccessCode)
+        public async Task<bool> IsValidUserAsync(string provider, string providerKey, string providerAccessCode)
         {
             using (var providerApi = CreateProviderApi(provider))
             {
-                return providerApi.Object.IsValidUserAsync(providerKey, providerAccessCode);
+                return await providerApi.Object.IsValidUserAsync(providerKey, providerAccessCode);
             }
         }
 
-        public Task<ExternalAuthUserInfo> GetUserInfoAsync(string provider, string accessCode)
+        public async Task<ExternalAuthUserInfo> GetUserInfoAsync(string provider, string accessCode)
         {
             using (var providerApi = CreateProviderApi(provider))
             {
-                return providerApi.Object.GetUserInfoAsync(accessCode);
+                return await providerApi.Object.GetUserInfoAsync(accessCode);
             }
         }
 

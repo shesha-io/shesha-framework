@@ -14,9 +14,9 @@ namespace Shesha.Elmah
 
         public ConcurrentHashSet<ExceptionWatchDog> ActiveWatchDogs { get; set; } = new ConcurrentHashSet<ExceptionWatchDog>();
 
-        public ExceptionWatchDog TopWatchDog => ActiveWatchDogs.LastOrDefault();
+        public ExceptionWatchDog? TopWatchDog => ActiveWatchDogs.LastOrDefault();
 
-        public string CurrentLocation => TopWatchDog?.Location;
+        public string? CurrentLocation => TopWatchDog?.Location;
         
     }
 
@@ -24,6 +24,6 @@ namespace Shesha.Elmah
     { 
         public Exception Exception { get; set; }
         public ErrorReference ErrorReference { get; set; }
-        public string Location { get; set; }
+        public string? Location { get; set; }
     }
 }

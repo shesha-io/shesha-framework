@@ -51,9 +51,7 @@ namespace Shesha.Authorization
                 return;
             }
 
-            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method) 
-                ? PermissionedObjectManager.CrudMethods[method] 
-                : method;
+            var methodName = PermissionedObjectManager.GetCrudMethod(method, method);
             var permissionName = $"{permissionedObject}@{methodName}";
 
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(permissionName, objectType);
@@ -91,7 +89,7 @@ namespace Shesha.Authorization
 
             var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
             // ToDo: add RequireAll flag
-            await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions.ToArray());
+            await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions?.ToArray());
         }
     }
 }

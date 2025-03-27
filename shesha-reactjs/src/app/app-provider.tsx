@@ -5,7 +5,6 @@ import { GlobalStateProvider, ShaApplicationProvider, StoredFilesProvider } from
 import { useNextRouter } from '@/hooks/useNextRouter';
 import { EntityCrudActions } from '@/providers/dynamicActions/implementations/entityCrudActions';
 import { StandardApis } from '@/providers/dynamicActions/implementations/standardApis';
-import { ProgressBar } from './progressBar';
 import { UrlActions } from '@/providers/dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { EntityActions } from '@/providers/dynamicActions/implementations/dataSourceDynamicMenu/entityDynamicMenuItem';
 
@@ -23,7 +22,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
         router={nextRouter}
         noAuth={nextRouter.path?.includes('/no-auth')}
       >
-        <ProgressBar />
         <EntityCrudActions>
           <UrlActions>
             <EntityActions>

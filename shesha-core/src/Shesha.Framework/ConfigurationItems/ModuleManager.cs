@@ -47,7 +47,7 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public async Task<Module> GetOrCreateModuleAsync(Assembly assembly) 
+        public async Task<Module?> GetOrCreateModuleAsync(Assembly assembly) 
         {
             var moduleName = assembly.GetConfigurableModuleName();
             return !string.IsNullOrWhiteSpace(moduleName)

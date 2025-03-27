@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shesha.Domain
 {
@@ -13,7 +12,7 @@ namespace Shesha.Domain
     [Discriminator]
     public class ShaRoleAppointment : FullAuditedEntity<Guid>, IMayHaveTenant
     {
-        public virtual ShaRole Role { get; set; }
+        public virtual ShaRole? Role { get; set; }
         public virtual int? TenantId { get; set; }
 
         [EntityReference(true)]

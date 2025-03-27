@@ -32,36 +32,42 @@ export const getSettings = (data: any) => {
                 },
                 jsSetting: true,
             })
-                .addSettingsInput({
-                    id: nanoid(),
-                    inputType: 'codeEditor',
-                    propertyName: 'renderer',
-                    parentId: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
-                    label: 'Render HTML',
-                    description: 'Enter custom JSX script that will render a component',
-                    exposedVariables: [
-                      {
-                        id: nanoid(),
-                        name: 'data',
-                        description: 'Form data',
-                        type: 'object',
-                      }.toString(),
-                      {
-                        id: nanoid(),
-                        name: 'globalState',
-                        description: 'The global state',
-                        type: 'object',
-                      }.toString(),
+                  .addSettingsInputRow({
+                    id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                    parentId: 's4gmBg31azZC0UjZjpfTm',
+                    inputs: [{
+                          id: nanoid(),
+                          type: 'codeEditor',
+                          propertyName: 'renderer',
+                          parentId: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
+                          label: 'Render HTML',
+                          description: 'Enter custom JSX script that will render a component',
+                          exposedVariables: [
+                            {
+                              id: nanoid(),
+                              name: 'data',
+                              description: 'Form data',
+                              type: 'object',
+                            }.toString(),
+                            {
+                              id: nanoid(),
+                              name: 'globalState',
+                              description: 'The global state',
+                              type: 'object',
+                            }.toString(),
+                          ],
+                        },
+                        {
+                          type: 'switch',
+                          id: 'hidden-s4gmBg31azZC0UjZjpfTm',
+                          propertyName: 'hidden',
+                          label: 'Hide',
+                          jsSetting: true,
+                          layout: 'horizontal',
+                      }
                     ],
-                  })
-                  .addSettingsInput({
-                    inputType: 'switch',
-                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                    layout: 'horizontal',
-                },)
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                })
                 .toJson(),
             ],
           },
@@ -103,7 +109,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })

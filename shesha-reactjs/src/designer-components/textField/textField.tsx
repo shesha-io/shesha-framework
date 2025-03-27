@@ -65,7 +65,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -148,7 +148,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
                 Input: {
                   fontFamily: model?.font?.type,
                   fontSize: model?.font?.size,
-                  // fontWeightStrong: Number(fontStyles.fontWeight)
+                  fontWeightStrong: Number(fontStyles.fontWeight)
                 },
               },
             }}

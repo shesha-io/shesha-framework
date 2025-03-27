@@ -23,31 +23,28 @@ namespace Shesha.DynamicEntities.Cache
         IEventHandler<EntityChangedEventData<EntityConfig>>,
         IEventHandler<EntityChangingEventData<ConfigurationItem>>
     {
-        private readonly ICacheManager _cacheManager;
         private readonly IRepository<EntityProperty, Guid> _propertyRepository;
         private readonly IRepository<EntityConfig, Guid> _configReprository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IObjectMapper _mapper;
         private readonly ITypeFinder _typeFinder;
-
-        public ITypedCache<string, EntityConfigCacheItem> InternalPropertyCache =>
-            _cacheManager.GetCache<string, EntityConfigCacheItem>($"{this.GetType().Name}");
+        private readonly ITypedCache<string, EntityConfigCacheItem?> _propertyCache;
 
         public EntityConfigCache(
-            ICacheManager cacheManager,
             IRepository<EntityProperty, Guid> propertyRepository,
             IRepository<EntityConfig, Guid> configReprository,
             IUnitOfWorkManager unitOfWorkManager,
             IObjectMapper mapper,
-            ITypeFinder typeFinder
+            ITypeFinder typeFinder,
+            IEntityConfigPropertyCacheHolder entityConfigPropertyCacheHolder
             )
         {
-            _cacheManager = cacheManager;
             _propertyRepository = propertyRepository;
             _configReprository = configReprository;
             _unitOfWorkManager = unitOfWorkManager;
             _mapper = mapper;
             _typeFinder = typeFinder;
+            _propertyCache = entityConfigPropertyCacheHolder.Cache;
         }
 
         private string GetPropertiesCacheKey(Type entityType)
@@ -60,7 +57,7 @@ namespace Shesha.DynamicEntities.Cache
             return GetCacheKey(entityConfig.Namespace, entityConfig.ClassName);
         }
 
-        private string GetCacheKey(string @namespace, string name)
+        private string GetCacheKey(string? @namespace, string name)
         {
             return $"{@namespace}.{name}";
         }
@@ -87,34 +84,36 @@ namespace Shesha.DynamicEntities.Cache
             }
         }
 
-        public async Task<EntityConfigDto> GetEntityConfigAsync(string entityType, bool raiseException = false)
+        public async Task<EntityConfigDto?> GetEntityConfigAsync(string entityType, bool raiseException = false)
         {
-            var item = await InternalPropertyCache.GetAsync(entityType, async (entityType) =>
+            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
             {
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
                 if (eType == null && raiseException)
                     throw new EntityNotFoundException($"Entity {entityType} not found");
-                return eType == null ? null : await FetchConfigAsync(eType);
+                return eType == null 
+                    ? null 
+                    : await FetchConfigAsync(eType);
             });
 
-            return item.EntityConfig;
+            return item?.EntityConfig;
         }
 
-        public async Task<EntityConfigDto> GetEntityConfigAsync(Type entityType)
+        public async Task<EntityConfigDto?> GetEntityConfigAsync(Type entityType)
         {
             var key = GetPropertiesCacheKey(entityType);
-            var item = await InternalPropertyCache.GetAsync(key, async (key) =>
+            var item = await _propertyCache.GetAsync(key, async (key) =>
             {
                 var item = await FetchConfigAsync(entityType);
                 return item;
             });
 
-            return item.EntityConfig;
+            return item?.EntityConfig;
         }
 
-        public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(string entityType, bool raiseException = false)
+        public async Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(string entityType, bool raiseException = false)
         {
-            var item = await InternalPropertyCache.GetAsync(entityType, async (entityType) =>
+            var item = await _propertyCache.GetAsync(entityType, async (entityType) =>
             {
                 var eType = _typeFinder.Find(x => x.FullName == entityType).FirstOrDefault();
                 if (eType == null && raiseException)
@@ -124,15 +123,15 @@ namespace Shesha.DynamicEntities.Cache
             return item?.Properties;
         }
 
-        public async Task<List<EntityPropertyDto>> GetEntityPropertiesAsync(Type entityType)
+        public async Task<List<EntityPropertyDto>?> GetEntityPropertiesAsync(Type entityType)
         {
             var key = GetPropertiesCacheKey(entityType);
-            var item = await InternalPropertyCache.GetAsync(key, async (key) =>
+            var item = await _propertyCache.GetAsync(key, async (key) =>
             {
                 var item = await FetchConfigAsync(entityType);
                 return item;
             });
-            return item.Properties;
+            return item?.Properties;
         }
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
@@ -140,7 +139,7 @@ namespace Shesha.DynamicEntities.Cache
             if (eventData.Entity?.EntityConfig == null)
                 return;
 
-            InternalPropertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
+            _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
         }
 
         public void HandleEvent(EntityChangingEventData<ConfigurationItem> eventData)
@@ -148,13 +147,13 @@ namespace Shesha.DynamicEntities.Cache
             var conf = _configReprository.GetAll().FirstOrDefault(x => x.Id == eventData.Entity.Id);
             if (conf != null)
             {
-                InternalPropertyCache.Remove(GetCacheKey(conf));
+                _propertyCache.Remove(GetCacheKey(conf));
             };
         }
 
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
         {
-            InternalPropertyCache.Remove(GetCacheKey(eventData.Entity));
+            _propertyCache.Remove(GetCacheKey(eventData.Entity));
         }
     }
 }

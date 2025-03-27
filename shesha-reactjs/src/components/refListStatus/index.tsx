@@ -47,7 +47,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   const canShowIcon = showIcon && itemData?.icon;
 
-  if (typeof itemData?.itemValue === 'undefined'  && !listItem?.loading) return null;
+  if (typeof itemData?.itemValue === 'undefined' && !listItem?.loading) return null;
 
   return listItem?.loading ? (
     <Skeleton.Button />
@@ -57,7 +57,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
 
 
-        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={style}>
+        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null} style={{ ...style, ...(memoizedColor && (!style?.backgroundColor && !style?.backgroundImage) ? { backgroundColor: memoizedColor, border: 'none', color: '#fff' } : {}) }}>
           {showReflistName && itemData?.item}
         </RefTag>
 

@@ -13,7 +13,7 @@ namespace Shesha.Utilities
             To = to;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var range = obj as DateRange;
             if (range == null)

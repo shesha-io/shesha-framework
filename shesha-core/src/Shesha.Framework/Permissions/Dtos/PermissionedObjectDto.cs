@@ -24,21 +24,21 @@ namespace Shesha.Permissions
 
         public string Object { get; set; }
 
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
-        public string Module { get; set; }
+        public string? Module { get; set; }
         public Guid? ModuleId { get; set; }
 
         public string Type { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public List<string> Permissions { get; set; }
+        public List<string>? Permissions { get; set; }
 
-        public List<string> ActualPermissions { get; set; }
-        public List<string> InheritedPermissions { get; set; }
+        public List<string>? ActualPermissions { get; set; }
+        public List<string>? InheritedPermissions { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }
 
@@ -46,24 +46,28 @@ namespace Shesha.Permissions
         public RefListPermissionedAccess? ActualAccess { get; set; }
         public RefListPermissionedAccess? InheritedAccess { get; set; }
 
-        public string Parent { get; set; }
+        public string? Parent { get; set; }
         
-        public List<PermissionedObjectDto> Children { get; set; }
+        public List<PermissionedObjectDto> Children { get; set; } = new List<PermissionedObjectDto>();
 
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
-        public Dictionary<string, string> AdditionalParameters { get; set; }
+        public Dictionary<string, string> AdditionalParameters { get; set; } = new Dictionary<string, string>();
 
         public override string ToString()
         {
-            var permissions = Hidden 
+            var permissions = Hidden ?? false 
                 ? "Hidden" 
                 : Access == RefListPermissionedAccess.RequiresPermissions
-                    ? string.Join(", ", Permissions)
-                : Access.ToString();
+                    ? PermissionsDelimited
+                    : Access.ToString();
             return $"{Object} -> ({permissions})";
         }
 
-        public string Md5 { get; set; } 
+        public string PermissionsDelimited => Permissions != null
+                        ? string.Join(", ", Permissions)
+                        : string.Empty;
+
+        public string? Md5 { get; set; } 
     }
 }

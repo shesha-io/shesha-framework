@@ -12,12 +12,12 @@ namespace Shesha.StoredFiles.Dto
         /// Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
         /// </summary>
         [BindProperty(Name = "propertyName")]
-        public string PropertyName { get; set; }
+        public string? PropertyName { get; set; }
 
         /// <summary>
         /// File category for owner entity if property is not set
         /// </summary>
         [BindProperty(Name = "fileCategory")]
-        public string FileCategory { get; set; }
+        public string? FileCategory { get; set; }
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using NHibernate.Mapping.ByCode;
+using Shesha.Reflection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Abp.Dependency;
-using NHibernate.Mapping.ByCode;
 
 namespace Shesha.NHibernate.Maps
 {
@@ -55,7 +55,7 @@ namespace Shesha.NHibernate.Maps
     {
         public static Type Owner(this PropertyPath member)
         {
-            return member.GetRootMember().DeclaringType;
+            return member.GetRootMember().DeclaringType.NotNull();
         }
 
         public static Type CollectionElementType(this PropertyPath member)

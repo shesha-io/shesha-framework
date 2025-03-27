@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Abp;
+﻿using Abp;
 using Abp.Domain.Uow;
-using Abp.Extensions;
 using NHibernate;
 using Shesha.NHibernate.UoW;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Shesha.NHibernate.Uow
 {
@@ -65,10 +65,10 @@ namespace Shesha.NHibernate.Uow
         /// <param name="unitOfWork"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        private bool SkipProcessing(IUnitOfWork unitOfWork, out ISession session)
+        private bool SkipProcessing(IUnitOfWork unitOfWork, [NotNullWhen(false)]out ISession? session)
         {
             session = unitOfWork is NhUnitOfWork nhUnitOwWork
-                ? nhUnitOwWork.GetSession(false)
+                ? nhUnitOwWork.GetSessionOrNull(false)
                 : null;
 
             return session == null;

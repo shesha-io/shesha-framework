@@ -6,7 +6,6 @@ using Castle.DynamicProxy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
-using NHibernate.Proxy;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.MappingMetadata;
 using Shesha.Domain;
@@ -16,7 +15,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities.Proxy;
-using Shesha.NHibernate.UoW;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Test;
 using System;
@@ -35,10 +34,8 @@ namespace Shesha.Tests.JsonEntity
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
-        private readonly IRepository<Organisation, Guid> _organisationRepository;
         private readonly IRepository<ComplexTest, Guid> _jsonRepository;
         private readonly IRepository<ComplexTestString, Guid> _jsonStringRepository;
-        //private readonly IRepository<ComplexPersonTest, Guid> _jsonPersonRepository;
         private readonly IEntityModelBinder _entityModelBinder;
         private readonly ITypeFinder _typeFinder;
         private readonly IDynamicRepository _dynamicRepository;
@@ -47,10 +44,8 @@ namespace Shesha.Tests.JsonEntity
         {
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _personRepository = Resolve<IRepository<Person, Guid>>();
-            _organisationRepository = Resolve<IRepository<Organisation, Guid>>();
             _jsonRepository = Resolve<IRepository<ComplexTest, Guid>>();
             _jsonStringRepository = Resolve<IRepository<ComplexTestString, Guid>>();
-            //_jsonPersonRepository = Resolve<IRepository<ComplexPersonTest, Guid>>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
             _typeFinder = Resolve<ITypeFinder>();
             _dynamicRepository = Resolve<IDynamicRepository>();
@@ -93,9 +88,7 @@ namespace Shesha.Tests.JsonEntity
         {
             LoginAsHostAdmin();
 
-            using var uow = (NhUnitOfWork)_unitOfWorkManager.Begin();
-
-            var session = uow.GetSession();
+            using var uow = _unitOfWorkManager.Begin();
 
             var myType = typeof(Organisation);
 
@@ -113,30 +106,29 @@ namespace Shesha.Tests.JsonEntity
         {
             LoginAsHostAdmin();
 
-            using var uow = (NhUnitOfWork)_unitOfWorkManager.Begin();
-
-            var session = uow.GetSession();
-
-            var oldValue = "Shesha.Test.JsonPerson1";
-            var newValue = "Shesha.Test.JsonPerson";
-
-            var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType()).ToList();
-
-            var mapProvider = Resolve<IMappingMetadataProvider>();
-
-            foreach (var entityType in entityTypes)
+            using (var uow = NewNhUnitOfWork()) 
             {
-                try
+                var oldValue = "Shesha.Test.JsonPerson1";
+                var newValue = "Shesha.Test.JsonPerson";
+
+                var entityTypes = _typeFinder.FindAll().Where(t => t.IsEntityType()).ToList();
+
+                var mapProvider = Resolve<IMappingMetadataProvider>();
+
+                foreach (var entityType in entityTypes)
                 {
-                    var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
-                    var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
-                    if (jsonProps.Any())
-                        await mapProvider.UpdateClassNamesAsync(entityType, jsonProps, oldValue, newValue, true);
-                    if (genericProps.Any())
-                        await mapProvider.UpdateClassNamesAsync(entityType, genericProps, oldValue, newValue, false);
-                }
-                catch (Exception)
-                {
+                    try
+                    {
+                        var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
+                        var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
+                        if (jsonProps.Any())
+                            await mapProvider.UpdateClassNamesAsync(entityType, jsonProps, oldValue, newValue, true);
+                        if (genericProps.Any())
+                            await mapProvider.UpdateClassNamesAsync(entityType, genericProps, oldValue, newValue, false);
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             }
         }
@@ -151,8 +143,8 @@ namespace Shesha.Tests.JsonEntity
 
             i.Ii = i.I;
 
-            var pi = i.GetType().GetProperty("I");
-            var pii = i.GetType().GetProperty("Ii");
+            var pi = i.GetType().GetRequiredProperty("I");
+            var pii = i.GetType().GetRequiredProperty("Ii");
 
             pii.SetValue(i, Convert.ToInt64(pi.GetValue(i)));
             pii.SetValue(i, Convert.ChangeType(pi.GetValue(i), typeof(Int64?)));
@@ -174,7 +166,7 @@ namespace Shesha.Tests.JsonEntity
 
                 var fn = obj.JsonPerson.FirstName;
 
-                var fn1 = (obj.JsonList[0] as JsonAddress).Town;
+                var fn1 = obj.JsonList[0].ForceCastAs<JsonAddress>().Town;
 
                 var slist = await _jsonStringRepository.GetAll().Take(25).ToListAsync();
 
@@ -217,47 +209,47 @@ namespace Shesha.Tests.JsonEntity
     ""any"":{""town"":""My Town"",""street"":""My street"",""postalCode"":12345678,""_meta"":{""className"":""Shesha.Test.JsonAddress""}}
 }
 ";
-                var complex = JsonConvert.DeserializeObject<ComplexTest>(json);
+                var complex = JsonConvert.DeserializeObject<ComplexTest>(json).NotNull();
 
                 var jsonRes = JsonEntityProxy.GetJson(complex.JsonPerson).ToString();
 
                 var b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                var i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                var tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                var i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                var tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 var fn = complex.JsonPerson.FirstName;
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 var ja = complex.JsonPerson.Address;
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 var jat = complex.JsonPerson.Address?.Town;
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 complex.JsonPerson.Person = person;
 
                 jsonRes = JsonEntityProxy.GetJson(complex.JsonPerson).ToString();
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
-                complex.JsonPerson.Address.Town = "Test town";
+                complex.JsonPerson.NotNull().Address.Town = "Test town";
 
                 jsonRes = JsonEntityProxy.GetJson(complex.JsonPerson).ToString();
 
                 b = JsonEntityProxy.IsChanged(complex.JsonPerson as IJsonEntityProxy);
-                i = (complex.JsonPerson as IJsonEntityProxy)._isInitialized;
-                tc = (complex.JsonPerson as IJsonEntityProxy)._isThisChanged;
+                i = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isInitialized;
+                tc = complex.JsonPerson.ForceCastAs<IJsonEntityProxy>()._isThisChanged;
 
                 jsonRes = JsonEntityProxy.GetJson(complex).ToString();
 
@@ -269,7 +261,7 @@ namespace Shesha.Tests.JsonEntity
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var o = new ComplexTest()
                 {
@@ -308,7 +300,7 @@ namespace Shesha.Tests.JsonEntity
 
                 dto.JsonPerson.FirstName = "Shurik";
                 dto.Description = "+++++++";
-                (dto.JsonList[3] as JsonPerson).FirstName = "Trheeeeeee";
+                dto.JsonList[3].ForceCastAs<JsonPerson>().FirstName = "Trheeeeeee";
 
                 ObjectToJsonExtension.ObjectToJObject(dto, jObj);
             }
@@ -333,7 +325,7 @@ namespace Shesha.Tests.JsonEntity
             var instanceField = proxyType.GetField("__target", flags);
             var unproxy = instanceField?.GetValue(model1);
 
-            var s1 = (model1 as IJsonReference)._displayName;
+            var s1 = model1.ForceCastAs<IJsonReference>()._displayName;
             model1.Test = "===";
             var s2 = model1.Test;
 
@@ -341,10 +333,10 @@ namespace Shesha.Tests.JsonEntity
 
             var model2 = new ProxyGenerator().CreateClassProxyWithTarget(obj.GetType(), /*new[] { typeof(IInner) },*/ obj, p);
 
-            (model1 as IJsonReference)._displayName = "111";
-            (model2 as IJsonReference)._displayName = "222";
+            model1.ForceCastAs<IJsonReference>()._displayName = "111";
+            model2.ForceCastAs<IJsonReference>()._displayName = "222";
 
-            var s = (model1 as IJsonReference)._displayName;
+            var s = model1.ForceCastAs<IJsonReference>()._displayName;
         }
 
         [Fact]
@@ -354,7 +346,7 @@ namespace Shesha.Tests.JsonEntity
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var json = @"
 {
@@ -374,13 +366,13 @@ namespace Shesha.Tests.JsonEntity
     ""any"":{""town"":""My Town"",""street"":""My street"",""postalCode"":12345678,""_meta"":{""className"":""Shesha.Test.JsonAddress""}}
 }
 ";
-                var complex = JsonConvert.DeserializeObject<ComplexTest>(json);
+                var complex = JsonConvert.DeserializeObject<ComplexTest>(json).NotNull();
 
                 var json2 = JsonConvert.SerializeObject(complex);
 
                 var name = complex.JsonPerson?.FirstName;
 
-                var pp = complex.JsonPerson.Person;
+                var pp = complex.JsonPerson?.Person;
 
                 var json3 = JsonConvert.SerializeObject(complex);
 
@@ -445,37 +437,6 @@ namespace Shesha.Tests.JsonEntity
                 };
                 await _jsonRepository.InsertOrUpdateAsync(o);
             }
-            /*var op = new ComplexPersonTest()
-            {
-                Name = "JsonPerson Person test",
-                Description = "New Person Description",
-                JsonList = new List<JsonEntities.JsonEntity>()
-                {
-                    new JsonAddress() { Town = "Listed Town", Street = "Listed street" },
-                    new JsonPerson() { FirstName = "11", LastName = "qq" },
-                    new JsonPerson() { FirstName = "22", LastName = "ww" },
-                    new JsonPerson() { FirstName = "33", LastName = "ee" },
-                },
-                AnyJson = new JsonPerson()
-                {
-                    FirstName = "JsonPerson",
-                    LastName = "JsonPerson",
-                    Person = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
-                },
-                JsonPerson = new JsonPerson()
-                {
-                    FirstName = "11111",
-                    LastName = "22222",
-                    //Person = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
-                }
-            };
-            try
-            {
-                await _jsonPersonRepository.InsertOrUpdateAsync(op);
-            }
-            catch (Exception e)
-            {
-            }*/
         }
 
         [Fact]
@@ -483,7 +444,7 @@ namespace Shesha.Tests.JsonEntity
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var person = _personRepository.GetAll().FirstOrDefault();
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync();
 
                 var o = new ComplexTest()
                 {
@@ -525,16 +486,7 @@ namespace Shesha.Tests.JsonEntity
 
                 using (var uow = _unitOfWorkManager.Begin())
                 {
-                    var nhuow = uow as NhUnitOfWork;
-
                     var person = _personRepository.GetAll().FirstOrDefault();
-
-                    /*var person = new Person()
-                    {
-                        Id = Guid.NewGuid(),
-                        FirstName = "Shurik 111",
-                        LastName = "Shurik 222",
-                    };*/
 
                     var pers = new JsonPerson()
                     {

@@ -1,5 +1,5 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { getEventHandlers } from '@/components/formDesigner/components/utils';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -7,17 +7,18 @@ import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles, useFormData } from '@/providers';
 import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
-import { Switch } from 'antd';
+import { InputProps, Switch } from 'antd';
 import { SwitchSize } from 'antd/lib/switch';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
+import { removeUndefinedProps } from '@/utils/object';
 
 const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
   name: 'Switch',
-  icon: <SwitcherOutlined />,
+icon: <SwitcherOutlined />,
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
@@ -26,23 +27,34 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     const { data: formData } = useFormData();
     const allData = useAvailableConstantsData();
 
+    const jsStyle = getStyle(model.style, passedModel);
     const style = getStyle(model?.style, formData);
 
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      ...style
+    });
+
+    const finalStyle = removeUndefinedProps({ ...additionalStyles });
+
+    const inputProps: InputProps = {
+      style: { ...finalStyle, ...jsStyle },
+    };
+
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
+      <ConfigurableFormItem model={model} valuePropName="checked">
         {(value, onChange) => {
-          const customEvents = getEventHandlers(model, allData);
+          const customEvent = customOnChangeValueEventHandler(model, allData);
           const onChangeInternal = (...args: any[]) => {
-            customEvents.onChange(args[0]);
+            customEvent.onChange(args[0]);
             if (typeof onChange === 'function')
-              onChange(...args);
+              onChange(args[0]);
           };
 
           return model.readOnly ? (
-              <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
-            ) : (
-              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChangeInternal} />
-            );
+            <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
+          ) : (
+            <Switch className="sha-switch" disabled={model.readOnly} style={inputProps.style} size={size as SwitchSize} checked={value} {...customEvent} onChange={onChangeInternal} />
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -59,14 +71,14 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ISwitchComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<ISwitchComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<ISwitchComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<ISwitchComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
         style: prev.style
       };
 
-      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
   ,
 };

@@ -5,11 +5,12 @@ using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
+using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Permissions;
-using Shesha.Web.FormsDesigner.Domain;
+using Shesha.Reflection;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
-        public static string GetFormPermissionedObjectName(string module, string name)
+        public static string GetFormPermissionedObjectName(string? module, string name)
         {
             return $"{module}.{name}";
         }
@@ -61,7 +62,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
             newVersion.Markup = form.Markup;
             newVersion.ModelType = form.ModelType;
-            newVersion.Type = form.Type;
             newVersion.IsTemplate = form.IsTemplate;
             newVersion.Template = form.Template;
             newVersion.Normalize();
@@ -129,8 +129,6 @@ namespace Shesha.Web.FormsDesigner.Services
             var validationResults = new List<ValidationResult>();
 
             // todo: review validation messages, add localization support
-            if (form == null)
-                validationResults.Add(new ValidationResult("Please select a form to move", new List<string> { nameof(input.ItemId) }));
             if (module == null)
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (module != null && form != null)
@@ -143,6 +141,8 @@ namespace Shesha.Web.FormsDesigner.Services
 
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
+            form.NotNull();
 
             var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == form.Origin);
             var allVersions = await allVersionsQuery.ToListAsync();
@@ -188,9 +188,8 @@ namespace Shesha.Web.FormsDesigner.Services
             form.VersionStatus = ConfigurationItemVersionStatus.Draft;
             form.Origin = form;
 
-            form.Markup = input.Markup;
+            form.Markup = input.Markup ?? "";
             form.ModelType = input.ModelType;
-            form.Type = input.Type;
             form.IsTemplate = input.IsTemplate;
             form.Template = template;
             form.Normalize();
@@ -207,7 +206,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public override async Task<FormConfiguration> CopyAsync(FormConfiguration item, CopyItemInput input)
         {
-            var srcForm = item as FormConfiguration;
+            var srcForm = item;
 
             // todo: validate input
             var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
@@ -215,8 +214,6 @@ namespace Shesha.Web.FormsDesigner.Services
             var validationResults = new List<ValidationResult>();
 
             // todo: review validation messages, add localization support
-            if (srcForm == null)
-                validationResults.Add(new ValidationResult("Please select a form to copy", new List<string> { nameof(input.ItemId) }));
             if (module == null)
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (string.IsNullOrWhiteSpace(input.Name))
@@ -249,7 +246,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
             form.Markup = srcForm.Markup;
             form.ModelType = srcForm.ModelType;
-            form.Type = srcForm.Type;
             form.IsTemplate = srcForm.IsTemplate;
             form.Template = srcForm.Template;
             form.Normalize();

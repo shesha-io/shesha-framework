@@ -12,6 +12,7 @@ export interface IProps<TModel extends IConfigurableActionArguments> {
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
+  cacheKey?: string;
 }
 
 function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
@@ -20,6 +21,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   markup,
   onValuesChange,
   readOnly = false,
+  cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
 
@@ -38,24 +40,27 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
         components: item.content.components.map((item: any) => ({
           ...item,
           type: "settingsInput",
-          inputType: item.type === 'settingsInput' ? item.inputType : item.type,
+          inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
           dropdownOptions: item?.values?.map((item: any) => ({
             ...item,
             label: item?.label,
             icon: item?.icon
           })),
+          tooltip: item?.description || item?.tooltip,
           buttonGroupOptions: item.buttonGroupOptions ?? item.items
         }))
       }
     } : {
       ...item,
       type: "settingsInput",
-      inputType: item.type === 'settingsInput' ? item.inputType : item.type,
+      inputType: item.type === 'settingsInput' ? item.inputType : item.type === 'checkbox' ? 'switch' : item.type,
       dropdownOptions: item?.values?.map((item: any) => ({
         ...item,
+        tooltip: item?.description || item?.tooltip,
         label: item?.label,
         icon: item?.icon
       })),
+      tooltip: item?.description || item?.tooltip,
       buttonGroupOptions: item.buttonGroupOptions ?? item.items
     };
   };
@@ -76,6 +81,7 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
       shaFormRef={formRef}
       onFinish={onSave}
       markup={newMarkUp as FormMarkup}
+      cacheKey={cacheKey}
       initialValues={model}
       onValuesChange={onValuesChange}
     />

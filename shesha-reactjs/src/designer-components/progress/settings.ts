@@ -100,7 +100,7 @@ export const getSettings = (data: any) => {
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
-                      type: 'number',
+                      type: 'numberField',
                       id: nanoid(),
                       propertyName: 'defaultValue',
                       label: 'Default Value',
@@ -108,7 +108,7 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                     },
                     {
-                      type: 'number',
+                      type: 'numberField',
                       id: nanoid(),
                       propertyName: 'percent',
                       label: 'Percent',
@@ -160,7 +160,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: nanoid(),
                                     propertyName: 'strokeColor',
                                     label: 'Stroke Color',
@@ -168,7 +168,7 @@ export const getSettings = (data: any) => {
                                     jsSetting: true,
                                   },
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: nanoid(),
                                     propertyName: 'trailColor',
                                     label: 'Trail Color',
@@ -197,7 +197,7 @@ export const getSettings = (data: any) => {
                                     jsSetting: true,
                                   },
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: nanoid(),
                                     propertyName: 'strokeWidth',
                                     label: 'Stroke Width',
@@ -211,7 +211,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'width',
                                 label: 'Width',
-                                inputType: 'number',
+                                inputType:'numberField',
                                 tooltip: 'The canvas width of the circular progress, unit: px',
                                 hidden: { _code: 'return !["circle", "dashboard"].includes(getSettingValue(data?.progressType));', _mode: 'code', _value: false },
                                 jsSetting: true,
@@ -237,7 +237,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'steps',
                                 label: 'Steps',
-                                inputType: 'number',
+                                inputType:'numberField',
                                 tooltip: 'The total step count',
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
                                 jsSetting: true,
@@ -250,7 +250,7 @@ export const getSettings = (data: any) => {
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "line";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: nanoid(),
                                     propertyName: 'lineStrokeColor',
                                     label: 'Line Stroke Color',
@@ -266,7 +266,7 @@ export const getSettings = (data: any) => {
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "circle";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
-                                    type: 'color',
+                                    type: 'colorPicker',
                                     id: nanoid(),
                                     propertyName: 'circleStrokeColor',
                                     label: 'Circle Stroke Color',
@@ -282,7 +282,7 @@ export const getSettings = (data: any) => {
                                 hidden: { _code: 'return getSettingValue(data?.progressType) !== "dashboard";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
-                                    type: 'number',
+                                    type: 'numberField',
                                     id: nanoid(),
                                     propertyName: 'gapDegree',
                                     label: 'Gap Degree',
@@ -326,7 +326,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'format',
                                 label: 'Format',
-                                inputType: 'codeEditor',
+                                inputType:'codeEditor',
                                 tooltip: 'The template function of the content. This function should return string or number',
                                 description: 'The template function of the content. This function should return string or number',
                                 mode: 'dialog',
@@ -345,7 +345,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'success',
                                 label: 'Success',
-                                inputType: 'codeEditor',
+                                inputType:'codeEditor',
                                 tooltip: 'Configs of successfully progress bar. Returns an object: { percent: number, strokeColor: string }',
                                 description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
                                 mode: 'dialog',
@@ -375,7 +375,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 propertyName: 'style',
                                 label: 'Style',
-                                inputType: 'codeEditor',
+                                inputType:'codeEditor',
                                 tooltip: 'Custom CSS style object for the progress component',
                                 description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                 mode: 'dialog',
@@ -409,7 +409,7 @@ export const getSettings = (data: any) => {
                   id: nanoid(),
                   propertyName: 'permissions',
                   label: 'Permissions',
-                  inputType: 'permissions',
+                  inputType:'permissions',
                   tooltip: 'Enter a list of permissions that should be associated with this component',
                   labelAlign: 'right',
                   validate: {},

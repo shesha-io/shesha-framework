@@ -23,11 +23,11 @@ namespace Shesha.DeviceForceUpdate
                await Repository.DeleteAsync(item);
 
             var itemToSave = ObjectMapper.Map<Shesha.Domain.DeviceForceUpdate>(input);
-            Repository.Insert(itemToSave);
+            await Repository.InsertAsync(itemToSave);
             return input;
         }
 
-        public async Task<DeviceForceUpdateDto> GetForceUpdateByOSType(int osType)
+        public async Task<DeviceForceUpdateDto?> GetForceUpdateByOSTypeAsync(int osType)
         {
             var items = await Repository.GetAll().Where(r => r.OSType == osType && !r.IsDeleted).ToListAsync();
             var currentForceUpdate = items.FirstOrDefault();

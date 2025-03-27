@@ -28,10 +28,10 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     id: nanoid(),
     propertyName: 'formId',
     label: 'Form',
+    parentId: 'root',
     validate: {
       required: true,
     },
-    convertToFullId: true,
     hidden: {
       _mode: 'code',
       _code: 'return data?.navigationType !== "form"'
@@ -40,8 +40,9 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
   .addLabelValueEditor({
     id: nanoid(),
     propertyName: 'queryParameters',
-    label: 'Query String parameters',
+    label: 'Query String Parameters',
     labelName: 'key',
+    parentId: 'root',
     labelTitle: 'Key',
     valueName: 'value',
     valueTitle: 'Value'

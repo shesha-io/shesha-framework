@@ -34,9 +34,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             padding-bottom: 7px;
             .${listItem} {
                 position: relative;
-                padding: 5px;
                 display: flex;
-
+                padding: 5px;
                 border: 1px solid #ddd;
                 border-radius: 4px;
                 margin-bottom: 4px;

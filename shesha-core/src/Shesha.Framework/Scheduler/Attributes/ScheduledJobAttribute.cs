@@ -14,16 +14,22 @@ namespace Shesha.Scheduler.Attributes
         /// </summary>
         public Guid Uid { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public string CronString { get; set; }
+        public string? CronString { get; set; }
         public StartUpMode StartupMode { get; set; }
 
         public LogMode LogMode { get; set; }
 
-        public string LogFolder { get; set; }
+        public string? LogFolder { get; set; }
 
-        public ScheduledJobAttribute(string uid, StartUpMode startupMode = StartUpMode.Automatic, string cronString = null, string description = null, LogMode logMode = LogMode.FileSystem, string logFolder = null)
+        public ScheduledJobAttribute(
+            string uid, 
+            StartUpMode startupMode = StartUpMode.Automatic, 
+            string? cronString = null, 
+            string? description = null,
+            LogMode logMode = LogMode.FileSystem, 
+            string? logFolder = null)
         {
             Uid = uid.ToGuid();
             StartupMode = startupMode;

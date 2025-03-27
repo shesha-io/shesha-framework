@@ -14,7 +14,7 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 
 interface IChevronSettingsState extends IChevronProps { }
 
-const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
+export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
   const { values, model, onValuesChange } = useSettingsForm<IChevronProps>();
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -27,7 +27,6 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={model}
           onValuesChange={onValuesChange}
-          
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>
@@ -58,8 +57,8 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }} tooltip='Make sure to reselect the reference list if any changes are made to its items'>
           <Autocomplete
             dataSourceType="entitiesList"
-            typeShortAlias="Shesha.Framework.ReferenceList"
-            filter='{"and":[{"==":[{"var":"isLast"},true]}]}'
+            entityType="Shesha.Framework.ReferenceList"
+            filter={{"and":[{"==":[{"var":"isLast"},true]}]}}
             readOnly={values.readOnly}
           />
         </SettingsFormItem>

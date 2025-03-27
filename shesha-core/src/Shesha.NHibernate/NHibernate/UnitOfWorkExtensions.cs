@@ -1,8 +1,8 @@
-﻿using System;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Uow;
 using NHibernate;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
+using System;
 
 namespace Shesha.NHibernate
 {
@@ -42,16 +42,11 @@ namespace Shesha.NHibernate
         private static NhUnitOfWork GetNhUnitOfWork(IActiveUnitOfWork unitOfWork)
         {
             if (unitOfWork == null)
-            {
                 throw new ArgumentNullException(nameof(unitOfWork));
-            }
 
-            if (!(unitOfWork is NhUnitOfWork))
-            {
-                throw new ArgumentException("unitOfWork is not type of " + typeof(NhUnitOfWork).FullName, "unitOfWork");
-            }
-
-            return unitOfWork as NhUnitOfWork;
+            return unitOfWork is NhUnitOfWork nhUnitOfWork
+                ? nhUnitOfWork
+                : throw new ArgumentException("unitOfWork is not type of " + typeof(NhUnitOfWork).FullName, "unitOfWork");
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 {
                     Class = e,
                     Attribute = e.GetAttribute<ScheduledJobAttribute>()
-                })
+                })                
                 .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Class.Assembly))
                 .ToList();
 
@@ -113,14 +113,15 @@ namespace Shesha.Scheduler.Bootstrappers
                         JobDescription = jobInfo.Attribute.Description,
                         LogMode = jobInfo.Attribute.LogMode,
                         LogFolder = jobInfo.Attribute.LogFolder,
-                        JobType = jobInfo.Class.FullName
+                        JobType = jobInfo.Class.GetRequiredFullName()
                     };
 
                     await _jobRepo.InsertAsync(job);
 
                     // create a trigger
                     if (jobInfo.Attribute.StartupMode == StartUpMode.Automatic &&
-                        CronStringHelper.IsValidCronExpression(jobInfo.Attribute.CronString ?? string.Empty))
+                        !string.IsNullOrWhiteSpace(jobInfo.Attribute.CronString) &&
+                        CronStringHelper.IsValidCronExpression(jobInfo.Attribute.CronString))
                     {
                         var trigger = new ScheduledJobTrigger()
                         {

@@ -23,37 +23,37 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Label (display name)
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Data type
         /// </summary>
-        public string DataType { get; set; }
+        public string? DataType { get; set; }
 
         /// <summary>
         /// Data format
         /// </summary>
-        public string DataFormat { get; set; }
+        public string? DataFormat { get; set; }
 
         /// <summary>
         /// Entity type. Aplicable for entity references
         /// </summary>
-        public string EntityType { get; set; }
+        public string? EntityType { get; set; }
 
         /// <summary>
         /// Reference list name
         /// </summary>
-        public string ReferenceListName { get; set; }
+        public string? ReferenceListName { get; set; }
 
         /// <summary>
         /// Reference list module
         /// </summary>
-        public string ReferenceListModule { get; set; }
+        public string? ReferenceListModule { get; set; }
 
         /// <summary>
         /// Source of the property (code/user)
@@ -73,7 +73,7 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Items type (applicable for arrays)
         /// </summary>
-        public DistributedEntityConfigProperty ItemsType { get; set; }
+        public DistributedEntityConfigProperty? ItemsType { get; set; }
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)
@@ -124,12 +124,12 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Validation RegularExpression 
         /// </summary>
-        public string RegExp { get; set; }
+        public string? RegExp { get; set; }
 
         /// <summary>
         /// Validation message
         /// </summary>
-        public string ValidationMessage { get; set; }
+        public string? ValidationMessage { get; set; }
 
         /// <summary>
         /// Allows to create child/nested entity

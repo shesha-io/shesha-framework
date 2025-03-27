@@ -1,5 +1,4 @@
-﻿using Abp.Runtime.Caching;
-using Abp.TestBase;
+﻿using Abp.TestBase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -13,7 +12,9 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Reflection;
 using Shesha.Tests.DynamicEntities.Mvc;
+using Shesha.Utilities;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace Shesha.Tests.DynamicEntities
             Assert.True(bindingResult.IsModelSet);
 
             var model = bindingResult.Model;
+            model.ShouldNotBeNull();
 
             var testItems = new Dictionary<string, object>
             {
@@ -62,8 +64,11 @@ namespace Shesha.Tests.DynamicEntities
             Assert.True(bindingResult.IsModelSet);
 
             var model = bindingResult.Model;
+            model.ShouldNotBeNull();
 
             var (level1_Prop, level1_Value) = GetPropertyAndValue(model, "NestedLevel1");
+            level1_Value.ShouldNotBeNull();
+
             var (level1_Prop1_Prop, level1_Prop1_Value) = GetPropertyAndValue(level1_Value, "NestedLevel1_Prop1");
             level1_Prop1_Value.ShouldBe("NestedLevel1_Prop1 string value");
         }
@@ -77,12 +82,16 @@ namespace Shesha.Tests.DynamicEntities
             Assert.True(bindingResult.IsModelSet);
 
             var model = bindingResult.Model;
+            model.ShouldNotBeNull();
 
             var (level1_Prop, level1_Value) = GetPropertyAndValue(model, "NestedLevel1");
+            level1_Value.ShouldNotBeNull();
+
             var (level1_Prop1_Prop, level1_Prop1_Value) = GetPropertyAndValue(level1_Value, "NestedLevel1_Prop1");
             level1_Prop1_Value.ShouldBe("NestedLevel1_Prop1 string value");
 
             var (level1_level2_Prop, level1_level2_Value) = GetPropertyAndValue(level1_Value, "NestedLevel2");
+            level1_level2_Value.ShouldNotBeNull();
 
             var (level1_level2_Prop1_Prop, level1_level2_Prop1_Value) = GetPropertyAndValue(level1_level2_Value, "NestedLevel2_Prop1");
             level1_level2_Prop1_Value.ShouldBe("NestedLevel2_Prop1 string value");
@@ -97,6 +106,7 @@ namespace Shesha.Tests.DynamicEntities
             Assert.True(bindingResult.IsModelSet);
 
             var model = bindingResult.Model;
+            model.ShouldNotBeNull();
 
             var testItems = new Dictionary<string, object>
             {
@@ -117,7 +127,7 @@ namespace Shesha.Tests.DynamicEntities
 
         #region private methods
 
-        private (PropertyInfo, object) GetPropertyAndValue(object container, string propertyName, bool requireProperty = true, bool requireValue = true)
+        private (PropertyInfo?, object?) GetPropertyAndValue(object container, string propertyName, bool requireProperty = true, bool requireValue = true)
         {
             var property = container.GetType().GetProperty(propertyName);
             if (requireProperty && property == null)
@@ -167,12 +177,12 @@ namespace Shesha.Tests.DynamicEntities
         {
             var content = await GetResourceStringAsync($"{this.GetType().Namespace}.Resources.{jsonResourceName}", this.GetType().Assembly);
             var deserialized = JsonConvert.DeserializeObject(content, modelType);
-            return deserialized;
+            return deserialized.NotNull();
         }
 
         private async Task<string> GetResourceStringAsync(string resourceName, Assembly assembly)
         {
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            using (var stream = assembly.GetEmbeddedResourceStream(resourceName))
             {
                 using (var sr = new StreamReader(stream))
                 {
@@ -197,8 +207,8 @@ namespace Shesha.Tests.DynamicEntities
 
         private static DefaultModelBindingContext GetBindingContext(
             Type modelType,
-            HttpContext httpContext = null,
-            IModelMetadataProvider metadataProvider = null)
+            HttpContext? httpContext = null,
+            IModelMetadataProvider? metadataProvider = null)
         {
             if (httpContext == null)
             {
@@ -236,12 +246,13 @@ namespace Shesha.Tests.DynamicEntities
                 .Returns(async () =>
                 {
                     var schema = await ReadJsonRequestAsync(typeof(List<EntityPropertyDto>), schemaResourceName) as List<EntityPropertyDto>;
-                    return schema;
+                    return schema.NotNull();
                 });
 
             var entityConfigStore = LocalIocManager.Resolve<IEntityConfigurationStore>();
-            var cacheManager = LocalIocManager.Resolve<ICacheManager>();
-            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, cacheManager);
+            var fullProxyCacheHolder = LocalIocManager.Resolve<IFullProxyCacheHolder>();
+            var dynamicTypeCacheHolder = LocalIocManager.Resolve<IDynamicTypeCacheHolder>();
+            var builder = new DynamicDtoTypeBuilder(entityConfigCacheMock.Object, entityConfigStore, fullProxyCacheHolder, dynamicTypeCacheHolder);
 
             return Task.FromResult<IDynamicDtoTypeBuilder>(builder);
         }

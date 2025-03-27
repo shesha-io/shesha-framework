@@ -41,18 +41,18 @@ namespace Shesha.ShaRoleAppointedPersons
         {
             CheckCreatePermission();
 
-            var appointment = await BindAndValidate(input);
+            var appointment = await BindAndValidateAsync(input);
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            if (appointment?.Person?.User != null)
+            if (appointment.Person?.User != null)
                 await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
 
             var dto = MapToEntityDto(appointment);
             return dto;
         }
 
-        private async Task<ShaRoleAppointedPerson> BindAndValidate(IShaRoleAppointedPersonDto input)
+        private async Task<ShaRoleAppointedPerson> BindAndValidateAsync(IShaRoleAppointedPersonDto input)
         {
             var entity = input is EntityDto<Guid> withId && withId.Id != Guid.Empty
                 ? await Repository.GetAsync(withId.Id)
@@ -61,7 +61,7 @@ namespace Shesha.ShaRoleAppointedPersons
             entity.Role = input.RoleId != Guid.Empty
                 ? await _roleRepository.GetAsync(input.RoleId)
                 : null;
-            entity.Person = (input.Person?.Id ?? Guid.Empty) != Guid.Empty
+            entity.Person = input.Person != null && input.Person.Id != null && input.Person.Id != Guid.Empty
                 ? await _personRepository.GetAsync(input.Person.Id.Value)
                 : null;
 
@@ -116,11 +116,11 @@ namespace Shesha.ShaRoleAppointedPersons
         {
             CheckCreatePermission();
 
-            var appointment = await BindAndValidate(input);
+            var appointment = await BindAndValidateAsync(input);
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            if (appointment?.Person?.User != null)
+            if (appointment.Person?.User != null)
                 await _shaPermissionChecker.ClearPermissionsCacheForUserAsync(appointment.Person.User.Id, appointment.Person.User.TenantId);
 
             var dto = MapToEntityDto(appointment);

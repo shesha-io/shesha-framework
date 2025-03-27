@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Json;
 using Abp.Timing;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
@@ -36,18 +37,33 @@ namespace Shesha.Tests.EntityReferenceTest
             _moduleRepo = Resolve<IRepository<Module, Guid>>();
         }
 
-        private static EntityIdentifier GetEntityIdentifier(GenericEntityReference genericEntity)
+        public class TestDto
         {
-            EntityIdentifier entityIdentifier = null;
+            public string Name { get; set; }
+            public GenericEntityReference Test { get; set; }
+        }
 
-            Entity<Guid> entity = genericEntity;
+        [Fact]
+        public async Task TestGnericEntityReferenceSerializationAsync()
+        {
+            LoginAsHostAdmin();
 
-            if (entity is not null)
+            using (var uow = _unitOfWorkManager.Begin())
             {
-                entityIdentifier = new EntityIdentifier(entity.GetType(), entity.Id);
-            }
+                var person = await _personRepository.GetAll().FirstOrDefaultAsync(x => x.FirstName != null && x.FirstName != "");
+                var dto = new TestDto
+                {
+                    Name = "Test",
+                    Test = person
+                };
 
-            return entityIdentifier;
+                var json = dto.ToJsonString();
+                var obj = json.FromJsonString<TestDto>();
+
+                var newTest = (Person)obj.Test;
+
+                Assert.True(newTest.FirstName?.Equals(person.FirstName));
+            }
         }
 
         [Fact]
@@ -88,7 +104,7 @@ namespace Shesha.Tests.EntityReferenceTest
                 {
                     //var b = i == item.PermissionedEntity1;
                     //i = item.PermissionedEntity1;
-                    var entry = session?.GetEntry(item, false);
+                    var entry = session.GetEntryOrNull(item);
                     var dirty = session.GetDirtyProperties(item);
                 }
 

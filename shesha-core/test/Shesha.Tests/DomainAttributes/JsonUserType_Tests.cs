@@ -1,5 +1,4 @@
-﻿using Abp.Dependency;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using Shesha.Generators;
@@ -31,9 +30,9 @@ namespace Shesha.Tests.DomainAttributes
             var jsonifiedPerson = JsonConvert.SerializeObject(person);
 
             var userType = new JsonUserType<PersonEntity>();
-            var deserialized = (PersonEntity) userType.Assemble(jsonifiedPerson, null);
+            var deserialized = userType.Assemble(jsonifiedPerson, null) as PersonEntity;
 
-            Assert.NotNull(deserialized);
+            Assert.NotNull(deserialized);            
             Assert.Equal(person.Name, deserialized.Name);
             Assert.Equal(person.HomeAddress.Street, deserialized.HomeAddress.Street);
             Assert.Equal(person.HomeAddress.PostalCode, deserialized.HomeAddress.PostalCode);
@@ -116,7 +115,7 @@ namespace Shesha.Tests.DomainAttributes
 
             conventions.Compile(nhConfig);
 
-            var sessionFactory = nhConfig.BuildSessionFactory();
+            using var sessionFactory = nhConfig.BuildSessionFactory();
 
             using (var session = sessionFactory.OpenSession())
             {

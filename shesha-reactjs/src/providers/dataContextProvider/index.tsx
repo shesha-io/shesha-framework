@@ -1,11 +1,12 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, } from "@/providers";
-import React, { FC, PropsWithChildren, useRef } from "react";
+import React, { FC, PropsWithChildren, useRef, useState } from "react";
 import { useDataContextManager } from "../dataContextManager/index";
 import {  DataContextType, ContextOnChangeData, ContextGetFull } from "./contexts";
 import DataContextBinder from "./dataContextBinder";
-import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
+import { setValueByPropertyName } from "@/utils/object";
 import { useAvailableConstantsData } from "../form/utils";
+import { IStorageProxy, StorageProxy } from "./contexts/storageProxy";
 
 export interface IDataContextProviderProps { 
   id: string;
@@ -20,7 +21,6 @@ export interface IDataContextProviderProps {
 }
 
 export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
-    
   const {
     children,
     id,
@@ -36,7 +36,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const allData = useRef<any>({});
   allData.current = useAvailableConstantsData({ topContextId: id });
 
-  const dataRef = useRef<any>({});
+  const [storage] = useState<IStorageProxy>(() => new StorageProxy(() => onChangeContextData()));
   const initialDataRef = useRef<any>(undefined);
 
   const onChangeData = useRef<ContextOnChangeData>();
@@ -45,31 +45,24 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   }
 
   const getFieldValue = (name: string) => {
-    return getValueByPropertyName(dataRef.current, name);
+    return storage.getFieldValue(name);
   };
 
   const getData = () => {
-    return dataRef.current;
+    return storage.getData();
   };
 
   let onChangeAction = null;
 
   const setFieldValue = (name: string, value: any) => {
-    setValueByPropertyName(dataRef.current, name, value, false);
+    storage.setFieldValue(name, value);
     const changedData = setValueByPropertyName({}, name, value, false);
     
-    onChangeContextData();
     onChangeAction(changedData);
   };
 
   const getFull: ContextGetFull = () => {
-    const data = getData();
-    // need to update `data` object to use inside code editor
-    const setFieldValueinternal = (name: string, value: any) => {
-      setFieldValue(name, value);
-    };
-    data.setFieldValue = setFieldValueinternal;
-    return data;
+    return getData();
   };
 
   onChangeAction = (changedData: any) => {
@@ -84,24 +77,22 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     }
   };
 
-  const setDatainternal = (changedData: any) => {
-    dataRef.current = {...dataRef.current, ...changedData};
+  const setDataInternal = (changedData: any) => {
+    storage.setData(changedData);
 
     if (onChangeData.current)
-      onChangeData.current({...dataRef.current}, {...changedData});
-
-      onChangeContextData();
-    };
+      onChangeData.current(changedData, changedData);
+};
 
   const setData = (changedData: any) => {
-    setDatainternal(changedData);
+    setDataInternal(changedData);
     onChangeAction(changedData);
   };
 
   if (initialData && initialDataRef.current === undefined) {
     initialDataRef.current = initialData;
     initialData.then((data) => {
-      setDatainternal(data);
+      setDataInternal(data);
       executeAction({
         actionConfiguration: props.onInitAction,
         argumentsEvaluationContext: {...allData.current},
@@ -115,7 +106,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       name={name}
       description={description}
       type={type}
-      data={dataRef.current}
+      data={storage}
       metadata={metadata}
       setFieldValue={setFieldValue}
       getFieldValue={getFieldValue}

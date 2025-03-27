@@ -9,7 +9,6 @@ using Microsoft.OpenApi.Models;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -53,8 +52,8 @@ namespace Shesha.Swagger
             return assemblyFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
                 .Where(a => !a.IsDynamic &&
-                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
-                ).SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity)))
+                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
+                ).SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t))) // && t != typeof(JsonEntity)) need to add JsonEntity for binding purposes
                 .ToList();
         }
 
@@ -157,7 +156,7 @@ namespace Shesha.Swagger
                     var test = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
                     return test;
                 } 
-                else if (modelType.HasInterface(typeof(IDynamicDtoProxy)))
+                else if (modelType.HasInterface(typeof(IDynamicDtoProxy)) && modelType.BaseType != null)
                     return "Proxy" + GetSchemaId(modelType.BaseType);
                 else
                     return modelType.Name;

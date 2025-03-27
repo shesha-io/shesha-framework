@@ -54,7 +54,7 @@ namespace Shesha.FluentMigrator
 
         public virtual void CreateOrMigrateForTenant(AbpTenantBase tenant, Action? seedAction)
         {
-            if (tenant.ConnectionString.IsNullOrEmpty())
+            if (string.IsNullOrWhiteSpace(tenant.ConnectionString))
                 return;
 
             CreateOrMigrate(tenant, seedAction);
@@ -63,7 +63,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Configure the dependency injection services
         /// </summary>
-        protected virtual IServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
+        protected virtual ServiceProvider CreateServices(IDbConnectionSettings connectionSettings)
         {
             var services = new ServiceCollection();
             services.TryAddSingleton<IModuleLocator>(_moduleLocator);
@@ -136,7 +136,8 @@ namespace Shesha.FluentMigrator
             // Put the database update into a scope to ensure
             // that all resources will be disposed.
             var connectionSettings = new DbConnectionSettings(dbmsType, connectionString);
-            using var scope = CreateServices(connectionSettings).CreateScope();
+            using var services = CreateServices(connectionSettings);
+            using var scope = services.CreateScope();
             using var connectionSettingsScope = DbConnectionSettings.BeginConnectionScope(connectionSettings);
 
             // Instantiate the runner

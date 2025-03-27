@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Abp.Domain.Entities;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
@@ -20,18 +18,18 @@ namespace Shesha.Domain
         /// Owning entity ID. ID is intentionally bigger because in some cases an owner ID is set to a data table ID string
         /// </summary>
         [Column("Frwk_OwnerId"), StringLength(255)]
-        public virtual string OwnerId { get; set; }
+        public virtual string? OwnerId { get; set; }
 
         /// <summary>
         /// Owning entity type alias
         /// </summary>
         [Column("Frwk_OwnerType"), StringLength(100)]
-        public virtual string OwnerType { get; set; }
+        public virtual string? OwnerType { get; set; }
 
         /// <summary>
         /// Sets owner with an entity object
         /// </summary>
-        public virtual void SetOwner<TId>(IEntity<TId> entity)
+        public virtual void SetOwner<TId>(IEntity<TId> entity) where TId: notnull
         {
             var config = entity.GetType().GetEntityConfiguration();
             if (string.IsNullOrEmpty(config.TypeShortAlias))

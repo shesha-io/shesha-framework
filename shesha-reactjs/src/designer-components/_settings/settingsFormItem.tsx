@@ -24,6 +24,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
     hidden?: boolean;
     layout?: 'horizontal' | 'vertical';
     hideLabel?: boolean;
+    type?: string;
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
@@ -33,6 +34,16 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
         return null;
 
     const { _mode: mode } = getPropertySettingsFromData(model, props.name?.toString());
+
+    const formProps: FormItemProps = {
+        name: getFieldNameFromExpression(props.name),
+        label: props.label,
+        style: props.style,
+        required: props.required,
+        tooltip: props.tooltip,
+        hidden: props.hidden,
+        valuePropName: props.valuePropName,
+    };
 
     if (typeof props.children === 'function') {
         const children = props.children as SettingsControlChildrenType;
@@ -52,8 +63,9 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 {children}
             </ConfigurableFormItem>;
         }
+
         return (
-            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label} >
+            <Form.Item {...formProps} label={props.label} >
                 <SettingsControl propertyName={props.name} mode={mode}>
                     {(value, onChange, propertyName) => children(value, onChange, propertyName)}
                 </SettingsControl>
@@ -62,7 +74,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     }
 
     if (!props.jsSetting) {
-        return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
+        return <Form.Item {...formProps}>{props.children}</Form.Item>;
     }
 
     const valuePropName = props.valuePropName ?? 'value';

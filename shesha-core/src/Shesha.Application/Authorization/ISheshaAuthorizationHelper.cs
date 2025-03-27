@@ -6,6 +6,6 @@ namespace Shesha.Authorization
 {
     public interface ISheshaAuthorizationHelper
     {
-        Task AuthorizeAsync(MethodInfo methodInfo, Type type);
+        Task AuthorizeAsync(MethodInfo methodInfo, Type? type);
     }
 }

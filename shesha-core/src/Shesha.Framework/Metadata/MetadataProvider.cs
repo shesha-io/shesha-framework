@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.ObjectMapping;
 using Abp.Reflection;
-using Abp.Runtime.Validation;
 using Abp.Threading;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.VisualBasic;
 using Shesha.Attributes;
 using Shesha.Configuration.Runtime;
 using Shesha.DynamicEntities;
@@ -30,7 +28,7 @@ namespace Shesha.Metadata
     public class MetadataProvider: IMetadataProvider, ITransientDependency
     {
         private readonly IEntityConfigurationStore _entityConfigurationStore;
-        private readonly IActionDescriptorCollectionProvider _actionDescriptorCollectionProvider;
+        private readonly IActionDescriptorCollectionProvider? _actionDescriptorCollectionProvider;
         private readonly ISpecificationsFinder _specificationsFinder;
         private readonly IModelConfigurationManager _modelConfigurationProvider;
         private readonly IHardcodeMetadataProvider _hardcodeMetadataProvider;
@@ -60,31 +58,34 @@ namespace Shesha.Metadata
         }
 
         // ToDo: support Dynamic entities
-        public async Task<MetadataDto> GetAsync(Type containerType, string containerName)
+        public async Task<MetadataDto> GetAsync(Type? containerType, string containerName = "")
         {
-            var isEntity = containerType.IsEntityType();
-            var isJsonEntity = containerType.IsJsonEntityType();
-
-            var moduleInfo = containerType.GetConfigurableModuleInfo();
+            var isEntity = containerType != null && containerType.IsEntityType();
+            var isJsonEntity = containerType != null && containerType.IsJsonEntityType();
 
             var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
 
             var dto = new MetadataDto
             {
-                DataType = isEntity ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
+                DataType = isEntity 
+                    ? DataTypes.EntityReference 
+                    : isJsonEntity
+                        ? DataTypes.ObjectReference
+                        : DataTypes.Object,// todo: check other types
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
                 Methods = await GetMethodsAsync(containerType),
                 ApiEndpoints = await GetApiEndpointsAsync(containerType),
-                ClassName = containerType.FullName,
-
+                ClassName = containerType?.GetRequiredFullName() ?? containerName,
                 ChangeTime = changeTime,
             };
 
             UpdateMd5(dto);
 
-            if (isEntity || isJsonEntity)
+            if (containerType != null && (isEntity || isJsonEntity))
             {
+                var moduleInfo = containerType.GetConfigurableModuleInfo();
+
                 dto.TypeAccessor = containerType.GetTypeAccessor();
                 dto.Module = moduleInfo?.Name;
                 dto.ModuleAccessor = moduleInfo?.GetModuleAccessor();
@@ -100,8 +101,11 @@ namespace Shesha.Metadata
             return dto;
         }
 
-        private async Task<List<MethodMetadataDto>> GetMethodsAsync(Type containerType)
+        private async Task<List<MethodMetadataDto>> GetMethodsAsync(Type? containerType)
         {
+            if (containerType == null)
+                return new List<MethodMetadataDto>();
+
             var assemblies = _assemblyFinder.GetAllAssemblies();
 
             var methods = ReflectionHelper.GetExtensionMethods(_assemblyFinder, containerType)
@@ -156,7 +160,7 @@ namespace Shesha.Metadata
             return true;
         }
 
-        private Task<DataTypeInfo> GetMethodReturnTypeAsync(MethodInfo method)
+        private Task<DataTypeInfo?> GetMethodReturnTypeAsync(MethodInfo method)
         {
             var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null);
             return Task.FromResult(result);
@@ -169,17 +173,18 @@ namespace Shesha.Metadata
             var parameters = method.GetParameters().Skip(1);
             foreach (var parameter in parameters) 
             {
-                result.Add(new VariableDef 
-                { 
-                     Name = parameter.Name,
-                     DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null),
-                });
+                if (!string.IsNullOrWhiteSpace(parameter.Name))
+                    result.Add(new VariableDef 
+                    { 
+                         Name = parameter.Name,
+                         DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null).NotNull(),
+                    });
             }
             
             return Task.FromResult(result);
         }
 
-        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType)
+        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type? containerType)
         {
             var result = new Dictionary<string, ApiEndpointDto>();
             if (_actionDescriptorCollectionProvider == null || containerType == null || !containerType.IsEntityType())
@@ -196,18 +201,20 @@ namespace Shesha.Metadata
                     .ToList();
             foreach (var actionDescriptor in actionDescriptors)
             {
-                var entityActionAttribute = actionDescriptor.MethodInfo.GetAttribute<EntityActionAttribute>(true);
+                var entityActionAttribute = actionDescriptor.MethodInfo.GetAttributeOrNull<EntityActionAttribute>(true);
                 if (entityActionAttribute != null)
                 {
                     var url = actionDescriptor.AttributeRouteInfo?.Template;
-                    var httpVerbs = actionDescriptor.ActionConstraints.OfType<HttpMethodActionConstraint>()
-                        .SelectMany(c => c.HttpMethods)
-                        .ToList();
+                    var httpVerbs = actionDescriptor.ActionConstraints != null 
+                        ? actionDescriptor.ActionConstraints.OfType<HttpMethodActionConstraint>()
+                            .SelectMany(c => c.HttpMethods)
+                            .ToList()
+                        : [];
 
                     if (!string.IsNullOrWhiteSpace(url) && httpVerbs.Count() == 1)
                         result.Add(entityActionAttribute.Action, new ApiEndpointDto
                         {
-                            HttpVerb = httpVerbs.FirstOrDefault(),
+                            HttpVerb = httpVerbs.First(),
                             Url = url,
                         });
                 }
@@ -220,7 +227,7 @@ namespace Shesha.Metadata
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
-        public Task<List<SpecificationDto>> GetSpecificationsAsync(Type entityType)
+        public Task<List<SpecificationDto>> GetSpecificationsAsync(Type? entityType)
         {
             if (entityType == null || !entityType.IsEntityType())
                 return Task.FromResult(new List<SpecificationDto>());
@@ -247,9 +254,12 @@ namespace Shesha.Metadata
             return properties;
         }
 
-        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type containerType, string containerName)
+        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type? containerType, string containerName)
         {
-            var metadataContext = new MetadataContext(containerType);
+            var metadataContext = containerType != null
+                ? new MetadataContext(containerType)
+                : new MetadataContext();
+
             var hardCodedProps = containerType == null
                 ? new List<PropertyMetadataDto>()
                 : containerType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -280,7 +290,7 @@ namespace Shesha.Metadata
                     })
                     .OrderBy(p => p.OrderIndex)
                     .ToList();
-                result = props.Select(p => RemoveSuppressed(p)).Where(p => p != null).ToList();
+                result = props.Select(p => RemoveSuppressed(p)).WhereNotNull().ToList();
             }
             else
                 result = hardCodedProps;
@@ -288,11 +298,11 @@ namespace Shesha.Metadata
             return (modelConfig?.ChangeTime, result);
         }
 
-        private PropertyMetadataDto RemoveSuppressed(PropertyMetadataDto prop)
+        private PropertyMetadataDto? RemoveSuppressed(PropertyMetadataDto prop)
         {
             if (prop.IsVisible)
             {
-                prop.Properties = prop.Properties.Select(pp => RemoveSuppressed(pp)).Where(p => p != null).ToList();
+                prop.Properties = prop.Properties.Select(pp => RemoveSuppressed(pp)).WhereNotNull().ToList();
                 return prop;
             }
             return null;

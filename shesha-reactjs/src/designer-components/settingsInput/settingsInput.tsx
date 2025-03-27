@@ -24,19 +24,19 @@ export const SettingInput: React.FC<ISettingsInputProps> = ({ children, label, h
                     hideLabel={hideLabel}
                     label={label}
                     tooltip={tooltip}
-                    hidden={hidden}
                     required={validate?.required}
                     layout='vertical'
-                    jsSetting={type === 'codeEditor' ? false : jsSetting ? jsSetting : false}
+                    jsSetting={type === 'codeEditor' || rest.inputType === 'codeEditor' ? false : jsSetting }
                     readOnly={readOnly}>
-                    {children || <InputComponent size='small'
+                    {children || <InputComponent size={size ?? 'small'}
                         label={label}
-                        type={type}
+                        type={rest.inputType || type}
                         dropdownOptions={dropdownOptions}
                         buttonGroupOptions={buttonGroupOptions}
                         hasUnits={hasUnits} propertyName={property}
                         tooltip={tooltip}
                         readOnly={readOnly}
+                        modelType={modelType}
                         {...rest} />
                     }
                 </FormItem>

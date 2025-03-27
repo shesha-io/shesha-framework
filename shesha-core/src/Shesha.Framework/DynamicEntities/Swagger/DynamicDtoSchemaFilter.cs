@@ -1,7 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Microsoft.OpenApi.Models;
-using Nito.AsyncEx.Synchronous;
-using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
@@ -37,7 +35,9 @@ namespace Shesha.DynamicEntities.Swagger
             if (!context.Type.IsDynamicDto() || isProxy)
                 return;
 
-            var modelType = isGeneric ? context.Type : context.Type.FindBaseGenericType(typeof(DynamicDto<,>));
+            var modelType = isGeneric 
+                ? context.Type 
+                : context.Type.FindBaseGenericType(typeof(DynamicDto<,>)).NotNull();
 
             var isCreateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(CreateDynamicDto<,>));
             var isUpdateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(UpdateDynamicDto<,>));
@@ -47,7 +47,7 @@ namespace Shesha.DynamicEntities.Swagger
             var entityReferenceProperties = srcProperties?.Where(x => x.PropertyType.IsEntityType()).Select(x => x.Name).ToList();
 
             var propertiesConfigs = srcType != null 
-                ? _entityConfigCache.GetEntityPropertiesAsync(srcType).WaitAndUnwrapException() 
+                ? AsyncHelper.RunSync(async () => await _entityConfigCache.GetEntityPropertiesAsync(srcType))
                 : null;
 
             var dtoBuilder = StaticContext.IocManager.Resolve<IDynamicDtoTypeBuilder>();
@@ -75,15 +75,15 @@ namespace Shesha.DynamicEntities.Swagger
                         && // skip special properties
                         (propertyName != nameof(FullAuditedEntity.Id) && propertyName.IsSpecialProperty()
                         || // skip system Readonly attributes
-                        srcProperty?.GetAttribute<ReadOnlyAttribute>(true) != null
+                        srcProperty?.GetAttributeOrNull<ReadOnlyAttribute>(true) != null
                         || // skip EntityConfig Reaadonly
                         (propertiesConfigs?.FirstOrDefault(x => x.Name == propertyName)?.ReadOnly ?? false)
                         || !(srcProperty?.CanWrite ?? true)
                     )
                     || // skip Shesha Readonly attributes
-                    isCreateDto && !(srcProperty?.GetAttribute<ReadonlyPropertyAttribute>(true)?.Insert ?? true)
+                    isCreateDto && !(srcProperty?.GetAttributeOrNull<ReadonlyPropertyAttribute>(true)?.Insert ?? true)
                     || // skip Shesha Readonly attributes
-                    isUpdateDto && !(srcProperty?.GetAttribute<ReadonlyPropertyAttribute>(true)?.Update ?? true)
+                    isUpdateDto && !(srcProperty?.GetAttributeOrNull<ReadonlyPropertyAttribute>(true)?.Update ?? true)
                 )
                     continue;
 
@@ -115,7 +115,7 @@ namespace Shesha.DynamicEntities.Swagger
             }
 
             // add `_formFields` with comment
-            var formFieldsProp = typeof(IHasFormFieldsList).GetProperty(nameof(IHasFormFieldsList._formFields));
+            var formFieldsProp = typeof(IHasFormFieldsList).GetRequiredProperty(nameof(IHasFormFieldsList._formFields));
             if (!propNames.Contains(formFieldsProp.Name.ToLower()))
             {
                 var formFieldsSchema = context.SchemaGenerator.GenerateSchema(formFieldsProp.PropertyType, context.SchemaRepository, memberInfo: formFieldsProp);

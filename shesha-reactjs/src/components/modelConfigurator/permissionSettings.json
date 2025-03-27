@@ -1,212 +1,296 @@
 {
-    "components": [
-      {
-        "id": "XfBj2SDuEkTf-SbtWciWo",
-        "type": "container",
-        "propertyName": "container6",
-        "label": "Container6",
-        "labelAlign": "right",
-        "parentId": "root",
-        "hidden": false,
-        "isDynamic": false,
-        "direction": "vertical",
-        "justifyContent": "left",
-        "components": [
-          {
-            "textType": "text",
-            "id": "U4jgpgbofzzQW3_njc5wZ",
-            "type": "textField",
-            "propertyName": "dependency",
-            "label": "Depends on",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "maxLength": null,
-            "parentId": "XfBj2SDuEkTf-SbtWciWo",
-            "placeholder": "",
-            "description": "",
-            "prefix": "",
-            "suffix": "",
-            "initialValue": "",
-            "disabled": true,
-            "readOnly": true,
-            "validate": {
-              "minLength": "",
-              "maxLength": "",
-              "message": ""
-            },
-            "quickviewWidth": "",
-            "settingsValidationErrors": []
-          },
-          {
-            "textType": "text",
-            "id": "C-F9oF99z_LKSfSG4-TdG",
-            "type": "textField",
-            "propertyName": "category",
-            "label": "Category",
-            "labelAlign": "right",
-            "hidden": {"_code": "return getSettingValue(data.parent);", "_mode": "value", "_value": true},
-            "isDynamic": false,
-            "maxLength": null,
-            "parentId": "XfBj2SDuEkTf-SbtWciWo",
-            "placeholder": "",
-            "description": "",
-            "prefix": "",
-            "suffix": "",
-            "initialValue": "",
-            "validate": {
-              "minLength": "",
-              "maxLength": "",
-              "message": ""
-            },
-            "quickviewWidth": "",
-            "settingsValidationErrors": []
-          },
-          {
-            "id": "j0EAgLiqqB7QdHW-QUJqI",
-            "type": "dropdown",
-            "propertyName": "access",
-            "label": "Access",
-            "labelAlign": "right",
-            "parentId": "XfBj2SDuEkTf-SbtWciWo",
-            "hidden": false,
-            "isDynamic": false,
-            "dataSourceType": "values",
-            "placeholder": "",
-            "description": "",
-            "defaultValue": null,
-            "entityTypeShortAlias": "",
-            "dataSourceUrl": "",
-            "validate": {},
-            "values": [
-              {
-                "id": "EVQV8Kf_dyUYwd56cb_b8",
-                "label": "Disabled",
-                "value": "1"
-              },
-              {
-                "id": "jbKpqNqiNIKXme_m2Yt4s",
-                "label": "Inherited",
-                "value": "2"
-              },
-              {
-                "id": "EwBWTiQ1biRoO0_MVzq1z",
-                "label": "Any authenticated",
-                "value": "3"
-              },
-              {
-                "id": "w0euzBU5EpNSzFGzXm568",
-                "label": "Requires permissions",
-                "value": "4"
-              },
-              {
-                "id": "TOLZuIjSNfnaruUeeY9AM",
-                "label": "Allow anonymous",
-                "value": "5"
-              }
-            ],
-            "settingsValidationErrors": []
-          },
-          {
-            "id": "WXaDzSHBAKzkbO18zDotx",
-            "type": "permissionAutocomplete",
-            "propertyName": "permissions",
-            "label": "Permissions",
-            "labelAlign": "right",
-            "parentId": "XfBj2SDuEkTf-SbtWciWo",
-            "hidden": {"_code": "return  getSettingValue(data?.access) !== 4;", "_mode": "code", "_value": false},
-            "isDynamic": false,
-            "autocompleteUrl": "/api/services/app/permission/autocomplete",
-            "placeholder": "",
-            "validate": {},
-            "version": 1,
-            "settingsValidationErrors": []
-          },
-          {
-            "id": "V4ZLolRl8UZK1HHiNvYO_",
-            "type": "autocompleteTagGroup",
-            "propertyName": "actualPermissions",
-            "label": "Actual permissions",
-            "labelAlign": "right",
-            "parentId": "XfBj2SDuEkTf-SbtWciWo",
-            "hidden": {"_code": "return  getSettingValue(data?.access) !== 2 || getSettingValue(data?.actualAccess) !== 4;", "_mode": "code", "_value": false},
-            "isDynamic": false,
-            "disabled": true,
-            "validate": {},
-            "autocompleteUrl": "",
-            "placeholder": "",
-            "settingsValidationErrors": []
-          },
-          {
-            "id": "8YKNrq6D42G1Lzrgoizyn",
-            "type": "dropdown",
-            "propertyName": "actualAccess",
-            "label": "Actual access",
-            "labelAlign": "right",
-            "parentId": "XfBj2SDuEkTf-SbtWciWo",
-            "hidden": {"_code": "return !(getSettingValue(data?.access) === 2 && getSettingValue(data?.actualAccess) !== 2 && getSettingValue(data?.actualAccess) !== 4);", "_mode": "code", "_value": false},
-            "isDynamic": false,
-            "dataSourceType": "values",
-            "placeholder": "",
-            "description": "",
-            "disabled": true,
-            "readOnly": true,
-            "defaultValue": "",
-            "entityTypeShortAlias": "",
-            "dataSourceUrl": "",
-            "validate": {},
-            "values": [
-              {
-                "id": "-R48wPdyuhwtHUuqXA9GZ",
-                "label": "Disable",
-                "value": "1"
-              },
-              {
-                "id": "epifkpaKzi1ph2miyO4bV",
-                "label": "Inherited",
-                "value": "2"
-              },
-              {
-                "id": "Yf-hXzCAaQZw2j-EepLl_",
-                "label": "Any authenticated",
-                "value": "3"
-              },
-              {
-                "id": "bd3Z_Pig0ARstcxdt3cKc",
-                "label": "Requires permissions",
-                "value": "4"
-              },
-              {
-                "id": "poxaZGdF6-RgAKqNBRGJG",
-                "label": "Allow anonymous",
-                "value": "5"
-              }
-            ],
-            "settingsValidationErrors": []
-          }
-        ]
-      }
-    ],
-    "formSettings": {
-      "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "excludeFormFieldsInPayload", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
-      "layout": "horizontal",
-      "colon": true,
-      "labelCol": { "span": 8 },
-      "wrapperCol": { "span": 16 },
-      "modelType": "Shesha.Permissions.PermissionedObjectDto",
-      "postUrl": "",
-      "putUrl": "",
-      "deleteUrl": "",
-      "getUrl": "",
-      "uniqueFormId": "1",
-      "onInitialize": "formMode = 'readonly';",
-      "displayName": "DEFAULT_FORM_SETTINGS",
-      "__docgenInfo": {
-        "description": "Default form settings",
-        "displayName": "DEFAULT_FORM_SETTINGS",
-        "props": {}
+  "components": [
+    {
+      "id": "XfBj2SDuEkTf-SbtWciWo",
+      "type": "container",
+      "propertyName": "container6",
+      "label": "Container6",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "editMode": {
+        "_code": "return !getSettingValue(data.hardcoded);",
+        "_mode": "code",
+        "_value": true
       },
-      "fieldsToFetch": [],
-      "formKeysToPersist": []
+      "direction": "vertical",
+      "justifyContent": "left",
+      "components": [
+        {
+          "alertType": "info",
+          "id": "sR6cp2tuDImKtgf0Od_1ECzUy-jkSN",
+          "type": "alert",
+          "propertyName": "alert1",
+          "componentName": "alert1",
+          "label": "Alert1",
+          "labelAlign": "right",
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "hidden": {
+            "_mode": "code",
+            "_code": "return !getSettingValue(data.hardcoded);",
+            "_value": false
+          },
+          "isDynamic": false,
+          "version": 2,
+          "text": "This permission is hardcoded on the backend and cannot be changed"
+        },
+        {
+          "textType": "text",
+          "id": "U4jgpgbofzzQW3_njc5wZ",
+          "type": "textField",
+          "propertyName": "dependency",
+          "label": "Depends on",
+          "labelAlign": "right",
+          "hidden": false,
+          "isDynamic": false,
+          "maxLength": null,
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "placeholder": "",
+          "description": "",
+          "prefix": "",
+          "suffix": "",
+          "initialValue": "",
+          "disabled": true,
+          "readOnly": true,
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "settingsValidationErrors": [],
+          "version": 5,
+          "editMode": "readOnly",
+          "desktop": {},
+          "tablet": {},
+          "mobile": {}
+        },
+        {
+          "textType": "text",
+          "id": "C-F9oF99z_LKSfSG4-TdG",
+          "type": "textField",
+          "propertyName": "category",
+          "label": "Category",
+          "labelAlign": "right",
+          "hidden": {
+            "_code": "return getSettingValue(data.parent);",
+            "_mode": "value",
+            "_value": true
+          },
+          "isDynamic": false,
+          "maxLength": null,
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "placeholder": "",
+          "description": "",
+          "prefix": "",
+          "suffix": "",
+          "initialValue": "",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "settingsValidationErrors": [],
+          "version": 5,
+          "desktop": {},
+          "tablet": {},
+          "mobile": {}
+        },
+        {
+          "id": "j0EAgLiqqB7QdHW-QUJqI",
+          "type": "dropdown",
+          "propertyName": "access",
+          "label": "Access",
+          "labelAlign": "right",
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "hidden": false,
+          "isDynamic": false,
+          "dataSourceType": "values",
+          "placeholder": "",
+          "description": "",
+          "defaultValue": null,
+          "entityTypeShortAlias": "",
+          "dataSourceUrl": "",
+          "validate": {},
+          "values": [
+            {
+              "id": "EVQV8Kf_dyUYwd56cb_b8",
+              "label": "Disabled",
+              "value": "1"
+            },
+            {
+              "id": "jbKpqNqiNIKXme_m2Yt4s",
+              "label": "Inherited",
+              "value": "2"
+            },
+            {
+              "id": "EwBWTiQ1biRoO0_MVzq1z",
+              "label": "Any authenticated",
+              "value": "3"
+            },
+            {
+              "id": "w0euzBU5EpNSzFGzXm568",
+              "label": "Requires permissions",
+              "value": "4"
+            },
+            {
+              "id": "TOLZuIjSNfnaruUeeY9AM",
+              "label": "Allow anonymous",
+              "value": "5"
+            }
+          ],
+          "settingsValidationErrors": [],
+          "version": 7,
+          "useRawValues": false,
+          "referenceListId": null,
+          "valueFormat": "listItem",
+          "desktop": {},
+          "tablet": {},
+          "mobile": {}
+        },
+        {
+          "id": "WXaDzSHBAKzkbO18zDotx",
+          "type": "permissionAutocomplete",
+          "propertyName": "permissions",
+          "label": "Permissions",
+          "labelAlign": "right",
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "hidden": {
+            "_code": "return  getSettingValue(data?.access) !== 4;",
+            "_mode": "code",
+            "_value": false
+          },
+          "isDynamic": false,
+          "autocompleteUrl": "/api/services/app/permission/autocomplete",
+          "placeholder": "",
+          "validate": {},
+          "version": 1,
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "V4ZLolRl8UZK1HHiNvYO_",
+          "type": "autocompleteTagGroup",
+          "propertyName": "actualPermissions",
+          "label": "Actual permissions",
+          "labelAlign": "right",
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "hidden": {
+            "_code": "return  getSettingValue(data?.access) !== 2 || getSettingValue(data?.actualAccess) !== 4;",
+            "_mode": "code",
+            "_value": false
+          },
+          "isDynamic": false,
+          "disabled": true,
+          "validate": {},
+          "autocompleteUrl": "",
+          "placeholder": "",
+          "settingsValidationErrors": [],
+          "version": 2
+        },
+        {
+          "id": "8YKNrq6D42G1Lzrgoizyn",
+          "type": "dropdown",
+          "propertyName": "actualAccess",
+          "label": "Actual access",
+          "labelAlign": "right",
+          "parentId": "XfBj2SDuEkTf-SbtWciWo",
+          "hidden": {
+            "_code": "return !(getSettingValue(data?.access) === 2 && getSettingValue(data?.actualAccess) !== 2 && getSettingValue(data?.actualAccess) !== 4);",
+            "_mode": "code",
+            "_value": false
+          },
+          "isDynamic": false,
+          "dataSourceType": "values",
+          "placeholder": "",
+          "description": "",
+          "disabled": true,
+          "readOnly": true,
+          "defaultValue": "",
+          "entityTypeShortAlias": "",
+          "dataSourceUrl": "",
+          "validate": {},
+          "values": [
+            {
+              "id": "-R48wPdyuhwtHUuqXA9GZ",
+              "label": "Disable",
+              "value": "1"
+            },
+            {
+              "id": "epifkpaKzi1ph2miyO4bV",
+              "label": "Inherited",
+              "value": "2"
+            },
+            {
+              "id": "Yf-hXzCAaQZw2j-EepLl_",
+              "label": "Any authenticated",
+              "value": "3"
+            },
+            {
+              "id": "bd3Z_Pig0ARstcxdt3cKc",
+              "label": "Requires permissions",
+              "value": "4"
+            },
+            {
+              "id": "poxaZGdF6-RgAKqNBRGJG",
+              "label": "Allow anonymous",
+              "value": "5"
+            }
+          ],
+          "settingsValidationErrors": [],
+          "version": 7,
+          "useRawValues": false,
+          "referenceListId": null,
+          "editMode": "readOnly",
+          "valueFormat": "listItem",
+          "desktop": {},
+          "tablet": {},
+          "mobile": {}
+        }
+      ],
+      "version": 6,
+      "flexWrap": "wrap",
+      "desktop": {},
+      "tablet": {},
+      "mobile": {},
+      "shadowStyle": "none"
+    }
+  ],
+  "formSettings": {
+    "_formFields": [ "modelType", "postUrl", "putUrl", "deleteUrl", "getUrl", "layout", "size", "colon", "labelCol.span", "wrapperCol.span", "excludeFormFieldsInPayload", "formKeysToPersist", "uniqueFormId", "preparedValues", "onDataLoaded", "onUpdate", "initialValues" ],
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": { "span": 8 },
+    "wrapperCol": { "span": 16 },
+    "modelType": "Shesha.Permissions.PermissionedObjectDto",
+    "uniqueFormId": "1",
+    "onInitialize": "formMode = 'readonly';",
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    },
+    "formKeysToPersist": [],
+    "version": 6,
+    "dataLoaderType": "gql",
+    "dataSubmitterType": "gql",
+    "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+    "onAfterDataLoad": null,
+    "onPrepareSubmitData": null,
+    "onBeforeSubmit": null,
+    "onSubmitSuccess": null,
+    "onSubmitFailed": null,
+    "dataSubmittersSettings": {
+      "gql": {
+        "endpointType": "default",
+        "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+      }
+    },
+    "dataLoadersSettings": {
+      "gql": { "endpointType": "default" },
+      "custom": {}
     }
   }
+}

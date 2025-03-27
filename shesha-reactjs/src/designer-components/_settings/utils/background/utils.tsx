@@ -1,6 +1,5 @@
 import React from "react";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
-import { customIcons } from "@/designer-components/inputComponent/icons";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -48,7 +47,8 @@ export const getBackgroundStyle = (input: IBackgroundValue, jsStyle: React.CSSPr
         style.backgroundColor = input?.color;
     } else if (input?.type === 'gradient') {
         const colors = input?.gradient?.colors || [];
-        style.backgroundImage = `linear-gradient(${input?.gradient?.direction || 'to right'}, ${Object.values(colors).filter(color => color !== undefined && color !== '').join(', ')})`;
+        const colorsString = Object.values(colors).filter(color => color !== undefined && color !== '').join(', ');
+        style.backgroundImage = `linear-gradient(${input?.gradient?.direction || 'to right'}, ${colorsString})`;
     } else if (input?.type === 'url') {
         style.backgroundImage = `url(${input?.url})`;
     } else if (input?.type === 'image') {
@@ -100,10 +100,10 @@ export const backgroundTypeOptions: IRadioOption[] = [
 ];
 
 export const repeatOptions: IRadioOption[] = [
-    { value: 'no-repeat', title: 'No Repeat', icon: customIcons['noRepeatIcon'] },
-    { value: 'repeat', title: 'Repeat', icon: customIcons['repeatIcon'] },
-    { value: 'repeat-x', title: 'Repeat X', icon: customIcons['repeatXIcon'] },
-    { value: 'repeat-y', title: 'Repeat Y', icon: customIcons['repeatYIcon'] },
+    { value: 'no-repeat', title: 'No Repeat', icon: 'noRepeatIcon' },
+    { value: 'repeat', title: 'Repeat', icon: 'repeatIcon' },
+    { value: 'repeat-x', title: 'Repeat X', icon: 'repeatXIcon' },
+    { value: 'repeat-y', title: 'Repeat Y', icon: 'repeatYIcon' },
 ];
 
 export const sizeOptions: IDropdownOption[] = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];

@@ -1,7 +1,5 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
-using Abp.Domain.Uow;
-using Abp.Extensions;
 using Shesha.EntityReferences;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -18,29 +16,28 @@ namespace Shesha.DelayedUpdate
         public const string ItemType = "storedFiles";
 
         private readonly IStoredFileService _fileService;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public StoredFileDelayedUpdateManager(
-            IStoredFileService fileService,
-            IUnitOfWorkManager unitOfWorkManager)
+        public StoredFileDelayedUpdateManager(IStoredFileService fileService)
         {
             _fileService = fileService;
-            _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public override async Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, StoredFileDelayedUpdateData data, List<ValidationResult> validationResult)
+        public override async Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, StoredFileDelayedUpdateData? data, List<ValidationResult> validationResult)
         {
             try
             {
-                var file = await _fileService.GetOrNullAsync(Guid.Parse(id.ToString()));
+                var stringId = id?.ToString();
+                ArgumentException.ThrowIfNullOrWhiteSpace(stringId, nameof(id));
 
-                if (data?.PropertyName?.IsNullOrEmpty() ?? true)
+                var file = await _fileService.GetOrNullAsync(Guid.Parse(stringId));
+
+                if (string.IsNullOrWhiteSpace(data?.PropertyName))
                 {
-                    object owner = entity;
-                    if (!data?.OwnerName?.IsNullOrEmpty() ?? false)
+                    object? owner = entity;
+                    if (!string.IsNullOrWhiteSpace(data?.OwnerName))
                     {
-                        var prop = ReflectionHelper.GetProperty(owner, data.OwnerName);
-                        owner = prop.GetValue(owner);
+                        var propAccessor = ReflectionHelper.GetPropertyValueAccessor(owner, data.OwnerName);
+                        owner = propAccessor.Value;
                         if (owner == null)
                         {
                             validationResult.Add(new ValidationResult($"Entity '{data.OwnerName}' not found for {entity.GetType().FullName}"));
@@ -51,7 +48,7 @@ namespace Shesha.DelayedUpdate
                 }
                 else
                 {
-                    var property = ReflectionHelper.GetProperty(entity, data.PropertyName, out var owner);
+                    var property = ReflectionHelper.GetPropertyOrNull(entity, data.PropertyName, out var owner);
                     if (property == null)
                     {
                         validationResult.Add(new ValidationResult($"Property '{data.PropertyName}' not found for {entity.GetType().FullName}"));

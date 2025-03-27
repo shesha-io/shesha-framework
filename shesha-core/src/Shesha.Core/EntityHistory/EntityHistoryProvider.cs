@@ -78,7 +78,7 @@ namespace Shesha.EntityHistory
             return _models = models.Where(x => !x.Suppress).ToList();
         }
 
-        private async Task<Type> GetContainerTypeAsync(string container)
+        private async Task<Type?> GetContainerTypeAsync(string container)
         {
             var allModels = await GetAllModelsAsync();
             var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
@@ -91,63 +91,60 @@ namespace Shesha.EntityHistory
 
         public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
-
             // disable SoftDeleteFilter to allow get deleted entities
-            _unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete);
-
-            var itemType = await GetContainerTypeAsync(entityTypeFullName);
-
-            var history = new List<EntityHistoryItemDto>();
-
-            var (audit, maxDate) = await GetEntityAuditAsync(itemType, entityId);
-
-            // Add entity history
-            history.AddRange(audit);
-
-            if (itemType != null)
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) 
             {
-                // Add many-to-many related entities
-                history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
+                var itemType = await GetContainerTypeAsync(entityTypeFullName);
 
-                // Add many-to-one related entities
-                history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
+                var history = new List<EntityHistoryItemDto>();
 
-                // Add child audited properties
-                if (includeEventsOnChildEntities)
-                    history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
+                var (audit, maxDate) = await GetEntityAuditAsync(itemType, entityId);
 
-                // Add generic child entities
-                history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
+                // Add entity history
+                history.AddRange(audit);
 
-                if (maxDate != DateTime.MaxValue)
+                if (itemType != null)
                 {
-                    history = history.Where(x => x.CreationTime <= maxDate).ToList();
+                    // Add many-to-many related entities
+                    history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
+
+                    // Add many-to-one related entities
+                    history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
+
+                    // Add child audited properties
+                    if (includeEventsOnChildEntities)
+                        history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
+
+                    // Add generic child entities
+                    history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
+
+                    if (maxDate != DateTime.MaxValue)
+                    {
+                        history = history.Where(x => x.CreationTime <= maxDate).ToList();
+                    }
                 }
-            }
+                history = history.OrderBy(x => x.CreationTime).ToList();
 
-            _unitOfWorkManager.Current.EnableFilter(AbpDataFilters.SoftDelete);
-
-            history = history.OrderBy(x => x.CreationTime).ToList();
-
-            return history;
+                return history;
+            }            
         }
 
         private async Task<List<EntityHistoryItemDto>> GetChildEntitiesAuditAsync(Type itemType, string entityId)
         {
             var list = new List<EntityHistoryItemDto>();
             // Check if child audited properties should be displayed
-            var childAuditedProperties = itemType?.GetProperties()
+            var childAuditedProperties = itemType.GetProperties()
                 .Where(p => p.GetCustomAttribute<DisplayChildAuditTrailAttribute>() != null).ToList();
 
             if (childAuditedProperties?.Any() ?? false)
             {
-                var item = _dynamicRepository.Get(itemType, entityId);
+                var item = await _dynamicRepository.GetAsync(itemType, entityId);
                 foreach (var childAuditedProperty in childAuditedProperties)
                 {
                     var childItem = childAuditedProperty.GetValue(item);
                     if (childItem != null)
                     {
-                        var attr = childAuditedProperty.GetCustomAttribute<DisplayChildAuditTrailAttribute>();
+                        var attr = childAuditedProperty.GetCustomAttribute<DisplayChildAuditTrailAttribute>().NotNull();
                         var propDisplayName = childAuditedProperty.GetCustomAttribute<DisplayAttribute>()?.Name ??
                                               childAuditedProperty.Name.ToFriendlyName();
                         var childType = childItem.GetType();
@@ -170,13 +167,7 @@ namespace Shesha.EntityHistory
             return list;
         }
 
-        /*private async Task<List<EntityHistoryItemDto>> GetEntityAuditAsync(Type entityType, string entityId, string childName = "", string[] fields = null)
-        {
-            var fakeDate = DateTime.MaxValue;
-            return await GetEntityAuditAsync(entityType, entityId, out fakeDate, childName, fields);
-        }*/
-
-        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type entityType, string entityId, string childName = "", string[] fields = null)
+        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type? entityType, string? entityId, string childName = "", string[]? fields = null)
         {
 
             var maxDateTime = DateTime.MaxValue;
@@ -188,22 +179,22 @@ namespace Shesha.EntityHistory
             List<EntityChange> changes;
             if (entityType != null)
             {
-                changes = _entityChangeRepository.GetAllList(x =>
+                changes = await _entityChangeRepository.GetAllListAsync(x =>
                     x.EntityId == entityId && x.EntityTypeFullName == entityType.FullName);
             }
             else
             {
-                changes = _entityChangeRepository.GetAllList(x => x.EntityId == entityId);
+                changes = await _entityChangeRepository.GetAllListAsync(x => x.EntityId == entityId);
             }
 
             foreach (var entityChange in changes)
             {
-                var changeSet = _entityChangeSetRepository.Get(entityChange.EntityChangeSetId);
+                var changeSet = await _entityChangeSetRepository.GetAsync(entityChange.EntityChangeSetId);
                 var username = GetPersonByUserId(changeSet?.UserId);
 
                 entityType ??= await GetContainerTypeAsync(entityChange.EntityTypeFullName);
 
-                var changeEvents = _eventRepository.GetAllList(x => x.EntityPropertyChange == null && x.EntityChange == entityChange);
+                var changeEvents = await _eventRepository.GetAllListAsync(x => x.EntityPropertyChange == null && x.EntityChange == entityChange);
                 foreach (var entityHistoryEvent in changeEvents)
                 {
 
@@ -222,14 +213,14 @@ namespace Shesha.EntityHistory
                     });
                 }
 
-                var properties = _entityPropertyChangeRepository.GetAllList(x => x.EntityChangeId == entityChange.Id);
+                var properties = await _entityPropertyChangeRepository.GetAllListAsync(x => x.EntityChangeId == entityChange.Id);
 
                 var propsDescr = new List<string>();
                 foreach (var propertyChange in properties)
                 {
                     if (fields != null && !fields.Contains(propertyChange.PropertyName)) continue;
 
-                    var propertyEvents = _eventRepository.GetAllList(x => x.EntityPropertyChange == propertyChange);
+                    var propertyEvents = await _eventRepository.GetAllListAsync(x => x.EntityPropertyChange == propertyChange);
                     var propDescription = "";
 
                     var propAsEvent = propertyEvents.FirstOrDefault(x =>
@@ -258,13 +249,13 @@ namespace Shesha.EntityHistory
                         || x.EventType == EntityHistoryCommonEventTypes.PROPERTY_CHANGE_USER_TEXT);
                     if (propAsDescription != null)
                     {
-                        propsDescr.Add(propAsDescription.Description);
+                        propsDescr.Add(propAsDescription.Description ?? string.Empty);
                         continue;
                     }
 
-                    var prop_ = entityType?.GetProperty(propertyChange.PropertyName);
-                    var propName = prop_ != null
-                        ? ReflectionHelper.GetDisplayName(entityType.GetProperty(propertyChange.PropertyName)) ?? propertyChange.PropertyName
+                    var property = entityType?.GetProperty(propertyChange.PropertyName);
+                    var propName = property != null
+                        ? ReflectionHelper.GetDisplayName(property) ?? propertyChange.PropertyName
                         : propertyChange.PropertyName;
 
                     propDescription =
@@ -334,7 +325,7 @@ namespace Shesha.EntityHistory
                     try
                     {
                         if (entityType != null && Parser.CanParseId(entityId, entityType) &&
-                            _dynamicRepository.Get(entityType, entityId) is ICreationAudited obj)
+                            await _dynamicRepository.GetAsync(entityType, entityId) is ICreationAudited obj)
                         {
                             var createdBy = GetPersonByUserId(obj.CreatorUserId);
                             list.Add(new EntityHistoryItemDto()
@@ -408,14 +399,14 @@ namespace Shesha.EntityHistory
                 var action = Expression.Equal(idExpression, Expression.Constant(Guid.Parse(entityId)));
                 var lambda = Expression.Lambda(action, parameterExpression);
 
-                var res = _dynamicRepository.Where(manyToManyType, lambda).ToDynamicList();
+                var res = await _dynamicRepository.Where(manyToManyType, lambda).ToDynamicListAsync();
 
                 var childItems = res
                     .Select(x =>
                         new Relation()
                         {
                             Id = manyToManyType.GetProperty("Id")?.GetValue(x)?.ToString(),
-                            RelatedObject = x as IFullAudited,
+                            RelatedObject = x.ForceCast<IFullAudited>(),
                             InnerObject = manyToManyType.GetProperty(attr.RelatedEntityField)?.GetValue(x) as IFullAudited,
                         })
                     .Select(x =>
@@ -428,9 +419,9 @@ namespace Shesha.EntityHistory
 
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
-                userIds.AddRange(childItems.Select(x => x.InnerObject.DeleterUserId));
+                userIds.AddRange(childItems.Select(x => x.InnerObject?.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToList();
+                var persons = await _personRepository.GetAll().Where(x => x.User != null && userIds.Contains(x.User.Id)).ToListAsync();
 
                 foreach (var childItem in childItems)
                 {
@@ -462,7 +453,7 @@ namespace Shesha.EntityHistory
                     }
                     else
                     {
-                        if (childItem.InnerObject.IsDeleted)
+                        if (childItem.InnerObject?.IsDeleted ?? false)
                         {
                             var deletedBy = GetPersonByUserIdInternal(persons, childItem.InnerObject.DeleterUserId);
                             list.Add(new EntityHistoryItemDto()
@@ -532,8 +523,8 @@ namespace Shesha.EntityHistory
                     : attr.NameField;
 
 
-                var changesAdded = _entityHistoryItemRepository
-                    .GetAllList(x =>
+                var changesAdded = await _entityHistoryItemRepository
+                    .GetAllListAsync(x =>
                         x.NewValue == entityIdJsonString
                         && x.PropertyName == relatedEntityField
                         && x.EntityTypeFullName == manyToOneTypeFullName
@@ -541,7 +532,7 @@ namespace Shesha.EntityHistory
 
                 foreach (var entityHistoryItem in changesAdded)
                 {
-                    var relatedObject = _dynamicRepository.Get(manyToOneType, entityHistoryItem.EntityId);
+                    var relatedObject = await _dynamicRepository.GetAsync(manyToOneType, entityHistoryItem.EntityId);
 
                     var name = GetEntityName(relatedObject, relatedNameField);
 
@@ -559,8 +550,8 @@ namespace Shesha.EntityHistory
                     });
                 }
 
-                var changesRemoved = _entityHistoryItemRepository
-                    .GetAllList(x =>
+                var changesRemoved = await _entityHistoryItemRepository
+                    .GetAllListAsync(x =>
                         x.OriginalValue == entityIdJsonString
                         && x.PropertyName == relatedEntityField
                         && x.EntityTypeFullName == manyToOneTypeFullName
@@ -568,7 +559,7 @@ namespace Shesha.EntityHistory
 
                 foreach (var entityHistoryItem in changesRemoved)
                 {
-                    var relatedObject = _dynamicRepository.Get(manyToOneType, entityHistoryItem.EntityId);
+                    var relatedObject = await _dynamicRepository.GetAsync(manyToOneType, entityHistoryItem.EntityId);
 
                     var name = GetEntityName(relatedObject, relatedNameField);
                     ;
@@ -593,14 +584,14 @@ namespace Shesha.EntityHistory
                 var action = Expression.Equal(idExpression, Expression.Constant(Guid.Parse(entityId)));
                 var lambda = Expression.Lambda(action, parameterExpression);
 
-                var res = _dynamicRepository.Where(manyToOneType, lambda).ToDynamicList();
+                var res = await _dynamicRepository.Where(manyToOneType, lambda).ToDynamicListAsync();
 
                 var childItems = res
                     .Select(x =>
                         new Relation()
                         {
                             Id = manyToOneType.GetProperty("Id")?.GetValue(x)?.ToString(),
-                            RelatedObject = x as IFullAudited,
+                            RelatedObject = x.ForceCast<IFullAudited>(),
                             Name = GetEntityName(x, relatedNameField)
                         })
                     .ToList();
@@ -608,7 +599,7 @@ namespace Shesha.EntityHistory
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToList();
+                var persons = await _personRepository.GetAll().Where(x => x.User != null && userIds.Contains(x.User.Id)).ToListAsync();
 
                 foreach (var childItem in childItems)
                 {
@@ -681,7 +672,7 @@ namespace Shesha.EntityHistory
 
             return events.Select(x =>
             {
-                var ecs = _entityChangeSetRepository.Get(x.EntityChange.EntityChangeSetId);
+                var ecs = _entityChangeSetRepository.Get(x.EntityChange.NotNull().EntityChangeSetId);
                 return new EntityHistoryItemDto()
                 {
                     CreationTime = x.EntityChange.ChangeTime,
@@ -703,7 +694,7 @@ namespace Shesha.EntityHistory
             var history = new List<EntityHistoryItemDto>();
             if (!attrs.Any()) return history;
 
-            var typeShortAlias = itemType.GetCustomAttribute<EntityAttribute>()?.TypeShortAlias ?? itemType.FullName;
+            var typeShortAlias = itemType.GetCustomAttribute<EntityAttribute>()?.TypeShortAlias ?? "";
 
             foreach (var attr in attrs)
             {
@@ -730,8 +721,11 @@ namespace Shesha.EntityHistory
                 var memberExpression1 = Expression.PropertyOrField(parameterExpression, ownerIdField);
                 var action1 = Expression.Equal(memberExpression1, Expression.Constant(Guid.Parse(entityId)));
                 var memberExpression2 = Expression.PropertyOrField(parameterExpression, ownerTypeField);
-                var action2 = Expression.Equal(memberExpression2, Expression.Constant(Guid.Parse(typeShortAlias)));
-                var andExpression = Expression.And(action1, action2);
+                var action2 = Expression.Equal(memberExpression2, Expression.Constant(typeShortAlias));
+                var memberExpression3 = Expression.PropertyOrField(parameterExpression, ownerTypeField);
+                var action3 = Expression.Equal(memberExpression3, Expression.Constant(itemType.FullName));
+                var orExpression = Expression.Or(action2, action3);
+                var andExpression = Expression.And(action1, orExpression);
                 var lambda = Expression.Lambda(andExpression, parameterExpression);
 
                 var res = _dynamicRepository.Where(childType, lambda).ToDynamicList();
@@ -741,7 +735,7 @@ namespace Shesha.EntityHistory
                         new Relation()
                         {
                             Id = childType.GetProperty("Id")?.GetValue(x)?.ToString(),
-                            RelatedObject = x as IFullAudited,
+                            RelatedObject = x.ForceCast<IFullAudited>(),
                             Name = GetEntityName(x, childNameField)
                         })
                     .ToList();
@@ -749,7 +743,7 @@ namespace Shesha.EntityHistory
                 var userIds = childItems.Select(x => x.RelatedObject.CreatorUserId).ToList();
                 userIds.AddRange(childItems.Select(x => x.RelatedObject.DeleterUserId));
                 userIds = userIds.Distinct().Where(x => x != null).ToList();
-                var persons = _personRepository.GetAll().Where(x => userIds.Contains(x.User.Id)).ToList();
+                var persons = _personRepository.GetAll().Where(x => x.User != null && userIds.Contains(x.User.Id)).ToList();
 
                 foreach (var childItem in childItems)
                 {
@@ -785,27 +779,30 @@ namespace Shesha.EntityHistory
             return history;
         }
 
-        private string GetEntityName(object entity, string fieldName)
+        private string GetEntityName(object? entity, string fieldName)
         {
-            if (entity == null) return "";
+            if (entity == null) return string.Empty;
+
+            if (string.IsNullOrEmpty(fieldName))
+                return entity.ToString() ?? string.Empty;
 
             var type = entity.GetType();
-            return string.IsNullOrEmpty(fieldName)
-                ? entity.ToString()
-                : string.IsNullOrEmpty(type.GetProperty(fieldName)?.GetValue(entity)?.ToString())
-                    ? entity.ToString()
-                    : type.GetProperty(fieldName)?.GetValue(entity)?.ToString();
+
+            var propValue = type.GetProperty(fieldName)?.GetValue(entity);
+            var propText = propValue?.ToString();
+            return !string.IsNullOrEmpty(propText)
+                ? propText
+                : string.Empty;
         }
 
-        private Person GetPersonByUserIdInternal(IList<Person> list, long? userId)
+        private Person? GetPersonByUserIdInternal(IList<Person> list, long? userId)
         {
             return userId != null
                 ? list.FirstOrDefault(x => x.User != null && x.User.Id == userId)
                 : null;
-
         }
 
-        private Person GetPersonByUserId(long? userId)
+        private Person? GetPersonByUserId(long? userId)
         {
             return userId != null
                 ? _personRepository.GetAll().FirstOrDefault(x => x.User != null && x.User.Id == userId)
@@ -815,10 +812,10 @@ namespace Shesha.EntityHistory
 
         private class Relation
         {
-            public string Id { get; set; }
+            public string? Id { get; set; }
             public IFullAudited RelatedObject { get; set; }
-            public IFullAudited InnerObject { get; set; }
-            public string InnerObjectId { get; set; }
+            public IFullAudited? InnerObject { get; set; }
+            public string? InnerObjectId { get; set; }
             public string Name { get; set; }
         }
     }

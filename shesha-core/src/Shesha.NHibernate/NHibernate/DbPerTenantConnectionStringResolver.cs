@@ -60,7 +60,7 @@ namespace Shesha.NHibernate
             }
 
             var tenantCacheItem = _tenantCache.Get(args.TenantId.Value);
-            if (tenantCacheItem.ConnectionString.IsNullOrEmpty())
+            if (string.IsNullOrWhiteSpace(tenantCacheItem.ConnectionString))
             {
                 //Tenant has not dedicated database
                 return base.GetNameOrConnectionString(args);

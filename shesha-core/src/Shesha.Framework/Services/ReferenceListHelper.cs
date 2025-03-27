@@ -5,7 +5,6 @@ using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
-using NetTopologySuite.Index.HPRtree;
 using Shesha.AutoMapper.Dto;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
@@ -14,6 +13,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
 using Shesha.Extensions;
+using Shesha.Services.ReferenceLists.Cache;
 using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Services.ReferenceLists.Exceptions;
 using Shesha.Utilities;
@@ -28,46 +28,40 @@ namespace Shesha.Services
         IEventHandler<EntityReorderedEventData<ReferenceListItem, Guid>>,
         IReferenceListHelper, ITransientDependency
     {
-        private const string ListItemsItemsCacheName = "ReferenceListItemsCache";
-        private const string ListItemsIdsCacheName = "ReferenceListIdsCache";
-
         private readonly IRepository<ReferenceList, Guid> _listRepository;
         private readonly IRepository<ReferenceListItem, Guid> _itemsRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly ICacheManager _cacheManager;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
-        /// <summary>
-        /// Reference to the object to object mapper.
-        /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
-
-        /// <summary>
-        /// Cache of the ReferenceListItems
-        /// </summary>
-        protected ITypedCache<Guid, List<ReferenceListItemDto>> ListItemsCache => _cacheManager.GetCache<Guid, List<ReferenceListItemDto>>(ListItemsItemsCacheName);
+        private readonly ITypedCache<Guid, List<ReferenceListItemDto>> _listItemsCache;
         
         /// <summary>
         /// Cache of reference list ids
         /// </summary>
-        protected ITypedCache<string, Guid> ListIdsCache => _cacheManager.GetCache<string, Guid>(ListItemsIdsCacheName);
+        private readonly ITypedCache<string, Guid> _listIdsCache;
 
+        /// <summary>
+        /// Reference to the object to object mapper.
+        /// </summary>
+        public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         public ReferenceListHelper(
             IRepository<ReferenceList, Guid> listRepository, 
             IRepository<ReferenceListItem, Guid> itemsRepository, 
             IUnitOfWorkManager unitOfWorkManager, 
-            ICacheManager cacheManager,
             IConfigurationFrameworkRuntime cfRuntime,
-            IConfigurationItemClientSideCache clientSideCache
+            IConfigurationItemClientSideCache clientSideCache,
+            IReferenceListItemsCacheHolder listItemsCache,
+            IReferenceListIdsCacheHolder listIdsCache
         )
         {
             _listRepository = listRepository;
             _itemsRepository = itemsRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _cacheManager = cacheManager;
             _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
+            _listItemsCache = listItemsCache.Cache;
+            _listIdsCache = listIdsCache.Cache;
         }
 
         private void ValidateRefListId(ReferenceListIdentifier refListId)
@@ -88,7 +82,7 @@ namespace Shesha.Services
         /// <param name="refListId">Referencve list identifier</param>
         /// <param name="value">Value of the <see cref="ReferenceListItem"/></param>
         /// <returns></returns>
-        public string GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value)
+        public string? GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value)
         {
             ValidateRefListId(refListId);
 
@@ -124,7 +118,7 @@ namespace Shesha.Services
         {
             var listId = await GetListIdAsync(refListId);
 
-            return await ListItemsCache.GetAsync(listId, async id => {
+            return await _listItemsCache.GetAsync(listId, async id => {
                 return await GetItemsAsync(id);
             });
         }
@@ -134,7 +128,7 @@ namespace Shesha.Services
         {
             var listId = GetListId(refListId);
 
-            return ListItemsCache.Get(listId, id => {
+            return _listItemsCache.Get(listId, id => {
                 return GetItems(id);
             });
         }
@@ -237,7 +231,7 @@ namespace Shesha.Services
         private async Task<Guid> GetListIdAsync(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            var listId = await ListIdsCache.GetAsync(idCacheKey, async key => {
+            var listId = await _listIdsCache.GetAsync(idCacheKey, async key => {
                 var list = await GetReferenceListAsync(refListId);
                 return list.Id;
             });
@@ -247,7 +241,7 @@ namespace Shesha.Services
         private Guid GetListId(ReferenceListIdentifier refListId)
         {
             var idCacheKey = GetListIdCacheKey(refListId);
-            var listId = ListIdsCache.Get(idCacheKey, key => {
+            var listId = _listIdsCache.Get(idCacheKey, key => {
                 var list = GetReferenceList(refListId);
                 return list.Id;
             });
@@ -267,20 +261,19 @@ namespace Shesha.Services
         private void ClearCacheForRefList(ReferenceList refList) 
         {
             // clear items cache by Id
-            ListItemsCache.Remove(refList.Id);
+            _listItemsCache.Remove(refList.Id);
 
             // clear ids cache by module, nameapce and name
             var modes = Enum.GetValues(typeof(ConfigurationItemViewMode)).Cast<ConfigurationItemViewMode>().ToList();
             var refListId = refList.GetReferenceListIdentifier();
             var keys = modes.Select(mode => GetListIdCacheKey(refListId, mode)).ToArray();
-            ListIdsCache.Remove(keys);
+            _listIdsCache.Remove(keys);
 
             // clear client-side cache
             AsyncHelper.RunSync(async () =>
             {
                 await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refListId.Module, refListId.Name, _cfRuntime.ViewMode, null);
-            }
-            );
+            });
         }
 
         /// <summary>
@@ -288,7 +281,7 @@ namespace Shesha.Services
         /// </summary>
         public async Task ClearCacheAsync()
         {
-            await ListItemsCache.ClearAsync();
+            await _listItemsCache.ClearAsync();
         }
 
         /// <summary>
@@ -297,18 +290,17 @@ namespace Shesha.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="rawValue"></param>
         /// <returns></returns>
-        public static List<ReferenceListItemValueDto> DecomposeMultiReferenceListValue<T>(T rawValue) where T : struct, IConvertible
+        public static List<ReferenceListItemValueDto> DecomposeMultiReferenceListValue<T>(Int64 rawValue) where T : struct, IConvertible
         {
             var result = new List<ReferenceListItemValueDto>();
 
             if (rawValue.ToString() == "0")
                 return result;
 
-            var flag = Enum.Parse(typeof(T), rawValue.ToString()) as Enum;
-
-            foreach (var r in (long[])Enum.GetValues(typeof(T)))
+            var enumValues = Enum.GetValues(typeof(T)).Cast<Int64>();
+            foreach (var r in enumValues)
             {
-                if ((Convert.ToInt64(flag) & r) == r)
+                if ((rawValue & r) == r)
                 {
                     var nameValue = new ReferenceListItemValueDto()
                     {

@@ -10,7 +10,9 @@ namespace Shesha.Domain
     /// </summary>
     public static class EntityHelper
     {
-        private static IEntityConfigurationStore _configurationStore;
+        private static IEntityConfigurationStore? _configurationStore;
+
+        private static IEntityConfigurationStore ConfigurationStore => _configurationStore ?? throw new Exception($"{nameof(IEntityConfigurationStore)} is unavailable");
 
         /// <summary>
         /// Refresh configuration store instance using provided <paramref name="iocManager"/>. Note: for internal usage and unit-tests only
@@ -34,7 +36,7 @@ namespace Shesha.Domain
 
         public static EntityConfiguration GetEntityConfiguration(this string typeShortAlias)
         {
-            return _configurationStore.Get(typeShortAlias);
+            return ConfigurationStore.Get(typeShortAlias);
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace Shesha.Domain
         /// </summary>
         public static EntityConfiguration GetEntityConfiguration(this Type entityType)
         {
-            return _configurationStore.Get(entityType);
+            return ConfigurationStore.Get(entityType);
         }
     }
 }
