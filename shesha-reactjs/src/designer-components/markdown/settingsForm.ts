@@ -34,21 +34,34 @@ export const getSettings = (data: any) => {
                   },
                   jsSetting: true,
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c55',
-                  inputType: 'codeEditor',
                   propertyName: 'content',
                   label: 'Content',
+                  readOnly: {
+                    _code: 'return  getSettingValue(data?.readOnly);',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hideLabel: false,
-                })
-                .addSettingsInput({
-                  id: '46d07439-4c18-468c-89e1-60c002ce96c55',
-                  inputType: 'switch',
-                  propertyName: 'hidden',
-                  label: 'hide',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hideLabel: false,
+                  inputs: [
+                    {
+                      type: 'codeEditor',
+                      id: '46d07439-4c18-468c-89e1-60c002ce96c55',
+                      propertyName: 'content',
+                      label: 'Content',
+                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      hideLabel: false,
+                    },
+                    {
+                      id: '46d07439-4c18-468c-89e1-60c002ce96c55',
+                      type: 'switch',
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      hideLabel: false,
+                    }
+                  ]
                 })
                 .toJson(),
             ],
