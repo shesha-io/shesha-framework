@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import isEqualWith from 'lodash/isEqualWith';
 import { isArray } from '@/utils/array';
 import { StorageProxy } from '@/providers/dataContextProvider/contexts/storageProxy';
+import { ObservableProxy } from '..';
 
 /**
  * Custom version of isEqual to handle function comparison
@@ -21,7 +22,13 @@ export function useDeepCompareMemoize(value: Readonly<any>) {
   const ref = useRef<any>();
 
   const unproxiedValue = isArray(value)
-    ? value.map((item) => item instanceof StorageProxy ? item.getData() : item)
+    ? value.map((item) => 
+      item instanceof StorageProxy 
+        ? item.getData() 
+        : item instanceof ObservableProxy
+          ? {...item}
+          : item
+      )
     : value;
 
   if (!isEqual(unproxiedValue, ref.current)) {

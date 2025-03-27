@@ -125,7 +125,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         data: value,
       });
     }
-  }, [typeof value === 'string' ? value : {...value}, propertyName]);
+  }, [value, propertyName]);
 
   const internalEntityType = (props.apiMode === 'entityName' ? entityType : value?.['_className']) || value?.['_className'];
   const prevRenderedEntityTypeForm = useRef<string>(null);
