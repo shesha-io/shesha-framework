@@ -110,13 +110,6 @@ export const getSettings = (data: any) => {
                         },
                       ],
                     },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
                     {
                       type: 'dropdown',
                       id: 'type-s4gmBg31azZC0UjZjpfTm',
@@ -375,6 +368,22 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        hidden: {
+                          _code: 'return  !getSettingValue(data?.hasChildren);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        readOnly: {
+                          _code: 'return  getSettingValue(data?.readOnly);',
+                          _mode: 'code',
+                          _value: false,
+                        } as any,
+                        inputs: [
                           {
                             type: 'dropdown',
                             id: 'justifyItems-s4gmBg31azZC0UjZjpfTm',
@@ -453,22 +462,6 @@ export const getSettings = (data: any) => {
                               },
                             ],
                           },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
-                        parentId: 's4gmBg31azZC0UjZjpfTm',
-                        hidden: {
-                          _code: 'return  !getSettingValue(data?.hasChildren);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        readOnly: {
-                          _code: 'return  getSettingValue(data?.readOnly);',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
                           {
                             type: 'textField',
                             id: 'customCss-s4gmBg31azZC0UjZjpfTm',

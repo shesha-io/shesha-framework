@@ -46,6 +46,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
+          console.log('model', model);
           return (
             <StoredFileProvider
               value={value}
@@ -60,6 +61,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               uploadMode={model.useSync ? 'sync' : 'async'}
             >
               <FileUpload
+                {...model}
                 isStub={formMode === 'designer'}
                 allowUpload={enabled && model.allowUpload}
                 allowDelete={enabled && model.allowDelete}
@@ -82,6 +84,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       ownerId: '',
       ownerType: '',
       isDragger: false,
+      editMode: 'inherited',
     };
     return customModel;
   },

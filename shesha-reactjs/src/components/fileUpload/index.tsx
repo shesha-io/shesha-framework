@@ -1,20 +1,21 @@
-import React, { FC, useRef } from 'react';
+import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { useStoredFile } from '@/providers';
-import { Upload, App, Button } from 'antd';
-import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import {
-  InfoCircleOutlined,
-  SyncOutlined,
   DeleteOutlined,
+  InfoCircleOutlined,
   LoadingOutlined,
+  SyncOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
+import { App, Button, Upload } from 'antd';
 import { UploadProps } from 'antd/lib/upload/Upload';
+import classNames from 'classnames';
 import filesize from 'filesize';
+import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+import React, { FC, useRef } from 'react';
 import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
-import classNames from 'classnames';
 
 const { Dragger } = Upload;
 
@@ -29,6 +30,13 @@ export interface IFileUploadProps {
   isStub?: boolean;
   allowedFileTypes?: string[];
   isDragger?: boolean;
+  listType?: listType;
+  thumbnailWidth?: string;
+  thumbnailHeight?: string;
+  borderRadius?: number;
+  hideFileName?: boolean;
+  readonly?: boolean;
+
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -40,6 +48,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
   isStub = false,
   allowedFileTypes = [],
   isDragger = false,
+  listType = 'text',
+  readonly,
 }) => {
   const {
     fileInfo,
@@ -108,9 +118,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps = {
     name: 'file',
-    disabled: false,
+    disabled: readonly && allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
+    listType: listType === 'text' ? 'text' : 'picture-card',
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
     onChange(info) {
@@ -149,7 +160,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       ref={uploadButtonRef}
       style={{ display: !showUploadButton ? 'none' : '' }}
     >
-      (press to upload)
+      {listType ==='text' ?`(press to upload)`: null}
     </Button>
   );
 
@@ -170,10 +181,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
         </Dragger>
       );
     }
-
     return (
-      <Upload {...fileProps} listType='picture-card' className={classes}>
-        {/* {allowUpload && uploadButton} */}
+      <Upload {...fileProps}  className={classes}>
+        {allowUpload && uploadButton}
       </Upload>
     );
   };

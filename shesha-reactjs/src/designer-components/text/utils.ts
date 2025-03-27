@@ -92,7 +92,7 @@ export const defaultStyles = (): IStyleType => {
       color: '#000',
       type: 'Segoe UI',
     },
-    background: { type: 'color', color: 'transparent' },
+    background: { type: 'color' },
     border: {
       border: {
         all: {

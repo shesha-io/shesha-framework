@@ -29,18 +29,19 @@ export const getSettings = () => {
             id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addContextPropertyAutocomplete({
                   id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                   propertyName: 'propertyName',
                   label: 'Property name',
-                  inputType: 'propertyAutocomplete',
                   validate: { required: true },
+                  styledLabel: true,
                   jsSetting: false,
                 })
                 .addLabelConfigurator({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   propertyName: 'hideLabel',
                   label: 'Label',
+                  hideLabel: true,
                 })
                 .addSettingsInput({
                   id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
@@ -52,7 +53,6 @@ export const getSettings = () => {
                   id: 'b920ef96-ae27-4a01-bfad-list-type',
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: '11114bf6-f76d-4139-a850-c99bf06c8b69',
-                  hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       id: 'b920ef96-ae27-4a01-bfad-bob7d07218da',
@@ -61,9 +61,14 @@ export const getSettings = () => {
                       type: 'dropdown',
                       defaultValue: 'text',
                       dropdownOptions: [
-                        { label: 'File Name', value: 'text' },
+                        { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
                       ],
+                      hidden: {
+                        _code: 'return getSettingValue(data?.isDragger);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                     {
                       id: 'cfd7d45e-c7e3-4a27-987b-dc525c412447',
@@ -89,6 +94,7 @@ export const getSettings = () => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       type: 'editModeSelector',
+                      defaultValue: 'inherited',
                     },
                     {
                       id: 'b920ef96-ae27-4a01-bfad-b5b7d0xc18da',
@@ -108,24 +114,23 @@ export const getSettings = () => {
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
-                        id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
-                        propertyName: 'hidden',
-                        label: 'Hide',
-                        type: 'switch',
+                      id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
+                      propertyName: 'hidden',
+                      label: 'Hide',
+                      type: 'switch',
                     },
                     {
-                        id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
-                        propertyName: 'allowUpload',
-                        label: 'Allow Upload',
-                        type: 'switch',
-                        defaultValue: true,
-                        hidden: {
-                          _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                      },
-                      
+                      id: '40024b1c-edd4-4b5d-9c85-1dda6fb8db6c',
+                      propertyName: 'allowUpload',
+                      label: 'Allow Upload',
+                      type: 'switch',
+                      defaultValue: true,
+                      hidden: {
+                        _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
+                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -166,33 +171,47 @@ export const getSettings = () => {
             id: '9b302942-a0a6-4805-ac47-8f45486a69d4',
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
-                  id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-                  propertyName: 'useSync',
-                  label: 'Synchronous Upload',
-                  inputType: 'switch',
+                .addSettingsInputRow({
+                  id: 'display-row-2',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
+                  inputs: [
+                    {
+                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                      propertyName: 'useSync',
+                      label: 'Synchronous Upload',
+                      type: 'switch',
+                    },
+                    {
+                      id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                      propertyName: 'allowedFileTypes',
+                      label: 'Allowed File Types',
+                      type: 'editableTagGroupProps',
+                      description: 'File types that can be accepted.',
+                    },
+                  ],
                 })
-                .addSettingsInput({
-                  id: '1c03863c-880d-4308-8667-c3d996619cb7',
-                  propertyName: 'ownerId',
-                  label: 'Owner Id',
-                  inputType: 'textField',
-                })
-                .addSettingsInput({
-                  id: '0009bf13-04a3-49d5-a9d8-1b23df20b97c',
-                  propertyName: 'ownerType',
-                  label: 'Owner Type',
-                  inputType: 'autocomplete',
-                  dataSourceType: 'url',
-                  dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                  useRawValues: true,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'allowedFileTypes',
-                  label: 'Allowed File Types',
-                  inputType: 'editableTagGroupProps',
-                  description: 'File types that can be accepted.',
+                .addSettingsInputRow({
+                  id: 'display-row-3',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  parentId: '9b302942-a0a6-4805-ac47-8f45486a69d4',
+                  inputs: [
+                    {
+                      id: '1c03863c-880d-4308-8667-c3d996619cb7',
+                      propertyName: 'ownerId',
+                      label: 'Owner Id',
+                      type: 'textField',
+                    },
+                    {
+                      id: '1c03863c-880d-4308-8667-c3d996619cb7',
+                      propertyName: 'ownerType',
+                      label: 'Owner Type',
+                      type: 'autocomplete',
+                      dataSourceType: 'url',
+                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      useRawValues: true,
+                    },
+                  ],
                 })
                 .toJson(),
             ],
