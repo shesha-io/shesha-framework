@@ -46,6 +46,30 @@ export const getSettings = (data: any) => {
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
+                      type: 'numberField',
+                      id: nanoid(),
+                      propertyName: 'percent',
+                      label: 'Percent',
+                      tooltip: 'To set the completion percentage',
+                      min: 0,
+                      max: 100,
+                      jsSetting: true,
+                    },
+                    {
+                      id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
+                      propertyName: 'description',
+                      label: 'Tooltip',
+                      type: 'textArea',
+                      jsSetting: true
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: 'root',
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
                       type: 'switch',
                       id: nanoid(),
                       propertyName: 'hidden',
@@ -94,23 +118,6 @@ export const getSettings = (data: any) => {
                         { label: 'Normal', value: 'normal' },
                         { label: 'Active', value: 'active' },
                       ],
-                      jsSetting: true,
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'percent',
-                      label: 'Percent',
-                      tooltip: 'To set the completion percentage',
-                      min: 0,
-                      max: 100,
                       jsSetting: true,
                     }
                   ]
