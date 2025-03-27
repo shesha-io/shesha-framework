@@ -288,9 +288,9 @@ export const getSettings = (data: any) => {
                       parentId: styleRouterId,
                       defaultValue: 'primary',
                       dropdownOptions: [
-                        { value: 'primary', label: 'Primary Color' },
-                        { value: 'custom', label: 'Custom Color' },
-                        { value: 'reflist', label: 'From RefList item' }
+                        { value: 'primary', label: 'Primary color' },
+                        { value: 'custom', label: 'Custom color' },
+                        { value: 'reflist', label: 'From reflist item' }
                       ],
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     })
