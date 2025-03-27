@@ -114,6 +114,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   propertyName: 'displayType',
                   label: 'Display Type',
                   inputType: 'dropdown',
+                  allowClear: true,
                   size: 'small',
                   jsSetting: true,
                   dropdownOptions: [
@@ -123,7 +124,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   ],
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   parentId: mainSettingsTabId,
-                  allowClear: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -294,6 +294,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             label: 'Width Units',
                             parentId: mainSettingsTabId,
                             type: 'dropdown',
+                            allowClear: true,
                             jsSetting: true,
                             dropdownOptions: [
                               { value: '%', label: 'Percentage (%)' },
@@ -340,6 +341,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'autocomplete',
+                  allowClear: true,
                   propertyName: 'entityType',
                   label: 'Entity Type',
                   description: 'The entity type you want to use for the chart.',
@@ -358,6 +360,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'autocomplete',
+                  allowClear: true,
                   propertyName: 'getEntityUrl',
                   label: 'Get Entity URL',
                   labelAlign: 'right',
@@ -386,6 +389,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       label: 'Display Property',
                       parentId: mainSettingsTabId,
                       type: 'propertyAutocomplete',
+                      allowClear: true,
                       jsSetting: true,
                       width: '100%',
                       modelType: "{{data?.entityType}}",
@@ -398,6 +402,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   label: 'Entity Reference Type',
                   parentId: mainSettingsTabId,
                   inputType: 'dropdown',
+                  allowClear: true,
                   jsSetting: true,
                   dropdownOptions: [
                     { value: 'Quickview', label: 'Quickview' },
@@ -412,6 +417,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   label: 'Form Selection Mode',
                   parentId: dataTabId,
                   inputType: 'dropdown',
+                  allowClear: true,
                   jsSetting: true,
                   dropdownOptions: [
                     { value: 'name', label: 'Name' },
@@ -437,6 +443,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       type: 'formTypeAutocomplete',
                       jsSetting: true,
                       width: '100%',
+                      allowClear: true,
                     },
                   ],
                 })
@@ -457,6 +464,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       parentId: mainSettingsTabId,
                       type: 'formAutocomplete',
                       jsSetting: true,
+                      allowClear: true,
                     },
                   ],
                 })
@@ -512,6 +520,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               label: 'Footer Buttons',
                               parentId: dataTabId,
                               type: 'dropdown',
+                              allowClear: true,
                               jsSetting: true,
                               dropdownOptions: [
                                 { value: 'default', label: 'Default' },
@@ -552,6 +561,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               label: 'Submit HTTP Verb',
                               parentId: dataTabId,
                               type: 'dropdown',
+                              allowClear: true,
                               jsSetting: true,
                               dropdownOptions: [
                                 { value: 'POST', label: 'POST' },
@@ -645,6 +655,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                               label: 'Dialog Width (%)',
                               parentId: dataTabId,
                               type: 'dropdown',
+                              allowClear: true,
                               jsSetting: true,
                               dropdownOptions: [
                                 { value: '40%', label: 'Small' },
