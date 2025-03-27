@@ -108,7 +108,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps = {
     name: 'file',
-    disabled: false,
+    disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],

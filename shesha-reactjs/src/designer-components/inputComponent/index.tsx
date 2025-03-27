@@ -25,6 +25,7 @@ import { ImagePicker } from '../imagePicker';
 import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
 import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
 import ColumnsList from '../columns/columnsList';
+import KeyInformationBarColumnsList from '../keyInformationBar/columnsList';
 import SizableColumnsList from '../sizableColumns/sizableColumnList';
 import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
@@ -51,7 +52,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?: any, hint?: string, style?: React.CSSProperties) => {
         if (typeof icon !== 'string') {
@@ -257,7 +258,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'columnsConfig':
             return <ColumnsConfig size={size} {...props} />;
         case 'columnsList':
-            return <ColumnsList {...props} readOnly={readOnly} />;
+            return <ColumnsList {...props} readOnly={readOnly} value={value} onChange={onChange} />;
+        case 'keyInformationBarColumnsList':
+            return <KeyInformationBarColumnsList {...props} size={size} readOnly={readOnly} value={value} onChange={onChange} />;
         case 'sizableColumnsConfig':
             return <SizableColumnsList {...props} readOnly={readOnly} />;
         case 'editableTagGroupProps':
@@ -370,16 +373,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 placeholder={placeholder}
                 suffix={<span style={{ height: '20px' }}>{iconElement(icon, null, tooltip)}</span>}
                 value={value?.value ? value.value : value}
+                type={textType}
             />;
     }
 };
-
-
-export interface IInputRowProps {
-    inputs: Array<ISettingsInputProps>;
-    readOnly: boolean;
-    inline?: boolean;
-    children?: React.ReactNode;
-    hidden?: boolean;
-}
-

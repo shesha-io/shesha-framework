@@ -2,16 +2,23 @@ import React from 'react';
 
 import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
 import { SettingOutlined } from "@ant-design/icons";
-import { IInputRowProps } from '../inputComponent';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
 import { evaluateString, useFormData } from '@/index';
 import { useStyles } from '../inputComponent/styles';
+import { ISettingsInputProps } from '../settingsInput/interfaces';
 
 export interface ISettingsInputRowProps extends Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'>, IInputRowProps {
 
 }
 
+export interface IInputRowProps {
+    inputs: Array<ISettingsInputProps>;
+    readOnly: boolean;
+    inline?: boolean;
+    children?: React.ReactNode;
+    hidden?: boolean;
+}
 
 export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
     const { styles } = useStyles();
