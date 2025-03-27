@@ -109,8 +109,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 defaultValue={defaultValue}
                 onChange={onChange}
                 showSearch={props.allowSearch ?? true}
-               options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
-
+                options={[...(options || [])].map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
             />;
         }
         case 'radio':

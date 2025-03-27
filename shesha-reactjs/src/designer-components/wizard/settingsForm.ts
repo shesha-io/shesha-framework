@@ -88,8 +88,16 @@ export const getSettings = () => {
                                             { value: 'horizontal', label: 'Horizontal' }
                                         ]
                                     },
-
-
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'defaultActiveStep',
+                                        label: 'Default Active Step',
+                                        parentId: 'root',
+                                        type: 'dropdown',
+                                        tooltip: 'This will be the default step that is active',
+                                        jsSetting: true,
+                                        dropdownOptions: { _code: 'return  getSettingValue(data?.steps)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                    }
                                 ]
                             })
                             .addSettingsInputRow(
