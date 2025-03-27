@@ -107,9 +107,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 value={value}
                 style={{ width: "100%" }}
                 defaultValue={defaultValue}
-                onChange={
-                    onChange}
-                options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
+                onChange={onChange}
+                showSearch={props.allowSearch ?? true}
+               options={options.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip, {}, styles) }))}
+
             />;
         }
         case 'radio':
@@ -216,7 +217,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'formAutocomplete':
             return <FormAutocomplete
                 readOnly={readOnly}
-                size={props.size}
+                size={props.size ?? 'small'}
                 value={value}
                 onChange={onChange}
             />;
@@ -262,6 +263,8 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <AutoComplete
                 disabled={readOnly}
                 options={formTypesOptions}
+                size={size ?? 'small'}
+                value={value}
                 onSearch={(t) =>
                     setFormTypesOptions(
                         (t
