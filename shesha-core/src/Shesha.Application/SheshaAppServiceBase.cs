@@ -41,11 +41,12 @@ namespace Shesha
         public SheshaAppServiceBase()
         {
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
+            LocalizationSourceName = SheshaConsts.LocalizationSourceName;
         }
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; } = default!;
         public IObjectValidatorManager ValidatorManager { get; set; } = default!;
-        public ILoggingContextCollector LoggingScope { get; set; } = default!;
+        public ILoggingContextCollector LoggingScope { get; set; } = NullLoggingContextCollector.Instance;
 
         /// <summary>
         /// Reference to the IoC manager.

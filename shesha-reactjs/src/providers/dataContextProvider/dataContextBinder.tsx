@@ -64,6 +64,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const parentContext = useDataContext(false);
   const [state, setState] = useState<IDataContextProviderStateContext>({
     id,
+    uid: uid,
     name,
     description,
     type,
@@ -143,7 +144,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     name,
     description,
     type,
-    parentId: parentContext?.id,
+    parentUid: parentContext?.uid,
     ...actionContext,
   }, []);
 
@@ -157,7 +158,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
         description,
         type,
         metadata: res,
-        parentId: parentContext?.id,
+        parentUid: parentContext?.uid,
         ...actionContext
       });
     });
@@ -171,7 +172,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
       name,
       description,
       type,
-      parentId: parentContext?.id,
+      parentUid: parentContext?.uid,
       ...actionContext,
     });
   }, [name, description]);
