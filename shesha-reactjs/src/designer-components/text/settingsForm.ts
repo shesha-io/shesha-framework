@@ -184,7 +184,7 @@ export const getSettings = (data: any) => {
                           value: 'round',
                         },
                         {
-                          label: 'Thousand Separator',
+                          label: 'Thousand separator',
                           value: 'thousandSeparator',
                         },
                       ],
