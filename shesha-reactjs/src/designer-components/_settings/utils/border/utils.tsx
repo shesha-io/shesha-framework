@@ -103,7 +103,7 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
     return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 
-export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
+export const getBorderInputs = (path = '', isResponsive: boolean = true, disabledValues?: string[]) => {
 
     const borderProp = path ? `${path}.border.border` : 'border.border';
 
@@ -138,7 +138,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     label: "Width",
                     hideLabel: true,
                     propertyName: `${borderProp}.all.width`,
-                    readOnly: { _code: `return getSettingValue(data?.${borderProp}.all.style) === 'none';`, _mode: 'code', _value: false } as any,
+                    readOnly: disabledValues.includes(`${borderProp}.all.color`) ?? { _code: `return getSettingValue(data?.${borderProp}.all.style) === 'none';`, _mode: 'code', _value: false } as any,
                 },
                 {
                     id: nanoid(),
@@ -155,7 +155,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     label: `Color`,
                     propertyName: `${borderProp}.all.color`,
                     type: "colorPicker",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    readOnly: disabledValues.includes(`${borderProp}.all.color`) ?? { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hideLabel: true,
                 }
             ]
