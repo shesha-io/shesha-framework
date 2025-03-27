@@ -278,54 +278,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           ],
                         },
                       })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: appearanceTabId,
-                        readOnly: false,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'widthUnits',
-                            label: 'Width Units',
-                            parentId: mainSettingsTabId,
-                            type: 'dropdown',
-                            allowClear: true,
-                            jsSetting: true,
-                            dropdownOptions: [
-                              { value: '%', label: 'Percentage (%)' },
-                              { value: 'px', label: 'Pixels (px)' },
-                            ],
-                            width: '100%',
-                          },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: appearanceTabId,
-                        readOnly: false,
-                        hidden: {
-                          _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
-                          _mode: 'code',
-                          _value: false,
-                        } as any,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            propertyName: 'customWidth',
-                            label: 'Custom Width',
-                            parentId: mainSettingsTabId,
-                            type: 'textField',
-                            jsSetting: true,
-                            min: 0,
-                            width: '100%',
-                          },
-                        ],
-                      })
+                     
                       .toJson(),
                   ],
                 })
@@ -353,7 +306,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
                   settingsValidationErrors: [],
                   useRawValues: true,
-                  allowClear: true,
                   width: '100%',
                   jsSetting: true,
                 })
@@ -480,6 +432,82 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     id: nanoid(),
                     components: [
                       ...new DesignerToolbarSettings()
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: appearanceTabId,
+                          readOnly: false,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'modalWidth',
+                              label: 'Dialog Width (%)',
+                              parentId: dataTabId,
+                              type: 'dropdown',
+                              allowClear: true,
+                              jsSetting: true,
+                              dropdownOptions: [
+                                { value: '40%', label: 'Small' },
+                                { value: '60%', label: 'Medium' },
+                                { value: '80%', label: 'Large' },
+                                { value: 'custom', label: 'Custom' },
+                              ],
+                              width: '100%',
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: dataTabId,
+                          readOnly: false,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'widthUnits',
+                              label: 'Width Units',
+                              parentId: dataTabId,
+                              type: 'dropdown',
+                              allowClear: true,
+                              jsSetting: true,
+                              dropdownOptions: [
+                                { value: '%', label: 'Percentage (%)' },
+                                { value: 'px', label: 'Pixels (px)' },
+                              ],
+                              width: '100%',
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: dataTabId,
+                          readOnly: false,
+                          hidden: {
+                            _code: 'return getSettingValue(data?.modalWidth) !== "custom";',
+                            _mode: 'code',
+                            _value: false,
+                          } as any,
+                          inputs: [
+                            {
+                              id: nanoid(),
+                              propertyName: 'customWidth',
+                              label: 'Custom Width',
+                              parentId: dataTabId,
+                              type: 'textField',
+                              jsSetting: true,
+                              min: 0,
+                              width: '100%',
+                            },
+                          ],
+                        })
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: dataTabId,
@@ -639,34 +667,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             },
                           ],
                         })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: appearanceTabId,
-                          readOnly: false,
-                          hidden: {
-                            _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
-                            _mode: 'code',
-                            _value: false,
-                          } as any,
-                          inputs: [
-                            {
-                              id: nanoid(),
-                              propertyName: 'modalWidth',
-                              label: 'Dialog Width (%)',
-                              parentId: dataTabId,
-                              type: 'dropdown',
-                              allowClear: true,
-                              jsSetting: true,
-                              dropdownOptions: [
-                                { value: '40%', label: 'Small' },
-                                { value: '60%', label: 'Medium' },
-                                { value: '80%', label: 'Large' },
-                                { value: 'custom', label: 'Custom' },
-                              ],
-                              width: '100%',
-                            },
-                          ],
-                        })
+                        
                         .toJson(),
                     ],
                   },
@@ -707,6 +708,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                     ],
                   },
                 })
+
                 .toJson(),
             ],
           },
