@@ -388,11 +388,6 @@
                 "id": "722eb4ea-9e00-4f4e-addb-e7300fa0c74c"
               },
               {
-                "label": "Autocomplete (displayText, value)",
-                "value": "autocomplete",
-                "id": "332eb4ea-9e00-4f4e-addb-e7300fa0c74c"
-              },
-              {
                 "label": "Custom",
                 "value": "custom",
                 "id": "faaeb4ea-9e00-4f4e-addb-e7300fa0c74c"
@@ -408,7 +403,7 @@
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
             "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
-            "description": "Return key from item value",
+            "description": "Return key from selected value",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [{ "name": "value", "description": "Value of item", "type": "object" }],
@@ -427,7 +422,7 @@
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
             "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
-            "description": "Return filter object for selected value(s). Use this settings to configure non-standard values format",
+            "description": "Return filter object (JsonLogic) for selected value(s). Use this settings to configure non-standard values format",
             "validate": {},
             "settingsValidationErrors": [],
             "exposedVariables": [{ "name": "item", "description": "Item of list", "type": "object" }],
