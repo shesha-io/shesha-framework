@@ -21,7 +21,7 @@ export class StorageProxy implements IStorageProxy {
             return null;
     
         if (typeof propValue === 'function')
-            return propValue.bind(this);
+            return propValue.bind(this._data);
 
         if (typeof propValue === 'object' && propValue) {
             return new StorageProxy(this._onChange, propValue);
@@ -84,8 +84,10 @@ export class StorageProxy implements IStorageProxy {
             ownKeys(target) {
                 return target.getKeys();
             },
-            getOwnPropertyDescriptor(_target, _prop) {
-                return { enumerable: true, configurable: true, writable: true };
+            getOwnPropertyDescriptor(target, prop) {
+                if (target.getKeys().indexOf(prop.toString()) >= 0)
+                    return { enumerable: true, configurable: true, writable: true };
+                return undefined;
             }
         });
     };
