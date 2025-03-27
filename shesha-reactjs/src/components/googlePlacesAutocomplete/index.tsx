@@ -44,6 +44,7 @@ export interface IGooglePlacesAutocompleteProps {
   style?: CSSProperties;
   size?: SizeType;
   searchOptions?: PropTypes['searchOptions'];
+  onFocus?: (payload: string) => void;
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({

@@ -1,7 +1,7 @@
 import { Form } from 'antd';
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import itemSettingsJson from './refListItemsSettings.json';
+import { getSettings } from './refListItemsSettingsForm';
 import { useRefListItemGroupConfigurator } from '../provider';
 import { ConfigurableFormInstance, FormMarkup } from '@/interfaces';
 import { getComponentModel } from '../provider/utils';
@@ -40,7 +40,7 @@ export const RefListItemProperties: FC<IRefListItemPropertiesProps> = () => {
 
     const componentModel = getComponentModel(getItem(selectedItemId));
 
-    const markup = itemSettingsJson as FormMarkup;
+    const markup = getSettings() as FormMarkup;
 
     return (
       <ConfigurableForm

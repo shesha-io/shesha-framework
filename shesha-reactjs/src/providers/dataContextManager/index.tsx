@@ -207,11 +207,11 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
         return res;
       }
 
-      let c = dataContexts.find(x => x.id === topId);
+      let c = dataContexts.find(x => x.uid === topId || x.id === topId);
       while (c) {
         ctxs.push(c);
-        c = dataContexts.find(x => x.id === c.parentId && x.uid !== c.uid);
-        if (c && c?.id === c?.parentId) {
+        c = dataContexts.find(x => x.uid === c.parentUid);
+        if (c && c?.uid === c?.parentUid) {
           console.error(`The hierarchy of contexts is broken, id === parentId: ${c.id} {${c.name}: ${c.description}}`);
           c = null;
         }
@@ -254,7 +254,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       if (!contextId)
           return undefined;
 
-      const dc = getLocalDataContexts('all').find(x => x.id === contextId);
+      const dc = getLocalDataContexts('all').find(x => x.uid === contextId || x.id === contextId);
       return dc ? dc : parentManager?.getDataContext(contextId);
     };
 

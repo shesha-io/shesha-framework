@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
@@ -8,6 +8,7 @@ import { ISettingsInputProps } from '../settingsInput/interfaces';
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
   markup: FormMarkup;
+
   onSave: (model: TModel) => void;
   onCancel: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
@@ -24,10 +25,6 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
-
-  useEffect(() => {
-    formRef.current?.resetFields();
-  });
 
   const objectMarkup = JSON.parse(JSON.stringify(markup));
 
