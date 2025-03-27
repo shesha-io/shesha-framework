@@ -332,10 +332,6 @@ export const getSettings = (data: any) => {
                                     description: 'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
                                     mode: 'dialog',
                                     jsSetting: true,
-                                    exposedVariables: [
-                                      `{ name: 'percent', description: 'Progress percentage', type: 'number' }`,
-                                      `{ name: 'successPercent', description: 'Success percentage', type: 'number' }`
-                                    ],
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                   },
                                   {
