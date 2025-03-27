@@ -46,6 +46,13 @@ export const getSettings = (data: any) => {
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
+                      id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
+                      propertyName: 'description',
+                      label: 'Tooltip',
+                      type: 'textArea',
+                      jsSetting: true
+                    },
+                    {
                       type: 'numberField',
                       id: nanoid(),
                       propertyName: 'percent',
@@ -53,36 +60,6 @@ export const getSettings = (data: any) => {
                       tooltip: 'To set the completion percentage',
                       min: 0,
                       max: 100,
-                      jsSetting: true,
-                    },
-                    {
-                      id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
-                      propertyName: 'description',
-                      label: 'Tooltip',
-                      type: 'textArea',
-                      jsSetting: true
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: 'root',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'showInfo',
-                      label: 'Show Info',
-                      tooltip: 'Whether to display the progress info',
-                      defaultValue: true,
                       jsSetting: true,
                     }
                   ]
@@ -118,6 +95,29 @@ export const getSettings = (data: any) => {
                         { label: 'Normal', value: 'normal' },
                         { label: 'Active', value: 'active' },
                       ],
+                      jsSetting: true,
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: 'root',
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'showInfo',
+                      label: 'Show Info',
+                      tooltip: 'Whether to display the progress info',
+                      defaultValue: true,
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'hidden',
+                      label: 'Hide',
                       jsSetting: true,
                     }
                   ]
@@ -384,10 +384,6 @@ export const getSettings = (data: any) => {
                                 exposedVariables: [
                                   `{ name: 'data', description: 'Form values', type: 'object' }`
                                 ],
-                                // wrapInTemplate: true,
-                                // templateSettings: {
-                                //   functionName: 'getStyle'
-                                // },
                                 jsSetting: true,
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                               })

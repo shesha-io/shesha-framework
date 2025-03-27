@@ -8,7 +8,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { ProgressProps } from 'antd';
 import { ProgressType } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 interface IProgressProps
@@ -54,10 +54,14 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       width,
       defaultValue,
       hidden,
-      gapDegree
+      gapDegree,
+      style
     } = model;
 
     if (hidden) return null;
+
+      const styles = getStyle(style);
+    
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
@@ -112,6 +116,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
               gapDegree={gapDegree}
+              style={styles}
             />);
         }}
       </ConfigurableFormItem>
