@@ -15,12 +15,12 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Shesha.Configuration.Startup;
-using Shesha.Domain.ConfigurationItems;
-using Shesha.Enterprise.Tests.Fixtures;
 using Shesha.FluentMigrator;
 using Shesha.NHibernate;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Tests.DependencyInjection;
+using Shesha.Tests.DynamicEntities;
 using Shesha.Tests.Interceptors;
 using Shesha.Web.FormsDesigner;
 using System;
@@ -42,11 +42,10 @@ namespace Shesha.Tests
         )]
     public class SheshaTestModule : AbpModule
     {
-        private readonly SheshaNHibernateModule _nhModule;
+        private const string ConnectionStringName = "TestDB";
 
         public SheshaTestModule(SheshaNHibernateModule nhModule)
         {
-            _nhModule = nhModule;
             nhModule.SkipDbSeed = false;    // Set to false to apply DB Migration files on start up
         }
 
@@ -54,24 +53,11 @@ namespace Shesha.Tests
         {
             IocManager.MockWebHostEnvirtonment();
 
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            var connectionString = config.GetConnectionString(ConnectionStringName).NotNullOrWhiteSpace($"Connection string '{ConnectionStringName}' is unavailable");
+
             var nhConfig = Configuration.Modules.ShaNHibernate();
-            var dbFixture = IocManager.IsRegistered<IDatabaseFixture>()
-                ? IocManager.Resolve<IDatabaseFixture>()
-                : null;
-            if (dbFixture != null)
-            {
-                nhConfig.UseDbms(c => dbFixture.DbmsType, c => dbFixture.ConnectionString);
-                if (!dbFixture.IsDbAvailable) 
-                {
-                    _nhModule.SkipDbContextRegistration = true;
-                    _nhModule.SkipDbSeed = true;
-                }
-            }
-            else
-            {
-                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-                nhConfig.UseDbms(c => config.GetDbmsType(), c => config.GetRequiredConnectionString("TestDB"));
-            }
+            nhConfig.UseMsSql(connectionString);
 
             Configuration.UnitOfWork.Timeout = TimeSpan.FromMinutes(30);
             Configuration.UnitOfWork.IsTransactional = false;
@@ -104,7 +90,7 @@ namespace Shesha.Tests
             IocManager.MockApiExplorer();
 
             // Use database for language management
-            //Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
+            Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
 
             IocManager.RegisterFakeService<SheshaDbMigrator>();
 
