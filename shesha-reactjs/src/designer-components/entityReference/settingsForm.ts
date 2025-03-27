@@ -137,7 +137,7 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   inputs: [
                     {
                       id: nanoid(),
-                      propertyName: 'icon',
+                      propertyName: 'iconName',
                       label: 'Icon',
                       parentId: mainSettingsTabId,
                       type: 'iconPicker',
