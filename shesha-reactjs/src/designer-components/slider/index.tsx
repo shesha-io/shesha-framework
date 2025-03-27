@@ -6,7 +6,7 @@ import { useFormData } from '@/providers';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SlidersFilled } from '@ant-design/icons';
 import { ISliderComponentProps } from './interfaces';
-import { settingsFormMarkup } from './settings';
+import { getSettings } from './settingsForm';
 
 const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
   type: 'slider',
@@ -34,6 +34,7 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
             onChange={onChange}
             value={value}
             style={getStyle(model?.style, formData)}
+
           />
         )}
       </ConfigurableFormItem>
@@ -45,8 +46,8 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
       label: 'Slider',
     };
   },
-  settingsFormMarkup,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsFormMarkup, model),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default SwitchComponent;
