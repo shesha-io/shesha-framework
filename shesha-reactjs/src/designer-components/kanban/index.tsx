@@ -17,6 +17,8 @@ import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/ba
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles } from './utils';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -31,7 +33,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     const shadow = model?.shadow;
     const columnShadow = model?.columnShadow;
     const border = model?.border;
-    const columnBorder = model?.columnBorder.border;
+    const columnBorder = model?.columnBorder?.border;
     const background = model?.background;
     const columnBackground = model?.columnBackground;
     const headerStyle = getStyle(model?.headerStyles as string, data);
@@ -113,6 +115,8 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     ...model,
     hideLabel: true,
   }),
+  //  migrator: (m) => m
+  //  .add<IKanbanProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
