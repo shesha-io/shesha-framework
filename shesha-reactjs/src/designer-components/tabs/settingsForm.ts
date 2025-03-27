@@ -10,7 +10,6 @@ import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
 
-
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
