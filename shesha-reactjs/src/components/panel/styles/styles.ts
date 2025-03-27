@@ -70,7 +70,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     borderColor: headerBorderColor,
     borderTopWidth: headerBorderTopWidth = panelHeadType === 'parent' ? '3px' : '',
     borderTopStyle: headerBorderTopStyle,
-    borderTopColor: headerBorderTopColor = panelHeadType === 'parent' ? token.colorPrimary : '',
+    borderTopColor: headerBorderTopColor,
     borderBottomWidth: headerBorderBottomWidth,
     borderBottomStyle: headerBorderBottomStyle,
     borderBottomColor: headerBorderBottomColor,
@@ -92,14 +92,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
+      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+        display: none;
+      }
     --primary-color: ${token.colorPrimary}; 
     ${hasBorder && '--ant-line-width: 0px !important;'}
+    --ant-collapse-header-bg: transparent !important;
 
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
       box-shadow: ${boxShadow};
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
+      margin-bottom: ${marginBottom};
+      margin-top: ${marginTop};
+      margin-left: ${marginLeft};
+      margin-right: ${marginRight};
     }
    
     > .ant-collapse-item > .ant-collapse-content {
@@ -145,7 +153,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};
-      border-top: ${headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${headerBorderTopColor || headerBorderColor};
+      border-top: ${headerBorderWidth || headerBorderTopWidth} ${headerBorderTopStyle || headerBorderStyle} ${headerBorderTopColor || headerBorderColor};
       border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
       border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
       border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
@@ -153,7 +161,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       padding-right: ${headerPaddingRight} !important;
       padding-bottom: ${headerPaddingBottom} !important;
       padding-left: ${headerPaddingLeft} !important;
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} 0px 0px !important;
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius};
 
       .ant-collapse-header-text {
         color: ${headerColor};
