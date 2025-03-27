@@ -1,6 +1,5 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
-using Abp.Runtime.Validation;
 using Shesha.Authorization.Users;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
@@ -9,6 +8,7 @@ using Shesha.Extensions;
 using Shesha.Persons;
 using Shesha.Reflection;
 using Shesha.UserManagements.Configurations;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -74,8 +74,7 @@ namespace Shesha.UserManagements
             if (await EmailAlreadyInUseAsync(input.EmailAddress, null))
                 validationResults.Add(new ValidationResult("Specified email already used by another person"));
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of

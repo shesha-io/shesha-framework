@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
@@ -10,6 +9,7 @@ using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services.ReferenceLists.Dto;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -48,8 +48,7 @@ namespace Shesha.Services.ReferenceLists
                         : $"Reference List with name `{input.Name}` already exists"
                     )
                 );
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var refList = new ReferenceList();
             refList.Name = input.Name;
@@ -106,8 +105,7 @@ namespace Shesha.Services.ReferenceLists
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
 
             var allVersions = await Repository.GetAll().Where(v => v.Name == refList.Name && v.Module == refList.Module).ToListAsync();
@@ -154,9 +152,8 @@ namespace Shesha.Services.ReferenceLists
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
-            
+            validationResults.ThrowValidationExceptionIfAny(L);
+
             var srcList = item.ForceCastAs<ReferenceList>();
 
             var listCopy = new ReferenceList();

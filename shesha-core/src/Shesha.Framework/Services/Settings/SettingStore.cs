@@ -15,6 +15,7 @@ using Shesha.Services.Settings.Cache;
 using Shesha.Services.Settings.Dto;
 using Shesha.Settings;
 using Shesha.Utilities;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -69,8 +70,7 @@ namespace Shesha.Services.Settings
                         : $"Setting Definition with name `{input.Name}` already exists"
                     )
                 );
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var definition = new SettingConfiguration();
             definition.Name = input.Name;
