@@ -83,15 +83,13 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     ) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-
-
     return (
       <ConfigurableFormItem model={{ ...model, label: undefined, hideLabel: true }}>
         {(value) => {
           const content = model.content || value;
           return <div style={{ ...dimensionStyles }}>
             <Markdown {...model} content={content} style={{...additionalStyles}} />
-            </div>
+            </div>;
         }}
       </ConfigurableFormItem>
     );
