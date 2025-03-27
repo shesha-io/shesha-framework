@@ -161,7 +161,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             disabled={readOnly}
             mode={selectedMode}
             placeholder={placeholder}
-            showSearch
+            showSearch={true}
             style={{borderWidth: '0px', ...style}}
             size={size}
         >

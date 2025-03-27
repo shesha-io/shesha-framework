@@ -4,6 +4,8 @@ import { FormLayout } from "antd/es/form/Form";
 
 export const getSettings = (data: any) => {
 
+  let formTypeSearchTerm = '';
+
   const ENABLE_CRUD_EXPOSED_VARIABLES = [
     {
       id: nanoid(),
@@ -25,38 +27,48 @@ export const getSettings = (data: any) => {
     }
   ].map(item => JSON.stringify(item));
 
-const ROW_SAVE_EXPOSED_VARIABLES = [
+  const formTypes = [
+    { label: 'Table', value: 'Table' },
+    { label: 'Create', value: 'Create' },
+    { label: 'Edit', value: 'Edit' },
+    { label: 'Details', value: 'Details' },
+    { label: 'Quickview', value: 'Quickview' },
+    { label: 'ListItem', value: 'ListItem' },
+    { label: 'Picker', value: 'Picker' }
+  ];
+
+  const ROW_SAVE_EXPOSED_VARIABLES = [
     {
-        id: nanoid(),
-        name: 'data',
-        description: 'Current row data',
-        type: 'object',
+      id: nanoid(),
+      name: 'data',
+      description: 'Current row data',
+      type: 'object',
     },
     {
-        id: nanoid(),
-        name: 'formData',
-        description: 'Form values',
-        type: 'object',
+      id: nanoid(),
+      name: 'formData',
+      description: 'Form values',
+      type: 'object',
     },
     {
-        id: nanoid(),
-        name: 'globalState',
-        description: 'The global state of the application',
-        type: 'object',
+      id: nanoid(),
+      name: 'globalState',
+      description: 'The global state of the application',
+      type: 'object',
     },
     {
-        id: nanoid(),
-        name: 'http',
-        description: 'axios instance used to make http requests',
-        type: 'object',
+      id: nanoid(),
+      name: 'http',
+      description: 'axios instance used to make http requests',
+      type: 'object',
     },
     {
-        id: nanoid(),
-        name: 'moment',
-        description: 'The moment.js object',
-        type: 'object',
+      id: nanoid(),
+      name: 'moment',
+      description: 'The moment.js object',
+      type: 'object',
     }
-].map(item => JSON.stringify(item));
+  ].map(item => JSON.stringify(item));
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -101,7 +113,6 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
                 parentId: 'root',
                 label: "Form selection mode",
                 jsSetting: false,
-                defaultValue: 'none',
                 dropdownOptions: [
                   { label: 'Named form', value: 'name' },
                   { label: 'View type', value: 'view' },
@@ -111,22 +122,68 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
               })
               .addSettingsInput({
                 id: nanoid(),
-                inputType: 'dropdown',
+                inputType: 'autocomplete',
                 propertyName: "formType",
                 parentId: 'root',
                 label: "Form type",
-                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "view";', _mode: 'code', _value: false } as any,
+                onSearch: (data) => {
+                  // 'data' is the search text
+                  const searchText = data;
+                  
+                  // Filter existing options based on search text
+                  const filteredOptions = formTypes.filter(option => 
+                    option.label.toLowerCase().includes(searchText.toLowerCase())
+                  );
+                  
+                  // Check if search text exactly matches any existing option
+                  const exactMatch = formTypes.some(option => 
+                    option.label.toLowerCase() === searchText.toLowerCase()
+                  );
+                  
+                  // If no exact match and search text is not empty, add an option to create new item
+                  if (!exactMatch && searchText && searchText.trim() !== '') {
+                    return [
+                      ...filteredOptions,
+                      { 
+                        label: `Add "${searchText}" as new form type`, 
+                        value: `new:${searchText}` // Special prefix to identify new items
+                      }
+                    ];
+                  }
+                  
+                  return filteredOptions;
+                },
+                onSelect: (value) => {
+                  // Check if this is a new form type (has the 'new:' prefix)
+                  if (value && typeof value === 'string' && value.startsWith('new:')) {
+                    const newLabel = value.substring(4); // Remove the 'new:' prefix
+                    
+                    // Create a new form type
+                    const newFormType = {
+                      label: newLabel,
+                      value: newLabel
+                    };
+                    
+                    // Add to the global formTypes array
+                    formTypes.push(newFormType);
+                  }
+                  
+                  // The actual selected value will be handled by onChange
+                },
+                
+                // Handle the final change
+                onChange: (value) => {
+                  // If this is a new form type selection, convert it to its actual value
+                  if (value && typeof value === 'string' && value.startsWith('new:')) {
+                    return value.substring(4); // Return the actual value without the 'new:' prefix
+                  }
+                  
+                  return value;
+                },
+                //hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "view";', _mode: 'code', _value: false } as any,
                 jsSetting: true,
                 dataSourceType: 'entitiesList',
-                dropdownOptions: [
-                  { label: 'Table', value: 'Table' },
-                  { label: 'Create', value: 'Create' },
-                  { label: 'Edit', value: 'Edit' },
-                  { label: 'Details', value: 'Details' },
-                  { label: 'Quickview', value: 'Quickview' }, 
-                  { label: 'ListItem', value: 'ListItem' },
-                  { label: 'Picker', value: 'Picker' }
-                ],
+                dropdownOptions: formTypes,
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInput({
@@ -188,12 +245,12 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
                 parentId: 'events',
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 dropdownOptions: [
-                    { value: 'yes', label: 'Yes' },
-                    { value: 'no', label: 'No' },
-                    { value: 'inherit', label: 'Inherit' },
-                    { value: 'js', label: 'Expression' },
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'inherit', label: 'Inherit' },
+                  { value: 'js', label: 'Expression' },
                 ],
-            })
+              })
               .addSettingsInput({
                 id: nanoid(),
                 propertyName: 'canDeleteInline',

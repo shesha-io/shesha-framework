@@ -162,12 +162,15 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
             return <Select
                 size={size}
                 mode={dropdownMode}
+                showSearch={true}
+                onSearch={props.onSearch}
                 allowClear={allowClear}
                 disabled={readOnly}
                 variant={variant}
                 className={className}
                 value={value}
                 defaultValue={defaultValue}
+                onSelect={props.onSelect}
                 onChange={
                     onChange}
                 options={typeof dropdownOptions === 'string' ?
