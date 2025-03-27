@@ -36,8 +36,8 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
             size: prevStyles?.size,
             border: {
                 hideBorder: prevStyles?.hideBorder || defaults?.hideBorder || false,
-                radiusType: 'all',
-                borderType: 'all',
+                radiusType: defaults?.border?.radiusType || 'all',
+                borderType: defaults?.border?.borderType || 'all',
                 border: {
                     all: border('all'),
                     top: border('top'),

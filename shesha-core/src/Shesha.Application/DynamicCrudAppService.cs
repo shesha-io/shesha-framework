@@ -2,13 +2,13 @@
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -100,15 +100,14 @@ namespace Shesha
             var entity = await Repository.GetAsync(input.Id);
 
             var result = await MapDynamicDtoToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(input, entity);
-            if (result.HasValidationError)
-                throw new AbpValidationException("Please correct the errors and try again", result.ValidationResults);
+
+            result.ValidationResults.ThrowValidationExceptionIfAny(L);
 
             await Repository.UpdateAsync(entity);
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             result = await DelayedUpdateAsync<TDynamicDto, TEntity, TPrimaryKey>(input, entity);
-            if (result.HasValidationError)
-                throw new AbpValidationException("Please correct the errors and try again", result.ValidationResults);
+            result.ValidationResults.ThrowValidationExceptionIfAny(L);
 
             return entity;
         }
@@ -138,12 +137,10 @@ namespace Shesha
                 await Repository.InsertAsync(entity);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
             });
-            if (result.HasValidationError)
-                throw new AbpValidationException("Please correct the errors and try again", result.ValidationResults);
+            result.ValidationResults.ThrowValidationExceptionIfAny(L);
 
             result = await DelayedUpdateAsync<TDynamicDto, TEntity, TPrimaryKey>(input, entity);
-            if (result.HasValidationError)
-                throw new AbpValidationException("Please correct the errors and try again", result.ValidationResults);
+            result.ValidationResults.ThrowValidationExceptionIfAny(L);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
             return entity;

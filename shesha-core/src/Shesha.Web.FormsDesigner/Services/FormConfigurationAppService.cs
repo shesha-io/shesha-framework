@@ -22,6 +22,7 @@ using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Utilities;
+using Shesha.Validations;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Exceptions;
 using System;
@@ -305,8 +306,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var validationResults = new List<ValidationResult>();
             if (string.IsNullOrWhiteSpace(input.Filter))
                 validationResults.Add(new ValidationResult("Filter is mandatory", new string[] { nameof(input.Filter) }));
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var forms = await GetAllFilteredAsync(input.Filter);
 
@@ -400,8 +400,7 @@ namespace Shesha.Web.FormsDesigner.Services
             if (!item.IsLast)
                 validationResults.Add(new ValidationResult($"This operation is allowed only for last version of form"));
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Failed to cancel version", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             await _formManager.CancelVersoinAsync(item);
             await CurrentUnitOfWork.SaveChangesAsync();

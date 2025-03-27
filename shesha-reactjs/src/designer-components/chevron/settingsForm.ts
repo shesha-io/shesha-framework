@@ -80,8 +80,8 @@ export const getSettings = (data: any) => {
             ]
           },
           {
-            key: 'items',
-            title: 'Items',
+            key: 'data',
+            title: 'Data',
             id: itemsTabId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInputRow({
@@ -104,7 +104,7 @@ export const getSettings = (data: any) => {
               .addSettingsInput({
                 id: nanoid(),
                 propertyName: 'items',
-                label: '',
+                label: "Items",
                 labelAlign: 'right',
                 parentId: itemsTabId,
                 referenceList: { _code: 'return getSettingValue(data?.referenceList);', _mode: 'code', _value: false } as any,
@@ -164,7 +164,8 @@ export const getSettings = (data: any) => {
                                 type: 'numberField',
                                 id: nanoid(),
                                 label: 'Size',
-                                propertyName: 'fontSize',
+                                propertyName: 'font.size',
+                                defaultValue: 14,
                                 hideLabel: true,
                                 width: 50,
                               },
@@ -183,7 +184,7 @@ export const getSettings = (data: any) => {
                                 id: nanoid(),
                                 label: 'Color',
                                 hideLabel: true,
-                                propertyName: 'fontColor',
+                                propertyName: 'font.color',
                               },
                               {
                                 type: 'dropdown',
@@ -224,7 +225,8 @@ export const getSettings = (data: any) => {
                                 width: 85,
                                 propertyName: "width",
                                 icon: "widthIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                defaultValue: 'auto',
                               },
                               {
                                 type: 'textField',
@@ -233,58 +235,10 @@ export const getSettings = (data: any) => {
                                 width: 85,
                                 propertyName: "height",
                                 icon: "heightIcon",
-                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
+                                tooltip: "You can use any unit (%, px, em, etc). px by default if without unit",
+                                defaultValue: 'auto'
                               }
                             ]
-                          })
-                          .toJson()
-                        ]
-                      }
-                    })
-                    .addCollapsiblePanel({
-                      id: nanoid(),
-                      propertyName: 'pnlColorSettings',
-                      label: 'Color Settings',
-                      labelAlign: 'right',
-                      ghost: true,
-                      parentId: styleRouterId,
-                      collapsible: 'header',
-                      content: {
-                        id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
-                          .addSettingsInput({
-                            id: nanoid(),
-                            propertyName: 'colorSource',
-                            label: 'Color Source',
-                            inputType: 'dropdown',
-                            jsSetting: true,
-                            tooltip: 'Hex and RGB colors are supported',
-                            parentId: styleRouterId,
-                            dropdownOptions: [
-                              { value: 'primary', label: 'Primary Color' },
-                              { value: 'custom', label: 'Custom Color' },
-                              { value: 'reflist', label: 'From RefList item' }
-                            ],
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                          })
-                          .addSettingsInput({
-                            id: nanoid(),
-                            propertyName: 'activeColor',
-                            label: 'Active Color',
-                            inputType: 'colorPicker',
-                            jsSetting: true,
-                            parentId: styleRouterId,
-                            //hidden: { _code: 'return getSettingValue(data?.colorSource) !== "custom";', _mode: 'code', _value: false } as any,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                          })
-                          .addSettingsInput({
-                            id: nanoid(),
-                            propertyName: 'showIcons',
-                            label: 'Show Icons',
-                            inputType: 'switch',
-                            jsSetting: true,
-                            parentId: styleRouterId,
-                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                           })
                           .toJson()
                         ]
@@ -312,6 +266,61 @@ export const getSettings = (data: any) => {
                     })
                     .toJson(),
                 ]
+              })
+              .addCollapsiblePanel({
+                id: nanoid(),
+                propertyName: 'pnlColorSettings',
+                label: 'Color Settings',
+                labelAlign: 'right',
+                ghost: true,
+                parentId: styleRouterId,
+                collapsible: 'header',
+                content: {
+                  id: nanoid(),
+                  components: [...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: nanoid(),
+                      propertyName: 'colorSource',
+                      label: 'Color Source',
+                      inputType: 'dropdown',
+                      jsSetting: true,
+                      tooltip: 'Hex and RGB colors are supported',
+                      parentId: styleRouterId,
+                      defaultValue: 'primary',
+                      dropdownOptions: [
+                        { value: 'primary', label: 'Primary Color' },
+                        { value: 'custom', label: 'Custom Color' },
+                        { value: 'reflist', label: 'From RefList item' }
+                      ],
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: styleRouterId,
+                      hidden: { _code: 'return  getSettingValue(data?.colorSource) !== "custom";', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          propertyName: 'activeColor',
+                          label: 'Active Color',
+                          type: 'colorPicker',
+                          jsSetting: true,
+                        },
+                      ],
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    })
+                    .addSettingsInput({
+                      id: nanoid(),
+                      propertyName: 'showIcons',
+                      label: 'Show Icons',
+                      inputType: 'switch',
+                      jsSetting: true,
+                      parentId: styleRouterId,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    })
+                    .toJson()
+                  ]
+                }
               })
               .toJson()
             ]

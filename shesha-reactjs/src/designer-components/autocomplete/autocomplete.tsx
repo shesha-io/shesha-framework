@@ -56,39 +56,34 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const jsStyle = getStyle(model.style, allData.data);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
+    const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
+    const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+  
     const keyValueFunc: KayValueFunc = useCallback( (value: any, args: any) => {
-      if (model.valueFormat === 'entityReference') {
-        return Boolean(value) ? getValueByPropertyName(value, model.keyPropName || 'id') : null;
-      }
-      if (model.valueFormat === 'custom') {
+      if (model.valueFormat === 'custom' && model.keyValueFunc) {
         return executeExpression<string>(model.keyValueFunc, {...args, value}, null, null );
       }
-      return value;
-    }, [model.valueFormat, model.keyValueFunc, model.keyPropName]);
+      return typeof(value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+    }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
-        return Boolean(value)
-          ? {id: value.id, _displayName: value._displayName || getValueByPropertyName(value, model.displayPropName), _className: model.entityType}
+        return Boolean(item)
+          ? {id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType}
           : null;
       }
-      if (model.valueFormat === 'custom') {
-        return executeExpression(model.outcomeValueFunc, {...args, item: value}, null, null );
+      if (model.valueFormat === 'custom' && model.outcomeValueFunc) {
+        return executeExpression(model.outcomeValueFunc, {...args, item: item}, null, null );
       }
-      return typeof(value) === 'object' 
-        ? getValueByPropertyName(value, model.keyPropName || 'id')
-        : value;
-    }, [model.valueFormat, model.outcomeValueFunc, model.keyPropName, model.entityType]);
+      return typeof(item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
+    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
 
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.displayValueFunc) {
         return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
       }
-      return (model.displayPropName
-        ? getValueByPropertyName(value, model.displayPropName)
-        : value?._displayName)  
-        || 'unknown'; 
-    }, [model.valueFormat, model.displayValueFunc, model.displayPropName]);
+      return getValueByPropertyName(value, displayPropName) || 'unknown'; 
+    }, [model.displayValueFunc, displayPropName]);
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value: any[]) => {
       return executeExpression(model.filterKeysFunc, {value}, null, null );
