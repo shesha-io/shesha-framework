@@ -253,26 +253,6 @@ export const getSettings = (data: any) => {
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
                                 parentId: eventsTabId
                             })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'onFocusCustom',
-                                label: 'On Focus',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on focus of event. (form, event) are exposed',
-                                parentId: eventsTabId
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'onBlurCustom',
-                                label: 'On Blur',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on blur of event. (form, event) are exposed',
-                                parentId: eventsTabId
-                            })
                             .toJson()
                         ]
                     },
