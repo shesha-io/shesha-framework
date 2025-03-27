@@ -92,7 +92,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                                 lineThickness={Number(size[0]) / 2}
                                 lineWidth='20'
                                 lineColor='#000'
-                                fontSize={14}
+                                fontSize={'14px'}
                                 marginBottom='0px'
                             />
                         </Tooltip>
