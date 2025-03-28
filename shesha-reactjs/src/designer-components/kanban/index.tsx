@@ -1,12 +1,24 @@
-import { FormOutlined } from '@ant-design/icons';
-import React from 'react';
 import { ConfigurableFormItem } from '@/components';
-import { IToolboxComponent, useForm } from '@/index';
-import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
-import { KanbanSettingsForm } from './settings';
+import {
+  getStyle,
+  IToolboxComponent,
+  useDataTableStore,
+  useSheshaApplication,
+  validateConfigurableComponentSettings,
+} from '@/index';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
+import { removeUndefinedProps } from '@/utils/object';
+import { FormOutlined } from '@ant-design/icons';
+import { Alert } from 'antd';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { getShadowStyle } from '../_settings/utils/shadow/utils';
+import { getSettings } from './settingsForm';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultColumnStyles, defaultStyles } from './utils';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -15,23 +27,60 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   icon: <FormOutlined />,
 
   Factory: ({ model }) => {
-    const form = useForm();
+    const store = useDataTableStore(false);
+    const data = model;
+    const { httpHeaders, backendUrl } = useSheshaApplication();
+    const { background: columnBackground, border: columnBorder, shadow: columnShadow } = model.columnStyles;
+    const { shadow, border, background } = model;
+    const headerStyle = getStyle(model?.headerStyles as string, data);
+    const columnStyle = getStyle(model?.columnStyle as string, data);
+    const borderStyles = useMemo(() => getBorderStyle(border, headerStyle), [border, headerStyle]);
+    const columnBorderStyles = useMemo(() => getBorderStyle(columnBorder, columnStyle), [columnBorder, columnStyle]);
+    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
+    const columnShadowStyles = useMemo(() => getShadowStyle(columnShadow), [columnShadow]);
 
-    if (form.formMode === 'designer' && !model.entityType) {
-      return (
-        <Alert
-          showIcon
-          message="Kanban not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
-          type="warning"
-        />
-      );
-    }
+    const [backgroundStyles, setBackgroundStyles] = useState({});
+    const [columnBackgroundStyle, setColumnBackgroundStyle] = useState({});
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+        const url = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+        const style = getBackgroundStyle(background, headerStyle, url);
+
+        setBackgroundStyles((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
+      };
+      fetchStyles();
+    }, [background, backendUrl, httpHeaders]);
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+        const url = await getBackgroundImageUrl(columnBackground, backendUrl, httpHeaders);
+        const style = getBackgroundStyle(columnBackground, columnStyle, url);
+
+        setColumnBackgroundStyle((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
+      };
+      fetchStyles();
+    }, [columnBackground, backendUrl, httpHeaders]);
+
+    const additionalColumnStyles: CSSProperties = removeUndefinedProps({
+      ...columnBorderStyles,
+      ...columnBackgroundStyle,
+      ...columnShadowStyles,
+      ...columnStyle,
+    });
+
+    const additionalHeaderStyles: CSSProperties = removeUndefinedProps({
+      ...borderStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...headerStyle,
+    });
+
     return (
       <div>
         <ConfigurableFormItem model={model}>
           {(value) => {
-            return (
+            return store ? (
               <RefListItemGroupConfiguratorProvider
                 value={value}
                 items={model.items}
@@ -40,8 +89,16 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
               >
                 <KanbanReactComponent
                   {...model}
+                  headerStyles={additionalHeaderStyles}
+                  columnStyle={additionalColumnStyles}
                 />
               </RefListItemGroupConfiguratorProvider>
+            ) : (
+              <Alert
+                className="sha-designer-warning"
+                message="Kanban must be used within a Data Table Context"
+                type="warning"
+              />
             );
           }}
         </ConfigurableFormItem>
@@ -52,9 +109,20 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     ...model,
     hideLabel: true,
   }),
-  settingsFormFactory: (props) => {
-    return <KanbanSettingsForm {...props} />;
-  },
+  migrator: (m) =>
+    m.add<IKanbanProps>(8, (prev) => {
+      const newModel = migratePrevStyles(prev, defaultStyles());
+      const defaultColumnStyle = defaultColumnStyles();
+
+      return {
+        ...newModel,
+        desktop: { ...newModel.desktop, columnStyles: defaultColumnStyle },
+        tablet: { ...newModel.tablet, columnStyles: defaultColumnStyle },
+        mobile: { ...newModel.mobile, columnStyles: defaultColumnStyle },
+      };
+    }),
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default KanbanComponent;

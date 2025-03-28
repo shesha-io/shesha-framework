@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Dropdown, Popconfirm } from 'antd';
-import { ReactSortable } from 'react-sortablejs';
-import { PlusOutlined, MoreOutlined, RightOutlined, LeftOutlined, SettingFilled } from '@ant-design/icons';
-import { ConfigurableForm, getStyle, IconPicker, useAvailableConstantsData, useConfigurableActionDispatcher, useFormData } from '@/index';
-import { MenuProps } from 'antd';
-import { Flex } from 'antd';
+import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
+import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
+import { ConfigurableForm, ShaIcon, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
-import { useKanbanActions } from '../utils';
+import { LeftOutlined, MoreOutlined, PlusOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Flex, MenuProps, Popconfirm } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from '../styles/styles';
-import { addPx } from '@/designer-components/_settings/utils';
+import { useKanbanActions } from '../utils';
 
 interface KanbanColumnProps {
   column: any;
@@ -42,17 +41,16 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
-  const { styles } = useStyles({ ...props, isCollapsed });
-  const { data: formData } = useFormData();
+  const dimensionsStyles = useMemo(() => getSizeStyle(props.columnStyles.dimensions), [props.columnStyles.dimensions]);
+  const fontStyles = useMemo(() => getFontStyle(props.font), [props.font]);
+  const { styles } = useStyles({ ...props, isCollapsed, dimensionsStyles, fontStyles });
   const { updateKanban } = useKanbanActions();
   const allData = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
-
   // Initialize collapse state from props
   useEffect(() => {
     setIsCollapsed(collapse);
   }, [collapse]);
-
   // Update user settings and persist to backend
   const toggleFold = async () => {
     try {
@@ -85,15 +83,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     },
   ].filter(Boolean);
 
-
-  
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
       return new Promise((resolve) => {
         const { to, dragged } = evt;
         const draggedTask = dragged?.dataset;
-        const targetColumn = to?.dataset?.targetColumn; 
-        
+        const targetColumn = to?.dataset?.targetColumn;
+
         if (!targetColumn?.actionConfiguration?.actionName) {
           resolve(true); // Allow the drag and drop to proceed without action
           return;
@@ -157,13 +153,14 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     });
   };
 
+  const iconStyles = { ...fontStyles, margin: '0px 8px' };
   return (
     <>
       {!column.hidden && (
         <div
           key={column.id}
           className={styles.combinedColumnStyle}
-          style={{ ...(getStyle(props.columnStyle, formData) || {}) }}
+          style={props.columnStyle || {}}
           data-column-id={column.id}
         >
           <Flex
@@ -174,25 +171,22 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             }
             align="center"
             className={styles.combinedHeaderStyle}
-            style={{ ...(getStyle(props.headerStyles, formData) || {}) }}
+            style={props.headerStyles || {}}
           >
-            {props.showIcons && column.icon && (
-              <IconPicker
-                value={column.icon}
-                readOnly
-                style={{ color: props.fontColor, fontSize: addPx(props.fontSize) }}
-              />
-            )}
-            <h3>
+            {props.showIcons && column.icon && <ShaIcon iconName={column.icon} readOnly style={iconStyles} />}
+            <h3
+              style={{
+                textWrap: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
               {column.item} ({columnTasks.length})
             </h3>
 
             {props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
-                <Button
-                  type="text"
-                  icon={<SettingFilled style={{ color: props.fontColor, fontSize: addPx(props.fontSize) }} />}
-                />
+                <Button type="text" icon={<SettingOutlined style={iconStyles} />} />
               </Dropdown>
             )}
           </Flex>
