@@ -5,4 +5,5 @@ export interface IColorPickerComponentProps extends IConfigurableFormComponent {
     allowClear?: boolean;
     showText?: boolean;
     disabledAlpha?: boolean;
+    tooltip?: string;
 }

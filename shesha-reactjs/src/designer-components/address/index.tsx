@@ -5,10 +5,10 @@ import { IToolboxComponent } from '@/interfaces';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
 import { IAddressCompomentProps } from './models';
-import { AddressSettingsForm } from './settings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItemWrapper from '@/components/readOnlyDisplayFormItem/wrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './formSettings';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -22,14 +22,14 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
         {(value, onChange) => {
           return (
             <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly}>
-              <AutoCompletePlacesControl {...model} value={value} onChange={onChange} />
+              <AutoCompletePlacesControl {...model} value={value} onChange={onChange}/>
             </ReadOnlyDisplayFormItemWrapper>
           );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: (props) => (<AddressSettingsForm {...props} />),
+  settingsFormMarkup: (data) => getSettings(data),
   migrator: (m) => m
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAddressCompomentProps>(1, (prev) => migrateVisibility(prev))
