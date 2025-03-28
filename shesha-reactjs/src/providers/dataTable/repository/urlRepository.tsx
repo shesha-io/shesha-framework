@@ -106,6 +106,10 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   };
 
   const fetch = (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
+    // Check if getListUrl is empty then return empty result
+    if (getListUrl === null || getListUrl === undefined) 
+      return Promise.resolve({ totalRows: 0, totalPages: 1, rows: [], totalRowsBeforeFilter: 0 });
+
     const getDataPayload = convertPayload(payload);
     const key = getUrlKeyParam(getListUrl);
 

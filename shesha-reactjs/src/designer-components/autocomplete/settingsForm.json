@@ -253,6 +253,7 @@
                 "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
               }
             ],
+            "onChangeCustom": "if (value === 'url' && data?.valueFormat === 'entityReference') form.setFieldValue('valueFormat', 'simple');",
             "version": 6,
             "referenceListId": null,
             "valueFormat": "listItem"
@@ -376,62 +377,12 @@
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
             "label": "Value format",
             "hidden": false,
-            "values": [
-              {
-                "label": "Simple Id",
-                "value": "simple",
-                "id": "329a001c-3c42-44b2-8616-a8fde0959323"
-              },
-              {
-                "label": "Entity reference",
-                "value": "entityReference",
-                "id": "722eb4ea-9e00-4f4e-addb-e7300fa0c74c"
-              },
-              {
-                "label": "Custom",
-                "value": "custom",
-                "id": "faaeb4ea-9e00-4f4e-addb-e7300fa0c74c"
-              }
-            ],
+            "values": { 
+              "_code": "return getSettingValue(data?.dataSourceType) === 'entitiesList' ? [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Entity reference\",\"value\": \"entityReference\",\"id\": \"2\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}] : [{\"label\": \"Simple Id\",\"value\": \"simple\",\"id\": \"1\"},{\"label\": \"Custom\",\"value\": \"custom\",\"id\": \"3\"}];", 
+              "_mode": "code", 
+              "_value": false 
+            },
             "dataSourceType": "values"
-          },
-          {
-            "id": "111ce49e-3067-4285-a1cb-104d4a8ee570",
-            "type": "codeEditor",
-            "propertyName": "keyValueFunc",
-            "label": "Key value Function",
-            "labelAlign": "right",
-            "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
-            "description": "Return key from selected value",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [{ "name": "value", "description": "Value of item", "type": "object" }],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": { "functionName": "keyValueFunc"},
-            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"value\", \"Value of item\").build();"
-          },
-          {
-            "id": "444ce49e-3067-4285-a1cb-104d4a8ee570",
-            "type": "codeEditor",
-            "propertyName": "filterKeysFunc",
-            "label": "Filter selected Function",
-            "labelAlign": "right",
-            "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
-            "description": "Return filter object (JsonLogic) for selected value(s). Use this settings to configure non-standard values format",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "exposedVariables": [{ "name": "item", "description": "Item of list", "type": "object" }],
-            "version": 3,
-            "language": "typescript",
-            "placeholder": "",
-            "wrapInTemplate": true,
-            "templateSettings": { "functionName": "filterSelectedFunc"},
-            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"value\", \"Value of autocomplete\").build();"
           },
           {
             "id": "222ce49e-3067-4285-a1cb-104d4a8ee570",
@@ -453,6 +404,25 @@
             "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"item\", \"Item of list\").build();"
           },
           {
+            "id": "111ce49e-3067-4285-a1cb-104d4a8ee570",
+            "type": "codeEditor",
+            "propertyName": "keyValueFunc",
+            "label": "Key value Function",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
+            "description": "Return key from selected value",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [{ "name": "value", "description": "Value of item", "type": "object" }],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": { "functionName": "keyValueFunc"},
+            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"value\", \"Value of item\").build();"
+          },
+          {
             "id": "333ce49e-3067-4285-a1cb-104d4a8ee570",
             "type": "codeEditor",
             "propertyName": "displayValueFunc",
@@ -472,17 +442,32 @@
             "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"item\", \"Item of list\").build();"
           },
           {
+            "id": "444ce49e-3067-4285-a1cb-104d4a8ee570",
+            "type": "codeEditor",
+            "propertyName": "filterKeysFunc",
+            "label": "Filter selected Function",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": { "_code": "return getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false },
+            "description": "Return filter object (JsonLogic) for selected value(s). Use this settings to configure non-standard values format",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "exposedVariables": [{ "name": "item", "description": "Item of list", "type": "object" }],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": { "functionName": "filterSelectedFunc"},
+            "availableConstantsExpression": "return metadataBuilder.object(\"constants\").addObject(\"value\", \"Value of autocomplete\").build();"
+          },
+          {
             "id": "Wda2Q9DU5DDExAb7MEEfK",
             "type": "checkbox",
             "propertyName": "allowFreeText",
             "label": "Allow Free Text",
             "labelAlign": "right",
             "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": {
-              "_code": "return !(getSettingValue(data?.dataSourceType) === 'url' && getSettingValue(data?.useRawValues) === true);",
-              "_mode": "code",
-              "_value": false
-            },
+            "hidden": {"_code": "return getSettingValue(data?.valueFormat) !== 'simple';", "_mode": "code", "_value": false},
             "isDynamic": false,
             "description": "Allow to use free text that is missing on the source",
             "validate": {},
@@ -515,6 +500,7 @@
             "modelType": "{{data.entityType}}",
             "autoFillProps": false,
             "settingsValidationErrors": [],
+            "hidden": {"_code": "return getSettingValue(data?.valueFormat) === 'entityReference';", "_mode": "code", "_value": false},
             "version": 2
           },
           {
@@ -528,6 +514,7 @@
             "validate": {},
             "modelType": "{{data.entityType}}",
             "settingsValidationErrors": [],
+            "hidden": {"_code": "return getSettingValue(data?.dataSourceType) !== 'entitiesList';", "_mode": "code", "_value": false},
             "version": 2
           },
           {
