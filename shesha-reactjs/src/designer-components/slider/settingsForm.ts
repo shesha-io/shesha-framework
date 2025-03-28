@@ -51,6 +51,14 @@ export const getSettings = (data: any) => {
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 inputs: [
                   {
+                    type:'editModeSelector',
+                    id: nanoid(),
+                    propertyName: 'editMode',
+                    label: 'Edit Mode',
+                    defaultValue: 'inherited',
+                    jsSetting: true,
+                  },
+                  {
                     type: 'switch',
                     id: nanoid(),
                     propertyName: 'hidden',
@@ -58,15 +66,6 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ]
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'editModeSelector',
-                propertyName: 'editMode',
-                parentId: commonTabId,
-                label: 'Edit mode',
-                defaultValue: 'inherited',
-                jsSetting: true,
               })
               .toJson()
             ]
@@ -137,7 +136,7 @@ export const getSettings = (data: any) => {
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'customStyle',
-                      label: 'Style',
+                      label: 'Custom Styles',
                       labelAlign: 'right',
                       parentId: styleRouterId,
                       ghost: true,

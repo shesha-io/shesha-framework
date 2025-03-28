@@ -50,22 +50,29 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 parentId: commonTabId,
                                 hideLabel: true,
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                inputType: 'textField',
-                                propertyName: 'placeholder',
-                                label: 'Placeholder',
                                 parentId: commonTabId,
-                                jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'textArea',
-                                propertyName: 'description',
-                                label: 'Tooltip',
-                                parentId: commonTabId,
-                                jsSetting: true,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'textField',
+                                        propertyName: 'placeholder',
+                                        label: 'Placeholder',
+                                        parentId: commonTabId,
+                                        jsSetting: true,
+                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        type: 'textArea',
+                                        propertyName: 'description',
+                                        label: 'Tooltip',
+                                        parentId: commonTabId,
+                                        jsSetting: true,
+                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    }
+                                ],
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
@@ -142,24 +149,22 @@ export const getSettings = (data: IAddressCompomentProps) => {
                             })
                             .addSettingsInput({
                                 id: nanoid(),
-                                inputType: 'textField',
+                                inputType: 'Password',
                                 propertyName: 'googleMapsApiKey',
                                 label: 'Google Maps Key',
                                 parentId: configTabId,
                                 jsSetting: true,
                                 tooltip: 'API key for authorization. Google Maps key which is required to make successful calls to Google services.',
-                                textType: 'password',
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInput({
                                 id: nanoid(),
-                                inputType: 'textField',
+                                inputType: 'Password',
                                 propertyName: 'openCageApiKey',
                                 label: 'OpenCage Key',
                                 parentId: configTabId,
                                 tooltip: 'API key for authorization. Go to (https://opencagedata.com/api) to learn about OpenCage. OpenCage key which is required to make successful calls to OpenCage services.',
                                 jsSetting: true,
-                                textType: 'password',
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInputRow({
@@ -174,7 +179,8 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         label: 'Country Restriction',
                                         tooltip: 'A filter which is based on the country/countries, multiple countries can be selected.',
                                         jsSetting: true,
-                                        mode: 'multiple',
+                                        showSearch: true,
+                                        dropdownMode: 'multiple',
                                         allowClear: true,
                                         dropdownOptions: COUNTRY_CODES
                                     },
@@ -226,6 +232,14 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                             required: true,
                                         }
                                     },
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: configTabId,
+                                hidden: { _code: 'return !getSettingValue(data?.showPriorityBounds);', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
                                     {
                                         type: 'numberField',
                                         id: nanoid(),
@@ -265,7 +279,7 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: styleRouterId,
@@ -352,17 +366,6 @@ export const getSettings = (data: IAddressCompomentProps) => {
                                 label: 'On Focus',
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on focusing of event. (form, event) are exposed',
-                                parentId: eventsTabId,
-                                exposedVariables: EXPOSED_VARIABLES,
-                            })
-                            .addSettingsInput({
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'onBlurCustom',
-                                label: 'On Blur',
-                                labelAlign: 'right',
-                                tooltip: 'Enter custom eventhandler on blurring of event. (form, event) are exposed',
                                 parentId: eventsTabId,
                                 exposedVariables: EXPOSED_VARIABLES,
                             })

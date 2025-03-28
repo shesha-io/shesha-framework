@@ -71,12 +71,13 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: 'left' }))
-      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null, dashed: prev['dashed'] ?? false }))
-      .add<ISectionSeparatorComponentProps>(4, (prev) => ({
+      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null}))
+      .add<ISectionSeparatorComponentProps>(5, (prev) => ({ ...prev, lineType: prev.dashed ? 'dashed' : 'solid' }))      
+      .add<ISectionSeparatorComponentProps>(6, (prev) => ({
         ...prev,
         desktop: { ...prev.desktop, lineFont: { size: 2 }, lineWidth: '100%' },
       }))
-      .add<ISectionSeparatorComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ISectionSeparatorComponentProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default SectionSeparatorComponent;

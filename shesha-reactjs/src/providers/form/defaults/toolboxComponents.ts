@@ -175,7 +175,6 @@ export const getToolboxComponents = (
         AttachmentsEditor,
         Notes,
         ChildEntitiesTagGroup,
-        DynamicView,
       ],
     },
     {
@@ -229,7 +228,8 @@ export const getToolboxComponents = (
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,
         TableTemplate,
-        DividerComponent
+        DividerComponent,
+        DynamicView,
       ],
     },
     {

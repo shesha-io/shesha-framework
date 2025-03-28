@@ -38,6 +38,8 @@ import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal'
 import { FormLayout } from 'antd/es/form/Form';
 import { startCase } from 'lodash';
 
+const { Password } = Input;
+
 export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
     const { styles } = useStyles();
@@ -52,7 +54,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, showSearch } = props;
 
     const iconElement = (icon: string | React.ReactNode, size?: any, hint?: string, style?: React.CSSProperties) => {
         if (typeof icon !== 'string') {
@@ -92,7 +94,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                                 lineThickness={Number(size[0]) / 2}
                                 lineWidth='20'
                                 lineColor='#000'
-                                fontSize={14}
+                                fontSize={'14px'}
                                 marginBottom='0px'
                             />
                         </Tooltip>
@@ -121,10 +123,10 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         readOnly: readOnly,
         description: description,
         mode: 'dialog',
-        language: 'typescript',
+        language: props.language ?? 'typescript',
         fileName: propertyName,
         label: label ?? propertyName,
-        wrapInTemplate: true,
+        wrapInTemplate: props.wrapInTemplate ?? true,
         value: value,
         onChange: onChange,
         templateSettings: { functionName: functionName },
@@ -168,11 +170,11 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 disabled={readOnly}
                 variant={variant}
                 className={className}
+                showSearch={showSearch}
                 value={value}
                 style={{ width: "100%" }}
                 defaultValue={defaultValue}
-                onChange={
-                    onChange}
+                onChange={onChange}
                 options={typeof dropdownOptions === 'string' ?
                     getValueFromString(dropdownOptions) :
                     dropdownOptions.map(option => ({ ...option, label: iconElement(option.label, option.value, tooltip) }))}
@@ -362,7 +364,16 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 propertyMeta={propertyMeta}
             />;
         case 'RefListItemSelectorSettingsModal':
-            return <RefListItemSelectorSettingsModal {...props} onChange={onChange} referenceList={referenceList?._data} readOnly={false} />;
+            return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList?._data} readOnly={false} />;
+
+        case 'Password':
+            return <Password
+                value={value}
+                onChange={onChange}
+                size={size}
+                readOnly={readOnly}
+                variant={variant}
+            />;
         default:
             return <Input
                 size={size}
