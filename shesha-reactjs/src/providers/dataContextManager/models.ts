@@ -1,14 +1,15 @@
 import { DataTypes } from "@/interfaces";
-import { IModelMetadata } from "@/interfaces/metadata";
+import { IContextMetadata } from "@/interfaces/metadata";
 import { DataContextType, IDataContextProviderActionsContext } from "../dataContextProvider/contexts";
 
 export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
   id: string;
+  uid: string;
   name: string;
   description?: string;
   type: DataContextType;
-  parentId?: string;
-  metadata?: IModelMetadata;
+  parentUid?: string;
+  metadata?: IContextMetadata;
 }
 
 export interface IDataContextDictionary {
@@ -24,7 +25,10 @@ export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGE
 
 export enum SheshaCommonContexts {
   ApplicationContext = 'application',
-  AppContext = 'appContext'
+  WebStorageContext = 'webStorage',
+  AppContext = 'appContext',
+  PageContext = 'pageContext',
+  FormContext = 'formContext'
 }
 
 export const DEFAULT_CONTEXT_METADATA = {
@@ -32,5 +36,6 @@ export const DEFAULT_CONTEXT_METADATA = {
   dataType: DataTypes.context,
   apiEndpoints: {},
   specifications: {},
-  properties: []
-} as IModelMetadata;
+  properties: [],
+  methods: [],
+} as IContextMetadata;

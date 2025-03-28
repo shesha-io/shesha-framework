@@ -12,16 +12,16 @@ namespace Shesha.Services
     {
         Task MarkDownloadedAsync(StoredFileVersion fileVersion);
 
-        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string fileCategory);
-        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>([NotNull] IEntity<TId> owner, string? fileCategory);
+        Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(IEntity<TId> owner);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(TId id, string typeShortAlias);
 
-        Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string? fileCategory);
         Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias);
 
-        Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory);
-        Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string? fileCategory);
+        Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string? fileCategory);
         Task<Stream> GetStreamAsync(StoredFileVersion fileVersion);
         Task<Stream> GetStreamAsync(StoredFile file);
         Task<Stream> GetStreamAsync(string filePath);
@@ -38,7 +38,7 @@ namespace Shesha.Services
 
         Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream);
         [Obsolete("Use CreateFileAsync instead")]
-        Task<T> SaveFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null);
+        Task<T> SaveFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null);
 
         /// <summary>
         /// Create new file and return created version
@@ -47,7 +47,7 @@ namespace Shesha.Services
         /// <param name="fileName">File name</param>
         /// <param name="prepareFileAction">Custom preparation of file entity</param>
         /// <returns></returns>
-        Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null);
+        Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile>? prepareFileAction = null);
 
         /// <summary>
         /// Update file content and name

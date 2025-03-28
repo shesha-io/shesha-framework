@@ -43,7 +43,7 @@ namespace Shesha.Services
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
+        public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         public ReferenceListHelper(
             IRepository<ReferenceList, Guid> listRepository, 
@@ -82,7 +82,7 @@ namespace Shesha.Services
         /// <param name="refListId">Referencve list identifier</param>
         /// <param name="value">Value of the <see cref="ReferenceListItem"/></param>
         /// <returns></returns>
-        public string GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value)
+        public string? GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value)
         {
             ValidateRefListId(refListId);
 
@@ -273,8 +273,7 @@ namespace Shesha.Services
             AsyncHelper.RunSync(async () =>
             {
                 await _clientSideCache.SetCachedMd5Async(ReferenceList.ItemTypeName, null, refListId.Module, refListId.Name, _cfRuntime.ViewMode, null);
-            }
-            );
+            });
         }
 
         /// <summary>
@@ -291,18 +290,17 @@ namespace Shesha.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="rawValue"></param>
         /// <returns></returns>
-        public static List<ReferenceListItemValueDto> DecomposeMultiReferenceListValue<T>(T rawValue) where T : struct, IConvertible
+        public static List<ReferenceListItemValueDto> DecomposeMultiReferenceListValue<T>(Int64 rawValue) where T : struct, IConvertible
         {
             var result = new List<ReferenceListItemValueDto>();
 
             if (rawValue.ToString() == "0")
                 return result;
 
-            var flag = Enum.Parse(typeof(T), rawValue.ToString()) as Enum;
-
-            foreach (var r in (long[])Enum.GetValues(typeof(T)))
+            var enumValues = Enum.GetValues(typeof(T)).Cast<Int64>();
+            foreach (var r in enumValues)
             {
-                if ((Convert.ToInt64(flag) & r) == r)
+                if ((rawValue & r) == r)
                 {
                     var nameValue = new ReferenceListItemValueDto()
                     {

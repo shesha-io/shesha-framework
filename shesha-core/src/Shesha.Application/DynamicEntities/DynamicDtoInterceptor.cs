@@ -1,19 +1,16 @@
 ﻿using Castle.DynamicProxy;
-using System;
+using Shesha.Extensions;
+using Shesha.Reflection;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shesha.DynamicEntities
 {
-
-    // ToDo AS: Don't use. Is not completed!
-    //[Obsolete("Don't use. Is not completed!")]
     public class DynamicDtoInterceptor : IInterceptor
     {
         private string _name;
         private DynamicDtoInterceptor _parent;
 
-        private Dictionary<string, object> _changes = new Dictionary<string, object>();
+        private Dictionary<string, object?> _changes = new ();
 
         private bool _isChanged = false;
 
@@ -33,7 +30,7 @@ namespace Shesha.DynamicEntities
             _changes.Clear();
         }
 
-        public void Change(string name, object value)
+        public void Change(string name, object? value)
         {
             if (_changes.ContainsKey(name)) _changes[name] = value;
             else _changes.Add(name, value);
@@ -59,11 +56,6 @@ namespace Shesha.DynamicEntities
                 invocation.ReturnValue = _isChanged;
                 return;
             }
-            /*if (invocation.Method.Name == $"set_{nameof(IDynamicDtoInputProxy.IsChanged)}")
-            {
-                _isChanged = (bool)invocation.Arguments[0];
-                return;
-            }*/
 
             if (invocation.Method.Name.StartsWith("set_"))
             {
@@ -72,7 +64,7 @@ namespace Shesha.DynamicEntities
                 if (prop != null)
                 {
                     var val = prop.GetValue(invocation.InvocationTarget, null);
-                    if (!val.Equals(invocation.Arguments[0]))
+                    if (!val.NullEquals(invocation.Arguments[0]))
                     {
                         Change(prop.Name, val);
                     }

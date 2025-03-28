@@ -20,7 +20,7 @@ namespace Shesha.Sms
 
         public ILogger Logger { get; set; }
 
-        public Type SettingsType => null;
+        public Type? SettingsType => null;
 
         public NullSmsGateway()
         {

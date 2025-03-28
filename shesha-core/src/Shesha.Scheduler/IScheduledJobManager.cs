@@ -59,8 +59,13 @@ namespace Shesha.Scheduler
         /// Get job type by Id
         /// </summary>
         /// <param name="id">Job Id</param>
-        /// <returns></returns>
         Type GetJobTypeById(Guid id);
+
+        /// <summary>
+        /// Get job type by Id
+        /// </summary>
+        /// <param name="id">Job Id</param>
+        Type? GetJobTypeByIdOrNull(Guid id);
 
         /// <summary>
         /// Get job instance by Id

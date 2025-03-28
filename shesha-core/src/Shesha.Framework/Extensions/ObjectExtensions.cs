@@ -1,18 +1,20 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using Abp.Domain.Entities;
-using NetTopologySuite.Geometries;
+﻿using NetTopologySuite.Geometries;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Reflection;
+using System;
 
 namespace Shesha.Extensions
 {
     public static class ObjectExtensions
     {
 
-        public static string GetClassName(this object obj)
+        public static bool NullEquals(this object? first, object? second)
+        {
+            return first == null && second == null || (first?.Equals(second) ?? false);
+        }
+
+        public static string? GetClassName(this object obj)
         {
             return obj == null ? null : obj.GetType().FullName;
         }
@@ -32,7 +34,7 @@ namespace Shesha.Extensions
         /// </summary>
         public static bool IsSystemType(this Type type)
         {
-            return type.FullName.StartsWith("System.");
+            return !string.IsNullOrWhiteSpace(type.FullName) && type.FullName.StartsWith("System.");
         }
 
         /// <summary>
@@ -51,9 +53,9 @@ namespace Shesha.Extensions
         /// <summary>
         /// Indicates is the specified type a type of entity
         /// </summary>
-        public static bool IsEntityType(this Type type)
+        public static bool IsEntityType(this Type? type)
         {
-            return MappingHelper.IsEntity(type);
+            return type != null && MappingHelper.IsEntity(type);
         }
 
         /// <summary>
@@ -113,11 +115,9 @@ namespace Shesha.Extensions
         /// <summary>
         /// Get type of the `Id` property. Applicable for entity types
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
         public static Type GetEntityIdType(this Type type) 
         {
-            return type?.GetProperty(SheshaDatabaseConsts.IdColumn)?.PropertyType;
+            return type.GetRequiredProperty(SheshaDatabaseConsts.IdColumn).PropertyType;
         }
     }
 }

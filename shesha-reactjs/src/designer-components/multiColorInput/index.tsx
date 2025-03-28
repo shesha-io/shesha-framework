@@ -6,8 +6,8 @@ import { useTheme } from '@/providers';
 import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
-import { InputRow } from '../inputComponent';
 import { gradientDirectionOptions } from '../_settings/utils/background/utils';
+import { InputRow } from '../settingsInputRow';
 
 export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }) => {
     const { theme } = useTheme();
@@ -21,12 +21,6 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
         }
     }, [value, onChange, theme.application.primaryColor]);
 
-    const removeLastWord = (inputString) => {
-        const words = inputString.split('.');
-        words.pop();
-        return words.join('.');
-    };
-
     return (
         <>
             <Row>
@@ -38,19 +32,17 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
                             bordered={false}
                             closable={id !== '1' && id !== '2'}
                             onClose={() => {
-                                const newColors = { ...value };
-                                delete newColors[id];
-                                onChange(newColors);
-                                setColors(newColors);
+                                onChange({ ...value, [id]: undefined });
+                                setColors({ ...value, [id]: undefined });
                             }}
                         >
-                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='colorPicker' id={nanoid()} />
+                            <SettingInput propertyName={`${propertyName}.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='colorPicker' id={id} />
                         </Tag>
                     );
                 })}
             </Row>
 
-            <InputRow inline={true} readOnly={readOnly} inputs={[{ propertyName: removeLastWord(propertyName) + '.direction', label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions, id: nanoid() }]} >
+            <InputRow inline={true} readOnly={readOnly} inputs={[{ id: nanoid(), propertyName: 'background.gradient.direction', label: 'Direction', hideLabel: true, width: '120px', type: 'dropdown', dropdownOptions: gradientDirectionOptions }]} >
                 <FormItem>
                     <Button
                         type='primary'

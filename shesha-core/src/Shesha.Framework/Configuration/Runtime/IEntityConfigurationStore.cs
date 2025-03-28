@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Shesha.Configuration.Runtime
 {
@@ -21,7 +20,7 @@ namespace Shesha.Configuration.Runtime
         /// <summary>
         /// Returns <see cref="EntityConfiguration"/> by class name or type short alias
         /// </summary>
-        EntityConfiguration GetOrNull(string nameOrAlias);
+        EntityConfiguration? GetOrNull(string nameOrAlias);
 
         /// <summary>
         /// Register default application service for entity type

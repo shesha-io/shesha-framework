@@ -1,13 +1,14 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.ObjectMapping;
 using Abp.Runtime.Validation;
-using Abp.UI;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
+using Shesha.Reflection;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +20,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Base class of the Configuration Item Manager
     /// </summary>
-    public abstract class ConfigurationItemManager<TItem> : IConfigurationItemManager<TItem> where TItem : ConfigurationItemBase
+    public abstract class ConfigurationItemManager<TItem> : AbpServiceBase, IConfigurationItemManager<TItem> where TItem : ConfigurationItemBase
     {
         /// <summary>
         /// Configurable Item type supported by the current manager
@@ -28,14 +29,11 @@ namespace Shesha.ConfigurationItems
 
         protected IRepository<TItem, Guid> Repository { get; private set; }
         protected IRepository<Module, Guid> ModuleRepository { get; private set; }
-        protected IUnitOfWorkManager UnitOfWorkManager { get; private set; }
-        /// <summary>
-        /// Reference to the object to object mapper.
-        /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
 
         public ConfigurationItemManager(IRepository<TItem, Guid> repository, IRepository<Module, Guid> moduleRepository, IUnitOfWorkManager unitOfWorkManager)
         {
+            LocalizationSourceName = SheshaConsts.LocalizationSourceName;
+
             Repository = repository;
             ModuleRepository = moduleRepository;
             UnitOfWorkManager = unitOfWorkManager;
@@ -119,8 +117,9 @@ namespace Shesha.ConfigurationItems
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
+
+            item.NotNull();
 
             var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == item.Origin);
             var allVersions = await allVersionsQuery.ToListAsync();
@@ -141,37 +140,37 @@ namespace Shesha.ConfigurationItems
 
         public async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
         {
-            await UpdateStatusAsync(item as TItem, status);
+            await UpdateStatusAsync((TItem)item, status);
         }
 
         public async Task<ConfigurationItemBase> CopyAsync(ConfigurationItemBase item, CopyItemInput input)
         {
-            return await CopyAsync(item as TItem, input) as ConfigurationItemBase;
+            return await CopyAsync((TItem)item, input) as ConfigurationItemBase;
         }
 
         public async Task CancelVersoinAsync(ConfigurationItemBase item)
         {
-            await CancelVersionAsync(item as TItem);
+            await CancelVersionAsync((TItem)item);
         }
 
         public async Task MoveToModuleAsync(ConfigurationItemBase item, MoveItemToModuleInput input)
         {
-            await MoveToModuleAsync(item as TItem, input);
+            await MoveToModuleAsync((TItem)item, input);
         }
 
         public async Task<ConfigurationItemBase> CreateNewVersionAsync(ConfigurationItemBase item)
         {
-            return await CreateNewVersionAsync(item as TItem) as ConfigurationItemBase;
+            return await CreateNewVersionAsync((TItem)item) as ConfigurationItemBase;
         }
 
         public async Task DeleteAllVersionsAsync(ConfigurationItemBase item)
         {
-            await DeleteAllVersionsAsync(item as TItem);
+            await DeleteAllVersionsAsync((TItem)item);
         }
 
         public async Task<IConfigurationItemDto> MapToDtoAsync(ConfigurationItemBase item)
         {
-            return await MapToDtoAsync(item as TItem) as IConfigurationItemDto;
+            return await MapToDtoAsync((TItem)item) as IConfigurationItemDto;
         }
     }
 }

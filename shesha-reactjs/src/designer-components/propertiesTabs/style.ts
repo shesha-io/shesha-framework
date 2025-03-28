@@ -7,7 +7,18 @@ export const useStyles = createStyles(({ css, cx, }) => {
         background: #fff;
         `);
 
+    const content = cx(css`
+            .ant-tabs-tab, .ant-tabs-nav-operations {
+                height: 24px;
+            }
+
+            .ant-tabs-tab {
+                --ant-tabs-card-padding-sm: 0 8px;
+            }
+        `);
+
     return {
-        searchField
+        searchField,
+        content
     };
 });

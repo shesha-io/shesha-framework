@@ -8,6 +8,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions.Dtos;
+using Shesha.Reflection;
 using Shesha.Roles.Dto;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Shesha.Permissions
     {
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ILocalizationContext _localizationContext;
-        private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
+        private IShaPermissionManager _shaPermissionManager => PermissionManager.ForceCastAs<IShaPermissionManager>();
         private readonly IShaPermissionChecker _permissionChecker;
 
         private const string emptyId = "_";
@@ -37,10 +38,10 @@ namespace Shesha.Permissions
             _permissionChecker = permissionChecker;
         }
 
-        public async Task<PermissionDto> GetAsync(string id)
+        public async Task<PermissionDto?> GetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return null;
+                throw new ArgumentNullException(nameof(id));
 
             var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
             dto.Module = dto.ModuleId != null 
@@ -132,7 +133,7 @@ namespace Shesha.Permissions
         [HttpPut, HttpPost] // ToDo: temporary - Allow HttpPost because permission can be created from edit mode
         public async Task<PermissionDto> UpdateAsync(PermissionDto permission)
         {
-            if (permission?.Id == emptyId)
+            if (permission.Id == emptyId)
             {
                 permission.Id = null;
                 return await CreateAsync(permission);
@@ -149,7 +150,7 @@ namespace Shesha.Permissions
                 VersionStatus = ConfigurationItemVersionStatus.Live,
             };
 
-            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id, dbp);
+            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id.NotNull(), dbp);
 
             return ObjectMapper.Map<PermissionDto>(res);
         }
@@ -168,7 +169,7 @@ namespace Shesha.Permissions
         }
 
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string term)
+        public Task<List<AutocompleteItemDto>> AutocompleteAsync(string? term)
         {
             term = (term ?? "").ToLower();
             

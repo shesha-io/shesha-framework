@@ -52,7 +52,7 @@ namespace Shesha.Services
         /// <param name="refListId">Reference list identifier</param>
         /// <param name="value">Value of the <see cref="ReferenceListItem"/></param>
         /// <returns></returns>
-        string GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value);
+        string? GetItemDisplayText(ReferenceListIdentifier refListId, Int64? value);
 
         /// <summary>
         /// Decompose <paramref name="value"/> into list of items. Is used for MultiValueReferenceLists

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { TypeAndLocation } from "./models";
+import { EOL, TypeAndLocation } from "./models";
 import { trimSuffix } from "../string";
 import { TypeImport } from "@/interfaces/metadata";
 
@@ -36,6 +36,6 @@ export class TypesImporter {
     generateImports(){
         return Array.from(this.#imports.entries())
             .map(([filePath, types]) => `import { ${Array.from(types).join(', ')} } from '${TypesImporter.cleanupFileNameForImport(filePath)}';`)
-            .join('\n');            
+            .join(EOL);
     }
 }

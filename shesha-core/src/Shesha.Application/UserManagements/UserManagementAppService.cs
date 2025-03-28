@@ -1,13 +1,14 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Linq.Extensions;
-using Abp.Runtime.Validation;
 using Shesha.Authorization.Users;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Persons;
+using Shesha.Reflection;
 using Shesha.UserManagements.Configurations;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -50,6 +51,11 @@ namespace Shesha.UserManagements
             var validationResults = new List<ValidationResult>();
             var supportedPasswordResetMethods = new List<int>();
 
+            if (!registrationSettings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.UserName))
+                validationResults.Add(new ValidationResult("Username is mandatory"));
+            if (registrationSettings.UserEmailAsUsername && string.IsNullOrWhiteSpace(input.EmailAddress))
+                validationResults.Add(new ValidationResult("Email Address is mandatory"));
+
             if (input.TypeOfAccount == null)
                 validationResults.Add(new ValidationResult("Type of account is mandatory"));
 
@@ -68,8 +74,7 @@ namespace Shesha.UserManagements
             if (await EmailAlreadyInUseAsync(input.EmailAddress, null))
                 validationResults.Add(new ValidationResult("Specified email already used by another person"));
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of
@@ -91,8 +96,9 @@ namespace Shesha.UserManagements
             var defaultMethods = supportedPasswordResetMethods.Count > 0 ? supportedPasswordResetMethods.Sum() : 0;
 
             // Creating User Account to enable login into the application
+            var userName = registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName;
             User user = await _userManager.CreateUserAsync(
-                registrationSettings.UserEmailAsUsername ? input.EmailAddress : input.UserName,
+                userName.NotNull(),
                 input.TypeOfAccount?.ItemValue == (long)RefListTypeOfAccount.Internal,
                 input.Password,
                 input.PasswordConfirmation,
@@ -140,7 +146,7 @@ namespace Shesha.UserManagements
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> CompleteRegistrationAsync(long userId)
+        public async Task<string?> CompleteRegistrationAsync(long userId)
         {
             var userRegistration = await _userRegistration.FirstOrDefaultAsync(e => e.UserId == userId);
             if (userRegistration == null)

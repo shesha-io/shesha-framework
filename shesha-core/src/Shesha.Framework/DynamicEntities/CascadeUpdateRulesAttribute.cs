@@ -1,13 +1,4 @@
-﻿using Abp.Dependency;
-using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
-using Shesha.EntityHistory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Shesha.DynamicEntities
 {
@@ -32,9 +23,9 @@ namespace Shesha.DynamicEntities
         /// </summary>
         public bool DeleteUnreferenced { get; set; }
 
-        public Type CascadeEntityCreator { get; set; }
+        public Type? CascadeEntityCreator { get; set; }
 
-        public CascadeUpdateRulesAttribute(bool canCreate = false, bool canUpdate = false,  bool deleteUnreferenced = false, Type cascadeEntityCreator = null)
+        public CascadeUpdateRulesAttribute(bool canCreate = false, bool canUpdate = false, bool deleteUnreferenced = false, Type? cascadeEntityCreator = null)
         {
             CanUpdate = canUpdate;
             CanCreate = canCreate;

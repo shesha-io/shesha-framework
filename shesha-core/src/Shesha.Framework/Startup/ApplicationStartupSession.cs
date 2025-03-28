@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -27,10 +28,10 @@ namespace Shesha.Startup
         /// <summary>
         /// Gets or sets the logger.
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public ApplicationStartupDto PreviousStartup { get; private set; }
-        public ApplicationStartupDto CurrentStartup { get; private set; }
+        public ApplicationStartupDto? PreviousStartup { get; private set; }
+        public ApplicationStartupDto? CurrentStartup { get; private set; }
         public bool AllAssembliesStayUnchanged { get; private set; }
 
         private List<ApplicationStartupAssemblyDto> _unchangedAssemblies;
@@ -143,13 +144,16 @@ namespace Shesha.Startup
                 var assemblies = await LogAssembliesAsync(startup);
                 await uow.CompleteAsync();
 
-                CurrentStartup = MapStartupToDto(startup, assemblies);
-                FillUnchangedAssemblies();
-                return CurrentStartup;
+                var startupDto = MapStartupToDto(startup, assemblies);
+                FillUnchangedAssemblies(startupDto);
+
+                CurrentStartup = startupDto;
+
+                return startupDto;
             }
         }
 
-        private void FillUnchangedAssemblies() 
+        private void FillUnchangedAssemblies(ApplicationStartupDto startup) 
         {
             // don't fill the list if previous startup is missing or not full and successful
             if (PreviousStartup == null || PreviousStartup.MigrationsDisabled || PreviousStartup.BootstrappersDisabled || PreviousStartup.Status != Domain.Enums.ApplicationStartupStatus.Success) 
@@ -159,7 +163,7 @@ namespace Shesha.Startup
                 return;
             }
                 
-            _unchangedAssemblies = CurrentStartup.Assemblies.Where(curr => 
+            _unchangedAssemblies = startup.Assemblies.Where(curr => 
                 PreviousStartup.Assemblies.Any(prev => prev.FileName == curr.FileName && 
                     prev.FileVersion == curr.FileVersion && 
                     prev.ProductVersion == curr.ProductVersion &&
@@ -168,22 +172,20 @@ namespace Shesha.Startup
                 )
                 .ToList();
             
-            AllAssembliesStayUnchanged = _unchangedAssemblies.Count() == CurrentStartup.Assemblies.Count() &&
-                CurrentStartup.Assemblies.Count() == PreviousStartup.Assemblies.Count();
+            AllAssembliesStayUnchanged = _unchangedAssemblies.Count() == startup.Assemblies.Count() &&
+                startup.Assemblies.Count() == PreviousStartup.Assemblies.Count();
         }
 
         private ApplicationStartupDto MapStartupToDto(ApplicationStartup startup, List<ApplicationStartupAssembly> assemblies)
         {
-            return startup != null
-                ? new ApplicationStartupDto()
+            return new ApplicationStartupDto()
                 {
                     Id = startup.Id,
                     Status = startup.Status,
                     MigrationsDisabled = startup.MigrationsDisabled,
                     BootstrappersDisabled = startup.BootstrappersDisabled,
                     Assemblies = assemblies.Select(a => MapAssemblyToDto(a)).ToList(),
-                }
-                : null;
+                };
         }
 
         private ApplicationStartupAssemblyDto MapAssemblyToDto(ApplicationStartupAssembly assembly)
@@ -233,9 +235,9 @@ namespace Shesha.Startup
             }
         }
 
-        private async Task<ApplicationStartupDto> GetPreviousStartupDetailsAsync()
+        private async Task<ApplicationStartupDto?> GetPreviousStartupDetailsAsync()
         {
-            ApplicationStartupDto result = null;
+            ApplicationStartupDto? result = null;
             using (var uow = _uowManager.Begin()) 
             {
                 var prevStartup = await _startupRepository.GetAll().OrderByDescending(s => s.StartedOn).FirstOrDefaultAsync();

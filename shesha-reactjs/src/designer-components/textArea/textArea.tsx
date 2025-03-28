@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
+import { ConfigProvider, Input } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import {
@@ -62,7 +62,6 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    // const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
     const dimensions = model?.dimensions;
     const border = model?.border;
     const font = model?.font;
@@ -121,8 +120,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       ...shadowStyles
     });
 
-    // const jsStyle = getStyle(model.style, allData.data);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, ...jsStyle });
 
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
@@ -133,7 +131,12 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       allowClear: model.allowClear,
       variant: model?.border?.hideBorder ? 'borderless' : undefined,
       size: model?.size,
-      style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
+      style: {
+        ...finalStyle,
+        ...((!finalStyle?.marginBottom || finalStyle.marginBottom === '0px' || finalStyle.marginBottom === 0 || finalStyle.marginBottom === '0')
+          ? { marginBottom: model?.showCount ? '16px' : '0px' }
+          : {})
+      },
       spellCheck: model.spellCheck,
     };
 
@@ -165,14 +168,26 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
           ) : model.readOnly ? (
             <ReadOnlyDisplayFormItem value={value} />
           ) : (
-            <Input.TextArea
-              rows={2}
-              {...textAreaProps}
-              disabled={model.readOnly}
-              {...customEvents}
-              value={value}
-              onChange={onChangeInternal}
-            />
+            <ConfigProvider
+              theme={{
+                components: {
+                  Input: {
+                    fontFamily: model?.font?.type,
+                    fontSize: model?.font?.size,
+                    fontWeightStrong: Number(fontStyles.fontWeight)
+                  },
+                },
+              }}
+            >
+              <Input.TextArea
+                rows={2}
+                {...textAreaProps}
+                disabled={model.readOnly}
+                {...customEvents}
+                value={value}
+                onChange={onChangeInternal}
+              />
+            </ConfigProvider>
           );
         }}
       </ConfigurableFormItem>
@@ -182,7 +197,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const textAreaModel: ITextAreaComponentProps = {
       ...model,
       label: 'Text Area',
-      autoSize: true,
+      autoSize: false,
       showCount: false,
       allowClear: false,
     };

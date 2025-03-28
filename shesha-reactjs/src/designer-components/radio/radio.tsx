@@ -5,15 +5,19 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IRadioProps } from './utils';
 import { IToolboxComponent } from '@/interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migrateCustomFunctions,
+  migratePropertyName,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-
+import { getEventHandlers } from '@/components/formDesigner/components/utils';
 
 interface IEnhancedRadioProps extends Omit<IRadioProps, 'style'> {
   style?: string;
@@ -28,43 +32,62 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {
+    const allData = useAvailableConstantsData();
     const { style, ...restProps } = model;
 
     const { data: formData } = useFormData();
 
     return (
       <ConfigurableFormItem model={restProps}>
-        {(value, onChange) => <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChange} />}
+        {(value, onChange) => {
+          const customEvents = getEventHandlers(model, allData);
+          const onChangeInternal = (e: any) => {
+            if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
+            if (typeof onChange === 'function') onChange(e);
+          };
+
+          const onFocusInternal = (e: any) => {
+            if (e.target) customEvents.onFocus({ ...e, currentTarget: { value: e.target.value } });
+          };
+
+          const onBlurInternal = (e: any) => {
+            if (e.target) customEvents.onBlur({ ...e, currentTarget: { value: e.target.value } });
+          };
+
+          return (
+            <RadioGroup {...restProps} style={getStyle(style, formData)} value={value} onChange={onChangeInternal} onFocus={onFocusInternal} onBlur={onBlurInternal} />
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
 
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
-  migrator: m => m
-    .add<IEnhancedRadioProps>(0, prev => ({
-      ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'values',
-      direction: prev['direction'] ?? 'horizontal',
-    }))
-    .add<IEnhancedRadioProps>(1, prev => {
-      return {
+  migrator: (m) =>
+    m
+      .add<IEnhancedRadioProps>(0, (prev) => ({
         ...prev,
-        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-      };
-    })
-    .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
-    .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
-    .add<IEnhancedRadioProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IEnhancedRadioProps>(6, (prev) => {
-      const styles: IInputStyles = {
-        style: prev.style
-      };
+        dataSourceType: prev['dataSourceType'] ?? 'values',
+        direction: prev['direction'] ?? 'horizontal',
+      }))
+      .add<IEnhancedRadioProps>(1, (prev) => {
+        return {
+          ...prev,
+          referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+        };
+      })
+      .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
+      .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
+      .add<IEnhancedRadioProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      .add<IEnhancedRadioProps>(6, (prev) => {
+        const styles: IInputStyles = {
+          style: prev.style,
+        };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-  ,
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      }),
   linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
 

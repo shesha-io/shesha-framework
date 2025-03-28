@@ -21,8 +21,8 @@ export const DebugPanel: FC<DebugPanelProps> = (props) => {
                     <pre>{JSON.stringify(props.formData, null, 2)}</pre>
                 </Col>
             </CollapsiblePanel>
-            {contexts.map((ctx) =>
-                <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{ color: 'gray' }}>({ctx.id})</span></>} expandIconPosition='start' ghost key={ctx.id}>
+            {contexts.map((ctx, index) =>
+                <CollapsiblePanel header={<>{ctx.name}: {ctx.description} <span style={{ color: 'gray' }}>({ctx.id})</span></>} expandIconPosition='start' ghost key={index}>
                     <Col span={24}>
                         <pre>{JSON.stringify(ctx.getData(), null, 2)}</pre>
                     </Col>

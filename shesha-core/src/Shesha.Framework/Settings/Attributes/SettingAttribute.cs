@@ -10,7 +10,7 @@ namespace Shesha.Settings
     {
         public string Name { get; set; }
         public bool IsClientSpecific { get; set; }
-        public string EditorFormName { get; set; }
+        public string? EditorFormName { get; set; }
         public bool IsUserSpecific { get; set; }
 
         public SettingAttribute(string name) : this(name, false, null, false) 
@@ -25,7 +25,7 @@ namespace Shesha.Settings
         { 
         }
 
-        public SettingAttribute(string name, bool isClientSpecific = false, string editorFormName = null, bool isUserSpecific = false)
+        public SettingAttribute(string name, bool isClientSpecific = false, string? editorFormName = null, bool isUserSpecific = false)
         {
             Name = name;
             IsClientSpecific = isClientSpecific;

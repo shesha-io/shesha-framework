@@ -17,14 +17,6 @@ namespace Shesha.Services.Urls
             PathBase = request?.PathBase;
         }
 
-        public LinkGeneratorState(string scheme, string host, int port, string pathBase = default) 
-        {
-            Scheme = scheme;
-            Host = host;
-            Port = port;
-            PathBase = pathBase;
-        }
-
         public LinkGeneratorState() 
         { 
 

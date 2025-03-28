@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
 using Abp.UI;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
@@ -14,6 +13,8 @@ using Shesha.Extensions;
 using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
+using Shesha.Reflection;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -69,11 +70,15 @@ namespace Shesha.Notifications
             // Step 2: Check for Parsed Override Channels
             if (type.ParsedOverrideChannels.Any())
             {
-                var overrideChannels = await _notificationChannelRepository
-                    .GetAll()
-                    .Where(channel => type.ParsedOverrideChannels.Contains(
-                        new NotificationChannelIdentifier(channel.Module.Name, channel.Name)))
-                    .ToListAsync();
+                var overrideChannels = new List<NotificationChannelConfig>();
+                foreach (var channel in type.ParsedOverrideChannels) 
+                {
+                    // TODO: check versioned query
+                    var dbChannel = await _notificationChannelRepository.GetAll().Where(new ByNameAndModuleSpecification<NotificationChannelConfig>(channel.Name, channel.Module).ToExpression())
+                        .FirstOrDefaultAsync();
+                    if (dbChannel != null)
+                        overrideChannels.Add(dbChannel);
+                }
 
                 return overrideChannels;
             }
@@ -91,6 +96,7 @@ namespace Shesha.Notifications
             if (selectedNotifications == null)
                 return new();
 
+            // TODO: check versioned query
             var liveChannels = _notificationChannelRepository
                 .GetAll()
                 .Where(channel => channel.IsLast && channel.VersionStatus == ConfigurationItemVersionStatus.Live);
@@ -137,8 +143,7 @@ namespace Shesha.Notifications
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var newCopy = new NotificationTypeConfig();
             newCopy.Name = input.Name;
@@ -151,7 +156,7 @@ namespace Shesha.Notifications
             newCopy.Origin = newCopy;
 
             // notification specific props
-            newCopy.CopyNotificationSpecificPropsFrom(src);
+            newCopy.CopyNotificationSpecificPropsFrom(src.NotNull());
 
             newCopy.Normalize();
 

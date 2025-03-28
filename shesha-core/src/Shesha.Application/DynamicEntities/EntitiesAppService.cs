@@ -50,7 +50,8 @@ namespace Shesha.DynamicEntities
 
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
+            var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
+            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
         [HttpGet]
@@ -63,10 +64,6 @@ namespace Shesha.DynamicEntities
                     throw new EntityTypeNotFoundException(entityType);
 
                 var typeName = entityConfig.EntityType.FullName;
-
-                //var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
-                //if (!(config?.GenerateAppService ?? true))
-                //    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -92,7 +89,7 @@ namespace Shesha.DynamicEntities
                 var convertedInput = Activator.CreateInstance(convertedInputType) ?? throw new Exception($"Failed to create instance of type '{convertedInputType.FullName}'");
                 AutoMapper.Map(input, convertedInput);
 
-                var task = (Task)method.Invoke(appService, new object[] { convertedInput });
+                var task = method.Invoke<Task>(appService, [convertedInput]).NotNull();
                 await task.ConfigureAwait(false);
 
                 var resultProperty = task.GetType().GetProperty("Result");
@@ -120,12 +117,6 @@ namespace Shesha.DynamicEntities
                 var entityConfig = _entityConfigStore.Get(entityType);
                 if (entityConfig == null)
                     throw new EntityTypeNotFoundException(entityType);
-
-                /* we MUST NOT disable it here
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == entityConfig.EntityType.FullName);
-                if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {entityConfig.EntityType.FullName}");
-                */
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -156,12 +147,6 @@ namespace Shesha.DynamicEntities
                     throw new EntityTypeNotFoundException(input.EntityType);
 
                 var typeName = entityConfig.EntityType.FullName;
-
-                /* we MUST NOT disable it here
-                var config = _entityConfigRepository.GetAll().FirstOrDefault(x => (x.Namespace + "." + x.ClassName) == typeName || x.TypeShortAlias == typeName);
-                if (!(config?.GenerateAppService ?? true))
-                    throw new NotSupportedException($"Application service is not configured for entity of type {typeName}");
-                */
 
                 var appServiceType = entityConfig.ApplicationServiceType;
 
@@ -198,16 +183,21 @@ namespace Shesha.DynamicEntities
                     if (objectExecutionNode.SubFields != null)
                     {
                         var root = objectExecutionNode.SubFields.FirstOrDefault(); // field itself e.g. '*List'
-                        var listResponse = (root as ObjectExecutionNode).SubFields;
-                        var itemsFieldName = StringHelper.ToCamelCase(nameof(PagedResultDto<EntityDto<Guid>>.Items));
-                        var itemsArray = listResponse.OfType<ArrayExecutionNode>().FirstOrDefault(f => f.Name == itemsFieldName);
-                        if (itemsArray != null)
+                        var listResponse = root is ObjectExecutionNode rootExecutionNode
+                            ? rootExecutionNode.SubFields
+                            : null;
+                        if (listResponse != null) 
                         {
-                            var rows = itemsArray.Items.OfType<ObjectExecutionNode>();
-                            return rows != null
-                                ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
-                                : [];
-                        }
+                            var itemsFieldName = StringHelper.ToCamelCase(nameof(PagedResultDto<EntityDto<Guid>>.Items));
+                            var itemsArray = listResponse.OfType<ArrayExecutionNode>().Single(f => f.Name == itemsFieldName);
+                            if (itemsArray != null && itemsArray.Items != null)
+                            {
+                                var rows = itemsArray.Items.OfType<ObjectExecutionNode>();
+                                return rows != null
+                                    ? rows.Select(row => row.ToValue() as Dictionary<string, object?>).WhereNotNull()
+                                    : [];
+                            }
+                        }                        
                     }
                 }
             }
@@ -254,7 +244,7 @@ namespace Shesha.DynamicEntities
                 throw new ArgumentException($"Property `{input.PropertyName}` not found in the type `{input.EntityType}`");
 
             var reordererType = typeof(IEntityReorderer<,,>).MakeGenericType(entityConfig.EntityType, entityConfig.IdType, property.PropertyType.GetUnderlyingTypeIfNullable());
-            var reorderer = IocManager.Resolve(reordererType) as IEntityReorderer;
+            var reorderer = IocManager.Resolve(reordererType).ForceCastAs<IEntityReorderer>();
 
             return await reorderer.ReorderAsync(input, property);
         }

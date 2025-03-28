@@ -3,7 +3,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
-using Shesha.Authorization.Users;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Bootstrappers;
@@ -22,8 +21,6 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
     {
         private readonly IScheduledJobManager _jobManager;
         private readonly IRepository<ScheduledJob, Guid> _jobRepo;
-
-        public IRepository<User, Int64> UserRepository { get; set; }
 
         /// <summary>
         /// Default constructor
@@ -80,7 +77,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         {
             var triggerService = IocManager.Resolve<IRepository<ScheduledJobTrigger, Guid>>();
             Guid jobId;
-            string jobType = null;
+            string? jobType = null;
 
             using (var uow = UnitOfWorkManager.Begin())
             {

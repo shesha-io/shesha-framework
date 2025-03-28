@@ -8,7 +8,7 @@ namespace Shesha.DynamicEntities.Dtos
     /// </summary>
     public class BaseEntitySyncResponse
     {
-        public string Accessor { get; set; }
+        public string? Accessor { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         public SyncStatus Status { get; set; }
     }

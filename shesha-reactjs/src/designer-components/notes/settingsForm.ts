@@ -119,6 +119,19 @@ export const getSettings = (data: any) => {
                       propertyName: 'ownerId',
                       label: 'Owner Id',
                       jsSetting: true
+                    }
+                  ]
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: dataTabId,
+                  readOnly: false,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
+                      propertyName: 'hidden',
+                      label: 'hide'
                     },
                     {
                       id: nanoid(),

@@ -1,5 +1,4 @@
-﻿using Abp.Configuration;
-using Abp.Extensions;
+﻿using Abp.Extensions;
 using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Reflection;
@@ -87,7 +86,7 @@ namespace Shesha.Settings
                     ? propType.GetGenericArguments()[0]
                     : propType.GetElementType();
 
-                var format = paramType.IsClass
+                var format = paramType.NotNull().IsClass
                     ? paramType.IsEntityType()
                         ? ArrayFormats.EntityReference
                         : paramType.IsJsonEntityType()

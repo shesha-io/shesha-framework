@@ -8,7 +8,6 @@ using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using static Castle.MicroKernel.ModelBuilder.Descriptors.InterceptorDescriptor;
 
 namespace Shesha.NHibernate.UoW
 {
@@ -26,20 +25,20 @@ namespace Shesha.NHibernate.UoW
         /// NH session
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP006:Implement IDisposable", Justification = $"Disposed in {nameof(DisposeUow)}")]
-        private ISession _session;
+        private ISession? _session;
 
         /// <summary>
         /// Active transaction
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("IDisposableAnalyzers.Correctness", "IDISP006:Implement IDisposable", Justification = $"Disposed in {nameof(DisposeUow)}")]
-        private ITransaction _transaction;
+        private ITransaction? _transaction;
 
         /// <summary>
         /// Returns current session or starts a new one is missing and <paramref name="startNewIfMissing"/> is true
         /// </summary>
         /// <param name="startNewIfMissing"></param>
         /// <returns></returns>
-        public ISession GetSession(bool startNewIfMissing = true)
+        public ISession? GetSessionOrNull(bool startNewIfMissing = true)
         {
             if (_session == null && startNewIfMissing)
             {
@@ -52,19 +51,21 @@ namespace Shesha.NHibernate.UoW
             return _session;
         }
 
+        public ISession GetSession()
+        {
+            return GetSessionOrNull() ?? throw new SessionException("Session is not available");
+        }
 
         /// <summary>
         /// <see cref="NhUnitOfWork"/> uses this DbConnection if it's set.
         /// This is usually set in tests.
         /// </summary>
-        public DbConnection DbConnection { get; set; }
+        public DbConnection? DbConnection { get; set; }
 
         /// <summary>
         /// Entity history helper
         /// </summary>
-        public EntityHistoryHelperBase EntityHistoryHelper { get; set; }
-
-        private readonly SheshaNHibernateModule _nhModule;
+        public EntityHistoryHelperBase EntityHistoryHelper { get; set; } = default!;
 
         /// <summary>
         /// Creates a new instance of <see cref="NhUnitOfWork"/>.
@@ -74,17 +75,13 @@ namespace Shesha.NHibernate.UoW
             ISessionFactory sessionFactory,
             IConnectionStringResolver connectionStringResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
-            IUnitOfWorkFilterExecuter filterExecuter,
-
-            SheshaNHibernateModule nhModule)
+            IUnitOfWorkFilterExecuter filterExecuter)
             : base(
                   connectionStringResolver,
                   defaultOptions,
                   filterExecuter)
         {
             _sessionFactory = sessionFactory;
-
-            _nhModule = nhModule;
         }
 
         /// <summary>

@@ -1,11 +1,12 @@
-import { EllipsisConfig } from 'antd/lib/typography/Base';
+
+import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 import { IBorderValue } from '../_settings/utils/border/interfaces';
-import { IFontValue } from '../_settings/utils/font/interfaces';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
-import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
+import { IFontValue } from '../_settings/utils/font/interfaces';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
+import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 
 type LevelType = 1 | 2 | 3 | 4 | 5;
 
@@ -59,34 +60,38 @@ export interface ITypographyProps {
   underline?: boolean;
   keyboard?: boolean;
   italic?: boolean;
-  styles?: CSSProperties;
-  contentDisplay?: ContentDisplay;
+  type?: BaseType;
+  style?: CSSProperties;
+}
+
+export interface ITextTypographyProps extends IConfigurableFormComponent {
+  textType: 'span' | 'paragraph' | 'title';
+  content: string;
+  contentType?: ContentType;
+  contentDisplay: ContentDisplay;
+  color?: string;
+  backgroundColor?: string;
+  level?: LevelType | TypographyFontSize;
+  fontSize?: TypographyFontSize;
+  padding?: TypographyPaddingSize;
   dataType?: 'string' | 'date-time' | 'number' | 'boolean';
   dateFormat?: string;
   numberFormat?: string;
+  code?: boolean;
+  italic?: boolean;
+  copyable?: boolean;
+  delete?: boolean;
+  ellipsis?: boolean;
+  mark?: boolean;
+  underline?: boolean;
+  keyboard?: boolean;
+  strong?: boolean;
   value?: any;
   textAlign?: string;
-  level?: LevelType | TypographyFontSize;
-  textType: 'span' | 'paragraph' | 'title';
-  content?: string;
-  contentType?: ContentType;
-  color?: string;
-  backgroundColor?: string;
-  fontSize?: TypographyFontSize;
-  padding?: TypographyPaddingSize;
   border?: IBorderValue;
-  hideBorder?: boolean;
-  borderSize?: number;
-  borderRadius?: number;
-  borderColor?: string;
-  fontColor?: string;
-  font?: IFontValue;
   shadow?: IShadowValue;
-  dimensions?: IDimensionsValue;  
+  font?: IFontValue;
   background?: IBackgroundValue;
-  strong?: boolean;
-
-}
-
-export interface ITextTypographyProps extends ITypographyProps, IConfigurableFormComponent {
+  dimensions?: IDimensionsValue;
+  styles?: CSSProperties;
 }

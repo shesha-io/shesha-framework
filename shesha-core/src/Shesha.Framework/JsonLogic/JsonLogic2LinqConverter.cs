@@ -11,6 +11,7 @@ using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -45,36 +46,48 @@ namespace Shesha.JsonLogic
 
         private delegate Expression Binder(Expression left, Expression right);
 
+        private Expression Reduce(Expression? acc, Expression right, Binder binder)
+        {
+            return acc == null 
+                ? right 
+                : binder(acc, right);
+        }
+
         private Expression CombineExpressions<T>(JToken[] tokens, Binder binder, ParameterExpression param) 
         {
-            Expression acc = null;
+            if (!tokens.Any())
+                throw new ArgumentException($"tokens list must not be empty", nameof(tokens));
 
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
-
+            Expression? acc = null;
             foreach (var argument in tokens)
             {
                 var parsedArgument = ParseTree<T>(argument, param);
-                acc = bind(acc, parsedArgument);
+                acc = Reduce(acc, parsedArgument, binder);
             }
 
-            return acc;
+            return acc ?? throw new Exception("Failed to combine linq expressions");
         }
 
         private Expression CombineExpressions<T>(Expression[] expressions, Binder binder, ParameterExpression param)
         {
-            Expression acc = null;
+            if (!expressions.Any())
+                throw new ArgumentException($"expressions list must not be empty", nameof(expressions));
 
-            Expression bind(Expression acc, Expression right) => acc == null ? right : binder(acc, right);
-
+            Expression? acc = null;
             foreach (var expression in expressions)
             {
-                acc = bind(acc, expression);
+                acc = Reduce(acc, expression, binder);
             }
 
-            return acc;
+            return acc ?? throw new Exception("Failed to combine linq expressions");
         }
 
-        private Expression ParseTree<T>(
+        private Expression ParseTree<T>(JToken rule, ParameterExpression param)
+        {
+            return ParseTreeOrNull<T>(rule, param) ?? throw new JsonLogicParsingFailedException("Expression parsing returns null", rule);
+        }
+
+        private Expression? ParseTreeOrNull<T>(
             JToken rule,
             ParameterExpression param)
         {
@@ -118,7 +131,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair, 
                                 pair => 
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -188,7 +201,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair, 
                                 pair => 
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -258,7 +271,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair,
                                 pair =>
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -328,7 +341,7 @@ namespace Shesha.JsonLogic
                             return Compare<T>(param, @operator.Arguments, pair => pair,
                                 pair =>
                                 {
-                                    Expression expr = null;
+                                    Expression? expr = null;
 
                                     #region datetime
                                     // try to compare var and datetime const (normal order)
@@ -432,6 +445,8 @@ namespace Shesha.JsonLogic
                                 throw new Exception($"{JsOperators.Var} operator must contain exactly one argument");
 
                             var name = GetStringValue(@operator.Arguments.First());
+                            if (string.IsNullOrWhiteSpace(name))
+                                throw new JsonLogicParsingFailedException($"Name is mandatory for '{JsOperators.Var}' operator", rule);
 
                             return ExpressionExtensions.GetMemberExpression(param, name);
                         }
@@ -461,7 +476,7 @@ namespace Shesha.JsonLogic
                                 return CombineExpressions<T>(arrExpressions, Expression.OrElse, param);
                             }
                             else {
-                                var containsMethod = typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) });
+                                var containsMethod = typeof(string).GetRequiredMethod(nameof(string.Contains), [typeof(string)]);
 
                                 var arg1 = ParseTree<T>(@operator.Arguments[0], param);
                                 var arg2 = ParseTree<T>(@operator.Arguments[1], param);
@@ -476,7 +491,7 @@ namespace Shesha.JsonLogic
 
                     case JsOperators.EndsWith:
                         {
-                            var endsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) });
+                            var endsWithMethod = typeof(string).GetRequiredMethod(nameof(string.EndsWith), [typeof(string)]);
 
                             if (@operator.Arguments.Count() != 2)
                                 throw new Exception($"{JsOperators.EndsWith} operator require two arguments");
@@ -494,7 +509,7 @@ namespace Shesha.JsonLogic
                         {
                             // note: now it supports only strings
                             // todo: add check
-                            var startsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) });
+                            var startsWithMethod = typeof(string).GetRequiredMethod(nameof(string.StartsWith), [typeof(string)]);
 
                             if (@operator.Arguments.Count() != 2)
                                 throw new Exception($"{JsOperators.StartsWith} operator require two arguments");
@@ -583,7 +598,7 @@ namespace Shesha.JsonLogic
                             {
                                 case "day": 
                                     {
-                                        var addMethod = typeof(DateTime).GetMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
+                                        var addMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.Add), [ typeof(TimeSpan) ]);
                                         var timeSpan = TimeSpan.FromDays(number.Value);
                                         return Expression.Call(
                                             date,
@@ -593,7 +608,7 @@ namespace Shesha.JsonLogic
                                     }
                                 case "week": 
                                     {
-                                        var addMethod = typeof(DateTime).GetMethod(nameof(DateTime.Add), new Type[] { typeof(TimeSpan) });
+                                        var addMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.Add), [ typeof(TimeSpan) ]);
                                         var timeSpan = TimeSpan.FromDays(number.Value * 7);
                                         return Expression.Call(
                                             date,
@@ -603,7 +618,7 @@ namespace Shesha.JsonLogic
                                     }
                                 case "month": 
                                     {
-                                        var addMonthsMethod = typeof(DateTime).GetMethod(nameof(DateTime.AddMonths), new Type[] { typeof(int) });
+                                        var addMonthsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddMonths), [ typeof(int) ]);
                                         return Expression.Call(
                                             date,
                                             addMonthsMethod,
@@ -612,7 +627,7 @@ namespace Shesha.JsonLogic
                                     }
                                 case "year":
                                     {
-                                        var addYearsMethod = typeof(DateTime).GetMethod(nameof(DateTime.AddYears), new Type[] { typeof(int) });
+                                        var addYearsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddYears), [ typeof(int) ]);
                                         return Expression.Call(
                                             date,
                                             addYearsMethod,
@@ -629,7 +644,7 @@ namespace Shesha.JsonLogic
                                 throw new Exception($"{JsOperators.Upper} operator require 1 argument");
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
-                            var toUpperMethod = typeof(string).GetMethod(nameof(string.ToUpper), new Type[] { });
+                            var toUpperMethod = typeof(string).GetRequiredMethod(nameof(string.ToUpper), []);
                             return Expression.Call(arg, toUpperMethod);
                         }
                     case JsOperators.Lower:
@@ -638,7 +653,7 @@ namespace Shesha.JsonLogic
                                 throw new Exception($"{JsOperators.Lower} operator require 1 argument");
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
-                            var toLowerMethod = typeof(string).GetMethod(nameof(string.ToLower), new Type[] { });
+                            var toLowerMethod = typeof(string).GetRequiredMethod(nameof(string.ToLower), []);
                             return Expression.Call(arg, toLowerMethod);
                         }
                     default:
@@ -649,11 +664,11 @@ namespace Shesha.JsonLogic
             return null;
         }
 
-        private string GetAsString(JToken token) 
+        private string? GetAsString(JToken token) 
         {
             if (token is JValue value)
             {
-                return value.Value.ToString();
+                return value.Value?.ToString();
             }
             else
                 throw new NotSupportedException();
@@ -671,7 +686,7 @@ namespace Shesha.JsonLogic
                 throw new NotSupportedException();
         }
 
-        private bool TryCompareMemberAndDateTime(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, out Expression expression)
+        private bool TryCompareMemberAndDateTime(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, [NotNullWhen(true)]out Expression? expression)
         {
             expression = null;
             if (IsDateTimeMember(left) &&
@@ -685,7 +700,7 @@ namespace Shesha.JsonLogic
             return false;
         }
 
-        private bool TryCompareMemberAndDate(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, out Expression expression)
+        private bool TryCompareMemberAndDate(Expression left, Expression right, Func<DateTime, DateTime> dateConverter, Binder binder, [NotNullWhen(true)] out Expression? expression)
         {
             expression = null;
             if (IsDateMember(left) &&
@@ -699,7 +714,7 @@ namespace Shesha.JsonLogic
             return false;
         }
 
-        private bool TryCompareMemberAndTime(Expression left, Expression right, Func<TimeSpan, TimeSpan> timeConverter, Binder binder, out Expression expression)
+        private bool TryCompareMemberAndTime(Expression left, Expression right, Func<TimeSpan, TimeSpan> timeConverter, Binder binder, [NotNullWhen(true)] out Expression? expression)
         {
             expression = null;
             if (IsTimeMember(left) && right.NodeType == ExpressionType.Constant)
@@ -784,7 +799,7 @@ namespace Shesha.JsonLogic
             if (!(expression is MemberExpression memberExpr) || expression.Type.GetUnderlyingTypeIfNullable() != typeof(DateTime))
                 return false;
 
-            var dataTypeAttribute = memberExpr.Member.GetAttribute<DataTypeAttribute>();
+            var dataTypeAttribute = memberExpr.Member.GetAttributeOrNull<DataTypeAttribute>();
             return dataTypeAttribute?.DataType == DataType.Date;
         }
 
@@ -818,7 +833,7 @@ namespace Shesha.JsonLogic
             if (!(expression is MemberExpression memberExpr) || expression.Type.GetUnderlyingTypeIfNullable() != typeof(DateTime))
                 return false;
 
-            var dataTypeAttribute = memberExpr.Member.GetAttribute<DataTypeAttribute>();
+            var dataTypeAttribute = memberExpr.Member.GetAttributeOrNull<DataTypeAttribute>();
             return dataTypeAttribute == null || dataTypeAttribute?.DataType == DataType.DateTime;
         }
 
@@ -831,7 +846,7 @@ namespace Shesha.JsonLogic
         {
             if (a.Type.GetUnderlyingTypeIfNullable() == typeof(Guid) && b.Type == typeof(string))
             {
-                var toGuidMethod = typeof(StringHelper).GetMethod(nameof(StringHelper.ToGuid), new Type[] { typeof(string) });
+                var toGuidMethod = typeof(StringHelper).GetRequiredMethod(nameof(StringHelper.ToGuid), [typeof(string)]);
 
                 b = Expression.Call(
                     null,
@@ -856,7 +871,7 @@ namespace Shesha.JsonLogic
                         throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
                 }
                 else
-                    if (constExpr.Type == typeof(string) && int.TryParse((string)constExpr.Value, out var intValue)) 
+                    if (constExpr.Type == typeof(string) && int.TryParse((string?)constExpr.Value, out var intValue)) 
                         numericConstToConvert = Expression.Constant(intValue);
             }
             if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Int64) && constExpr.Value != null)
@@ -870,7 +885,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string)) 
                 {
-                    if (double.TryParse((string)constExpr.Value, out var doubleValue))
+                    if (double.TryParse((string?)constExpr.Value, out var doubleValue))
                         numericConstToConvert = Expression.Constant(doubleValue);
                 } else
                     numericConstToConvert = Expression.Constant(Convert.ToDouble(constExpr.Value));
@@ -879,7 +894,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (decimal.TryParse((string)constExpr.Value, out var decimalValue))
+                    if (decimal.TryParse((string?)constExpr.Value, out var decimalValue))
                         numericConstToConvert = Expression.Constant(decimalValue);
                 }
                 else
@@ -889,7 +904,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (Single.TryParse((string)constExpr.Value, out var singleValue))
+                    if (Single.TryParse((string?)constExpr.Value, out var singleValue))
                         numericConstToConvert = Expression.Constant(singleValue);
                 }
                 else
@@ -899,7 +914,7 @@ namespace Shesha.JsonLogic
             {
                 if (constExpr.Type == typeof(string))
                 {
-                    if (byte.TryParse((string)constExpr.Value, out var byteValue))
+                    if (byte.TryParse((string?)constExpr.Value, out var byteValue))
                         numericConstToConvert = Expression.Constant(byteValue);
                 }
                 else
@@ -911,7 +926,7 @@ namespace Shesha.JsonLogic
         {
             if (a.Type == typeof(TimeSpan) && b.Type == typeof(Int64))
             {
-                var fromSecondsMethod = typeof(TimeSpan).GetMethod(nameof(TimeSpan.FromSeconds), new Type[] { typeof(double) });
+                var fromSecondsMethod = typeof(TimeSpan).GetRequiredMethod(nameof(TimeSpan.FromSeconds), new Type[] { typeof(double) });
                 
                 b = Expression.Call(
                     null,
@@ -1015,7 +1030,7 @@ namespace Shesha.JsonLogic
             return pairs;
         }
 
-        private string GetStringValue(JToken arg)
+        private string? GetStringValue(JToken arg)
         {
             if (arg == null)
                 return null;
@@ -1031,7 +1046,7 @@ namespace Shesha.JsonLogic
         /// </summary>
         /// <param name="rule"></param>
         /// <returns></returns>
-        public OperationProps GetOperation(JToken rule)
+        public OperationProps? GetOperation(JToken rule)
         {
             if (rule is JObject ruleObj)
             {
@@ -1039,7 +1054,7 @@ namespace Shesha.JsonLogic
                 var operationName = p.Name;
                 var operationArguments = (p.Value is JArray jArrayArgs)
                     ? jArrayArgs.ToArray()
-                    : new JToken[] { p.Value };
+                    : [p.Value];
                 return new OperationProps
                 {
                     Name = operationName,
@@ -1055,7 +1070,7 @@ namespace Shesha.JsonLogic
             return TryGetOperator(rule, out var _);
         }
 
-        public bool TryGetOperator(JToken rule, out OperationProps @operator) 
+        public bool TryGetOperator(JToken rule, [NotNullWhen(true)] out OperationProps? @operator) 
         {
             if (!(rule is JObject ruleObj) || ruleObj.Properties().Count() != 1) 
             {
@@ -1067,7 +1082,7 @@ namespace Shesha.JsonLogic
             var operationName = p.Name;
             var operationArguments = (p.Value is JArray jArrayArgs)
                 ? jArrayArgs.ToArray()
-                : new JToken[] { p.Value };
+                : [p.Value];
 
             @operator = new OperationProps { 
                 Name = operationName,
@@ -1077,7 +1092,7 @@ namespace Shesha.JsonLogic
         }
 
         /// inheritedDoc
-        public Expression<Func<T, bool>> ParseExpressionOf<T>(string rule) 
+        public Expression<Func<T, bool>>? ParseExpressionOf<T>(string rule) 
         {
             if (string.IsNullOrWhiteSpace(rule))
                 return null;
@@ -1089,7 +1104,7 @@ namespace Shesha.JsonLogic
         }
         
         /// inheritedDoc
-        public Expression<Func<T, bool>> ParseExpressionOf<T>(JObject rule)
+        public Expression<Func<T, bool>>? ParseExpressionOf<T>(JObject rule)
         {
             if (rule.IsNullOrEmpty())
                 return null;
@@ -1105,7 +1120,7 @@ namespace Shesha.JsonLogic
             return query;
         }
 
-        public Func<T, bool> ParsePredicateOf<T>(string rule) 
+        public Func<T, bool>? ParsePredicateOf<T>(string rule) 
         {
             if (string.IsNullOrWhiteSpace(rule))
                 return null;
@@ -1116,31 +1131,31 @@ namespace Shesha.JsonLogic
             return ParsePredicateOf<T>(jsonLogic);
         }
 
-        public Func<T, bool> ParsePredicateOf<T>(JObject rule)
+        public Func<T, bool>? ParsePredicateOf<T>(JObject rule)
         {
             if (rule.IsNullOrEmpty())
                 return null;
 
-            var query = ParseExpressionOf<T>(rule);
+            var query = ParseExpressionOf<T>(rule).NotNull();
             return query.Compile();
         }
 
         private Expression TrimStringMember(MemberExpression member) 
         {
-            var trimMethod = typeof(string).GetMethod(nameof(string.Trim), new Type[] { });
+            var trimMethod = typeof(string).GetRequiredMethod(nameof(string.Trim), []);
 
             return Expression.Call(member, trimMethod);
         }
 
         public bool EvaluatePredicateInternal<T>(T model, string predicate)
         {
-            var expression = ParsePredicateOf<T>(predicate);
+            var expression = ParsePredicateOf<T>(predicate).NotNull();
             return expression.Invoke(model);
         }
 
         public bool EvaluatePredicate(object model, string predicate)
         {
-            var method = this.GetType().GetMethod(nameof(EvaluatePredicateInternal));
+            var method = this.GetType().GetRequiredMethod(nameof(EvaluatePredicateInternal));
             var modelType = model.GetType();
             var genericMethod = method.MakeGenericMethod(modelType);
 

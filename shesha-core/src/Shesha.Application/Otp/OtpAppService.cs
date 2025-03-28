@@ -1,9 +1,7 @@
 ﻿using Abp.Dependency;
-using Abp.Net.Mail;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
-using Shesha.Sms;
 using System.Threading.Tasks;
 
 namespace Shesha.Otp

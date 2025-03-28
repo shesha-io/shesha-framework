@@ -40,7 +40,7 @@ namespace Shesha.DynamicEntities.Json
             }
             else
             {
-                throw new JsonSerializationException($"Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {value.GetType().FullName}.");
+                throw new JsonSerializationException($"Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {value?.GetType().FullName}.");
             }
 
             writer.WriteValue(text);

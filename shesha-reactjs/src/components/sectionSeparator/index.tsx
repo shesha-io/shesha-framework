@@ -12,7 +12,6 @@ export interface ISectionSeparatorProps {
   titleStyle?: CSSProperties;
   tooltip?: string;
   inline?: boolean;
-  dashed?: boolean;
   lineColor?: string;
   lineThickness?: number;
   lineWidth?: string;
@@ -21,14 +20,15 @@ export interface ISectionSeparatorProps {
   marginBottom?: string | number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
-  fontSize?: string | number;
+  fontSize?: string;
+  lineType?: string;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   id,
   labelAlign = 'left',
   inline,
-  dashed,
+  lineType = 'solid',
   lineColor,
   lineThickness,
   lineWidth,
@@ -39,7 +39,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   tooltip,
   title,
   titleMargin,
-  marginBottom
+  marginBottom,
 }) => {
   const { styles } = useStyles();
   const titleRef = useRef<HTMLDivElement>(null);
@@ -55,14 +55,14 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
 
   const borderStyle: CSSProperties = {
     '--border-thickness': `${lineThickness ?? 2}px`,
-    '--border-style': dashed ? 'dashed' : 'solid',
+    '--border-style': lineType,
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign,
     marginBottom: marginBottom || '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
-    borderBottom: inline ? `${lineThickness || 2}px ${dashed ? 'dashed' : 'solid'} ${lineColor || styles.primaryColor}` : 'none',
+    borderBottom: inline ? `${lineThickness || 2}px ${lineType} ${lineColor || styles.primaryColor}` : 'none',
   };
 
   const getLineStyles = (isLeft: boolean) => {

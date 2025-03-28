@@ -4,10 +4,10 @@ import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IInputStyles, useForm, useSheshaApplication } from '@/providers';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
-import { executeCustomExpression, getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
+import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -20,7 +20,7 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from '../textField/utils';
+import { defaultStyles } from './utils';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
@@ -33,9 +33,6 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     const { formMode } = useForm();
     const { solidBackground = true, referenceListId, showReflistName = true } = model;
 
-    const { data: formData } = useFormData();
-    const { globalState } = useGlobalState();
-
 
     const localStyle = getStyle(model.style, allData.data);
     const dimensions = model?.dimensions;
@@ -46,14 +43,12 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, localStyle), [border, localStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-
     useEffect(() => {
-
       const fetchStyles = async () => {
         const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
           ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
@@ -65,14 +60,12 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
               return URL.createObjectURL(blob);
             }) : '';
 
-        const style = await getBackgroundStyle(background, localStyle, storedImageUrl);
+        const style = getBackgroundStyle(background, localStyle, storedImageUrl);
         setBackgroundStyles(style);
       };
 
       fetchStyles();
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
-
-    const isVisibleByCondition = executeCustomExpression(model?.customVisibility, true, formData, globalState);
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders, localStyle]);
 
 
     const styling = JSON.parse(model.stylingBox || '{}');
@@ -85,12 +78,13 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
-      ...shadowStyles
+      ...shadowStyles,
+      ...localStyle
     });
 
-    const style = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+    const style = removeUndefinedProps({ ...additionalStyles, justifyContent: model?.font?.align, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
 
-    if (!isVisibleByCondition && formMode !== 'designer') return null;
+    if (model?.hidden && formMode !== 'designer') return null;
 
     if (formMode === 'designer' && !referenceListId) {
       return (

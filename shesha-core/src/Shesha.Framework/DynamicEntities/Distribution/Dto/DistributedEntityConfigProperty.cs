@@ -33,7 +33,7 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Data type
         /// </summary>
-        public string DataType { get; set; }
+        public string? DataType { get; set; }
 
         /// <summary>
         /// Data format
@@ -73,7 +73,7 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// <summary>
         /// Items type (applicable for arrays)
         /// </summary>
-        public DistributedEntityConfigProperty ItemsType { get; set; }
+        public DistributedEntityConfigProperty? ItemsType { get; set; }
 
         /// <summary>
         /// If true, indicates that current property is a framework-related (e.g. <see cref="ISoftDelete.IsDeleted"/>, <see cref="IHasModificationTime.LastModificationTime"/>)

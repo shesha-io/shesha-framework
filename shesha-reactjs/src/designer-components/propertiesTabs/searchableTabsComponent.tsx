@@ -6,6 +6,7 @@ import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
 import { ITabsComponentProps } from './models';
+import { useTheme } from '@/providers';
 
 interface SearchableTabsProps {
     model: ITabsComponentProps;
@@ -19,10 +20,11 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const { styles } = useStyles();
+    const { theme } = useTheme();
 
     const newFilteredTabs = tabs
         .map((tab: any) => {
-            const filteredComponents = tab.children ? tab.children : filterDynamicComponents(tab.components, searchQuery, data);
+            const filteredComponents = tab.children ? tab.children : filterDynamicComponents(tab.components, searchQuery, data, theme.application.primaryColor);
             const hasVisibleComponents = Array.isArray(filteredComponents)
                 ? filteredComponents.some(comp => !comp.hidden)
                 : !!filteredComponents;
@@ -79,6 +81,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, data }
                     type={model.tabType || 'card'}
                     tabPosition={model.position || 'top'}
                     items={newFilteredTabs}
+                    className={styles.content}
                 />
             }
         </>

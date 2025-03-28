@@ -120,36 +120,16 @@ export const getSettings = (data: any) => {
                                 },
                               ]
                             })
-                            .addSettingsInputRow(
-                              getBorderInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getBorderInputs()[4] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[0] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[1] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[2] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[3] as any
-                            )
-                            .addSettingsInputRow(
-                              getCornerInputs()[4] as any
-                            )
+                            .addContainer({
+                              id: 'borderStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getBorderInputs() as any
+                            })
+                            .addContainer({
+                              id: 'borderRadiusStyleRow',
+                              parentId: 'borderStylePnl',
+                              components: getCornerInputs() as any
+                            })
                             .toJson()
                           ]
                         }
@@ -273,15 +253,22 @@ export const getSettings = (data: any) => {
                                     propertyName: "background.position",
                                     dropdownOptions: positionOptions,
                                   },
-                                  {
-                                    type: 'radio',
-                                    id: 'backgroundStyleRow-repeat',
-                                    label: "Repeat",
-                                    hideLabel: true,
-                                    propertyName: "background.repeat",
-                                    buttonGroupOptions: repeatOptions,
-                                  }
                                 ]
+                              })
+                              .addSettingsInputRow({
+                                id: 'backgroundStyleRow-repeat',
+                                parentId: 'backgroundStyleRow',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [{
+                                  type: 'radio',
+                                  id: 'backgroundStyleRow-repeat-row-radio',
+                                  label: 'Repeat',
+                                  hideLabel: true,
+                                  propertyName: 'background.repeat',
+                                  inputType: 'radio',
+                                  buttonGroupOptions: repeatOptions,
+                                }],
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ],
@@ -310,7 +297,7 @@ export const getSettings = (data: any) => {
                                   id: 'shadowStyleRow-offsetX',
                                   label: 'Offset X',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   inputType: 'numberField',
                                   icon: "offsetHorizontalIcon",
                                   propertyName: 'shadow.offsetX',
@@ -320,7 +307,7 @@ export const getSettings = (data: any) => {
                                   id: 'shadowStyleRow-offsetY',
                                   label: 'Offset Y',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   inputType: 'numberField',
                                   icon: 'offsetVerticalIcon',
                                   propertyName: 'shadow.offsetY',
@@ -330,7 +317,7 @@ export const getSettings = (data: any) => {
                                   id: 'shadowStyleRow-blur',
                                   label: 'Blur',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   inputType: 'numberField',
                                   icon: 'blurIcon',
                                   propertyName: 'shadow.blurRadius',
@@ -340,7 +327,7 @@ export const getSettings = (data: any) => {
                                   id: 'shadowStyleRow-spread',
                                   label: 'Spread',
                                   hideLabel: true,
-                                  width: 60,
+                                  width: 80,
                                   inputType: 'numberField',
                                   icon: 'spreadIcon',
                                   propertyName: 'shadow.spreadRadius',
@@ -394,7 +381,6 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'style',
-                              hideLabel: true,
                               label: 'Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })

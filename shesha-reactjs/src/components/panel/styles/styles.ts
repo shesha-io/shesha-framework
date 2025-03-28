@@ -1,6 +1,14 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyles, panelHeadType, bodyStyle, hideCollapseContent }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
+  headerStyle = {} as CSSProperties,
+  panelHeadType,
+  bodyStyle = {} as CSSProperties,
+  hideCollapseContent,
+  isSimpleDesign,
+  ghost
+}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
 
@@ -29,7 +37,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     minHeight,
     maxWidth,
     maxHeight,
-    borderRadius,
+    borderTopLeftRadius = '8px',
+    borderTopRightRadius = '8px',
+    borderBottomLeftRadius = '8px',
+    borderBottomRightRadius = '8px',
     marginBottom,
     marginTop,
     marginLeft,
@@ -59,7 +70,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderColor: headerBorderColor,
     borderTopWidth: headerBorderTopWidth = panelHeadType === 'parent' ? '3px' : '',
     borderTopStyle: headerBorderTopStyle,
-    borderTopColor: headerBorderTopColor = panelHeadType === 'parent' ? token.colorPrimary : '',
+    borderTopColor: headerBorderTopColor,
     borderBottomWidth: headerBorderBottomWidth,
     borderBottomStyle: headerBorderBottomStyle,
     borderBottomColor: headerBorderBottomColor,
@@ -70,43 +81,36 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     borderLeftStyle: headerBorderLeftStyle,
     borderLeftColor: headerBorderLeftColor = panelHeadType === 'child' ? token.colorPrimary : '',
     borderRadius: headerBorderRadius,
+    paddingBottom: headerPaddingBottom = '8px',
+    paddingTop: headerPaddingTop = '8px',
+    paddingLeft: headerPaddingLeft = '0px',
+    paddingRight: headerPaddingRight = '8px',
+    overflow: headerOverflow,
     ...headerRest
-  } = headerStyles;
+  } = headerStyle;
 
-  const borderTopLeftRadius = borderRadius?.split(' ')[0] || 0;
-  const borderTopRightRadius = borderRadius?.split(' ')[1] || 0;
-  const borderBottomLeftRadius = borderRadius?.split(' ')[2] || 0;
-  const borderBottomRightRadius = borderRadius?.split(' ')[3] || 0;
+  const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
-         &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
-      ${borderWidth && '--ant-line-width: 0px !important;'}
-      --primary-color: ${token.colorPrimary};
-      --ant-collapse-content-padding: ${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft};
-      width: ${width};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
-      height: max-content;
-      min-height: ${minHeight};
-      max-height: ${maxHeight};
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+    --primary-color: ${token.colorPrimary}; 
+    ${hasBorder && '--ant-line-width: 0px !important;'}
+    --ant-collapse-header-bg: transparent !important;
+
+    > .ant-collapse-item {
+      display: flex;
+      flex-direction: column;
+      box-shadow: ${boxShadow};
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
       margin-bottom: ${marginBottom};
       margin-top: ${marginTop};
       margin-left: ${marginLeft};
       margin-right: ${marginRight};
-
-
-    .ant-collapse-item {
-      display: flex;
-      flex-direction: column;
-      box-shadow: ${boxShadow};
-      ${rest}
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
     }
-      
-    .ant-collapse-content-box {
+   
+    > .ant-collapse-item > .ant-collapse-content {
       ${rest}
       width: ${width};
       min-width: ${minWidth};
@@ -121,33 +125,43 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;
       padding-right: ${paddingRight} !important;
-      border-radius : 0 0 ${borderBottomLeftRadius} ${borderBottomRightRadius} !important;
+      border-radius : 0px 0px ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
       border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
       border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
       border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
       border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
-  }
 
-    .ant-collapse-header[aria-expanded="false"] {
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
+      > .ant-collapse-content-box {
+        --ant-collapse-content-padding: 0px !important;
+        padding: 0px !important;
+      }
     }
 
-    .ant-collapse-header[aria-expanded="true"] {
-      border-radius : ${borderTopLeftRadius} ${borderTopRightRadius} 0 0 !important;
+    > .ant-collapse-item > .ant-collapse-header[aria-expanded="false"] {
+      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
+    }
+    
+    > .ant-collapse-item > .ant-collapse-header[aria-expanded="true"] {
+      border-radius : ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius ?? '0px'} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius ?? '0px'} 0px 0px !important;
     }
 
-    .ant-collapse-header {
-        position: relative;
-        visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
-        background: ${headerBgImage || headerBgColor};
-        height: ${headerHeight};
-        min-height: ${headerMinHeight};
-        max-height: ${headerMaxHeight};
-        border-top: ${headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${headerBorderTopColor || headerBorderColor};
-        border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
-        border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
-        border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
-        ${headerRest}
+    > .ant-collapse-item > .ant-collapse-header {
+      ${headerRest}
+      position: relative;
+      visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
+      background: ${headerBgImage || headerBgColor};
+      height: ${headerHeight};
+      min-height: ${headerMinHeight};
+      max-height: ${headerMaxHeight};
+      border-top: ${headerBorderWidth || headerBorderTopWidth} ${headerBorderTopStyle || headerBorderStyle} ${headerBorderTopColor || headerBorderColor};
+      border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
+      border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
+      border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
+      padding-top: ${headerPaddingTop} !important;
+      padding-right: ${headerPaddingRight} !important;
+      padding-bottom: ${headerPaddingBottom} !important;
+      padding-left: ${headerPaddingLeft} !important;
+      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius};
 
       .ant-collapse-header-text {
         color: ${headerColor};
@@ -156,106 +170,89 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         font-size: ${fontSize};
         font-weight: ${fontWeight};
         align-self: center;
-        margin-left: 10px;
       }
 
       .ant-collapse-extra {
         align-self: center;
-        margin-right: 10px;
       }
 
       .ant-collapse-expand-icon {
         align-self: center;
+        margin-right: 8px;
       }
-
     }
 
     &.${prefixCls}-collapse-ghost {
-        > .${prefixCls}-collapse-item {
-          > .${prefixCls}-collapse-header {
-            border-bottom: 2px solid ${token.colorPrimary};
-            border-bottom-left-radius: unset;
-            border-bottom-right-radius: unset;
-            border-top: ${panelHeadType === 'parent' ? `${headerBorderTopWidth} solid var(--primary-color)` : 'none'};
-            border-left: ${panelHeadType === 'child' ? `${headerBorderTopWidth} solid  var(--primary-color)` : 'none'};
-            font-weight: ${fontWeight || 'bold'};
-          }
-          > .${prefixCls}-collapse-content {
-            > .${prefixCls}-collapse-content-box {
-              padding: 5px 0;
-            }
+      > .ant-collapse-item {
+        > .ant-collapse-header {
+          --ant-collapse-header-padding: 5px 0px !important;
+          border-bottom-left-radius: unset;
+          border-bottom-right-radius: unset;
+          border-bottom: 2px solid ${token.colorPrimary};
+          border-top: ${panelHeadType === 'parent' || panelHeadType === 'default' ? `3px solid var(--primary-color)` : 'none'};
+          border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
+          font-weight: ${fontWeight || '500'};
+        }
+        > .ant-collapse-content {
+          > .ant-collapse-content-box {
+            padding: 5px 0;
           }
         }
       }
-
-    `);
+    }
+  `);
 
   const shaSimpleDesign = cx(css`
-      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
-          display: none;
-      }
+    --primary-color: ${token.colorPrimary};
 
+    > .ant-collapse-item > .ant-collapse-header-text {
+      color: ${headerColor};
+      font-family: ${fontFamily};
+      text-align: ${textAlign};
+      font-size: ${fontSize};
+      font-weight: ${fontWeight};
+    }
+
+    &.${prefixCls}-collapse-ghost {
+      > .ant-collapse-item {
+        > .ant-collapse-header {
+          --ant-collapse-header-padding: ${headerStyle?.padding || '12px 16px'} !important;
+          padding: 12px 16px !important;
+          border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
+          border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
+          font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
+        }
+      }
+    }
+
+    > .ant-collapse-item > .${prefixCls}-collapse-content-box {
+      padding: 5px 0;
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};
       height: max-content;
       min-height: ${minHeight};
       max-height: ${maxHeight};
-      margin-bottom: ${marginBottom};
-      margin-top: ${marginTop};
-      margin-left: ${marginLeft};
-      margin-right: ${marginRight};
+      overflow: ${overflow ?? 'auto'};
+      padding-top: ${paddingTop} !important;
+      padding-bottom: ${paddingBottom} !important;
+      padding-left: ${paddingLeft} !important;
+      padding-right: ${paddingRight} !important;
+    }
 
-
-      .ant-collapse-header-text {
-        color: ${headerColor};
-        font-family: ${fontFamily};
-        text-align: ${textAlign};
-        font-size: ${fontSize};
-        font-weight: ${fontWeight};
-      }
-
-      --ant-line-width: 0px !important;
-      --primary-color: ${token.colorPrimary};
-      &.${prefixCls}-collapse-ghost {
-        > .${prefixCls}-collapse-item {
-          > .${prefixCls}-collapse-header {
-            padding: 12px 16px !important;
-            border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
-            border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
-            font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
-            font-weight: 'bold';
-          }
-         
-        }
-      }
-
-      .${prefixCls}-collapse-content-box {
-        padding: 5px 0;
-        width: ${width};
-        min-width: ${minWidth};
-        max-width: ${maxWidth};
-        height: max-content;
-        min-height: ${minHeight};
-        max-height: ${maxHeight};
-        overflow: ${overflow ?? 'auto'};
-        padding-top: ${paddingTop} !important;
-        padding-bottom: ${paddingBottom} !important;
-        padding-left: ${paddingLeft} !important;
-        padding-right: ${paddingRight} !important;
-      }
-
-      .ant-collapse-header {
-        border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
-        border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
-        font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
-        height: ${headerHeight};
-        min-height: ${headerMinHeight};
-        max-height: ${headerMaxHeight}
-        width: ${width};
-        min-width: ${minWidth};
-        max-width: ${maxWidth};
-        `);
+    > .ant-collapse-item > .ant-collapse-header {
+      visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
+      border-top: ${panelHeadType === 'parent' ? `3px solid var(--primary-color)` : 'none'};
+      border-left: ${panelHeadType === 'child' ? `3px solid  var(--primary-color)` : 'none'};
+      font-size: ${panelHeadType === 'parent' ? '13px' : '16px'};
+      height: ${headerHeight};
+      min-height: ${headerMinHeight};
+      max-height: ${headerMaxHeight}
+      width: ${width};
+      min-width: ${minWidth};
+      max-width: ${maxWidth};
+    }
+  `);
 
   return {
     shaCollapsiblePanel,

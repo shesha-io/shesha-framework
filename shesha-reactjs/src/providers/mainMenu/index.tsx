@@ -119,7 +119,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
 
   useDeepCompareEffect(() => {
     dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
-  }, [{...allData}]); // use spread to get the values of the ObservableProxy fields
+  }, [allData]);
 
 
   useEffect(() => {

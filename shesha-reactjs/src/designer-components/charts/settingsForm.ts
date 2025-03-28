@@ -52,7 +52,7 @@ export const getSettings = (data: any) => {
                   inputType: 'dropdown',
                   dropdownOptions: [
                     { label: 'URL', value: 'url' },
-                    { label: 'Entity Type', value: 'entityType' }
+                    { label: 'Entity type', value: 'entityType' }
                   ],
                   validate: { required: true },
                   defaultValue: 'entityType',
@@ -119,10 +119,10 @@ export const getSettings = (data: any) => {
                           label: 'Chart Type',
                           inputType: 'dropdown',
                           dropdownOptions: [
-                            { label: 'Pie Chart', value: 'pie' },
-                            { label: 'Line Chart', value: 'line' },
-                            { label: 'Bar Chart', value: 'bar' },
-                            { label: 'Polar Area Chart', value: 'polarArea' },
+                            { label: 'Pie chart', value: 'pie' },
+                            { label: 'Line chart', value: 'line' },
+                            { label: 'Bar chart', value: 'bar' },
+                            { label: 'Polar area chart', value: 'polarArea' },
                           ],
                           validate: { required: true },
                           defaultValue: 'line',

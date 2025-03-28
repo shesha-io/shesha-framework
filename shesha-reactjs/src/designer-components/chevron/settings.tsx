@@ -14,7 +14,7 @@ import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 
 interface IChevronSettingsState extends IChevronProps { }
 
-const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
+export const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
   const { values, model, onValuesChange } = useSettingsForm<IChevronProps>();
   const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();

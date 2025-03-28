@@ -13,7 +13,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Packed items
         /// </summary>
-        public List<ConfigurationItemsPackageItem> Items { get; set; } = new List<ConfigurationItemsPackageItem>();
+        public List<ConfigurationItemsPackageItem> Items { get; set; } = new();
 
         private ZipArchive _zip;
 
@@ -37,7 +37,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Module name
         /// </summary>
-        public string ModuleName { get; set; }
+        public required string ModuleName { get; set; }
 
         /// <summary>
         /// Front-end Application Key
@@ -47,17 +47,17 @@ namespace Shesha.ConfigurationItems.Distribution.Models
         /// <summary>
         /// Item type
         /// </summary>
-        public string ItemType { get; set; }
+        public required string ItemType { get; set; }
 
         /// <summary>
         /// File name in the zip archive
         /// </summary>
-        public string FileName { get; set; }
+        public required string FileName { get; set; }
 
         /// <summary>
         /// Stream accessor
         /// </summary>
-        public Func<Stream> StreamGetter { get; set; }
+        public required Func<Stream> StreamGetter { get; set; }
 
         /// <summary>
         /// Corresponding importer
