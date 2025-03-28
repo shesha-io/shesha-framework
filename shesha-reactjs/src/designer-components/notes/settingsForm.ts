@@ -9,7 +9,6 @@ export const getSettings = (data: any) => {
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
-  const styleRouterId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
