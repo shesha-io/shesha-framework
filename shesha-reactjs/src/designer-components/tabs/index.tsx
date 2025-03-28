@@ -173,7 +173,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           },
         }}
       >
-        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content}/>
+        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={tabPosition} items={items} className={styles.content} />
       </ConfigProvider>
     );
   },

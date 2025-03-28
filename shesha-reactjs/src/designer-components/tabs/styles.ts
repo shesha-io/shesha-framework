@@ -160,7 +160,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
             }
 
             .ant-tabs-nav {
-                --ant-tabs-ink-bar-color: ${tabLineColor} !important;
+                --ant-tabs-ink-bar-color: ${tabLineColor || token.colorPrimary} !important;
                 margin: 0;
                 width: ${isTop || isBottom ? width : 'auto'};
                 height: ${isTop || isBottom ? 'auto' : height};
