@@ -104,8 +104,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
       .add<INumberFieldComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<INumberFieldComponentProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-      .add<INumberFieldComponentProps>(5, (prev) => {
+      .add<INumberFieldComponentProps>(4, (prev) => {
         const styles: IInputStyles = {
           size: prev.size,
           hideBorder: prev.hideBorder,
@@ -114,7 +113,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      }),
+      })
+      .add<INumberFieldComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     return {
