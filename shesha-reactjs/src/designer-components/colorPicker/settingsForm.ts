@@ -73,6 +73,14 @@ export const getSettings = (data: any) => {
                                         size: 'small',
                                         jsSetting: true,
                                         defaultValue: 'inherited',
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'hidden',
+                                        label: 'Hide',
+                                        parentId: styleRouterId,
+                                        type: 'switch',
+                                        jsSetting: true,
                                     }
                                 ]
                             })
@@ -131,7 +139,14 @@ export const getSettings = (data: any) => {
                                         label: 'Show Color Code',
                                         tooltip: 'Shows the color value (hex/rgb) alongside the color preview',
                                         jsSetting: true,
-                                    },
+                                    }
+                                ]
+                            })
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                parentId: mainSettingsTabId,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
                                     {
                                         id: nanoid(),
                                         propertyName: 'disabledAlpha',
@@ -163,14 +178,6 @@ export const getSettings = (data: any) => {
                                     components: [...new DesignerToolbarSettings()
                                         .addSettingsInput({
                                             id: nanoid(),
-                                            propertyName: 'hidden',
-                                            label: 'Hide',
-                                            parentId: styleRouterId,
-                                            inputType: 'switch',
-                                            jsSetting: true,
-                                        })
-                                        .addSettingsInput({
-                                            id: nanoid(),
                                             inputType: 'dropdown',
                                             propertyName: 'size',
                                             label: 'Size',
@@ -183,9 +190,24 @@ export const getSettings = (data: any) => {
                                                 { label: 'Large', value: 'large' }
                                             ],
                                         })
+                                        .toJson()
+                                    ]
+                                }
+                            })
+                            .addCollapsiblePanel({
+                                id: nanoid(),
+                                propertyName: 'marginPadding',
+                                label: 'Margin & Padding',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: styleRouterId,
+                                collapsible: 'header',
+                                content: {
+                                    id: nanoid(),
+                                    components: [...new DesignerToolbarSettings()
                                         .addStyleBox({
                                             id: nanoid(),
-                                            label: 'Margin Padding',
+                                            label: 'Margin & Padding',
                                             hideLabel: true,
                                             propertyName: 'stylingBox',
                                         })
@@ -211,7 +233,7 @@ export const getSettings = (data: any) => {
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'customStyles',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: styleRouterId,
@@ -247,7 +269,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'codeEditor',
-                                propertyName: 'onChangeCustom',
+                                propertyName: 'onChange',
                                 label: 'On Change',
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',

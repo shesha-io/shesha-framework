@@ -30,6 +30,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
             disabledAlpha={model.disabledAlpha}
             readOnly={model.readOnly}
             size={model.size}
+            {...model}
           />
         )}
       </ConfigurableFormItem>
