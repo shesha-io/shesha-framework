@@ -135,7 +135,7 @@ export const getSettings = (data: any) => {
               ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: appearanceTabId,
+                  parentId: eventsTabId,
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {

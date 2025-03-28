@@ -3,7 +3,7 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components';
-import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
 import { evaluateValue, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import NotesProvider from '@/providers/notes';
@@ -23,7 +23,6 @@ export interface INotesProps extends IConfigurableFormComponent {
   autoSize?: boolean;
   allowDelete?: boolean;
   onCreated?: string;
-  onUpdated?: string;
 }
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
@@ -32,12 +31,13 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   name: 'Notes',
   icon: <FormOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
     const httpClient = useHttpClient();
     const form = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { message } = App.useApp();
+
+    if (model.hidden) return null;
 
     const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
 

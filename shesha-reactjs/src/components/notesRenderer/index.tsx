@@ -22,7 +22,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({ autoSize, buttonPostion
 
   useEffect(() => {
     onCreated(notes);
-  },[isInProgress])
+  },[isInProgress]);
   
 
   return (
