@@ -52,15 +52,6 @@ export const getSettings = (data: any) => {
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                       inputs: [
                         {
-                          id: nanoid(),
-                          type: 'editModeSelector',
-                          propertyName: 'editMode',
-                          label: 'Edit Mode',
-                          parentId: commonTabId,
-                          defaultValue: 'inherited',
-                          jsSetting: true,
-                        },
-                        {
                           type: 'switch',
                           id: nanoid(),
                           propertyName: 'autoSize',
@@ -73,6 +64,22 @@ export const getSettings = (data: any) => {
                           propertyName: 'hidden',
                           label: 'Hide',
                           jsSetting: true
+                        }
+                      ]
+                    })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: commonTabId,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: 'editModeSelector',
+                          propertyName: 'editMode',
+                          label: 'Edit Mode',
+                          parentId: commonTabId,
+                          defaultValue: 'inherited',
+                          jsSetting: true,
                         }
                       ]
                     })
@@ -156,33 +163,32 @@ export const getSettings = (data: any) => {
             id: eventsTabId,
             components: [
               ...new DesignerToolbarSettings()
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onCreated',
-                  label: 'On Created',
-                  labelAlign: 'right',
-                  parentId: eventsTabId,
-                  tooltip: 'Triggered after successfully creating a new note',
+                  parentId: appearanceTabId,
                   readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  // wrapInTemplate: true,
-                  // templateSettings: {
-                  //   functionName: 'onCreated'
-                  // }
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onUpdated',
-                  label: 'On Updated',
-                  labelAlign: 'right',
-                  parentId: eventsTabId,
-                  tooltip: 'Triggered after successfully updating a note',
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  // wrapInTemplate: true,
-                  // templateSettings: {
-                  //   functionName: 'onUpdated'
-                  // }
+                  inputs: [
+                    {
+                      id: nanoid(),
+                      type: 'codeEditor',
+                      propertyName: 'onCreated',
+                      label: 'On Created',
+                      labelAlign: 'right',
+                      parentId: eventsTabId,
+                      tooltip: 'Triggered after successfully creating a new note',
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    },
+                    {
+                      id: nanoid(),
+                      type: 'codeEditor',
+                      propertyName: 'onUpdated',
+                      label: 'On Updated',
+                      labelAlign: 'right',
+                      parentId: eventsTabId,
+                      tooltip: 'Triggered after successfully updating a note',
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    }
+                  ]
                 })
                 .toJson()
             ]
