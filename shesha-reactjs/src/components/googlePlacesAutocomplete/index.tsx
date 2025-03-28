@@ -44,6 +44,8 @@ export interface IGooglePlacesAutocompleteProps {
   style?: CSSProperties;
   size?: SizeType;
   searchOptions?: PropTypes['searchOptions'];
+  onFocus?: (payload: any) => void;
+  onBlur?: (payload: string) => void;
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
@@ -63,6 +65,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   style,
   size,
   searchOptions,
+  onFocus
 }) => {
   const { styles } = useStyles();
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
@@ -182,6 +185,8 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   };
 
   const onBlur = () => setShowSuggestionsDropdownContainer(false);
+
+  const handleFocus = (event) => onFocus(event);
   return (
     // @ts-ignore
     <PlacesAutocomplete
@@ -224,6 +229,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                 tabIndex={tabIndex}
                 onKeyDown={onKeyDown}
                 onBlur={onBlur}
+                onFocus={handleFocus}
                 style={style}
                 size={size}
               />

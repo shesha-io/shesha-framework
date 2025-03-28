@@ -9,6 +9,7 @@ import {
   TypographyPaddingSize,
 } from './models';
 import { DATE_TIME_FORMATS } from '../dateField/utils';
+import { IStyleType } from '@/index';
 
 // Common date formats to support
 const SUPPORTED_DATE_FORMATS = [
@@ -64,7 +65,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string = 
   const datePattern =
     /\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/g;
 
-  return content.replace(datePattern, (match) => {
+  return content?.replace(datePattern, (match) => {
     if (isValidDate(match)) {
       return formatDate(match, dateFormat);
     }
@@ -83,4 +84,34 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
     default:
       return content;
   }
+};
+
+export const defaultStyles = (): IStyleType => {
+  return {
+    font: {
+      color: '#000',
+      type: 'Segoe UI',
+    },
+    background: { type: 'color', color: 'transparent' },
+    border: {
+      border: {
+        all: {
+          width: 1,
+          style: 'none',
+          color: '#d9d9d9',
+        },
+      },
+      radius: { all: 8 },
+      borderType: 'all',
+      radiusType: 'all',
+    },
+    dimensions: {
+      width: '100%',
+      height: '32px',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    },
+  };
 };

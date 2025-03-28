@@ -7,7 +7,6 @@ using Abp.IdentityFramework;
 using Abp.Json;
 using Abp.Organizations;
 using Abp.Runtime.Caching;
-using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -19,6 +18,7 @@ using Shesha.Configuration.Security;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Settings;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -242,8 +242,7 @@ namespace Shesha.Authorization.Users
                     validationResults.Add(new ValidationResult("Password Confirmation must be the same as Password"));
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             // 1. create user
             var user = new User()

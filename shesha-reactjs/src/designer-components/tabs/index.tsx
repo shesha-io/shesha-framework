@@ -160,7 +160,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         };
         tabItems.push(tab);
       });
-
       return tabItems;
     }, [tabs]);
 
@@ -179,12 +178,21 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     );
   },
   initModel: (model) => {
+    const id = nanoid();
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
       stylingBox: "{\"marginBottom\":\"5\"}",
       tabPosition: "top",
-      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], type: '' }],
+      tabs: [{
+        id: id,
+        name: 'Tab 1',
+        key: id,
+        title: 'Tab 1',
+        editMode: 'inherited',
+        selectMode: 'editable',
+        components: []
+      }],
     };
     return tabsModel;
   },
@@ -203,12 +211,13 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
     .add<ITabsComponentProps>(4, (prev) => {
       const newModel = migratePrevStyles(prev, defaultStyles);
+      const initialCardStyle = { ...defaultCardStyles, font: { ...defaultCardStyles.font, color: '#000000' } };
       return {
         ...newModel,
-        card: defaultCardStyles,
-        desktop: { ...newModel.desktop },
-        tablet: { ...newModel.tablet },
-        mobile: { ...newModel.mobile }
+        card: { ...initialCardStyle },
+        desktop: { ...newModel.desktop, card: { ...initialCardStyle } },
+        tablet: { ...newModel.tablet, card: { ...initialCardStyle } },
+        mobile: { ...newModel.mobile, card: { ...initialCardStyle } }
       };
     }),
   settingsFormMarkup: () => getSettings(),

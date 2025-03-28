@@ -35,18 +35,27 @@ export const getSettings = (data) => {
                 },
                 jsSetting: true,
               })
-              .addSettingsInput({
-                id: 'label-4c18-468c-89e1-60c002ce96c5',
-                propertyName: 'label',
-                label: 'Caption',
+              .addSettingsInputRow({
+                id: 'caption-tooltip-row',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
-              })
-              .addSettingsInput({
-                id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
-                inputType: 'textArea',
-                propertyName: 'tooltip',
-                label: 'Tooltip',
-                jsSetting: true,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'textField',
+                    id: 'label-4c18-468c-89e1-60c002ce96c5',
+                    propertyName: 'label',
+                    label: 'Caption',
+                    jsSetting: true,
+                    parentId: 's4gmBg31azZC0UjZjpfTm',
+                  },
+                  {
+                    id: 'tooltip-4c18-468c-89e1-60c002ce96c5',
+                    type: 'textArea',
+                    propertyName: 'tooltip',
+                    label: 'Tooltip',
+                    jsSetting: true,
+                  }
+                ]
               })
               .addSettingsInputRow({
                 id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
@@ -113,16 +122,6 @@ export const getSettings = (data) => {
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
             components: [...new DesignerToolbarSettings()
-              .addSettingsInput({
-                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                propertyName: 'buttonType',
-                label: 'Type',
-                validate: {
-                  required: true,
-                },
-                inputType: 'dropdown',
-                dropdownOptions: buttonTypes,
-              })
               .addPropertyRouter({
                 id: 'styleRouter',
                 propertyName: 'propertyRouter1',
@@ -138,6 +137,16 @@ export const getSettings = (data) => {
                 },
                 components: [
                   ...new DesignerToolbarSettings()
+                    .addSettingsInput({
+                      id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                      propertyName: 'buttonType',
+                      label: 'Type',
+                      validate: {
+                        required: true,
+                      },
+                      inputType: 'dropdown',
+                      dropdownOptions: buttonTypes,
+                    })
                     .addCollapsiblePanel({
                       id: 'fontStyleCollapsiblePanel',
                       propertyName: 'pnlFontStyle',
@@ -228,8 +237,8 @@ export const getSettings = (data) => {
                                 width: 85,
                                 propertyName: "dimensions.width",
                                 icon: "widthIcon",
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType) === "link";', _mode: 'code', _value: false } as any,
                                 tooltip: "You can use any unit (%, px, em, etc). px by default if without unit"
-
                               },
                               {
                                 type: 'textField',
@@ -286,20 +295,6 @@ export const getSettings = (data) => {
                               }
                             ]
                           })
-                          .addSettingsInput({
-                            id: 'predefinedSizes',
-                            parentId: 'dimensionsStylePnl',
-                            propertyName: 'size',
-                            label: 'Size',
-                            inputType: 'dropdown',
-                            width: '150px',
-                            hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                            dropdownOptions: [
-                              { value: 'small', label: 'Small' },
-                              { value: 'medium', label: 'Medium' },
-                              { value: 'large', label: 'Large' },
-                            ]
-                          })
                           .toJson()
                         ]
                       }
@@ -310,7 +305,7 @@ export const getSettings = (data) => {
                       label: 'Border',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  ["text", "link", "ghost", "dashed"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       parentId: 'styleRouter',
                       collapsible: 'header',
                       content: {
@@ -356,7 +351,7 @@ export const getSettings = (data) => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
-                      hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -467,15 +462,22 @@ export const getSettings = (data) => {
                                   propertyName: "background.position",
                                   dropdownOptions: positionOptions,
                                 },
-                                {
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat',
-                                  label: "Repeat",
-                                  hideLabel: true,
-                                  propertyName: "background.repeat",
-                                  buttonGroupOptions: repeatOptions,
-                                }
                               ]
+                            })
+                            .addSettingsInputRow({
+                              id: 'backgroundStyleRow-repeat',
+                              parentId: 'backgroundStyleRow',
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [{
+                                type: 'radio',
+                                id: 'backgroundStyleRow-repeat-radio',
+                                label: 'Repeat',
+                                hideLabel: true,
+                                propertyName: 'background.repeat',
+                                inputType: 'radio',
+                                buttonGroupOptions: repeatOptions,
+                              }],
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                             })
                             .toJson()
                         ],
@@ -504,7 +506,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-offsetX',
                                 label: 'Offset X',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 inputType: 'numberField',
                                 icon: "offsetHorizontalIcon",
                                 propertyName: 'shadow.offsetX',
@@ -514,7 +516,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-offsetY',
                                 label: 'Offset Y',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 inputType: 'numberField',
                                 icon: 'offsetVerticalIcon',
                                 propertyName: 'shadow.offsetY',
@@ -524,7 +526,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-blur',
                                 label: 'Blur',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 inputType: 'numberField',
                                 icon: 'blurIcon',
                                 propertyName: 'shadow.blurRadius',
@@ -534,7 +536,7 @@ export const getSettings = (data) => {
                                 id: 'shadowStyleRow-spread',
                                 label: 'Spread',
                                 hideLabel: true,
-                                width: 60,
+                                width: 80,
                                 inputType: 'numberField',
                                 icon: 'spreadIcon',
                                 propertyName: 'shadow.spreadRadius',

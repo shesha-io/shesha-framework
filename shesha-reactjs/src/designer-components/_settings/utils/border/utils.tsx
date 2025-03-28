@@ -12,13 +12,14 @@ import { addPx } from "../../utils";
 import { nanoid } from "@/utils/uuid";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
+import { humanizeString } from "@/utils/string";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
-    if (!input || jsStyle?.border) return {};
+    if (!input) return {};
 
     const style: React.CSSProperties = {};
-    const { all, top, right, bottom, left } = input?.border;
-
+    const border = input.border || {};
+    const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
     const handleBorderPart = (part, prefix: string) => {
         const hideBorder = input?.border?.[part]?.style === 'none';
@@ -27,21 +28,29 @@ export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties
         if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
     };
 
-    if (input.borderType === 'all') {
-        handleBorderPart(all, 'border');
-    } else {
-        handleBorderPart(top, 'borderTop');
-        handleBorderPart(right, 'borderRight');
-        handleBorderPart(bottom, 'borderBottom');
-        handleBorderPart(left, 'borderLeft');
+    if (!jsStyle.border) {
+        if (input.borderType === 'all') {
+            handleBorderPart(all, 'border');
+        } else {
+            handleBorderPart(top, 'borderTop');
+            handleBorderPart(right, 'borderRight');
+            handleBorderPart(bottom, 'borderBottom');
+            handleBorderPart(left, 'borderLeft');
+        }
     };
 
     if (input?.radius) {
         const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
         if (input?.radiusType === 'all') {
-            style.borderRadius = `${all ?? 8}px ${all ?? 8}px ${all ?? 8}px ${all ?? 8}px`;
+            style.borderTopRightRadius = `${all || 0}px`;
+            style.borderBottomRightRadius = `${all || 0}px`;
+            style.borderBottomLeftRadius = `${all || 0}px`;
+            style.borderTopLeftRadius = `${all || 0}px`;
         } else {
-            style.borderRadius = `${topLeft || all || 8}px ${topRight || all || 8}px ${bottomRight || all || 8}px ${bottomLeft || all || 8}px`;
+            style.borderTopRightRadius = `${topRight || 0}px`;
+            style.borderBottomRightRadius = `${bottomRight || 0}px`;
+            style.borderBottomLeftRadius = `${bottomLeft || 0}px`;
+            style.borderTopLeftRadius = `${topLeft || 0}px`;
         }
     };
 
@@ -96,13 +105,14 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
 
 export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
 
+    const borderProp = path ? `${path}.border.border` : 'border.border';
+
     return [...new DesignerToolbarSettings()
         .addSettingsInput({
             id: nanoid(),
             inputType: 'radio',
             label: 'Border Type',
             propertyName: `${path ? path + '.' : ''}border.borderType`,
-            defaultValue: 'all',
             buttonGroupOptions: borderConfigType,
         })
         .addSettingsInputRow({
@@ -127,12 +137,12 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     type: 'textField',
                     label: "Width",
                     hideLabel: true,
-                    propertyName: path ? `${path}.border.border.all.width` : `border.border.all.width`,
+                    propertyName: `${borderProp}.all.width`,
                 },
                 {
                     id: nanoid(),
                     label: "Style",
-                    propertyName: path ? `${path}.border.border.all.style` : `border.border.all.style`,
+                    propertyName: `${borderProp}.all.style`,
                     type: "dropdown",
                     hideLabel: true,
                     width: 60,
@@ -142,9 +152,8 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                 {
                     id: nanoid(),
                     label: `Color`,
-                    propertyName: path ? `${path}.border.border.all.color` : `border.border.all.color`,
+                    propertyName: `${borderProp}.all.color`,
                     type: "colorPicker",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     hideLabel: true,
                 }
             ]
@@ -180,12 +189,12 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                                 type: 'textField',
                                 label: "Width",
                                 hideLabel: true,
-                                propertyName: path ? `${path}.border.border.${side}.width` : `border.border.${side}.width`,
+                                propertyName: `${borderProp}.${side}.width`,
                             },
                             {
                                 id: nanoid(),
                                 label: "Style",
-                                propertyName: path ? `${path}.border.border.${side}.style` : `border.border.${side}.style`,
+                                propertyName: `${borderProp}.${side}.style`,
                                 type: "dropdown",
                                 hideLabel: true,
                                 width: 60,
@@ -195,7 +204,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                             {
                                 id: nanoid(),
                                 label: `Color`,
-                                propertyName: path ? `${path}.border.border.${side}.color` : `border.border.${side}.color`,
+                                propertyName: `${borderProp}.${side}.color`,
                                 type: "colorPicker",
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 hideLabel: true,
@@ -230,10 +239,11 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
-                    width: 65,
+                    width: 80,
                     defaultValue: 0,
                     type: 'numberField',
                     icon: 'ExpandOutlined',
+                    tooltip: 'Styles will apply to all corners',
                     propertyName: path ? `${path}.border.radius.all` : 'border.radius.all',
                 }
             ]
@@ -245,17 +255,18 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
             inline: true,
             readOnly: false,
             inputs: radiusCorners.map(cornerValue => {
-                const corner = cornerValue.value;
+                const corner = cornerValue.value as string;
 
                 return {
                     id: `borderRadiusStyleRow-${corner}`,
                     parentId: "borderStylePnl",
                     label: "Corner Radius",
                     hideLabel: true,
-                    width: 65,
+                    width: 80,
                     defaultValue: 0,
                     type: 'numberField',
                     icon: cornerValue.icon,
+                    tooltip: `${humanizeString(corner)} corner`,
                     propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
                 };
             })

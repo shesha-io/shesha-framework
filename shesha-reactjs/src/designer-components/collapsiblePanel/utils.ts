@@ -3,18 +3,24 @@ import { ICollapsiblePanelComponentProps } from "./interfaces";
 
 export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
     const bodyColor = prev.bodyColor || '#fff';
-    const { ghost, borderRadius, isSimpleDesign } = prev;
+    const { ghost, borderRadius } = prev;
 
     return {
         background: { type: 'color', color: bodyColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
         border: {
-            radiusType: 'all', borderType: 'all',
+            radiusType: 'all', borderType: 'custom',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
-                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { style: 'none' } },
+                    : {
+                        all: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        top: { width: '1px', color: '#d9d9d9', style: 'none' },
+                        bottom: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        left: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        right: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                    },
             },
-            radius: { all: borderRadius || 8, topLeft: isSimpleDesign || ghost ? '0' : borderRadius, topRight: isSimpleDesign || ghost ? '0' : borderRadius }
+            radius: { all: borderRadius || 8 }
         },
         shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
         position: { value: 'relative', top: 0, right: 0, bottom: 0, left: 0, offset: 'top' },
@@ -27,16 +33,23 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
     const { isSimpleDesign, ghost, borderRadius } = prev;
 
     return {
-        font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : 'bold', align: 'left', type: 'Arial' },
-        background: { type: 'color', color: headerBgColor, size: 'cover', position: 'center', repeat: 'repeat' },
+        font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '500', align: 'left', type: 'Segoe UI' },
+        background: { type: 'color', color: headerBgColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0', maxHeight: 'auto', minWidth: '0', maxWidth: 'auto' },
         border: {
-            radiusType: 'all', borderType: 'all',
+            radiusType: 'all',
+            borderType: 'custom',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
-                    : { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, bottom: { width: '0px' } },
+                    : {
+                        all: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        top: { width: '3px', color: 'var(--primary-color)', style: 'solid' },
+                        bottom: { width: '1px', color: '#d9d9d9', style: 'none' },
+                        left: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        right: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                    },
             },
-            radius: { all: borderRadius, bottomLeft: '0px', bottomRight: '0px', topLeft: isSimpleDesign || ghost ? '0px' : borderRadius || 8, topRight: isSimpleDesign || ghost ? '0px' : borderRadius || 8 }
+            radius: { all: borderRadius || 8 }
         },
         stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}'
     };

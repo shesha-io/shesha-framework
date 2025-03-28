@@ -1,7 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using Abp.Runtime.Validation;
 using Abp.UI;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
@@ -15,6 +14,7 @@ using Shesha.Notifications.Configuration;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
 using Shesha.Reflection;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -143,8 +143,7 @@ namespace Shesha.Notifications
                     );
             }
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             var newCopy = new NotificationTypeConfig();
             newCopy.Name = input.Name;

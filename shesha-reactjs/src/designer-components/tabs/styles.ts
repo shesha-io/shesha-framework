@@ -29,6 +29,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         paddingRight = '0px',
         paddingLeft = '0px',
         paddingBottom = '0px',
+        borderTopLeftRadius,
+        borderTopRightRadius,
+        borderBottomRightRadius,
+        borderBottomLeftRadius,
         overflow,
         fontSize,
         fontWeight,
@@ -46,6 +50,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         minHeight: cardMinHeight,
         maxWidth: cardMaxWidth,
         maxHeight: cardMaxHeight,
+        borderTopLeftRadius: cardTopLeftRadius,
+        borderTopRightRadius: cardTopRightRadius,
+        borderBottomRightRadius: cardBottomRightRadius,
+        borderBottomLeftRadius: cardBottomLeftRadius,
     } = cardStyles;
 
     const isLeft = position === 'left';
@@ -67,16 +75,6 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
         right: getBorder('borderRight'),
         default: `${borderWidth} ${borderStyle} ${borderColor}`,
     };
-
-    const borderTopLeftRadius = styles.borderRadius?.split(' ')[0] || 0;
-    const borderTopRightRadius = styles.borderRadius?.split(' ')[1] || 0;
-    const borderBottomRightRadius = styles.borderRadius?.split(' ')[2] || 0;
-    const borderBottomLeftRadius = styles.borderRadius?.split(' ')[3] || 0;
-
-    const cardTopLeftRadius = cardStyles.borderRadius?.split(' ')[0] || 0;
-    const cardTopRightRadius = cardStyles.borderRadius?.split(' ')[1] || 0;
-    const cardBottomRightRadius = cardStyles.borderRadius?.split(' ')[2] || 0;
-    const cardBottomLeftRadius = cardStyles.borderRadius?.split(' ')[3] || 0;
 
     const content = cx(
         'content',
@@ -118,6 +116,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
+                background-repeat: ${cardStyles.backgroundRepeat} !important;
+                background-size: ${cardStyles.backgroundSize} !important;
+                background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px` :

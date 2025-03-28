@@ -1,8 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities.Auditing;
-using Shesha.Domain.Attributes;
+﻿using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {

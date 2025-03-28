@@ -52,7 +52,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
     const {
       href: initialHref = '',
-      content = '',
+      content = 'Link',
       style,
       target,
       direction,
@@ -87,9 +87,12 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
           if (!hasChildren) {
             return (
-              <a href={href} target={target} className="sha-link" style={{ ...linkStyle, ...finalStyle }}>
-                {content}
-              </a>
+              <div style={{ ...linkStyle, ...finalStyle, width: '100%' }}>
+                <a href={href} target={target} className="sha-link">
+                  {content}
+                </a>
+              </div>
+
             );
           }
 
@@ -149,9 +152,9 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
         style: prev.style
       };
 
-        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-      })
-      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
+    .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
 };
 
 export default LinkComponent;

@@ -162,7 +162,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           theme={{
             components: {
               Select: {
-                fontSize: Number(style?.fontSize),
+                fontSize: Number(style?.fontSize ?? 14),
                 colorText: style?.color,
                 fontFamily: style?.fontFamily,
                 fontWeightStrong: Number(style.fontWeight)

@@ -78,13 +78,13 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     }
 
     [HttpGet]
-    public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string term, string selectedValue)
+    public async Task<List<AutocompleteItemDto>> EntityConfigAutocompleteAsync(bool? implemented, string? term, string? selectedValue)
     {
         var isPreselection = string.IsNullOrWhiteSpace(term) && !string.IsNullOrWhiteSpace(selectedValue);
         var models = await _entityConfigManager.GetMainDataListAsync(implemented: implemented);
 
         var entities = isPreselection
-            ? models.Where(e => e.Id == selectedValue.ToGuid()).ToList()
+            ? models.Where(e => e.Id == selectedValue.NotNull().ToGuid()).ToList()
             : models
             .Where(e => string.IsNullOrWhiteSpace(term)
                 || e.FullClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase)

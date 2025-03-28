@@ -10,6 +10,6 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         /// <summary>
         /// Settings
         /// </summary>
-        public virtual string Settings { get; set; }
+        public virtual string? Settings { get; set; }
     }
 }

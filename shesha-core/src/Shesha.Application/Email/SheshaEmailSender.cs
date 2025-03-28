@@ -114,6 +114,13 @@ namespace Shesha.Email
             NormalizeMail(mail);
             NormalizeMailSender(mail, smtpSettings);
 
+            if (mail.From == null || string.IsNullOrWhiteSpace(mail.From.Address)) 
+            {
+                Logger.Error("Attempt to send email using empty from address. Subject: " + mail.Subject);
+                return false;
+
+            }
+
             // check recipient before redirect
             if (!mail.To.Any() || mail.To[0].Address == "")
             {
@@ -180,11 +187,12 @@ namespace Shesha.Email
                 }
                 else
                 {
-                    mail.From = new MailAddress(
-                        smtpSettings.UserName,
-                        null,
-                        Encoding.UTF8
-                    );
+                    if (!string.IsNullOrWhiteSpace(smtpSettings.UserName))
+                        mail.From = new MailAddress(
+                            smtpSettings.UserName,
+                            null,
+                            Encoding.UTF8
+                        );
                 }
             }
         }

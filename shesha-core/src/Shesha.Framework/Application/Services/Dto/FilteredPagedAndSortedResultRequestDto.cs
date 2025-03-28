@@ -1,12 +1,11 @@
-﻿using Abp.Application.Services.Dto;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Shesha.Application.Services.Dto
 {
     /// <summary>
     /// Filtered, pages and sorted request DTO
     /// </summary>
-    public class FilteredPagedAndSortedResultRequestDto : PagedAndSortedResultRequestDto, IFilteredPagedAndSortedResultRequestDto
+    public class FilteredPagedAndSortedResultRequestDto : ShaFilteredPagedAndSortedResultRequestDto, IFilteredPagedAndSortedResultRequestDto
     {
         /// <summary>
         /// Filter string in JsonLogic format

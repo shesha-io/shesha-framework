@@ -17,12 +17,12 @@ namespace Shesha.Services.Settings.Dto
         /// <summary>
         /// Reference list name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// Label
         /// </summary>
-        public string Label { get; set; }
+        public string? Label { get; set; }
 
         /// <summary>
         /// Description
@@ -38,7 +38,7 @@ namespace Shesha.Services.Settings.Dto
         /// Data type of the value
         /// </summary>
         [StringLength(100)]
-        public string DataType { get; set; }
+        public required string DataType { get; set; }
 
         [StringLength(200)]
         public string? EditorFormName { get; set; }

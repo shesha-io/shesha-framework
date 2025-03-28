@@ -1,9 +1,7 @@
 ﻿using Castle.Core.Logging;
-using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Distribution
 {
@@ -30,7 +28,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Import result. If specified, all imported items will be linked to the corresponding import session
         /// </summary>
-        public ConfigurationPackageImportResult ImportResult { get; set; }
+        public ConfigurationPackageImportResult? ImportResult { get; set; }
 
         /// <summary>
         /// Cancellation token. Is used for termination of the import process 
@@ -40,7 +38,7 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <summary>
         /// Filter of items. Return true to import and false to skip import of the specified item
         /// </summary>
-        public Func<DistributedConfigurableItemBase, bool> ShouldImportItem { get; set; }
+        public Func<DistributedConfigurableItemBase, bool>? ShouldImportItem { get; set; }
 
         /// <summary>
         /// Logger

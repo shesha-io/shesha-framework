@@ -20,10 +20,22 @@ export const getSettings = (data: any) => {
                         title: 'Common',
                         id: 's4gmBg31azZC0UjZjpfTm',
                         components: [...new DesignerToolbarSettings()
+                            .addSectionSeparator({
+                                id: 's4gmBg31azZC0UjZjpfTm-filters-separator',
+                                propertyName: 'filtersSeparator',
+                                label: 'Filters',
+                                layout: 'horizontal',
+                                font: {
+                                    color: 'darkslategrey',
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            })
                             .addSettingsInput({
                                 inputType: 'filtersList',
                                 id: 's4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'filters',
+                                hideLabel: true,
                                 label: 'Filters',
                                 layout: 'horizontal',
                             })

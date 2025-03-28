@@ -56,42 +56,38 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const jsStyle = getStyle(model.style, allData.data);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
+    const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
+    const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+  
     const keyValueFunc: KayValueFunc = useCallback( (value: any, args: any) => {
-      if (model.valueFormat === 'entityReference') {
-        return Boolean(value) ? getValueByPropertyName(value, model.keyPropName || 'id') : null;
-      }
-      if (model.valueFormat === 'custom') {
+      if (model.valueFormat === 'custom' && model.keyValueFunc) 
         return executeExpression<string>(model.keyValueFunc, {...args, value}, null, null );
-      }
-      return value;
-    }, [model.valueFormat, model.keyValueFunc, model.keyPropName]);
+      if (model.valueFormat === 'entityReference') 
+        return value?.id;
+      return typeof(value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+    }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
-      if (model.valueFormat === 'entityReference') {
-        return Boolean(value)
-          ? {id: value.id, _displayName: value._displayName || getValueByPropertyName(value, model.displayPropName), _className: model.entityType}
+    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
+      if (model.valueFormat === 'entityReference')
+        return Boolean(item)
+          ? {id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType}
           : null;
-      }
-      if (model.valueFormat === 'custom') {
-        return executeExpression(model.outcomeValueFunc, {...args, item: value}, null, null );
-      }
-      return typeof(value) === 'object' 
-        ? getValueByPropertyName(value, model.keyPropName || 'id')
-        : value;
-    }, [model.valueFormat, model.outcomeValueFunc, model.keyPropName, model.entityType]);
+      if (model.valueFormat === 'custom' && model.outcomeValueFunc)
+        return executeExpression(model.outcomeValueFunc, {...args, item: item}, null, null );
+      return typeof(item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
+    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
 
     const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
-      if (model.displayValueFunc) {
+      if (model.displayValueFunc)
         return executeExpression(model.displayValueFunc, {...args, item: value}, null, null );
-      }
-      return (model.displayPropName
-        ? getValueByPropertyName(value, model.displayPropName)
-        : value?._displayName)  
-        || 'unknown'; 
-    }, [model.valueFormat, model.displayValueFunc, model.displayPropName]);
+      return getValueByPropertyName(value, displayPropName) || 'unknown'; 
+    }, [model.displayValueFunc, displayPropName]);
 
-    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any[]) => {
-      return executeExpression(model.filterKeysFunc, {value}, null, null );
+    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
+      const localValue = value?.length === 1 ? value[0] : value;
+      return Array.isArray(localValue)
+        ? { or : localValue.map(x => executeExpression(model.filterKeysFunc, {value: x}, null, null )) }
+        : executeExpression(model.filterKeysFunc, {value: localValue}, null, null );
     }, [model.filterKeysFunc]);
 
     return (
@@ -114,6 +110,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             style={finalStyle}
             value={value}
             onChange={onChangeInternal} 
+            allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
           />;
         }}
       </ConfigurableFormItem>
@@ -166,6 +163,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(7, (prev) => {
       return { 
         ...prev,
+        mode: prev.mode || 'single',
         entityType: prev.entityType || prev['entityTypeShortAlias'],
         valueFormat: prev.dataSourceType === 'entitiesList'
           ? prev['useRawValues'] ? 'simple' : 'entityReference'
@@ -173,9 +171,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         displayPropName: prev.dataSourceType === 'entitiesList' 
           ? prev['entityDisplayProperty'] 
           : prev['useRawValues']
-            ? 'displayText'
+            ? prev['valuePropName'] || 'displayText'
             : prev['valuePropName'],
-        keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? 'value' : undefined,
+        keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? prev.keyPropName || 'value' : prev.keyPropName,
       };
     })
   ,
