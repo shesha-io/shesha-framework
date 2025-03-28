@@ -138,7 +138,6 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                     label: "Width",
                     hideLabel: true,
                     propertyName: `${borderProp}.all.width`,
-                    readOnly: { _code: `return getSettingValue(data?.${borderProp}.all.style) === 'none';`, _mode: 'code', _value: false } as any,
                 },
                 {
                     id: nanoid(),

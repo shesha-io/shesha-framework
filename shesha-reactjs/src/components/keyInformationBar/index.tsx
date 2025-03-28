@@ -8,14 +8,12 @@ import { addPx } from './utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
     const { data } = useFormData();
     const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerThickness = '0.62px', dividerColor, gap, stylingBox, alignItems } = props;
-    const { styles } = useStyles();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const dimensions = props?.dimensions;
@@ -25,7 +23,6 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     const background = props?.background;
     const jsStyle = getStyle(props.style, data);
 
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -47,7 +44,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                         .then((blob) => {
                             return URL.createObjectURL(blob);
                         }) : '';
-                        
+
                 const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
                 setBackgroundStyles(style);
             } catch (error) {
@@ -58,30 +55,41 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         fetchStyles();
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-    if (props?.background?.type === 'storedFile' && props?.background.storedFile?.id && !isValidGuid(props?.background.storedFile.id)) {
-        return <ValidationErrors error="The provided StoredFileId is invalid" />;
-    }
+
 
     const styling = JSON.parse(props.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
         ...stylingBoxAsCSS,
-        ...dimensionsStyles,
         ...borderStyles,
         ...fontStyles,
         ...backgroundStyles,
         ...shadowStyles
     });
 
+    const dimensionStyles = {
+        width: dimensions?.width ? `calc(${addPx(dimensions.width)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
+        height: dimensions?.height ? `calc(${addPx(dimensions.height)} - ${additionalStyles?.marginTop || '0px'} - ${additionalStyles?.marginBottom || '0px'})` : undefined,
+        minWidth: dimensions?.minWidth ? `calc(${addPx(dimensions.minWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
+        minHeight: dimensions?.minHeight ? `calc(${addPx(dimensions.minHeight)} - ${additionalStyles?.marginTop || '0px'} - ${additionalStyles?.marginBottom || '0px'})` : undefined,
+        maxWidth: dimensions?.maxWidth ? `calc(${addPx(dimensions.maxWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
+        maxHeight: dimensions?.maxHeight ? `calc(${addPx(dimensions.maxHeight)} - ${additionalStyles?.marginTop || '0px'} - ${additionalStyles?.marginBottom || '0px'})` : undefined,
+    };
+
+    const { styles } = useStyles({ dimensions: dimensionStyles });
+
 
     const finalStyle = removeUndefinedProps({
-      ...additionalStyles,
-      fontWeight: props?.font?.weight
-        ? Number(props.font.weight.split(' - ')[0])
-        : 400
+        ...additionalStyles,
+        fontWeight: props?.font?.weight
+            ? Number(props.font.weight.split(' - ')[0])
+            : 400,
     });
 
+    if (props?.background?.type === 'storedFile' && props?.background.storedFile?.id && !isValidGuid(props?.background.storedFile.id)) {
+        return <ValidationErrors error="The provided StoredFileId is invalid" />;
+    }
 
     if (hidden) return null;
 
@@ -111,10 +119,13 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         margin: vertical ? `${margin} 0` : `0 ${margin}`,
     };
 
+
     return (
-        <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...barStyle, ...finalStyle }} >
+        <Flex vertical={vertical} className={styles.flexContainer} style={{
+            ...computedStyle, ...barStyle, ...finalStyle
+        }} >
             {columns?.map((item, i) => {
-                const itemWidth = vertical ? "100%" : addPx(item.width);
+                const itemWidth = vertical ? addPx(item.width) || "100%" : addPx(item.width);
                 return (
                     <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }}>
                         {i !== 0 && <div key={"divider" + i} className={styles.divider} style={{ ...dividerStyle, alignSelf: "center" }} />}

@@ -105,7 +105,7 @@ export const getSettings = (data: any) => {
                           value: 'string',
                         },
                         {
-                          label: 'Date Time',
+                          label: 'Date time',
                           value: 'date-time',
                         },
                         {
@@ -184,7 +184,7 @@ export const getSettings = (data: any) => {
                           value: 'round',
                         },
                         {
-                          label: 'Thousand Separator',
+                          label: 'Thousand separator',
                           value: 'thousandSeparator',
                         },
                       ],
@@ -284,7 +284,7 @@ export const getSettings = (data: any) => {
                                 value: 'danger',
                               },
                               {
-                                label: 'Custom Color',
+                                label: 'Custom color',
                                 value: 'custom',
                               },
                             ],

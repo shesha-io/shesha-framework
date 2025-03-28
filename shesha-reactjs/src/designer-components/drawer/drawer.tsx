@@ -9,7 +9,7 @@ import { IConfigurableFormComponent } from '@/providers';
 
 interface IShaDrawer {
   id?: string;
-  propertyName?: string;
+  componentName?: string;
   showFooter?: boolean;
   label?: string | ReactNode;
   onOkAction?: IConfigurableActionConfiguration;
@@ -26,7 +26,6 @@ interface IShaDrawer {
   footerStyle?: CSSProperties;
   placement?: 'top' | 'right' | 'bottom' | 'left';
   width?: string | number;
-  height?: string | number;
   readOnly?: boolean;
 }
 
@@ -39,7 +38,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     id,
     placement,
     width,
-    propertyName: name,
+    componentName: name,
     readOnly,
     label,
     onOkAction,

@@ -27,45 +27,79 @@ export const getSettings = (data: any) => {
                   label: 'Component Name',
                   jsSetting: true,
                 })
-                .addSettingsInput({
+                .addSettingsInputRow({
                   id: 'orientation-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'dropdown',
-                  propertyName: 'orientation',
-                  label: 'Orientation',
-                  jsSetting: true,
-                  dropdownOptions: [
-                    {
-                      label: 'horizontal',
-                      value: 'horizontal',
-                    },
-                    {
-                      label: 'vertical',
-                      value: 'vertical',
-                    },
-                  ],
-                })
-                .addLabelConfigurator({
-                  id: '46d07439-4c18-468c-89e1-60c002ce96c5',
-                  propertyName: 'hideLabel',
-                  label: 'Label',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  hideLabel: true,
-                  labelAlignOptions: [
-                    { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
-                    { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
-                    { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
-                  ],
-                })
-                .addSettingsInput({
-                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  inputType: 'textArea',
-                  propertyName: 'description',
-                  label: 'Tooltip',
-                  jsSetting: true,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'orientation-s4gmBg31azZC0UjZjpfTm',
+                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      type: 'dropdown',
+                      propertyName: 'orientation',
+                      label: 'Orientation',
+                      jsSetting: true,
+                      dropdownOptions: [
+                        {
+                          label: 'horizontal',
+                          value: 'horizontal',
+                        },
+                        {
+                          label: 'vertical',
+                          value: 'vertical',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'switch',
+                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'inline',
+                      label: 'Inline',
+                      size: 'small',
+                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                    }
+                  ]
                 })
+                .addContainer({
+                  id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                  components: [
+                    ...new DesignerToolbarSettings()
+                      .addLabelConfigurator({
+                        id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                        propertyName: 'hideLabel',
+                        label: 'Label',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        hideLabel: true,
+                        labelAlignOptions: [
+                          { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                          { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                          { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
+                        ],
+                      })
+                      .addSettingsInputRow({
+                        id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
+                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        inputs: [
+                          {
+                            id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                            type: 'textArea',
+                            propertyName: 'description',
+                            label: 'Tooltip',
+                            jsSetting: true,
+                            hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                          },
+                        ],
+                      }).toJson(),
+                  ]
+                })
+
+
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -78,15 +112,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       jsSetting: true,
                       layout: 'horizontal',
-                    },
-                    {
-                      type: 'switch',
-                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'inline',
-                      label: 'Inline',
-                      size: 'small',
-                      jsSetting: true,
-                    },
+                    }
                   ],
                 })
                 .toJson(),
@@ -343,19 +369,33 @@ export const getSettings = (data: any) => {
                                   ],
                                 },
                               })
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'title-css-412c-8461-4c8d55e5c073',
-                                inputType: 'codeEditor',
-                                propertyName: 'titleStyle',
-                                hideLabel: false,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              .addCollapsiblePanel({
+                                id: 'customStyleCollapsiblePanel',
+                                propertyName: 'customStyle',
+                                label: 'Custom Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                content: {
+                                  id: 'stylePnl-M500-911MFR-title',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        id: 'title-css-412c-8461-4c8d55e5c073',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'titleStyle',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description:
+                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                      })
+                                      .toJson()
+                                  ]
+                                }
                               })
                               .toJson(),
                           ],
@@ -395,19 +435,33 @@ export const getSettings = (data: any) => {
                                   ],
                                 },
                               })
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: 'custom-css-412c-8461-4c8d55e5c073',
-                                inputType: 'codeEditor',
-                                propertyName: 'containerStyle',
-                                hideLabel: false,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              .addCollapsiblePanel({
+                                id: 'customStyleCollapsiblePanel',
+                                propertyName: 'customStyle',
+                                label: 'Custom Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                content: {
+                                  id: 'stylePnl-M500-911MFR',
+                                  components: [
+                                    ...new DesignerToolbarSettings()
+                                      .addSettingsInput({
+                                        readOnly: {
+                                          _code: 'return  getSettingValue(data?.readOnly);',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
+                                        id: 'custom-css-412c-8461-4c8d55e5c073',
+                                        inputType: 'codeEditor',
+                                        propertyName: 'containerStyle',
+                                        hideLabel: false,
+                                        label: 'Style',
+                                        description:
+                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                                      })
+                                      .toJson()
+                                  ]
+                                }
                               })
                               .toJson(),
                           ],
