@@ -269,7 +269,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 id: nanoid(),
                                 inputType: 'codeEditor',
-                                propertyName: 'onChange',
+                                propertyName: 'onChangeCustom',
                                 label: 'On Change',
                                 labelAlign: 'right',
                                 tooltip: 'Enter custom eventhandler on changing of event. (form, event) are exposed',
