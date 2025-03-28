@@ -14,6 +14,7 @@ import { isEqual, uniqWith } from 'lodash';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseProps) => {
+  const {allowClear = true } = props;
 
   // sources
   const source = useDataTableStore(false);
@@ -29,7 +30,10 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     ((value: any) => (getValueByPropertyName(value, keyPropName) ?? value)?.toString()?.toLowerCase());
   const filterKeysFunc: FilterSelectedFunc = props.filterKeysFunc ??
     ((value: any) => ({ in: [{ var: `${keyPropName}` }, Array.isArray(value) ? value.map(x => keyValueFunc(x, allData)) : [keyValueFunc(value, allData)]] }));
-  const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => ({ "!": { and: [filterKeysFunc(value)] } }));
+  const filterNotKeysFunc: FilterSelectedFunc = ((value: any) => {
+    const filter = filterKeysFunc(value);
+    return filter ? { "!": filter } : null;
+  });
   const displayValueFunc: DisplayValueFunc = props.displayValueFunc ??
     ((value: any) => (Boolean(value) ? getValueByPropertyName(value, displayPropName) ?? value?.toString() : ''));
   const outcomeValueFunc: OutcomeValueFunc = props.outcomeValueFunc ??
@@ -47,6 +51,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   const [loadingValues, setLoadingValues] = useState<boolean>(false);
   const selected = useRef<Array<any>>([]);
   const lastSearchText = useRef<string>('');
+  const [autocompleteText, setAutocompleteText] = useState(null);
 
   const keys = useMemo(() => {
     const res = props.value
@@ -73,8 +78,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         }
       }
       props.disableRefresh.current = false;
-      if (selected.current?.length === 0 && keys.length) {
-        if (!loadingValues) {
+      if (keys.length) {
+        const allExist = keys.every((x) => selected.current?.find((y) => keyValueFunc(outcomeValueFunc(y, allData), allData) === x));
+        if (!loadingValues && !allExist) {
           // request full details for values
           setLoadingValues(true);
           const selectedFilter = filterKeysFunc(props.value);
@@ -98,6 +104,8 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     }, 200);
 
   const handleSearch = (searchText: string) => {
+    if (props.allowFreeText)
+      setAutocompleteText(searchText);
     debouncedSearch(searchText);
     if (props.onSearch)
       props.onSearch(searchText);
@@ -139,7 +147,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
     const key = keyValueFunc(value, allData);
     const label = displayValueFunc(row, allData);
     return (
-      <Select.Option value={key} key={JSON.stringify(key || index)} data={row} title={label}>
+      <Select.Option value={key} key={index} data={row} title={label}>
         <span dangerouslySetInnerHTML={{ __html: label }} />
       </Select.Option>
     );
@@ -154,8 +162,14 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
   };
 
   const selectedValuesList = useMemo(() => {
-    return <>{selected.current?.map((row, index) => renderOption(row, index))}</>;
+    return selected.current?.map((row, index) => renderOption(row, 10 + index));
   }, [selected.current]);
+  
+  const freeTextValuesList = useMemo(() => {
+    return props.allowFreeText && autocompleteText && source.tableData.findIndex(x => x[displayPropName]?.toLowerCase() === autocompleteText.toLowerCase()) === -1
+      ? renderOption({[keyPropName]: autocompleteText, [displayPropName]: autocompleteText}, 'freeText')
+      : null;
+  }, [autocompleteText, source.tableData]);
 
   const list = useMemo(() => {
     const list = source?.tableData
@@ -241,7 +255,7 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         onSearch={handleSearch}
         //defaultValue={wrapValue(defaultValue, options)}
         onChange={handleChange}
-        allowClear={true}
+        allowClear={allowClear}
         loading={source?.isInProgress?.fetchTableData}
         placeholder={props.placeholder}
         disabled={props.readOnly}
@@ -252,8 +266,9 @@ const AutocompleteInner: FC<IAutocompleteBaseProps> = (props: IAutocompleteBaseP
         ref={selectRef}
         mode={props.value && props.mode === 'multiple' ? props.mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
       >
+        {freeTextValuesList /* this is need for showing free text value */}
         {list}
-        {!open && selectedValuesList /* need to show selected value(s) */}
+        {!open && selectedValuesList /* this is need for showing selected value(s) */}
       </Select>
     </>
   );
