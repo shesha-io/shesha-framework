@@ -1,4 +1,4 @@
-import { ConfigurableForm, DataTypes, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
+import { ConfigurableForm, DataTypes, pickStyleFromModel, useDataTableStore, useFormState, useMetadataDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { App, Flex, Form, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -9,7 +9,7 @@ import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
+  const { gap, groupingProperty, createFormId, items, componentName, editFormId, stylingBox } = props;
 
   const { tableData, modelType } = useDataTableStore();
   const { message } = App.useApp();
@@ -27,6 +27,9 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const [settings, setSettings] = useState({});
   const { storeSettings } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
+
+  const styling = JSON.parse(stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
     if (!isInDesigner && modelType && groupingProperty) {
@@ -153,11 +156,11 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
   return (
     <>
-      {items.length === 0 ? (
+      {!items || items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
-          {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
+        <Flex style={{...stylingBoxAsCSS, overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
+          {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
               setTasks={setTasks}

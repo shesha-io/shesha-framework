@@ -6,7 +6,7 @@ import {
   IToolboxComponent,
   useDataTableStore,
   useSheshaApplication,
-  validateConfigurableComponentSettings
+  validateConfigurableComponentSettings,
 } from '@/index';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
 import { removeUndefinedProps } from '@/utils/object';
@@ -18,7 +18,7 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
+import { defaultColumnStyles, defaultStyles } from './utils';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -28,14 +28,10 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
-    const { httpHeaders, backendUrl } = useSheshaApplication();
     const data = model;
-    const shadow = model?.shadow;
-    const columnShadow = model?.columnShadow;
-    const border = model?.border;
-    const columnBorder = model?.columnBorder?.border;
-    const background = model?.background;
-    const columnBackground = model?.columnBackground;
+    const { httpHeaders, backendUrl } = useSheshaApplication();
+    const { background: columnBackground, border: columnBorder, shadow: columnShadow } = model.columnStyles;
+    const { shadow, border, background } = model;
     const headerStyle = getStyle(model?.headerStyles as string, data);
     const columnStyle = getStyle(model?.columnStyle as string, data);
     const borderStyles = useMemo(() => getBorderStyle(border, headerStyle), [border, headerStyle]);
@@ -49,24 +45,22 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     useEffect(() => {
       const fetchStyles = async () => {
         const url = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
-        const style =  getBackgroundStyle(background, headerStyle, url);
-    
+        const style = getBackgroundStyle(background, headerStyle, url);
+
         setBackgroundStyles((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
       fetchStyles();
     }, [background, backendUrl, httpHeaders]);
-    
 
     useEffect(() => {
       const fetchStyles = async () => {
         const url = await getBackgroundImageUrl(columnBackground, backendUrl, httpHeaders);
         const style = getBackgroundStyle(columnBackground, columnStyle, url);
-    
+
         setColumnBackgroundStyle((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
       fetchStyles();
     }, [columnBackground, backendUrl, httpHeaders]);
-    
 
     const additionalColumnStyles: CSSProperties = removeUndefinedProps({
       ...columnBorderStyles,
@@ -115,8 +109,18 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     ...model,
     hideLabel: true,
   }),
-  //  migrator: (m) => m
-  //  .add<IKanbanProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  migrator: (m) =>
+    m.add<IKanbanProps>(8, (prev) => {
+      const newModel = migratePrevStyles(prev, defaultStyles());
+      const defaultColumnStyle = defaultColumnStyles();
+
+      return {
+        ...newModel,
+        desktop: { ...newModel.desktop, columnStyles: defaultColumnStyle },
+        tablet: { ...newModel.tablet, columnStyles: defaultColumnStyle },
+        mobile: { ...newModel.mobile, columnStyles: defaultColumnStyle },
+      };
+    }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

@@ -1,11 +1,6 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IButtonGroupItem, IButtonItem } from '@/providers';
+import { IButtonGroupItem, IButtonItem, IStyleType } from '@/providers';
 import { CSSProperties } from 'styled-components';
-import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
-import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
-import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -25,7 +20,7 @@ export interface IKanbanButton extends IButtonGroupItem {
   itemValue: number;
   item: string;
 }
-export interface IKanbanProps extends IConfigurableFormComponent {
+export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
   items?: IKanbanButton[];
   referenceList?: any;
   fontColor?: string;
@@ -47,14 +42,5 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   editFormId?: string;
   allowEdit?: boolean;
   allowDelete?: boolean;
-  font?: IFontValue;
-  background?: IBackgroundValue;
-  columnBackground?: IBackgroundValue;
-  shadow?: IShadowValue;
-  border?: IBorderValue;
-  columnShadow?: IShadowValue;
-  columnBorder?: {
-    border: IBorderValue;
-  };
-  dimensions?:IDimensionsValue;
+  columnStyles?: IStyleType;
 }

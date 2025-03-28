@@ -8,8 +8,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       justify-content: space-between;
       margin: 0 10px;
       padding: 0px;
-      border: 1px solid #ddd;
-      margin-bottom: 10px;
       display: flex;
       flex-direction: column;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -20,6 +18,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       min-width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.minWidth) || '300px'};
       width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.width) || '300px'};
       max-width: ${isCollapsed ? '45px' : addPx(dimensionsStyles?.maxWidth) || '500px'};
+     ${isCollapsed
+        &&`
+        border: none !important;
+        `}
     `
   );
 
@@ -32,7 +34,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       font-family: ${fontStyles?.fontFamily || 'Arial'};
       padding: 10px 10px;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid #ddd;
       text-align: center;
 
       ${isCollapsed

@@ -1,6 +1,6 @@
 import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { ConfigurableForm, IconPicker, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
+import { ConfigurableForm, ShaIcon, useAvailableConstantsData, useConfigurableActionDispatcher } from '@/index';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { LeftOutlined, MoreOutlined, PlusOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Flex, MenuProps, Popconfirm } from 'antd';
@@ -41,7 +41,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
-  const dimensionsStyles = useMemo(() => getSizeStyle(props.dimensions), [props.dimensions]);
+  const dimensionsStyles = useMemo(() => getSizeStyle(props.columnStyles.dimensions), [props.columnStyles.dimensions]);
   const fontStyles = useMemo(() => getFontStyle(props.font), [props.font]);
   const { styles } = useStyles({ ...props, isCollapsed, dimensionsStyles, fontStyles });
   const { updateKanban } = useKanbanActions();
@@ -51,7 +51,6 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   useEffect(() => {
     setIsCollapsed(collapse);
   }, [collapse]);
-
   // Update user settings and persist to backend
   const toggleFold = async () => {
     try {
@@ -153,6 +152,8 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       });
     });
   };
+
+  const iconStyles = { ...fontStyles, margin: '0px 8px' };
   return (
     <>
       {!column.hidden && (
@@ -172,17 +173,20 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             className={styles.combinedHeaderStyle}
             style={props.headerStyles || {}}
           >
-            {props.showIcons && column.icon && (
-              <IconPicker value={column.icon} onIconChange={() => null} readOnly style={fontStyles} />
-            )}
-
-            <h3>
+            {props.showIcons && column.icon && <ShaIcon iconName={column.icon} readOnly style={iconStyles} />}
+            <h3
+              style={{
+                textWrap: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
               {column.item} ({columnTasks.length})
             </h3>
 
             {props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
-                <Button type="text" icon={<SettingOutlined style={fontStyles} />} />
+                <Button type="text" icon={<SettingOutlined style={iconStyles} />} />
               </Dropdown>
             )}
           </Flex>
