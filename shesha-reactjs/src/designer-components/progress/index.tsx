@@ -8,7 +8,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { ProgressProps } from 'antd';
 import { ProgressType } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 interface IProgressProps
@@ -29,6 +29,12 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   icon: <LineOutlined />,
   isInput: true,
   isOutput: true,
+    initModel: (model) => {
+      return {
+        ...model,
+        hideLabel: true,
+      };
+    },
   Factory: ({ model }) => {
     const {
       progressType,
@@ -47,10 +53,15 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       strokeWidth,
       width,
       defaultValue,
-      hidden
+      hidden,
+      gapDegree,
+      style
     } = model;
 
     if (hidden) return null;
+
+      const styles = getStyle(style);
+    
 
     const getEvaluatedSuccessColor = () => {
       // tslint:disable-next-line:function-constructor
@@ -58,22 +69,23 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     };
 
     const getEvaluatedStrokeValue = () => {
-      let color = strokeColor;
+      let color: string = strokeColor;
       let isLineOrCircle = false;
 
       if (progressType === 'line') {
-        color = lineStrokeColor;
+        color = lineStrokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (progressType === 'circle') {
-        color = circleStrokeColor;
+        color = circleStrokeColor?.toString();
         isLineOrCircle = true;
       }
 
       if (isLineOrCircle) {
         // tslint:disable-next-line:function-constructor
-        return new Function(color)();
+        //console.log(color)
+        return color;
       } else {
         return color;
       }
@@ -103,6 +115,8 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
               strokeLinecap={strokeLinecap}
               success={getEvaluatedSuccessColor()}
               defaultValue={defaultValue}
+              gapDegree={gapDegree}
+              style={styles}
             />);
         }}
       </ConfigurableFormItem>

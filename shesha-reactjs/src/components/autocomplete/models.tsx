@@ -110,11 +110,12 @@ export interface IAutocompleteBaseProps {
   grouping?: GroupingItem;
   /** Size */
   size?: SizeType;
+  
+  allowFreeText?: boolean;
+  allowClear?: boolean;
 
   // not implemented
-  allowFreeText?: boolean;
   defaultValue?: any | any[];
-  allowClear?: boolean;
 
   // need to review (not used)
   allowInherited?: boolean;
