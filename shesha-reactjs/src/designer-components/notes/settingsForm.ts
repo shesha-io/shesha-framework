@@ -180,49 +180,6 @@ export const getSettings = (data: any) => {
                     }
                   ]
                 })
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: "code",
-                    _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: ""
-                  },
-                  components: [
-                    ...new DesignerToolbarSettings()
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              hideLabel: false,
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                              jsSetting: true
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .toJson()
-                  ]
-                })
                 .toJson()
             ]
           },
