@@ -63,7 +63,6 @@ export const useKanbanActions = () => {
       },
       payload
     );
- 
   };
 
   const deleteKanban = (payload: any, url: string) => {

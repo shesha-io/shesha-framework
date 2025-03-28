@@ -62,7 +62,7 @@ export const getSettings = (data: any) => {
                       label: 'Hide',
                       parentId: 's4gmBg31azZC0UjZjpfTm',
                       hideLabel: false,
-
+                      jsSetting: true,
                     },
                   ],
                 })
