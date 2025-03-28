@@ -6,7 +6,7 @@ import { IAddressCompomentProps } from './models';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
-import { useAvailableConstantsData } from '@/index';
+import { getStyle, useAvailableConstantsData } from '@/index';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;
@@ -14,7 +14,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocusCustom } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocusCustom, style } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -50,6 +50,8 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   const disableGoogleEvent = (value: string) =>
     (value?.length || 0) < parseInt((minCharactersSearch as string) || '0', 10) - 1;
 
+  const styles = getStyle(style);
+  
   return (
     <Fragment>
       <ValidationErrors error={error} />
@@ -63,6 +65,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         disabled={readOnly}
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
+        style={styles}
         {...customAddressEventHandler(model, allData, onChange, onSelect, onFocusCustom)}
       />
     </Fragment>

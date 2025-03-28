@@ -167,6 +167,157 @@ export const getSettings = (data: any) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'titleStyle',
+                        label: 'Title Font',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        collapsedByDefault: true,
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: pnlFontStyleId,
+                              inline: true,
+                              propertyName: 'titleFont',
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: `fontFamily-${styleRouterId}`,
+                                  label: 'Family',
+                                  propertyName: 'titleFont.type',
+                                  hideLabel: false,
+                                  dropdownOptions: fontTypes,
+                                },
+                                {
+                                  type: 'numberField',
+                                  id: `fontSize-${styleRouterId}`,
+                                  label: 'Size',
+                                  propertyName: 'titleFont.size',
+                                  hideLabel: false,
+                                  width: 50,
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontWeight-${styleRouterId}`,
+                                  label: 'Weight',
+                                  propertyName: 'titleFont.weight',
+                                  hideLabel: false,
+                                  dropdownOptions: fontWeights,
+                                  width: 100,
+                                },
+                                {
+                                  type: 'colorPicker',
+                                  id: `fontColor-${styleRouterId}`,
+                                  label: 'Color',
+                                  hideLabel: false,
+                                  propertyName: 'titleFont.color',
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontAlign-${styleRouterId}`,
+                                  label: 'Align',
+                                  propertyName: 'titleFont.align',
+                                  hideLabel: false,
+                                  width: 60,
+                                  dropdownOptions: textAlign,
+                                },
+                              ],
+                            })
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'titleStyle',
+                              hideLabel: false,
+                              label: 'Custom',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'valueStyle',
+                        label: 'Value Font',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        collapsedByDefault: true,
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                              id: nanoid(),
+                              parentId: pnlFontStyleId,
+                              inline: true,
+                              propertyName: 'valueFont',
+                              label: 'Value Font',
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              inputs: [
+                                {
+                                  type: 'dropdown',
+                                  id: `fontFamily-${styleRouterId}`,
+                                  label: 'Family',
+                                  propertyName: 'valueFont.type',
+                                  hideLabel: false,
+                                  dropdownOptions: fontTypes,
+                                },
+                                {
+                                  type: 'numberField',
+                                  id: `fontSize-${styleRouterId}`,
+                                  label: 'Size',
+                                  propertyName: 'valueFont.size',
+                                  hideLabel: false,
+                                  width: 50,
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontWeight-${styleRouterId}`,
+                                  label: 'Weight',
+                                  propertyName: 'valueFont.weight',
+                                  hideLabel: false,
+                                  dropdownOptions: fontWeights,
+                                  width: 100,
+                                },
+                                {
+                                  type: 'colorPicker',
+                                  id: `fontColor-${styleRouterId}`,
+                                  label: 'Color',
+                                  hideLabel: false,
+                                  propertyName: 'valueFont.color',
+                                },
+                                {
+                                  type: 'dropdown',
+                                  id: `fontAlign-${styleRouterId}`,
+                                  label: 'Align',
+                                  propertyName: 'valueFont.align',
+                                  hideLabel: false,
+                                  width: 60,
+                                  dropdownOptions: textAlign,
+                                },
+                              ],
+                            })
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'valueStyle',
+                              hideLabel: false,
+                              label: 'Custom',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
                         label: 'Dimensions',
@@ -552,157 +703,6 @@ export const getSettings = (data: any) => {
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
-                        propertyName: 'titleStyle',
-                        label: 'Title Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        collapsedByDefault: true,
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: pnlFontStyleId,
-                              inline: true,
-                              propertyName: 'titleFont',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'dropdown',
-                                  id: `fontFamily-${styleRouterId}`,
-                                  label: 'Family',
-                                  propertyName: 'titleFont.type',
-                                  hideLabel: false,
-                                  dropdownOptions: fontTypes,
-                                },
-                                {
-                                  type: 'numberField',
-                                  id: `fontSize-${styleRouterId}`,
-                                  label: 'Size',
-                                  propertyName: 'titleFont.size',
-                                  hideLabel: false,
-                                  width: 50,
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontWeight-${styleRouterId}`,
-                                  label: 'Weight',
-                                  propertyName: 'titleFont.weight',
-                                  hideLabel: false,
-                                  dropdownOptions: fontWeights,
-                                  width: 100,
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: `fontColor-${styleRouterId}`,
-                                  label: 'Color',
-                                  hideLabel: false,
-                                  propertyName: 'titleFont.color',
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontAlign-${styleRouterId}`,
-                                  label: 'Align',
-                                  propertyName: 'titleFont.align',
-                                  hideLabel: false,
-                                  width: 60,
-                                  dropdownOptions: textAlign,
-                                },
-                              ],
-                            })
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'titleStyle',
-                              hideLabel: false,
-                              label: 'Custom',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'valueStyle',
-                        label: 'Value Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        collapsedByDefault: true,
-                        content: {
-                          id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
-                            .addSettingsInputRow({
-                              id: nanoid(),
-                              parentId: pnlFontStyleId,
-                              inline: true,
-                              propertyName: 'valueFont',
-                              label: 'Value Font',
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              inputs: [
-                                {
-                                  type: 'dropdown',
-                                  id: `fontFamily-${styleRouterId}`,
-                                  label: 'Family',
-                                  propertyName: 'valueFont.type',
-                                  hideLabel: false,
-                                  dropdownOptions: fontTypes,
-                                },
-                                {
-                                  type: 'numberField',
-                                  id: `fontSize-${styleRouterId}`,
-                                  label: 'Size',
-                                  propertyName: 'valueFont.size',
-                                  hideLabel: false,
-                                  width: 50,
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontWeight-${styleRouterId}`,
-                                  label: 'Weight',
-                                  propertyName: 'valueFont.weight',
-                                  hideLabel: false,
-                                  dropdownOptions: fontWeights,
-                                  width: 100,
-                                },
-                                {
-                                  type: 'colorPicker',
-                                  id: `fontColor-${styleRouterId}`,
-                                  label: 'Color',
-                                  hideLabel: false,
-                                  propertyName: 'valueFont.color',
-                                },
-                                {
-                                  type: 'dropdown',
-                                  id: `fontAlign-${styleRouterId}`,
-                                  label: 'Align',
-                                  propertyName: 'valueFont.align',
-                                  hideLabel: false,
-                                  width: 60,
-                                  dropdownOptions: textAlign,
-                                },
-                              ],
-                            })
-                            .addSettingsInput({
-                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'valueStyle',
-                              hideLabel: false,
-                              label: 'Custom',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson()
-                          ]
-                        }
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
                         propertyName: 'stylingBox',
                         label: 'Margin & Padding',
                         labelAlign: 'right',
@@ -725,7 +725,7 @@ export const getSettings = (data: any) => {
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'style',
-                        label: 'Custom Style',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
                         parentId: styleRouterId,
