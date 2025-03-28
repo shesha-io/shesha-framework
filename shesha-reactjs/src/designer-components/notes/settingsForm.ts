@@ -4,10 +4,13 @@ import { FormLayout } from "antd/lib/form/Form";
 
 export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
-  const displayTabId = nanoid();
-  const stylingTabId = nanoid();
-  const notesTabId = nanoid();
+  const commonTabId = nanoid();
+  const dataTabId = nanoid();
+  const mainStylesTabId = nanoid();
+  const eventsTabId = nanoid();
+  const appearanceTabId = nanoid();
   const securityTabId = nanoid();
+  const styleRouterId = nanoid();
 
   return {
     components: new DesignerToolbarSettings(data)
@@ -23,65 +26,150 @@ export const getSettings = (data: any) => {
           {
             key: 'common',
             title: 'Common',
-            id: displayTabId,
+            id: commonTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: displayTabId,
-                  readOnly: false,
+                  parentId: commonTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'textField',
                       id: nanoid(),
                       propertyName: 'componentName',
-                      label: 'Component name',
+                      label: 'Component Name',
                       jsSetting: false,
-                      
                       validate: {
                         required: true
                       }
                     }
                   ]
                 })
+                    .addSettingsInputRow({
+                      id: nanoid(),
+                      parentId: commonTabId,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      inputs: [
+                        {
+                          id: nanoid(),
+                          type: 'editModeSelector',
+                          propertyName: 'editMode',
+                          label: 'Edit Mode',
+                          parentId: commonTabId,
+                          defaultValue: 'inherited',
+                          jsSetting: true,
+                        },
+                        {
+                          type: 'switch',
+                          id: nanoid(),
+                          propertyName: 'autoSize',
+                          label: 'Auto Size',
+                          jsSetting: true
+                        },
+                        {
+                          type: 'switch',
+                          id: nanoid(),
+                          propertyName: 'hidden',
+                          label: 'Hide',
+                          jsSetting: true
+                        }
+                      ]
+                    })
+                .toJson()
+            ]
+          },
+          {
+            key: 'mainsettings',
+            title: 'Main Settings',
+            id: mainStylesTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: commonTabId,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    type: 'switch',
+                    id: nanoid(),
+                    propertyName: 'allowDelete',
+                    label: 'Allow Delete',
+                    jsSetting: true
+                  }
+                ]
+              })
+            .toJson()
+            ]
+          },
+          {
+            key: 'data',
+            title: 'Data',
+            id: dataTabId,
+            components: [
+              ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: displayTabId,
-                  readOnly: false,
+                  parentId: dataTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'textField',
                       id: nanoid(),
-                      propertyName: 'label',
-                      label: 'Label'
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: displayTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hidden'
+                      propertyName: 'ownerId',
+                      label: 'Owner Id',
+                      jsSetting: true
                     },
                     {
-                      type: 'switch',
                       id: nanoid(),
-                      propertyName: 'allowDelete',
-                      label: 'Allow Delete'
-                    }
+                      propertyName: 'ownerType',
+                      type: 'autocomplete',
+                      parentId: nanoid(),
+                      label: 'Owner Type',
+                      labelAlign: 'right',
+                      dataSourceType: 'url',
+                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+                      mode: 'single',
+                      jsSetting: true
+                    } 
                   ]
+                })
+                .toJson()
+            ]
+          },
+          {
+            key: 'events',
+            title: 'Events',
+            id: eventsTabId,
+            components: [
+              ...new DesignerToolbarSettings()
+                .addSettingsInput({
+                  id: nanoid(),
+                  inputType: 'codeEditor',
+                  propertyName: 'onCreated',
+                  label: 'On Created',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully creating a new note',
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  // wrapInTemplate: true,
+                  // templateSettings: {
+                  //   functionName: 'onCreated'
+                  // }
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'editModeSelector',
-                  propertyName: 'editMode',
-                  label: 'Edit mode',
-                  parentId: displayTabId,
+                  inputType: 'codeEditor',
+                  propertyName: 'onUpdated',
+                  label: 'On Updated',
+                  labelAlign: 'right',
+                  parentId: eventsTabId,
+                  tooltip: 'Triggered after successfully updating a note',
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  // wrapInTemplate: true,
+                  // templateSettings: {
+                  //   functionName: 'onUpdated'
+                  // }
                 })
                 .toJson()
             ]
@@ -89,21 +177,22 @@ export const getSettings = (data: any) => {
           {
             key: 'appearance',
             title: 'Appearance',
-            id: stylingTabId,
+            id: appearanceTabId,
             components: [
               ...new DesignerToolbarSettings()
                 .addSettingsInputRow({
                   id: nanoid(),
-                  parentId: stylingTabId,
-                  readOnly: false,
+                  parentId: appearanceTabId,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                   inputs: [
                     {
                       type: 'dropdown',
                       id: nanoid(),
                       propertyName: 'savePlacement',
-                      label: 'Save Placement',
-                      description: 'This used to place the save button (Left, Right).',
+                      label: 'Buttons Layout',
+                      tooltip: 'This is used to place the save button (Left, Right).',
                       defaultValue: 'left',
+                      jsSetting: true,
                       dropdownOptions: [
                         { value: 'left', label: 'Left' },
                         { value: 'right', label: 'Right' }
@@ -111,50 +200,47 @@ export const getSettings = (data: any) => {
                     }
                   ]
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: stylingTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'autoSize',
-                      label: 'Auto Size'
-                    }
-                  ]
-                })
-                .toJson()
-            ]
-          },
-          {
-            key: 'data',
-            title: 'Data',
-            id: notesTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: notesTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'textField',
-                      id: nanoid(),
-                      propertyName: 'ownerId',
-                      label: 'Owner Id'
-                    },
-                    {
-                      id: 'c6ecd70c-7419-4ea7-a715-d42699d26e6e',
-                      propertyName: 'ownerType',
-                      type: 'autocomplete',
-                      parentId: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
-                      label: 'Owner Type',
-                      labelAlign: 'right',
-                      dataSourceType: 'url',
-                      dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
-                      mode: 'single',
-                    } 
+                .addPropertyRouter({
+                  id: styleRouterId,
+                  propertyName: 'propertyRouter1',
+                  componentName: 'propertyRouter',
+                  label: 'Property router1',
+                  labelAlign: 'right',
+                  parentId: appearanceTabId,
+                  hidden: false,
+                  propertyRouteName: {
+                    _mode: "code",
+                    _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
+                    _value: ""
+                  },
+                  components: [
+                    ...new DesignerToolbarSettings()
+                      .addCollapsiblePanel({
+                        id: nanoid(),
+                        propertyName: 'customStyle',
+                        label: 'Custom Styles',
+                        labelAlign: 'right',
+                        ghost: true,
+                        parentId: styleRouterId,
+                        collapsible: 'header',
+                        content: {
+                          id: nanoid(),
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: nanoid(),
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              hideLabel: false,
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                              jsSetting: true
+                            })
+                            .toJson()
+                          ]
+                        }
+                      })
+                      .toJson()
                   ]
                 })
                 .toJson()
@@ -172,7 +258,8 @@ export const getSettings = (data: any) => {
                   propertyName: 'permissions',
                   label: 'Permissions',
                   parentId: securityTabId,
-                  validate: {}
+                  validate: {},
+                  jsSetting: true
                 })
                 .toJson()
             ]

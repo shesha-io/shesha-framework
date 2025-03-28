@@ -51,6 +51,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
       ...model,
       ownerId: '{data.id}',
       ownerType: '',
+      hideLabel: true,
     };
     return customModel;
   },
