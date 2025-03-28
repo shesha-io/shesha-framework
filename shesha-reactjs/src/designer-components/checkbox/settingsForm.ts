@@ -73,14 +73,14 @@ export const getSettings = (data: any) => {
                       jsSetting: true,
                       layout: 'horizontal',
                     },
-                    {
-                      type: 'switch',
-                      id: 'default-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'defaultValue',
-                      label: 'Default Checked',
-                      jsSetting: true,
-                    },
                   ],
+                })
+                .addSettingsInput({
+                  id: 'default-s4gmBg31azZC0UjZjpfTm',
+                  inputType: 'switch',
+                  propertyName: 'defaultValue',
+                  label: 'Default Checked',
+                  jsSetting: true,
                 })
                 .toJson(),
             ],

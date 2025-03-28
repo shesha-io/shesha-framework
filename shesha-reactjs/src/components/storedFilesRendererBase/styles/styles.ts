@@ -99,7 +99,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-text {
-      height: cal(var(--container-height) - 32px) !important;
+      height: calc(var(--container-height) - 32px) !important;
       max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
       min-height: calc(var(--container-min-height) - 32px) !important;
       width: calc(var(--container-width) - 32px) !important;

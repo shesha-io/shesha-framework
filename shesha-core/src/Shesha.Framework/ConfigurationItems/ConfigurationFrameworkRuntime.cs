@@ -35,7 +35,7 @@ namespace Shesha.ConfigurationItems
         public ConfigurationItemViewMode ViewMode => State.ViewMode;
 
         /// inheritedDoc
-        public string FrontEndApplication => State.FrontEndApplication;
+        public string? FrontEndApplication => State.FrontEndApplication;
 
         /// inheritedDoc
         public IDisposable BeginScope(Action<ConfigurationFrameworkRuntimeState> initAction)

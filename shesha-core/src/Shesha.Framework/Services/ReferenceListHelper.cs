@@ -43,7 +43,7 @@ namespace Shesha.Services
         /// <summary>
         /// Reference to the object to object mapper.
         /// </summary>
-        public IObjectMapper ObjectMapper { get; set; }
+        public IObjectMapper ObjectMapper { get; set; } = NullObjectMapper.Instance;
 
         public ReferenceListHelper(
             IRepository<ReferenceList, Guid> listRepository, 

@@ -200,6 +200,7 @@ namespace Shesha.Tests
                 var session = uow.GetSession();
 #pragma warning restore IDISP001 // Dispose created
                 action.Invoke(session);
+                uow.Complete();
             }
         }
 

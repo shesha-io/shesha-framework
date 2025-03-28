@@ -1,7 +1,7 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
 import { overflowOptions } from '../_settings/utils/dimensions/utils';
@@ -28,73 +28,88 @@ export const getSettings = () => {
                                 id: 'panel5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 propertyName: 'componentName',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Component name',
+                                label: 'Component Name',
                                 validate: {
                                     required: true
                                 },
                                 jsSetting: false
                             })
-                            .addSettingsInput({
-                                id: 'panel46d07439-4c18-468c-89e1-60c002ce96c5',
-                                propertyName: 'label',
+                            .addSettingsInputRow({
+                                id: 'label-customHeader-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Label',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412558',
-                                propertyName: 'hasCustomHeader',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Custom Header',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panel57a40a33-7e08-4ce4-9f08-a34d24a83338',
-                                propertyName: 'expandIconPosition',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Icon position',
-                                inputType: 'dropdown',
-                                jsSetting: true,
-                                dropdownOptions: [
+                                readOnly: { _code: 'return  getSettingValue(data?.hasCustomHeader);', _mode: 'code', _value: false } as any,
+                                inputs: [
                                     {
-                                        label: 'Hide',
-                                        value: 'hide',
+                                        type: 'textField',
+                                        id: 'panel46d07439-4c18-468c-89e1-60c002ce96c5',
+                                        propertyName: 'label',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Label',
+                                        jsSetting: true
                                     },
                                     {
-                                        label: 'Start',
-                                        value: 'start',
-                                    },
-                                    {
-                                        label: 'End',
-                                        value: 'end',
+                                        id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412558',
+                                        propertyName: 'hasCustomHeader',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Custom Header',
+                                        type: 'switch',
+                                        jsSetting: true
                                     }
-                                ],
-                                validate: {},
+                                ]
                             })
-                            .addSettingsInput({
-                                id: 'panel-wshDLo-lK468vwxVVBDMh',
-                                propertyName: 'collapsible',
-                                label: 'Collapsible',
-                                inputType: 'dropdown',
-                                jsSetting: true,
+                            .addSettingsInputRow({
+                                id: 'expandIconPosition-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                dropdownOptions: [
+                                readOnly: { _code: 'return  getSettingValue(data?.expandIconPosition);', _mode: 'code', _value: 'end' } as any,
+                                inputs: [
                                     {
-                                        label: 'Header',
-                                        value: 'header',
+                                        id: 'panel57a40a33-7e08-4ce4-9f08-a34d24a83338',
+                                        propertyName: 'expandIconPosition',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Icon Position',
+                                        type: 'dropdown',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            {
+                                                label: 'Hide',
+                                                value: 'hide',
+                                            },
+                                            {
+                                                label: 'Start',
+                                                value: 'start',
+                                            },
+                                            {
+                                                label: 'End',
+                                                value: 'end',
+                                            }
+                                        ],
+                                        validate: {},
                                     },
                                     {
-                                        label: 'Icon',
-                                        value: 'icon',
-                                    },
-                                    {
-                                        label: 'Disabled',
-                                        value: 'disabled',
+                                        id: 'panel-wshDLo-lK468vwxVVBDMh',
+                                        propertyName: 'collapsible',
+                                        label: 'Collapsible',
+                                        type: 'dropdown',
+                                        jsSetting: true,
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        dropdownOptions: [
+                                            {
+                                                label: 'Header',
+                                                value: 'header',
+                                            },
+                                            {
+                                                label: 'Icon',
+                                                value: 'icon',
+                                            },
+                                            {
+                                                label: 'Disabled',
+                                                value: 'disabled',
+                                            }
+                                        ],
+                                        validate: {},
+                                        version: 3
                                     }
-                                ],
-                                validate: {},
-                                version: 3
+                                ]
                             })
                             .addSettingsInputRow({
                                 id: 'collapsedByDefault-ghost-row',
@@ -104,7 +119,7 @@ export const getSettings = () => {
                                     {
                                         id: 'panel-wYzLo-lK468vwxVVBDMh',
                                         propertyName: 'collapsedByDefault',
-                                        label: 'Collapsed by default',
+                                        label: 'Collapsed By Default',
                                         labelAlign: 'right',
                                         type: 'switch',
                                         parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
@@ -158,7 +173,7 @@ export const getSettings = () => {
                                     {
                                         id: 'panelBC7507ED-ADB6-4D2E-BD37-F5DD51EFF45D',
                                         propertyName: 'hideWhenEmpty',
-                                        label: 'Hide when empty',
+                                        label: 'Hide When Empty',
                                         labelAlign: 'right',
                                         parentId: 'bc67960e-77e3-40f2-89cc-f18f94678cce',
                                         type: 'switch',
@@ -170,7 +185,7 @@ export const getSettings = () => {
                                         id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412448',
                                         propertyName: 'hidden',
                                         parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                        label: 'hide',
+                                        label: 'Hide',
                                         type: 'switch',
                                         jsSetting: true
                                     }
@@ -357,33 +372,7 @@ export const getSettings = () => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -528,16 +517,23 @@ export const getSettings = () => {
                                                                             label: "Bottom Right"
                                                                         }
                                                                     ],
-                                                                },
-                                                                {
-                                                                    type: 'radio',
-                                                                    id: 'panelbackgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    buttonGroupOptions: repeatOptions,
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],
@@ -566,7 +562,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
                                                                 icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
@@ -575,7 +572,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
                                                                 icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
@@ -584,7 +582,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Blur radius',
+                                                                width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
@@ -593,7 +592,8 @@ export const getSettings = () => {
                                                                 id: 'panelshadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Spread radius',
+                                                                width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
@@ -791,32 +791,10 @@ export const getSettings = () => {
                                                         content: {
                                                             id: 'panelheaderborderStylePnl',
                                                             components: [...new DesignerToolbarSettings()
-                                                                .addSettingsInputRow({
-                                                                    id: nanoid(),
-                                                                    parentId: 'panelheaderborderStylePnl',
-                                                                    hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                                    inputs: [
-                                                                        {
-                                                                            type: 'button',
-                                                                            id: 'panel-header-borderStyleRow-hideBorder',
-                                                                            label: "Border",
-                                                                            hideLabel: true,
-                                                                            propertyName: "headerStyles.border.hideBorder",
-                                                                            icon: "EyeOutlined",
-                                                                            iconAlt: "EyeInvisibleOutlined"
-                                                                        },
-                                                                    ]
-                                                                })
                                                                 .addContainer({
                                                                     id: 'borderStyleRow',
                                                                     parentId: 'borderStylePnl',
                                                                     components: getBorderInputs('headerStyles', true) as any
-                                                                })
-                                                                .addContainer({
-                                                                    id: 'borderRadiusStyleRow',
-                                                                    parentId: 'borderStylePnl',
-                                                                    components: getCornerInputs('headerStyles', true) as any
                                                                 })
                                                                 .toJson()]
                                                         }
@@ -944,7 +922,7 @@ export const getSettings = () => {
                                                                     id: "header-backgroundStyleRow-controls",
                                                                     parentId: 'panel-header-styles-pnl',
                                                                     inline: true,
-                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
@@ -963,15 +941,22 @@ export const getSettings = () => {
                                                                             propertyName: "headerStyles.background.position",
                                                                             dropdownOptions: positionOptions,
                                                                         },
-                                                                        {
-                                                                            type: 'radio',
-                                                                            id: nanoid(),
-                                                                            label: "Repeat",
-                                                                            hideLabel: true,
-                                                                            propertyName: "headerStyles.background.repeat",
-                                                                            buttonGroupOptions: repeatOptions,
-                                                                        }
                                                                     ]
+                                                                })
+                                                                .addSettingsInputRow({
+                                                                    id: 'backgroundStyleRow-repeat',
+                                                                    parentId: 'backgroundStyleRow',
+                                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                    inputs: [{
+                                                                        type: 'radio',
+                                                                        id: 'backgroundStyleRow-repeat-radio',
+                                                                        label: 'Repeat',
+                                                                        hideLabel: true,
+                                                                        propertyName: 'headerStyles.background.repeat',
+                                                                        inputType: 'radio',
+                                                                        buttonGroupOptions: repeatOptions,
+                                                                    }],
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                 })
                                                                 .toJson()
                                                             ]
@@ -980,7 +965,7 @@ export const getSettings = () => {
                                                     .addCollapsiblePanel({
                                                         id: 'panelheader-styling-box',
                                                         propertyName: 'stylingBox',
-                                                        label: 'Styling Box',
+                                                        label: 'Margin and Padding',
                                                         labelAlign: 'right',
                                                         parentId: 'panel-header-styles-pnl',
                                                         collapsible: 'header',
@@ -1015,12 +1000,6 @@ export const getSettings = () => {
                                                                     hideLabel: false,
                                                                     label: 'Style',
                                                                     description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                                                })
-                                                                .addStyleBox({
-                                                                    id: nanoid(),
-                                                                    label: 'Margin Padding',
-                                                                    hideLabel: true,
-                                                                    propertyName: 'headerStyles.stylingBox',
                                                                 })
                                                                 .toJson()]
                                                         }

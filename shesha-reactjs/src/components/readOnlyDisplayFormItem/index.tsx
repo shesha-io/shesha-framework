@@ -41,7 +41,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
       return '';
     }
 
-    const entityId = value?.id ?? value?.data?.id ?? value?.data ?? value;
+    const entityId = typeof value === 'object' ? value?.id ?? value?.data?.id ?? value?.data : value;
     const className = value?._className ?? value?.data?._className;
     const displayName = value?.label || value?._displayName || value?.data?._displayName;
 

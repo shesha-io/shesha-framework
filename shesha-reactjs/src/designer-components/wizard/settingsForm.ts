@@ -4,11 +4,10 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
-import { getBorderInputs } from '../_settings/utils/border/utils';
-import { getCornerInputs } from '../_settings/utils/border/utils';
-import { repeatOptions } from '../_settings/utils/background/utils';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
+import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 
-export const getSettings = (data) => {
+export const getSettings = () => {
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
@@ -27,85 +26,116 @@ export const getSettings = (data) => {
                         components: [...new DesignerToolbarSettings()
                             .addSettingsInput({
                                 id: nanoid(),
+                                inputType: 'textField',
                                 propertyName: 'componentName',
                                 label: 'Component Name',
                                 parentId: 'root',
                                 size: 'small',
+                                hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
                                 validate: {
                                     required: true,
                                 },
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'wizardType',
-                                label: 'Wizard Type',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'default', label: 'Default' },
-                                    { value: 'navigation', label: 'Navigation' }
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: 'wizardType',
+                                        type: 'dropdown',
+                                        propertyName: 'wizardType',
+                                        label: 'Wizard Type',
+                                        parentId: 'root',
+                                        inputType: 'dropdown',
+                                        jsSetting: true,
+                                        hidden: { _code: 'return  getSettingValue(data?.hidden);', _mode: 'code', _value: false } as any,
+                                        dropdownOptions: [
+                                            { value: 'default', label: 'Default' },
+                                            { value: 'navigation', label: 'Navigation' }
+                                        ]
+                                    },
+                                    {
+                                        id: 'direction',
+                                        type: 'dropdown',
+                                        propertyName: 'direction',
+                                        label: 'Direction',
+                                        parentId: 'root',
+                                        inputType: 'dropdown',
+                                        tooltip: 'To specify the direction of the step bar',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            { value: 'vertical', label: 'Vertical' },
+                                            { value: 'horizontal', label: 'Horizontal' }
+                                        ]
+                                    }
                                 ]
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: nanoid(),
-                                propertyName: 'steps',
-                                label: 'Configure Steps',
-                                parentId: 'root',
-                                inputType: 'itemListConfiguratorModal',
-                                onAddNewItem: onAddNewItem,
-                                listItemSettingsMarkup: getItemSettings(),
-                                modalProps: {
-                                    title: 'Configure Wizard Steps',
-                                    header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
-                                },
-                                buttonText: 'Configure Wizard Steps',
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'direction',
-                                label: 'Direction',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'To specify the direction of the step bar',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: 'labelPlacement',
+                                        type: 'dropdown',
+                                        propertyName: 'labelPlacement',
+                                        label: 'Label Placement',
+                                        parentId: 'root',
+                                        inputType: 'dropdown',
+                                        tooltip: 'To specify the label placement',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            { value: 'vertical', label: 'Vertical' },
+                                            { value: 'horizontal', label: 'Horizontal' }
+                                        ]
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'defaultActiveStep',
+                                        label: 'Default Active Step',
+                                        parentId: 'root',
+                                        type: 'dropdown',
+                                        tooltip: 'This will be the default step that is active',
+                                        jsSetting: true,
+                                        dropdownOptions: { _code: 'return  getSettingValue(data?.steps)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                    }
                                 ]
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'labelPlacement',
-                                label: 'Label Placement',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'To specify the label placement',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                    { value: 'vertical', label: 'Vertical' },
-                                    { value: 'horizontal', label: 'Horizontal' }
-                                ]
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'defaultActiveStep',
-                                label: 'Default Active Step',
-                                parentId: 'root',
-                                inputType: 'dropdown',
-                                tooltip: 'This will be the default step that is active',
-                                jsSetting: true,
-                                hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                dropdownOptions: data?.steps,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'hidden',
-                                label: 'hide',
-                                parentId: 'root',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
+                            .addSettingsInputRow(
+                                {
+                                    id: nanoid(),
+                                    readOnly: false,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            type: 'itemListConfiguratorModal',
+                                            propertyName: 'steps',
+                                            label: 'Configure Steps',
+                                            parentId: 'root',
+                                            buttonTextReadOnly: 'View Wizard Steps',
+                                            onAddNewItem: onAddNewItem,
+                                            listItemSettingsMarkup: getItemSettings(),
+                                            hidden: false,
+                                            modalSettings: {
+                                                title: 'Configure Wizard Steps',
+                                                header: 'Here you can configure the wizard steps by adjusting their settings and ordering.'
+                                            },
+                                            modalReadonlySettings: {
+                                                title: 'View Wizard Steps',
+                                                header: 'Here you can view wizard steps configuration'
+                                            },
+                                            buttonText: 'Configure Steps',
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'hidden',
+                                            label: 'Hide',
+                                            parentId: 'root',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                        }
+                                    ]
+                                }
+                            )
                             .toJson()
                         ]
                     },
@@ -268,19 +298,6 @@ export const getSettings = (data) => {
                                                             }
                                                         ]
                                                     })
-                                                    .addSettingsInput({
-                                                        id: 'predefinedSizes',
-                                                        inputType: 'dropdown',
-                                                        propertyName: 'size',
-                                                        label: 'Size',
-                                                        width: '150px',
-                                                        hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                        dropdownOptions: [
-                                                            { value: 'small', label: 'Small' },
-                                                            { value: 'medium', label: 'Medium' },
-                                                            { value: 'large', label: 'Large' },
-                                                        ]
-                                                    })
                                                     .toJson()
                                                 ]
                                             }
@@ -347,33 +364,7 @@ export const getSettings = (data) => {
                                                             propertyName: "background.type",
                                                             inputType: "radio",
                                                             tooltip: "Select a type of background",
-                                                            buttonGroupOptions: [
-                                                                {
-                                                                    value: "color",
-                                                                    icon: "FormatPainterOutlined",
-                                                                    title: "Color"
-                                                                },
-                                                                {
-                                                                    value: "gradient",
-                                                                    icon: "BgColorsOutlined",
-                                                                    title: "Gradient"
-                                                                },
-                                                                {
-                                                                    value: "image",
-                                                                    icon: "PictureOutlined",
-                                                                    title: "Image"
-                                                                },
-                                                                {
-                                                                    value: "url",
-                                                                    icon: "LinkOutlined",
-                                                                    title: "URL"
-                                                                },
-                                                                {
-                                                                    value: "storedFile",
-                                                                    icon: "DatabaseOutlined",
-                                                                    title: "Stored File"
-                                                                }
-                                                            ],
+                                                            buttonGroupOptions: backgroundTypeOptions,
                                                             readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                         })
                                                         .addSettingsInputRow({
@@ -459,20 +450,7 @@ export const getSettings = (data) => {
                                                                     label: "Size",
                                                                     hideLabel: true,
                                                                     propertyName: "background.size",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "cover",
-                                                                            label: "Cover"
-                                                                        },
-                                                                        {
-                                                                            value: "contain",
-                                                                            label: "Contain"
-                                                                        },
-                                                                        {
-                                                                            value: "auto",
-                                                                            label: "Auto"
-                                                                        }
-                                                                    ],
+                                                                    dropdownOptions: sizeOptions,
                                                                 },
                                                                 {
                                                                     type: 'customDropdown',
@@ -480,54 +458,24 @@ export const getSettings = (data) => {
                                                                     label: "Position",
                                                                     hideLabel: true,
                                                                     propertyName: "background.position",
-                                                                    dropdownOptions: [
-                                                                        {
-                                                                            value: "center",
-                                                                            label: "Center"
-                                                                        },
-                                                                        {
-                                                                            value: "top",
-                                                                            label: "Top"
-                                                                        },
-                                                                        {
-                                                                            value: "left",
-                                                                            label: "Left"
-                                                                        },
-                                                                        {
-                                                                            value: "right",
-                                                                            label: "Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom",
-                                                                            label: "Bottom"
-                                                                        },
-                                                                        {
-                                                                            value: "top left",
-                                                                            label: "Top Left"
-                                                                        },
-                                                                        {
-                                                                            value: "top right",
-                                                                            label: "Top Right"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom left",
-                                                                            label: "Bottom Left"
-                                                                        },
-                                                                        {
-                                                                            value: "bottom right",
-                                                                            label: "Bottom Right"
-                                                                        }
-                                                                    ],
-                                                                },
-                                                                {
-                                                                    type: 'radio',
-                                                                    id: 'backgroundStyleRow-repeat',
-                                                                    label: "Repeat",
-                                                                    hideLabel: true,
-                                                                    propertyName: "background.repeat",
-                                                                    buttonGroupOptions: repeatOptions,
+                                                                    dropdownOptions: positionOptions
                                                                 }
                                                             ]
+                                                        })
+                                                        .addSettingsInputRow({
+                                                            id: 'backgroundStyleRow-repeat',
+                                                            parentId: 'backgroundStyleRow',
+                                                            readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                            inputs: [{
+                                                                type: 'radio',
+                                                                id: 'backgroundStyleRow-repeat-radio',
+                                                                label: 'Repeat',
+                                                                hideLabel: true,
+                                                                propertyName: 'background.repeat',
+                                                                inputType: 'radio',
+                                                                buttonGroupOptions: repeatOptions,
+                                                            }],
+                                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                         })
                                                         .toJson()
                                                 ],
@@ -555,7 +503,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-offsetX',
                                                                 label: 'Offset X',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset X',
+                                                                width: 80,
                                                                 icon: "offsetHorizontalIcon",
                                                                 propertyName: 'shadow.offsetX',
                                                             },
@@ -564,7 +513,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-offsetY',
                                                                 label: 'Offset Y',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Offset Y',
+                                                                width: 80,
                                                                 icon: 'offsetVerticalIcon',
                                                                 propertyName: 'shadow.offsetY',
                                                             },
@@ -573,7 +523,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Blur radius',
+                                                                width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
                                                             },
@@ -582,7 +533,8 @@ export const getSettings = (data) => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                width: 60,
+                                                                tooltip: 'Spread radius',
+                                                                width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
                                                             },
@@ -665,7 +617,7 @@ export const getSettings = (data) => {
                                                         dropdownOptions: [
                                                             { value: 'left', label: 'Left' },
                                                             { value: 'right', label: 'Right' },
-                                                            { value: 'spaceBetween', label: 'Space Between' }
+                                                            { value: 'spaceBetween', label: 'Space between' }
                                                         ]
                                                     })
                                                     .addSettingsInputRow({

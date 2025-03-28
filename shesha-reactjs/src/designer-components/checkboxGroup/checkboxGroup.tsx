@@ -39,16 +39,26 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGoupProps> = {
         {(value, onChange) => {
           const customEvents = getEventHandlers(model, allData);
           const onChangeInternal = (e: any) => {
-            customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
+            if (e.target) customEvents.onChange({ ...e, currentTarget: { value: e.target.value } });
             if (typeof onChange === 'function') onChange(e);
           };
+
+          const onFocusInternal = (e: any) => {
+            if (e.target) customEvents.onFocus({ ...e, currentTarget: { value: e.target.value } });
+          };
+
+          const onBlurInternal = (e: any) => {
+            if (e.target) customEvents.onBlur({ ...e, currentTarget: { value: e.target.value } });
+          };
+
           return (
             <RefListCheckboxGroup
               {...model}
-              {...customEvents}
               style={getStyle(model?.style, data)}
               value={value}
               onChange={onChangeInternal}
+              onFocus={onFocusInternal}
+              onBlur={onBlurInternal}
             />
           );
         }}

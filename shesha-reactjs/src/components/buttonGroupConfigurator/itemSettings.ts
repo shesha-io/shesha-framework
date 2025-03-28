@@ -4,7 +4,6 @@ import { fontTypes, fontWeights, textAlign } from '@/designer-components/_settin
 import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import _ from 'lodash';
 
 export const getItemSettings = (data) => {
 
@@ -30,7 +29,7 @@ export const getItemSettings = (data) => {
                                 propertyName: "itemSubType",
                                 label: "Item Type",
                                 labelAlign: "right",
-                                parentId: "root",
+                                parentId: "s4gmBg31azZC0UjZjpfTm",
                                 hidden: false,
                                 jsSetting: false,
                                 dropdownOptions: [
@@ -63,9 +62,8 @@ export const getItemSettings = (data) => {
                                     ...new DesignerToolbarSettings()
                                         .addSettingsInputRow({
                                             id: 'name-8b38-4b82-b192-563259afc159',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
-
                                             inputs: [{
                                                 id: 'name-8b38-4b82-b192-563259afc159',
                                                 type: 'textField',
@@ -79,7 +77,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             hidden: data?.itemSubType !== 'button',
                                             inputs: [
@@ -88,7 +86,8 @@ export const getItemSettings = (data) => {
                                                     type: "textField",
                                                     propertyName: "label",
                                                     parentId: "root",
-                                                    label: "Caption"
+                                                    label: "Caption",
+                                                    jsSetting: true
                                                 },
                                                 {
                                                     id: "rupsZ1fuRwqetjQ0BC5sk",
@@ -98,13 +97,14 @@ export const getItemSettings = (data) => {
                                                     labelAlign: "right",
                                                     parentId: "root",
                                                     hidden: false,
-                                                    allowClear: false
+                                                    allowClear: false,
+                                                    jsSetting: true
                                                 }
                                             ]
                                         })
                                         .addSettingsInputRow({
                                             id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             inputs: [
                                                 {
                                                     id: 'icon-s4gmBg31azZC0UjZjpfTm',
@@ -112,6 +112,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'icon',
                                                     label: 'Icon',
                                                     size: 'small',
+                                                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -121,6 +122,7 @@ export const getItemSettings = (data) => {
                                                     size: 'small',
                                                     jsSetting: true,
                                                     type: 'radio',
+                                                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     buttonGroupOptions: [
                                                         { title: 'start', value: 'start', icon: 'LeftOutlined' },
                                                         { title: 'end', value: 'end', icon: 'RightOutlined' },
@@ -131,7 +133,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             inputs: [
                                                 {
@@ -140,6 +142,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'editMode',
                                                     label: 'Edit Mode',
                                                     size: 'small',
+                                                    parentId: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -156,6 +159,7 @@ export const getItemSettings = (data) => {
                                             id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                             propertyName: 'actionConfiguration',
                                             label: 'Action Configuration',
+                                            hideLabel: true,
                                             validate: {},
                                             settingsValidationErrors: [],
                                         }).toJson()
@@ -196,6 +200,9 @@ export const getItemSettings = (data) => {
                         key: '2',
                         title: 'Appearance',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
+                        hidden: {
+                            _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
+                        },
                         components: [
                             ...new DesignerToolbarSettings()
                                 .addSettingsInput({
@@ -213,7 +220,7 @@ export const getItemSettings = (data) => {
                                     propertyName: 'pnlFontStyle',
                                     label: 'Font',
                                     labelAlign: 'right',
-                                    parentId: 'root',
+                                    parentId: 'styleRouter',
                                     ghost: true,
                                     collapsible: 'header',
                                     content: {
@@ -278,7 +285,7 @@ export const getItemSettings = (data) => {
                                     id: 'dimensionsStyleCollapsiblePanel',
                                     propertyName: 'pnlDimensions',
                                     label: 'Dimensions',
-                                    parentId: 'root',
+                                    parentId: 'styleRouter',
                                     labelAlign: 'right',
                                     ghost: true,
                                     collapsible: 'header',
@@ -356,20 +363,6 @@ export const getItemSettings = (data) => {
                                                     }
                                                 ]
                                             })
-                                            .addSettingsInput({
-                                                id: 'predefinedSizes',
-                                                parentId: 'dimensionsStylePnl',
-                                                propertyName: 'size',
-                                                label: 'Size',
-                                                inputType: 'dropdown',
-                                                width: '150px',
-                                                hidden: { _code: 'return  getSettingValue(data?.dimensions?.width) || getSettingValue(data?.dimensions?.height);', _mode: 'code', _value: false } as any,
-                                                dropdownOptions: [
-                                                    { value: 'small', label: 'Small' },
-                                                    { value: 'medium', label: 'Medium' },
-                                                    { value: 'large', label: 'Large' },
-                                                ]
-                                            })
                                             .toJson()
                                         ]
                                     }
@@ -380,8 +373,8 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'root',
+                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                                    parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
                                         id: 'borderStylePnl',
@@ -389,7 +382,7 @@ export const getItemSettings = (data) => {
                                             .addSettingsInputRow({
                                                 id: `borderStyleRow`,
                                                 parentId: 'borderStylePnl',
-                                                hidden: { _code: 'return  !getSettingValue(data.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                hidden: { _code: 'return  !getSettingValue(data?.border?.hideBorder);', _mode: 'code', _value: false } as any,
                                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 inputs: [
                                                     {
@@ -407,12 +400,12 @@ export const getItemSettings = (data) => {
                                             .addContainer({
                                                 id: 'borderStyleRow',
                                                 parentId: 'borderStylePnl',
-                                                components: getBorderInputs('', false) as any
+                                                components: getBorderInputs("", false) as any
                                             })
                                             .addContainer({
                                                 id: 'borderRadiusStyleRow',
                                                 parentId: 'borderStylePnl',
-                                                components: getCornerInputs('', false) as any
+                                                components: getCornerInputs("", false) as any
                                             })
                                             .toJson()
                                         ]
@@ -424,9 +417,9 @@ export const getItemSettings = (data) => {
                                     label: 'Background',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'root',
+                                    parentId: 'styleRouter',
                                     collapsible: 'header',
+                                    hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
                                     content: {
                                         id: 'backgroundStylePnl',
                                         components: [
@@ -438,6 +431,7 @@ export const getItemSettings = (data) => {
                                                     jsSetting: false,
                                                     propertyName: "background.type",
                                                     inputType: "radio",
+                                                    defaultValue: "color",
                                                     tooltip: "Select a type of background",
                                                     buttonGroupOptions: backgroundTypeOptions,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
@@ -453,7 +447,7 @@ export const getItemSettings = (data) => {
                                                         hideLabel: true,
                                                         jsSetting: false,
                                                     }],
-                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
@@ -467,7 +461,7 @@ export const getItemSettings = (data) => {
                                                         jsSetting: false,
                                                     }
                                                     ],
-                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
                                                     hideLabel: true,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
@@ -481,7 +475,7 @@ export const getItemSettings = (data) => {
                                                         jsSetting: false,
                                                         label: "URL",
                                                     }],
-                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
@@ -494,18 +488,19 @@ export const getItemSettings = (data) => {
                                                         label: "Image",
                                                         jsSetting: false,
                                                     }],
-                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 })
                                                 .addSettingsInputRow({
                                                     id: "backgroundStyleRow-storedFile",
                                                     parentId: 'backgroundStylePnl',
-                                                    hidden: { _code: 'return  getSettingValue(data.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {
                                                             type: 'textField',
-                                                            id: 'backgroundStyleRow-storedFile',
+                                                            id: 'backgroundStyle-storedFile',
+                                                            jsSetting: false,
                                                             propertyName: "background.storedFile.id",
                                                             label: "File ID"
                                                         }
@@ -515,36 +510,43 @@ export const getItemSettings = (data) => {
                                                     id: "backgroundStyleRow-controls",
                                                     parentId: 'backgroundStyleRow',
                                                     inline: true,
-                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                     inputs: [
                                                         {
                                                             type: 'customDropdown',
                                                             id: 'backgroundStyleRow-size',
                                                             label: "Size",
-                                                            hideLabel: true,
                                                             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                                            hideLabel: true,
                                                             propertyName: "background.size",
                                                             dropdownOptions: sizeOptions,
                                                         },
                                                         {
-                                                            label: "Position",
-                                                            hideLabel: true,
                                                             type: 'customDropdown',
                                                             id: 'backgroundStyleRow-position',
+                                                            label: "Position",
+                                                            hideLabel: true,
                                                             customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                                             propertyName: "background.position",
                                                             dropdownOptions: positionOptions,
                                                         },
-                                                        {
-                                                            type: 'radio',
-                                                            id: 'backgroundStyleRow-repeat',
-                                                            label: "Repeat",
-                                                            hideLabel: true,
-                                                            propertyName: "background.repeat",
-                                                            buttonGroupOptions: repeatOptions,
-                                                        }
                                                     ]
+                                                })
+                                                .addSettingsInputRow({
+                                                    id: 'backgroundStyleRow-repeat',
+                                                    parentId: 'backgroundStyleRow',
+                                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                    inputs: [{
+                                                        type: 'radio',
+                                                        id: 'backgroundStyleRow-repeat-radio',
+                                                        label: 'Repeat',
+                                                        hideLabel: true,
+                                                        propertyName: 'background.repeat',
+                                                        inputType: 'radio',
+                                                        buttonGroupOptions: repeatOptions,
+                                                    }],
+                                                    hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                 })
                                                 .toJson()
                                         ],
@@ -556,8 +558,8 @@ export const getItemSettings = (data) => {
                                     label: 'Shadow',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data.buttonType));', _mode: 'code', _value: false } as any,
-                                    parentId: 'root',
+                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                                    parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
                                         id: 'shadowStylePnl',
@@ -573,7 +575,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-offsetX',
                                                         label: 'Offset X',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: "offsetHorizontalIcon",
                                                         propertyName: 'shadow.offsetX',
@@ -583,7 +585,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-offsetY',
                                                         label: 'Offset Y',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: 'offsetVerticalIcon',
                                                         propertyName: 'shadow.offsetY',
@@ -593,7 +595,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-blur',
                                                         label: 'Blur',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: 'blurIcon',
                                                         propertyName: 'shadow.blurRadius',
@@ -603,7 +605,7 @@ export const getItemSettings = (data) => {
                                                         id: 'shadowStyleRow-spread',
                                                         label: 'Spread',
                                                         hideLabel: true,
-                                                        width: 60,
+                                                        width: 80,
                                                         inputType: 'numberField',
                                                         icon: 'spreadIcon',
                                                         propertyName: 'shadow.spreadRadius',
@@ -622,9 +624,29 @@ export const getItemSettings = (data) => {
                                     }
                                 })
                                 .addCollapsiblePanel({
+                                    id: 'styleCollapsiblePanel',
+                                    propertyName: 'stylingBox',
+                                    label: 'Margin & Padding',
+                                    labelAlign: 'right',
+                                    ghost: true,
+                                    collapsible: 'header',
+                                    content: {
+                                        id: 'stylePnl-M5-911',
+                                        components: [...new DesignerToolbarSettings()
+                                            .addStyleBox({
+                                                id: 'styleBoxPnl',
+                                                label: 'Margin Padding',
+                                                hideLabel: true,
+                                                propertyName: 'stylingBox',
+                                            })
+                                            .toJson()
+                                        ]
+                                    }
+                                })
+                                .addCollapsiblePanel({
                                     id: 'customStyleCollapsiblePanel',
                                     propertyName: 'customStyle',
-                                    label: 'Custom Style',
+                                    label: 'Custom Styles',
                                     labelAlign: 'right',
                                     ghost: true,
                                     parentId: 'styleRouter',
@@ -635,9 +657,9 @@ export const getItemSettings = (data) => {
                                             .addSettingsInput({
                                                 readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                 id: 'custom-css-412c-8461-4c8d55e5c073',
-                                                propertyName: 'style',
-                                                hideLabel: true,
                                                 inputType: 'codeEditor',
+                                                propertyName: 'style',
+                                                hideLabel: false,
                                                 label: 'Style',
                                                 description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                                             })
@@ -670,7 +692,7 @@ export const getItemSettings = (data) => {
             colon: false,
             layout: 'vertical' as FormLayout,
             labelCol: { span: 24 },
-            wrapperCol: { span: 24 }
-        }
+            wrapperCol: { span: 24 },
+        },
     };
 };

@@ -2,16 +2,23 @@ import { nanoid } from "@/utils/uuid";
 import { ITabPaneProps } from "./models";
 import { IStyleType } from "@/index";
 
-export const defaultStyles: IStyleType = {
+const initialBorder: IStyleType['border']['border']['all'] = { width: '1px', color: '#f0f0f0', style: 'solid' };
 
+export const defaultStyles: IStyleType = {
+    font: {
+        size: 14,
+        weight: '500',
+        type: 'Segoe UI',
+        color: 'var(--primary-color)'
+    },
     background: { type: 'color', color: '#FFFFFF' },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
         border: {
-            all: { width: '1px', color: '#f0f0f0', style: 'solid' }, top: { width: '1' }, right: { width: '1' },
-            bottom: { width: '1' }, left: { width: '1' }
+            all: initialBorder, top: initialBorder, right: initialBorder,
+            bottom: initialBorder, left: initialBorder
         },
-        radius: { all: 8 },
+        radius: { all: 8, topLeft: 0, topRight: 0, bottomLeft: 0, bottomRight: 0 },
         radiusType: 'all',
         borderType: 'all'
     },
@@ -19,7 +26,14 @@ export const defaultStyles: IStyleType = {
 };
 
 export const defaultCardStyles: IStyleType = {
-    background: { type: 'color', color: 'rgba(0,0,0,0.02)' },
+    font: {
+        size: 14,
+        weight: '400',
+        type: 'Segoe UI',
+        color: 'var(--primary-color)'
+    },
+    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    background: { type: 'color', color: 'rgba(0,0,0,0.02)', repeat: 'repeat', size: 'cover', position: 'center' },
 };
 
 export const onAddNewItem = (items) => {

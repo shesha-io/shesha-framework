@@ -1,7 +1,4 @@
-﻿using System;
-using Abp.Application.Services.Dto;
-
-namespace Shesha.Web.FormsDesigner.Dtos
+﻿namespace Shesha.Web.FormsDesigner.Dtos
 {
     /// <summary>
     /// Update component settings input
@@ -11,12 +8,12 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Module name
         /// </summary>
-        public string Module { get; set; }
+        public string? Module { get; set; }
 
         /// <summary>
         /// Component name
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// If true, indicates that component is application specific
@@ -26,6 +23,6 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Settings in JSON format
         /// </summary>
-        public string Settings { get; set; }
+        public string? Settings { get; set; }
     }
 }

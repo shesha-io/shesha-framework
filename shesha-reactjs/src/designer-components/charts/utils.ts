@@ -82,7 +82,6 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
       properties: removePropertyDuplicates((convertNestedPropertiesToObjectFormat([dataProperty, legendProperty, axisProperty]) + ", " + convertNestedPropertiesToObjectFormat(filterProperties)).replace(/\s/g, '')),
       filter: filters,
       sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
-      maxResultCount: -1
     },
   };
 };

@@ -6,6 +6,7 @@ using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.ShaRoleAppointedPersons.Dto;
+using Shesha.Validations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -82,8 +83,7 @@ namespace Shesha.ShaRoleAppointedPersons
 
             // todo: validate regions only for roles with region parameter
 
-            if (validationResults.Any())
-                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+            validationResults.ThrowValidationExceptionIfAny(L);
 
             await Repository.InsertOrUpdateAsync(entity);
 

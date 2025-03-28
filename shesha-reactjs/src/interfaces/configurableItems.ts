@@ -11,6 +11,10 @@ export const isConfigurableItemRawId = (formId: ConfigurableItemIdentifier): for
   return formId && typeof formId === 'string';
 };
 
-export const isConfigurableItemFullName = (formId: ConfigurableItemIdentifier): formId is ConfigurableItemFullName => {
-  return formId && Boolean((formId as ConfigurableItemFullName)?.name);
+export const isConfigurableItemFullName = (value: ConfigurableItemIdentifier): value is ConfigurableItemFullName => {
+  return value && Boolean((value as ConfigurableItemFullName)?.name);
+};
+
+export const ConfigurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
+  return isConfigurableItemFullName(value) ? `${value.module}:${value.name}` : value;
 };

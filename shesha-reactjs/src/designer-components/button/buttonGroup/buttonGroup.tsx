@@ -33,8 +33,6 @@ import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { removeNullUndefined } from '@/providers/utils';
-import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { initialValues } from '@/components/buttonGroupConfigurator/utils';
 import { getSizeStyle } from '@/designer-components/_settings/utils/dimensions/utils';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
@@ -94,7 +92,9 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-    const finalStyles = removeUndefinedProps({ ...finalStyle, ...stylingBoxAsCSS });
+    const finalStyles = removeUndefinedProps({
+        ...finalStyle, ...stylingBoxAsCSS, '--ant-button-padding-block-lg': '0px'
+    });
 
     return (
         <ConfigurableButton
@@ -179,7 +179,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
         switch (item.itemSubType) {
             case 'button':
-                return <RenderButton props={{ ...item, ...migratePrevStyles(item) }} uuid={item.id} appContext={appContext} form={form} />;
+                return <RenderButton props={{ ...item }} uuid={item.id} appContext={appContext} form={form} />;
             case 'separator':
             case 'line':
                 return <Divider type='vertical' key={uuid} />;
@@ -245,10 +245,10 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         return items?.map((item) => {
             const model = { ...item, type: '' };
             const jsStyle = getStyle(model.style);
-            const dimensions = migratePrevStyles(model, initialValues()).dimensions;
-            const border = migratePrevStyles(model, initialValues())?.border;
-            const font = migratePrevStyles(model, initialValues())?.font;
-            const shadow = migratePrevStyles(model, initialValues())?.shadow;
+            const dimensions = item?.dimensions;
+            const border = item?.border;
+            const font = item?.font;
+            const shadow = item?.shadow;
 
             const dimensionsStyles = getSizeStyle(dimensions);
             const borderStyles = getBorderStyle(border, jsStyle);

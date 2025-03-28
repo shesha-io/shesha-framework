@@ -124,10 +124,12 @@ namespace Shesha.Configuration.Runtime
             foreach (var src in properties)
             {
                 var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty();
+                    ?? new EntityProperty { 
+                        EntityConfig = item,
+                        Name = src.Name,
+                        DataType = src.DataType
+                    };
 
-                dbItem.EntityConfig = item;
-                dbItem.Name = src.Name;
                 dbItem.Label = src.Label;
                 dbItem.Description = src.Description;
                 dbItem.DataType = src.DataType;

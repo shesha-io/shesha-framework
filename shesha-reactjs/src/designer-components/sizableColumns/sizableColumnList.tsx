@@ -160,13 +160,13 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
   const cols = [
     !readOnly
       ? {
-          title: '',
-          dataIndex: 'sort',
-          width: 30,
-          render: (_text, _record, _index) => {
-            return <DragHandle />;
-          },
-        }
+        title: '',
+        dataIndex: 'sort',
+        width: 30,
+        render: (_text, _record, _index) => {
+          return <DragHandle />;
+        },
+      }
       : null,
     {
       title: 'Size',
@@ -176,15 +176,15 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
     },
     !readOnly
       ? {
-          title: '',
-          dataIndex: 'operations',
-          render: (_, record) =>
-            columns.length >= 1 ? (
-              <Popconfirm title="Are you sure want to delete this tab?" onConfirm={() => handleDeleteTab(record.id)}>
-                <a>Delete</a>
-              </Popconfirm>
-            ) : null,
-        }
+        title: '',
+        dataIndex: 'operations',
+        render: (_, record) =>
+          columns.length >= 1 ? (
+            <Popconfirm title="Are you sure want to delete this column?" onConfirm={() => handleDeleteTab(record.id)}>
+              <a>Delete</a>
+            </Popconfirm>
+          ) : null,
+      }
       : null,
   ].filter((c) => Boolean(c));
 
@@ -235,7 +235,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
 
   return (
     <Fragment>
-      <Button onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
+      <Button size="small" onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
 
       <Modal
         title={readOnly ? 'View Columns' : 'Configure Columns'}

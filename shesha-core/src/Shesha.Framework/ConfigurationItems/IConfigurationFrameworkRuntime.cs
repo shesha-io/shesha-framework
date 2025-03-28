@@ -16,7 +16,7 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Front-end application
         /// </summary>
-        string FrontEndApplication { get; }
+        string? FrontEndApplication { get; }
 
         /// <summary>
         /// Begin runtime scope

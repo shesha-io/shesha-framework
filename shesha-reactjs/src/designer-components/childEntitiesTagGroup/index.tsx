@@ -23,7 +23,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
-          <ChildEntitiesTagGroupControl model={model} value={value} onChange={onChange} />
+          <ChildEntitiesTagGroupControl model={model} value={value} onChange={onChange} componentName={model.componentName} />
         }
       </ConfigurableFormItem>
     );

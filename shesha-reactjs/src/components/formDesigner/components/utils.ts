@@ -133,7 +133,8 @@ export const customAddressEventHandler = (
   model: IConfigurableFormComponent,
   context: IApplicationContext,
   onChangeCustom,
-  onSelectCustom
+  onSelectCustom,
+  onFocusCustom,
 ): IGooglePlacesAutocompleteProps => {
 
   const onCustomEvent = (event: any, key: string) => {
@@ -157,12 +158,18 @@ export const customAddressEventHandler = (
     onCustomEvent(e, 'onChangeCustom');
   };
 
+  const onFocus = (e: string) => {
+    onFocusCustom(e);
+    onCustomEvent(e, 'onFocusCustom');
+  };
+
   const onGeocodeChange = (event: IAddressAndCoords) =>
     onSelectCustom(event).then((payload) => onCustomEvent({ ...event, ...(payload || {}) }, 'onSelectCustom'));
 
   return {
     onChange,
     onGeocodeChange,
+    onFocus
   };
 };
 

@@ -7,3 +7,5 @@ export interface TypeAndLocation {
     /** Absolute path to the file */
     filePath?: string;
 }
+
+export const EOL = '\r\n';
