@@ -109,25 +109,34 @@ const ROW_SAVE_EXPOSED_VARIABLES = [
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .addSettingsInput({
+              .addSettingsInputRow({
                 id: nanoid(),
-                inputType: 'dropdown',
-                propertyName: "formType",
                 parentId: 'root',
                 label: "Form type",
-                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "view";', _mode: 'code', _value: false } as any,
-                jsSetting: true,
-                dataSourceType: 'entitiesList',
-                dropdownOptions: [
-                  { label: 'Table', value: 'Table' },
-                  { label: 'Create', value: 'Create' },
-                  { label: 'Edit', value: 'Edit' },
-                  { label: 'Details', value: 'Details' },
-                  { label: 'Quickview', value: 'Quickview' }, 
-                  { label: 'ListItem', value: 'ListItem' },
-                  { label: 'Picker', value: 'Picker' }
-                ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "view";', _mode: 'code', _value: false } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'formType',
+                    label: 'Form Type',
+                    type: 'myAutocomplete',
+                    jsSetting: true,
+                    validate: {
+                      required: true
+                    },
+                    options: [
+                      { label: 'Table', value: 'Table' },
+                      { label: 'Create', value: 'Create' },
+                      { label: 'Edit', value: 'Edit' },
+                      { label: 'Details', value: 'Details' },
+                      { label: 'Quickview', value: 'Quickview' }, 
+                      { label: 'ListItem', value: 'ListItem' },
+                      { label: 'Picker', value: 'Picker' }
+                    ],
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  }
+                ]
               })
               .addSettingsInput({
                 id: nanoid(),

@@ -36,6 +36,7 @@ import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
 import { FormLayout } from 'antd/es/form/Form';
 import { startCase } from 'lodash';
+import MyAutoComplete from '../dataList/utils';
 
 export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
     const icons = require('@ant-design/icons');
@@ -153,6 +154,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const verb = props.httpVerb ? evaluateValue(props.httpVerb, { data: formData }) : props.httpVerb;
 
     switch (type) {
+        case 'myAutocomplete':
+            console.log('myAutocomplete', { ...props });
+            return <MyAutoComplete {...props}/>;
         case 'tooltip':
             return iconElement(icon, null, tooltip);
         case 'dataSortingEditor':

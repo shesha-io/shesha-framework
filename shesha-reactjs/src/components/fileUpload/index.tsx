@@ -97,18 +97,18 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <React.Fragment>
         {fileInfo && (
-          <a className={styles.shaUploadHistoryControl}>
+          <a >
             {false && <InfoCircleOutlined />}
             <FileVersionsPopup fileId={fileInfo.id} />
           </a>
         )}
         {allowReplace && (
-          <a className={styles.shaUploadReplaceControl} onClick={onReplaceClick}>
+          <a  onClick={onReplaceClick}>
             <SyncOutlined title="Replace" />
           </a>
         )}
         {allowDelete && (
-          <a className={styles.shaUploadRemoveControl} onClick={onDeleteClick}>
+          <a onClick={onDeleteClick}>
             <DeleteOutlined title="Remove" />
           </a>
         )}
@@ -136,9 +136,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
     itemRender: (_originNode, file, _currFileList) => {
       return (
-        <div className={file.error ? styles.shaUploadListItemError : ''}>
-          <div className={styles.shaUploadListItemInfo}>
-            {isUploading && <LoadingOutlined className={styles.shaUploadUploading} />}
+        <div >
+          <div >
+            {isUploading && <LoadingOutlined />}
             <a target="_blank" title={file.name} onClick={onDownloadClick}>
               {file.name} ({filesize(file.size)})
             </a>
@@ -151,7 +151,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
-  const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
+  // const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
     <Button
@@ -169,27 +169,27 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return <Dragger disabled><DraggerStub /></Dragger>;
     }
 
-    return <div className={classes}>{uploadButton}</div>;
+    return <div>{uploadButton}</div>;
   };
 
   const renderUploader = () => {
     if (isDragger && allowUpload) {
       return (
-        <Dragger {...fileProps} className={classes}>
+        <Dragger {...fileProps} >
           <span ref={uploadDraggerSpanRef} />
           <DraggerStub />
         </Dragger>
       );
     }
     return (
-      <Upload {...fileProps}  className={classes}>
+      <Upload {...fileProps}  >
         {allowUpload && uploadButton}
       </Upload>
     );
   };
 
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;

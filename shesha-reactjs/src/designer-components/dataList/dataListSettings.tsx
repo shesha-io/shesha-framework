@@ -21,6 +21,7 @@ import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
+import MyAutoComplete from './utils';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -251,7 +252,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
         {model.formSelectionMode === 'view' &&
           <SettingsFormItem name="formType" label="Form type" jsSetting>
-            <AutoComplete
+            {/* <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
               onSearch={t =>
@@ -266,7 +267,23 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                   })
                 )
               }
-            />
+            /> */}
+            <MyAutoComplete
+            onChange={(value) => console.log(value)}
+            value={model.formType}
+              //disabled={readOnly}
+              options={formTypesOptions}
+              onSearch={(term: any) => setFormTypesOptions(
+                (term
+                  ? formTypes.filter(f => {
+                    return f.toLowerCase().includes(term.toLowerCase());
+                  })
+                  : formTypes
+                ).map(i => {
+                  return { value: i };
+                })
+              )}
+             />
           </SettingsFormItem>
         }
 
