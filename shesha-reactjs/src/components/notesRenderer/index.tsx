@@ -21,9 +21,11 @@ export const NotesRenderer: FC<INotesRendererProps> = ({ autoSize, buttonPostion
   const { fetchNotes: isFetchingNotes, postNotes: isPostingNotes } = isInProgress;
 
   useEffect(() => {
-    onCreated(notes);
-  },[isInProgress]);
-  
+    if (onCreated) {
+      onCreated(notes);
+    }
+  }, [isInProgress, notes]);
+
 
   return (
     <div className={styles.shaNotesRenderer}>
