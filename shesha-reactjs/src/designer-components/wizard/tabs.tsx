@@ -137,10 +137,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         direction={direction}
                         labelPlacement={labelPlacement}
                     />
-
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
-
                 <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
                     <div
                         className={classNames(styles.shaStepsButtonsContainer, {
