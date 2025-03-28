@@ -6,7 +6,6 @@ export const getSettings = (data: any) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
-  const mainStylesTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
@@ -61,8 +60,8 @@ export const getSettings = (data: any) => {
                         {
                           type: 'switch',
                           id: nanoid(),
-                          propertyName: 'hidden',
-                          label: 'Hide',
+                          propertyName: 'allowDelete',
+                          label: 'Allow Delete',
                           jsSetting: true
                         }
                       ]
@@ -80,33 +79,17 @@ export const getSettings = (data: any) => {
                           parentId: commonTabId,
                           defaultValue: 'inherited',
                           jsSetting: true,
+                        },
+                        {
+                          type: 'switch',
+                          id: nanoid(),
+                          propertyName: 'hidden',
+                          label: 'Hide',
+                          jsSetting: true
                         }
                       ]
                     })
                 .toJson()
-            ]
-          },
-          {
-            key: 'mainsettings',
-            title: 'Main Settings',
-            id: mainStylesTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                inputs: [
-                  {
-                    type: 'switch',
-                    id: nanoid(),
-                    propertyName: 'allowDelete',
-                    label: 'Allow Delete',
-                    jsSetting: true
-                  }
-                ]
-              })
-            .toJson()
             ]
           },
           {
@@ -126,19 +109,6 @@ export const getSettings = (data: any) => {
                       propertyName: 'ownerId',
                       label: 'Owner Id',
                       jsSetting: true
-                    }
-                  ]
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  readOnly: false,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'hide'
                     },
                     {
                       id: nanoid(),
@@ -175,18 +145,9 @@ export const getSettings = (data: any) => {
                       label: 'On Created',
                       labelAlign: 'right',
                       parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully creating a new note',
+                      tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
                       readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    },
-                    {
-                      id: nanoid(),
-                      type: 'codeEditor',
-                      propertyName: 'onUpdated',
-                      label: 'On Updated',
-                      labelAlign: 'right',
-                      parentId: eventsTabId,
-                      tooltip: 'Triggered after successfully updating a note',
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      exposedVariables: [` { name: 'createdNotes', description: 'Created note', type: 'array' },`]
                     }
                   ]
                 })

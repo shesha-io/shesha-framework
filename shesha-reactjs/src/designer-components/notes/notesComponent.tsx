@@ -3,13 +3,16 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components';
-import { useFormData } from '@/providers';
-import { evaluateValue, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useForm, useFormData, useGlobalState, useHttpClient, useSheshaApplication } from '@/providers';
+import { evaluateValue, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import NotesProvider from '@/providers/notes';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getFormApi } from '@/providers/form/formApi';
+import { App } from 'antd';
+import moment from 'moment';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -19,6 +22,8 @@ export interface INotesProps extends IConfigurableFormComponent {
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
   allowDelete?: boolean;
+  onCreated?: string;
+  onUpdated?: string;
 }
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
@@ -27,12 +32,30 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   name: 'Notes',
   icon: <FormOutlined />,
   Factory: ({ model }) => {
-    const { data } = useFormData();
-
-    // TODO:: Change to use Mustache
-    const ownerId = evaluateValue(model.ownerId, { data });
-
     if (model.hidden) return null;
+    const httpClient = useHttpClient();
+    const form = useForm();
+    const { data } = useFormData();
+    const { globalState, setState: setGlobalState } = useGlobalState();
+    const { message } = App.useApp();
+
+    const ownerId = evaluateValue(`${model.ownerId}`, { data: data, globalState });
+
+    const onCreated = (createdNotes: Array<any>) => {
+      if (!model.onCreated)
+        return;
+
+      executeScript<void>(model?.onCreated, {
+        createdNotes,
+        data,
+        form: getFormApi(form),
+        globalState,
+        http: httpClient,
+        message,
+        moment,
+        setGlobalState
+      });
+    };
 
     return (
       <NotesProvider ownerId={ownerId} ownerType={model.ownerType}>
@@ -41,6 +64,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
           buttonPostion={model?.savePlacement}
           autoSize={model?.autoSize}
           allowDelete={model.allowDelete}
+          onCreated={onCreated}
         />
       </NotesProvider>
     );
