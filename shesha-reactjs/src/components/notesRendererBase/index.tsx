@@ -105,7 +105,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       <Skeleton loading={isFetchingNotes} active>
         <Card className={classNames(styles.commentListCard, commentListClassName)} size="small">
           <List
-            locale={{ emptyText: <Empty description="The are no notes" /> }}
+            locale={{ emptyText: <Empty description="There are no notes" /> }}
             className={`${styles.commentList} scroll scroll-y`}
             style={{ ...commentListStyles }}
             itemLayout="horizontal"
