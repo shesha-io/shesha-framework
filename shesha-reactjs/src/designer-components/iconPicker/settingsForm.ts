@@ -1,7 +1,6 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 
 export const getSettings = (data: any) => {
     const searchableTabsId = nanoid();
@@ -179,6 +178,7 @@ export const getSettings = (data: any) => {
                                                                 propertyName: 'borderRadius',
                                                                 label: 'Border Radius',
                                                                 jsSetting: true,
+                                                                defaultValue: 8
                                                             },
                                                         ],
                                                     })
@@ -193,6 +193,7 @@ export const getSettings = (data: any) => {
                                                                 propertyName: 'borderWidth',
                                                                 label: 'Border Width',
                                                                 jsSetting: true,
+                                                                defaultValue: 1,
                                                             },
                                                             {
                                                                 type: 'colorPicker',
@@ -310,48 +311,6 @@ export const getSettings = (data: any) => {
                                                         }
                                                     })
 
-                                                    .toJson()
-                                                ]
-                                            }
-                                        })
-                                        .addCollapsiblePanel({
-                                            id: 'borderStyleCollapsiblePanel',
-                                            propertyName: 'pnlBorderStyle',
-                                            label: 'Border',
-                                            labelAlign: 'right',
-                                            ghost: true,
-                                            parentId: 'styleRouter',
-                                            collapsible: 'header',
-                                            content: {
-                                                id: 'borderStylePnl',
-                                                components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
-                                                    .addContainer({
-                                                        id: 'borderStyleRow',
-                                                        parentId: 'borderStylePnl',
-                                                        components: getBorderInputs() as any
-                                                    })
-                                                    .addContainer({
-                                                        id: 'borderRadiusStyleRow',
-                                                        parentId: 'borderStylePnl',
-                                                        components: getCornerInputs() as any
-                                                    })
                                                     .toJson()
                                                 ]
                                             }
