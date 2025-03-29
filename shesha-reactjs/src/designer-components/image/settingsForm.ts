@@ -119,7 +119,6 @@ export const getSettings = (data) => {
                                 jsSetting: true,
                                 propertyName: "dataSource",
                                 inputType: "radio",
-                                tooltip: "Select a type of image ",
                                 buttonGroupOptions: [
                                     {
                                         title: "StoredFile",
@@ -323,7 +322,7 @@ export const getSettings = (data) => {
                                         .addCollapsiblePanel({
                                             id: 'size-position-CollapsiblePanel',
                                             propertyName: 'pnlsize-position-',
-                                            label: 'Picture Style',
+                                            label: 'Picture Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -576,7 +575,7 @@ export const getSettings = (data) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',

@@ -142,7 +142,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                     {
                                         type: 'numberField',
                                         id: 'minLength-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.minLength',
+                                        propertyName: 'minLength',
                                         label: 'Min Length',
                                         size: 'small',
                                         jsSetting: true,
@@ -151,7 +151,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                         type: 'numberField',
                                         id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
                                         defaultValue: 4,
-                                        propertyName: 'validate.maxLength',
+                                        propertyName: 'maxLength',
                                         label: 'Max Length',
                                         size: 'small',
                                         jsSetting: true,
@@ -166,7 +166,7 @@ export const getSettings = (data: IPasswordComponentProps) => {
                                     {
                                         type: 'textField',
                                         id: 'message-s4gmBg31azZC0UjZjpfTm',
-                                        propertyName: 'validate.message',
+                                        propertyName: 'message',
                                         label: 'Message',
                                         size: 'small',
                                         jsSetting: true,

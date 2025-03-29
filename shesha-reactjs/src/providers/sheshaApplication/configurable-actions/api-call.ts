@@ -33,9 +33,9 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
   .addDropdown({
     id: nanoid(),
     propertyName: 'verb',
-    label: 'Http Verb',
+    label: 'HTTP Verb',
     dataSourceType: 'values',
-    values: HttpVerbs.map(v => ({ id: v, label: v, value: v })),
+    values: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
     defaultValue: 'post',
   })
   .addEndpointsAutocomplete({

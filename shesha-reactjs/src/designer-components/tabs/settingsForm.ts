@@ -10,7 +10,6 @@ import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
 
-
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
@@ -80,7 +79,7 @@ export const getSettings = () => {
                                             labelAlign: 'right',
                                             parentId: 'root',
                                             buttonTextReadOnly: 'View Tab Panes',
-                                            buttonText: 'Configure Tabs',
+                                            buttonText: 'Configure Tab Panes',
                                             listItemSettingsMarkup: getItemSettings(),
                                             onAddNewItem: onAddNewItem,
                                             hidden: false,
@@ -95,9 +94,9 @@ export const getSettings = () => {
                                         },
                                         {
                                             id: nanoid(),
-                                            type: 'switch',
+                                            type: 'button',
                                             propertyName: 'hidden',
-                                            label: 'Hide',
+                                            label: 'Hide from the rest of the world',
                                             jsSetting: true,
                                             labelAlign: 'right',
                                             parentId: 'root',
@@ -339,6 +338,31 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
+                                            id: 'tab-line-color-collapsible-panel',
+                                            propertyName: 'pnlTabLineColor',
+                                            label: 'Line Color',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: 'styleRouter',
+                                            collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.tabType) !== "line";', _mode: 'code', _value: false } as any,
+                                            content: {
+                                                id: 'tab-line-color-pnl',
+                                                components: [
+                                                    ...new DesignerToolbarSettings()
+                                                        .addSettingsInput({
+                                                            id: 'tab-line-color-row',
+                                                            parentId: 'tab-line-color-pnl',
+                                                            inputType: 'colorPicker',
+                                                            label: 'Color',
+                                                            propertyName: 'tabLineColor',
+                                                            jsSetting: false,
+                                                        })
+                                                        .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
                                             id: 'backgroundStyleCollapsiblePanel',
                                             propertyName: 'pnlBackgroundStyle',
                                             label: 'Background',
@@ -346,6 +370,7 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'backgroundStylePnl',
                                                 components: [

@@ -37,7 +37,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const { data } = useFormData();
 
 
-    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top' } = model;
+    const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
@@ -107,7 +107,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       fetchTabStyles();
     }, [model.background, model?.card?.background, backendUrl, httpHeaders, jsStyle]);
 
-    const { styles } = useStyles({ styles: finalStyle, cardStyles: tabType === 'line' ? { ...cardFontStyles, ...cardDimensionsStyles, } : cardFinalStyle, position: tabPosition, tabType });
+    const { styles } = useStyles({ styles: finalStyle, cardStyles: tabType === 'line' ? { ...cardFontStyles, ...cardDimensionsStyles, } : cardFinalStyle, position: tabPosition, tabType, tabLineColor });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
@@ -182,7 +182,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
-      stylingBox: "{\"marginBottom\":\"5\"}",
       tabPosition: "top",
       tabs: [{
         id: id,
