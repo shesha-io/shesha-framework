@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
@@ -23,10 +23,6 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   cacheKey,
 }: IProps<TModel>) {
   const formRef = useShaFormRef();
-
-  useEffect(() => {
-    formRef.current?.resetFields();
-  });
 
   return (
     <ConfigurableForm

@@ -4,7 +4,7 @@ export const getSettings = () => {
     return {
         components: new DesignerToolbarSettings()
             .addSettingsInputRow({
-                id: '3B19B03F-8568-4125-9CB0-CDEA52BE207D-row',
+                id: 'endpointsAutocomplete-labelValueEditor-row',
                 readOnly: false,
                 inputs: [
                     {

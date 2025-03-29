@@ -14,23 +14,24 @@ export interface IShowMessageArguments {
 }
 
 export const showMessageArgumentsForm = new DesignerToolbarSettings()
-  .addTextArea({
+  .addSettingsInput({
     id: nanoid(),
+    inputType: "textField",
     propertyName: 'message',
     label: 'Message',
     autoSize: true,
     validate: { required: true },
   })
-  .addDropdown({
+  .addSettingsInput({
     id: nanoid(),
+    inputType: "dropdown",
     propertyName: 'type',
     label: 'Type',
-    values: messageTypes.map(v => ({
-      label: v,
+    dropdownOptions: messageTypes.map(v => ({
+      label: v[0].toUpperCase() + v.slice(1),
       value: v,
       id: v,
     })),
-    dataSourceType: 'values',
   })
   .toJson();
 

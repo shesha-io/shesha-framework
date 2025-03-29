@@ -39,6 +39,11 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             position: relative;
             bottom: -2px;
             }
+
+            +.sha-required-mark {
+                position: relative;
+                bottom: -8px;
+            }
     `);
 
     const bindingOptionsBtn = cx(css`
