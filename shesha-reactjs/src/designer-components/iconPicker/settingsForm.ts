@@ -1,6 +1,7 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
+import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 
 export const getSettings = (data: any) => {
     const searchableTabsId = nanoid();
@@ -26,10 +27,11 @@ export const getSettings = (data: any) => {
                         id: commonTabId,
                         components: [...new DesignerToolbarSettings()
                             .addContextPropertyAutocomplete({
-                                id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
+                                id: nanoid(),
                                 propertyName: 'propertyName',
-                                parentId: commonTabId,
                                 label: 'Property Name',
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                styledLabel: true,
                                 size: 'small',
                                 validate: {
                                     required: true,
@@ -37,16 +39,24 @@ export const getSettings = (data: any) => {
                                 jsSetting: true,
                             })
                             .addLabelConfigurator({
-                                id: '46d07439-4c18-468c-89e1-60c002ce96c5',
+                                id: nanoid(),
                                 propertyName: 'hideLabel',
                                 label: 'Label',
-                                parentId: commonTabId,
-                                defaultValue: true,
-                              })
+                                parentId: 's4gmBg31azZC0UjZjpfTm',
+                                hideLabel: true,
+                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
                                 inputs: [
+                                    {
+                                        id: nanoid(),
+                                        type: 'iconPicker',
+                                        propertyName: 'defaultValue',
+                                        label: 'Default Icon',
+                                        jsSetting: true,
+                                        defaultValue: 'UpCircleOutlined',
+                                    },
                                     {
                                         type: 'dropdown',
                                         id: nanoid(),
@@ -64,7 +74,7 @@ export const getSettings = (data: any) => {
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                             })
                             .addSettingsInput({
-                                id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
+                                id: nanoid(),
                                 inputType: 'textArea',
                                 propertyName: 'description',
                                 parentId: commonTabId,
@@ -76,6 +86,15 @@ export const getSettings = (data: any) => {
                                 parentId: commonTabId,
                                 inputs: [
                                     {
+                                        id: nanoid(),
+                                        type: 'editModeSelector',
+                                        propertyName: 'editMode',
+                                        label: 'Edit Mode',
+                                        parentId: commonTabId,
+                                        jsSetting: true,
+                                        defaultValue: 'inherited'
+                                    },
+                                    {
                                         type: 'switch',
                                         id: nanoid(),
                                         propertyName: 'hidden',
@@ -84,23 +103,6 @@ export const getSettings = (data: any) => {
                                     }
                                 ],
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInput({
-                                id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-                                inputType: 'editModeSelector',
-                                propertyName: 'editMode',
-                                label: 'Edit Mode',
-                                parentId: commonTabId,
-                                jsSetting: true,
-                                defaultValue: 'inherited'
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'iconPicker',
-                                propertyName: 'defaultValue',
-                                label: 'Default Icon',
-                                parentId: commonTabId,
-                                jsSetting: true,
                             })
                             .toJson()
                         ]
@@ -126,12 +128,12 @@ export const getSettings = (data: any) => {
                                 components: [
                                     ...new DesignerToolbarSettings()
                                         .addCollapsiblePanel({
-                                            id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5091',
+                                            id: nanoid(),
                                             propertyName: 'pnlStyling',
                                             parentId: styleRouterId,
                                             label: 'Icon Styling',
                                             labelAlign: "right",
-                                            expandIconPosition: "start",
+                                            expandIconPosition: "end",
                                             ghost: true,
                                             collapsible: 'header',
                                             content: {
@@ -287,11 +289,68 @@ export const getSettings = (data: any) => {
                                                             ]
                                                         }
                                                     })
-                                                    .addStyleBox({
-                                                        id: nanoid(),
-                                                        propertyName: 'stylingBox',
+                                                    .addCollapsiblePanel({
+                                                        id: 'dimensionsStyleCollapsiblePanel',
+                                                        propertyName: 'pnlMarginPadding',
                                                         label: 'Margin & Padding',
-                                                        parentId: 'pnl24bf6-f76d-4139-a850-cbf06c8b71',
+                                                        parentId: 'styleRouter',
+                                                        labelAlign: 'right',
+                                                        ghost: true,
+                                                        collapsible: 'header',
+                                                        content: {
+                                                            id: 'dimensionsStylePnl',
+                                                            components: [...new DesignerToolbarSettings()
+                                                                .addStyleBox({
+                                                                    id: nanoid(),
+                                                                    propertyName: 'stylingBox',
+                                                                    parentId: 'dimensionsStyleCollapsiblePanel',
+                                                                })
+                                                                .toJson()
+                                                            ]
+                                                        }
+                                                    })
+
+                                                    .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
+                                            id: 'borderStyleCollapsiblePanel',
+                                            propertyName: 'pnlBorderStyle',
+                                            label: 'Border',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: 'styleRouter',
+                                            collapsible: 'header',
+                                            content: {
+                                                id: 'borderStylePnl',
+                                                components: [...new DesignerToolbarSettings()
+                                                    .addSettingsInputRow({
+                                                        id: `borderStyleRow`,
+                                                        parentId: 'borderStylePnl',
+                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                type: 'button',
+                                                                id: 'borderStyleRow-hideBorder',
+                                                                label: "Border",
+                                                                hideLabel: true,
+                                                                propertyName: "border.hideBorder",
+                                                                icon: "EyeOutlined",
+                                                                iconAlt: "EyeInvisibleOutlined"
+                                                            },
+                                                        ]
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getBorderInputs() as any
+                                                    })
+                                                    .addContainer({
+                                                        id: 'borderRadiusStyleRow',
+                                                        parentId: 'borderStylePnl',
+                                                        components: getCornerInputs() as any
                                                     })
                                                     .toJson()
                                                 ]
@@ -300,9 +359,9 @@ export const getSettings = (data: any) => {
                                         .addCollapsiblePanel({
                                             id: nanoid(),
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: "right",
-                                            expandIconPosition: "start",
+                                            expandIconPosition: "end",
                                             ghost: true,
                                             parentId: styleRouterId,
                                             collapsible: 'header',

@@ -72,11 +72,11 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         ...getStyle(props.style),
         ...(executeFunction("{}", { data, globalState }) || {})
     };
-
+    console.log("SBJSON",stylingBoxJSON)
     return (
         <div style={(defaultValue) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
             <Tooltip title={props?.description}>
-            <div style={{...getIconStyle, marginLeft: (props.value === undefined && props.defaultValue === undefined) ? "38px" : ""}}>
+            <div style={{...getIconStyle, marginLeft: (props.value === undefined && props.defaultValue === undefined) ? "0px" : stylingBoxJSON?.marginLeft+"px"}}>
                 <IconPicker
                     value={defaultValue as ShaIconTypes}
                     defaultValue={defaultValue as ShaIconTypes}

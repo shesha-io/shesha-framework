@@ -152,7 +152,7 @@ const IconPicker: FC<IIconPickerProps> = ({
               name={localSelectedIcon}
               //title={localSelectedIcon} removed to avoid it conflicting with icon tooltip
             />
-          ) : <Button size={selectBtnSize} disabled={readOnly} icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}>Select Icon</Button>}
+          ) : <Button size={selectBtnSize} title={'Select icon'} disabled={readOnly} icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}></Button>}
         </div>
       </div>
       <Modal
