@@ -1,12 +1,13 @@
 import { AutocompleteDataSourceType } from '@/components/autocomplete';
 import { CodeLanguages } from '../codeEditor/types';
-import { ResultType } from '@/components/codeEditor/models';
-import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent } from '@/index';
+import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
+import { FormMarkup, IComponentLabelProps, IConfigurableFormComponent, IObjectMetadata } from '@/index';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
 import { ComponentType } from '@/components/formComponentSelector';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { GetResultTypeFunc } from '../codeEditor/interfaces';
 
 export interface IRadioOption {
     value: string | number;
@@ -27,7 +28,7 @@ export interface InputType {
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'textField' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
     | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip'
-    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
+    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
     | 'keyInformationBarColumnsList' | 'Password';
 }
 
@@ -92,6 +93,9 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     showText?: boolean;
     fieldsUnavailableHint?: string;
     wrapInTemplate?: boolean;
+    templateSettings?: CodeTemplateSettings;
+    resultTypeExpression?: string | GetResultTypeFunc;
+    availableConstants?: IObjectMetadata;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];

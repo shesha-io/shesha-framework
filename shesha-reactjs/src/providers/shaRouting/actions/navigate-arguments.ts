@@ -2,43 +2,52 @@ import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 
 export const navigateArgumentsForm = new DesignerToolbarSettings()
-  .addSettingsInput({
-    id: nanoid(),
-    inputType: 'radio',
-    propertyName: 'navigationType',
-    parentId: 'root',
-    label: 'Navigation Type',
-    buttonGroupOptions: [
-      { icon: 'LinkOutlined', title: 'Url', value: 'url' },
-      { icon: 'FormOutlined', title: 'Form', value: 'form' },
+  .addSettingsInputRow({
+    id: 'navigation-url-form-row',
+    readOnly: false,
+    inputs: [
+      {
+        id: nanoid(),
+        type: 'radio',
+        propertyName: 'navigationType',
+        parentId: 'root',
+        label: 'Navigation Type',
+        buttonGroupOptions: [
+          { icon: 'LinkOutlined', title: 'Url', value: 'url' },
+          { icon: 'FormOutlined', title: 'Form', value: 'form' },
+        ]
+      },
+      {
+        id: nanoid(),
+        type: 'textField',
+        propertyName: 'url',
+        parentId: 'root',
+        label: 'Target Url',
+        validate: { required: true },
+        hidden: {
+          _mode: 'code',
+          _code: 'return data?.navigationType !== "url"'
+        } as any
+      },
+      {
+        id: nanoid(),
+        type: 'formAutocomplete',
+        propertyName: 'formId',
+        label: 'Form',
+        parentId: 'root',
+        validate: {
+          required: true,
+        },
+        hidden: {
+          _mode: 'code',
+          _code: 'return data?.navigationType !== "form"'
+        } as any
+      }
     ]
   })
-  .addTextField({
+  .addSettingsInput({
     id: nanoid(),
-    propertyName: 'url',
-    parentId: 'root',
-    label: 'Target Url',
-    validate: { required: true },
-    hidden: {
-      _mode: 'code',
-      _code: 'return data?.navigationType !== "url"'
-    }
-  })
-  .addFormAutocomplete({
-    id: nanoid(),
-    propertyName: 'formId',
-    label: 'Form',
-    parentId: 'root',
-    validate: {
-      required: true,
-    },
-    hidden: {
-      _mode: 'code',
-      _code: 'return data?.navigationType !== "form"'
-    }
-  })
-  .addLabelValueEditor({
-    id: nanoid(),
+    inputType: 'labelValueEditor',
     propertyName: 'queryParameters',
     label: 'Query String Parameters',
     labelName: 'key',
