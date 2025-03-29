@@ -13,6 +13,16 @@ export const useStyles = createStyles(({ css, cx }) => {
         display: flex;
         flex-wrap: wrap;
         gap: 0px 8px;
+
+        .ant-btn {
+            max-width: 100%;
+            span {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
         `);
 
 

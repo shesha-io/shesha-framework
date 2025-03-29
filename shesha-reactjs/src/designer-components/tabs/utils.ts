@@ -23,6 +23,7 @@ export const defaultStyles: IStyleType = {
         borderType: 'all'
     },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
+    stylingBox: "{\"marginBottom\":\"5\",\"paddingLeft\":\"16\",\"paddingBottom\":\"16\",\"paddingTop\":\"16\",\"paddingRight\":\"16\"}",
 };
 
 export const defaultCardStyles: IStyleType = {
