@@ -18,10 +18,14 @@ import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeUndefinedProps } from '@/utils/object';
 import { getStyle, pickStyleFromModel } from '@/index';
+import { ShaIconTypes } from '@/components/iconPicker';
 
 export type IActionParameters = [{ key: string; value: string }];
 
-export interface IEntityReferenceControlProps extends IEntityReferenceProps, IConfigurableFormComponent { }
+export interface IEntityReferenceControlProps extends IEntityReferenceProps, IConfigurableFormComponent {
+  /** @deprecated Use iconName instead */
+  icon?: string;
+}
 
 const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> = {
   type: 'entityReference',
@@ -44,9 +48,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
         ...stylingBoxAsCSS,
       })
     );
-    const additionalStylesWithoutQuotes = additionalStyles
-      .replace(/"([^"]+)":/g, '$1:') 
-      .replace(/'([^']+)':/g, '$1:'); 
+    const additionalStylesWithoutQuotes = additionalStyles.replace(/"([^"]+)":/g, '$1:').replace(/'([^']+)':/g, '$1:');
     const finalStyle = `return ${additionalStylesWithoutQuotes}`;
 
     return (
@@ -87,7 +89,11 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
         footerButtons: context.isNew ? 'default' : (prev.footerButtons ?? prev.showModalFooter) ? 'default' : 'none',
       }))
       .add<IEntityReferenceControlProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev) })),
+      .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev) }))
+      .add<IEntityReferenceControlProps>(8, (prev) => ({
+        ...prev,
+        iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes) ?? 'DoubleLeftOutlined',
+      })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
