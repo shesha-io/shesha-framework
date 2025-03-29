@@ -107,7 +107,7 @@ export const getSettings = () => {
                         ]
                     },
                     {
-                        key: '4',
+                        key: '2',
                         title: 'Appearance',
                         type: '',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
@@ -942,7 +942,7 @@ export const getSettings = () => {
                             }).toJson()]
                     },
                     {
-                        key: '5',
+                        key: '3',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         type: '',
