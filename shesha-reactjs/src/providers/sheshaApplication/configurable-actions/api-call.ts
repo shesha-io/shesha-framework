@@ -40,7 +40,7 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
         propertyName: 'verb',
         label: 'HTTP Verb',
         dropdownOptions: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
-        defaultValue: 'post',
+        defaultValue: 'get',
       },
       {
         id: nanoid(),
