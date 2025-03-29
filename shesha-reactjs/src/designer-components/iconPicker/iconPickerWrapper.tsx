@@ -43,7 +43,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { globalState } = useGlobalState();
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-
+    
     const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
         if (onChange) onChange(iconName);
     };
@@ -76,19 +76,19 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     return (
         <div style={(defaultValue) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
             <Tooltip title={props?.description}>
-                <div style={{ ...getIconStyle, marginLeft: (props.value === undefined && props.defaultValue === undefined) ? "0px" : stylingBoxJSON?.marginLeft + "px" }}>
-                    <IconPicker
-                        value={defaultValue as ShaIconTypes}
-                        defaultValue={defaultValue as ShaIconTypes}
-                        onIconChange={onIconChange}
-                        selectBtnSize={selectBtnSize}
-                        iconSize={fontSize}
-                        readOnly={readOnly}
-                        style={style}
-                        color={props.color}
-                        twoToneColor={color}
-                    />
-                </div>
+            <div style={{...getIconStyle, marginLeft: (props.value === undefined && props.defaultValue === undefined) ? "38px" : ""}}>
+                <IconPicker
+                    value={defaultValue as ShaIconTypes}
+                    defaultValue={defaultValue as ShaIconTypes}
+                    onIconChange={onIconChange}
+                    selectBtnSize={selectBtnSize}
+                    iconSize={fontSize}
+                    readOnly={readOnly}
+                    style={style}
+                    color={props.color}
+                    twoToneColor={color}
+                />
+            </div>
             </Tooltip>
         </div>
     );
