@@ -137,10 +137,10 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           </SettingsControl>
         </Form.Item>
       </ConditionalWrap>
-      <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'} className={styles.bindingOptionsBtn}>
+      <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>
-      <Button type='link' onClick={setContextMode} hidden={model.readOnly || mode === 'context'} className={styles.bindingOptionsBtn}>
+      <Button type='link' onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
         show binding option
       </Button>
     </>

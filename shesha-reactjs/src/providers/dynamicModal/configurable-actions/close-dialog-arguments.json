@@ -5,7 +5,7 @@
             "propertyName": "showDialogResult",
             "label": "Show Dialog Result",
             "allowClear": true,
-            "values": [
+            "dropdownOptions": [
                 {
                     "label": "Success",
                     "value": "true",
@@ -17,9 +17,8 @@
                     "id": "470d820b-7cd7-439c-8e95-1f5b3134f80c"
                 }
             ],
-            "dataSourceType": "values",
-            "type": "dropdown",
-            "version": 7,
+            "type": "settingsInput",
+            "inputType": "dropdown",
             "parentId": "root"
         }
     ],

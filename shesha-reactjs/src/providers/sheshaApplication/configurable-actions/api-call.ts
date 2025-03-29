@@ -30,40 +30,56 @@ const HttpVerbs: Method[] = ['get',
   'unlink'];
 
 export const apiCallArgumentsForm = new DesignerToolbarSettings()
-  .addDropdown({
-    id: nanoid(),
-    propertyName: 'verb',
-    label: 'HTTP Verb',
-    dataSourceType: 'values',
-    values: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
-    defaultValue: 'post',
+  .addSettingsInputRow({
+    id: 'httpverb-url-row',
+    readOnly: false,
+    inputs: [
+      {
+        id: nanoid(),
+        type: 'dropdown',
+        propertyName: 'verb',
+        label: 'HTTP Verb',
+        dropdownOptions: HttpVerbs.map(v => ({ id: v, label: v.toUpperCase(), value: v })),
+        defaultValue: 'post',
+      },
+      {
+        id: nanoid(),
+        type: 'endpointsAutocomplete',
+        propertyName: 'url',
+        label: 'URL',
+        description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
+        httpVerb: "{data.verb}",
+      }
+    ]
   })
-  .addEndpointsAutocomplete({
-    id: nanoid(),
-    propertyName: 'url',
-    label: 'URL',
-    description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
-    httpVerb: "{data.verb}",
+  .addSettingsInputRow({
+    id: "parameters-standard-header-row",
+    readOnly: false,
+    inputs: [
+      {
+        id: nanoid(),
+        type: 'labelValueEditor',
+        propertyName: 'parameters',
+        label: 'Parameters',
+        description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
+        labelName: 'key',
+        labelTitle: 'Key',
+        valueName: 'value',
+        valueTitle: 'Value',
+      },
+      {
+        id: nanoid(),
+        type: 'switch',
+        propertyName: 'sendStandardHeaders',
+        label: 'Send Standard Headers',
+        description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
+        defaultValue: true,
+      }
+    ]
   })
-  .addLabelValueEditor({
+  .addSettingsInput({
     id: nanoid(),
-    propertyName: 'parameters',
-    label: 'Parameters',
-    description: 'Request parameters. They will be included into the request as query string or body depending on the selected verb.',
-    labelName: 'key',
-    labelTitle: 'Key',
-    valueName: 'value',
-    valueTitle: 'Value',
-  })
-  .addCheckbox({
-    id: nanoid(),
-    propertyName: 'sendStandardHeaders',
-    label: 'Send Standard Headers',
-    description: 'Allow to send standard application headers including authentication. Note: it may be unsafe to send these headers to external applications.',
-    defaultValue: true,
-  })
-  .addLabelValueEditor({
-    id: nanoid(),
+    inputType: 'labelValueEditor',
     propertyName: 'headers',
     label: 'Headers',
     labelName: 'key',

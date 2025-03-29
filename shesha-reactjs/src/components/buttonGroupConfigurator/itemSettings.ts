@@ -124,9 +124,14 @@ export const getItemSettings = (data) => {
                                                     type: 'radio',
                                                     parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     buttonGroupOptions: [
-                                                        { title: 'start', value: 'start', icon: 'LeftOutlined' },
-                                                        { title: 'end', value: 'end', icon: 'RightOutlined' },
+                                                        { title: 'Start', value: 'start', icon: 'LeftOutlined' },
+                                                        { title: 'End', value: 'end', icon: 'RightOutlined' },
                                                     ],
+                                                    hidden: {
+                                                        _code: 'return  !getSettingValue(data?.icon);',
+                                                        _mode: 'code',
+                                                        _value: false
+                                                    } as any
                                                 },
                                             ],
                                             readOnly: data.readOnly,
@@ -373,7 +378,7 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {
