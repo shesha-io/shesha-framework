@@ -24,6 +24,7 @@ const tableClassNames = {
   shaSortable: 'sha-sortable',
   shaDragging: 'sha-dragging',
   shaTooltipIcon: 'sha-tooltip-icon',
+  shaCellParent: 'sha-cell-parent',
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -58,6 +59,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSortable,
     shaDragging,
     shaTooltipIcon,
+    shaCellParent,
   } = tableClassNames;
 
   // var(--ant-primary-3)
@@ -252,6 +254,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
               }
             }
+          }
+
+          .${shaCellParent} {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              cursor: pointer;
           }
         }
         .${shaTooltipIcon} {
