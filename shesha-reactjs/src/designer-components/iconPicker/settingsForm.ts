@@ -44,6 +44,14 @@ export const getSettings = (data: any) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
+                            .addSettingsInput({
+                                id: nanoid(),
+                                inputType: 'textArea',
+                                propertyName: 'description',
+                                parentId: commonTabId,
+                                label: 'Tooltip',
+                                jsSetting: true,
+                            })
                             .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: commonTabId,
@@ -71,14 +79,6 @@ export const getSettings = (data: any) => {
                                     },
                                 ],
                                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'textArea',
-                                propertyName: 'description',
-                                parentId: commonTabId,
-                                label: 'Tooltip',
-                                jsSetting: true,
                             })
                             .addSettingsInputRow({
                                 id: nanoid(),
