@@ -28,30 +28,41 @@ export const getSettings = () => {
                         title: 'Common',
                         id: commonTabId,
                         components: [...new DesignerToolbarSettings()
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'componentName',
-                                label: 'Component Name',
+
+                            .addSettingsInput(
+                                {
+                                    id: nanoid(),
+                                    inputType: 'textField',
+                                    propertyName: 'componentName',
+                                    label: 'Component Name',
+                                    parentId: commonTabId,
+                                    size: 'small',
+                                    validate: {
+                                        required: true,
+                                    }
+                                }
+                            )
+                            .addSettingsInputRow({
+                                id: 'componentName-hide-row',
                                 parentId: commonTabId,
-                                size: 'small',
-                                validate: {
-                                    required: true,
-                                },
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'hidden',
-                                label: 'Hidden',
-                                parentId: commonTabId,
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'columns',
-                                label: 'Columns',
-                                parentId: commonTabId,
-                                inputType: 'keyInformationBarColumnsList',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'columns',
+                                        label: 'Columns',
+                                        parentId: commonTabId,
+                                        type: 'keyInformationBarColumnsList',
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'hidden',
+                                        label: 'Hide',
+                                        parentId: commonTabId,
+                                        type: 'switch',
+                                        jsSetting: true
+                                    }
+                                ]
                             })
                             .toJson()
                         ]
@@ -511,52 +522,64 @@ export const getSettings = () => {
                                             content: {
                                                 id: 'dividerPnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        propertyName: 'dividerMargin',
-                                                        label: 'Divider Margin',
+                                                    .addSettingsInputRow({
+                                                        id: 'dividerMargin-height-row',
                                                         parentId: dividerTabId,
-                                                        inputType: 'textField',
-                                                        jsSetting: true,
-                                                        tooltip: 'Sets the margin around the divider'
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                id: nanoid(),
+                                                                propertyName: 'dividerMargin',
+                                                                label: 'Divider Margin',
+                                                                parentId: dividerTabId,
+                                                                type: 'textField',
+                                                                jsSetting: true,
+                                                                tooltip: 'Sets the margin around the divider'
+                                                            },
+                                                            {
+                                                                id: nanoid(),
+                                                                propertyName: 'dividerWidth',
+                                                                label: 'Divider Width',
+                                                                parentId: dividerTabId,
+                                                                type: 'textField',
+                                                                jsSetting: true,
+                                                                tooltip: 'Sets the width of the divider',
+                                                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) !== "vertical";', _mode: 'code', _value: false } as any
+                                                            },
+                                                            {
+                                                                id: nanoid(),
+                                                                propertyName: 'dividerHeight',
+                                                                label: 'Divider Height',
+                                                                parentId: dividerTabId,
+                                                                type: 'textField',
+                                                                jsSetting: true,
+                                                                tooltip: 'Sets the height of the divider',
+                                                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any
+                                                            }]
                                                     })
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        propertyName: 'dividerHeight',
-                                                        label: 'Divider Height',
+                                                    .addSettingsInputRow({
+                                                        id: 'dividerWidth-thickness-row',
                                                         parentId: dividerTabId,
-                                                        inputType: 'textField',
-                                                        jsSetting: true,
-                                                        tooltip: 'Sets the height of the divider',
-                                                        hidden: { _code: 'return getSettingValue(data?.orientation) !== "horizontal";', _mode: 'code', _value: false } as any
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        propertyName: 'dividerWidth',
-                                                        label: 'Divider Width',
-                                                        parentId: dividerTabId,
-                                                        inputType: 'textField',
-                                                        jsSetting: true,
-                                                        tooltip: 'Sets the width of the divider',
-                                                        hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical";', _mode: 'code', _value: false } as any
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        propertyName: 'dividerThickness',
-                                                        label: 'Divider Thickness',
-                                                        parentId: dividerTabId,
-                                                        inputType: 'textField',
-                                                        jsSetting: true,
-                                                        tooltip: 'Sets the thickness of the divider line'
-                                                    })
-                                                    .addSettingsInput({
-                                                        id: nanoid(),
-                                                        propertyName: 'dividerColor',
-                                                        label: 'Divider Color',
-                                                        parentId: dividerTabId,
-                                                        inputType: 'colorPicker',
-                                                        jsSetting: true,
-                                                        allowClear: true
+                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                        inputs: [
+                                                            {
+                                                                id: nanoid(),
+                                                                propertyName: 'dividerThickness',
+                                                                label: 'Divider Thickness',
+                                                                parentId: dividerTabId,
+                                                                type: 'textField',
+                                                                jsSetting: true,
+                                                                tooltip: 'Sets the thickness of the divider line'
+                                                            },
+                                                            {
+                                                                id: nanoid(),
+                                                                propertyName: 'dividerColor',
+                                                                label: 'Divider Color',
+                                                                parentId: dividerTabId,
+                                                                type: 'colorPicker',
+                                                                jsSetting: true,
+                                                                allowClear: true
+                                                            }]
                                                     })
                                                     .toJson()
                                                 ]

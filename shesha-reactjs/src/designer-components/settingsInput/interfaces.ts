@@ -19,6 +19,7 @@ export interface IRadioOption {
 export interface IDropdownOption {
     label: string | React.ReactNode;
     value: string;
+    icon?: string | React.ReactNode;
 }
 
 export interface InputType {
@@ -72,6 +73,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     dropdownMode?: 'multiple' | 'tags';
     customDropdownMode?: 'single' | 'multiple';
     allowClear?: boolean;
+    allowSearch?: boolean;
     className?: string;
     icon?: string | React.ReactNode;
     iconAlt?: string | React.ReactNode;

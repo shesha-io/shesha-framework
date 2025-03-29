@@ -55,7 +55,9 @@ export interface IChartsProps {
 /**
  * Chart props, used in the Shesha tool box
  */
-export interface IChartProps extends IConfigurableFormComponent, IChartsProps { }
+export interface IChartProps extends IConfigurableFormComponent, IChartsProps {
+    hidden?: boolean;
+ }
 
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];

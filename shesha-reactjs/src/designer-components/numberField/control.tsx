@@ -18,18 +18,24 @@ interface IProps {
   model: INumberFieldComponentProps;
   onChange?: Function;
   value?: number;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) => {
+const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBlur, onFocus }) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const { styles } = useStyles({ fontFamily: model?.font?.type, fontWeight: model?.font?.weight, textAlign: model?.font?.align });
+  const { styles } = useStyles({
+    fontFamily: model?.font?.type,
+    fontWeight: model?.font?.weight,
+    textAlign: model?.font?.align,
+  });
   const dimensions = model?.dimensions;
   const border = model?.border;
   const font = model?.font;
   const shadow = model?.shadow;
   const background = model?.background;
-  const jsStyle = getStyle(model.style, model);
+  const jsStyle = getStyle(model?.style, model);
   const allData = useAvailableConstantsData();
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
@@ -39,18 +45,19 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
   useEffect(() => {
-
     const fetchStyles = async () => {
-
-      const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-        ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-          { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-          .then((response) => {
-            return response.blob();
-          })
-          .then((blob) => {
-            return URL.createObjectURL(blob);
-          }) : '';
+      const storedImageUrl =
+        background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`, {
+              headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' },
+            })
+              .then((response) => {
+                return response.blob();
+              })
+              .then((blob) => {
+                return URL.createObjectURL(blob);
+              })
+          : '';
 
       const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
       setBackgroundStyles(style);
@@ -59,7 +66,11 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     fetchStyles();
   }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-  if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+  if (
+    model?.background?.type === 'storedFile' &&
+    model?.background.storedFile?.id &&
+    !isValidGuid(model?.background.storedFile.id)
+  ) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
@@ -74,8 +85,11 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     ...backgroundStyles,
     ...shadowStyles,
   });
-  
-  const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight.split(' - ')[0]) || 400 });
+
+  const finalStyle = removeUndefinedProps({
+    ...additionalStyles,
+    fontWeight: model?.font?.weight ? Number(model?.font?.weight.split(' - ')[0]) : 400,
+  });
 
   const style = model.style;
 
@@ -92,8 +106,18 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     ...customOnChangeValueEventHandler(model, allData, onChange),
     defaultValue: model?.defaultValue,
     changeOnWheel: false,
-    prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-    suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>
+    prefix: (
+      <>
+        {model.prefix}
+        {model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}
+      </>
+    ),
+    suffix: (
+      <>
+        {model.suffix}
+        {model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}
+      </>
+    ),
   };
 
   return (
@@ -104,11 +128,20 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
             fontFamily: model?.font?.type,
             fontSize: model?.font?.size || 14,
             fontWeightStrong: Number(fontStyles.fontWeight) || 400,
+            colorText: model?.font?.color,
           },
         },
       }}
     >
-      <InputNumber value={value} {...inputProps} stringMode={model?.highPrecision} style={{ ...finalStyle, ...jsStyle }} className={`sha-input ${styles.numberField}`} />
+      <InputNumber
+        value={value ?? model.defaultValue}
+        {...inputProps}
+        stringMode={model?.highPrecision}
+        style={{ ...finalStyle, ...jsStyle }}
+        className={`sha-input ${styles.numberField}`}
+        onBlur={onBlur}
+        onFocus={onFocus}
+      />
     </ConfigProvider>
   );
 };

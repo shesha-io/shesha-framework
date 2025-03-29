@@ -36,7 +36,24 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
       )
       .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev))
       .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev))
-      .add<IKeyInformationBarProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<IKeyInformationBarProps>(3, (prev) => {
+
+        const prevDividerStyles = {
+          orientation: prev?.orientation,
+          dividerWidth: prev?.dividerWidth,
+          dividerMargin: prev?.dividerMargin,
+          dividerColor: prev?.dividerColor,
+          gap: prev?.gap,
+        };
+
+        return ({
+          ...prev,
+          desktop: { ...prev.desktop, ...prevDividerStyles },
+          mobile: { ...prev.mobile, ...prevDividerStyles },
+          tablet: { ...prev.tablet, ...prevDividerStyles }
+        });
+      })
+      .add<IKeyInformationBarProps>(4, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   initModel: (model) => {
     const tabsModel: IKeyInformationBarProps = {
       ...model,
@@ -50,8 +67,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
           components: [],
           padding: '0px',
         }
-      ],
-      orientation: 'horizontal',
+      ]
     };
 
     return tabsModel;
