@@ -49,6 +49,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     children?: React.ReactNode;
     tooltip?: string;
     customTooltip?: string;
+    prefix?: string;
     suffix?: string;
     size?: SizeType;
     width?: string | number;
@@ -79,6 +80,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     icon?: string | React.ReactNode;
     iconAlt?: string | React.ReactNode;
     inline?: boolean;
+    autoSize?: boolean;
     inputType?: InputType['type'];
     referenceList?: any;
     filter?: any;

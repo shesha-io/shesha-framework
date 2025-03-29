@@ -89,7 +89,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       ...dimensionsStyles,
       ...(['primary', 'default'].includes(model.buttonType) && borderStyles),
       ...fontStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && backgroundStyles),
+      ...(['dashed', 'default'].includes(model.buttonType) && backgroundStyles),
       ...(['primary', 'default'].includes(model.buttonType) && shadowStyles),
       ...stylingBoxAsCSS,
       ...jsStyle
@@ -138,7 +138,13 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IButtonComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      .add<IButtonComponentProps>(8, (prev) => ({
+        ...prev,
+        desktop: { ...prev.desktop, buttonType: 'default' },
+        mobile: { ...prev.mobile, buttonType: 'default' },
+        tablet: { ...prev.tablet, buttonType: 'default' }
+      }))
+      .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };
 
 export default ButtonComponent;

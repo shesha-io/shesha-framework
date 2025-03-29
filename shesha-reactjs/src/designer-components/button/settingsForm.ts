@@ -141,6 +141,7 @@ export const getSettings = (data) => {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                       propertyName: 'buttonType',
                       label: 'Type',
+                      defaultValue: 'default',
                       validate: {
                         required: true,
                       },
