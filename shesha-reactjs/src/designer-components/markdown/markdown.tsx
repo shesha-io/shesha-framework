@@ -11,22 +11,22 @@ let dark;
 let remarkGfm;
 
 const ReactMarkdown = lazy(async () => {
-  import('remark-gfm').then(module => {
+  import('remark-gfm').then((module) => {
     remarkGfm = module?.default;
   });
 
-  import('react-syntax-highlighter').then(module => {
+  import('react-syntax-highlighter').then((module) => {
     SyntaxHighlighter = module?.Prism;
   });
 
-  import('react-syntax-highlighter/dist/esm/styles/prism').then(module => {
+  import('react-syntax-highlighter/dist/esm/styles/prism').then((module) => {
     dark = module?.dark;
   });
 
   return import('react-markdown');
 });
 
-const Markdown: FC<IMarkdownComponentProps> = model => {
+const Markdown: FC<IMarkdownComponentProps> = (model) => {
   const { formMode } = useForm();
   // NOTE: to be replaced with a generic context implementation
   const { value: subFormData } = useSubForm(false) ?? {};
@@ -51,6 +51,7 @@ const Markdown: FC<IMarkdownComponentProps> = model => {
         <ReactMarkdown
           remarkPlugins={[remarkGfm]?.filter(Boolean)}
           components={{
+            style: model.style as any,
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match && SyntaxHighlighter ? (

@@ -26,7 +26,8 @@ export interface InputType {
     | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'contextPropertyAutocomplete' | 'textField' | 'queryBuilder' | 'formAutocomplete' | 'referenceListAutocomplete' | 'filtersList' |
     'autocomplete' | 'imageUploader' | 'editModeSelector' | 'permissions' | 'multiColorPicker' | 'propertyAutocomplete' | 'columnsConfig' | 'columnsList'
     | 'sizableColumnsConfig' | 'labelValueEditor' | 'componentSelector' | 'itemListConfiguratorModal' | 'dataSortingEditor' | 'tooltip'
-    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator';
+    | 'typeAutoComplete' | 'fullIdFormAutocomplete' | 'endpointsAutoComplete' | 'formTypeAutocomplete' | 'configurableActionConfigurator' | 'RefListItemSelectorSettingsModal'
+    | 'keyInformationBarColumnsList' | 'Password';
 }
 
 export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
@@ -35,7 +36,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     propertyName: string;
     variant?: 'borderless' | 'filled' | 'outlined';
     buttonGroupOptions?: IRadioOption[];
-    dropdownOptions?: IDropdownOption[];
+    dropdownOptions?: IDropdownOption[] | string;
     readOnly?: boolean;
     onChange?: (value: any) => void;
     editorConfig?: IConfigurableActionConfiguratorComponentProps;
@@ -88,11 +89,14 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     max?: number;
     showText?: boolean;
     fieldsUnavailableHint?: string;
+    wrapInTemplate?: boolean;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];
     buttonText?: string;
-    modalProps?: IItemListConfiguratorModalProps<any>['modalSettings'];
+    buttonTextReadOnly?: string;
+    modalSettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
+    modalReadonlySettings?: IItemListConfiguratorModalProps<any>['modalSettings'];
     settingsMarkupFactory?: FormMarkup;
     _formFields?: string[];
     autoFillProps?: boolean;
@@ -101,4 +105,6 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     noSelectionItemValue?: string;
     componentType?: ComponentType;
     parentComponentType?: string;
+    textType?: string;
+    showSearch?: boolean;
 };

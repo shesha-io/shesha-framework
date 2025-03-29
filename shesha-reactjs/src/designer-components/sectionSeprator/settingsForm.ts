@@ -152,22 +152,33 @@ export const getSettings = (data: any) => {
                                     propertyName: 'lineFont.color',
                                   },
                                   {
-                                    type: 'switch',
-                                    id: 'dashed',
-                                    label: 'Dashed',
+                                    type: 'dropdown',
+                                    id: 'type-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Type',
+                                    propertyName: 'lineType',
                                     hideLabel: false,
-                                    propertyName: 'dashed',
-                                    layout: 'horizontal',
-                                    defaultValue: 'false',
-                                  },
+                                    defaultValue: 'solid',
+                                    dropdownOptions: [
+                                      {
+                                        label: 'Solid',
+                                        value: 'solid',
+                                      },
+                                      {
+                                        label: 'Dashed',
+                                        value: 'dashed',
+                                      },
+                                      {
+                                        label: 'Dotted',
+                                        value: 'dotted',
+                                      }
+                                    ],
+                                  }
                                 ],
                               })
-
                               .toJson(),
                           ],
                         },
                       })
-
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',

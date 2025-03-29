@@ -9,7 +9,7 @@ import { getSettings } from './settings';
 export interface DynamicViewComponentProps extends IConfigurableFormComponent {
 }
 
-
+/** @deprecated */
 const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
   type: 'dynamicView',
   isInput: false,

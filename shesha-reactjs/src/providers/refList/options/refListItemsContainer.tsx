@@ -26,8 +26,12 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
     }
   };
 
+  if (props.items.length === 0) {
+    return <>No items have been configured</>;
+  }
+
   return (
-    <div className={styles.sidebarContainerMainArea}>
+    <div className={styles.sidebarContainerMainArea} style={{marginTop: '5px'}}>
       <ReactSortable
         disabled={readOnly}
         list={props.items}

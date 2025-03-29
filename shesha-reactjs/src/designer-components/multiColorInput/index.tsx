@@ -6,8 +6,8 @@ import { useTheme } from '@/providers';
 import FormItem from 'antd/es/form/FormItem';
 import { removeUndefinedProps } from '@/utils/object';
 import { SettingInput } from '../settingsInput/settingsInput';
-import { InputRow } from '../inputComponent';
 import { gradientDirectionOptions } from '../_settings/utils/background/utils';
+import { InputRow } from '../settingsInputRow';
 
 export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }) => {
     const { theme } = useTheme();

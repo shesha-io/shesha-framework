@@ -28,6 +28,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     id: nanoid(),
     propertyName: 'formId',
     label: 'Form',
+    parentId: 'root',
     validate: {
       required: true,
     },
@@ -41,6 +42,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
     propertyName: 'queryParameters',
     label: 'Query String Parameters',
     labelName: 'key',
+    parentId: 'root',
     labelTitle: 'Key',
     valueName: 'value',
     valueTitle: 'Value'
