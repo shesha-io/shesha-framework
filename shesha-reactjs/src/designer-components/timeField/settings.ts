@@ -195,7 +195,6 @@ export const getSettings = (data: any) => {
                                         id: nanoid(),
                                         propertyName: 'allowClear',
                                         label: 'Allow Clear',
-                                        defaultValue: true,
                                         jsSetting: true,
                                     },
                                     {
@@ -203,7 +202,6 @@ export const getSettings = (data: any) => {
                                         id: nanoid(),
                                         propertyName: 'showNow',
                                         label: 'Show Now',
-                                        defaultValue: true,
                                         jsSetting: true,
                                     }
                                 ]
@@ -300,31 +298,6 @@ export const getSettings = (data: any) => {
                                                                 ],
                                                             }
                                                         ]
-                                                    })
-                                                    .addSettingsInput({
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        id: nanoid(),
-                                                        inputType: 'codeEditor',
-                                                        propertyName: 'style',
-                                                        label: 'Style',
-                                                        description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                                        exposedVariables: [
-                                                            {
-                                                                name: 'data',
-                                                                description: 'Form values',
-                                                                type: 'object'
-                                                            },
-                                                            {
-                                                                name: 'globalState',
-                                                                description: 'The global state',
-                                                                type: 'object'
-                                                            }
-                                                        ],
-                                                        wrapInTemplate: true,
-                                                        templateSettings: {
-                                                            functionName: 'getStyle'
-                                                        },
-                                                        availableConstantsExpression: "return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
                                                     })
                                                     .toJson()
                                                 ]
