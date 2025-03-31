@@ -58,7 +58,7 @@ export const getSettings = (data: IKanbanProps) => {
                       type: 'propertyAutocomplete',
                       id: nanoid(),
                       propertyName: 'groupingProperty',
-                      label: 'Grouping property',
+                      label: 'Grouping Property',
                       jsSetting: true,
                       validate: {
                         required: true,
@@ -77,6 +77,11 @@ export const getSettings = (data: IKanbanProps) => {
                       propertyName: 'collapsible',
                       label: 'Collapsible',
                       jsSetting: true,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.kanbanReadonly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                     {
                       type: 'switch',
@@ -98,6 +103,11 @@ export const getSettings = (data: IKanbanProps) => {
                       propertyName: 'allowDelete',
                       label: 'Allow Delete',
                       jsSetting: true,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.kanbanReadonly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                     {
                       type: 'switch',
@@ -119,6 +129,11 @@ export const getSettings = (data: IKanbanProps) => {
                       propertyName: 'allowNewRecord',
                       label: 'Allow New Record',
                       jsSetting: true,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.kanbanReadonly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                     {
                       type: 'formAutocomplete',
@@ -148,6 +163,11 @@ export const getSettings = (data: IKanbanProps) => {
                       propertyName: 'allowEdit',
                       label: 'Allow Edit',
                       jsSetting: true,
+                      hidden: {
+                        _code: 'return getSettingValue(data?.kanbanReadonly);',
+                        _mode: 'code',
+                        _value: false,
+                      } as any,
                     },
                     {
                       type: 'formAutocomplete',
@@ -172,7 +192,7 @@ export const getSettings = (data: IKanbanProps) => {
           },
           {
             key: 'columns',
-            title: 'Columns',
+            title: 'Data',
             id: columnsTabId,
             components: [
               ...new DesignerToolbarSettings()
@@ -196,7 +216,7 @@ export const getSettings = (data: IKanbanProps) => {
                 .addSettingsInput({
                   id: nanoid(),
                   propertyName: 'items',
-                  label: '',
+                  label: 'Items',
                   labelAlign: 'right',
                   parentId: columnsTabId,
                   referenceList: {
@@ -306,7 +326,7 @@ export const getSettings = (data: IKanbanProps) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'backgroundStyleCollapsiblePanel',
+                                id: 'backgroundStyleCollapsiblePanels',
                                 propertyName: 'pnlBackgroundStyle',
                                 label: 'Background',
                                 labelAlign: 'right',
@@ -318,7 +338,7 @@ export const getSettings = (data: IKanbanProps) => {
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        id: 'backgroundStyleRow-selectType',
+                                        id: 'backgroundStyleRow-selectTypes',
                                         parentId: 'backgroundStylePnl',
                                         label: 'Type',
                                         jsSetting: false,
@@ -359,7 +379,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'backgroundStyleRow-color',
+                                        id: 'backgroundStyleRow-colors',
                                         parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
@@ -384,7 +404,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'backgroundStyle-gradientColors',
+                                        id: 'backgroundStyle-gradientColor',
                                         parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
@@ -409,7 +429,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'backgroundStyle-url',
+                                        id: 'backgroundStyle-urls',
                                         parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
@@ -457,7 +477,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'backgroundStyleRow-storedFile',
+                                        id: 'backgroundStyleRow-storedFiles',
                                         parentId: 'backgroundStylePnl',
                                         hidden: {
                                           _code:
@@ -481,8 +501,14 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: 'backgroundStyleRow-controls',
+                                        id: 'backgroundStyleRow-controlss',
                                         parentId: 'backgroundStyleRow',
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
                                         inline: true,
                                         readOnly: {
                                           _code: 'return  getSettingValue(data?.readOnly);',
@@ -513,11 +539,48 @@ export const getSettings = (data: IKanbanProps) => {
                                           },
                                           {
                                             type: 'customDropdown',
-                                            id: 'backgroundStyleRow-position',
+                                            id: 'backgroundStyleRowl-position',
                                             label: 'Position',
                                             hideLabel: true,
                                             propertyName: 'background.position',
-                                            dropdownOptions: positionOptions,
+                                            dropdownOptions: [
+                                              {
+                                                value: 'center',
+                                                label: 'Center',
+                                              },
+                                              {
+                                                value: 'top',
+                                                label: 'Top',
+                                              },
+                                              {
+                                                value: 'left',
+                                                label: 'Left',
+                                              },
+                                              {
+                                                value: 'right',
+                                                label: 'Right',
+                                              },
+                                              {
+                                                value: 'bottom',
+                                                label: 'Bottom',
+                                              },
+                                              {
+                                                value: 'top left',
+                                                label: 'Top Left',
+                                              },
+                                              {
+                                                value: 'top right',
+                                                label: 'Top Right',
+                                              },
+                                              {
+                                                value: 'bottom left',
+                                                label: 'Bottom Left',
+                                              },
+                                              {
+                                                value: 'bottom right',
+                                                label: 'Bottom Right',
+                                              },
+                                            ],
                                           },
                                         ],
                                       })
@@ -578,6 +641,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             id: 'shadowStyleRow-offsetX',
                                             label: 'Offset X',
                                             hideLabel: true,
+                                            tooltip: 'Offset X',
                                             width: 80,
                                             icon: 'offsetHorizontalIcon',
                                             propertyName: 'shadow.offsetX',
@@ -587,6 +651,7 @@ export const getSettings = (data: IKanbanProps) => {
                                             id: 'shadowStyleRow-offsetY',
                                             label: 'Offset Y',
                                             hideLabel: true,
+                                            tooltip: 'Offset Y',
                                             width: 80,
                                             icon: 'offsetVerticalIcon',
                                             propertyName: 'shadow.offsetY',
@@ -596,9 +661,20 @@ export const getSettings = (data: IKanbanProps) => {
                                             id: 'shadowStyleRow-blurRadius',
                                             label: 'Blur',
                                             hideLabel: true,
+                                            tooltip: 'Blur radius',
                                             width: 80,
                                             icon: 'blurIcon',
                                             propertyName: 'shadow.blurRadius',
+                                          },
+                                          {
+                                            type: 'numberField',
+                                            id: 'shadowStyleRow-spreadRadius',
+                                            label: 'Spread',
+                                            hideLabel: true,
+                                            tooltip: 'Spread radius',
+                                            width: 80,
+                                            icon: 'spreadIcon',
+                                            propertyName: 'shadow.spreadRadius',
                                           },
                                           {
                                             type: 'colorPicker',
@@ -789,20 +865,20 @@ export const getSettings = (data: IKanbanProps) => {
                                 },
                               })
                               .addCollapsiblePanel({
-                                id: 'customBackgroundPanel',
-                                propertyName: 'pnlCustomBackground',
+                                id: 'backgroundStyleCollapsiblePanels',
+                                propertyName: 'pnlBackgroundStyle',
                                 label: 'Background',
                                 labelAlign: 'right',
                                 ghost: true,
-                                parentId: 'customStyleRouter',
+                                parentId: 'styleRouter',
                                 collapsible: 'header',
                                 content: {
-                                  id: 'customBackgroundPnl',
+                                  id: 'backgroundStylePnl',
                                   components: [
                                     ...new DesignerToolbarSettings()
                                       .addSettingsInput({
-                                        id: 'customBackgroundRow-selectType',
-                                        parentId: 'customBackgroundPnl',
+                                        id: 'backgroundStyleRow-selectTypes',
+                                        parentId: 'backgroundStylePnl',
                                         label: 'Type',
                                         jsSetting: false,
                                         propertyName: 'columnStyles.background.type',
@@ -836,18 +912,18 @@ export const getSettings = (data: IKanbanProps) => {
                                           },
                                         ],
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-color',
-                                        parentId: 'customBackgroundPnl',
+                                        id: 'backgroundStyleRow-colors',
+                                        parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
                                             type: 'colorPicker',
-                                            id: 'customBackgroundRow-colorPicker',
+                                            id: 'backgroundStyleRow-color',
                                             label: 'Color',
                                             propertyName: 'columnStyles.background.color',
                                             hideLabel: true,
@@ -856,23 +932,23 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                         hidden: {
                                           _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "color";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-gradientColors',
-                                        parentId: 'customBackgroundPnl',
+                                        id: 'backgroundStyle-gradientColor',
+                                        parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
                                             type: 'multiColorPicker',
-                                            id: 'customBackgroundRow-gradientColorsPicker',
+                                            id: 'backgroundStyle-gradientColors',
                                             propertyName: 'columnStyles.background.gradient.colors',
                                             label: 'Colors',
                                             jsSetting: false,
@@ -880,48 +956,48 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                         hidden: {
                                           _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "gradient";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         hideLabel: true,
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-url',
-                                        parentId: 'customBackgroundPnl',
+                                        id: 'backgroundStyle-urls',
+                                        parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
                                             type: 'textField',
-                                            id: 'customBackgroundRow-urlInput',
-                                            propertyName: 'columnStyles.background.url',
+                                            id: 'backgroundStyle-url',
+                                            propertyName: 'background.url',
                                             jsSetting: false,
                                             label: 'URL',
                                           },
                                         ],
                                         hidden: {
                                           _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "url";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-image',
-                                        parentId: 'customBackgroundPnl',
+                                        id: 'backgroundStyle-image',
+                                        parentId: 'backgroundStylePnl',
                                         inputs: [
                                           {
                                             type: 'imageUploader',
-                                            id: 'customBackgroundRow-imageUploader',
+                                            id: 'backgroundStyle-image',
                                             propertyName: 'columnStyles.background.uploadFile',
                                             label: 'Image',
                                             jsSetting: false,
@@ -929,53 +1005,59 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                         hidden: {
                                           _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "image";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-storedFile',
-                                        parentId: 'customBackgroundPnl',
+                                        id: 'backgroundStyleRow-storedFiles',
+                                        parentId: 'backgroundStylePnl',
                                         hidden: {
                                           _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "storedFile";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         inputs: [
                                           {
                                             type: 'textField',
-                                            id: 'customBackgroundRow-storedFileInput',
+                                            id: 'backgroundStyle-storedFile',
                                             jsSetting: false,
-                                            propertyName: 'columnStyles.background.storedFile.id',
+                                            propertyName: 'background.storedFile.id',
                                             label: 'File ID',
                                           },
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-controls',
-                                        parentId: 'customBackgroundRow',
+                                        id: 'backgroundStyleRow-controlss',
+                                        parentId: 'backgroundStyleRow',
+                                        hidden: {
+                                          _code:
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) === "color";',
+                                          _mode: 'code',
+                                          _value: false,
+                                        } as any,
                                         inline: true,
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         inputs: [
                                           {
                                             type: 'customDropdown',
-                                            id: 'customBackgroundRow-sizeDropdown',
+                                            id: 'backgroundStyleRow-size',
                                             label: 'Size',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.size',
@@ -996,26 +1078,63 @@ export const getSettings = (data: IKanbanProps) => {
                                           },
                                           {
                                             type: 'customDropdown',
-                                            id: 'customBackgroundRow-positionDropdown',
+                                            id: 'backgroundStyleRowl-position',
                                             label: 'Position',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.position',
-                                            dropdownOptions: positionOptions,
+                                            dropdownOptions: [
+                                              {
+                                                value: 'center',
+                                                label: 'Center',
+                                              },
+                                              {
+                                                value: 'top',
+                                                label: 'Top',
+                                              },
+                                              {
+                                                value: 'left',
+                                                label: 'Left',
+                                              },
+                                              {
+                                                value: 'right',
+                                                label: 'Right',
+                                              },
+                                              {
+                                                value: 'bottom',
+                                                label: 'Bottom',
+                                              },
+                                              {
+                                                value: 'top left',
+                                                label: 'Top Left',
+                                              },
+                                              {
+                                                value: 'top right',
+                                                label: 'Top Right',
+                                              },
+                                              {
+                                                value: 'bottom left',
+                                                label: 'Bottom Left',
+                                              },
+                                              {
+                                                value: 'bottom right',
+                                                label: 'Bottom Right',
+                                              },
+                                            ],
                                           },
                                         ],
                                       })
                                       .addSettingsInputRow({
-                                        id: 'customBackgroundRow-repeat',
-                                        parentId: 'customBackgroundRow',
+                                        id: 'backgroundStyleRow-repeat',
+                                        parentId: 'backgroundStyleRow',
                                         readOnly: {
-                                          _code: 'return getSettingValue(data?.readOnly);',
+                                          _code: 'return  getSettingValue(data?.readOnly);',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
                                         inputs: [
                                           {
                                             type: 'radio',
-                                            id: 'customBackgroundRow-repeatRadio',
+                                            id: 'backgroundStyleRow-repeat-radio',
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.repeat',
@@ -1025,7 +1144,7 @@ export const getSettings = (data: IKanbanProps) => {
                                         ],
                                         hidden: {
                                           _code:
-                                            'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) === "color";',
+                                            'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
                                         } as any,
@@ -1058,34 +1177,47 @@ export const getSettings = (data: IKanbanProps) => {
                                         inputs: [
                                           {
                                             type: 'numberField',
-                                            id: 'columnStyles.shadowStyleRow-offsetX',
+                                            id: 'shadowStyleRow-offsetX',
                                             label: 'Offset X',
                                             hideLabel: true,
+                                            tooltip: 'Offset X',
                                             width: 80,
                                             icon: 'offsetHorizontalIcon',
                                             propertyName: 'columnStyles.shadow.offsetX',
                                           },
                                           {
                                             type: 'numberField',
-                                            id: 'columnStyles.shadowStyleRow-offsetY',
+                                            id: 'shadowStyleRow-offsetY',
                                             label: 'Offset Y',
                                             hideLabel: true,
+                                            tooltip: 'Offset Y',
                                             width: 80,
                                             icon: 'offsetVerticalIcon',
                                             propertyName: 'columnStyles.shadow.offsetY',
                                           },
                                           {
                                             type: 'numberField',
-                                            id: 'columnStyles.shadowStyleRow-blurRadius',
+                                            id: 'shadowStyleRow-blurRadius',
                                             label: 'Blur',
                                             hideLabel: true,
+                                            tooltip: 'Blur radius',
                                             width: 80,
                                             icon: 'blurIcon',
                                             propertyName: 'columnStyles.shadow.blurRadius',
                                           },
                                           {
+                                            type: 'numberField',
+                                            id: 'shadowStyleRow-spreadRadius',
+                                            label: 'Spread',
+                                            hideLabel: true,
+                                            tooltip: 'Spread radius',
+                                            width: 80,
+                                            icon: 'spreadIcon',
+                                            propertyName: 'columnStyles.shadow.spreadRadius',
+                                          },
+                                          {
                                             type: 'colorPicker',
-                                            id: 'columnStyles.shadowStyleRow-color',
+                                            id: 'shadowStyleRow-color',
                                             label: 'Color',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.shadow.color',
