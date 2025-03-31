@@ -2,7 +2,7 @@ import { IKanbanProps } from '@/components/kanban/model';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
-import { positionOptions, repeatOptions } from '../_settings/utils/background/utils';
+import { repeatOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 
