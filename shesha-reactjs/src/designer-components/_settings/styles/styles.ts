@@ -38,6 +38,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             align-self: end !important;
             position: relative;
             bottom: -2px;
+            margin-right: 8px;
             }
 
             +.sha-required-mark {
