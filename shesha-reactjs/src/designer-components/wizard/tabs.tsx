@@ -120,7 +120,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-
     if (model?.hidden) return null;
     const btnStyle = getWizardButtonStyle(buttonsLayout);
 

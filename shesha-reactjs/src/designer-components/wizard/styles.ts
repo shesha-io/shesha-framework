@@ -7,16 +7,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
   const shaStepsButtons = "sha-steps-buttons";
 
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = colors;
-
+  const { color, ...rest } = styles;
   const shaWizard = cx("sha-wizard", css`
     
     .ant-steps-item {
       --ant-color-primary: ${primaryBgColor};
-      --ant-color-text-description: ${styles.color}75;
-      --ant-color-text: ${styles.color};
+      --ant-color-text-description: ${color}75;
+      --ant-color-text: ${color};
       --ant-font-size: calc(${styles.fontSize}/1.3);
       --ant-font-size-lg: ${styles.fontSize || 16};
-      --ant-steps-nav-arrow-color: ${styles.color}45;
+      --ant-steps-nav-arrow-color: ${color}45;
       --ant-steps-finish-icon-bg-color: ${primaryBgColor}45;
       --ant-color-text-light-solid: ${primaryTextColor} !important;
 
@@ -53,7 +53,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors 
       }
   }
     
-    ${styles}
+    ${rest}
       
     .${shaWizardContainer} {
       margin: unset;
