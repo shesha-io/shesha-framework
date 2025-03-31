@@ -36,13 +36,47 @@ jobs:
 
       - name: Tag PR on Success
         if: ${{ steps.build.outcome == 'success' }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "shesha-reactjs-build-passed"
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "shesha-reactjs-build-failed" || true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo, number } = context.repo;
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels: ['shesha-reactjs-build-passed']
+            });
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: number,
+                name: 'shesha-reactjs-build-failed'
+              });
+            } catch (error) {
+              // Ignore error if label doesn't exist
+            }
 
       - name: Tag PR on Failure
         if: ${{ steps.build.outcome == 'failure' }}
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "shesha-reactjs-build-failed"
-          gh pr edit ${{ github.event.pull_request.number }} --remove-label "shesha-reactjs-build-passed" || true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo, number } = context.repo;
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: number,
+              labels: ['shesha-reactjs-build-failed']
+            });
+            try {
+              await github.rest.issues.removeLabel({
+                owner,
+                repo,
+                issue_number: number,
+                name: 'shesha-reactjs-build-passed'
+              });
+            } catch (error) {
+              // Ignore error if label doesn't exist
+            }
 
