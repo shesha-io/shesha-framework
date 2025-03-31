@@ -71,6 +71,7 @@ export const getSettings = (data: any) => {
                     propertyName: 'value',
                     label: 'Value',
                     jsSetting: true,
+                    description: 'The value to display in the statistic. This value will will only override if there is no binding to the property name.',
                   },
                   {
                     type: 'numberField',
@@ -765,7 +766,7 @@ export const getSettings = (data: any) => {
                 label: 'On Click',
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
-                parentId: eventsId,
+                parentId: eventsId
               })
               .toJson()
             ]
