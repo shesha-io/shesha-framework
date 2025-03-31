@@ -131,7 +131,7 @@ export const onAddNewItem = (items: IWizardStepProps[]) => {
 
 export const defaultStyles = (): IStyleType => {
   return {
-    background: { type: 'color', color: '#ffffff00' },
+    background: { type: 'color', color: '' },
     font: { weight: '400', size: 16, color: '#000', type: 'Segoe UI' },
     dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
