@@ -13,18 +13,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         display: flex;
         flex-wrap: wrap;
         gap: 0px 8px;
-
-        .ant-btn {
-            max-width: 100%;
-            span {
-                max-width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-        }
         `);
-
 
     const icon = cx(css`
         --icon-fill-color: #1C1B1F;
