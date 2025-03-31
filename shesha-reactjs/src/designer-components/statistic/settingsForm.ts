@@ -102,7 +102,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .addSettingsInputRow({
                 id: fixesRowId,
@@ -123,7 +123,7 @@ export const getSettings = (data: any) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
               .toJson()
             ]
@@ -190,7 +190,7 @@ export const getSettings = (data: any) => {
                                   id: `fontFamily-${styleRouterId}`,
                                   label: 'Family',
                                   propertyName: 'titleFont.type',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   dropdownOptions: fontTypes,
                                 },
                                 {
@@ -198,7 +198,7 @@ export const getSettings = (data: any) => {
                                   id: `fontSize-${styleRouterId}`,
                                   label: 'Size',
                                   propertyName: 'titleFont.size',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   width: 50,
                                 },
                                 {
@@ -206,7 +206,7 @@ export const getSettings = (data: any) => {
                                   id: `fontWeight-${styleRouterId}`,
                                   label: 'Weight',
                                   propertyName: 'titleFont.weight',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   dropdownOptions: fontWeights,
                                   width: 100,
                                 },
@@ -214,7 +214,7 @@ export const getSettings = (data: any) => {
                                   type: 'colorPicker',
                                   id: `fontColor-${styleRouterId}`,
                                   label: 'Color',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: 'titleFont.color',
                                 },
                                 {
@@ -222,7 +222,7 @@ export const getSettings = (data: any) => {
                                   id: `fontAlign-${styleRouterId}`,
                                   label: 'Align',
                                   propertyName: 'titleFont.align',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   width: 60,
                                   dropdownOptions: textAlign,
                                 },
@@ -233,8 +233,8 @@ export const getSettings = (data: any) => {
                               id: nanoid(),
                               inputType: 'codeEditor',
                               propertyName: 'titleStyle',
-                              hideLabel: false,
-                              label: 'Custom',
+                              hideLabel: true,
+                              label: 'Custom Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()
@@ -266,7 +266,7 @@ export const getSettings = (data: any) => {
                                   id: `fontFamily-${styleRouterId}`,
                                   label: 'Family',
                                   propertyName: 'valueFont.type',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   dropdownOptions: fontTypes,
                                 },
                                 {
@@ -274,7 +274,7 @@ export const getSettings = (data: any) => {
                                   id: `fontSize-${styleRouterId}`,
                                   label: 'Size',
                                   propertyName: 'valueFont.size',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   width: 50,
                                 },
                                 {
@@ -282,7 +282,7 @@ export const getSettings = (data: any) => {
                                   id: `fontWeight-${styleRouterId}`,
                                   label: 'Weight',
                                   propertyName: 'valueFont.weight',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   dropdownOptions: fontWeights,
                                   width: 100,
                                 },
@@ -290,7 +290,7 @@ export const getSettings = (data: any) => {
                                   type: 'colorPicker',
                                   id: `fontColor-${styleRouterId}`,
                                   label: 'Color',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: 'valueFont.color',
                                 },
                                 {
@@ -298,7 +298,7 @@ export const getSettings = (data: any) => {
                                   id: `fontAlign-${styleRouterId}`,
                                   label: 'Align',
                                   propertyName: 'valueFont.align',
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   width: 60,
                                   dropdownOptions: textAlign,
                                 },
@@ -310,7 +310,7 @@ export const getSettings = (data: any) => {
                               inputType: 'codeEditor',
                               propertyName: 'valueStyle',
                               hideLabel: false,
-                              label: 'Custom',
+                              label: 'Custom Style',
                               description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                             })
                             .toJson()
@@ -349,7 +349,7 @@ export const getSettings = (data: any) => {
                                   id: `minWidth-${styleRouterId}`,
                                   label: "Min Width",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.minWidth",
                                   icon: "minWidthIcon",
                                 },
@@ -358,7 +358,7 @@ export const getSettings = (data: any) => {
                                   id: `maxWidth-${styleRouterId}`,
                                   label: "Max Width",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.maxWidth",
                                   icon: "maxWidthIcon",
                                 }
@@ -384,7 +384,7 @@ export const getSettings = (data: any) => {
                                   id: `minHeight-${dimensionsStylePnlId}`,
                                   label: "Min Height",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.minHeight",
                                   icon: "minHeightIcon",
                                 },
@@ -393,7 +393,7 @@ export const getSettings = (data: any) => {
                                   id: `maxHeight-${dimensionsStylePnlId}`,
                                   label: "Max Height",
                                   width: 85,
-                                  hideLabel: false,
+                                  hideLabel: true,
                                   propertyName: "dimensions.maxHeight",
                                   icon: "maxHeightIcon",
                                 }
@@ -582,13 +582,12 @@ export const getSettings = (data: any) => {
                                   }
                                 ]
                               })
-
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -613,7 +612,7 @@ export const getSettings = (data: any) => {
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 inputs: [{
                                   type: 'radio',
                                   id: 'backgroundStyleRow-repeat-radio',
@@ -623,7 +622,7 @@ export const getSettings = (data: any) => {
                                   inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                               })
                               .toJson()
                           ],
@@ -759,14 +758,14 @@ export const getSettings = (data: any) => {
             id: eventsId,
             components: [...new DesignerToolbarSettings()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 id: nanoid(),
                 inputType: 'codeEditor',
                 propertyName: 'onClickCustom',
                 label: 'On Click',
                 labelAlign: 'right',
                 tooltip: 'Enter custom eventhandler on click of event. (form, event) are exposed',
-                parentId: eventsId
+                parentId: eventsId,
               })
               .toJson()
             ]
