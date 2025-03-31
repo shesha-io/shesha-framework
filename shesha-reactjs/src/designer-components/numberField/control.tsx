@@ -35,7 +35,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
   const font = model?.font;
   const shadow = model?.shadow;
   const background = model?.background;
-  const jsStyle = getStyle(model.style, model);
+  const jsStyle = getStyle(model?.style, model);
   const allData = useAvailableConstantsData();
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
