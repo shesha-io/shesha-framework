@@ -40,7 +40,7 @@ export const getSettings = (data: any) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: "textField",
+                  inputType: "textArea",
                   propertyName: "description",
                   parentId: commonTabId,
                   label: "Tooltip",
