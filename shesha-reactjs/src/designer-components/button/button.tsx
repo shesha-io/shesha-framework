@@ -140,9 +140,9 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
       .add<IButtonComponentProps>(8, (prev) => ({
         ...prev,
-        desktop: { ...prev.desktop, buttonType: 'default' },
-        mobile: { ...prev.mobile, buttonType: 'default' },
-        tablet: { ...prev.tablet, buttonType: 'default' }
+        desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
+        mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
+        tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' }
       }))
       .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
 };

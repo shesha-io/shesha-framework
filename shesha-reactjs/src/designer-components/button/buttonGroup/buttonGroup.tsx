@@ -77,10 +77,11 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; appContext: 
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
         ...dimensionsStyles,
-        ...borderStyles,
         ...fontStyles,
-        ...shadowStyles,
-        ...getBackgroundStyle(background, jsStyle, imageUrl)
+        ...(['primary', 'default'].includes(buttonType) && borderStyles),
+        ...(['primary', 'default'].includes(buttonType) && shadowStyles),
+        ...(['dashed', 'default'].includes(buttonType) && getBackgroundStyle(background, jsStyle, imageUrl)),
+        ...jsStyle,
     });
 
     const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
@@ -288,63 +289,49 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     }, [allData]);
 
     const actualItems = useDeepCompareMemo(() => {
-        return items?.map((item) => {
-            const model = { ...item, type: '' };
-            const jsStyle = getStyle(model.style);
+        return Promise.all(items?.map(async (item) => {
+            const jsStyle = getStyle(item.style);
             const dimensions = item?.dimensions;
             const border = item?.border;
             const font = item?.font;
             const shadow = item?.shadow;
+            const background = item.background;
 
             const dimensionsStyles = getSizeStyle(dimensions);
             const borderStyles = getBorderStyle(border, jsStyle);
             const fontStyles = getFontStyle(font);
             const shadowStyles = getShadowStyle(shadow);
 
+            const storedImageUrl = await getBackgroundImageUrl(background, backendUrl, httpHeaders);
+
+            const backgroundStyle = getBackgroundStyle(item.background, getStyle(item.style), storedImageUrl);
+
             const newStyles = {
                 ...dimensionsStyles,
-                ...borderStyles,
+                ...(['primary', 'default'].includes(item.buttonType) && borderStyles),
                 ...fontStyles,
-                ...shadowStyles,
+                ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
+                ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyle),
                 ...jsStyle,
             };
 
             return prepareItem({ ...item, styles: newStyles }, disabled);
-        });
+        }) || []);
     }, [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
-    const [finalItems, setFinalItems] = useState(actualItems);
+    const [resolvedItems, setResolvedItems] = useState<ButtonGroupItemProps[]>([]);
 
     useEffect(() => {
-        const fetchBackgroundStyles = async () => {
-            const updatedItems = await Promise.all(
-                actualItems.map(async (item) => {
-                    const storedImageUrl = await getBackgroundImageUrl(item.background, backendUrl, httpHeaders);
+        actualItems?.then(setResolvedItems);
+    }, [actualItems]);
 
-                    const backgroundStyle = getBackgroundStyle(item.background, getStyle(item.style), storedImageUrl);
-
-                    const updatedStyles = {
-                        ...item.styles,
-                        ...backgroundStyle,
-                    };
-
-                    return prepareItem({ ...item, styles: updatedStyles }, disabled);
-                })
-            );
-
-            setFinalItems(updatedItems);
-        };
-
-        fetchBackgroundStyles();
-    }, [actualItems, backendUrl, disabled, httpHeaders, prepareItem]);
+    const filteredItems = resolvedItems?.filter(getIsVisible);
 
     if (background?.type === 'storedFile' && background.storedFile?.id && !isValidGuid(background.storedFile.id)) {
         return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    const filteredItems = finalItems?.filter(getIsVisible);
-
-    if (actualItems.length === 0 && isDesignMode)
+    if (resolvedItems.length === 0 && isDesignMode)
         return (
             <Alert
                 className="sha-designer-warning"

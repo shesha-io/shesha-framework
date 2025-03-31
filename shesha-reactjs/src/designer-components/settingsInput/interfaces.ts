@@ -8,6 +8,7 @@ import { ComponentType } from '@/components/formComponentSelector';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { GetResultTypeFunc } from '../codeEditor/interfaces';
+import { IHttpVerb } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 
 export interface IRadioOption {
     value: string | number;
@@ -69,6 +70,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     value?: any;
     placeholder?: string;
     mode?: any;
+    availableHttpVerbs?: IHttpVerb[];
     /** Can be any valid number e.g.: 1, 0.1, 3, 3.14 */
     step?: number;
     exposedVariables?: string[] | ICodeExposedVariable[];
