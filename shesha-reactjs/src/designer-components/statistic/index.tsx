@@ -1,5 +1,5 @@
-import { ValidationErrors } from '@/components';
-import { getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
+import { ConfigurableFormItem, ValidationErrors } from '@/components';
+import { customOnClickEventHandler, getEventHandlers, isValidGuid } from '@/components/formDesigner/components/utils';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
@@ -111,30 +111,48 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
 
     if (formMode === 'designer') {
       return (
-        <ShaStatistic
-          value={passedModel?.value}
-          precision={passedModel?.precision}
-          title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-          prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span></div>}
-          suffix={<div><span style={{ marginRight: 5 }}>{passedModel.suffix && passedModel.suffix}{passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}</span></div>}
-          style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
-          valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
-          onClick={customEvents?.onClick}
-        />
+        <ConfigurableFormItem model={{ ...model, hideLabel: true }} valuePropName="checked" initialValue={model?.defaultValue}>
+          {(value, _) => {
+            const customEvent = customOnClickEventHandler(model, allData);
+            const onClickInternal = (_: any) => {
+              customEvent.onClick(value);
+            };
+            return <ShaStatistic
+              value={value || passedModel?.value}
+              precision={passedModel?.precision}
+              title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
+              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span></div>}
+              suffix={<div><span style={{ marginRight: 5 }}>{passedModel.suffix && passedModel.suffix}{passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}</span></div>}
+              style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
+              valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
+              {...customEvents}
+              onClick={onClickInternal}
+            />;
+          }}
+        </ConfigurableFormItem>
       );
     }
 
     return (
-      <ShaStatistic
-        value={passedModel?.value}
-        precision={passedModel?.precision}
-        title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-        prefix={<div>{prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{prefix && prefix}</span></div>}
-        suffix={<div><span style={{ marginRight: 5 }}>{suffix && suffix}</span>{suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}</div>}
-        style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
-        valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
-        onClick={customEvents?.onClick}
-      />
+      <ConfigurableFormItem model={{ ...model, hideLabel: true }} valuePropName="checked" initialValue={model?.defaultValue}>
+        {(value) => {
+          const customEvent = customOnClickEventHandler(model, allData);
+          const onClickInternal = (_: any) => {
+            customEvent.onClick(value);
+          };
+          return <ShaStatistic
+            value={value || passedModel?.value}
+            precision={passedModel?.precision}
+            title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
+            prefix={<div>{prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{prefix && prefix}</span></div>}
+            suffix={<div><span style={{ marginRight: 5 }}>{suffix && suffix}</span>{suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}</div>}
+            style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
+            valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
+            {...customEvents}
+            onClick={onClickInternal}
+          />;
+        }}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),
@@ -149,6 +167,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         titleFont: defaultStyles().titleFont,
         titleStyle: prev?.titleStyle,
         hideBorder: prev?.hideBorder,
+        shadow: defaultStyles().shadow,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
