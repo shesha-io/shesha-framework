@@ -44,7 +44,9 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const actualItem = useActualContextData({ ...item, actionConfiguration });
 
 
-  const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, block, danger } = actualItem;
+  const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius,
+    height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth,
+    readOnly, block, danger } = actualItem;
 
   const model = {
     ...actualItem,
@@ -91,19 +93,19 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             return URL.createObjectURL(blob);
           }) : '';
 
-      const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
+      const style = getBackgroundStyle(background, jsStyle, storedImageUrl);
       setBackgroundStyles(style);
     };
 
     fetchStyles();
-  }, [background]);
+  }, [background, httpHeaders, backendUrl, jsStyle]);
 
   const newStyles = {
     ...dimensionsStyles,
-    ...borderStyles,
+    ...(['primary', 'default'].includes(item.buttonType) && borderStyles),
     ...fontStyles,
-    ...backgroundStyles,
-    ...shadowStyles,
+    ...(['dashed', 'default'].includes(item.buttonType) && backgroundStyles),
+    ...(['primary', 'default'].includes(item.buttonType) && shadowStyles),
     ...jsStyle,
     ...stylingBoxAsCSS
   };
