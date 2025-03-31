@@ -10,9 +10,19 @@ export const useStyles = createStyles(({ css, cx }) => {
     const codeEditorContainer = cx("sha-code-editor-container", css`
         height: 70vh;
     `);
+
+    const button = cx("sha-code-btn",
+        css`
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-flex;
+            align-items: center;
+        `);
+
     return {
         codeEditorModal,
         codeEditorModalBody,
         codeEditorContainer,
+        button
     };
 });
