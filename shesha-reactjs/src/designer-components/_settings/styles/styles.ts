@@ -79,7 +79,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
-                top: -25px;
+                top: ${hasCode ? '-38px' : '-25px'};
             }
         }
     `);
