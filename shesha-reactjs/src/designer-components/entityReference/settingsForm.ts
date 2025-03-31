@@ -191,41 +191,27 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                   components: [
                     ...new DesignerToolbarSettings()
                       .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlStyle',
-                        label: 'Style',
+                        id: 'customStyleCollapsiblePanel',
+                        propertyName: 'customStyle',
+                        label: 'Custom Styles',
                         labelAlign: 'right',
                         ghost: true,
+                        parentId: 'styleRouter',
                         collapsible: 'header',
                         content: {
-                          id: nanoid(),
-                          components: [
-                            ...new DesignerToolbarSettings()
-                              .addSettingsInput({
-                                readOnly: {
-                                  _code: 'return getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'style',
-                                label: 'Style',
-                                mode: 'dialog',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                exposedVariables: [
-                                  {
-                                    id: nanoid(),
-                                    name: 'data',
-                                    description: 'Form data',
-                                    type: 'object',
-                                  },
-                                ],
-                              })
-                            .toJson(),
-                          ],
-                        },
+                          id: 'stylePnl-M500-911MFR',
+                          components: [...new DesignerToolbarSettings()
+                            .addSettingsInput({
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              id: 'custom-css-412c-8461-4c8d55e5c073',
+                              inputType: 'codeEditor',
+                              propertyName: 'style',
+                              label: 'Style',
+                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                            })
+                            .toJson()
+                          ]
+                        }
                       })
                       .addCollapsiblePanel({
                         id: nanoid(),
