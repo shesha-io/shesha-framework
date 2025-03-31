@@ -167,6 +167,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         titleFont: defaultStyles().titleFont,
         titleStyle: prev?.titleStyle,
         hideBorder: prev?.hideBorder,
+        shadow: defaultStyles().shadow,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };

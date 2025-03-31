@@ -28,6 +28,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, iconPrefixCls, toke
     .${prefixCls}-statistic-content-value-int {
         font-size: ${token?.fontSize};
     }    
+
+    .container-div-zero-padding-margin {
+        padding: 0;
+        margin: 0;
+    }
   `); 
   return {
     shaStatistic,

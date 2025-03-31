@@ -14,7 +14,7 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
     }
   });
 
-  return (<div onClick={e => rest.onClick(e)}>
+  return (<div className={styles['container-div-zero-padding-margin']} onClick={e => rest.onClick(e)}>
     <Statistic className={classNames(styles.shaStatistic, className)} {...rest} />
   </div>);
 };
