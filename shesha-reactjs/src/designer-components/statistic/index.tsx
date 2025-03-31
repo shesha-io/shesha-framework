@@ -128,8 +128,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               {...customEvents}
               onClick={onClickInternal}
             />;
-          }
-          }
+          }}
         </ConfigurableFormItem>
       );
     }
@@ -152,8 +151,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             {...customEvents}
             onClick={onClickInternal}
           />;
-        }
-      }
+        }}
       </ConfigurableFormItem>
     );
   },
