@@ -1,0 +1,48 @@
+name: shesha-reactjs-build-test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./shesha-reactjs
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        id: build
+        run: npm run build
+
+      - name: Tag PR on Success
+        if: ${{ steps.build.outcome == 'success' }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "shesha-reactjs-build-passed"
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "shesha-reactjs-build-failed" || true
+
+      - name: Tag PR on Failure
+        if: ${{ steps.build.outcome == 'failure' }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-label "shesha-reactjs-build-failed"
+          gh pr edit ${{ github.event.pull_request.number }} --remove-label "shesha-reactjs-build-passed" || true
+
