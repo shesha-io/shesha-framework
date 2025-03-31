@@ -146,6 +146,9 @@ export interface IComponentRuntimeProps {
   /** Custom onChange handler */
   onChangeCustom?: string;
 
+  /** Custom onClick handler */
+  onClickCustom?: string;
+
   /** Custom onFocus handler */
   onFocusCustom?: string;
 }
