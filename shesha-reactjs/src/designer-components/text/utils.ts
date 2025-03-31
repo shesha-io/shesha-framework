@@ -65,7 +65,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string = 
   const datePattern =
     /\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/g;
 
-  return content.replace(datePattern, (match) => {
+  return content?.replace(datePattern, (match) => {
     if (isValidDate(match)) {
       return formatDate(match, dateFormat);
     }

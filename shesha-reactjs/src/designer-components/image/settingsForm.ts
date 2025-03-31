@@ -41,19 +41,29 @@ export const getSettings = (data) => {
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 hideLabel: true,
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: 'alt-text-c4sf4ff-f4ffe-4r34fc',
                                 propertyName: 'alt',
                                 label: 'Alt Text',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                            })
-                            .addSettingsInput({
-                                id: 'img-desc-4f4f4f4f-4f4f4f4f-4f4f4f4f',
-                                inputType: 'textArea',
-                                propertyName: 'description',
-                                label: 'Tooltip',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                jsSetting: true,
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        type: 'textField',
+                                        id: 'alt-text-c4sf4ff-f4ffe-4r34fc',
+                                        propertyName: 'alt',
+                                        label: 'Alt Text',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        id: 'img-desc-4f4f4f4f-4f4f4f4f-4f4f4f4f',
+                                        type: 'textArea',
+                                        propertyName: 'description',
+                                        label: 'Tooltip',
+                                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                                        jsSetting: true,
+                                    }
+                                ]
                             })
                             .addSettingsInputRow({
                                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -78,29 +88,37 @@ export const getSettings = (data) => {
                                     },
                                 ],
                             })
-                            .addSettingsInput({
+                            .addSettingsInputRow({
                                 id: 'allow-preview-s4gmBg31azZC0UjZjpfTm',
                                 propertyName: 'allowPreview',
                                 label: 'Allow Preview',
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
-                                inputType: 'switch'
-                            })
-                            .addSettingsInput({
-                                id: 'allowed-type-s4gmBg31azZC0UjZjpfTm',
-                                propertyName: 'allowedFileTypes',
-                                label: 'Allowed File Types',
-                                inputType: 'editableTagGroupProps',
-                                parentId: 's4gmBg31azZC0UjZjpfTm',
-                                tooltip: 'Enter the file types that are allowed to be uploaded e.g .jpg, .png, .gif',
+                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                inputs: [
+                                    {
+                                        type: 'switch',
+                                        id: 'allow-preview-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'allowPreview',
+                                        label: 'Allow Preview',
+                                        jsSetting: true,
+                                    },
+                                    {
+                                        id: 'allowed-type-s4gmBg31azZC0UjZjpfTm',
+                                        propertyName: 'allowedFileTypes',
+                                        label: 'Allowed File Types',
+                                        type: 'editableTagGroupProps',
+                                        parentId: 's4gmBg31azZC0UjZjpfTm',
+                                        tooltip: 'Enter the file types that are allowed to be uploaded e.g .jpg, .png, .gif',
+                                    }
+                                ]
                             })
                             .addSettingsInput({
                                 id: "image-source-type",
                                 parentId: 's4gmBg31azZC0UjZjpfTm',
                                 label: "Image Source Type",
-                                jsSetting: false,
+                                jsSetting: true,
                                 propertyName: "dataSource",
                                 inputType: "radio",
-                                tooltip: "Select a type of background",
                                 buttonGroupOptions: [
                                     {
                                         title: "StoredFile",
@@ -304,7 +322,7 @@ export const getSettings = (data) => {
                                         .addCollapsiblePanel({
                                             id: 'size-position-CollapsiblePanel',
                                             propertyName: 'pnlsize-position-',
-                                            label: 'Picture Style',
+                                            label: 'Picture Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',
@@ -557,7 +575,7 @@ export const getSettings = (data) => {
                                         .addCollapsiblePanel({
                                             id: 'customStyleCollapsiblePanel',
                                             propertyName: 'customStyle',
-                                            label: 'Custom Style',
+                                            label: 'Custom Styles',
                                             labelAlign: 'right',
                                             ghost: true,
                                             parentId: 'styleRouter',

@@ -21,6 +21,7 @@ export interface IPropertyAutocompleteProps {
   mode?: 'single' | 'multiple' | 'tags';
   autoFillProps?: boolean;
   readOnly?: boolean;
+  allowClear?: boolean;
 }
 
 interface IOption {
@@ -51,7 +52,7 @@ const properties2options = (properties: IPropertyMetadata[], prefix: string): IO
   });
 };
 
-export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, ...props }) => {
+export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 'single', readOnly = false, allowClear = false, ...props }) => {
   const { style = { width: '32px' } } = props;
 
   const meta = useMetadata(false);
@@ -188,6 +189,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       size={props.size}
       dropdownStyle={props?.dropdownStyle}
       popupMatchSelectWidth={false}
+      allowClear={allowClear}
     />
   );
 

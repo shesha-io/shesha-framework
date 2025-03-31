@@ -8,6 +8,7 @@ export const useStyles = createStyles(({ css, cx, }) => {
         `);
 
     const content = cx(css`
+
             .ant-tabs-tab, .ant-tabs-nav-operations {
                 height: 24px;
             }

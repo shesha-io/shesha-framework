@@ -122,6 +122,11 @@ export const GlobalSheshaStyles = createGlobalStyle`
   
   body {
     margin: 0;
+    div {
+      .ant-tabs-dropdown {
+      --ant-tabs-z-index-popup: 1200 !important;
+      }
+    }
   }
 
   [hidden] {

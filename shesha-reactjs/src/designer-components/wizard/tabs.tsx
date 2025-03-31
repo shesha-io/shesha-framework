@@ -5,7 +5,6 @@ import ParentProvider from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { useSheshaApplication } from '@/providers';
 import { getStyle, pickStyleFromModel, ValidationErrors } from '@/index';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
@@ -16,7 +15,7 @@ import { removeUndefinedProps } from '@/utils/object';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
-import { useForm, useFormData } from '@/providers';
+import { useSheshaApplication, useForm, useFormData } from '@/providers';
 import { useFormExpression } from '@/hooks/index';
 import { useStyles } from './styles';
 import { useWizard } from './hooks';
@@ -137,10 +136,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
                         direction={direction}
                         labelPlacement={labelPlacement}
                     />
-
                     <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
                 </div>
-
                 <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
                     <div
                         className={classNames(styles.shaStepsButtonsContainer, {
