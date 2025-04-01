@@ -13,6 +13,7 @@ import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
+import _ from 'lodash';
 
 const actionsOwner = 'Configuration Items';
 
