@@ -46,6 +46,6 @@ export const getDesignerDefaultContent = (model: any) => {
         suffix: model.suffix,
         prefixIcon: model.prefixIcon,
         suffixIcon: model.suffixIcon,
-        precision: model.precision || 2,
+        precision: model.precision,
     };
 };
