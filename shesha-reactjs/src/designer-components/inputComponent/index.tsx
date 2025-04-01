@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -48,7 +48,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, showSearch } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, showSearch, defaultChecked } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -122,8 +122,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                     })}
             </Radio.Group>;
         case 'switch':
+            /*Handle cases where defaultValue is used in place of defaultChecked*/
             return <Switch disabled={readOnly} size='small'
-                defaultValue={defaultValue} onChange={onChange} value={value || defaultValue} />;
+                defaultChecked={defaultChecked ?? defaultValue} onChange={onChange} defaultValue={defaultValue} value={value} />;
         case 'numberField':
             return <InputNumber
                 placeholder={placeholder}
