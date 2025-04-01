@@ -1,12 +1,9 @@
 import React, { FC } from 'react';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
-import { Tooltip } from 'antd';
 import { IRadioOption } from '../settingsInput/interfaces';
-import { capitalize } from 'lodash';
 
 export interface ILabelProps {
   readOnly?: boolean;
