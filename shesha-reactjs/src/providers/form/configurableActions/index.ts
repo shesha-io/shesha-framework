@@ -19,7 +19,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
 
     useConfigurableAction(
         {
-            name: 'Start edit',
+            name: 'Start Edit',
             owner: name,
             ownerUid: actionsOwnerUid,
             hasArguments: false,
@@ -34,7 +34,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
 
     useConfigurableAction(
         {
-            name: 'Cancel edit',
+            name: 'Cancel Edit',
             owner: name,
             ownerUid: actionsOwnerUid,
             hasArguments: false,

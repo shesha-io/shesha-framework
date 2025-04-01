@@ -32,7 +32,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
   useConfigurableAction<IShowConfirmationArguments>(
     {
-      name: 'Show confirmation dialog',
+      name: 'Show Confirmation Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
@@ -71,7 +71,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
   useConfigurableAction<IShowModalActionArguments>(
     {
-      name: 'Show dialog',
+      name: 'Show Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
@@ -155,7 +155,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   //#region Close the latest Dialog
   useConfigurableAction<ICloseModalActionArguments>(
     {
-      name: 'Close dialog',
+      name: 'Close Dialog',
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
