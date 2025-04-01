@@ -1,5 +1,5 @@
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { useStoredFile } from '@/providers';
+import { useSheshaApplication, useStoredFile } from '@/providers';
 import {
   DeleteOutlined,
   InfoCircleOutlined,
@@ -9,14 +9,14 @@ import {
 } from '@ant-design/icons';
 import { App, Button, Upload } from 'antd';
 import { UploadProps } from 'antd/lib/upload/Upload';
-import classNames from 'classnames';
 import filesize from 'filesize';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import React, { FC, useRef } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
-
+import { isImageType, getFileIcon } from '@/icons/fileIcons';
+import { Image } from 'antd/lib';
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {
@@ -36,7 +36,7 @@ export interface IFileUploadProps {
   borderRadius?: number;
   hideFileName?: boolean;
   readonly?: boolean;
-
+  styles?: any;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -49,7 +49,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
   allowedFileTypes = [],
   isDragger = false,
   listType = 'text',
+  hideFileName = false,
   readonly,
+  styles: stylesProp,
 }) => {
   const {
     fileInfo,
@@ -61,17 +63,20 @@ export const FileUpload: FC<IFileUploadProps> = ({
     succeeded: { downloadZip: downloadZipSuccess },
     */
   } = useStoredFile();
-  const { styles } = useStyles();
+  const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  const { styles } = useStyles({ styles: stylesProp, model: { layout: listType === 'thumbnail' && !isDragger, hideFileName: hideFileName && listType === 'thumbnail', isDragger } });
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
   const { message } = App.useApp();
-
+  const [imageUrl, setImageUrl] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
     uploadFile({ file: file as File }, callback);
   };
 
-  const onDownloadClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const onDownloadClick = (e) => {
     e.preventDefault();
     downloadFile({ fileId: fileInfo.id, fileName: fileInfo.name });
   };
@@ -88,7 +93,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   };
 
-  const onDeleteClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const onDeleteClick = (e) => {
     e.preventDefault();
     deleteFile();
   };
@@ -103,7 +108,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
           </a>
         )}
         {allowReplace && (
-          <a  onClick={onReplaceClick}>
+          <a onClick={onReplaceClick}>
             <SyncOutlined title="Replace" />
           </a>
         )}
@@ -116,6 +121,32 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
+  useEffect(() => {
+    fetch(`${backendUrl}${fileInfo?.url}`,
+      { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+      .then((response) => {
+        return response.blob();
+      })
+      .then((blob) => {
+        return URL.createObjectURL(blob);
+      })
+      .then((url) => {
+        setImageUrl(url);
+      });
+
+  }, [fileInfo]);
+
+  const iconRender = (fileInfo) => {
+    const { type, name } = fileInfo;
+    if (isImageType(type)) {
+      if (listType === 'thumbnail' && !isDragger) {
+        return <Image src={imageUrl} alt={name} preview={false} />;
+      }
+    }
+
+    return getFileIcon(type);
+  };
+
   const fileProps: UploadProps = {
     name: 'file',
     disabled: readonly && allowUpload,
@@ -124,6 +155,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     listType: listType === 'text' ? 'text' : 'picture-card',
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
+    onPreview: () => setPreviewOpen(true),
     onChange(info) {
       if (info.file.status !== 'uploading') {
         //
@@ -134,20 +166,13 @@ export const FileUpload: FC<IFileUploadProps> = ({
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    itemRender: (_originNode, file, _currFileList) => {
-      return (
-        <div >
-          <div >
-            {isUploading && <LoadingOutlined />}
-            <a target="_blank" title={file.name} onClick={onDownloadClick}>
-              {file.name} ({filesize(file.size)})
-            </a>
-
-            {!isUploading && fileControls()}
-          </div>
-        </div>
-      );
+    onRemove: () => deleteFile(),
+    onDownload: (e) => onDownloadClick(e),
+    showUploadList: {
+      showRemoveIcon: allowDelete,
+      showDownloadIcon: true,
     },
+    iconRender: iconRender,
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
@@ -160,7 +185,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       ref={uploadButtonRef}
       style={{ display: !showUploadButton ? 'none' : '' }}
     >
-      {listType ==='text' ?`(press to upload)`: null}
+      {listType === 'text' ? `(press to upload)` : null}
     </Button>
   );
 
@@ -183,13 +208,29 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
     return (
       <Upload {...fileProps}  >
-        {allowUpload && uploadButton}
+        {allowUpload && !fileInfo && uploadButton}
       </Upload>
     );
   };
 
 
-  return <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return <>
+    <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
+    {previewOpen && (
+      <Image
+        wrapperStyle={{ display: 'none' }}
+        preview={{
+          visible: previewOpen,
+          onVisibleChange: (visible) => setPreviewOpen(visible),
+          afterOpenChange: (visible) => !visible,
+          toolbarRender: (original) => {
+            return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
+          },
+        }}
+        src={imageUrl}
+      />
+    )}
+  </>;
 };
 
 export default FileUpload;
