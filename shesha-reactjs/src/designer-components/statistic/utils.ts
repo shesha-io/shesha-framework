@@ -36,16 +36,3 @@ export const defaultStyles = (): {} extends IStyleType | null ? any : any => {
         },
     };
 };
-
-export const getDesignerDefaultContent = (model: any) => {
-    return {
-        ...model,
-        title: model.title,
-        value: model.value,
-        prefix: model.prefix,
-        suffix: model.suffix,
-        prefixIcon: model.prefixIcon,
-        suffixIcon: model.suffixIcon,
-        precision: model.precision,
-    };
-};
