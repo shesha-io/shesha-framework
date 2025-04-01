@@ -16,7 +16,7 @@ export interface IShowMessageArguments {
 export const showMessageArgumentsForm = new DesignerToolbarSettings()
   .addSettingsInput({
     id: nanoid(),
-    inputType: "textField",
+    inputType: "textArea",
     propertyName: 'message',
     label: 'Message',
     autoSize: true,
@@ -42,7 +42,7 @@ export const useShowMessageAction = () => {
     isPermament: true,
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
-    name: 'Show Message',
+    name: 'Show message',
     hasArguments: true,
     argumentsFormMarkup: showMessageArgumentsForm,
     executer: (actionArgs, _context) => {

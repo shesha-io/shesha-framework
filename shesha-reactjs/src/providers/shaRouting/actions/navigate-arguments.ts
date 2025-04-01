@@ -22,7 +22,7 @@ export const navigateArgumentsForm = new DesignerToolbarSettings()
         type: 'textField',
         propertyName: 'url',
         parentId: 'root',
-        label: 'Target Url',
+        label: 'Target URL',
         validate: { required: true },
         hidden: {
           _mode: 'code',

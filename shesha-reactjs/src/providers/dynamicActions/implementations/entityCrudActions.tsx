@@ -96,7 +96,7 @@ export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> =
     return (
         <DynamicActionsProvider
             id='entity-crud'
-            name='CRUD Actions'
+            name='CRUD actions'
             renderingHoc={entityActionsHoc}
             useEvaluator={useEntityCrudActions}
         >

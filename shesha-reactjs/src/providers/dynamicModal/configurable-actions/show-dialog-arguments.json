@@ -47,12 +47,12 @@
                     "direction": "horizontal",
                     "buttonGroupOptions": [
                         {
-                            "label": "Edit",
+                            "title": "Edit",
                             "value": "edit",
                             "icon": "editIcon"
                         },
                         {
-                            "label": "Read only",
+                            "title": "Read only",
                             "value": "readonly",
                             "icon": "readonlyIcon"
                         }

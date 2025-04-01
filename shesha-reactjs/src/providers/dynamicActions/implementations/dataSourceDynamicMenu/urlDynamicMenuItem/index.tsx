@@ -53,7 +53,7 @@ export const UrlActions: FC<PropsWithChildren<IWorkflowInstanceStartActionsProps
   return (
     <DynamicActionsProvider
       id="Url"
-      name="Url"
+      name="URL"
       useEvaluator={useUrlActions}
       hasArguments={true}
       settingsFormMarkup={settingsMarkup}
