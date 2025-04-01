@@ -46,7 +46,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
         allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
 
@@ -170,7 +170,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'button':
             return <Button style={{ maxWidth: "100%" }} disabled={readOnly} defaultValue={defaultValue}
                 type={'primary'} size={size}
-                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt, null, tooltip, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
+                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt, null, tooltipAlt, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':

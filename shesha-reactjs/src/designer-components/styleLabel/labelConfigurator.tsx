@@ -6,6 +6,7 @@ import { SettingInput } from '../settingsInput/settingsInput';
 import { nanoid } from '@/utils/uuid';
 import { Tooltip } from 'antd';
 import { IRadioOption } from '../settingsInput/interfaces';
+import { capitalize } from 'lodash';
 
 export interface ILabelProps {
   readOnly?: boolean;
@@ -15,13 +16,13 @@ export interface ILabelProps {
   labelAlignOptions?: IRadioOption[];
 }
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions:labelAlign }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, labelAlignOptions: labelAlign }) => {
   const { styles } = useStyles();
   return (
     <>
       <div className={!value ? styles.flexWrapper : ''}>
         <SettingInput
-          label={`${label} Align`}
+          label={`Label Align`}
           hideLabel
           propertyName="labelAlign"
           readOnly={readOnly}
@@ -33,22 +34,16 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, label, l
         />
         <SettingInput
           id={nanoid()}
-          label={`Hide ${label}`}
+          label={`Hide Label`}
+          tooltip={`Hide Label`}
           hideLabel={!value}
           propertyName="hideLabel"
           readOnly={readOnly}
           jsSetting={false}
           type="button"
-          icon={
-            <Tooltip title="Hide label">
-              <EyeOutlined />
-            </Tooltip>
-          }
-          iconAlt={
-            <Tooltip title="Show Label">
-              <EyeInvisibleOutlined />
-            </Tooltip>
-          }
+          icon='EyeOutlined'
+          iconAlt='EyeInvisibleOutlined'
+          tooltipAlt='Show Label'
         />
       </div>
       <SettingInput
