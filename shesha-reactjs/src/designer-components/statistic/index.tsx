@@ -49,7 +49,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const allData = useAvailableConstantsData();
     const { formMode } = useForm();
-
+    
     const dimensions = model?.dimensions;
     const border = model?.border;
     const valueFont = model?.valueFont;
@@ -118,13 +118,17 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               customEvent.onClick(value);
             };
             return <ShaStatistic
-              value={value || passedModel?.value}
+              value={value || passedModel?.value || 1234}
               precision={passedModel?.precision}
               title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span></div>}
+              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null) || (!(value || passedModel?.value) ? 'R' : null)}</span></div>}
               suffix={<div><span style={{ marginRight: 5 }}>{passedModel.suffix && passedModel.suffix}{passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}</span></div>}
               style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
-              valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
+              valueStyle={removeUndefinedProps({ 
+                ...valueFontStyles, 
+                ...valueStyles,
+                ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' })
+              })}
               {...customEvents}
               onClick={onClickInternal}
             />;
@@ -141,13 +145,17 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             customEvent.onClick(value);
           };
           return <ShaStatistic
-            value={value || passedModel?.value}
+            value={(value || passedModel?.value) || 1234}
             precision={passedModel?.precision}
             title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-            prefix={<div>{prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{prefix && prefix}</span></div>}
+            prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null) || (!(value || passedModel?.value) ? 'R' : null)}</span></div>}
             suffix={<div><span style={{ marginRight: 5 }}>{suffix && suffix}</span>{suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}</div>}
             style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
-            valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
+            valueStyle={removeUndefinedProps({ 
+              ...valueFontStyles, 
+              ...valueStyles,
+              ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' })
+            })}
             {...customEvents}
             onClick={onClickInternal}
           />;
@@ -160,6 +168,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   migrator: (m) => m
     .add<IStatisticComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<IStatisticComponentProps>(2, (prev) => {
+
       const styles = {
         style: prev?.style,
         valueFont: defaultStyles().valueFont,
