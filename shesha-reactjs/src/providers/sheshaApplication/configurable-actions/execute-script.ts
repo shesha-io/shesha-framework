@@ -115,7 +115,7 @@ export const useExecuteScriptAction = () => {
       isPermament: true,
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
-      name: 'Execute Script',
+      name: 'Execute script',
       hasArguments: true,
       argumentsFormMarkup: (formArgs) => executeScriptArgumentsForm(formArgs),
       executer: (actionArgs, context) => {

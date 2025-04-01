@@ -49,6 +49,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     jsSetting?: boolean;
     children?: React.ReactNode;
     tooltip?: string;
+    tooltipAlt?: string;
     customTooltip?: string;
     prefix?: string;
     suffix?: string;
@@ -117,4 +118,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     parentComponentType?: string;
     textType?: string;
     showSearch?: boolean;
+    defaultChecked?: boolean;
 };
