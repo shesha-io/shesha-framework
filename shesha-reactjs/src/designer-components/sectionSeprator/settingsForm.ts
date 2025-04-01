@@ -27,40 +27,6 @@ export const getSettings = (data: any) => {
                   label: 'Component Name',
                   jsSetting: true,
                 })
-                .addSettingsInputRow({
-                  id: 'orientation-s4gmBg31azZC0UjZjpfTm',
-                  parentId: 's4gmBg31azZC0UjZjpfTm',
-                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                  inputs: [
-                    {
-                      id: 'orientation-s4gmBg31azZC0UjZjpfTm',
-                      parentId: 's4gmBg31azZC0UjZjpfTm',
-                      type: 'dropdown',
-                      propertyName: 'orientation',
-                      label: 'Orientation',
-                      jsSetting: true,
-                      dropdownOptions: [
-                        {
-                          label: 'horizontal',
-                          value: 'horizontal',
-                        },
-                        {
-                          label: 'vertical',
-                          value: 'vertical',
-                        },
-                      ],
-                    },
-                    {
-                      type: 'switch',
-                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'inline',
-                      label: 'Inline',
-                      size: 'small',
-                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
-                      jsSetting: true,
-                    }
-                  ]
-                })
                 .addContainer({
                   id: '46d07439-4c18-468c-89e1-60c002ce96c5',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -98,8 +64,40 @@ export const getSettings = (data: any) => {
                       }).toJson(),
                   ]
                 })
-
-
+                .addSettingsInputRow({
+                  id: 'orientation-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'orientation-s4gmBg31azZC0UjZjpfTm',
+                      parentId: 's4gmBg31azZC0UjZjpfTm',
+                      type: 'dropdown',
+                      propertyName: 'orientation',
+                      label: 'Orientation',
+                      jsSetting: true,
+                      dropdownOptions: [
+                        {
+                          label: 'Horizontal',
+                          value: 'horizontal',
+                        },
+                        {
+                          label: 'Vertical',
+                          value: 'vertical',
+                        },
+                      ],
+                    },
+                    {
+                      type: 'switch',
+                      id: 'inline-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'inline',
+                      label: 'Inline',
+                      size: 'small',
+                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false } as any,
+                      jsSetting: true,
+                    }
+                  ]
+                })
                 .addSettingsInputRow({
                   id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -343,27 +341,6 @@ export const getSettings = (data: any) => {
                                             propertyName: 'font.color',
                                           },
                                         ],
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
-                              .addCollapsiblePanel({
-                                id: 'styleCollapsiblePanel',
-                                propertyName: 'stylingBox',
-                                label: 'Margin & Padding',
-                                labelAlign: 'right',
-                                ghost: true,
-                                collapsible: 'header',
-                                content: {
-                                  id: 'stylePnl-M5-911',
-                                  components: [
-                                    ...new DesignerToolbarSettings()
-                                      .addStyleBox({
-                                        id: 'styleBoxPnl',
-                                        label: 'Margin Padding',
-                                        hideLabel: true,
-                                        propertyName: 'titleStylingBox',
                                       })
                                       .toJson(),
                                   ],
