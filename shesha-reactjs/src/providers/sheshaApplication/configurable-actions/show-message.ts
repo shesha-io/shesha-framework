@@ -42,7 +42,7 @@ export const useShowMessageAction = () => {
     isPermament: true,
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
-    name: 'Show message',
+    name: 'Show Message',
     hasArguments: true,
     argumentsFormMarkup: showMessageArgumentsForm,
     executer: (actionArgs, _context) => {

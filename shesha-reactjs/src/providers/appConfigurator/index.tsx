@@ -127,7 +127,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   useConfigurableAction<IHasConfigurableItemId>(
     {
-      name: 'Set item ready',
+      name: 'Set Item Ready',
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
@@ -155,7 +155,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   useConfigurableAction<IHasConfigurableItemId>(
     {
-      name: 'Publish item',
+      name: 'Publish Item',
       owner: actionsOwner,
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
