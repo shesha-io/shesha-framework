@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -82,6 +82,12 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         : null;
 
     const meta = useMetadata(false);
+
+    useEffect(() => {
+        if (defaultValue && !value) {
+            onChange(defaultValue);
+        }
+    }, [defaultValue]);
 
     const propertyMeta = property && meta
         ? meta.getPropertyMeta(property)
