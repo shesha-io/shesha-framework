@@ -117,4 +117,5 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     parentComponentType?: string;
     textType?: string;
     showSearch?: boolean;
+    defaultChecked?: boolean;
 };

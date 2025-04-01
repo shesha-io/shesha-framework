@@ -48,7 +48,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
     const { data: formData } = useFormData();
     const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, showSearch = true } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -128,8 +128,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                     })}
             </Radio.Group>;
         case 'switch':
+            /*Handle cases where defaultValue is used in place of defaultChecked*/
             return <Switch disabled={readOnly} size='small'
-                defaultValue={defaultValue} onChange={onChange} value={value || defaultValue} />;
+                defaultChecked={defaultChecked ?? defaultValue} onChange={onChange} defaultValue={defaultValue} value={value} />;
         case 'numberField':
             return <InputNumber
                 placeholder={placeholder}
