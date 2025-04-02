@@ -73,7 +73,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             .sidebar-container & {
                 right: 0;
                 left: auto;
-                top: -20px;
+                top: -25px;
                 width: 25px;
             }
             .${sheshaStyles.verticalSettingsClass} & {
