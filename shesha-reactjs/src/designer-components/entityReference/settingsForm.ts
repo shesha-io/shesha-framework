@@ -7,7 +7,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const mainSettingsTabId = nanoid();
-  const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const dataTabId = nanoid();
   const securityId = nanoid();
@@ -653,35 +652,32 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                           },
                         ],
                       })
-                      .addContainer({
+                      .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlOnSuccess',
-                        label: 'On Success',
-                        labelAlign: 'right',
+                        label: 'On Success Handler',
+                        labelAlign: 'left',
                         parentId: dataTabId,
+                        collapsible: 'header',
                         hidden: {
                           _code: 'return getSettingValue(data?.handleSuccess) !== true;',
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        components: [
-                          ...new DesignerToolbarSettings()
-                            .addSectionSeparator({
-                              id: nanoid(),
-                              parentId: dataTabId,
-                              label: 'On Success Handler',
-                              labelAlign: 'left',
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              propertyName: 'onSuccess',
-                              label: 'On Success',
-                              parentId: dataTabId,
-                              inputType: 'configurableActionConfigurator',
-                              jsSetting: true,
-                            })
-                            .toJson(),
-                        ],
+                        content: {
+                          id: nanoid(),
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addConfigurableActionConfigurator({
+                                id: nanoid(),
+                                propertyName: 'onSuccess',
+                                label: 'On Success',
+                                parentId: dataTabId,
+                                jsSetting: true,
+                              })
+                              .toJson(),
+                          ]
+                        }
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -694,40 +690,37 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                             label: 'Handle Fail',
                             parentId: dataTabId,
                             type: 'switch',
-                            defaultValue: true,
+                            defaultValue: false,
                             jsSetting: false,
                           },
                         ],
                       })
-                      .addContainer({
+                      .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlOnFail',
-                        label: 'On Fail',
-                        labelAlign: 'right',
+                        label: 'On Fail Handler',
+                        labelAlign: 'left',
                         parentId: dataTabId,
+                        collapsible: 'header',
                         hidden: {
                           _code: 'return getSettingValue(data?.handleFail) !== true;',
                           _mode: 'code',
                           _value: false,
                         } as any,
-                        components: [
-                          ...new DesignerToolbarSettings()
-                            .addSectionSeparator({
-                              id: nanoid(),
-                              parentId: dataTabId,
-                              label: 'On Fail Handler',
-                              labelAlign: 'left',
-                            })
-                            .addSettingsInput({
-                              id: nanoid(),
-                              propertyName: 'onFail',
-                              label: 'On Fail',
-                              parentId: dataTabId,
-                              inputType: 'configurableActionConfigurator',
-                              jsSetting: false,
-                            })
-                            .toJson(),
-                        ],
+                        content: {
+                          id: nanoid(),
+                          components: [
+                            ...new DesignerToolbarSettings()
+                              .addConfigurableActionConfigurator({
+                                id: nanoid(),
+                                propertyName: 'onFail',
+                                label: 'On Fail',
+                                parentId: dataTabId,
+                                jsSetting: false,
+                              })
+                              .toJson()
+                          ]
+                        }
                       })
                       .toJson(),
                   ],
@@ -768,73 +761,6 @@ export const getSettings = (data: IEntityReferenceControlProps) => {
                       })
                       .toJson(),
                   ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
-            components: [
-              ...new DesignerToolbarSettings()
-                .addCollapsiblePanel({
-                  id: nanoid(),
-                  propertyName: 'pnlOnSuccess',
-                  label: 'On Success',
-                  labelAlign: 'right',
-                  ghost: true,
-                  parentId: mainSettingsTabId,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [
-                      ...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                          id: nanoid(),
-                          propertyName: 'onSuccess',
-                          label: 'On Success',
-                          parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfigurator',
-                          jsSetting: true,
-                        })
-                        .toJson(),
-                    ],
-                  },
-                  hidden: {
-                    _code: 'return getSettingValue(data?.handleSuccess) !== true;',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                })
-                .addCollapsiblePanel({
-                  id: nanoid(),
-                  propertyName: 'pnlOnFail',
-                  label: 'On Fail',
-                  labelAlign: 'right',
-                  ghost: true,
-                  parentId: mainSettingsTabId,
-                  collapsible: 'header',
-                  content: {
-                    id: nanoid(),
-                    components: [
-                      ...new DesignerToolbarSettings()
-                        .addSettingsInput({
-                          id: nanoid(),
-                          propertyName: 'onFail',
-                          label: 'On Fail',
-                          parentId: mainSettingsTabId,
-                          inputType: 'configurableActionConfigurator',
-                          jsSetting: true,
-                        })
-                        .toJson(),
-                    ],
-                  },
-                  hidden: {
-                    _code: 'return getSettingValue(data?.handleFail) !== true;',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
                 })
                 .toJson(),
             ],

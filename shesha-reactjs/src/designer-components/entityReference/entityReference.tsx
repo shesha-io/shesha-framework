@@ -92,7 +92,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       .add<IEntityReferenceControlProps>(7, (prev) => ({ ...migratePrevStyles(prev) }))
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
-        iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes) ?? 'DoubleLeftOutlined',
+        iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes) ,
       })),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
