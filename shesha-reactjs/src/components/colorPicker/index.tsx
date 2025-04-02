@@ -4,6 +4,7 @@ import { ColorValueType } from 'antd/es/color-picker/interface';
 import { Color } from 'antd/es/color-picker/color';
 import type { ColorPickerProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { getStyle, pickStyleFromModel } from '@/index';
 
 type Preset = Required<ColorPickerProps>['presets'][number];
 type ColorFormat = ColorPickerProps['format'];
@@ -18,6 +19,8 @@ export interface IColorPickerProps {
   disabledAlpha?: boolean;
   readOnly?: boolean;
   size?: SizeType;
+  style?: string;
+  stylingBox?: string;
 }
 
 const formatColor = (color: Color, format: ColorFormat) => {
@@ -31,7 +34,7 @@ const formatColor = (color: Color, format: ColorFormat) => {
   }
 };
 
-export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size }) => {
+export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size, stylingBox, style}) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
 
   const handleChange = (value: Color) => {
@@ -46,6 +49,10 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
   const onPanelClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
   };
+  const styling = JSON.parse(stylingBox || '{}');
+  const stylingBoxAsCSS = pickStyleFromModel(styling);
+  
+  const jsStyle = getStyle(style);
 
   return (
     <AntdColorPicker
@@ -57,6 +64,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
       disabled={readOnly}
       onClear={handleClear}
       size={size}
+      style={{...stylingBoxAsCSS, ...jsStyle}}
       value={value ?? ""}
       onChange={handleChange}
       presets={presets}

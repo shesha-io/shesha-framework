@@ -1,5 +1,5 @@
+import { addPx } from '@/designer-components/_settings/utils';
 import { createStyles } from '@/styles';
-import { addPx } from '../sectionSeparator/utils';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
     const chevronButton = cx(`${prefixCls}-chevron-btn`, css`

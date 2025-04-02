@@ -2,11 +2,11 @@ import { ConfigurableForm, DataTypes, pickStyleFromModel, useDataTableStore, use
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { App, Flex, Form, Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
-import { addPx } from '../keyInformationBar/utils';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn from './components/renderColumn';
 import { IKanbanProps } from './model';
 import { useKanbanActions } from './utils';
+import { addPx } from '@/designer-components/_settings/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, items, componentName, editFormId, stylingBox } = props;

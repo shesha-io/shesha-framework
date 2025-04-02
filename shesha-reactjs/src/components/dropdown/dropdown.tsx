@@ -36,7 +36,6 @@ export const Dropdown: FC<IDropdownProps> = ({
   const { globalState } = useGlobalState();
 
   const selectedMode = mode === 'single' ? undefined : mode;
-;
   //quick fix not to default to empty string or null while working with multi-mode
   const defaultValue = Array.isArray(defaultVal)
     ? defaultVal
@@ -166,7 +165,7 @@ export const Dropdown: FC<IDropdownProps> = ({
       style={{ borderWidth: '0px', ...style }}
       size={size}
     >
-      {(dataSourceType === 'values' ? value : options).map((option, index) => (
+      {(dataSourceType === 'values' ? (value ?? []) : options).map((option, index) => (
         <Select.Option key={index} value={option.value}>
           {option.label}
         </Select.Option>

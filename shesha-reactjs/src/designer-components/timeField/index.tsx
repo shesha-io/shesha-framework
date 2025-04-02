@@ -13,6 +13,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getSettings } from './settings';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
@@ -43,7 +44,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
+  settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => {
     const customModel: ITimePickerProps = {

@@ -101,6 +101,17 @@ export const customOnChangeValueEventHandler = (model: IConfigurableFormComponen
   },
 });
 
+export const customOnClickEventHandler = (model: IConfigurableFormComponent, context: IApplicationContext, clickEvent: Function = null) => ({
+  onClick: (value: any) => {
+    if (typeof clickEvent === 'function')
+      clickEvent(value);
+    const expression = model?.onClickCustom;
+    if (Boolean(expression)) {
+      return executeScriptSync(expression, addContextData(context, {value}));
+    }
+  },
+});
+
 export const onCustomEventsHandler = <FormCustomEvent = any>(
   event: FormCustomEvent,
   customEventAction: string,
