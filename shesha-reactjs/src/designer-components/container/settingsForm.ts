@@ -69,6 +69,15 @@ export const getSettings = (data) => {
                   },
                 ],
               })
+              .addSettingsInput({
+                id: 'noDefaultStyling-s4gmBg31azZC0UjZjpfTm',
+                inputType: 'switch',
+                propertyName: 'noDefaultStyling',
+                label: 'No Default Styling',
+                parentId: 's4gmBg31azZC0UjZjpfTm',
+                size: 'small',
+                jsSetting: true,
+              })
               .toJson()
             ]
           },
