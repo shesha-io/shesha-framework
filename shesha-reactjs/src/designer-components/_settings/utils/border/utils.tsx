@@ -18,7 +18,7 @@ import { readThemeColor } from "@/components/colorPicker";
 
 export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
     if (!input) return {};
-        
+
     const style: React.CSSProperties = {};
     const border = input.border || {};
     const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
@@ -155,9 +155,9 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                 {
                     id: nanoid(),
                     type: 'tooltip',
-                    label: 'Icon',
+                    label: '',
                     hideLabel: true,
-                    propertyName: 'borderIcon',
+                    propertyName: '',
                     icon: 'BorderOutlined',
                     width: 20,
                     tooltip: `Styles will apply to all border`,

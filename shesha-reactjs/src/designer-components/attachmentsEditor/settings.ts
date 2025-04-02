@@ -19,7 +19,7 @@ export const getSettings = () => {
         tabs: [
           {
             key: '1',
-            title: 'Display',
+            title: 'Common',
             id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
             components: [
               ...new DesignerToolbarSettings()
@@ -355,6 +355,13 @@ export const getSettings = () => {
                               },
                             ],
                           })
+                          .addSettingsInput({
+                            id: 'primary-color',
+                            propertyName: 'primaryColor',
+                            label: 'Primary Color',
+                            inputType: 'colorPicker',
+                            jsSetting: true,
+                          })
                           .toJson()
                         ]
                       }
@@ -367,6 +374,7 @@ export const getSettings = () => {
                       labelAlign: 'right',
                       ghost: true,
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'dimensionsStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -453,6 +461,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'borderStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -495,6 +504,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'backgroundStylePnl',
                         components: [
@@ -660,6 +670,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'shadowStylePnl',
                         components: [...new DesignerToolbarSettings()
@@ -726,6 +737,7 @@ export const getSettings = () => {
                       ghost: true,
                       parentId: 'styleRouter',
                       collapsible: 'header',
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
                       content: {
                         id: 'stylePnl-M500-911MFR',
                         components: [...new DesignerToolbarSettings()
