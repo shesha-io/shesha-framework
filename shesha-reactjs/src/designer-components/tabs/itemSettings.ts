@@ -38,7 +38,8 @@ export const getItemSettings = () => {
                                         propertyName: 'title',
                                         label: 'Title',
                                         labelAlign: 'right',
-                                        parentId: 'root'
+                                        parentId: 'root',
+                                        jsSetting: true
                                     }
                                 ]
                             })
@@ -61,7 +62,8 @@ export const getItemSettings = () => {
                                         propertyName: 'className',
                                         label: 'Class Name',
                                         labelAlign: 'right',
-                                        parentId: 'root'
+                                        parentId: 'root',
+                                        jsSetting: true
                                     }
                                 ]
                             })
@@ -77,6 +79,7 @@ export const getItemSettings = () => {
                                         labelAlign: 'right',
                                         parentId: 'root',
                                         hidden: false,
+                                        jsSetting: true,
                                         validate: {}
                                     },
                                     {
@@ -84,26 +87,29 @@ export const getItemSettings = () => {
                                         type: 'iconPicker',
                                         propertyName: 'icon',
                                         label: 'Icon',
+                                        jsSetting: true,
                                         labelAlign: 'right',
                                         parentId: 'root',
                                         hidden: false
                                     }
                                 ]
                             })
-                            .addSettingsInput({
-                                id: '81da0da4-00db-4d6b-9f16-b364a6f9d9e1',
-                                inputType: 'switch',
-                                propertyName: 'forceRender',
-                                label: 'Force Render',
-                                labelAlign: 'right',
-                                parentId: 'root',
-                                hidden: false,
-                                validate: {}
-                            })
+
                             .addSettingsInputRow({
                                 id: 'hidden-forceRender-row',
                                 readOnly: false,
                                 inputs: [
+                                    {
+                                        id: '81da0da4-00db-4d6b-9f16-b364a6f9d9e1',
+                                        type: 'switch',
+                                        propertyName: 'forceRender',
+                                        label: 'Force Render',
+                                        labelAlign: 'right',
+                                        parentId: 'root',
+                                        hidden: false,
+                                        validate: {},
+                                        jsSetting: true
+                                    },
                                     {
                                         id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
                                         type: 'switch',
@@ -112,16 +118,9 @@ export const getItemSettings = () => {
                                         labelAlign: 'right',
                                         parentId: 'root',
                                         hidden: false,
-                                        validate: {}
+                                        validate: {},
+                                        jsSetting: true
                                     },
-                                    {
-                                        id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-                                        type: 'editModeSelector',
-                                        propertyName: 'editMode',
-                                        parentId: 'root',
-                                        label: 'Edit mode'
-                                    }
-
                                 ]
                             })
                             .addSettingsInputRow({
@@ -129,12 +128,21 @@ export const getItemSettings = () => {
                                 readOnly: false,
                                 inputs: [
                                     {
+                                        id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
+                                        type: 'editModeSelector',
+                                        propertyName: 'editMode',
+                                        parentId: 'root',
+                                        label: 'Edit Mode',
+                                        jsSetting: true
+                                    },
+                                    {
                                         id: "8615d12f - 6ea0- 4b11 - a1a1 - 6088c7160fd9",
                                         type: "dropdown",
                                         propertyName: "selectMode",
                                         parentId: "root",
                                         label: "Select Mode",
                                         allowClear: false,
+                                        jsSetting: true,
                                         defaultValue: "editable",
                                         dropdownOptions: [
                                             {
@@ -151,18 +159,23 @@ export const getItemSettings = () => {
                                             }
                                         ],
                                     },
-                                    {
-                                        id: 'a8b12318-65a5-4b98-bcce-834b6a40b2fd',
-                                        type: 'switch',
-                                        propertyName: 'destroyInactiveTabPane',
-                                        label: 'Destroy Inactive Tab Pane',
-                                        labelAlign: 'right',
-                                        parentId: 'root',
-                                        hidden: false,
-                                        validate: {}
-                                    }
+
                                 ]
                             })
+
+                            .addSettingsInput(
+                                {
+                                    id: 'a8b12318-65a5-4b98-bcce-834b6a40b2fd',
+                                    inputType: 'switch',
+                                    propertyName: 'destroyInactiveTabPane',
+                                    label: 'Destroy Inactive Tab Pane',
+                                    labelAlign: 'right',
+                                    parentId: 'root',
+                                    hidden: false,
+                                    validate: {},
+                                    jsSetting: true
+                                }
+                            )
                             .toJson()
                     ]
                 },
@@ -179,6 +192,7 @@ export const getItemSettings = () => {
                             propertyName: 'permissions',
                             label: 'Permissions',
                             size: 'small',
+                            jsSetting: true,
                             parentId: '6Vw9iiDw9d0MD_Rh5cbIn'
                         })
                         .toJson()

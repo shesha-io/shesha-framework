@@ -1,14 +1,14 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { onAddNewItem } from './utils';
 import { getItemSettings } from './itemSettings';
 import { overflowOptions } from '../_settings/utils/dimensions/utils';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
-
 
     return {
         components: new DesignerToolbarSettings()
@@ -38,62 +38,76 @@ export const getSettings = () => {
                                     validate: { required: true },
                                     parentId: 'root'
                                 })
-                                .addSettingsInput({
-                                    id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
-                                    inputType: 'textField',
-                                    propertyName: 'defaultActiveKey',
-                                    label: 'Default Active Tab',
-                                    labelAlign: 'right',
-                                    parentId: 'root'
+                                .addSettingsInputRow({
+                                    id: nanoid(),
+                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            type: 'dropdown',
+                                            propertyName: 'defaultActiveKey',
+                                            label: 'Default Active Tab',
+                                            labelAlign: 'right',
+                                            parentId: 'root',
+                                            dropdownOptions: { _code: 'return  getSettingValue(data?.tabs)?._data?.map((item) => ({ ...item, label: item?.title, value: item?.id }));', _mode: 'code', _value: 0 } as any
+                                        },
+                                        {
+                                            id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
+                                            type: 'dropdown',
+                                            propertyName: 'tabType',
+                                            label: 'Tab Type',
+                                            defaultValue: 'card',
+                                            dropdownOptions: [
+                                                { value: 'line', label: 'Line' },
+                                                { value: 'card', label: 'Card' }
+                                            ],
+                                            jsSetting: false,
+                                            labelAlign: 'right',
+                                            parentId: 'root'
+                                        }
+                                    ]
                                 })
-                                .addSettingsInput({
-                                    id: '4bb6cdc7-0657-4e41-8c50-effe14d0dc96',
-                                    inputType: 'dropdown',
-                                    propertyName: 'tabType',
-                                    label: 'Tab Type',
-                                    defaultValue: 'card',
-                                    dropdownOptions: [
-                                        { value: 'line', label: 'Line' },
-                                        { value: 'card', label: 'Card' }
-                                    ],
-                                    jsSetting: false,
-                                    labelAlign: 'right',
-                                    parentId: 'root'
-                                })
-                                .addSettingsInput({
-                                    id: '4595a895-5078-4986-934b-c5013bf315ad',
-                                    inputType: 'itemListConfiguratorModal',
-                                    propertyName: 'tabs',
-                                    label: 'Tabs',
-                                    labelAlign: 'right',
-                                    parentId: 'root',
-                                    listItemSettingsMarkup: getItemSettings(),
-                                    onAddNewItem: onAddNewItem,
-                                    hidden: false
-                                })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: 'd1e06550-826c-4db9-9b9f-ce05e565f64f',
-                                    inputType: 'switch',
-                                    propertyName: 'hidden',
-                                    label: 'Hide',
-                                    labelAlign: 'right',
-                                    parentId: 'root',
-                                    hidden: false,
-                                    validate: {}
-                                })
-                                .addSettingsInput({
-                                    id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
-                                    inputType: 'editModeSelector',
-                                    propertyName: 'editMode',
-                                    parentId: 'root',
-                                    defaultValue: 'inherited',
-                                    label: 'Edit Mode'
+                                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    inputs: [
+                                        {
+                                            id: '4595a895-5078-4986-934b-c5013bf315ad',
+                                            type: 'itemListConfiguratorModal',
+                                            propertyName: 'tabs',
+                                            label: 'Tabs',
+                                            labelAlign: 'right',
+                                            parentId: 'root',
+                                            buttonTextReadOnly: 'View Tab Panes',
+                                            buttonText: 'Configure Tab Panes',
+                                            listItemSettingsMarkup: getItemSettings(),
+                                            onAddNewItem: onAddNewItem,
+                                            hidden: false,
+                                            modalSettings: {
+                                                title: 'Configure Tab Panes',
+                                                header: 'Here you can configure the tab panes by adjusting their settings and ordering.'
+                                            },
+                                            modalReadonlySettings: {
+                                                title: 'View Tab Panes',
+                                                header: 'Here you can view tab panes configuration'
+                                            }
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            type: 'switch',
+                                            propertyName: 'hidden',
+                                            label: 'Hide',
+                                            jsSetting: true,
+                                            labelAlign: 'right',
+                                            parentId: 'root',
+                                        }
+                                    ]
                                 })
                                 .toJson()
                         ]
                     },
                     {
-                        key: '4',
+                        key: '2',
                         title: 'Appearance',
                         type: '',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
@@ -179,16 +193,7 @@ export const getSettings = () => {
                                                                 label: 'Color',
                                                                 hideLabel: true,
                                                                 propertyName: 'font.color',
-                                                            },
-                                                            {
-                                                                type: 'dropdown',
-                                                                id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                                                label: 'Align',
-                                                                propertyName: 'font.align',
-                                                                hideLabel: true,
-                                                                width: 60,
-                                                                dropdownOptions: textAlign,
-                                                            },
+                                                            }
                                                         ],
                                                     })
                                                     .toJson()
@@ -333,6 +338,31 @@ export const getSettings = () => {
                                             }
                                         })
                                         .addCollapsiblePanel({
+                                            id: 'tab-line-color-collapsible-panel',
+                                            propertyName: 'pnlTabLineColor',
+                                            label: 'Line Color',
+                                            labelAlign: 'right',
+                                            ghost: true,
+                                            parentId: 'styleRouter',
+                                            collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.tabType) !== "line";', _mode: 'code', _value: false } as any,
+                                            content: {
+                                                id: 'tab-line-color-pnl',
+                                                components: [
+                                                    ...new DesignerToolbarSettings()
+                                                        .addSettingsInput({
+                                                            id: 'tab-line-color-row',
+                                                            parentId: 'tab-line-color-pnl',
+                                                            inputType: 'colorPicker',
+                                                            label: 'Color',
+                                                            propertyName: 'tabLineColor',
+                                                            jsSetting: false,
+                                                        })
+                                                        .toJson()
+                                                ]
+                                            }
+                                        })
+                                        .addCollapsiblePanel({
                                             id: 'backgroundStyleCollapsiblePanel',
                                             propertyName: 'pnlBackgroundStyle',
                                             label: 'Background',
@@ -340,6 +370,7 @@ export const getSettings = () => {
                                             ghost: true,
                                             parentId: 'styleRouter',
                                             collapsible: 'header',
+                                            hidden: { _code: 'return  getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
                                             content: {
                                                 id: 'backgroundStylePnl',
                                                 components: [
@@ -687,6 +718,7 @@ export const getSettings = () => {
                                                                             id: 'card-min-width-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Width",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.minWidth",
                                                                         },
                                                                         {
@@ -694,6 +726,7 @@ export const getSettings = () => {
                                                                             id: 'card-max-width-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Width",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.maxWidth",
                                                                         }
                                                                     ]
@@ -718,6 +751,7 @@ export const getSettings = () => {
                                                                             id: 'card-min-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Height",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.minHeight",
                                                                         },
                                                                         {
@@ -725,6 +759,7 @@ export const getSettings = () => {
                                                                             id: 'card-max-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Height",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.maxHeight",
                                                                         }
                                                                     ]
@@ -855,15 +890,21 @@ export const getSettings = () => {
                                                                             }
                                                                         ]
                                                                     })
-                                                                    .addSettingsInput({
-                                                                        id: 'backgroundStyleRow-repeat',
+                                                                    .addSettingsInputRow({
+                                                                        id: 'card-bg-repeat-row',
                                                                         parentId: 'backgroundStyleRow',
-                                                                        label: 'Repeat',
-                                                                        hideLabel: true,
-                                                                        propertyName: 'card.background.repeat',
-                                                                        inputType: 'radio',
-                                                                        buttonGroupOptions: repeatOptions,
-                                                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                        readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                                                        inputs: [
+                                                                            {
+                                                                                type: 'radio',
+                                                                                id: 'backgroundStyleRow-repeat',
+                                                                                parentId: 'backgroundStyleRow',
+                                                                                label: 'Repeat',
+                                                                                hideLabel: true,
+                                                                                propertyName: 'card.background.repeat',
+                                                                                buttonGroupOptions: repeatOptions,
+                                                                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.card?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                            }]
                                                                     })
                                                                     .toJson()
                                                             ],
@@ -901,7 +942,7 @@ export const getSettings = () => {
                             }).toJson()]
                     },
                     {
-                        key: '5',
+                        key: '3',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         type: '',

@@ -105,7 +105,7 @@ export const getSettings = (data: any) => {
                           value: 'string',
                         },
                         {
-                          label: 'Date Time',
+                          label: 'Date time',
                           value: 'date-time',
                         },
                         {
@@ -184,7 +184,7 @@ export const getSettings = (data: any) => {
                           value: 'round',
                         },
                         {
-                          label: 'Thousand Separator',
+                          label: 'Thousand separator',
                           value: 'thousandSeparator',
                         },
                       ],
@@ -284,7 +284,7 @@ export const getSettings = (data: any) => {
                                 value: 'danger',
                               },
                               {
-                                label: 'Custom Color',
+                                label: 'Custom color',
                                 value: 'custom',
                               },
                             ],
@@ -346,6 +346,12 @@ export const getSettings = (data: any) => {
                                     label: 'Color',
                                     hideLabel: true,
                                     propertyName: 'font.color',
+                                    hidden: {
+                                      _code:
+                                        'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.contentType) !== "custom";',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
                                   },
                                   {
                                     type: 'dropdown',
@@ -684,48 +690,6 @@ export const getSettings = (data: any) => {
                                   },
                                 ],
                               })
-                              .addSettingsInputRow({
-                                id: 'backgroundStyleRow-controls',
-                                parentId: 'backgroundStyleRow',
-                                inline: true,
-                                readOnly: {
-                                  _code: 'return  getSettingValue(data?.readOnly);',
-                                  _mode: 'code',
-                                  _value: false,
-                                } as any,
-                                inputs: [
-                                  {
-                                    type: 'customDropdown',
-                                    id: 'backgroundStyleRow-size',
-                                    label: 'Size',
-                                    hideLabel: true,
-                                    propertyName: 'background.size',
-                                    dropdownOptions: [
-                                      {
-                                        value: 'cover',
-                                        label: 'Cover',
-                                      },
-                                      {
-                                        value: 'contain',
-                                        label: 'Contain',
-                                      },
-                                      {
-                                        value: 'auto',
-                                        label: 'Auto',
-                                      },
-                                    ],
-                                  },
-                                  {
-                                    type: 'customDropdown',
-                                    id: 'backgroundStyleRow-position',
-                                    label: 'Position',
-                                    hideLabel: true,
-                                    propertyName: 'background.position',
-                                    dropdownOptions: positionOptions
-                                  },
-                                ],
-                              })
-
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',

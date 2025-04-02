@@ -47,7 +47,7 @@ import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ISetFormDataPayload } from '../form/contexts';
 import { deepMergeValues } from '@/utils/object';
 import { useActualContextExecution } from '@/hooks/useActualContextExecution';
-import { ConfigurableItemIdentifierToString } from '@/index';
+import { ConfigurableItemIdentifierToString, useDataContextManager } from '@/index';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -80,6 +80,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const parent = useParent(false);
 
+  const ctxManager = useDataContextManager();
+  const contextId = context ? (ctxManager?.getDataContext(context)?.uid ?? context) : undefined;
+
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { message, notification } = App.useApp();
 
@@ -106,6 +109,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       onChange({});
   };
 
+  // ToDO: Alexs - review and remove
   // update global state on value change
   useDeepCompareEffect(() => {
     if (propertyName) {
@@ -538,7 +542,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         },
         propertyName,
         value: value || defaultValue,
-        context
+        context: contextId
       }}
     >
       <SubFormActionsContext.Provider
@@ -553,7 +557,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           condition={Boolean(state.formSettings?.modelType)}
           wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
         >
-          <ParentProvider model={props} context={context} isScope name={`SubForm ${ConfigurableItemIdentifierToString(formId)}`}
+          <ParentProvider model={props} context={contextId} isScope name={`SubForm ${componentName || ConfigurableItemIdentifierToString(formId)}`}
             formApi={subFormApi}
             formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
           >

@@ -9,12 +9,12 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
         background: { type: 'color', color: bodyColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
         border: {
-            radiusType: 'all', borderType: 'all',
+            radiusType: 'all', borderType: 'custom',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
                     : {
                         all: { width: '1px', color: '#d9d9d9', style: 'solid' },
-                        top: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        top: { width: '1px', color: '#d9d9d9', style: 'none' },
                         bottom: { width: '1px', color: '#d9d9d9', style: 'solid' },
                         left: { width: '1px', color: '#d9d9d9', style: 'solid' },
                         right: { width: '1px', color: '#d9d9d9', style: 'solid' },
@@ -33,15 +33,19 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
     const { isSimpleDesign, ghost, borderRadius } = prev;
 
     return {
-        font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '500', align: 'left', type: 'Arial' },
+        font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '500', align: 'left', type: 'Segoe UI' },
         background: { type: 'color', color: headerBgColor },
         dimensions: { width: 'auto', height: 'auto', minHeight: '0', maxHeight: 'auto', minWidth: '0', maxWidth: 'auto' },
         border: {
-            radiusType: 'all', borderType: 'all',
+            radiusType: 'all', borderType: 'custom',
             border: {
                 ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' }, top: { width: '3px', style: 'solid', color: 'var(--primary-color)' }, bottom: { width: ghost ? '2px' : 0, style: 'solid', color: 'var(--primary-color)' } }
                     : {
                         all: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        top: { width: '3px', color: 'var(--primary-color)', style: 'solid' },
+                        bottom: { width: '1px', color: '#d9d9d9', style: 'none' },
+                        left: { width: '1px', color: '#d9d9d9', style: 'solid' },
+                        right: { width: '1px', color: '#d9d9d9', style: 'solid' },
                     },
             },
             radius: { all: borderRadius || 8 }

@@ -10,6 +10,7 @@ import {
   Tabs,
   Typography
 } from 'antd';
+import classNames from 'classnames';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeFilled, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
@@ -145,7 +146,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ? (<Typography.Text disabled>No Code</Typography.Text>)
     : (
       <>
-        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} className={props.className} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} className={classNames(styles.button, props.className)} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{}}>
           {props.label !== " " && (readOnly ? 'View Code' : '...')}
         </Button>
         {showDialog && (

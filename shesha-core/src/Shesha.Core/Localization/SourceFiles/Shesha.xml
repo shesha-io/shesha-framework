@@ -118,5 +118,8 @@
     <text name="Xml2Sms_UseProxy">Use Proxy</text>
     <text name="Xml2Sms_UseADProxy">Use AD Proxy</text>
     <text name="Xml2Sms_WebProxyAddress">Proxy Address</text>
+
+    <text name="Validation.CorrectErrorsAndTryAgain">Please correct the errors and try again</text>
+    <text name="Validation.SomethingWentWrong">Something went wrong</text>
   </texts>
 </localizationDictionary>

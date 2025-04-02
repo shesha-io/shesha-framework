@@ -31,7 +31,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
 
   const filter = ({ itemValue }: ReferenceListItemDto) => {
-    if (!filters?.length ) {
+    if (!filters?.length) {
       return true;
     }
 
@@ -40,9 +40,11 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     return !filtered;
   };
 
-  const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
-    if (localValue === undefined) 
-      return (mode === 'multiple' || mode === 'tags') ? [] : undefined;
+  const wrapValue = (
+    localValue: TValue | TValue[],
+    allOptions: ISelectOption<TValue>[]
+  ): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
+    if (localValue === undefined) return mode === 'multiple' || mode === 'tags' ? [] : undefined;
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
@@ -52,7 +54,23 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     } else return getLabeledValue(localValue as TValue, allOptions);
   };
 
-  const disableValue = (item => ({...item, disabled: disabledValues.includes(item.value)}));
+  const parseDisabledValues = (input) => {
+    if (!input) return []; // Handle empty input
+    if (Array.isArray(input)) return input.map(Number); // Ensure it's an array of numbers
+    return String(input)
+      .split(',')
+      .map((val) => Number(val.trim()))
+      .filter((num) => !isNaN(num)); // Remove invalid values
+  };
+
+  const disableValue = (item, index) => {
+    const parsedDisabledValues = parseDisabledValues(disabledValues);
+
+    return {
+      ...item,
+      disabled: parsedDisabledValues.includes(index),
+    };
+  };
 
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = (refList?.items || []).filter(filter);
@@ -76,8 +94,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
 
     const result = [...fetchedItems, ...selectedItems];
 
-    return disabledValues ? result.map(disableValue): result;
-
+    return disabledValues ? result.map(disableValue) : result;
   }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc, disabledValues]);
 
   const handleChange = (_: CustomLabeledValue<TValue>, option: any) => {
@@ -133,7 +150,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         return false;
       }}
       {...rest}
-      style={width === undefined ? {...style} : { ...style, width }}
+      style={width === undefined ? { ...style } : { ...style, width }}
       onChange={handleChange}
       value={wrapValue(value, options)}
       mode={mode}

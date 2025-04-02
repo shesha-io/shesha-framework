@@ -8,11 +8,13 @@ export interface IShaStatisticProps extends StatisticProps {
 }
 
 export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
-  const { styles } = useStyles();
-  return (<div onClick={e => rest.onClick(e)} style={{
-    margin: '0 auto',
-    width: 'fit-content',
-  }}>
+  const { styles } = useStyles({
+    token: {
+      fontSize: rest.valueStyle?.fontSize,
+    }
+  });
+
+  return (<div className={styles['container-div-zero-padding-margin']} onClick={e => rest.onClick(e)}>
     <Statistic className={classNames(styles.shaStatistic, className)} {...rest} />
   </div>);
 };

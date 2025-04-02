@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType }) => {
+export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
     const {
         borderWidth,
         borderStyle,
@@ -109,6 +109,8 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
             .ant-tabs-tab {
                 --ant-tabs-card-bg: ${cardBgImage || cardBgColor};
+                ${color && `--ant-tabs-item-hover-color: ${color} !important`};
+                ${color && `--ant-tabs-item-active-color: ${color} !important`};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
                 --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom ?
                 styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
@@ -116,6 +118,9 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
                 ${cardStyles};
+                background-repeat: ${cardStyles.backgroundRepeat} !important;
+                background-size: ${cardStyles.backgroundSize} !important;
+                background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
                 ${isLeft && 'border-right-width: 0px !important' || isRight && 'border-left-width: 0px !important' || isTop && 'border-bottom-width: 0px !important' || isBottom && 'border-top-width: 0px !important'};
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px` :
@@ -125,6 +130,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
             }
 
             .ant-tabs-tab-active {
+                --primary-color: ${token.colorPrimary} !important;
                 --ant-tabs-card-bg: ${backgroundColor || backgroundImage};
                 --ant-color-bg-container: ${backgroundColor || backgroundImage};
                 --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
@@ -154,6 +160,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
             }
 
             .ant-tabs-nav {
+                --ant-tabs-ink-bar-color: ${tabLineColor || token.colorPrimary} !important;
                 margin: 0;
                 width: ${isTop || isBottom ? width : 'auto'};
                 height: ${isTop || isBottom ? 'auto' : height};

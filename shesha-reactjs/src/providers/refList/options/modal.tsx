@@ -74,6 +74,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
+  
   const [modalVisible, setModalVisible] = useState(false);
 
   const showModal = () => setModalVisible(true);

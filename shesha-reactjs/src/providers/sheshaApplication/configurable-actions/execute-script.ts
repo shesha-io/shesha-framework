@@ -88,19 +88,18 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
   const variables = [...standardVariables, ...customVariables];
 
   return new DesignerToolbarSettings()
-    .addCodeEditor({
+    .addSettingsInput({
       id: nanoid(),
+      inputType: 'codeEditor',
       propertyName: 'expression',
       label: 'Expression',
       mode: 'dialog',
-
       fileName: 'expression',
       wrapInTemplate: true,
       templateSettings: {
         functionName: "executeScriptAsync",
-        useAsyncDeclaration: true,        
+        useAsyncDeclaration: true,
       },
-      resultTypeExpression: 'return metadataBuilder.anyObject();',
       availableConstants: props.availableConstants,
       /**
        * @deprecated to be removed
@@ -124,7 +123,7 @@ export const useExecuteScriptAction = () => {
           return Promise.reject('Expected expression to be defined but it was found to be empty.');
 
         return executeScript(actionArgs.expression, context);
-      },      
+      },
     },
     []
   );

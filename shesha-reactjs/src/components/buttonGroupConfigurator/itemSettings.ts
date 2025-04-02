@@ -29,7 +29,7 @@ export const getItemSettings = (data) => {
                                 propertyName: "itemSubType",
                                 label: "Item Type",
                                 labelAlign: "right",
-                                parentId: "root",
+                                parentId: "s4gmBg31azZC0UjZjpfTm",
                                 hidden: false,
                                 jsSetting: false,
                                 dropdownOptions: [
@@ -62,7 +62,7 @@ export const getItemSettings = (data) => {
                                     ...new DesignerToolbarSettings()
                                         .addSettingsInputRow({
                                             id: 'name-8b38-4b82-b192-563259afc159',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             inputs: [{
                                                 id: 'name-8b38-4b82-b192-563259afc159',
@@ -77,7 +77,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             hidden: data?.itemSubType !== 'button',
                                             inputs: [
@@ -104,7 +104,7 @@ export const getItemSettings = (data) => {
                                         })
                                         .addSettingsInputRow({
                                             id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             inputs: [
                                                 {
                                                     id: 'icon-s4gmBg31azZC0UjZjpfTm',
@@ -112,6 +112,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'icon',
                                                     label: 'Icon',
                                                     size: 'small',
+                                                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -121,17 +122,23 @@ export const getItemSettings = (data) => {
                                                     size: 'small',
                                                     jsSetting: true,
                                                     type: 'radio',
+                                                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                                                     buttonGroupOptions: [
-                                                        { title: 'start', value: 'start', icon: 'LeftOutlined' },
-                                                        { title: 'end', value: 'end', icon: 'RightOutlined' },
+                                                        { title: 'Start', value: 'start', icon: 'LeftOutlined' },
+                                                        { title: 'End', value: 'end', icon: 'RightOutlined' },
                                                     ],
+                                                    hidden: {
+                                                        _code: 'return  !getSettingValue(data?.icon);',
+                                                        _mode: 'code',
+                                                        _value: false
+                                                    } as any
                                                 },
                                             ],
                                             readOnly: data.readOnly,
                                         })
                                         .addSettingsInputRow({
                                             id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                                            parentId: 's4gmBg31azZC0UjZjpfTm',
+                                            parentId: 'common-button-settings-container',
                                             readOnly: data?.readOnly,
                                             inputs: [
                                                 {
@@ -140,6 +147,7 @@ export const getItemSettings = (data) => {
                                                     propertyName: 'editMode',
                                                     label: 'Edit Mode',
                                                     size: 'small',
+                                                    parentId: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                                                     jsSetting: true,
                                                 },
                                                 {
@@ -156,6 +164,7 @@ export const getItemSettings = (data) => {
                                             id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                                             propertyName: 'actionConfiguration',
                                             label: 'Action Configuration',
+                                            hideLabel: true,
                                             validate: {},
                                             settingsValidationErrors: [],
                                         }).toJson()
@@ -369,7 +378,7 @@ export const getItemSettings = (data) => {
                                     label: 'Border',
                                     labelAlign: 'right',
                                     ghost: true,
-                                    hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
                                     parentId: 'styleRouter',
                                     collapsible: 'header',
                                     content: {

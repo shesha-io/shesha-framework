@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
@@ -51,6 +51,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     onChangeData,
   } = props;
 
+  const uid = useId();
   const { onChangeContext, onChangeContextData } = useDataContextManager();
   const metadataDispatcher = useMetadataDispatcher();
 
@@ -63,6 +64,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const parentContext = useDataContext(false);
   const [state, setState] = useState<IDataContextProviderStateContext>({
     id,
+    uid: uid,
     name,
     description,
     type,
@@ -138,10 +140,11 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
 
   useDataContextRegister({
     id,
+    uid,
     name,
     description,
     type,
-    parentId: parentContext?.id,
+    parentUid: parentContext?.uid,
     ...actionContext,
   }, []);
 
@@ -150,11 +153,12 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     metadata?.then(res => {
       onChangeContext({
         id,
+        uid,
         name,
         description,
         type,
         metadata: res,
-        parentId: parentContext?.id,
+        parentUid: parentContext?.uid,
         ...actionContext
       });
     });
@@ -164,10 +168,11 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   useEffect(() => {
     onChangeContext({
       id,
+      uid,
       name,
       description,
       type,
-      parentId: parentContext?.id,
+      parentUid: parentContext?.uid,
       ...actionContext,
     });
   }, [name, description]);

@@ -78,11 +78,11 @@ export const getSettings = (data) => {
                     jsSetting: true,
                     dropdownOptions: [
                       {
-                        label: 'single',
+                        label: 'Single',
                         value: 'single',
                       },
                       {
-                        label: 'multiple',
+                        label: 'Multiple',
                         value: 'multiple',
                       },
                     ],
@@ -159,18 +159,24 @@ export const getSettings = (data) => {
                 id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
                 parentId: 's4gmBg31azZC0UjZjpfTm',
                 components: [...new DesignerToolbarSettings()
-                  .addSettingsInput(
-                    {
-                      inputType: 'queryBuilder',
-                      id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'filters',
-                      label: 'Entity Filter',
-                      jsSetting: true,
-                      modelType: '{{data.entityType}}',
-                      fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.'
-                    }
-
-                  ).addSettingsInput({
+                  .addSettingsInputRow({
+                    id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
+                    parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+                    readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    inputs: [
+                      {
+                        type: 'queryBuilder',
+                        id: 'query-builder-s4gmBg31azZC0UjZjpfTm',
+                        propertyName: 'filters',
+                        label: 'Entity Filter',
+                        jsSetting: true,
+                        modelType: '{{data.entityType}}',
+                        fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+                        hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                      },
+                    ],
+                  })
+                  .addSettingsInput({
                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                     inputType: 'dropdown',
                     id: 'acb2d566-fe48-43bd-84e0-28b7103354c1',
@@ -202,7 +208,7 @@ export const getSettings = (data) => {
                         type: 'codeEditor',
                         id: '405b0599-914d-4d2d-875c-765a495472f8',
                         propertyName: 'incomeCustomJs',
-                        label: 'Id value',
+                        label: 'Id Value',
                         parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
                         validate: {},
                         settingsValidationErrors: [],
@@ -212,7 +218,7 @@ export const getSettings = (data) => {
                         type: 'codeEditor',
                         id: '81fb0599-914d-4d2d-875c-765a495472f8',
                         propertyName: 'outcomeCustomJs',
-                        label: 'Custom value',
+                        label: 'Custom Value',
                         parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
                         validate: {},
                         settingsValidationErrors: [],

@@ -28,73 +28,88 @@ export const getSettings = () => {
                                 id: 'panel5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
                                 propertyName: 'componentName',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Component name',
+                                label: 'Component Name',
                                 validate: {
                                     required: true
                                 },
                                 jsSetting: false
                             })
-                            .addSettingsInput({
-                                id: 'panel46d07439-4c18-468c-89e1-60c002ce96c5',
-                                propertyName: 'label',
+                            .addSettingsInputRow({
+                                id: 'label-customHeader-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Label',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412558',
-                                propertyName: 'hasCustomHeader',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Custom Header',
-                                inputType: 'switch',
-                                jsSetting: true
-                            })
-                            .addSettingsInput({
-                                id: 'panel57a40a33-7e08-4ce4-9f08-a34d24a83338',
-                                propertyName: 'expandIconPosition',
-                                parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                label: 'Icon Position',
-                                inputType: 'dropdown',
-                                jsSetting: true,
-                                dropdownOptions: [
+                                readOnly: { _code: 'return  getSettingValue(data?.hasCustomHeader);', _mode: 'code', _value: false } as any,
+                                inputs: [
                                     {
-                                        label: 'Hide',
-                                        value: 'hide',
+                                        type: 'textField',
+                                        id: 'panel46d07439-4c18-468c-89e1-60c002ce96c5',
+                                        propertyName: 'label',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Label',
+                                        jsSetting: true
                                     },
                                     {
-                                        label: 'Start',
-                                        value: 'start',
-                                    },
-                                    {
-                                        label: 'End',
-                                        value: 'end',
+                                        id: 'panelcfd7d45e-c7e3-4a27-987b-dc525c412558',
+                                        propertyName: 'hasCustomHeader',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Custom Header',
+                                        type: 'switch',
+                                        jsSetting: true
                                     }
-                                ],
-                                validate: {},
+                                ]
                             })
-                            .addSettingsInput({
-                                id: 'panel-wshDLo-lK468vwxVVBDMh',
-                                propertyName: 'collapsible',
-                                label: 'Collapsible',
-                                inputType: 'dropdown',
-                                jsSetting: true,
+                            .addSettingsInputRow({
+                                id: 'expandIconPosition-row',
                                 parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-                                dropdownOptions: [
+                                readOnly: { _code: 'return  getSettingValue(data?.expandIconPosition);', _mode: 'code', _value: 'end' } as any,
+                                inputs: [
                                     {
-                                        label: 'Header',
-                                        value: 'header',
+                                        id: 'panel57a40a33-7e08-4ce4-9f08-a34d24a83338',
+                                        propertyName: 'expandIconPosition',
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        label: 'Icon Position',
+                                        type: 'dropdown',
+                                        jsSetting: true,
+                                        dropdownOptions: [
+                                            {
+                                                label: 'Hide',
+                                                value: 'hide',
+                                            },
+                                            {
+                                                label: 'Start',
+                                                value: 'start',
+                                            },
+                                            {
+                                                label: 'End',
+                                                value: 'end',
+                                            }
+                                        ],
+                                        validate: {},
                                     },
                                     {
-                                        label: 'Icon',
-                                        value: 'icon',
-                                    },
-                                    {
-                                        label: 'Disabled',
-                                        value: 'disabled',
+                                        id: 'panel-wshDLo-lK468vwxVVBDMh',
+                                        propertyName: 'collapsible',
+                                        label: 'Collapsible',
+                                        type: 'dropdown',
+                                        jsSetting: true,
+                                        parentId: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
+                                        dropdownOptions: [
+                                            {
+                                                label: 'Header',
+                                                value: 'header',
+                                            },
+                                            {
+                                                label: 'Icon',
+                                                value: 'icon',
+                                            },
+                                            {
+                                                label: 'Disabled',
+                                                value: 'disabled',
+                                            }
+                                        ],
+                                        validate: {},
+                                        version: 3
                                     }
-                                ],
-                                validate: {},
-                                version: 3
+                                ]
                             })
                             .addSettingsInputRow({
                                 id: 'collapsedByDefault-ghost-row',
@@ -907,7 +922,7 @@ export const getSettings = () => {
                                                                     id: "header-backgroundStyleRow-controls",
                                                                     parentId: 'panel-header-styles-pnl',
                                                                     inline: true,
-                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                     readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                                                     inputs: [
                                                                         {
@@ -937,11 +952,11 @@ export const getSettings = () => {
                                                                         id: 'backgroundStyleRow-repeat-radio',
                                                                         label: 'Repeat',
                                                                         hideLabel: true,
-                                                                        propertyName: 'background.repeat',
+                                                                        propertyName: 'headerStyles.background.repeat',
                                                                         inputType: 'radio',
                                                                         buttonGroupOptions: repeatOptions,
                                                                     }],
-                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
                                                                 })
                                                                 .toJson()
                                                             ]

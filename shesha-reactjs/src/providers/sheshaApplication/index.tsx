@@ -129,7 +129,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                           id={SheshaCommonContexts.AppContext}
                                           name={SheshaCommonContexts.AppContext}
                                           description={'Application data store context'}
-                                          type={'root'}
+                                          type={'app'}
                                         >
                                           <FormDataLoadersProvider>
                                             <FormDataSubmittersProvider>

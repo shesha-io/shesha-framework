@@ -17,8 +17,8 @@ import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { defaultStyles } from './utils';
+import { addPx } from '../_settings/utils';
 
 const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',
@@ -35,7 +35,24 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+
+    const styling = JSON.parse(stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      ...stylingBoxAsCSS,
+      ...borderStyles,
+      ...fontStyles,
+      ...backgroundStyles,
+      ...shadowStyles,
+      ...jsStyle,
+    });
+
+    const dimensionStyles = {
+      width: dimensions?.width ? `calc(${addPx(dimensions.width)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
+      minWidth: dimensions?.minWidth ? `calc(${addPx(dimensions.minWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
+      maxWidth: dimensions?.maxWidth ? `calc(${addPx(dimensions.maxWidth)} - ${additionalStyles?.marginLeft || '0px'} - ${additionalStyles?.marginRight || '0px'})` : undefined,
+  };
 
     useEffect(() => {
       const fetchStyles = async () => {
@@ -66,24 +83,13 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     ) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-
-    const styling = JSON.parse(stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      ...stylingBoxAsCSS,
-      ...dimensionsStyles,
-      ...borderStyles,
-      ...fontStyles,
-      ...backgroundStyles,
-      ...shadowStyles,
-      ...jsStyle,
-    });
     return (
       <ConfigurableFormItem model={{ ...model, label: undefined, hideLabel: true }}>
         {(value) => {
           const content = model.content || value;
-          return <Markdown {...model} content={content} style={additionalStyles} />;
+          return <div style={{ ...dimensionStyles }}>
+            <Markdown {...model} content={content} style={{...additionalStyles}} />
+            </div>;
         }}
       </ConfigurableFormItem>
     );
