@@ -74,7 +74,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
                 right: 0;
                 left: auto;
                 top: -25px;
-                width: 25px;
             }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
