@@ -126,26 +126,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         color='lightslategrey'
         onClick={onSwitchMode}
       />
-      {/* <ConfigProvider
-        theme={{
-          components: {
-            Switch: {
-              handleSizeSM: 8,
-              trackMinWidthSM: 20,
-              trackHeightSM: 12,
-            },
-          },
-        }}
-      >
-        <Switch
-          className={`${styles.jsSwitch} inlineJS`}
-          size='small'
-          checkedChildren='js'
-          checked={mode === 'code'}
-          onChange={onSwitchMode}
-        />
-      </ConfigProvider> */}
-
       {mode === 'code' && editor}
       {mode === 'value' && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
