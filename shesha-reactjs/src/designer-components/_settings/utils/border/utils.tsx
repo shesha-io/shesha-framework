@@ -127,8 +127,8 @@ export const borderCorners = [
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
-
 const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, path: string) => {
+
     const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
     return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };

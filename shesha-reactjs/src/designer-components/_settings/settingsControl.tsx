@@ -9,6 +9,10 @@ import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
+import { Button } from 'antd';
+import {
+  CodeOutlined, CodeFilled, FormOutlined
+} from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -75,6 +79,11 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     }
   };
 
+  const onSwitchMode = () => {
+    const newMode = mode === 'code' ? 'value' : 'code';
+    onInternalChange(setting, newMode);
+  };
+
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
@@ -94,7 +103,6 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     },
     type: 'text',
     label: ' ',
-    className: `${styles.jsSwitch}`,
     ghost: true,
     exposedVariables: defaultExposedVariables,
     hidden: !setting._code && props.readOnly,
@@ -107,8 +115,19 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
-      {editor}
-      {!code && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
+      <Button
+        hidden={props.readOnly}
+        className={`${styles.jsSwitch} inlineJS`}
+        type='text'
+        danger={mode === 'value' && !!code}
+        ghost
+        size='small'
+        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        color='lightslategrey'
+        onClick={onSwitchMode}
+      />
+      {mode === 'code' && editor}
+      {mode === 'value' && <div className={styles.jsContent} style={{ marginLeft: 0 }}>
         {props.children(setting?._value, valueOnChange, propertyName)}
       </div>}
     </div>

@@ -26,7 +26,6 @@ export const useStyles = createStyles(({ css, cx, }) => {
                     text-overflow: ellipsis;
                     white-space: nowrap;
                 }
-
         }
         `);
 
