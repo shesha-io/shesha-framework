@@ -134,14 +134,16 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     const managers = useRef<IDataContextManagerFullInstance[]>([]);
     const formInstance = useRef<ConfigurableFormInstance>();
 
+    const setLastUpdate = () => setState({...state, lastUpdate: new Date().toJSON()});
+
     const onChangeContextData = () => {
-      setState({...state, lastUpdate: new Date().toJSON()});
+      setLastUpdate();
       state.parent?.onChangeContextData();
     };
 
     const updatePageFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
-        setState({...state, lastUpdate: new Date().toJSON() });
+        setLastUpdate();
     };
 
     const getPageFormInstance = () => {
@@ -151,7 +153,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
   const registerDataManager = (payload: IDataContextManagerFullInstance) => {
     if (!managers.current.find(x => x.id === payload.id)) {
       managers.current.push(payload);
-      setState({...state, lastUpdate: new Date().toJSON() });
+      setLastUpdate();
     }
   };
 
@@ -159,7 +161,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     const manager = managers.current.find(x => x.id === payload.id);
     if (manager) {
       managers.current.splice(managers.current.indexOf(manager), 1);
-      setState({...state, lastUpdate: new Date().toJSON() });
+      setLastUpdate();
     }
   };
 
@@ -168,7 +170,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
             const ctx = {...payload};
             delete ctx.initialData;
             contexts.current[payload.id] = {...ctx};
-            setState({...state, lastUpdate: new Date().toJSON() });
+            setLastUpdate();
 
             if (payload.type === 'root')
                 RootContexts.push(payload.id);
@@ -179,7 +181,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       if (!!contexts.current[payload.id])
         delete contexts.current[payload.id];
 
-      setState({...state, lastUpdate: new Date().toJSON() });
+      setLastUpdate();
 
       if (payload.type === 'root')
         RootContexts.splice(RootContexts.indexOf(payload.id), 1);
@@ -293,7 +295,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
             const changed = !isEqual(existingContext, newCtx);
             if (changed) {
                 contexts.current[payload.id] = newCtx;
-                setState({...state, lastUpdate: new Date().toJSON() });
+                setLastUpdate();
             }
         }
     };

@@ -64,7 +64,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                         condition={Boolean(formSettings?.modelType)}
                         wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
                     >
-                        <ParentProvider model={{}} formMode='designer'>
+                        <ParentProvider model={null} formMode='designer'>
                             <DataContextProvider id={SheshaCommonContexts.FormContext} name={SheshaCommonContexts.FormContext} type={'form'} 
                                 description='Form designer'
                             >

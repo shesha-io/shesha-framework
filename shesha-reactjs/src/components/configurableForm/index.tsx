@@ -136,7 +136,7 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
               <EditViewMsg persistedFormProps={showFormInfoOverlay ? shaForm.form : undefined} />
             </BlockOverlay>
             <ShaFormProvider shaForm={shaForm}>
-              <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={shaForm.flatStructure} formApi={shaForm.getPublicFormApi()} 
+              <ParentProvider model={null} formMode={shaForm.formMode} formFlatMarkup={shaForm.flatStructure} formApi={shaForm.getPublicFormApi()} 
                 name={ConfigurableItemIdentifierToString(formId)} isScope
               >
                 {markupLoadingState.status === 'ready' && (

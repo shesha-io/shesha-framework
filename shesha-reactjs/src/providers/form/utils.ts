@@ -47,7 +47,7 @@ import {
   ViewType,
   FormRawMarkup,
 } from './models';
-import { isPropertySettings, updateSettingsComponents } from '@/designer-components/_settings/utils';
+import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
 import {
   IDataContextManagerFullInstance,
   IDataContextsData,
@@ -1816,7 +1816,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
 export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
-    components = updateSettingsComponents(designerComponents, components);
+    components = updateJsSettingsForComponents(designerComponents, components);
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version

@@ -71,7 +71,6 @@ export const updateSettingsComponents = (
     const componentRegistration = toolboxComponents[component.type];
 
     const newComponent: IConfigurableFormComponent = { ...component, jsSetting: false };
-
     if ((componentRegistration?.canBeJsSetting && component.jsSetting !== false) || component.jsSetting === true) {
       const oldComponent: IConfigurableFormComponent = { ...newComponent };
 
@@ -127,6 +126,41 @@ export const updateSettingsComponents = (
   return components.map((c) => {
     return processComponent(c);
   });
+};
+
+export const updateJsSettingsForComponents = (
+    toolboxComponents: IToolboxComponents,
+    components: IConfigurableFormComponent[]) => {
+
+    const processComponent = (component: IConfigurableFormComponent) => {
+        const componentRegistration = toolboxComponents[component.type];
+        const newComponent: IConfigurableFormComponent = { 
+          ...component,
+          jsSetting: componentRegistration?.canBeJsSetting && component.jsSetting !== false || component.jsSetting === true
+        };
+
+        // Check all child containers
+        // custom containers
+        const customContainerNames = componentRegistration?.customContainerNames || [];
+        customContainerNames.forEach(subContainer => {
+            if (Array.isArray(component[subContainer]?.components) && component[subContainer]?.components.length > 0)
+                newComponent[subContainer].components = component[subContainer]?.components.map(c => {
+                    return processComponent(c);
+                });
+        });
+
+        // default container
+        if (Array.isArray(component['components']) && component['components'].length > 0)
+            newComponent['components'] = component['components'].map(c => {
+                return processComponent(c);
+            });
+
+        return newComponent;
+    };
+
+    return components.map(c => {
+        return processComponent(c);
+    });
 };
 
 export const updateSettingsComponentsDict = (
