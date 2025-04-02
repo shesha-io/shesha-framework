@@ -28,7 +28,7 @@ export const defaultStyles = (prev): IStyleType => {
       radiusType: 'all',
       border: {
         all: {
-          width: 1,
+          width: '1px',
           style: 'none',
           color: '#d9d9d9'
         },

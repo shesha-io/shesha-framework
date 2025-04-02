@@ -6,12 +6,12 @@ import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/provi
 import { INumberFieldComponentProps } from './interfaces';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { useStyles } from './styles';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { removeUndefinedProps } from '@/utils/object';
+import { dimensionStyles, MAX_SAFE_INTEGER } from './utils';
 
 interface IProps {
   disabled: boolean;
@@ -38,7 +38,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
   const jsStyle = getStyle(model?.style, model);
   const allData = useAvailableConstantsData();
 
-  const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -74,12 +73,11 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
-  const styling = JSON.parse(model.stylingBox || '{}');
+  const styling = JSON.parse(model?.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   const additionalStyles: CSSProperties = removeUndefinedProps({
     ...stylingBoxAsCSS,
-    ...dimensionsStyles,
     ...borderStyles,
     ...fontStyles,
     ...backgroundStyles,
@@ -87,8 +85,8 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
   });
 
   const finalStyle = removeUndefinedProps({
+    ...dimensionStyles(dimensions, additionalStyles),
     ...additionalStyles,
-    fontWeight: model?.font?.weight ? Number(model?.font?.weight.split(' - ')[0]) : 400,
   });
 
   const style = model.style;
@@ -97,8 +95,8 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     className: 'sha-number-field',
     disabled: disabled,
     variant: model.hideBorder ? 'borderless' : undefined,
-    min: model?.min,
-    max: model?.max,
+    min: model?.validate?.minValue ?? 0,
+    max: model?.validate?.maxValue ?? MAX_SAFE_INTEGER,
     placeholder: model?.placeholder,
     size: model?.size,
     style: style ? getStyle(style, allData.data, allData.globalState) : { width: '100%' },
@@ -120,6 +118,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     ),
   };
 
+
   return (
     <ConfigProvider
       theme={{
@@ -127,16 +126,16 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
           InputNumber: {
             fontFamily: model?.font?.type,
             fontSize: model?.font?.size || 14,
-            fontWeightStrong: Number(fontStyles.fontWeight) || 400,
+            fontWeightStrong: Number(model.font.weight) ?? 400,
             colorText: model?.font?.color,
           },
         },
       }}
     >
       <InputNumber
-        value={value ?? model.defaultValue}
+        value={value ?? model?.defaultValue}
         {...inputProps}
-        stringMode={model?.highPrecision}
+        stringMode={!model?.highPrecision}
         style={{ ...finalStyle, ...jsStyle }}
         className={`sha-input ${styles.numberField}`}
         onBlur={onBlur}

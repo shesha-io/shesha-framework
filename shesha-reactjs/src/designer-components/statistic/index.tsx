@@ -3,7 +3,7 @@ import { customOnClickEventHandler, getEventHandlers, isValidGuid } from '@/comp
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
-import { IInputStyles, useForm, useSheshaApplication } from '@/providers';
+import { IInputStyles, useForm, useSheshaApplication, useTheme } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { toSizeCssProp } from '@/utils/form';
@@ -14,13 +14,14 @@ import { CSSProperties } from 'styled-components';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getBackgroundStyle } from '../_settings/utils/background/utils';
-import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getSizeStyle } from '../_settings/utils/dimensions/utils';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 import { getFontStyle } from '../_settings/utils/font/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
-import { defaultStyles, getDesignerDefaultContent } from './utils';
+import { defaultStyles } from './utils';
+import { getBorderStyle } from '../_settings/utils/border/utils';
+import { IBorderValue } from '../_settings/utils/border/interfaces';
 
 interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigurableFormComponent {
   value?: number | string;
@@ -36,6 +37,10 @@ interface IStatisticComponentProps extends Omit<IInputStyles, 'font'>, IConfigur
   valueFont?: IFontValue;
   onClick?: () => void;
   onDoubleClick?: () => void;
+  borderSize?: string | number;
+  borderRadius?: string | number;
+  borderType?: string;
+  borderColor?: string;
 }
 
 const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
@@ -49,7 +54,8 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const allData = useAvailableConstantsData();
     const { formMode } = useForm();
-
+    const { theme } = useTheme();
+    
     const dimensions = model?.dimensions;
     const border = model?.border;
     const valueFont = model?.valueFont;
@@ -63,7 +69,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     const titleStyles = getStyle(titleStyle);
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
+    const borderStyles = useMemo(() => getBorderStyle(border, jsStyle, theme), [border, jsStyle, theme]);
     const valueFontStyles = useMemo(() => getFontStyle(valueFont), [valueFont]);
     const titleFontStyles = useMemo(() => getFontStyle(titleFont), [titleFont]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -118,13 +124,17 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               customEvent.onClick(value);
             };
             return <ShaStatistic
-              value={value || passedModel?.value}
-              precision={passedModel?.precision}
+              value={value || passedModel?.value || 1234}
+              precision={passedModel?.precision || (value || passedModel?.value ? 0 : 2)}
               title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{passedModel.prefix ? passedModel.prefix : null}</span></div>}
+              prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null) || (!(value || passedModel?.value) ? 'R' : null)}</span></div>}
               suffix={<div><span style={{ marginRight: 5 }}>{passedModel.suffix && passedModel.suffix}{passedModel.suffixIcon && <ShaIcon iconName={passedModel.suffixIcon as IconType} />}</span></div>}
               style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
-              valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
+              valueStyle={removeUndefinedProps({
+                ...valueFontStyles, 
+                ...valueStyles,
+                ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' })
+              })}
               {...customEvents}
               onClick={onClickInternal}
             />;
@@ -141,13 +151,17 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             customEvent.onClick(value);
           };
           return <ShaStatistic
-            value={value || passedModel?.value}
-            precision={passedModel?.precision}
+            value={(value || passedModel?.value) || 1234}
+            precision={passedModel?.precision || (value || passedModel?.value ? 0 : 2)}
             title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel?.title}</div>}
-            prefix={<div>{prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{prefix && prefix}</span></div>}
+            prefix={<div>{passedModel.prefixIcon && <ShaIcon iconName={passedModel.prefixIcon as IconType} />}<span style={{ marginLeft: 5 }}>{(passedModel.prefix ? passedModel.prefix : null) || (!(value || passedModel?.value) ? 'R' : null)}</span></div>}
             suffix={<div><span style={{ marginRight: 5 }}>{suffix && suffix}</span>{suffixIcon && <ShaIcon iconName={suffixIcon as IconType} />}</div>}
             style={removeUndefinedProps({ ...additionalStyles, ...jsStyle })}
-            valueStyle={removeUndefinedProps({ ...valueFontStyles, ...valueStyles })}
+            valueStyle={removeUndefinedProps({ 
+              ...valueFontStyles, 
+              ...valueStyles,
+              ...(!(value || passedModel?.value) && { opacity: 0.5, color: '#999' })
+            })}
             {...customEvents}
             onClick={onClickInternal}
           />;
@@ -168,12 +182,14 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
         titleStyle: prev?.titleStyle,
         hideBorder: prev?.hideBorder,
         shadow: defaultStyles().shadow,
+        border: {
+          border: defaultStyles().border.border as IBorderValue,
+        }
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IStatisticComponentProps>(3, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-    .add<IStatisticComponentProps>(4, (prev) => ({ ...getDesignerDefaultContent(prev) }))
 };
 
 export default StatisticComponent;

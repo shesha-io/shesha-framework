@@ -92,7 +92,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       ...(['dashed', 'default'].includes(model.buttonType) && backgroundStyles),
       ...(['primary', 'default'].includes(model.buttonType) && shadowStyles),
       ...stylingBoxAsCSS,
-      ...jsStyle
+      ...jsStyle,
     };
 
     return (

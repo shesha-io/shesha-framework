@@ -63,7 +63,6 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     borderRadius: addPx(borderRadius)
   };
 
-  const jsStyle = getStyle(model.style);
 
   const prevStyles = migratePrevStyles(model, initialValues());
   const dimensions = prevStyles?.dimensions;
@@ -74,6 +73,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
   const styling = JSON.parse(model.stylingBox || '{}');
 
   const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+  const jsStyle = useMemo(() => getStyle(model.style), [model.style]);
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const [backgroundStyles, setBackgroundStyles] = useState({});

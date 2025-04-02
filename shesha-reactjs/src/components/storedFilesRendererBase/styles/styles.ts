@@ -19,8 +19,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
-    --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
+    --thumbnail-width: ${layout ? (width ?? '54px') : '100%'};
+    --thumbnail-height: ${layout ? (height ?? '54px') : '100%'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
@@ -52,6 +52,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       --ant-font-size: ${fontSize ?? '14px'} !important;
       border-radius: ${borderRadius ?? '8px'} !important;
       display: flex;
+      width: ${layout ? (width ?? '54px') : ''};
+      height: ${layout ? (height ?? '54px') : ''};
 
       :before {
         top: 0;

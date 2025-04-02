@@ -181,7 +181,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         inputType: 'referenceListAutocomplete',
                         settingsValidationErrors: [],
                       })
-                      .addQueryBuilder({
+                      .addSettingsInput({
                         id: 'Scip2BCqWk6HniFIGHwtA',
                         parentId: '6eBJvoll3xtLJxdvOAlnB',
                         propertyName: 'filter',
@@ -191,6 +191,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                         settingsValidationErrors: [],
                         modelType: 'Shesha.Framework.ReferenceListItem',
                         version: 2,
+                        inputType: 'queryBuilder',
                       })
                       .addSettingsInput({
                         id: 'Scip2BCqWk6HniFIGHHqA',
@@ -208,7 +209,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                           },
                           {
                             value: 'listItem',
-                            label: 'Reference List item',
+                            label: 'Reference list item',
                           },
                           {
                             value: 'custom',
@@ -378,8 +379,8 @@ export const getSettings = (data: IDropdownComponentProps) => {
                       propertyName: 'queryParams',
                       parentId: 'Xp6zDosEy-IrSeDfHHwh-',
                       label: 'Values',
-                      labelTitle: 'Param',
-                      labelName: 'param',
+                      labelTitle: 'Label',
+                      labelName: 'label',
                       valueTitle: 'Value',
                       valueName: 'value',
                       ignorePrefixesOnNewItems: true,
@@ -935,7 +936,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     id: 'shadowStyleRow-blurRadius',
                                     label: 'Blur',
                                     hideLabel: true,
-                                    tooltip: 'Blur radius',
+                                    tooltip: 'Blur Radius',
                                     width: 80,
                                     icon: 'blurIcon',
                                     propertyName: 'shadow.blurRadius',
@@ -945,7 +946,7 @@ export const getSettings = (data: IDropdownComponentProps) => {
                                     id: 'shadowStyleRow-spreadRadius',
                                     label: 'Spread',
                                     hideLabel: true,
-                                    tooltip: 'Spread radius',
+                                    tooltip: 'Spread Radius',
                                     width: 80,
                                     icon: 'spreadIcon',
                                     propertyName: 'shadow.spreadRadius',

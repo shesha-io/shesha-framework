@@ -16,7 +16,7 @@ export interface IShowMessageArguments {
 export const showMessageArgumentsForm = new DesignerToolbarSettings()
   .addSettingsInput({
     id: nanoid(),
-    inputType: "textField",
+    inputType: "textArea",
     propertyName: 'message',
     label: 'Message',
     autoSize: true,
