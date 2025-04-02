@@ -1,6 +1,6 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }, hasCode) => {
+export const useStyles = createStyles(({ css, cx, responsive, token }, hasCode) => {
 
     const contentJs = cx(css`
         position: relative;
