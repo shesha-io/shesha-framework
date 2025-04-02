@@ -10,6 +10,15 @@ import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () => {
 
+    const prefix = 'getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tabPosition) === ';
+
+    const hideConditions = {
+        topLeft: 'return ' + prefix + '"top" || ' + prefix + '"left";',
+        topRight: 'return ' + prefix + '"top" || ' + prefix + '"right";',
+        bottomLeft: 'return ' + prefix + '"bottom" || ' + prefix + '"left";',
+        bottomRight: 'return ' + prefix + '"bottom" || ' + prefix + '"right";',
+    };
+
     return {
         components: new DesignerToolbarSettings()
             .addSearchableTabs({
@@ -306,23 +315,6 @@ export const getSettings = () => {
                                             content: {
                                                 id: 'borderStylePnl',
                                                 components: [...new DesignerToolbarSettings()
-                                                    .addSettingsInputRow({
-                                                        id: `borderStyleRow`,
-                                                        parentId: 'borderStylePnl',
-                                                        hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
-                                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                                        inputs: [
-                                                            {
-                                                                type: 'button',
-                                                                id: 'borderStyleRow-hideBorder',
-                                                                label: "Border",
-                                                                hideLabel: true,
-                                                                propertyName: "border.hideBorder",
-                                                                icon: "EyeOutlined",
-                                                                iconAlt: "EyeInvisibleOutlined"
-                                                            },
-                                                        ]
-                                                    })
                                                     .addContainer({
                                                         id: 'borderStyleRow',
                                                         parentId: 'borderStylePnl',
@@ -331,7 +323,7 @@ export const getSettings = () => {
                                                     .addContainer({
                                                         id: 'borderRadiusStyleRow',
                                                         parentId: 'borderStylePnl',
-                                                        components: getCornerInputs() as any
+                                                        components: getCornerInputs("", true, hideConditions) as any
                                                     })
                                                     .toJson()
                                                 ]
