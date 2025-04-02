@@ -116,7 +116,7 @@ export const getSettings = (data) => {
                             },
                             dropdownOptions: [
                               { value: 'relative', label: 'Relative' },
-                              { value: 'Fixed', label: 'Fixed' },
+                              { value: 'absolute', label: 'Absolute' }
                             ]
                           })
                           .addSettingsInputRow(
