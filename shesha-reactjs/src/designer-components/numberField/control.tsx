@@ -43,8 +43,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
   const [backgroundStyles, setBackgroundStyles] = useState({});
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-  console.log('model?.highPrecision', model?.highPrecision);
-
   useEffect(() => {
     const fetchStyles = async () => {
       const storedImageUrl =
@@ -120,7 +118,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     ),
   };
 
-  console.log({ ...inputProps });
 
   return (
     <ConfigProvider
@@ -138,7 +135,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
       <InputNumber
         value={value ?? model?.defaultValue}
         {...inputProps}
-        stringMode={false}
+        stringMode={!model?.highPrecision}
         style={{ ...finalStyle, ...jsStyle }}
         className={`sha-input ${styles.numberField}`}
         onBlur={onBlur}

@@ -161,15 +161,50 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   defaultValue: false,
                 })
 
-                .addSettingsInput({
-                  id: '874aa450-6274-48d4-8032-395fdd680fa5',
-                  inputType: 'numberField',
-                  propertyName: 'stepNumeric',
-                  parentId: 'jNmEKg7HtYXwaL9CylTOX',
-                  label: 'Step',
-                  defaultValue: 1,
-                  validate: {},
-                  settingsValidationErrors: [],
+                .addSettingsInputRow({
+                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.highPrecision)',
+                    _mode: 'code',
+                    _value: false,
+                  },
+                  inputs: [
+                    {
+                      id: '874aa450-6274-48d4-8032-395fdd680fa5',
+                      type: 'numberField',
+                      propertyName: 'stepNumeric',
+                      parentId: 'jNmEKg7HtYXwaL9CylTOX',
+                      label: 'Step',
+                      defaultValue: 1,
+                      validate: {},
+                      settingsValidationErrors: [],
+                    },
+                  ],
+                })
+
+                .addSettingsInputRow({
+                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return !getSettingValue(data?.highPrecision)',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
+                  inputs: [
+                    {
+                      id: '874aa450-6274-48d4-8032-395fdd680fa5',
+                      type: 'textField',
+                      propertyName: 'stepString',
+                      parentId: 'jNmEKg7HtYXwaL9CylTOX',
+                      label: 'Step',
+                      defaultValue: 0.1,
+                      validate: {},
+                      settingsValidationErrors: [],
+                    },
+                  ],
                 })
 
                 .toJson(),
@@ -199,7 +234,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                     {
                       type: 'numberField',
                       id: 'minLength-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'validate.minLength',
+                      propertyName: 'validate.minValue',
                       label: 'Min Value',
                       size: 'small',
                       jsSetting: true,
@@ -207,7 +242,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                     {
                       type: 'numberField',
                       id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'validate.maxLength',
+                      propertyName: 'validate.maxValue',
                       label: 'Max Value',
                       size: 'small',
                       jsSetting: true,
