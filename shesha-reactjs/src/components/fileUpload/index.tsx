@@ -2,6 +2,7 @@ import { listType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { useSheshaApplication, useStoredFile } from '@/providers';
 import {
   DeleteOutlined,
+  DownloadOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
   SyncOutlined,
@@ -65,12 +66,21 @@ export const FileUpload: FC<IFileUploadProps> = ({
   } = useStoredFile();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const { styles } = useStyles({ styles: stylesProp, model: { layout: listType === 'thumbnail' && !isDragger, hideFileName: hideFileName && listType === 'thumbnail', isDragger } });
+  const { styles } = useStyles({
+    styles: stylesProp,
+    model: {
+      layout: listType === 'thumbnail' && !isDragger,
+      hideFileName: hideFileName && listType === 'thumbnail',
+      isDragger,
+    },
+  });
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
   const { message } = App.useApp();
   const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
     uploadFile({ file: file as File }, callback);
@@ -98,32 +108,32 @@ export const FileUpload: FC<IFileUploadProps> = ({
     deleteFile();
   };
 
-  const fileControls = () => {
-    return (
-      <React.Fragment>
-        {fileInfo && (
-          <a >
-            {false && <InfoCircleOutlined />}
-            <FileVersionsPopup fileId={fileInfo.id} />
-          </a>
-        )}
-        {allowReplace && (
-          <a onClick={onReplaceClick}>
-            <SyncOutlined title="Replace" />
-          </a>
-        )}
-        {allowDelete && (
-          <a onClick={onDeleteClick}>
-            <DeleteOutlined title="Remove" />
-          </a>
-        )}
-      </React.Fragment>
-    );
-  };
+  // const fileControls = () => {
+  //   return (
+  //     <React.Fragment>
+  //       {fileInfo && (
+  //         <a>
+  //           {false && <InfoCircleOutlined />}
+  //           <FileVersionsPopup fileId={fileInfo.id} />
+  //         </a>
+  //       )}
+  //       {allowReplace && (
+  //         <a onClick={onReplaceClick}>
+  //           <SyncOutlined title="Replace" />
+  //         </a>
+  //       )}
+  //       {allowDelete && (
+  //         <a onClick={onDeleteClick}>
+  //           <DeleteOutlined title="Remove" />
+  //         </a>
+  //       )}
+  //     </React.Fragment>
+  //   );
+  // };
 
+  const url = `${backendUrl}${fileInfo?.url}`;
   useEffect(() => {
-    fetch(`${backendUrl}${fileInfo?.url}`,
-      { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+    fetch(url, { headers: { ...httpHeaders, 'Content-Type': 'application/octet-stream' } })
       .then((response) => {
         return response.blob();
       })
@@ -133,7 +143,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
       .then((url) => {
         setImageUrl(url);
       });
-
   }, [fileInfo]);
 
   const iconRender = (fileInfo) => {
@@ -155,7 +164,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
     listType: listType === 'text' ? 'text' : 'picture-card',
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
-    onPreview: () => setPreviewOpen(true),
+    onPreview: () => {
+      setPreviewImage({ url, uid: fileInfo.id, name: fileInfo.name });
+      setPreviewOpen(true);
+    },
     onChange(info) {
       if (info.file.status !== 'uploading') {
         //
@@ -191,7 +203,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderStub = () => {
     if (isDragger) {
-      return <Dragger disabled><DraggerStub /></Dragger>;
+      return (
+        <Dragger disabled>
+          <DraggerStub />
+        </Dragger>
+      );
     }
 
     return <div>{uploadButton}</div>;
@@ -200,37 +216,42 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const renderUploader = () => {
     if (isDragger && allowUpload) {
       return (
-        <Dragger {...fileProps} >
+        <Dragger {...fileProps}>
           <span ref={uploadDraggerSpanRef} />
           <DraggerStub />
         </Dragger>
       );
     }
-    return (
-      <Upload {...fileProps}  >
-        {allowUpload && !fileInfo && uploadButton}
-      </Upload>
-    );
+    return <Upload {...fileProps}>{allowUpload && !fileInfo && uploadButton}</Upload>;
   };
 
-
-  return <>
-    <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
-    {previewOpen && (
-      <Image
-        wrapperStyle={{ display: 'none' }}
-        preview={{
-          visible: previewOpen,
-          onVisibleChange: (visible) => setPreviewOpen(visible),
-          afterOpenChange: (visible) => !visible,
-          toolbarRender: (original) => {
-            return <div style={{ display: 'flex', flexDirection: 'row-reverse' }}><DownloadOutlined className={styles.antPreviewDownloadIcon} onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })} />{original}</div>;
-          },
-        }}
-        src={imageUrl}
-      />
-    )}
-  </>;
+  return (
+    <>
+      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
+      {previewOpen && (
+        <Image
+          wrapperStyle={{ display: 'none' }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible,
+            toolbarRender: (original) => {
+              return (
+                <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
+                  <DownloadOutlined
+                    className={styles.antPreviewDownloadIcon}
+                    onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })}
+                  />
+                  {original}
+                </div>
+              );
+            },
+          }}
+          src={imageUrl}
+        />
+      )}
+    </>
+  );
 };
 
 export default FileUpload;
