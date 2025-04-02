@@ -159,8 +159,8 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleType & ICo
     minWidth = '0px',
     borderColor = '#d9d9d9',
     borderRadius = '8',
-    borderStyle = 'solid',
-    borderWidth = '0px',
+    borderStyle = 'none',
+    borderWidth = '1px',
     shadowStyle,
   } = prev || {};
 

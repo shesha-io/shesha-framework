@@ -141,7 +141,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 value={value || defaultValue}
                 style={{ width: "100%" }}
                 onChange={onChange}
-                addonAfter={iconElement(icon, null, tooltip, {}, styles)}
+                addonAfter={iconElement(icon, null, tooltip || label, {}, styles)}
             />;
         case 'customDropdown': {
             const options = dropdownOptions as IDropdownOption[];
