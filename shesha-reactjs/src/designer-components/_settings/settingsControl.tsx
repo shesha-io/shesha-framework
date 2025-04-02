@@ -9,10 +9,10 @@ import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
-import { Button, ConfigProvider, Switch } from 'antd';
-import { CodeOutlined } from '@ant-design/icons';
-import { CodeFilled } from '@ant-design/icons';
-import { FormOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import {
+  CodeOutlined, CodeFilled, FormOutlined
+} from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 

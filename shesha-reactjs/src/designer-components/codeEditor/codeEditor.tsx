@@ -10,9 +10,8 @@ import {
   Tabs,
   Typography
 } from 'antd';
-import classNames from 'classnames';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
-import { CodeFilled, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
@@ -147,13 +146,13 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     : (
       <>
         <Button
-          // type={props.type ? props.type : hasValue ? 'primary' : 'default'}
           className={props.className}
           size="small"
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis' } : undefined}
         >
-          {hasValue ? <><CodeOutlined /> {value}</> : <><CodeOutlined /> ...</>}
+          {<CodeOutlined />}
+          {hasValue ? value : '...'}
         </Button>
         {showDialog && (
           <Modal
