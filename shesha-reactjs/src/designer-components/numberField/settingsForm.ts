@@ -155,7 +155,7 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   id: 'f6f4a345-a529-4720-a90b-d84532e556fb',
                   inputType: 'switch',
                   propertyName: 'highPrecision',
-                  label: 'High precision',
+                  label: 'High Precision',
                   tooltip: 'To support high precision decimals support',
                   version: 2,
                   defaultValue: false,
