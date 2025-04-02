@@ -51,7 +51,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
         top: -8px;
         `);
     const jsSwitch = cx(css`
-        &.${prefixCls}-btn {
             position: absolute;
             right: 0;
             top: 4px;
@@ -74,14 +73,15 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }
             .sidebar-container & {
                 right: 0;
                 left: auto;
-                top: ${hasCode ? '-35px' : '-25px'};
+                top: -20px;
+                width: 25px;
             }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
                 top: ${hasCode ? '-38px' : '-25px'};
             }
-        }
+        
     `);
 
     return {

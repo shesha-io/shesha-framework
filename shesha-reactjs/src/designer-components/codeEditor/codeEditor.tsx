@@ -146,8 +146,14 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     ? (<Typography.Text disabled>No Code</Typography.Text>)
     : (
       <>
-        <Button type={props.type ? props.type : hasValue ? 'primary' : 'default'} className={classNames(styles.button, props.className)} icon={hasValue ? <CodeFilled /> : <CodeOutlined />} onClick={openEditorDialog} size="small" style={{}}>
-          {props.label !== " " && (readOnly ? 'View Code' : '...')}
+        <Button
+          // type={props.type ? props.type : hasValue ? 'primary' : 'default'}
+          className={props.className}
+          size="small"
+          onClick={openEditorDialog}
+          style={hasValue ? { fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis' } : undefined}
+        >
+          {hasValue ? <><CodeOutlined /> {value}</> : <><CodeOutlined /> ...</>}
         </Button>
         {showDialog && (
           <Modal

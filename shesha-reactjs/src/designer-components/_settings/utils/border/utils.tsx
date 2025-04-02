@@ -127,8 +127,14 @@ export const borderCorners = [
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
-
+// interface IHideCornerConditions {
+//     topLeft?: string;
+//     topRight?: string;
+//     bottomLeft?: string;
+//     bottomRight?: string;
+// }
 const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, path: string) => {
+
     const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
     return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
@@ -247,7 +253,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
     ];
 };
 
-export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
+export const getCornerInputs = (path = '', isResponsive: boolean = true,) => {
 
     return [...new DesignerToolbarSettings()
         .addSettingsInput({
