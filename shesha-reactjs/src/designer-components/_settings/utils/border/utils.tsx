@@ -216,7 +216,14 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
     ];
 };
 
-export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
+interface IHideCornerConditions {
+    topLeft?: string;
+    topRight?: string;
+    bottomLeft?: string;
+    bottomRight?: string;
+}
+
+export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}) => {
 
     return [...new DesignerToolbarSettings()
         .addSettingsInput({
@@ -266,6 +273,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     defaultValue: 0,
                     type: 'numberField',
                     icon: cornerValue.icon,
+                    hidden: { _code: hideCornerConditions[corner], _mode: 'code', _value: false } as any,
                     tooltip: `${humanizeString(corner)} corner`,
                     propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
                 };
