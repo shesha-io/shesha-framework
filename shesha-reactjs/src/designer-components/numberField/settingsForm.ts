@@ -151,6 +151,62 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                   ],
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                 })
+                .addSettingsInput({
+                  id: 'f6f4a345-a529-4720-a90b-d84532e556fb',
+                  inputType: 'switch',
+                  propertyName: 'highPrecision',
+                  label: 'High Precision',
+                  tooltip: 'To support high precision decimals support',
+                  version: 2,
+                  defaultValue: false,
+                })
+
+                .addSettingsInputRow({
+                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return getSettingValue(data?.highPrecision)',
+                    _mode: 'code',
+                    _value: false,
+                  },
+                  inputs: [
+                    {
+                      id: '874aa450-6274-48d4-8032-395fdd680fa5',
+                      type: 'numberField',
+                      propertyName: 'stepNumeric',
+                      parentId: 'jNmEKg7HtYXwaL9CylTOX',
+                      label: 'Step',
+                      defaultValue: 1,
+                      validate: {},
+                      settingsValidationErrors: [],
+                    },
+                  ],
+                })
+
+                .addSettingsInputRow({
+                  id: 'type-default-value-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code: 'return !getSettingValue(data?.highPrecision)',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
+                  inputs: [
+                    {
+                      id: '874aa450-6274-48d4-8032-395fdd680fa5',
+                      type: 'textField',
+                      propertyName: 'stepString',
+                      parentId: 'jNmEKg7HtYXwaL9CylTOX',
+                      label: 'Step',
+                      defaultValue: 0.1,
+                      validate: {},
+                      settingsValidationErrors: [],
+                    },
+                  ],
+                })
+
                 .toJson(),
             ],
           },
@@ -160,7 +216,17 @@ export const getSettings = (data: INumberFieldComponentProps) => {
             id: '6eBJvoll3xtLJxdvOAlnB',
             components: [
               ...new DesignerToolbarSettings()
-
+                .addSettingsInput({
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
+                  propertyName: 'validate.required',
+                  label: 'Required',
+                  inputType: 'switch',
+                  size: 'small',
+                  layout: 'horizontal',
+                  jsSetting: true,
+                  parentId: '6eBJvoll3xtLJxdvOAlnB',
+                })
                 .addSettingsInputRow({
                   id: 'qOkkwAnHvKJ0vYXeXMLsd',
                   parentId: '6eBJvoll3xtLJxdvOAlnB',
@@ -168,16 +234,16 @@ export const getSettings = (data: INumberFieldComponentProps) => {
                     {
                       type: 'numberField',
                       id: 'minLength-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'validate.minLength',
-                      label: 'Min Length',
+                      propertyName: 'validate.minValue',
+                      label: 'Min Value',
                       size: 'small',
                       jsSetting: true,
                     },
                     {
                       type: 'numberField',
                       id: 'maxLength-s4gmBg31azZC0UjZjpfTm',
-                      propertyName: 'validate.maxLength',
-                      label: 'Max Length',
+                      propertyName: 'validate.maxValue',
+                      label: 'Max Value',
                       size: 'small',
                       jsSetting: true,
                     },
