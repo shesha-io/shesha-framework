@@ -41,7 +41,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     
     .ant-upload:not(.ant-upload-disabled) {
           .icon {
-            color: ${primaryColor ?? token.colorPrimary} !important;
+            color: ${primaryColor || token.colorPrimary} !important;
         };
     }
 
@@ -49,9 +49,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
-      --font-size: ${fontSize ?? '14px'} !important;
-      --ant-font-size: ${fontSize ?? '14px'} !important;
-      border-radius: ${borderRadius ?? '8px'} !important;
+      --font-size: ${fontSize || '14px'} !important;
+      --ant-font-size: ${fontSize || '14px'} !important;
+      border-radius: ${borderRadius || '8px'} !important;
       display: flex;
       width: ${layout ? (width ?? '54px') : ''};
       height: ${layout ? (height ?? '54px') : ''};
