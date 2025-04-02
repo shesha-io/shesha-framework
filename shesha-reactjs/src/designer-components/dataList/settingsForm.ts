@@ -120,107 +120,89 @@ export const getSettings = (data: any) => {
                 ],
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
               })
-              .addSettingsInput({
+              .addSettingsInputRow({
                 id: nanoid(),
-                inputType: 'autocomplete',
-                propertyName: "formType",
-                parentId: 'root',
-                label: "Form type",
-                onSearch: (data) => {
-                  // 'data' is the search text
-                  const searchText = data;
-                  
-                  // Filter existing options based on search text
-                  const filteredOptions = formTypes.filter(option => 
-                    option.label.toLowerCase().includes(searchText.toLowerCase())
-                  );
-                  
-                  // Check if search text exactly matches any existing option
-                  const exactMatch = formTypes.some(option => 
-                    option.label.toLowerCase() === searchText.toLowerCase()
-                  );
-                  
-                  // If no exact match and search text is not empty, add an option to create new item
-                  if (!exactMatch && searchText && searchText.trim() !== '') {
-                    return [
-                      ...filteredOptions,
-                      { 
-                        label: `Add "${searchText}" as new form type`, 
-                        value: `new:${searchText}` // Special prefix to identify new items
-                      }
-                    ];
-                  }
-                  
-                  return filteredOptions;
-                },
-                onSelect: (value) => {
-                  // Check if this is a new form type (has the 'new:' prefix)
-                  if (value && typeof value === 'string' && value.startsWith('new:')) {
-                    const newLabel = value.substring(4); // Remove the 'new:' prefix
-                    
-                    // Create a new form type
-                    const newFormType = {
-                      label: newLabel,
-                      value: newLabel
-                    };
-                    
-                    // Add to the global formTypes array
-                    formTypes.push(newFormType);
-                  }
-                  
-                  // The actual selected value will be handled by onChange
-                },
-                
-                // Handle the final change
-                onChange: (value) => {
-                  // If this is a new form type selection, convert it to its actual value
-                  if (value && typeof value === 'string' && value.startsWith('new:')) {
-                    return value.substring(4); // Return the actual value without the 'new:' prefix
-                  }
-                  
-                  return value;
-                },
-                //hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "view";', _mode: 'code', _value: false } as any,
-                jsSetting: true,
-                dataSourceType: 'entitiesList',
-                dropdownOptions: formTypes,
+                parentId: '',
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                propertyName: 'formId',
-                label: 'Modal form',
-                inputType: 'formAutocomplete',
-                labelAlign: 'right',
-                parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                hidden: false,
-                validate: {
-                  required: true,
-                },
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'codeEditor',
-                propertyName: "formIdExpression",
-                parentId: 'root',
-                label: "Form identifier expression",
-                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";', _mode: 'code', _value: false } as any,
-                jsSetting: false,
-                description: "Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-                exposedVariables: [
-                  `{ name: "item", description: "List item", type: "object" }`,
-                  `{ name: "data", description: "Selected form values", type: "object" }`,
-                  `{ name: "contexts", description: "Contexts data", type: "object" }`,
-                  `{ name: "globalState", description: "The global model of the application", type: "object" }`,
-                  `{ name: "setGlobalState", description: "Setting the global state of the application", type: "function" }`,
-                  `{ name: "formMode", description: "Form mode", type: "object" }`,
-                  `{ name: "form", description: "Form instance", type: "object" }`,
-                  `{ name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" }`,
-                  `{ name: "moment", description: "moment", type: "object" }`,
-                  `{ name: "http", description: "axiosHttp", type: "object" }`,
-                  `{ name: "message", description: "message framework", type: "object" }`,
+                hidden: {
+                  _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'formType',
+                    label: 'Form Type',
+                    parentId: '',
+                    type: 'formTypeAutocomplete',
+                    jsSetting: true,
+                    width: '100%',
+                    allowClear: true,
+                  }
                 ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: '',
                 readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hidden: {
+                  _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'formId',
+                    label: 'Modal form',
+                    type: 'formAutocomplete',
+                    labelAlign: 'right',
+                    parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
+                    hidden: false,
+                    validate: {
+                      required: true,
+                    },
+                  }
+                ],
+              })
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: '',
+                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                hidden: {
+                  _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";',
+                  _mode: 'code',
+                  _value: false,
+                } as any,
+                inputs: [
+                  {
+                    id: nanoid(),
+                    type: 'codeEditor',
+                    propertyName: "formIdExpression",
+                    parentId: 'root',
+                    label: "Form identifier expression",
+                    hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";', _mode: 'code', _value: false } as any,
+                    jsSetting: false,
+                    description: "Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+                    exposedVariables: [
+                      `{ name: "item", description: "List item", type: "object" }`,
+                      `{ name: "data", description: "Selected form values", type: "object" }`,
+                      `{ name: "contexts", description: "Contexts data", type: "object" }`,
+                      `{ name: "globalState", description: "The global model of the application", type: "object" }`,
+                      `{ name: "setGlobalState", description: "Setting the global state of the application", type: "function" }`,
+                      `{ name: "formMode", description: "Form mode", type: "object" }`,
+                      `{ name: "form", description: "Form instance", type: "object" }`,
+                      `{ name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" }`,
+                      `{ name: "moment", description: "moment", type: "object" }`,
+                      `{ name: "http", description: "axiosHttp", type: "object" }`,
+                      `{ name: "message", description: "message framework", type: "object" }`,
+                    ],
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  }
+
+                  
+                ],
               })
               .addSettingsInput({
                 id: nanoid(),
