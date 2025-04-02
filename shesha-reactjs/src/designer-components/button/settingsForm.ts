@@ -59,7 +59,7 @@ export const getSettings = (data) => {
               })
               .addSettingsInputRow({
                 id: 'icon-position-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
+                parentId: 'common-button-settings-container',
                 inputs: [
                   {
                     id: 'icon-s4gmBg31azZC0UjZjpfTm',
@@ -67,6 +67,7 @@ export const getSettings = (data) => {
                     propertyName: 'icon',
                     label: 'Icon',
                     size: 'small',
+                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                     jsSetting: true,
                   },
                   {
@@ -76,13 +77,19 @@ export const getSettings = (data) => {
                     size: 'small',
                     jsSetting: true,
                     type: 'radio',
+                    parentId: "icon-position-s4gmBg31azZC0UjZjpfTm",
                     buttonGroupOptions: [
-                      { title: 'start', value: 'start', icon: 'LeftOutlined' },
-                      { title: 'end', value: 'end', icon: 'RightOutlined' },
+                      { title: 'Start', value: 'start', icon: 'LeftOutlined' },
+                      { title: 'End', value: 'end', icon: 'RightOutlined' },
                     ],
+                    hidden: {
+                      _code: 'return  !getSettingValue(data?.icon);',
+                      _mode: 'code',
+                      _value: false
+                    } as any
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: data.readOnly,
               })
               .addSettingsInputRow({
                 id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
@@ -141,6 +148,7 @@ export const getSettings = (data) => {
                       id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
                       propertyName: 'buttonType',
                       label: 'Type',
+                      defaultValue: 'default',
                       validate: {
                         required: true,
                       },

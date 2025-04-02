@@ -103,9 +103,9 @@ export const getSettings = () => {
                                         },
                                         {
                                             id: nanoid(),
-                                            type: 'button',
+                                            type: 'switch',
                                             propertyName: 'hidden',
-                                            label: 'Hide from the rest of the world',
+                                            label: 'Hide',
                                             jsSetting: true,
                                             labelAlign: 'right',
                                             parentId: 'root',
@@ -116,7 +116,7 @@ export const getSettings = () => {
                         ]
                     },
                     {
-                        key: '4',
+                        key: '2',
                         title: 'Appearance',
                         type: '',
                         id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
@@ -536,7 +536,7 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-blurRadius',
                                                                 label: 'Blur',
                                                                 hideLabel: true,
-                                                                tooltip: 'Blur radius',
+                                                                tooltip: 'Blur Radius',
                                                                 width: 80,
                                                                 icon: 'blurIcon',
                                                                 propertyName: 'shadow.blurRadius',
@@ -546,7 +546,7 @@ export const getSettings = () => {
                                                                 id: 'shadowStyleRow-spreadRadius',
                                                                 label: 'Spread',
                                                                 hideLabel: true,
-                                                                tooltip: 'Spread radius',
+                                                                tooltip: 'Spread Radius',
                                                                 width: 80,
                                                                 icon: 'spreadIcon',
                                                                 propertyName: 'shadow.spreadRadius',
@@ -710,6 +710,7 @@ export const getSettings = () => {
                                                                             id: 'card-min-width-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Width",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.minWidth",
                                                                         },
                                                                         {
@@ -717,6 +718,7 @@ export const getSettings = () => {
                                                                             id: 'card-max-width-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Width",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.maxWidth",
                                                                         }
                                                                     ]
@@ -741,6 +743,7 @@ export const getSettings = () => {
                                                                             id: 'card-min-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Min Height",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.minHeight",
                                                                         },
                                                                         {
@@ -748,6 +751,7 @@ export const getSettings = () => {
                                                                             id: 'card-max-height-s4gmBg31azZC0UjZjpfTm',
                                                                             label: "Max Height",
                                                                             width: 85,
+                                                                            hideLabel: true,
                                                                             propertyName: "card.dimensions.maxHeight",
                                                                         }
                                                                     ]
@@ -930,7 +934,7 @@ export const getSettings = () => {
                             }).toJson()]
                     },
                     {
-                        key: '5',
+                        key: '3',
                         title: 'Security',
                         id: '6Vw9iiDw9d0MD_Rh5cbIn',
                         type: '',

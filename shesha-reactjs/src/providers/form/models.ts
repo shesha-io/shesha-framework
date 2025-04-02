@@ -146,6 +146,9 @@ export interface IComponentRuntimeProps {
   /** Custom onChange handler */
   onChangeCustom?: string;
 
+  /** Custom onClick handler */
+  onClickCustom?: string;
+
   /** Custom onFocus handler */
   onFocusCustom?: string;
 }
@@ -184,14 +187,17 @@ export interface IComponentMetadata {
  */
 export interface IConfigurableFormComponent
   extends IFormComponentContainer,
-  IHasVersion,
-  IComponentBindingProps,
-  IComponentLabelProps,
-  IComponentVisibilityProps,
-  IComponentRuntimeProps,
-  IComponentMetadata {
+    IHasVersion,
+    IComponentBindingProps,
+    IComponentLabelProps,
+    IComponentVisibilityProps,
+    IComponentRuntimeProps,
+    IComponentMetadata {
   /** Type of the component */
   type: string;
+
+  /** Options added using the dialog*/
+  queryParams?: any;
 
   /** Description of the field, is used for tooltips */
   description?: string;
