@@ -124,7 +124,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       className="sha-dropdown"
-      showSearch={true}
+      showSearch
       labelInValue={true}
       defaultActiveFirstOption={false}
       suffixIcon={showArrow ? undefined : null}
