@@ -335,9 +335,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     return (data,) => {
       const evaluationContext = {
         data,
-
       };
-      
 
       executeAction({
         actionConfiguration: onRowDoubleClick as IConfigurableActionConfiguration,
@@ -346,12 +344,13 @@ export const ReactTable: FC<IReactTableProps> = ({
     };
   }, [onRowDoubleClick]);
 
-  const handleDoubleClickRow = (row) => {
-    if (onRowDoubleClick) {
-        performOnRowDoubleClick(row);
-      }
+  const handleDoubleClickRow = (row, index) => {
+    if (!onRowDoubleClick) {
+      performOnRowDoubleClick(row);
+    } else if (typeof onRowDoubleClick === 'function') {
+      onRowDoubleClick(row, index);
+    }
   };
-
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
   const renderNewRowEditor = () => (
@@ -385,7 +384,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         key={id ?? rowIndex}
         prepareRow={prepareRow}
         onClick={handleSelectRow}
-        onDoubleClick={()=>handleDoubleClickRow(row)}
+        onDoubleClick={()=>handleDoubleClickRow(row, rowIndex)}
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
