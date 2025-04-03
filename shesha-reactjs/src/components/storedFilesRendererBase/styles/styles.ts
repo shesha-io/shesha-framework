@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles }) => {
+export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model, containerStyles, primaryColor }) => {
   const { background, backgroundImage, borderRadius, borderWidth, borderTopWidth, width, minWidth, maxWidth,
     borderBottomWidth, borderLeftWidth, borderLeftColor, borderLeftStyle, borderRightColor, borderRightStyle, borderColor, borderTopStyle, borderTopColor,
     borderTop, boxShadow, borderBottom, borderBottomColor, borderBottomStyle, borderRight, borderRightWidth, backgroundColor, backgroundPosition,
@@ -19,8 +19,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-    --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
-    --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
+    --thumbnail-width: ${layout ? (width ?? '54px') : '100%'};
+    --thumbnail-height: ${layout ? (height ?? '54px') : '100%'};
     --ant-margin-xs: ${gap ?? '8px'} !important;
     --ant-border-radius-xs: ${borderRadius ?? '8px'} !important;
     --ant-border-radius-sm: ${borderRadius ?? '8px'} !important;
@@ -41,17 +41,20 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     
     .ant-upload:not(.ant-upload-disabled) {
           .icon {
-            color: ${token.colorPrimary} !important;
+            color: ${primaryColor || token.colorPrimary} !important;
         };
     }
+
   
     .ant-upload-list-item {
       --ant-line-width: 0px !important;
       --ant-padding-xs: 0px !important;
-      --font-size: ${fontSize ?? '14px'} !important;
-      --ant-font-size: ${fontSize ?? '14px'} !important;
-      border-radius: ${borderRadius ?? '8px'} !important;
+      --font-size: ${fontSize || '14px'} !important;
+      --ant-font-size: ${fontSize || '14px'} !important;
+      border-radius: ${borderRadius || '8px'} !important;
       display: flex;
+      width: ${layout ? (width ?? '54px') : ''};
+      height: ${layout ? (height ?? '54px') : ''};
 
       :before {
         top: 0;
@@ -134,6 +137,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
       
         .ant-btn {
+          color: ${primaryColor || token.colorPrimary} !important;
           padding: 0;
           *{
             font-size: ${fontSize ?? '14px'} !important;

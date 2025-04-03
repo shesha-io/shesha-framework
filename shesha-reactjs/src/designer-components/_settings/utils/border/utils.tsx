@@ -13,29 +13,59 @@ import { nanoid } from "@/utils/uuid";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 import { humanizeString } from "@/utils/string";
+import { IConfigurableTheme } from "@/providers";
+import { readThemeColor } from "@/components/colorPicker";
 
-export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties): React.CSSProperties => {
+export const getBorderStyle = (input: IBorderValue, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
     if (!input) return {};
 
     const style: React.CSSProperties = {};
     const border = input.border || {};
     const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
-    const handleBorderPart = (part, prefix: string) => {
+    const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme) => {
         const hideBorder = input?.border?.[part]?.style === 'none';
         if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
         if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
         if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
+
+        if (theme && readThemeColor(theme)[`${input?.border?.all?.color}`]) {
+            style[`borderColor`] = readThemeColor(theme)[`${input?.border?.all?.color}`];
+            style[`borderWidth`] = input?.border?.all?.width;
+            style[`borderStyle`] = input?.border?.all?.style;
+        } else {
+            if (theme && readThemeColor(theme)[`${input?.border?.bottom?.color}`]) {
+                style[`borderBottomColor`] = readThemeColor(theme)[`${input?.border?.bottom?.color}`];
+                style[`borderBottomWidth`] = input?.border?.bottom?.width;
+                style[`borderBottomStyle`] = input?.border?.bottom?.style;
+            }
+            if (theme && readThemeColor(theme)[`${input?.border?.left?.color}`]) {
+                style[`borderLeftColor`] = readThemeColor(theme)[`${input?.border?.left?.color}`];
+                style[`borderLeftWidth`] = input?.border?.left?.width;
+                style[`borderLeftStyle`] = input?.border?.left?.style;
+            }
+            if (theme && readThemeColor(theme)[`${input?.border?.right?.color}`]) {
+                style[`borderRightColor`] = readThemeColor(theme)[`${input?.border?.right?.color}`];
+                style[`borderRightWidth`] = input?.border?.right?.width;
+                style[`borderRightStyle`] = input?.border?.right?.style;
+            }
+            if (theme && readThemeColor(theme)[`${input?.border?.top?.color}`]) {
+                style[`borderTopColor`] = readThemeColor(theme)[`${input?.border?.top?.color}`];
+                style[`borderTopWidth`] = input?.border?.top?.width;
+                style[`borderTopStyle`] = input?.border?.top?.style;
+            }
+        }
     };
+
 
     if (!jsStyle.border) {
         if (input.borderType === 'all') {
-            handleBorderPart(all, 'border');
+            handleBorderPart(all, 'border', theme);
         } else {
-            handleBorderPart(top, 'borderTop');
-            handleBorderPart(right, 'borderRight');
-            handleBorderPart(bottom, 'borderBottom');
-            handleBorderPart(left, 'borderLeft');
+            handleBorderPart(top, 'borderTop', theme);
+            handleBorderPart(right, 'borderRight', theme);
+            handleBorderPart(bottom, 'borderBottom', theme);
+            handleBorderPart(left, 'borderLeft', theme);
         }
     };
 
@@ -97,8 +127,8 @@ export const borderCorners = [
     { value: "bottomRight", icon: "RadiusBottomrightOutlined", title: "Bottom Right" }
 ];
 
-
 const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, path: string) => {
+
     const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
     return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
@@ -125,9 +155,9 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
                 {
                     id: nanoid(),
                     type: 'tooltip',
-                    label: 'Icon',
+                    label: '',
                     hideLabel: true,
-                    propertyName: 'borderIcon',
+                    propertyName: '',
                     icon: 'BorderOutlined',
                     width: 20,
                     tooltip: `Styles will apply to all border`,
@@ -217,7 +247,14 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true) => {
     ];
 };
 
-export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
+interface IHideCornerConditions {
+    topLeft?: string;
+    topRight?: string;
+    bottomLeft?: string;
+    bottomRight?: string;
+}
+
+export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}) => {
 
     return [...new DesignerToolbarSettings()
         .addSettingsInput({
@@ -267,6 +304,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true) => {
                     defaultValue: 0,
                     type: 'numberField',
                     icon: cornerValue.icon,
+                    hidden: { _code: hideCornerConditions[corner], _mode: 'code', _value: false } as any,
                     tooltip: `${humanizeString(corner)} corner`,
                     propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
                 };

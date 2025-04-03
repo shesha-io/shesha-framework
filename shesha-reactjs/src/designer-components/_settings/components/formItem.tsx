@@ -24,9 +24,9 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         childElement,
         {
             ...childElement?.props,
-            readOnly: readOnly || hasCode,
+            readOnly: readOnly,
             size: 'small',
-            disabled: readOnly || hasCode,
+            disabled: readOnly,
             onChange: handleChange(onChange),
             [valuePropName]: value
         }
