@@ -151,7 +151,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         height: prev.height,
         hideBorder: prev.hideBorder,
         borderSize: prev.borderSize,
-        borderRadius: prev.borderRadius,
+        borderRadius: prev.borderRadius ?? 8,
         borderColor: prev.borderColor,
         fontSize: prev.fontSize,
         backgroundColor: prev.backgroundColor,
