@@ -64,10 +64,14 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       font,
     } = model;
 
+    const align = font?.align || 'left';
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const finalStyle = removeUndefinedProps({ ...fontStyles, ...getStyle(style, data) });
-
-    const linkStyle: CSSProperties = {};
+    // Create link container style with textAlign from fontStyles
+    const linkStyle: CSSProperties = {
+      display: 'block',
+      textAlign: align,
+    };
 
     if (direction === 'horizontal' && justifyContent) {
       linkStyle['display'] = 'flex';
@@ -87,18 +91,18 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
           if (!hasChildren) {
             return (
-              <div style={{ ...linkStyle, ...finalStyle, width: '100%' }}>
-                <a href={href} target={target} className="sha-link">
+              <div style={{ ...linkStyle}}>
+                <a href={href} target={target} className="sha-link" style={finalStyle}>
                   {content}
                 </a>
               </div>
-
             );
           }
 
           const containerHolder = () => (
             <ParentProvider model={model}>
               <ComponentsContainer
+                style={{ ...linkStyle, ...finalStyle }}
                 containerId={id}
                 direction={direction}
                 justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
