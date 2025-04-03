@@ -62,6 +62,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
       ...style,
       color: contentType === 'custom' ? style.color : undefined,
       fontSize: textType === 'title' ? undefined : style?.fontSize,
+      justifyContent: style.textAlign,
     },
   };
 
@@ -69,7 +70,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     ...baseProps,
     strong: model?.strong,
   };
-
   const paragraphProps: ParagraphProps = {
     ...baseProps,
     strong: model?.strong,
@@ -87,7 +87,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Text key={`text-${updateKey}`} style={{ display: 'block' }} {...textProps} className={className}>
+      <Text key={`text-${updateKey}`} {...textProps} className={className}>
         {children}
       </Text>
     );
