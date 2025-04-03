@@ -64,14 +64,10 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       font,
     } = model;
 
-    const align = font?.align || 'left';
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const finalStyle = removeUndefinedProps({ ...fontStyles, ...getStyle(style, data) });
     // Create link container style with textAlign from fontStyles
-    const linkStyle: CSSProperties = {
-      display: 'block',
-      textAlign: align,
-    };
+    const linkStyle: CSSProperties = {};
 
     if (direction === 'horizontal' && justifyContent) {
       linkStyle['display'] = 'flex';
@@ -91,7 +87,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
           if (!hasChildren) {
             return (
-              <div style={{ ...linkStyle}}>
+              <div style={{ ...linkStyle }}>
                 <a href={href} target={target} className="sha-link" style={finalStyle}>
                   {content}
                 </a>
@@ -139,26 +135,27 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
 
     return customProps;
   },
-  migrator: (m) => m
-    .add<ILinkProps>(0, (prev) => ({ ...prev } as ILinkProps))
-    .add<ILinkProps>(1, (prev) => {
-      return {
-        ...prev,
-        label: prev.label ?? prev['name'],
-        href: prev.content,
-        content: prev['name'],
-      };
-    })
-    .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-    .add<ILinkProps>(4, (prev) => {
-      const styles: IInputStyles = {
-        style: prev.style
-      };
+  migrator: (m) =>
+    m
+      .add<ILinkProps>(0, (prev) => ({ ...prev }) as ILinkProps)
+      .add<ILinkProps>(1, (prev) => {
+        return {
+          ...prev,
+          label: prev.label ?? prev['name'],
+          href: prev.content,
+          content: prev['name'],
+        };
+      })
+      .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ILinkProps>(4, (prev) => {
+        const styles: IInputStyles = {
+          style: prev.style,
+        };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
-    })
-    .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+        return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      })
+      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default LinkComponent;

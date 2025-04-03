@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { fontTypes, fontWeights, textAlign } from '../_settings/utils/font/utils';
+import { fontTypes, fontWeights } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
 
 export const getSettings = (data: any) => {
@@ -255,15 +255,6 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     propertyName: 'font.color',
                                   },
-                                  {
-                                    type: 'dropdown',
-                                    id: 'fontAlign-s4gmBg31azZC0UjZjpfTm',
-                                    label: 'Align',
-                                    propertyName: 'font.align',
-                                    hideLabel: true,
-                                    width: 60,
-                                    dropdownOptions: textAlign,
-                                  },
                                 ],
                               })
                               .toJson(),
@@ -298,11 +289,11 @@ export const getSettings = (data: any) => {
                                 value: 'center',
                               },
                               {
-                                label: 'Flex Start',
+                                label: 'Flex start',
                                 value: 'flex-start',
                               },
                               {
-                                label: 'Flex End',
+                                label: 'Flex end',
                                 value: 'flex-end',
                               },
                               {
@@ -314,15 +305,15 @@ export const getSettings = (data: any) => {
                                 value: 'right',
                               },
                               {
-                                label: 'Space Between',
+                                label: 'Space between',
                                 value: 'space-between',
                               },
                               {
-                                label: 'Space Around',
+                                label: 'Space around',
                                 value: 'space-around',
                               },
                               {
-                                label: 'Space Evenly',
+                                label: 'Space evenly',
                                 value: 'space-evenly',
                               },
                               {
@@ -352,11 +343,11 @@ export const getSettings = (data: any) => {
                                 value: 'end',
                               },
                               {
-                                label: 'Flex End',
+                                label: 'Flex end',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'Flex Start',
+                                label: 'Flex start',
                                 value: 'flex-start',
                               },
                               {
@@ -376,11 +367,11 @@ export const getSettings = (data: any) => {
                                 value: 'revert',
                               },
                               {
-                                label: 'Self End',
+                                label: 'Self end',
                                 value: 'self-end',
                               },
                               {
-                                label: 'Self Start',
+                                label: 'Self start',
                                 value: 'self-start',
                               },
                               {
@@ -406,7 +397,7 @@ export const getSettings = (data: any) => {
                             layout: 'horizontal',
                             dropdownOptions: [
                               {
-                                label: 'Baseline',
+                                label: 'baseline',
                                 value: 'baseline',
                               },
                               {
@@ -418,11 +409,11 @@ export const getSettings = (data: any) => {
                                 value: 'end',
                               },
                               {
-                                label: 'Flex End',
+                                label: 'Flex end',
                                 value: 'flex-end',
                               },
                               {
-                                label: 'Flex Start',
+                                label: 'Flex start',
                                 value: 'flex-start',
                               },
                               {
@@ -454,11 +445,11 @@ export const getSettings = (data: any) => {
                                 value: 'right',
                               },
                               {
-                                label: 'Self End',
+                                label: 'Self end',
                                 value: 'self-end',
                               },
                               {
-                                label: 'Self Start',
+                                label: 'Self start',
                                 value: 'self-start',
                               },
                               {
