@@ -329,6 +329,46 @@ export const getSettings = (data: any) => {
                                     propertyName: 'font.size',
                                     hideLabel: true,
                                     width: 50,
+                                    hidden: {
+                                      _code: 'return  getSettingValue(data.textType) === "title";',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
+                                  },
+                                  {
+                                    type: 'dropdown',
+                                    id: 'size-s4gmBg31azZC0UjZjpfTm',
+                                    label: 'Size unit',
+                                    propertyName: 'level',
+                                    hideLabel: true,
+                                    defaultValue: '1',
+                                    dropdownOptions: [
+                                      {
+                                        label: 'H1',
+                                        value: '1',
+                                      },
+                                      {
+                                        label: 'H2',
+                                        value: '2',
+                                      },
+                                      {
+                                        label: 'H3',
+                                        value: '3',
+                                      },
+                                      {
+                                        label: 'H4',
+                                        value: '4',
+                                      },
+                                      {
+                                        label: 'H5',
+                                        value: '5',
+                                      },
+                                    ],
+                                    hidden: {
+                                      _code: 'return  getSettingValue(data.textType) !== "title";',
+                                      _mode: 'code',
+                                      _value: false,
+                                    } as any,
                                   },
                                   {
                                     type: 'dropdown',
@@ -691,46 +731,68 @@ export const getSettings = (data: any) => {
                                 ],
                               })
                               .addSettingsInputRow({
-                                id: "backgroundStyleRow-controls",
+                                id: 'backgroundStyleRow-controls',
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                                 inputs: [
                                   {
                                     type: 'customDropdown',
                                     id: 'backgroundStyleRow-size',
-                                    label: "Size",
+                                    label: 'Size',
                                     hideLabel: true,
-                                    propertyName: "background.size",
-                                    customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
+                                    propertyName: 'background.size',
+                                    customTooltip:
+                                      'Size of the background image, two space separated values with units e.g "100% 100px"',
                                     dropdownOptions: sizeOptions,
                                   },
                                   {
                                     type: 'customDropdown',
                                     id: 'backgroundStyleRow-position',
-                                    label: "Position",
+                                    label: 'Position',
                                     hideLabel: true,
-                                    customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                    propertyName: "background.position",
+                                    customTooltip:
+                                      'Position of the background image, two space separated values with units e.g "5em 100px"',
+                                    propertyName: 'background.position',
                                     dropdownOptions: positionOptions,
-                                  }
-                                ]
+                                  },
+                                ],
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-repeat',
                                 parentId: 'backgroundStyleRow',
-                                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                inputs: [{
-                                  type: 'radio',
-                                  id: 'backgroundStyleRow-repeat-radio',
-                                  label: 'Repeat',
-                                  hideLabel: true,
-                                  propertyName: 'background.repeat',
-                                  inputType: 'radio',
-                                  buttonGroupOptions: repeatOptions,
-                                }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                readOnly: {
+                                  _code: 'return  getSettingValue(data?.readOnly);',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
+                                inputs: [
+                                  {
+                                    type: 'radio',
+                                    id: 'backgroundStyleRow-repeat-radio',
+                                    label: 'Repeat',
+                                    hideLabel: true,
+                                    propertyName: 'background.repeat',
+                                    inputType: 'radio',
+                                    buttonGroupOptions: repeatOptions,
+                                  },
+                                ],
+                                hidden: {
+                                  _code:
+                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
+                                  _mode: 'code',
+                                  _value: false,
+                                } as any,
                               })
                               .toJson(),
                           ],
