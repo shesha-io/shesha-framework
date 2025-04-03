@@ -39,6 +39,22 @@ export const getSettings = (data: any) => {
                   parentId: 's4gmBg31azZC0UjZjpfTm',
                   hideLabel: true,
                 })
+                .addSettingsInputRow({
+                  id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return  getSettingValue(data?.hasChildren);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      id: 'palceholder-s4gmBg31azZC0UjZjpfTm',
+                      type: 'textArea',
+                      propertyName: 'content',
+                      label: 'Content',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
                 .addSettingsInput({
                   id: 'palceholder-tooltip-s4gmBg31azZC0UjZjpfTm',
                   parentId: 's4gmBg31azZC0UjZjpfTm',
@@ -48,6 +64,12 @@ export const getSettings = (data: any) => {
                   size: 'small',
                   jsSetting: true,
                   readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  hidden: {
+                    _code:
+                      'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.hasChildren);',
+                    _mode: 'code',
+                    _value: false,
+                  } as any,
                 })
                 .addSettingsInput({
                   id: 'href-s4gmBg31azZC0UjZjpfTm',
