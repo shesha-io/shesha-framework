@@ -135,23 +135,29 @@ export const getSettings = (data: ITableComponentProps) => {
                                     parentId: commonTabId,
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                 })
-                                .addSettingsInput({
+                                .addSettingsInputRow({
                                     id: nanoid(),
-                                    propertyName: 'useMultiselect',
-                                    label: 'Use Multi-select',
-                                    inputType: 'switch',
-                                    jsSetting: true,
-                                    parentId: commonTabId,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                })
-                                .addSettingsInput({
-                                    id: nanoid(),
-                                    propertyName: 'freezeHeaders',
-                                    label: 'Freeze Headers',
-                                    inputType: 'switch',
-                                    jsSetting: true,
-                                    parentId: commonTabId,
-                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    readOnly: false,
+                                    inputs: [
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'freezeHeaders',
+                                            label: 'Freeze Headers',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                            parentId: commonTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        },
+                                        {
+                                            id: nanoid(),
+                                            propertyName: 'useMultiselect',
+                                            label: 'Use Multi-select',
+                                            type: 'switch',
+                                            jsSetting: true,
+                                            parentId: commonTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                        }
+                                    ]
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
@@ -361,11 +367,10 @@ export const getSettings = (data: ITableComponentProps) => {
                                     ]
                                 })
 
-
                                 .addSettingsInput({
                                     id: nanoid(),
                                     propertyName: 'onRowSave',
-                                    label: 'On row save',
+                                    label: 'On Row Save',
                                     inputType: 'codeEditor',
                                     parentId: crudTabId,
                                     tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
@@ -373,15 +378,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
                                     description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
                                     exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
-                                })
-                                .addConfigurableActionConfigurator({
-                                    id: nanoid(),
-                                    propertyName: 'onRowSaveSuccessAction',
-                                    label: 'On Row Save Success',
-                                    parentId: crudTabId,
-                                    description: 'Custom business logic to be executed after successfull saving of new/updated row.',
-                                    hideLabel: true,
-                                    jsSetting: true,
                                 })
                                 .addSettingsInput({
                                     id: nanoid(),
@@ -441,7 +437,70 @@ export const getSettings = (data: ITableComponentProps) => {
                         title: 'Appearance',
                         id: layoutTabId,
                         components: [...new DesignerToolbarSettings()
+                            .addSettingsInputRow({
+                                id: nanoid(),
+                                readOnly: false,
+                                inputs: [
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'minHeight',
+                                        label: 'Min Height',
+                                        type: 'numberField',
+                                        parentId: layoutTabId,
+                                        tooltip: 'The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.',
+                                        jsSetting: true,
+                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    },
+                                    {
+                                        id: nanoid(),
+                                        propertyName: 'maxHeight',
+                                        label: 'Max Height',
+                                        type: 'numberField',
+                                        parentId: layoutTabId,
+                                        tooltip: 'The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.',
+                                        jsSetting: true,
+                                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                    }
+                                ]
+                            })
+                            .addCollapsiblePanel({
+                                id: 'tableStyles',
+                                propertyName: 'tableStylesCol',
+                                label: 'Customize Styles',
+                                labelAlign: 'right',
+                                ghost: true,
+                                parentId: layoutTabId,
+                                collapsible: 'header',
+                                content: {
+                                    id: 'tableStylesCollapsible',
+                                    components: [...new DesignerToolbarSettings()
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'containerStyle',
+                                            label: 'Table container style',
+                                            inputType: 'codeEditor',
+                                            parentId: layoutTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'The style that will be applied to the table container/wrapper',
+                                            exposedVariables: [],
+                                        })
+                                        .addSettingsInput({
+                                            id: nanoid(),
+                                            propertyName: 'tableStyle',
+                                            label: 'Table style',
+                                            inputType: 'codeEditor',
+                                            parentId: layoutTabId,
+                                            readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                            description: 'The style that will be applied to the table',
+                                            exposedVariables: [],
+                                        })
+                                        .toJson()
 
+
+
+                                    ]
+                                }
+                            })
                             .addCollapsiblePanel({
                                 id: 'tableEmptyState',
                                 propertyName: 'tableEmptyState',
@@ -485,46 +544,6 @@ export const getSettings = (data: ITableComponentProps) => {
                                     ]
                                 }
                             })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'minHeight',
-                                label: 'Min Height',
-                                inputType: 'numberField',
-                                parentId: layoutTabId,
-                                tooltip: 'The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.',
-                                jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'maxHeight',
-                                label: 'Max Height',
-                                inputType: 'numberField',
-                                parentId: layoutTabId,
-                                tooltip: 'The maximum height of the table. If left blank should grow to display all rows, otherwise should allow for vertical scrolling.',
-                                jsSetting: true,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'containerStyle',
-                                label: 'Table container style',
-                                inputType: 'codeEditor',
-                                parentId: layoutTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                description: 'The style that will be applied to the table container/wrapper',
-                                exposedVariables: [],
-                            })
-                            .addSettingsInput({
-                                id: nanoid(),
-                                propertyName: 'tableStyle',
-                                label: 'Table style',
-                                inputType: 'codeEditor',
-                                parentId: layoutTabId,
-                                readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                                description: 'The style that will be applied to the table',
-                                exposedVariables: [],
-                            })
                             .toJson()
                         ]
                     },
@@ -543,6 +562,32 @@ export const getSettings = (data: ITableComponentProps) => {
                                     jsSetting: true,
                                     tooltip: 'Enter a list of permissions that should be associated with this component',
                                     readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                })
+                                .toJson()
+                        ]
+                    },
+                    {
+                        key: 'events',
+                        title: 'Events',
+                        id: securityTabId,
+                        components: [
+                            ...new DesignerToolbarSettings()
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: "dblClickActionConfiguration",
+                                    parentId: 'root',
+                                    label: "On Double Click",
+                                    jsSetting: false,
+                                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                })
+                                .addConfigurableActionConfigurator({
+                                    id: nanoid(),
+                                    propertyName: 'onRowSaveSuccessAction',
+                                    label: 'On Row Save Success',
+                                    parentId: crudTabId,
+                                    description: 'Custom business logic to be executed after successfull saving of new/updated row.',
+                                    hideLabel: true,
+                                    jsSetting: true,
                                 })
                                 .toJson()
                         ]
