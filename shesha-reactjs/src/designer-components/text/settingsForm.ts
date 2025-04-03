@@ -213,6 +213,98 @@ export const getSettings = (data: any) => {
                     },
                   ],
                 })
+                .addSettingsInputRow({
+                  id: 'switeches-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: 'italic-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'italic',
+                      label: 'Italic',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: 'code-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'code',
+                      label: 'Code',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: 'switeches-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: 'delete-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'delete',
+                      label: 'Strikethrough',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: 'underline-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'underline',
+                      label: 'Underline',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: 'switeches-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: 'strong-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'ellipsis',
+                      label: 'Ellipsis',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: 'mark-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'mark',
+                      label: 'Mark',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: 'switeches-s4gmBg31azZC0UjZjpfTm',
+                  parentId: 's4gmBg31azZC0UjZjpfTm',
+                  readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: 'keyboard-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'keyboard',
+                      label: 'Keyboard',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                    {
+                      type: 'switch',
+                      id: 'copyable-s4gmBg31azZC0UjZjpfTm',
+                      propertyName: 'copyable',
+                      label: 'Copyable',
+                      size: 'small',
+                      jsSetting: true,
+                    },
+                  ],
+                })
                 .toJson(),
             ],
           },
@@ -401,7 +493,7 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     width: 60,
                                     dropdownOptions: textAlign,
-                                },
+                                  },
                                 ],
                               })
                               .toJson(),
@@ -826,10 +918,10 @@ export const getSettings = (data: any) => {
                                     hideLabel: true,
                                     tooltip: 'Offset X',
                                     width: 80,
-                                    icon: "offsetHorizontalIcon",
+                                    icon: 'offsetHorizontalIcon',
                                     propertyName: 'shadow.offsetX',
-                                },
-                                {
+                                  },
+                                  {
                                     type: 'numberField',
                                     id: 'shadowStyleRow-offsetY',
                                     label: 'Offset Y',
@@ -838,8 +930,8 @@ export const getSettings = (data: any) => {
                                     width: 80,
                                     icon: 'offsetVerticalIcon',
                                     propertyName: 'shadow.offsetY',
-                                },
-                                {
+                                  },
+                                  {
                                     type: 'numberField',
                                     id: 'shadowStyleRow-blurRadius',
                                     label: 'Blur',
@@ -848,8 +940,8 @@ export const getSettings = (data: any) => {
                                     width: 80,
                                     icon: 'blurIcon',
                                     propertyName: 'shadow.blurRadius',
-                                },
-                                {
+                                  },
+                                  {
                                     type: 'numberField',
                                     id: 'shadowStyleRow-spreadRadius',
                                     label: 'Spread',
@@ -858,14 +950,14 @@ export const getSettings = (data: any) => {
                                     width: 80,
                                     icon: 'spreadIcon',
                                     propertyName: 'shadow.spreadRadius',
-                                },
-                                {
+                                  },
+                                  {
                                     type: 'colorPicker',
                                     id: 'shadowStyleRow-color',
                                     label: 'Color',
                                     hideLabel: true,
                                     propertyName: 'shadow.color',
-                                },
+                                  },
                                 ],
                               })
                               .toJson(),
