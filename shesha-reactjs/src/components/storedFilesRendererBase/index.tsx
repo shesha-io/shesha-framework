@@ -160,7 +160,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const { styles } = useStyles({
     containerStyles: { ...{ ...containerDimensions, width: layout === 'vertical' ? '' : addPx(containerDimensions.width), height: layout === 'horizontal' ? '' : addPx(containerDimensions.height) }, ...containerJsStyle },
-    style: finalStyle, model: { gap, layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger },
+    style: finalStyle, model: { gap: addPx(gap), layout: listType === 'thumbnail' && !isDragger, hideFileName: rest.hideFileName && listType === 'thumbnail', isDragger },
     primaryColor
   });
 
@@ -211,7 +211,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewImage({ url: imageUrls[file.uid], uid: file.uid, name: file.name });
     setPreviewOpen(true);
   };
-
 
   const iconRender = (file) => {
     const { type, uid } = file;
@@ -304,7 +303,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         theme={{
           components: {
             Upload: {
-              actionsColor: '#1890ff',
+              actionsColor: primaryColor,
             },
           },
         }}
@@ -312,7 +311,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         {isStub
           ? (isDragger
             ? <Dragger disabled><DraggerStub /></Dragger>
-            : <div>{renderUploadContent()}</div>)
+            : <div className='ant-upload-list-item-thumbnail ant-upload-list-item'>{renderUploadContent()}</div>)
           : (props.disabled
             ? <Upload {...props} style={finalStyle} listType={listTypeAndLayout} />
             : isDragger

@@ -11,7 +11,8 @@ import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
 import {
-  CodeOutlined, CodeFilled, FormOutlined
+  CodeOutlined, CodeFilled,
+  EditOutlined
 } from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
@@ -122,7 +123,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         danger={mode === 'value' && !!code}
         ghost
         size='small'
-        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        icon={mode === 'code' ? <EditOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
         color='lightslategrey'
         onClick={onSwitchMode}
       />

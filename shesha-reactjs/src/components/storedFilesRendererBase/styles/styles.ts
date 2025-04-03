@@ -10,7 +10,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const { width: containerWidth, height: containerHeight,
     maxHeight: containerMaxHeight, maxWidth: containerMaxWidth, minHeight: containerMinHeight,
-    minWidth: containerMinWidth } = containerStyles;
+    minWidth: containerMinWidth, ...restContainerStyles } = containerStyles;
 
   const { gap, layout, hideFileName, isDragger } = model;
 
@@ -31,11 +31,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     --container-min-height: ${containerMinHeight};
     --container-max-height: ${containerMaxHeight};
     --container-height: ${containerHeight};
+    --ant-upload-actions-color: ${token.colorError} !important;
     --ant-button-content-font-size: ${fontSize ?? '14px'} !important;
     --ant-button-font-weight: ${fontWeight ?? '400'} !important;
     --ant-font-family: ${fontFamily ?? 'Segoe UI'} !important;
     --ant-button-font-weight: ${fontWeight ?? '400'} !important;
-      ${rest}
+      ${restContainerStyles}
       ${containerStyles}
       max-height: auto;
     
@@ -65,8 +66,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     }
 
     .ant-upload-list-item-thumbnail {
-      border-radius: ${borderRadius ?? '8px'} !important;
-      padding: 0 !important;
       background: ${backgroundImage ?? (backgroundColor || '#fff')} !important;
       border: ${borderWidth} ${borderStyle} ${borderColor};
       border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
@@ -74,7 +73,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
       border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
       box-shadow: ${boxShadow};
-     
+      ${rest}
+
       img {
         width: var(--thumbnail-width, 54px) !important;
         height: var(--thumbnail-height, 54px) !important;
@@ -194,7 +194,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     .${prefixCls}-upload-list {
           display: flex !important;
           flex-wrap: nowrap !important;
-          flex-direction: row !important;
+          flex-direction: row-reverse !important;
           flex-shrink: 0 !important;
           overflow-x: auto;
           overflow-y: clip !important;
@@ -231,7 +231,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       min-height: var(--container-min-height) !important;
     .${prefixCls}-upload-list {
           display: flex !important;
-          flex-direction: column !important;
+          flex-direction: column-reverse !important;
           flex-wrap: nowrap !important;
           padding: 2px ${borderWidth ?? '2px'} !important;
           height: var(--container-height) !important;
