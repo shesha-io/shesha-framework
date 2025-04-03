@@ -113,20 +113,13 @@ export const getSettings = (data: any) => {
                       inputs: [
                         {
                           id: nanoid(),
-                          type: "autocomplete",
-                          propertyName: "formType",
-                          label: "Form type",
+                          propertyName: 'formType',
+                          label: 'Form Type',
+                          parentId: commonTabId,
+                          type: 'formTypeAutocomplete',
                           jsSetting: true,
-                          dataSourceType: "entitiesList",
-                          dropdownOptions: [
-                            { label: "Table", value: "Table" },
-                            { label: "Create", value: "Create" },
-                            { label: "Edit", value: "Edit" },
-                            { label: "Details", value: "Details" },
-                            { label: "Quickview", value: "Quickview" },
-                            { label: "ListItem", value: "ListItem" },
-                            { label: "Picker", value: "Picker" }
-                          ]
+                          width: '100%',
+                          allowClear: true,
                         }
                       ],
                       hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
