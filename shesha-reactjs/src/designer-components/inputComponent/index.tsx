@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -46,9 +46,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType,
+    const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt,
         propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, showSearch } = props;
+        allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor, referenceList, textType, defaultChecked, showSearch = true } = props;
 
     const allData = useAvailableConstantsData();
 
@@ -82,6 +82,12 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         : null;
 
     const meta = useMetadata(false);
+
+    useEffect(() => {
+        if (defaultValue && !value) {
+            onChange(defaultValue);
+        }
+    }, [defaultValue]);
 
     const propertyMeta = property && meta
         ? meta.getPropertyMeta(property)
@@ -122,8 +128,9 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                     })}
             </Radio.Group>;
         case 'switch':
+            /*Handle cases where defaultValue is used in place of defaultChecked*/
             return <Switch disabled={readOnly} size='small'
-                defaultValue={defaultValue} onChange={onChange} value={value || defaultValue} />;
+                defaultChecked={defaultChecked ?? defaultValue} onChange={onChange} defaultValue={defaultValue} value={value} />;
         case 'numberField':
             return <InputNumber
                 placeholder={placeholder}
@@ -134,7 +141,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
                 value={value || defaultValue}
                 style={{ width: "100%" }}
                 onChange={onChange}
-                addonAfter={iconElement(icon, null, tooltip, {}, styles)}
+                addonAfter={iconElement(icon, null, tooltip || label, {}, styles)}
             />;
         case 'customDropdown': {
             const options = dropdownOptions as IDropdownOption[];
@@ -163,7 +170,7 @@ export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) =
         case 'button':
             return <Button style={{ maxWidth: "100%" }} disabled={readOnly} defaultValue={defaultValue}
                 type={'primary'} size={size}
-                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt, null, tooltip, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
+                icon={!value ? iconElement(icon, null, tooltip, {}, styles) : iconElement(iconAlt, null, tooltipAlt, {}, styles)} onClick={() => onChange(!value)} title={tooltip} />;
         case 'filtersList':
             return <FiltersList readOnly={readOnly}  {...props} />;
         case 'buttonGroupConfigurator':

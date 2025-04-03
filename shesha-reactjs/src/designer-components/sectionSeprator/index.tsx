@@ -11,6 +11,7 @@ import { getFontStyle } from '../_settings/utils/font/utils';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { getDimensionsStyles } from '../_settings/utils';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -18,15 +19,17 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   name: 'Section Separator',
   icon: <LineOutlined />,
   Factory: ({ model }) => {
+    const { lineWidth, lineHeight } = model;
     const { data: formData } = useFormData();
     const { lineFont, font } = model;
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
 
-    const styling = JSON.parse(model.titleStylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const extractedDimensions = {
+      width: lineWidth,
+      height: lineHeight,
+    };
 
     const titleAdditionalStyles = {
-      ...stylingBoxAsCSS,
       ...fontStyles,
       ...getStyle(model?.titleStyle, formData),
     };
@@ -39,6 +42,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       ...getStyle(model?.containerStyle, formData),
     };
 
+    const dimensions = getDimensionsStyles(extractedDimensions, containerAdditionalStyles);
+
     const inputProps = {
       ...model,
       lineThickness: lineFont?.size,
@@ -49,7 +54,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       <SectionSeparator
         {...inputProps}
         title={!model.hideLabel && model.label}
-        containerStyle={containerAdditionalStyles}
+        containerStyle={{ ...dimensions, ...containerAdditionalStyles }}
         titleStyle={titleAdditionalStyles}
         tooltip={model?.description}
       />
@@ -80,7 +85,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
           font: prev.font,
           titleStylingBox: prev.titleStylingBox,
           containerStylingBox: prev.containerStylingBox,
-          lineType: prev.dashed ? 'dashed' : 'solid'
+          lineType: prev.dashed ? 'dashed' : 'solid',
         };
 
         return {

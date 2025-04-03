@@ -1,3 +1,4 @@
+import { buttonTypes } from '@/designer-components/button/util';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = () => {
@@ -81,14 +82,7 @@ export const getSettings = () => {
                         validate: {
                             required: true
                         },
-                        dropdownOptions: [
-                            { label: 'primary', value: 'primary' },
-                            { label: 'ghost', value: 'ghost' },
-                            { label: 'dashed', value: 'dashed' },
-                            { label: 'link', value: 'link' },
-                            { label: 'text', value: 'text' },
-                            { label: 'default', value: 'default' }
-                        ],
+                        dropdownOptions: buttonTypes,
                         jsSetting: false
                     },
                     {

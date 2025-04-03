@@ -56,25 +56,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       >
         {(value, onChange) => {
           const customEvents = getEventHandlers(model, allData);
-
-          const onChangeInternal = (...args: any[]) => {
-            // Handle the case where the user clears the input
-            if (args[0] === null) {
-              // Fire custom event with `null` or fallback value
-              customEvents.onChange({ target: { value: null } } as unknown as React.ChangeEvent<HTMLInputElement>);
-
-              if (typeof onChange === 'function') onChange(null);
-              return;
-            }
-
-            // Handle normal case where args[0] is a valid number
-            customEvents.onChange({
-              target: { value: args[0] },
-            } as unknown as React.ChangeEvent<HTMLInputElement>);
-
-            if (typeof onChange === 'function') onChange(...args);
-          };
-
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
@@ -85,7 +66,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
               disabled={model.readOnly}
               model={model}
               value={value}
-              onChange={onChangeInternal}
+              onChange={onChange}
               onBlur={customEvents.onBlur}
               onFocus={customEvents.onFocus}
             />
