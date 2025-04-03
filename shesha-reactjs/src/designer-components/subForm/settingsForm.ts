@@ -148,7 +148,7 @@ export const getSettings = (data: any) => {
           },
           {
             key: 'dataSource',
-            title: 'Data source',
+            title: 'Data',
             id: dataSourceTabId,
             components: [...new DesignerToolbarSettings()
               .addCollapsiblePanel({
@@ -244,7 +244,6 @@ export const getSettings = (data: any) => {
                           label: "Query Params",
                           tooltip: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
                           description: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
-                          //exposedVariables: QUERY_PARAMS_EXPOSED_VARIABLES.map(setting => setting.toString()),
                         }
                       ],
                       hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
@@ -300,12 +299,6 @@ export const getSettings = (data: any) => {
                       ],
                       hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false } as any,
                     })
-
-
-
-
-
-
                     .toJson()
                   ]
                 }
