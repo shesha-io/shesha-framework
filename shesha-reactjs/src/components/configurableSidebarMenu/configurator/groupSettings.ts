@@ -29,7 +29,7 @@ export const getGroupSettings = (data: any) => {
                                     inputType: "textField",
                                     propertyName: "title",
                                     parentId: commonTabId,
-                                    label: "Tooltip",
+                                    label: "Title",
                                     jsSetting: true,
                                     validate: {
                                         required: true
@@ -87,7 +87,8 @@ export const getGroupSettings = (data: any) => {
             colon: false,
             layout: 'vertical' as FormLayout,
             labelCol: { span: 24 },
-            wrapperCol: { span: 24 }
+            wrapperCol: { span: 24 },
+            isSettingsForm: true
         }
     };
 };

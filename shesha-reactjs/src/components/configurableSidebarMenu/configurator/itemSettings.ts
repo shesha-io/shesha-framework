@@ -56,11 +56,6 @@ export const getItemSettings = (data: any) => {
                                     validate: {
                                         required: true
                                     },
-                                    hidden: {
-                                        _code: "return getSettingValue(data?.itemType) !== 'button';",
-                                        _mode: "code",
-                                        _value: false
-                                    },
                                 })
                                 .addContainer({
                                     id: nanoid(),
@@ -136,10 +131,10 @@ export const getItemSettings = (data: any) => {
             })
             .toJson(),
         formSettings: {
-            colon: true,
-            layout: 'horizontal' as FormLayout,
-            labelCol: { span: 8 },
-            wrapperCol: { span: 16 },
+            colon: false,
+            layout: 'vertical' as FormLayout,
+            labelCol: { span: 24 },
+            wrapperCol: { span: 24 },
             isSettingsForm: true
         }
     };
