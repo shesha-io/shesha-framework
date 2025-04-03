@@ -100,7 +100,7 @@ export interface ISettingsInputProps extends IComponentLabelProps, Omit<IConfigu
     wrapInTemplate?: boolean;
     templateSettings?: CodeTemplateSettings;
     resultTypeExpression?: string | GetResultTypeFunc;
-    availableConstants?: IObjectMetadata;
+    availableConstants?: IObjectMetadata ;
     items?: [];
     onAddNewItem?: IItemListConfiguratorModalProps<any>['initNewItem'];
     listItemSettingsMarkup?: IConfigurableFormComponent[];
