@@ -156,7 +156,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     .${prefixCls}-layout-sider-children {
       width: ${shaSiderExpandedWidth}  !important;
-
+z
       .logo {
         margin-top: ${layoutTriggerHeight}  !important; // It should use a config
       }
