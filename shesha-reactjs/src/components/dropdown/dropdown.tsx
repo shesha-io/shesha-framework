@@ -7,6 +7,7 @@ import { useForm, useFormData, useGlobalState } from '@/providers';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
+import { useStyles } from './styles/style';
 
 export const Dropdown: FC<IDropdownProps> = ({
   valueFormat,
@@ -34,6 +35,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   const { formMode } = useForm();
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
+  const { styles } = useStyles({ style });
 
   const selectedMode = mode === 'single' ? undefined : mode;
   //quick fix not to default to empty string or null while working with multi-mode
@@ -115,6 +117,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   if (dataSourceType === 'referenceList') {
     return (
       <GenericRefListDropDown<any>
+        className={`sha-input ${styles.dropdown}`}
         onChange={onChange}
         referenceListId={referenceListId}
         value={value}
@@ -153,6 +156,7 @@ export const Dropdown: FC<IDropdownProps> = ({
 
   return (
     <Select
+      className={`sha-input ${styles.dropdown}`}
       allowClear={allowClear}
       onChange={onChange}
       value={options.length > 0 ? value || defaultValue : undefined}

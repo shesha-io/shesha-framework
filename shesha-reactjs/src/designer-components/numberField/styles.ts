@@ -8,6 +8,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
         font-weight: ${fontWeight} !important;
         font-family: ${fontFamily};
         text-align: ${textAlign};
+        padding-right: 15px !important;
       }
     `
   );

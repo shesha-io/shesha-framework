@@ -95,8 +95,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     className: 'sha-number-field',
     disabled: disabled,
     variant: model.hideBorder ? 'borderless' : undefined,
-    min: model?.validate?.minValue ?? 0,
-    max: model?.validate?.maxValue ?? MAX_SAFE_INTEGER,
     placeholder: model?.placeholder,
     size: model?.size,
     style: style ? getStyle(style, allData.data, allData.globalState) : { width: '100%' },
@@ -118,7 +116,6 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
     ),
   };
 
-
   return (
     <ConfigProvider
       theme={{
@@ -135,7 +132,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value, onBl
       <InputNumber
         value={value ?? model?.defaultValue}
         {...inputProps}
-        stringMode={!model?.highPrecision}
+        stringMode={model?.highPrecision !== undefined ? !model?.highPrecision : false}
         style={{ ...finalStyle, ...jsStyle }}
         className={`sha-input ${styles.numberField}`}
         onBlur={onBlur}

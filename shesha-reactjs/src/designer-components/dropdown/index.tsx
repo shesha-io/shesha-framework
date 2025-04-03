@@ -33,6 +33,7 @@ import { useSheshaApplication } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { ConfigProvider } from 'antd';
+import { dimensionStyles } from '../numberField/utils';
 
 const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   type: 'dropdown',
@@ -104,9 +105,11 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       ...shadowStyles,
     });
     const finalStyle = removeUndefinedProps({
+      ...dimensionStyles(dimensions, additionalStyles),
       ...additionalStyles,
-      fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400,
     });
+
+
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -124,7 +127,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
                   Select: {
                     fontFamily: model?.font?.type,
                     fontSize: model?.font?.size,
-                    fontWeightStrong: Number(fontStyles.fontWeight),
+                    fontWeightStrong: Number(model.font.weight) ?? 400,
                     colorText: model?.font?.color,
                     colorPrimary: model?.font?.color,
                   },
